@@ -1,19 +1,23 @@
 import React, { useState, useContext } from 'react'
+import YAML from 'yaml'
 import { ConfigurationType, BuildStageVariable } from '../../config'
-import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CustomInput,
+    PluginType,
+    ScriptType,
+    StyledRadioGroup as RadioGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
-import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function TaskDetailComponent() {
+export const TaskDetailComponent = () => {
     const {
         formData,
         setFormData,
@@ -21,7 +25,7 @@ export function TaskDetailComponent() {
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
-        isCdPipeline
+        isCdPipeline,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
@@ -108,15 +112,15 @@ export function TaskDetailComponent() {
             <div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
-                        <CustomInput
-                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                            data-testid="preBuild-task-name-textbox"
-                            type="text"
-                            onChange={(e) => handleNameChange(e)}
-                            value={formData[activeStageName].steps[selectedTaskIndex].name}
-                            name="task-name"
-                            error={renderTaskNameError()}
-                        />
+                    <CustomInput
+                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                        data-testid="preBuild-task-name-textbox"
+                        type="text"
+                        onChange={(e) => handleNameChange(e)}
+                        value={formData[activeStageName].steps[selectedTaskIndex].name}
+                        name="task-name"
+                        error={renderTaskNameError()}
+                    />
                 </div>
                 <div className="row-container mb-12">
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
@@ -217,7 +221,7 @@ export function TaskDetailComponent() {
                     editorValue={editorValue}
                     handleEditorValueChange={handleEditorValueChange}
                     height="calc(100vh - 320px)"
-                    showSample={true}
+                    showSample
                 />
             )}
         </div>

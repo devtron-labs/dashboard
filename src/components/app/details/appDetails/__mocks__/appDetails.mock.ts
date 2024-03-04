@@ -103,7 +103,7 @@ export const nodes = [
         ],
         resourceVersion: '5738841',
     },
-];
+]
 
 export const podMetadata = [
     {
@@ -112,4 +112,4 @@ export const podMetadata = [
         containers: ['colorful-pod-logs'],
         isNew: true,
     },
-];
+]

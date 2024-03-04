@@ -10,13 +10,18 @@ import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic
 import { UserPermissionListHeaderProps } from './types'
 import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
+import { importComponentFromFELibrary } from '../../../../../components/common'
+
+const StatusFilterDropdown = importComponentFromFELibrary('StatusFilterDropdown', null, 'function')
 
 const UserPermissionListHeader = ({
     disabled,
-    // showStatus,
+    showStatus,
     handleSearch,
     initialSearchText,
     getDataToExport,
+    handleStatusFilterChange,
+    status,
 }: UserPermissionListHeaderProps) => {
     const { path } = useRouteMatch()
     const { isSuperAdmin } = useMainContext()
@@ -50,19 +55,20 @@ const UserPermissionListHeader = ({
                         </div>
                     }
                 >
-                    <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
+                    <div className="flex">
+                        <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
+                    </div>
                 </TippyCustomized>
             </div>
             <div className="flex dc__gap-8">
                 <SearchBar
                     inputProps={{
-                        placeholder: 'Search User',
+                        placeholder: 'Search user',
                     }}
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}
                 />
-                {/* TODO (v3): Add the multi-select filtering */}
-                {/* {showStatus && <div>Status</div>} */}
+                {showStatus && <StatusFilterDropdown value={status} onChange={handleStatusFilterChange} />}
                 <div className="dc__divider h-20" />
                 <Link to={`${path}/add`} type="button" className="cta anchor flex dc__gap-6 h-32">
                     <PlusIcon className="icon-dim-14 mw-14" />

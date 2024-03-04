@@ -33,6 +33,8 @@ interface TriggerInfoModalProps {
 }
 
 export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerInfoModalState> {
+    commitInfoRef = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -51,12 +53,23 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             tagsEditable: false,
             hideImageTaggingHardDelete: false,
         }
+        this.commitInfoRef = React.createRef<HTMLDivElement>()
         this.selectMaterial = this.selectMaterial.bind(this)
         this.toggleChanges = this.toggleChanges.bind(this)
     }
 
+    outsideClickHandler = (evt): void => {
+        if (this.commitInfoRef.current && !this.commitInfoRef.current.contains(evt.target)) {
+            this.props.close()
+        }
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.outsideClickHandler)
+    }
+
     componentDidMount() {
-        let params = {
+        const params = {
             envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId,
         }
@@ -71,20 +84,23 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             .catch((error) => {
                 showError(error)
             })
+        document.addEventListener('click', this.outsideClickHandler)
     }
 
     selectMaterial(materialId: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.isSelected = true
-            } else material.isSelected = false
+            } else {
+                material.isSelected = false
+            }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     toggleChanges(materialId: string, commit: string): void {
-        let materials = this.state.materials.map((material) => {
+        const materials = this.state.materials.map((material) => {
             if (String(material.id) === materialId) {
                 material.history = material.history.map((hist) => {
                     if (hist.commit === commit) {
@@ -95,13 +111,13 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             }
             return material
         })
-        this.setState({ materials: materials })
+        this.setState({ materials })
     }
 
     renderWithBackDrop(headerDescription: string, body) {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div data-testid="visible-modal-commit-info" className="h-100vh">
+                <div data-testid="visible-modal-commit-info" className="h-100vh" ref={this.commitInfoRef}>
                     <div className="trigger-modal__header bcn-0">
                         <div className="">
                             <h1 className="modal__title">{this.state.appName}</h1>
@@ -123,7 +139,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     render() {
-        let headerDescription, body
+        let headerDescription
+        let body
         if (this.state.view === ViewType.LOADING) {
             headerDescription = null
             body = (
@@ -162,7 +179,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                         <Artifacts
                             status=""
                             artifact={this.state.image}
-                            blobStorageEnabled={true}
+                            blobStorageEnabled
                             isArtifactUploaded={false}
                             isJobView={false}
                             type={HistoryComponentType.CI}

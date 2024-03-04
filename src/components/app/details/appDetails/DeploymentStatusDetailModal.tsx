@@ -1,15 +1,14 @@
 import React, { useEffect, useRef } from 'react'
+import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import { useHistory } from 'react-router-dom'
 import './appDetails.scss'
 import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentStatusDetailModal({
     appName,
     environmentName,
-    streamData,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
     isLoading,
@@ -93,7 +92,6 @@ export default function DeploymentStatusDetailModal({
                     ) : (
                         <DeploymentStatusDetailBreakdown
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            streamData={streamData}
                             isVirtualEnvironment={isVirtualEnvironment}
                         />
                     )}

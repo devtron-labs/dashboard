@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom'
 import {
-    convertToOptionsList,
-    createGroupSelectList,
-    filterImageList,
-    processK8SObjects,
-    sortObjectArrayAlphabetically,
-} from '../../common'
-import {
     showError,
     Progressing,
     ServerErrors,
@@ -18,6 +11,14 @@ import {
     Reload,
     DevtronProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { ShortcutProvider } from 'react-keybind'
+import {
+    convertToOptionsList,
+    createGroupSelectList,
+    filterImageList,
+    processK8SObjects,
+    sortObjectArrayAlphabetically,
+} from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -50,7 +51,6 @@ import ConnectingToClusterState from './ConnectingToClusterState'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
-import { ShortcutProvider } from 'react-keybind'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     getEventObjectTypeGVK,
@@ -199,7 +199,9 @@ export default function ResourceList() {
         } else if (nodeType == AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.cluster_overview, AppDetailsTabs.cluster_overview)
         } else if (selectedResource && !node) {
-            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) getSidebarData(clusterId)
+            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
+                getSidebarData(clusterId)
+            }
             markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
         }
 
@@ -224,7 +226,9 @@ export default function ResourceList() {
     }, [location.pathname])
 
     const getGVKData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) return
+        if (!_clusterId) {
+            return
+        }
         try {
             setRawGVKLoader(true)
             setK8SObjectMapRaw(null)
@@ -374,9 +378,8 @@ export default function ResourceList() {
                 setClusterList((prev) => {
                     if (prev && prev.length === 0) {
                         return _clusterList
-                    } else {
-                        return prev
                     }
+                    return prev
                 })
 
                 const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
@@ -479,7 +482,9 @@ export default function ResourceList() {
     }
 
     const getSidebarData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) return
+        if (!_clusterId) {
+            return
+        }
         try {
             setK8SObjectMap(null)
             setLoader(true)
@@ -606,7 +611,7 @@ export default function ResourceList() {
                         'node',
                         'ip',
                     ],
-                    origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
                 },
             })
         }
@@ -757,7 +762,7 @@ export default function ResourceList() {
 
     const updateNodeSelectionData = (_selected: Record<string, any>, _group?: string) => {
         if (_selected) {
-            const _nodeType = _selected.isFromEvent || _selected.isFromNodeDetails ? '' : nodeType + '_'
+            const _nodeType = _selected.isFromEvent || _selected.isFromNodeDetails ? '' : `${nodeType}_`
             setNodeSelectionData((prevData) =>
                 getUpdatedNodeSelectionData(
                     prevData,
@@ -846,34 +851,33 @@ export default function ResourceList() {
                     setLastDataSync={setLastDataSync}
                 />
             )
-        } else {
-            return (
-                <K8SResourceList
-                    selectedResource={selectedResource}
-                    resourceList={resourceList}
-                    filteredResourceList={filteredResourceList}
-                    noResults={noResults}
-                    selectedCluster={selectedCluster}
-                    namespaceOptions={namespaceOptions}
-                    selectedNamespace={selectedNamespace}
-                    setSelectedNamespace={setSelectedNamespace}
-                    resourceListLoader={resourceListLoader}
-                    getResourceListData={getResourceListData}
-                    updateNodeSelectionData={updateNodeSelectionData}
-                    searchText={searchText}
-                    setSearchText={setSearchText}
-                    searchApplied={searchApplied}
-                    setSearchApplied={setSearchApplied}
-                    handleFilterChanges={handleFilterChanges}
-                    clearSearch={clearSearch}
-                    isCreateModalOpen={showCreateResourceModal}
-                    addTab={addTab}
-                    renderCallBackSync={renderRefreshBar}
-                    syncError={!hideSyncWarning}
-                    k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
-                />
-            )
         }
+        return (
+            <K8SResourceList
+                selectedResource={selectedResource}
+                resourceList={resourceList}
+                filteredResourceList={filteredResourceList}
+                noResults={noResults}
+                selectedCluster={selectedCluster}
+                namespaceOptions={namespaceOptions}
+                selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                resourceListLoader={resourceListLoader}
+                getResourceListData={getResourceListData}
+                updateNodeSelectionData={updateNodeSelectionData}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchApplied={searchApplied}
+                setSearchApplied={setSearchApplied}
+                handleFilterChanges={handleFilterChanges}
+                clearSearch={clearSearch}
+                isCreateModalOpen={showCreateResourceModal}
+                addTab={addTab}
+                renderCallBackSync={renderRefreshBar}
+                syncError={!hideSyncWarning}
+                k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
+            />
+        )
     }
 
     const renderTerminalLoader = () => {
@@ -883,7 +887,8 @@ export default function ResourceList() {
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
+        }
+        if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
             return (
                 <div className="bcn-0 node-data-container flex">
                     {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
@@ -894,7 +899,9 @@ export default function ResourceList() {
     }
 
     const renderClusterTerminal = (): JSX.Element => {
-        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) return null
+        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) {
+            return null
+        }
         const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
         const _showTerminal =
             nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
@@ -908,7 +915,7 @@ export default function ResourceList() {
                     taints={createTaintsList(selectedTerminal.nodeDetails, 'nodeName')}
                     clusterImageList={_imageList}
                     namespaceList={namespaceDefaultList[selectedTerminal.name]}
-                    isNodeDetailsPage={true}
+                    isNodeDetailsPage
                 />
             )
         )
@@ -932,7 +939,7 @@ export default function ResourceList() {
                 <div className="resource-details-container">
                     <NodeDetailComponent
                         loadingResources={resourceListLoader || rawGVKLoader || loader}
-                        isResourceBrowserView={true}
+                        isResourceBrowserView
                         selectedResource={getSelectedResourceData()}
                         markTabActiveByIdentifier={markTabActiveByIdentifier}
                         addTab={addTab}
@@ -942,7 +949,8 @@ export default function ResourceList() {
                     />
                 </div>
             )
-        } else if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase())
+        }
+        if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
             return (
                 <ClusterOverview
                     isSuperAdmin={superAdminRef.current}
@@ -955,6 +963,7 @@ export default function ResourceList() {
                     sideDataAbortController={sideDataAbortController.current}
                 />
             )
+        }
         return loader || rawGVKLoader || errorMsg ? (
             <ConnectingToClusterState
                 loader={loader}
@@ -982,7 +991,7 @@ export default function ResourceList() {
     }
 
     const addClusterButton = () => {
-        if (clusterId)
+        if (clusterId) {
             return (
                 !loader &&
                 !showErrorState &&
@@ -999,6 +1008,7 @@ export default function ResourceList() {
                     </>
                 )
             )
+        }
 
         return (
             <>
@@ -1032,13 +1042,15 @@ export default function ResourceList() {
                     <ErrorScreenManager code={accessDeniedCode} />
                 </div>
             )
-        } else if ((loader && !selectedCluster?.value) || clusterLoader) {
+        }
+        if ((loader && !selectedCluster?.value) || clusterLoader) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             )
-        } else if (!selectedCluster?.value) {
+        }
+        if (!selectedCluster?.value) {
             return (
                 <ClusterSelectionList
                     clusterOptions={clusterList}

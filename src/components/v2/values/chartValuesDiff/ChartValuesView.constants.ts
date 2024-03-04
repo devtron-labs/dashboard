@@ -40,7 +40,7 @@ export const COMPARISON_OPTION_LABELS = {
     CompareDeployed: 'Compare with deployed',
     HideComparison: 'Hide comparison',
     CompareValues: 'Compare values',
-    CompareManifest: 'Compare manifest'
+    CompareManifest: 'Compare manifest',
 }
 
 export const COMPARISON_OPTION_TIPPY_CONTENT = {
@@ -52,7 +52,7 @@ export const COMPARISON_OPTION_TIPPY_CONTENT = {
     Fetching: 'Fetching...',
     ReadmeNotAvailable: 'Readme is not available for this chart',
     DiabledManifest: 'You can compare manifest output of deployments once this chart is deployed',
-    EnabledManifest: 'Compare manifest output with previous deployments of this application'
+    EnabledManifest: 'Compare manifest output with previous deployments of this application',
 }
 
 export const UPDATE_APP_BUTTON_TEXTS = {
@@ -74,7 +74,8 @@ export const CONNECT_TO_HELM_CHART_TEXTS = {
 }
 
 export const MANIFEST_INFO = {
-    InfoText: 'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.'
+    InfoText:
+        'Manifest is generated only for apps linked to a helm chart. Link this app to a helm chart to view generated manifest.',
 }
 
 export const CHART_DEPCRECATED_TEXTS = {

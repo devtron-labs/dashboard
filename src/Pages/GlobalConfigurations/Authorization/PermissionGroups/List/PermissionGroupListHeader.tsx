@@ -49,13 +49,15 @@ const PermissionGroupListHeader = ({
                         </div>
                     }
                 >
-                    <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
+                    <div className="flex">
+                        <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
+                    </div>
                 </TippyCustomized>
             </div>
             <div className="flex dc__gap-8">
                 <SearchBar
                     inputProps={{
-                        placeholder: 'Search groups',
+                        placeholder: 'Search group',
                     }}
                     handleEnter={handleSearch}
                     initialSearchText={initialSearchText}

@@ -1,9 +1,9 @@
+import { KeyValueListType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
 import { deepEqual } from '../../../common'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
-import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './types'
+import { DeploymentWithConfigType, RuntimeParamsValidatorReturnType, TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -40,14 +40,14 @@ export const LAST_SAVED_CONFIG_OPTION = {
     infoText: 'Use last saved configuration to deploy',
 }
 
-const LATEST_TRIGGER_CONFIG_OPTION = {
+export const LATEST_TRIGGER_CONFIG_OPTION = {
     label: 'Last deployed config',
     value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
     infoText: 'Retain currently deployed configuration',
 }
 
 export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
-    let configOptionsList = [
+    const configOptionsList = [
         {
             label: 'Select a configuration to deploy',
             options: [LAST_SAVED_CONFIG_OPTION],
@@ -94,7 +94,7 @@ export const processResolvedPromise = (
             wfrId: resp.value?.result?.wfrId,
         }
     }
-    //This will handle a corner case, no previous deployment history is present i.e for first time deployment.
+    // This will handle a corner case, no previous deployment history is present i.e for first time deployment.
     if (!isRecentDeployConfig) {
         showError(resp.reason)
     }
@@ -105,7 +105,8 @@ export const processResolvedPromise = (
 const compareConfigValues = (configA: DeploymentHistoryDetail, configB: DeploymentHistoryDetail): boolean => {
     if (!configA && !configB) {
         return false
-    } else if (
+    }
+    if (
         (configA && !configB) ||
         (!configA && configB) ||
         (configA.values && !configB.values) ||
@@ -114,19 +115,19 @@ const compareConfigValues = (configA: DeploymentHistoryDetail, configB: Deployme
         (!configA.codeEditorValue?.value && configB.codeEditorValue?.value)
     ) {
         return true
-    } else if (!deepEqual(configA.values, configB.values)) {
+    }
+    if (!deepEqual(configA.values, configB.values)) {
         return true
-    } else {
-        try {
-            const parsedEditorValueA = JSON.parse(configA.codeEditorValue.value)
-            const parsedEditorValueB = JSON.parse(configB.codeEditorValue.value)
+    }
+    try {
+        const parsedEditorValueA = JSON.parse(configA.codeEditorValue.value)
+        const parsedEditorValueB = JSON.parse(configB.codeEditorValue.value)
 
-            if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
-                return true
-            }
-        } catch (err) {
-            return false
+        if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
+            return true
         }
+    } catch (err) {
+        return false
     }
 
     return false
@@ -185,4 +186,41 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
     }
 
     return diffForOptions
+}
+
+export const validateAndGetValidRuntimeParams = (
+    runtimeParams: KeyValueListType[],
+): RuntimeParamsValidatorReturnType => {
+    // Checking if any key is duplicated
+    const keysFrequencyMap = {}
+    runtimeParams.forEach((param) => {
+        if (keysFrequencyMap[param.key]) {
+            keysFrequencyMap[param.key]++
+        } else {
+            keysFrequencyMap[param.key] = 1
+        }
+    })
+
+    const areKeysDuplicated = Object.keys(keysFrequencyMap).some((key) => keysFrequencyMap[key] > 1)
+    if (areKeysDuplicated) {
+        return {
+            isValid: false,
+            message: 'Duplicate keys found',
+        }
+    }
+
+    const validParams = {
+        envVariables: runtimeParams.reduce((acc, param) => {
+            if (param.key) {
+                acc[param.key] = param.value
+            }
+            return acc
+        }, {}),
+    }
+
+    // filtering empty keys
+    return {
+        isValid: true,
+        validParams,
+    }
 }

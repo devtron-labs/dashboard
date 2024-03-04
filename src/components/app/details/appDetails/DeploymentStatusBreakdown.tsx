@@ -1,7 +1,7 @@
 import React from 'react'
 import { DeploymentStatusDetailBreakdownType } from './appDetails.type'
 import { TIMELINE_STATUS, URLS } from '../../../../config'
-import '../../../../components/v2/appDetails/sourceInfo/environmentStatus/environmentStatus.scss'
+import '../../../v2/appDetails/sourceInfo/environmentStatus/environmentStatus.scss'
 import { useRouteMatch } from 'react-router-dom'
 import ErrorBar from '../../../common/error/ErrorBar'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -10,7 +10,6 @@ import { ErrorInfoStatusBar } from './ErrorInfoStatusBar'
 
 export default function DeploymentStatusDetailBreakdown({
     deploymentStatusDetailsBreakdownData,
-    streamData,
     isVirtualEnvironment,
 }: DeploymentStatusDetailBreakdownType) {
     const _appDetails = IndexStore.getAppDetails()
@@ -69,9 +68,8 @@ export default function DeploymentStatusDetailBreakdown({
 
                         <DeploymentStatusDetailRow
                             type={TIMELINE_STATUS.APP_HEALTH}
-                            hideVerticalConnector={true}
+                            hideVerticalConnector
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                            streamData={streamData}
                         />
                     </>
                 ) : (
@@ -82,13 +80,11 @@ export default function DeploymentStatusDetailBreakdown({
                             deploymentDetailedData={deploymentStatusDetailsBreakdownData}
                         />
                         {isHelmManifestPushed && (
-                            <>
-                                <DeploymentStatusDetailRow
-                                    type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
-                                    hideVerticalConnector={true}
-                                    deploymentDetailedData={deploymentStatusDetailsBreakdownData}
-                                />
-                            </>
+                            <DeploymentStatusDetailRow
+                                type={TIMELINE_STATUS.HELM_MANIFEST_PUSHED_TO_HELM_REPO}
+                                hideVerticalConnector
+                                deploymentDetailedData={deploymentStatusDetailsBreakdownData}
+                            />
                         )}
                     </>
                 )}

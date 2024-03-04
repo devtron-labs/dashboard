@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import ReactSelect, { MultiValue } from 'react-select'
+import { useLocation, useHistory } from 'react-router-dom'
+import * as queryString from 'query-string'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { Option, DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import ReactSelect, { MultiValue } from 'react-select'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
 import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 import { ShortcutKeyBadge } from '../common/formFields/Widgets/Widgets'
-import { useLocation, useHistory} from 'react-router-dom'
-import * as queryString from 'query-string'
-
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -55,28 +54,28 @@ export default function NodeListSearchFliter({
     }, [searchText, searchedTextMap])
 
     const handleFocus = () => {
-        document.removeEventListener('keydown', keyPressHandler);
-      };
+        document.removeEventListener('keydown', keyPressHandler)
+    }
 
-      const handleBlur = () => {
-        document.addEventListener('keydown', keyPressHandler);
-      };
+    const handleBlur = () => {
+        document.addEventListener('keydown', keyPressHandler)
+    }
 
     useEffect(() => {
-          handleBlur()
-          document.addEventListener('focusin', handleFocus);
-          document.addEventListener('focusout', handleBlur);
+        handleBlur()
+        document.addEventListener('focusin', handleFocus)
+        document.addEventListener('focusout', handleBlur)
         return () => {
-            document.removeEventListener('keydown', keyPressHandler);
-            document.removeEventListener('focusin', handleFocus);
-            document.removeEventListener('focusout', handleBlur);
-        };
+            document.removeEventListener('keydown', keyPressHandler)
+            document.removeEventListener('focusin', handleFocus)
+            document.removeEventListener('focusout', handleBlur)
+        }
     }, [])
 
     const keyPressHandler = (e) => {
-       if(e.key === "r"){
+        if (e.key === 'r') {
             setOpenFilterPopup(true)
-       }
+        }
     }
 
     const clearTextFilter = (): void => {
@@ -91,22 +90,20 @@ export default function NodeListSearchFliter({
     const handleFilterInput = (event): void => {
         setSearchInputText(event.target.value)
     }
-    const handleQueryParamsSeacrh=(searchString:string)=>{
+    const handleQueryParamsSeacrh = (searchString: string) => {
         const qs = queryString.parse(location.search)
         const keys = Object.keys(qs)
         const query = {}
         keys.forEach((key) => {
             query[key] = qs[key]
         })
-        if(searchString){
+        if (searchString) {
             query[selectedSearchTextType] = searchInputText
-        }
-        else {
+        } else {
             delete query[selectedSearchTextType]
         }
         const queryStr = queryString.stringify(query)
         push(`?${queryStr}`)
-
     }
 
     const handleFilterTag = (event): void => {
@@ -131,7 +128,7 @@ export default function NodeListSearchFliter({
                     _searchedTextMap.set(currentItem, true)
                 }
             }
-            
+
             handleQueryParamsSeacrh(searchInputText)
             setSearchText(searchInputText)
             setSearchedTextMap(_searchedTextMap)
@@ -157,8 +154,8 @@ export default function NodeListSearchFliter({
         setSearchInputText('')
         setOpenFilterPopup(false)
     }
-    
-    const applyFilter=(selected)=>{
+
+    const applyFilter = (selected) => {
         setSelectedVersion(selected)
         const qs = queryString.parse(location.search)
         const keys = Object.keys(qs)
@@ -166,11 +163,13 @@ export default function NodeListSearchFliter({
         keys.forEach((key) => {
             query[key] = qs[key]
         })
-        if(selected.value===defaultVersion.value)delete query['k8sversion']
-        else query['k8sversion']=selected.value
-        let queryStr = queryString.stringify(query)
+        if (selected.value === defaultVersion.value) {
+            delete query['k8sversion']
+        } else {
+            query['k8sversion'] = selected.value
+        }
+        const queryStr = queryString.stringify(query)
         push(`?${queryStr}`)
-
     }
     const renderTextFilter = (): JSX.Element => {
         let placeholderText = ''
@@ -209,13 +208,15 @@ export default function NodeListSearchFliter({
                             />
                         </>
                     ) : (
-                        <span className='cn-5'>Search nodes by name, labels or node group</span>
+                        <span className="cn-5">Search nodes by name, labels or node group</span>
                     )}
-                    {!selectedSearchTextType && <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />}
+                    {!selectedSearchTextType && (
+                        <ShortcutKeyBadge shortcutKey="r" rootClassName="node-list-search-key" />
+                    )}
                 </div>
                 {openFilterPopup && (
                     <>
-                        <div className="dc__transparent-div" onClick={toggleSelectPopup}></div>
+                        <div className="dc__transparent-div" onClick={toggleSelectPopup} />
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
@@ -253,7 +254,7 @@ export default function NodeListSearchFliter({
                 options={[
                     defaultVersion,
                     ...(nodeK8sVersions?.map((version) => ({
-                        label: 'K8s version: ' + version,
+                        label: `K8s version: ${version}`,
                         value: version,
                     })) || []),
                 ]}
@@ -274,13 +275,13 @@ export default function NodeListSearchFliter({
                         ...base,
                         zIndex: 6,
                     }),
-                    valueContainer: (base,state) => ({
-                        ...containerImageSelectStyles.valueContainer(base,state),
-                        display:'grid',
+                    valueContainer: (base, state) => ({
+                        ...containerImageSelectStyles.valueContainer(base, state),
+                        display: 'grid',
                     }),
                 }}
             />
-            <div className="dc__border-left h-20 mt-6"></div>
+            <div className="dc__border-left h-20 mt-6" />
             <ColumnFilterContext.Provider
                 value={{
                     appliedColumns,

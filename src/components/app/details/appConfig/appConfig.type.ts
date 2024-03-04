@@ -73,7 +73,7 @@ export interface AppConfigNavigationProps {
     getWorkflows: () => void
     environmentList?: any[]
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
 }
 
 export interface AppComposeRouterProps {
@@ -93,7 +93,7 @@ export interface AppComposeRouterProps {
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
     isBaseConfigProtected?: boolean
-    reloadEnvironments:()=> void
+    reloadEnvironments: () => void
     configProtectionData: any[]
     filteredEnvIds?: string
 }
@@ -124,7 +124,7 @@ export interface EnvironmentOverrideRouterProps {
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
     allEnvs?: any[]
-    reloadEnvironments: ()=> void
+    reloadEnvironments: () => void
 }
 
 export interface NextButtonProps {

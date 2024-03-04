@@ -1,5 +1,5 @@
-import { Routes } from '../../config/constants'
 import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../config/constants'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
 import { SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
@@ -69,15 +69,21 @@ interface SESConfigResponseType extends ResponseType {
 }
 
 function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId: number): SaveNotificationPayload {
-    let allPipelines = selectedPipelines.map((config) => {
-        let eventTypeIds = []
-        if (config.trigger) eventTypeIds.push(1)
-        if (config.success) eventTypeIds.push(2)
-        if (config.failure) eventTypeIds.push(3)
+    const allPipelines = selectedPipelines.map((config) => {
+        const eventTypeIds = []
+        if (config.trigger) {
+            eventTypeIds.push(1)
+        }
+        if (config.success) {
+            eventTypeIds.push(2)
+        }
+        if (config.failure) {
+            eventTypeIds.push(3)
+        }
 
-        let teamId = config.appliedFilters.filter((filter) => filter.type === 'project').map((p) => p.id)
-        let appId = config.appliedFilters.filter((filter) => filter.type === 'application').map((app) => app.id)
-        let envId = config.appliedFilters.filter((filter) => filter.type === 'environment').map((e) => e.id)
+        const teamId = config.appliedFilters.filter((filter) => filter.type === 'project').map((p) => p.id)
+        const appId = config.appliedFilters.filter((filter) => filter.type === 'application').map((app) => app.id)
+        const envId = config.appliedFilters.filter((filter) => filter.type === 'environment').map((e) => e.id)
 
         return {
             teamId,
@@ -85,7 +91,7 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
             envId,
             pipelineId: config.pipelineId,
             pipelineType: config.type,
-            eventTypeIds: eventTypeIds,
+            eventTypeIds,
         }
     })
     providers = providers.map((p) => {
@@ -95,23 +101,23 @@ function createSaveNotificationPayload(selectedPipelines, providers, sesConfigId
                 dest: p.data.dest,
                 recipient: '',
             }
-        } else
-            return {
-                configId: 0,
-                dest: p.data.dest || '',
-                recipient: p.data.recipient,
-            }
+        }
+        return {
+            configId: 0,
+            dest: p.data.dest || '',
+            recipient: p.data.recipient,
+        }
     })
     return {
         notificationConfigRequest: allPipelines,
-        providers: providers,
-        sesConfigId: sesConfigId,
+        providers,
+        sesConfigId,
     }
 }
 
 export function saveNotification(selectedPipelines, providers, sesConfigId): Promise<SaveNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
-    let payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
+    const payload = createSaveNotificationPayload(selectedPipelines, providers, sesConfigId)
     return post(URL, payload)
 }
 
@@ -198,11 +204,11 @@ export function getConfigs(): Promise<ResponseType> {
 export function getNotificationConfigurations(offset: number, pageSize: number): Promise<GetNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}?offset=${offset}&size=${pageSize}`
     return get(URL).then((response) => {
-        let settings = response.result.settings || []
-        let parsedSettings = settings.map((config) => {
+        const settings = response.result.settings || []
+        const parsedSettings = settings.map((config) => {
             let providers = config.providerConfigs || []
             providers = providers.map((p) => {
-                let o = {
+                const o = {
                     ...p,
                     configId: p.id,
                 }
@@ -221,13 +227,13 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                 success: config.eventTypes.includes(2),
                 failure: config.eventTypes.includes(3),
                 isSelected: false,
-                providers: providers,
+                providers,
                 appliedFilters: {
                     project: config.team || [],
                     application: config.app || [],
                     environment: config.environment || [],
                 },
-                isVirtualEnvironment: config?.pipeline?.isVirtualEnvironment
+                isVirtualEnvironment: config?.pipeline?.isVirtualEnvironment,
             }
         })
         return {
@@ -242,7 +248,7 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
 
 export function updateNotificationEvents(data: UpdateNotificationEvent[]): Promise<UpdateNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
-    let payload = {
+    const payload = {
         updateType: 'events',
         notificationConfigRequest: data,
     }
@@ -257,16 +263,16 @@ export function updateNotificationRecipients(
 ): Promise<UpdateNotificationResponseType> {
     const URL = `${Routes.NOTIFIER}`
     newRecipients = newRecipients.map((r) => r.data)
-    let savedRecipientSet = new Set()
+    const savedRecipientSet = new Set()
     for (let i = 0; i < savedRecipient.length; i++) {
-        let key = savedRecipient[i].configId + savedRecipient[i].name
+        const key = savedRecipient[i].configId + savedRecipient[i].name
         savedRecipientSet.add(key)
     }
-    let notificationConfigRequest = notificationList.map((config) => {
+    const notificationConfigRequest = notificationList.map((config) => {
         let updatedProviders = []
         let emailChannel = selectedEmailAgent?.toLowerCase()
         for (let i = 0; i < config.providers.length; i++) {
-            let key = config.providers[i].configId + config.providers[i].name
+            const key = config.providers[i].configId + config.providers[i].name
             if (savedRecipientSet.has(key)) {
                 updatedProviders.push(config.providers[i])
                 if (config.providers[i].dest === 'smtp' || config.providers[i].dest === 'ses') {
@@ -279,24 +285,24 @@ export function updateNotificationRecipients(
             if (r.configId) {
                 return {
                     configId: r.configId,
-                    dest: r.dest === 'slack' || r.dest === "webhook" ? r.dest : emailChannel,
+                    dest: r.dest === 'slack' || r.dest === 'webhook' ? r.dest : emailChannel,
                     recipient: '',
                 }
-            } else
-                return {
-                    configId: 0,
-                    dest: emailChannel || '',
-                    recipient: r.recipient,
-                }
+            }
+            return {
+                configId: 0,
+                dest: emailChannel || '',
+                recipient: r.recipient,
+            }
         })
         return {
             ...config,
             providers: updatedProviders,
         }
     })
-    let payload = {
+    const payload = {
         updateType: 'recipients',
-        notificationConfigRequest: notificationConfigRequest,
+        notificationConfigRequest,
     }
     return put(URL, payload)
 }
@@ -318,8 +324,8 @@ export function deleteNotifications(requestBody, singleDeletedId): Promise<Delet
 
 export function saveEmailConfiguration(data, channel: string): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    let payload = {
-        channel: channel,
+    const payload = {
+        channel,
         configs: [data],
     }
     return post(URL, payload)
@@ -337,22 +343,21 @@ export function getSMTPConfiguration(smtpConfigId: number): Promise<SMTPConfigRe
 
 export function getSlackConfiguration(slackConfigId: number, isDeleteComponent?: boolean): Promise<ResponseType> {
     return getChannelConfigs().then((response) => {
-        let list = response.result.slackConfigs || []
-        let config = list.find((config) => config.id === slackConfigId)
+        const list = response.result.slackConfigs || []
+        const config = list.find((config) => config.id === slackConfigId)
         if (isDeleteComponent) {
             return {
                 ...response,
                 result: config,
             }
-        } else {
-            return {
-                ...response,
-                result: {
-                    configName: config.configName,
-                    webhookUrl: config.webhookUrl,
-                    projectId: config.teamId,
-                },
-            }
+        }
+        return {
+            ...response,
+            result: {
+                configName: config.configName,
+                webhookUrl: config.webhookUrl,
+                projectId: config.teamId,
+            },
         }
     })
 }
@@ -362,19 +367,19 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
 }
 
 export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
-    const headerObj = {};
+    const headerObj = {}
     const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
     data.header.forEach((element) => {
         if (element.key != '') {
             headerObj[element.key] = element.value
         }
-    });
+    })
 
-    let payload = {
+    const payload = {
         channel: 'webhook',
         configs: [
             {
-                id: (Number)(data.id),
+                id: Number(data.id),
                 configName: data.configName,
                 webhookUrl: data.webhookUrl,
                 header: headerObj,
@@ -387,7 +392,7 @@ export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigRespon
 
 export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    let payload = {
+    const payload = {
         channel: 'slack',
         configs: [
             {
@@ -402,7 +407,7 @@ export function saveSlackConfiguration(data): Promise<UpdateConfigResponseType> 
 
 export function updateSlackConfiguration(data): Promise<UpdateConfigResponseType> {
     const URL = `${Routes.NOTIFIER}/channel`
-    let payload = {
+    const payload = {
         channel: 'slack',
         configs: [
             {
@@ -434,37 +439,37 @@ function getChannelsAndEmails(): Promise<GetChannelsResponseType> {
 
 export function getPipelines(filters): Promise<GetPipelinesResponseType> {
     const URL = `${Routes.NOTIFIER}/search`
-    let payload = {
+    const payload = {
         teamId: filters.filter((p) => p.type == 'project').map((p) => p.value),
         envId: filters.filter((p) => p.type == 'environment').map((p) => p.value),
         appId: filters.filter((p) => p.type == 'application').map((p) => p.value),
         pipelineName: filters.find((p) => p.type == 'pipeline')?.value,
     }
     return post(URL, payload).then((response) => {
-        let parsedResult = response.result?.map((row) => {
-            let projects = row.team
+        const parsedResult = response.result?.map((row) => {
+            const projects = row.team
                 ? row.team.map((team) => {
-                    return {
-                        type: 'project',
-                        ...team,
-                    }
-                })
+                      return {
+                          type: 'project',
+                          ...team,
+                      }
+                  })
                 : []
-            let app = row.app
+            const app = row.app
                 ? row.app.map((team) => {
-                    return {
-                        type: 'application',
-                        ...team,
-                    }
-                })
+                      return {
+                          type: 'application',
+                          ...team,
+                      }
+                  })
                 : []
-            let environment = row.environment
+            const environment = row.environment
                 ? row.environment?.map((team) => {
-                    return {
-                        type: 'environment',
-                        ...team,
-                    }
-                })
+                      return {
+                          type: 'environment',
+                          ...team,
+                      }
+                  })
                 : []
             return {
                 appliedFilters: projects.concat(app, environment),
@@ -480,8 +485,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 failure: false,
             }
         })
-        let matchingPipelines = parsedResult.filter((r) => r.appliedFilters.length == 0)
-        let directPipelines = parsedResult.filter((r) => r.appliedFilters.length > 0)
+        const matchingPipelines = parsedResult.filter((r) => r.appliedFilters.length == 0)
+        const directPipelines = parsedResult.filter((r) => r.appliedFilters.length > 0)
 
         return {
             code: response.code,
@@ -498,9 +503,9 @@ export function getAddNotificationInitData(): Promise<{
 }> {
     return Promise.all([getChannelsAndEmailsFilteredByEmail(), getChannelConfigs()]).then(
         ([providerRes, channelRes]) => {
-            let providerOptions = providerRes.result || []
-            let sesConfigOptions = channelRes.result.sesConfigs || []
-            let smtpConfigOptions = channelRes.result.smtpConfigs || []
+            const providerOptions = providerRes.result || []
+            const sesConfigOptions = channelRes.result.sesConfigs || []
+            const smtpConfigOptions = channelRes.result.smtpConfigs || []
             return {
                 channelOptions: providerOptions.map((p) => {
                     return {

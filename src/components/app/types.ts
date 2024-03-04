@@ -519,30 +519,29 @@ export interface TagChipsContainerType {
     whiteBackground?: boolean
 }
 export interface SourceInfoType {
-  appDetails: AppDetails
-  appStreamData?: AppStreamData
-  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
-  environment: AppEnvironment
-  environments: AppEnvironment[]
-  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
-  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-  loadingDetails?: boolean
-  loadingResourceTree?: boolean
-  isVirtualEnvironment?: boolean
-  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-  refetchDeploymentStatus: (showTimeline?: boolean)=> void
-  severityCount?: {
-    critical: number
-    moderate: number
-    low: number
-}
-  showVulnerabilitiesModal?: () => void
-  toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
-  envId?: number | string
-  ciArtifactId?: number 
-  setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+    appDetails: AppDetails
+    setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+    environment: AppEnvironment
+    environments: AppEnvironment[]
+    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    loadingDetails?: boolean
+    loadingResourceTree?: boolean
+    isVirtualEnvironment?: boolean
+    setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+    refetchDeploymentStatus: (showTimeline?: boolean) => void
+    severityCount?: {
+        critical: number
+        moderate: number
+        low: number
+    }
+    showVulnerabilitiesModal?: (e) => void
+    toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
+    envId?: number | string
+    ciArtifactId?: number
+    setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
 }
 
 export interface EnvironmentListMinType {
@@ -560,12 +559,38 @@ export interface EnvironmentListMinType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
+export interface PayloadParsedFromURL {
+    appNameSearch?: string
+    appStatuses?
+    environments?
+    hOffset?: number
+    namespaces?
+    offset?: number
+    size?: number
+    sortBy?: string
+    sortOrder?: string
+    teams?
+}
+
+export interface ExternalArgoListType {
+    serverMode?: string
+    payloadParsedFromUrl: PayloadParsedFromURL
+    sortApplicationList
+    clearAllFilters
+    fetchingExternalApps
+    setFetchingExternalAppsState
+    updateDataSyncing
+    setShowPulsatingDotState
+    masterFilters
+    syncListData
+    isArgoInstalled: boolean
+}
 export interface EditDescRequest {
-    id: number,
-    environment_name: string,
-    cluster_id: number,
-    namespace: string,
-    active: boolean,
-    default: boolean,
-    description: string,
+    id: number
+    environment_name: string
+    cluster_id: number
+    namespace: string
+    active: boolean
+    default: boolean
+    description: string
 }

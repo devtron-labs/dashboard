@@ -63,13 +63,13 @@ export default function JobDetails() {
                             <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <TriggerView isJobView={true} />
+                            <TriggerView isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} isJobView={true} />
+                            <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} isJobView={true} />
+                            <AppConfig appName={jobName} isJobView />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
@@ -79,7 +79,7 @@ export default function JobDetails() {
     )
 }
 
-function JobHeader({ jobName }: { jobName: string }) {
+const JobHeader = ({ jobName }: { jobName: string }) => {
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -121,12 +121,7 @@ function JobHeader({ jobName }: { jobName: string }) {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                        <AppSelector
-                            onChange={handleAppChange}
-                            appId={Number(appId)}
-                            appName={jobName}
-                            isJobView={true}
-                        />
+                        <AppSelector onChange={handleAppChange} appId={Number(appId)} appName={jobName} isJobView />
                     ),
                     linked: false,
                 },
@@ -203,8 +198,8 @@ function JobHeader({ jobName }: { jobName: string }) {
         <div className="job-header-wrapper">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
-                isBreadcrumbs={true}
-                showTabs={true}
+                isBreadcrumbs
+                showTabs
                 renderHeaderTabs={renderAppDetailsTabs}
             />
         </div>

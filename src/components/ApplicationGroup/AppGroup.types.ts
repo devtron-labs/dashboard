@@ -2,9 +2,10 @@ import {
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
+    KeyValueListType,
     ResponseType,
     UserApprovalConfigType,
-    WorkflowNodeType
+    WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
@@ -85,6 +86,9 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    runtimeParams: Record<string, KeyValueListType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
+    setPageViewType: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface BulkCDTriggerType {

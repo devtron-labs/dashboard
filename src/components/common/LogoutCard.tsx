@@ -9,7 +9,7 @@ interface LogoutCardType {
     showLogOutCard: boolean
 }
 
-function LogoutCard({ className, userFirstLetter, setShowLogOutCard, showLogOutCard }: LogoutCardType) {
+const LogoutCard = ({ className, userFirstLetter, setShowLogOutCard, showLogOutCard }: LogoutCardType) => {
     const history = useHistory()
 
     const onLogout = () => {

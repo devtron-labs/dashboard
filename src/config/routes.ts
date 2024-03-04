@@ -15,9 +15,11 @@ export const URLS = {
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
+    EXTERNAL_ARGO_APP: 'eaa',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',
+    APP_LIST_ARGO: 'a',
     APPS: '/devtron-apps', // for V2 router
     HELM_CHARTS: 'helm-apps', // for V2 router
     APP_VALUES: 'values', // for V2 router
@@ -76,6 +78,7 @@ export const URLS = {
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
+    GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     SECURITY: '/security',
@@ -117,10 +120,14 @@ export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
 
 export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
     const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
-    if (!appStage) return _url
-    for (let stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
+    if (!appStage) {
+        return _url
+    }
+    for (const stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
         const { stage, path } = stageDetail
-        if (stage === appStage) return `${_url}/${path}`
+        if (stage === appStage) {
+            return `${_url}/${path}`
+        }
     }
     return `${_url}/${URLS.APP_GIT_CONFIG}`
 }
@@ -186,11 +193,11 @@ interface StageStatusResponseItem {
 }
 
 export function isCIPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    let ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
+    const ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
     return ciPipeline.status
 }
 
 export function isCDPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    let cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
+    const cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
     return cdPipeline.status
 }

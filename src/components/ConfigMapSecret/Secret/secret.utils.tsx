@@ -1,14 +1,14 @@
 import React from 'react'
 import { components } from 'react-select'
-import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
 import { OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import YAML from 'yaml'
+import { NavLink } from 'react-router-dom'
+import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
+import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
 import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../Types'
 import { processCurrentData } from '../ConfigMapSecret.reducer'
-import { NavLink } from 'react-router-dom'
 import { DOCUMENTATION, URLS } from '../../../config'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
@@ -203,36 +203,43 @@ export const dataHeaders = {
     ),
     default: (
         <div>
-            # Sample Data<br></br># key: Secret key in backend<br></br># name: Name for this key in the generated secret
-            <br></br># property: Property to extract if secret in backend is a JSON object(optional)<br></br># isBinary:
-            Set this to true if configuring an item for a binary file stored(optional)<br></br>
+            # Sample Data
+            <br /># key: Secret key in backend
+            <br /># name: Name for this key in the generated secret
+            <br /># property: Property to extract if secret in backend is a JSON object(optional)
+            <br /># isBinary: Set this to true if configuring an item for a binary file stored(optional)
+            <br />
         </div>
     ),
 }
 
 export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     const noGroups: any[] = [
-            { value: '', label: 'Kubernetes Secret' },
-            { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
-        ],
-        esoGroups: any[] = [
-            { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
-            { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
-            { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
-            { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
-        ],
-        ksoGroups: any[] = [
-            { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
-            { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
-            { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
-        ]
+        { value: '', label: 'Kubernetes Secret' },
+        { value: 'KubernetesSecret', label: 'Mount Existing Kubernetes Secret' },
+    ]
+    const esoGroups: any[] = [
+        { value: 'ESO_GoogleSecretsManager', label: 'Google Secrets Manager' },
+        { value: 'ESO_AWSSecretsManager', label: 'AWS Secrets Manager' },
+        { value: 'ESO_AzureSecretsManager', label: 'Azure Secrets Manager' },
+        { value: 'ESO_HashiCorpVault', label: 'Hashi Corp Vault' },
+    ]
+    const ksoGroups: any[] = [
+        { value: 'AWSSecretsManager', label: 'AWS Secrets Manager', deprecated: true },
+        { value: 'AWSSystemManager', label: 'AWS System Manager', deprecated: true },
+        { value: 'HashiCorpVault', label: 'Hashi Corp Vault', deprecated: true },
+    ]
     const groupList = isJobView ? noGroups : [...noGroups, ...esoGroups, ...ksoGroups]
     const externalType = groupList.find((x) => x.value === typeValue)
 
-    if (typeValue) return externalType
+    if (typeValue) {
+        return externalType
+    }
     if (isJobView) {
         const externalType = [...noGroups].find((x) => x.value === typeValue)
-        if (typeValue) return externalType
+        if (typeValue) {
+            return externalType
+        }
         return [
             {
                 label: '',
@@ -256,7 +263,7 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     ]
 }
 
-export function SecretOptions(props) {
+export const SecretOptions = (props) => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
     return (
         <components.Option {...props}>
@@ -268,13 +275,20 @@ export function SecretOptions(props) {
     )
 }
 
-export function GroupHeading(props) {
-    if (!props.data.label) return null
+export const GroupHeading = (props) => {
+    if (!props.data.label) {
+        return null
+    }
     return (
         <components.GroupHeading {...props}>
             <div className="flex flex-justify h-100">
                 {props.data.label}
-                <a className="flex" href="https://github.com/external-secrets/external-secrets" target="_blank">
+                <a
+                    className="flex"
+                    href="https://github.com/external-secrets/external-secrets"
+                    target="_blank"
+                    rel="noreferrer"
+                >
                     <InfoIcon className="icon-dim-20 fcn-6" />
                 </a>
             </div>
@@ -328,7 +342,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
             },
         })
         if (configMapSecretData.secretData) {
-            let json = configMapSecretData.secretData.map((s) => {
+            const json = configMapSecretData.secretData.map((s) => {
                 return {
                     fileName: s.key,
                     name: s.name,
@@ -374,7 +388,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
         })
     } else if (Array.isArray(json)) {
         json = json.map((j) => {
-            let temp = {}
+            const temp = {}
             temp['isBinary'] = j.isBinary
             if (j.key) {
                 temp['fileName'] = j.key
@@ -400,13 +414,15 @@ export function handleSecretDataYamlChange(
     isESO: boolean,
     dispatch: (action: ConfigMapAction) => void,
 ): void {
-    if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
+    if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) {
+        return
+    }
     dispatch({
         type: isESO ? ConfigMapActionTypes.setEsoYaml : ConfigMapActionTypes.setSecretDataYaml,
         payload: yaml,
     })
     try {
-        let json = YAML.parse(yaml)
+        const json = YAML.parse(yaml)
         if (!json || !Object.keys(json).length) {
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
@@ -425,7 +441,8 @@ export function handleSecretDataYamlChange(
 }
 
 export const getSecretInitState = (configMapSecretData, draftMode: boolean): SecretState => {
-    let tempSecretData, jsonForSecretDataYaml
+    let tempSecretData
+    let jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
         tempSecretData = configMapSecretData.secretData
         jsonForSecretDataYaml = configMapSecretData.secretData
@@ -437,7 +454,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
-        let temp = {}
+        const temp = {}
         temp['isBinary'] = j.isBinary
         if (j.key) {
             temp['key'] = j.key
@@ -450,7 +467,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         }
         return temp
     })
-    let tempEsoSecretData =
+    const tempEsoSecretData =
         (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData
             : configMapSecretData?.esoSecretData
@@ -472,7 +489,7 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         refreshInterval: tempEsoSecretData?.refreshInterval,
         esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
         secretMode: false,
-        unAuthorized: configMapSecretData?.unAuthorized ?? (!!configMapSecretData?.name),
+        unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
     }
 }
 

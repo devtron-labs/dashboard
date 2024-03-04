@@ -2,7 +2,7 @@ import { CHECKBOX_VALUE, ResponseType } from '@devtron-labs/devtron-fe-common-li
 import { Dispatch, SetStateAction } from 'react'
 import { Nodes, NodeType } from '../../../../app/types'
 import { DeploymentStrategy } from '../../../../cdPipeline/cdPipeline.types'
-import {GVKType} from '../../../../ResourceBrowser/Types'
+import { GVKType } from '../../../../ResourceBrowser/Types'
 
 export interface WorkloadCheckType {
     isChecked: boolean
@@ -64,4 +64,3 @@ export interface RotatePodsRequest {
     resources: RotatePodsTargetObject[]
     environmentId: number
 }
-

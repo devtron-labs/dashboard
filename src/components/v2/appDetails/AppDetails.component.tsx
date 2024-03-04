@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { AppStreamData, AppType } from './appDetails.type'
+import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
-import { importComponentFromFELibrary, useEventSource } from '../../common'
+import { importComponentFromFELibrary } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
-import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
-import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
+import { DEFAULT_STATUS, DEFAULT_STATUS_TEXT, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -38,19 +37,14 @@ const AppDetailsComponent = ({
     _init,
     loadingDetails,
     loadingResourceTree,
-}: {
-    externalLinks: ExternalLink[]
-    monitoringTools: OptionTypeWithIcon[]
-    isExternalApp: boolean
-    _init?: () => void
-    loadingDetails: boolean
-    loadingResourceTree: boolean
-}) => {
+}: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const [streamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
+    const deploymentModalShownRef = useRef(null)
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
+    deploymentModalShownRef.current = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
     // State to track the loading state for the timeline data when the detailed status modal opens
     const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const shouldFetchTimelineRef = useRef(false)
@@ -61,7 +55,7 @@ const AppDetailsComponent = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS,
+            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
 
     useEffect(() => {
@@ -69,7 +63,6 @@ const AppDetailsComponent = ({
             getSaveTelemetry(params.appId)
         }
     }, [])
-
     useEffect(() => {
         const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
         // Reset the loading state when the modal is closed
@@ -163,6 +156,7 @@ const AppDetailsComponent = ({
                 appDetails={appDetails}
                 externalLinks={externalLinks}
                 monitoringTools={monitoringTools}
+                isExternalApp={isExternalApp}
             />
         )
     }
@@ -175,20 +169,21 @@ const AppDetailsComponent = ({
                     _init={_init}
                     loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
+                    appType={appDetails?.appType}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
-                        appStreamData={streamData}
                         loadingDetails={loadingDetails || !appDetails?.appType}
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
-                        isHelmApp={true}
+                        isHelmApp
                         refetchDeploymentStatus={getDeploymentDetailStepsData}
                     />
                 )}
             </div>
-            {!appDetails.deploymentAppDeleteRequest && (
+
+            {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}
@@ -207,7 +202,6 @@ const AppDetailsComponent = ({
                 <DeploymentStatusDetailModal
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
-                    streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnv.current}
                     isLoading={isInitialTimelineDataLoading}

@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import IndexStore from '../index.store'
-import { useState } from 'react'
 import { NodeStatus, StatusFilterButtonType } from '../appDetails.type'
-import { RadioGroup } from '../../../common'
+import { StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
 import './k8resources.scss'
 
 interface TabState {
@@ -14,14 +13,14 @@ interface TabState {
 export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: StatusFilterButtonType) => {
     const [selectedTab, setSelectedTab] = useState('all')
 
-    let allNodeCount: number = 0,
-        healthyNodeCount: number = 0,
-        progressingNodeCount: number = 0,
-        failedNodeCount: number = 0,
-        missingNodeCount: number = 0
+    let allNodeCount: number = 0
+    let healthyNodeCount: number = 0
+    let progressingNodeCount: number = 0
+    let failedNodeCount: number = 0
+    let missingNodeCount: number = 0
 
     nodes?.forEach((_node) => {
-        let _nodeHealth = _node.health?.status
+        const _nodeHealth = _node.health?.status
 
         if (_nodeHealth?.toLowerCase() === NodeStatus.Healthy) {
             healthyNodeCount++
@@ -36,7 +35,7 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
     })
 
     const filters = [
-        { status: 'all', count: allNodeCount, isSelected: 'all' == selectedTab },
+        { status: 'all', count: allNodeCount, isSelected: selectedTab == 'all' },
         { status: NodeStatus.Missing, count: missingNodeCount, isSelected: NodeStatus.Missing == selectedTab },
         { status: NodeStatus.Degraded, count: failedNodeCount, isSelected: NodeStatus.Degraded == selectedTab },
         {
@@ -55,12 +54,10 @@ export const StatusFilterButtonComponent = ({ nodes, handleFilterClick }: Status
             (selectedTab === NodeStatus.Missing && missingNodeCount === 0)
         ) {
             setSelectedTab('all')
+        } else if (handleFilterClick) {
+            handleFilterClick(selectedTab)
         } else {
-            if (handleFilterClick) {
-                handleFilterClick(selectedTab)
-            } else {
-                IndexStore.updateFilterType(selectedTab.toUpperCase())
-            }
+            IndexStore.updateFilterType(selectedTab.toUpperCase())
         }
     }, [nodes, selectedTab])
 

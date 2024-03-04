@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
@@ -13,7 +14,6 @@ import {
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
-import Tippy from '@tippyjs/react'
 import {
     getMonitoringToolIcon,
     getParsedURL,
@@ -21,9 +21,14 @@ import {
     NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    TippyCustomized,
+    TippyTheme,
+    InfoColourBar,
+    GenericEmptyState,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
-import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
@@ -56,9 +61,7 @@ export const NoExternalLinksView = ({
     history: any
 }): JSX.Element => {
     const handleButton = () => {
-        return (
-            <AddLinkButton handleOnClick={handleAddLinkClick} />
-        )
+        return <AddLinkButton handleOnClick={handleAddLinkClick} />
     }
     return (
         <GenericEmptyState
@@ -70,10 +73,10 @@ export const NoExternalLinksView = ({
                     {`Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
                     ${isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
                     page. `}
-                    {<ExternalLinksLearnMore />}
+                    <ExternalLinksLearnMore />
                 </>
             }
-            isButtonAvailable={true}
+            isButtonAvailable
             renderButton={handleButton}
             children={isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
         />
@@ -91,8 +94,8 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
             classname={`info_bar fs-12 pl-12 pr-12 ${listingView ? 'mt-12 mb-12' : 'dc__mxw-300 m-20'}`}
             Icon={InfoIcon}
             iconClass="h-20"
-            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global Configurations' : 'Global Configurations.'}
-            internalLink={true}
+            linkText={userRole === UserRoleType.SuperAdmin ? 'Go to Global configurations' : 'Global Configurations.'}
+            internalLink
             redirectLink={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
         />
     )
@@ -163,7 +166,7 @@ export const AppLevelExternalLinks = ({
                         heading={linkOption.label}
                         infoText={linkOption.description}
                     >
-                        {children}
+                        <div>{children}</div>
                     </TippyCustomized>
                 )}
             >
@@ -172,6 +175,7 @@ export const AppLevelExternalLinks = ({
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
+                    rel="noreferrer"
                 >
                     <img
                         className="icon-dim-16 mr-4"
@@ -198,7 +202,7 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
+            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
@@ -241,7 +245,7 @@ export const NodeLevelExternalLinks = ({
                         heading={data.label}
                         infoText={data.description}
                     >
-                        {children}
+                        <div>{children}</div>
                     </TippyCustomized>
                 )}
             >
@@ -250,6 +254,7 @@ export const NodeLevelExternalLinks = ({
                     href={getParsedURL(false, data.value, details, podName, containerName)}
                     target="_blank"
                     className="external-link-option h-32 flex left br-4 dc__no-decor cn-9"
+                    rel="noreferrer"
                 >
                     <img className="icon-dim-20 mr-12" src={data.icon} alt={data.label} onError={onImageLoadError} />
                     <span className="dc__ellipsis-right">{data.label}</span>
@@ -267,7 +272,7 @@ export const NodeLevelExternalLinks = ({
                     options={nodeLevelExternalLinks}
                     isMulti={false}
                     isSearchable={false}
-                    closeMenuOnSelect={true}
+                    closeMenuOnSelect
                     components={{
                         IndicatorSeparator: null,
                         ClearIndicator: null,
@@ -281,7 +286,7 @@ export const NodeLevelExternalLinks = ({
 }
 
 export const ValueContainer = (props): JSX.Element => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
 
     return (
         <components.ValueContainer {...props}>

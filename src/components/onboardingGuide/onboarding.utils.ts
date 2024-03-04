@@ -12,7 +12,7 @@ export const POSTHOG_EVENT_ONBOARDING = {
     TOOLTIP_OKAY: 'Tooltip okay',
     TOOLTIP_DONT_SHOW_AGAIN: 'Tooltip Dont show again',
     HELP: 'Clicked Help',
-    SKIP_AND_EXPLORE_DEVTRON : 'SkippedOnboarding',
+    SKIP_AND_EXPLORE_DEVTRON: 'SkippedOnboarding',
 }
 
 export const LOGIN_COUNT = 'login-count'
@@ -30,6 +30,6 @@ export const handlePostHogEventUpdate = (e, eventName?: string): void => {
 }
 
 export const NAVIGATION = {
-  AUTOCOMPLETE: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?hOffset=0&namespace=1&offset=0`,
-  HELM_APPS: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
+    AUTOCOMPLETE: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?hOffset=0&namespace=1&offset=0`,
+    HELM_APPS: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
 }

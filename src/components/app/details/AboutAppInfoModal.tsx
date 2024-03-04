@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import ReactSelect from 'react-select'
+import { toast } from 'react-toastify'
+import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../v2/common/ReactSelect.utils'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
-import { toast } from 'react-toastify'
 
 export default function AboutAppInfoModal({
     isLoading,
@@ -124,24 +124,22 @@ export default function AboutAppInfoModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <>
-                        <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
-                        {renderProjectSelect()}
-                        {selectedProject &&
-                            appMetaInfo &&
-                            selectedProject.label !== appMetaInfo.projectName &&
-                            !isJobOverview && (
-                                <InfoColourBar
-                                    classname="warn cn-9 lh-20"
-                                    Icon={Error}
-                                    message={projectChangeMessage()}
-                                    iconClass="warning-icon"
-                                    styles={{
-                                        padding: '8px 12px',
-                                    }}
-                                />
-                            )}
-                    </>
+                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
+                    {renderProjectSelect()}
+                    {selectedProject &&
+                        appMetaInfo &&
+                        selectedProject.label !== appMetaInfo.projectName &&
+                        !isJobOverview && (
+                            <InfoColourBar
+                                classname="warn cn-9 lh-20"
+                                Icon={Error}
+                                message={projectChangeMessage()}
+                                iconClass="warning-icon"
+                                styles={{
+                                    padding: '8px 12px',
+                                }}
+                            />
+                        )}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button

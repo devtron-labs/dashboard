@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactGA from 'react-ga4';
-import { DropdownIcon, Page } from '../../../common';
+import React from 'react'
+import ReactGA from 'react-ga4'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
-import '../../../charts/modal/DeployChart.scss';
-import MessageUI, { MsgUIType } from '../../common/message.ui';
+import { DropdownIcon, Page } from '../../../common'
+import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
+import '../../../charts/modal/DeployChart.scss'
+import MessageUI, { MsgUIType } from '../../common/message.ui'
 
-function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) {
+const ReadmeColumn = ({ readmeCollapsed, toggleReadmeCollapsed, readme, loading = false, ...props }) => {
     return (
         <div className="deploy-chart__readme-column">
             {loading && (
@@ -26,22 +26,42 @@ function ReadmeColumn({ readmeCollapsed, toggleReadmeCollapsed, readme, loading 
                 />
             )}
             {!loading && readme && <MarkDown markdown={readme} className="deploy-chart__readme-markdown" />}
-            <aside className="flex column" onClick={readme ? (e) => {
-                if (readmeCollapsed) {
-                    ReactGA.event({
-                        category: 'DeployChart',
-                        action: 'Readme Expands',
-                        label: ''
-                    });
+            <aside
+                className="flex column"
+                onClick={
+                    readme
+                        ? (e) => {
+                              if (readmeCollapsed) {
+                                  ReactGA.event({
+                                      category: 'DeployChart',
+                                      action: 'Readme Expands',
+                                      label: '',
+                                  })
+                              }
+                              toggleReadmeCollapsed((t) => !t)
+                          }
+                        : (e) => {}
                 }
-                toggleReadmeCollapsed(t => !t)
-            } : e => { }}>
-                {readme && <DropdownIcon className={`rotate ${readme ? '' : 'not-available'}`} style={{ ['--rotateBy' as any]: `${readmeCollapsed ? -90 : 90}deg` }} color={readmeCollapsed ? '#06c' : 'white'} />}
-                {readmeCollapsed && <div className={`rotate ${readme ? '' : 'not-available'}`} style={{ ['--rotateBy' as any]: `-90deg`, width: '106px', margin: '70px' }}>{readme ? 'View Readme.md' : 'README.md not available'}</div>}
+            >
+                {readme && (
+                    <DropdownIcon
+                        className={`rotate ${readme ? '' : 'not-available'}`}
+                        style={{ ['--rotateBy' as any]: `${readmeCollapsed ? -90 : 90}deg` }}
+                        color={readmeCollapsed ? '#06c' : 'white'}
+                    />
+                )}
+                {readmeCollapsed && (
+                    <div
+                        className={`rotate ${readme ? '' : 'not-available'}`}
+                        style={{ ['--rotateBy' as any]: `-90deg`, width: '106px', margin: '70px' }}
+                    >
+                        {readme ? 'View Readme.md' : 'README.md not available'}
+                    </div>
+                )}
                 {readmeCollapsed && <Page className="rotate" style={{ ['--rotateBy' as any]: `0deg` }} />}
             </aside>
         </div>
-    );
+    )
 }
 
-export default ReadmeColumn;
+export default ReadmeColumn

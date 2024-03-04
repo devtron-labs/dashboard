@@ -2,7 +2,7 @@ import React from 'react'
 import { PluginType, PluginDetailType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginCard } from './PluginCard'
 
-export function PluginCardListContainer({
+export const PluginCardListContainer = ({
     pluginListTitle,
     pluginList,
     setPluginType,
@@ -17,7 +17,7 @@ export function PluginCardListContainer({
         inputVariables: VariableType[],
         outputVariables: VariableType[],
     ) => void
-}) {
+}) => {
     return (
         pluginList.length > 0 && (
             <div className="plugin-container">

@@ -1,5 +1,5 @@
-import { ScopedVariablesDataType } from './types'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { ScopedVariablesDataType } from './types'
 import { Routes } from '../../config'
 
 // Services
