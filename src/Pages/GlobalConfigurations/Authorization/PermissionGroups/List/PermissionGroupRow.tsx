@@ -14,7 +14,7 @@ import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-i
 
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
-import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const PermissionGroupRow = ({
     id,

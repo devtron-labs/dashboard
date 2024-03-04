@@ -14,7 +14,7 @@ import { getPermissionGroupList } from '../../authorization.service'
 import { SortableKeys } from './constants'
 import { PermissionGroup } from '../../types'
 import PermissionGroupContainer from './PermissionGroupContainer'
-import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
 
 const PermissionGroupList = () => {
     const [bulkSelectionModalConfig, setBulkSelectionModalConfig] = useState<BulkSelectionModalConfig>({

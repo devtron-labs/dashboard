@@ -19,9 +19,9 @@ import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../auth
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
-} from '../../shared/components/PermissionConfigurationForm'
+} from '../../Shared/components/PermissionConfigurationForm'
 import { getIsSuperAdminPermission, getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../shared/components/K8sObjectPermissions/utils'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -179,7 +179,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             placeholder="Enter a description for this group"
                         />
                     </div>
-                    <div className="dc__border-top-n1" />
+                    <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector={false} />
                 </div>
                 <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">

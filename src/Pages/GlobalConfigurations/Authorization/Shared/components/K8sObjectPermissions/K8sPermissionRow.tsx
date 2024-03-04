@@ -70,6 +70,7 @@ const K8sPermissionRow = ({
                         userEmail=""
                         handleChange={_handleStatusUpdate}
                         disabled={getIsStatusDropdownDisabled(userStatus)}
+                        showTooltipWhenDisabled
                         showDropdownBorder={false}
                         breakLinesForTemporaryAccess
                     />

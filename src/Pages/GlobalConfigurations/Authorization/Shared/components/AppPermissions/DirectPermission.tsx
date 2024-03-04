@@ -537,8 +537,10 @@ const DirectPermission = ({
                         userEmail=""
                         handleChange={handleStatusChange}
                         disabled={getIsStatusDropdownDisabled(userStatus)}
+                        showTooltipWhenDisabled
                         showDropdownBorder={false}
                         breakLinesForTemporaryAccess
+                        dropdownClassName="flex-grow-1"
                     />
                 </div>
             )}

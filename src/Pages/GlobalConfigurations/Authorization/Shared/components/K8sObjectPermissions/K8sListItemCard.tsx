@@ -559,6 +559,7 @@ const K8sListItemCard = ({
                                     userEmail=""
                                     handleChange={handleUserStatusUpdate}
                                     disabled={getIsStatusDropdownDisabled(userStatus)}
+                                    showTooltipWhenDisabled
                                 />
                             </div>
                         </>

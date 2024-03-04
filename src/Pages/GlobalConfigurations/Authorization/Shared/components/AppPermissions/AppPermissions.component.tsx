@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
@@ -8,7 +8,7 @@ import {
     showError,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes } from '../../../constants'
+import { IMAGE_APPROVER_ACTION, CONFIG_APPROVER_ACTION, EntityTypes, ActionTypes } from '../../../constants'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { mapByKey } from '../../../../../../components/common'
 import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
@@ -46,6 +46,7 @@ import { getWorkflowOptions } from '../../../utils'
 import { AppPermissionsDetailType, DirectPermissionRow } from './types'
 import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
 import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { JobList } from '../../../../../../components/Jobs/Types'
 
 const AppPermissions = () => {
     const { serverMode } = useContext(mainContext)
@@ -66,6 +67,16 @@ const AppPermissions = () => {
     const [appsList, setAppsList] = useState<AppPermissionsDetailType['appsList']>(new Map())
     const [appsListHelmApps, setAppsListHelmApps] = useState<AppPermissionsDetailType['appsListHelmApps']>(new Map())
     const [jobsList, setJobsList] = useState<AppPermissionsDetailType['jobsList']>(new Map())
+
+    // To store the mapping and minimize the number of API calls
+    const projectToJobListRef = useRef<
+        Map<
+            number,
+            {
+                jobsList: JobList['result']['jobContainers']
+            }
+        >
+    >()
 
     const [isDataLoading, configData, error, reload] = useAsync(() =>
         Promise.all([
@@ -102,41 +113,45 @@ const AppPermissions = () => {
             }, _jobsList),
         )
         try {
-            // TODO (v3): Temporary workaround since projectId are not available in job list
-            missingProjects.forEach(async (projectId) => {
-                const {
-                    result: { jobContainers },
-                } = await getJobs({ teams: [projectId] })
+            const {
+                result: { jobContainers },
+            } = await getJobs({ teams: missingProjects })
 
-                setJobsList((_jobsList) => {
-                    _jobsList.set(+projectId, {
-                        loading: false,
-                        result: jobContainers || [],
-                        error: null,
-                    })
-                    return _jobsList
-                })
-            })
-            // const {
-            //     result: { jobContainers },
-            // } = await getJobs({ teams: missingProjects })
+            // Group the job list by respective project IDs
+            const projectsMap = jobContainers.reduce(
+                (map, job) => {
+                    const { projectId } = job
+                    if (!map.has(projectId)) {
+                        map.set(projectId, {
+                            jobsList: [],
+                        })
+                    }
+                    map.get(projectId).jobsList.push(job)
+                    return map
+                },
+                new Map<
+                    number,
+                    {
+                        jobsList: JobList['result']['jobContainers']
+                    }
+                >(),
+            )
 
-            // // FIXME: We should not be adding projectIds[0] here
-            // const jobs = [{ projectId: projectIds[0], jobsList: jobContainers }]
-            // const projectsMap = mapByKey(jobs || [], 'projectId')
-            // setJobsList(
-            //     (_jobsList) =>
-            //         new Map(
-            //             missingProjects.reduce((__jobsList, projectId) => {
-            //                 __jobsList.set(projectId, {
-            //                     loading: false,
-            //                     result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
-            //                     error: null,
-            //                 })
-            //                 return __jobsList
-            //             }, _jobsList),
-            //         ),
-            // )
+            projectToJobListRef.current = projectsMap
+
+            setJobsList(
+                (_jobsList) =>
+                    new Map(
+                        missingProjects.reduce((__jobsList, projectId) => {
+                            __jobsList.set(projectId, {
+                                loading: false,
+                                result: projectsMap.has(+projectId) ? projectsMap.get(+projectId)?.jobsList || [] : [],
+                                error: null,
+                            })
+                            return __jobsList
+                        }, _jobsList),
+                    ),
+            )
         } catch (_error) {
             showError(_error)
             setJobsList((_jobsList) =>
@@ -441,9 +456,7 @@ const AppPermissions = () => {
                     let jobNameToAppNameMapping = new Map()
 
                     if (directRoleFilter.entity === EntityTypes.JOB) {
-                        const {
-                            result: { jobContainers },
-                        } = await getJobs({ teams: [projectId] })
+                        const jobContainers = projectToJobListRef.current?.get(projectId)?.jobsList ?? []
 
                         jobNameToAppNameMapping = new Map(jobContainers.map((job) => [job.appName, job.jobName]))
                     }
@@ -492,22 +505,37 @@ const AppPermissions = () => {
         setDirectPermission(directPermissions)
 
         // Chart Permissions
-        const tempChartPermission: APIRoleFilter = roleFilters?.find(
-            (roleFilter) => roleFilter.entity === EntityTypes.CHART_GROUP,
+        const adminOrUpdateChartPermission = roleFilters?.find(
+            (roleFilter) => roleFilter.entity === EntityTypes.CHART_GROUP && roleFilter.action !== ActionTypes.VIEW,
         )
-        if (tempChartPermission) {
-            const chartPermission: ChartGroupPermissionsFilter = {
-                entity: EntityTypes.CHART_GROUP,
-                entityName:
-                    tempChartPermission?.entityName.split(',')?.map((entity) => ({ value: entity, label: entity })) ||
-                    [],
-                action:
-                    tempChartPermission.action === SELECT_ALL_VALUE ? ActionTypes.ADMIN : tempChartPermission.action,
-                ...getDefaultStatusAndTimeout(),
-            }
 
-            setChartPermission(chartPermission)
+        let _chartPermission: ChartGroupPermissionsFilter = {
+            entity: EntityTypes.CHART_GROUP,
+            entityName: [],
+            action: ActionTypes.VIEW,
+            ...getDefaultStatusAndTimeout(),
         }
+
+        if (adminOrUpdateChartPermission) {
+            // Admin chart permission
+            if (adminOrUpdateChartPermission.action === ActionTypes.ADMIN) {
+                _chartPermission = {
+                    ..._chartPermission,
+                    action: ActionTypes.ADMIN,
+                }
+            } else if (adminOrUpdateChartPermission.action === ActionTypes.UPDATE) {
+                // Edit permission for chart group
+                _chartPermission = {
+                    ..._chartPermission,
+                    action: ActionTypes.UPDATE,
+                    entityName:
+                        adminOrUpdateChartPermission.entityName
+                            ?.split(',')
+                            ?.map((entity) => ({ value: entity, label: entity })) || [],
+                }
+            }
+        }
+        setChartPermission(_chartPermission)
 
         // K8s Permissions
         const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
@@ -838,7 +866,7 @@ const AppPermissions = () => {
 
     return (
         <div className="flexbox-col dc__gap-12">
-            <ul className="tab-list dc__border-bottom">
+            <ul className="tab-list dc__border-bottom-n1">
                 {navLinksConfig.map(
                     ({ isHidden, label, tabName }) =>
                         !isHidden && (
