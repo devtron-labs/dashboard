@@ -1,11 +1,15 @@
 import React, { useState, useContext } from 'react'
-import { CustomInput, PluginType, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { ConfigurationType, BuildStageVariable } from '../../config'
-import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
+import {
+    CustomInput,
+    PluginType,
+    ScriptType,
+    StyledRadioGroup as RadioGroup,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
