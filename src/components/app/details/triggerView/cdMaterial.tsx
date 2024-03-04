@@ -37,6 +37,8 @@ import {
     ModuleNameMap,
     ModuleStatus,
     getGitCommitInfo,
+    ImageTaggingContainerType,
+    SequentialCDCardTitleProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1191,9 +1193,9 @@ const getInitialSelectedConfigToDeploy = () => {
 
     const renderMaterialCTA = (
         mat: CDMaterialType,
-        isApprovalRequester: boolean = false,
         isImageApprover: boolean = false,
         disableSelection: boolean = false,
+        shouldRenderExpireApproval: boolean = false,
     ) => {
         if (mat.filterState !== FilterStates.ALLOWED) {
             return (
@@ -1234,14 +1236,7 @@ const getInitialSelectedConfigToDeploy = () => {
         if (mat.isSelected) {
             return (
                 <Check
-                    className={`${
-                        materialType !== MATERIAL_TYPE.none &&
-                        isApprovalRequester &&
-                        !isImageApprover &&
-                        !disableSelection
-                            ? ''
-                            : 'dc__align-right'
-                    } icon-dim-24 cursor`}
+                    className={`${shouldRenderExpireApproval ? '' : 'dc__align-right'} icon-dim-24 cursor`}
                     data-testid={`cd-artifact-selected-check-${mat.index}`}
                 />
             )
@@ -1266,31 +1261,34 @@ const getInitialSelectedConfigToDeploy = () => {
     const renderCTA = ({ mat, disableSelection }: RenderCTAType) => {
         const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
+        const shouldRenderExpireApproval =
+            materialType !== MATERIAL_TYPE.none && isApprovalRequester && !isImageApprover && !disableSelection
 
         return (
             <>
-                {materialType !== MATERIAL_TYPE.none &&
-                    isApprovalRequester &&
-                    !isImageApprover &&
-                    !disableSelection &&
-                    ExpireApproval && (
-                        <>
-                            <ExpireApproval
-                                matId={mat.id}
-                                appId={appId}
-                                pipelineId={pipelineId}
-                                userApprovalMetadata={mat.userApprovalMetadata}
-                                reloadMaterials={reloadMaterials}
-                            />
+                {shouldRenderExpireApproval && ExpireApproval && (
+                    <>
+                        <ExpireApproval
+                            matId={mat.id}
+                            appId={appId}
+                            pipelineId={pipelineId}
+                            userApprovalMetadata={mat.userApprovalMetadata}
+                            reloadMaterials={reloadMaterials}
+                        />
 
-                            {mat.filterState !== FilterStates.ALLOWED && (
-                                <div className="flex dc__gap-12 mr-12">
-                                    <div className="h-12 dc__border-left" />
-                                </div>
-                            )}
-                        </>
-                    )}
-                {renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
+                        {mat.filterState !== FilterStates.ALLOWED && (
+                            <div className="flex dc__gap-12 mr-12">
+                                <div className="h-12 dc__border-left" />
+                            </div>
+                        )}
+                    </>
+                )}
+                {renderMaterialCTA(
+                    mat,
+                    isImageApprover,
+                    disableSelection,
+                    shouldRenderExpireApproval,
+                )}
             </>
         )
     }
@@ -1318,6 +1316,33 @@ const getInitialSelectedConfigToDeploy = () => {
         ) : null,
     })
 
+    const getImageTagContainerProps = (mat: CDMaterialType): ImageTaggingContainerType => ({
+        ciPipelineId,
+        artifactId: +mat.id,
+        imageComment: mat.imageComment,
+        imageReleaseTags: mat.imageReleaseTags,
+        appReleaseTagNames,
+        setAppReleaseTagNames,
+        tagsEditable,
+        toggleCardMode,
+        setTagsEditable,
+        forceReInit: true,
+        hideHardDelete: hideImageTaggingHardDelete,
+        updateCurrentAppMaterial,
+        isSuperAdmin,
+    })
+
+    const getSequentialCDCardTitleProps = (mat: CDMaterialType): SequentialCDCardTitleProps => ({
+        isLatest: mat.latest,
+        isRunningOnParentCD: mat.runningOnParentCd,
+        artifactStatus: mat.artifactStatus,
+        environmentName: envName,
+        parentEnvironmentName,
+        stageType,
+        showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
+        isVirtualEnvironment,
+    })
+
     const renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) =>
         materialList.map((mat) => {
             const isMaterialInfoAvailable = getIsMaterialInfoAvailable(mat.materialInfo)
@@ -1339,33 +1364,9 @@ const getInitialSelectedConfigToDeploy = () => {
                         mat,
                         disableSelection,
                     })}
-                    sequentialCDCardTitleProps={{
-                        isLatest: mat.latest,
-                        isRunningOnParentCD: mat.runningOnParentCd,
-                        artifactStatus: mat.artifactStatus,
-                        environmentName: envName,
-                        parentEnvironmentName,
-                        stageType,
-                        showLatestTag:
-                            +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
-                        isVirtualEnvironment,
-                    }}
+                    sequentialCDCardTitleProps={getSequentialCDCardTitleProps(mat)}
                     artifactInfoProps={getArtifactInfoProps(mat, showApprovalInfoTippy)}
-                    imageTagContainerProps={{
-                        ciPipelineId,
-                        artifactId: +mat.id,
-                        imageComment: mat.imageComment,
-                        imageReleaseTags: mat.imageReleaseTags,
-                        appReleaseTagNames,
-                        setAppReleaseTagNames,
-                        tagsEditable,
-                        toggleCardMode,
-                        setTagsEditable,
-                        forceReInit: true,
-                        hideHardDelete: hideImageTaggingHardDelete,
-                        updateCurrentAppMaterial,
-                        isSuperAdmin,
-                    }}
+                    imageTagContainerProps={getImageTagContainerProps(mat)}
                     rootClassName={imageCardRootClassName}
                     materialInfoRootClassName={approvedImageClass}
                     key={`material-history-${mat.index}`}
