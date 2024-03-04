@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -30,11 +30,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
             }
         })
+
         this.state = {
             regexValue,
             savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
+            currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
         }
     }
 
@@ -54,6 +56,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 this.setState({ isBlobStorageConfigured: true })
             }
         } catch (error) {}
+    }
+
+
+    handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            currentSidebarTab: e.target.value as CIMaterialSidebarType,
+        })
     }
 
     onClickStopPropagation = (e): void => {
@@ -242,6 +251,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
                         ciBlockState={this.props.ciBlockState}
                         isJobCI={this.props.isJobCI}
+                        currentSidebarTab={this.state.currentSidebarTab}
+                        handleSidebarTabChange={this.handleSidebarTabChange}
+                        runtimeParams={this.props.runtimeParams}
+                        handleRuntimeParametersChange={this.props.handleRuntimeParametersChange}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null

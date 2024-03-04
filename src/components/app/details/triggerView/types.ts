@@ -14,6 +14,10 @@ import {
     FilterConditionsListType,
     CDMaterialResponseType,
     PipelineType,
+    KeyValueListType,
+    CIMaterialSidebarType,
+    HandleKeyValueChangeType,
+    RuntimeParamsTriggerPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -190,6 +194,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
+    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    runtimeParams: KeyValueListType[]
 }
 
 export interface RegexValueType {
@@ -202,6 +208,7 @@ export interface CIMaterialState {
     savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
+    currentSidebarTab: CIMaterialSidebarType
 }
 
 export interface NodeAttr extends CommonNodeAttr {
@@ -411,6 +418,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
+    runtimeParams?: KeyValueListType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -744,4 +752,10 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     dimensions: WorkflowDimensions
     startX: number
     startY: number
+}
+
+export interface RuntimeParamsValidatorReturnType {
+    isValid: boolean
+    message?: string
+    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }

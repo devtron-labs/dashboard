@@ -24,6 +24,10 @@
     flex: 1;
 }
 
+.app-info-bg {
+    background: var(--window-bg);
+}
+
 .app-info-bg-gradient {
     background: linear-gradient(to top, #ffffff 0, #ffffff 50px, var(--window-bg) 50px);
 }

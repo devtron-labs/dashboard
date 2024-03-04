@@ -10,13 +10,17 @@ import {
     ConsequenceAction,
     useAsync,
     GenericEmptyState,
+    KeyValueListType,
+    KeyValueListActionType,
+    HandleKeyValueChangeType,
+    CIMaterialSidebarType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
@@ -24,7 +28,7 @@ import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -36,14 +40,18 @@ import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { BulkCIDetailType, BulkCITriggerType } from '../../AppGroup.types'
 import { IGNORE_CACHE_INFO } from '../../../app/details/triggerView/Constants'
 import TriggerResponseModal from './TriggerResponseModal'
-import { BULK_CI_MESSAGING } from '../../Constants'
+import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
+import { ApiQueuingWithBatch } from '../../AppGroup.service'
+import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
+const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
 
-export default function BulkCITrigger({
+const BulkCITrigger = ({
     appList,
     closePopup,
     updateBulkInputMaterial,
@@ -57,13 +65,18 @@ export default function BulkCITrigger({
     responseList,
     isLoading,
     setLoading,
-}: BulkCITriggerType) {
+    runtimeParams,
+    setRuntimeParams,
+    setPageViewType,
+    httpProtocol,
+}: BulkCITriggerType) => {
     const [showRegexModal, setShowRegexModal] = useState(false)
     const [isChangeBranchClicked, setChangeBranchClicked] = useState(false)
     const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>({})
     const [appIgnoreCache, setAppIgnoreCache] = useState<Record<number, boolean>>({})
     const [appPolicy, setAppPolicy] = useState<Record<number, ConsequenceType>>({})
     const [selectedApp, setSelectedApp] = useState<BulkCIDetailType>(appList[0])
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<string>(CIMaterialSidebarType.CODE_SOURCE)
 
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -77,42 +90,12 @@ export default function BulkCITrigger({
         refreshMaterial: (ciNodeId: number, materialId: number, abortController?: AbortController) => void
     } = useContext(TriggerViewContext)
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
+    const isBulkBuildTriggered = useRef(false)
 
     const closeBulkCIModal = (evt) => {
         abortControllerRef.current.abort()
         closePopup(evt)
     }
-
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
-            evt.preventDefault()
-            closeBulkCIModal(evt)
-        }
-    }
-    const outsideClickHandler = (evt): void => {
-        if (
-            ciTriggerDetailRef.current &&
-            !ciTriggerDetailRef.current.contains(evt.target) &&
-            typeof closePopup === 'function'
-        ) {
-            closeBulkCIModal(evt)
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     useEffect(() => {
         for (const _app of appList) {
@@ -121,27 +104,58 @@ export default function BulkCITrigger({
         getMaterialData()
     }, [])
 
+    const getRuntimeParamsData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
+        const runtimeParamsServiceList = appList.map((appDetails) => {
+            if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
+                return () => ({
+                    [appDetails.ciPipelineId]: [],
+                })
+            }
+            return () => getRuntimeParams(appDetails.ciPipelineId)
+        })
+
+        if (runtimeParamsServiceList.length) {
+            try {
+                const responses = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
+                const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                responses.forEach((res, index) => {
+                    _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
+                })
+                setRuntimeParams(_runtimeParams)
+            } catch (error) {
+                setPageViewType(ViewType.ERROR)
+                showError(error)
+            }
+        }
+    }
+
     const getMaterialData = (): void => {
         abortControllerRef.current = new AbortController()
-        const _CIMaterialPromiseList = appList.map((appDetails) =>
+        const _CIMaterialPromiseFunctionList = appList.map((appDetails) =>
             getIsAppUnorthodox(appDetails)
-                ? null
-                : getCIMaterialList(
-                      {
-                          pipelineId: appDetails.ciPipelineId,
-                      },
-                      abortControllerRef.current.signal,
-                  ),
+                ? () => null
+                : () =>
+                      getCIMaterialList(
+                          {
+                              pipelineId: appDetails.ciPipelineId,
+                          },
+                          abortControllerRef.current.signal,
+                      ),
         )
-        if (_CIMaterialPromiseList?.length) {
+        if (_CIMaterialPromiseFunctionList?.length) {
             const _materialListMap: Record<string, any[]> = {}
-            Promise.all(_CIMaterialPromiseList)
-                .then((responses) => {
+            // TODO: Remove then and use async await
+            ApiQueuingWithBatch(_CIMaterialPromiseFunctionList, httpProtocol)
+                .then(async (responses: any[]) => {
                     responses.forEach((res, index) => {
-                        _materialListMap[appList[index]?.appId] = res?.['result']
+                        _materialListMap[appList[index]?.appId] = res.value?.['result']
                     })
+                    // These two handlers should be imported from elsewhere
                     if (getCIBlockState) {
-                        getPolicyEnforcementData(_materialListMap)
+                        await getPolicyEnforcementData(_materialListMap)
+                    }
+                    if (getRuntimeParams) {
+                        await getRuntimeParamsData(_materialListMap)
                     }
                     updateBulkInputMaterial(_materialListMap)
                     if (!getIsAppUnorthodox(selectedApp)) {
@@ -166,10 +180,43 @@ export default function BulkCITrigger({
         }
     }
 
-    const getPolicyEnforcementData = (_materialListMap: Record<string, any[]>): void => {
-        const policyPromiseList = appList.map((appDetails) => {
+    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
+        let _runtimeParams = runtimeParams[selectedApp.ciPipelineId] ?? []
+
+        switch (action) {
+            case KeyValueListActionType.ADD:
+                _runtimeParams.unshift({ key: '', value: '' })
+                break
+
+            case KeyValueListActionType.UPDATE_KEY:
+                _runtimeParams[data.index].key = data.value
+                break
+
+            case KeyValueListActionType.UPDATE_VALUE:
+                _runtimeParams[data.index].value = data.value
+                break
+
+            case KeyValueListActionType.DELETE:
+                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
+                break
+            default:
+                throw new Error(`Invalid action ${action}`)
+        }
+
+        setRuntimeParams({
+            ...runtimeParams,
+            [selectedApp.ciPipelineId]: _runtimeParams,
+        })
+    }
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
+    }
+
+    const getPolicyEnforcementData = async (_materialListMap: Record<string, any[]>): Promise<void> => {
+        const policyPromiseFunctionList = appList.map((appDetails) => {
             if (getIsAppUnorthodox(appDetails) || !_materialListMap[appDetails.appId]) {
-                return null
+                return () => null
             }
             let branchNames = ''
             for (const material of _materialListMap[appDetails.appId]) {
@@ -180,20 +227,24 @@ export default function BulkCITrigger({
                     branchNames += `${branchNames ? ',' : ''}${material.value}`
                 }
             }
-            return !branchNames ? null : getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
+            return !branchNames
+                ? () => null
+                : () => getCIBlockState(appDetails.ciPipelineId, appDetails.appId, branchNames)
         })
-        if (policyPromiseList?.length) {
+
+        if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
-            Promise.all(policyPromiseList)
-                .then((responses) => {
-                    responses.forEach((res, index) => {
-                        policyListMap[appList[index]?.appId] = res?.['result']
-                            ? processConsequenceData(res['result'])
-                            : null
-                    })
-                    setAppPolicy(policyListMap)
+            try {
+                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                responses.forEach((res, index) => {
+                    policyListMap[appList[index]?.appId] = res.value?.['result']
+                        ? processConsequenceData(res.value['result'])
+                        : null
                 })
-                .catch((error) => {})
+                setAppPolicy(policyListMap)
+            } catch (error) {
+                showError(error)
+            }
         }
     }
 
@@ -207,9 +258,10 @@ export default function BulkCITrigger({
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
-                    className="dc__transparent flex icon-dim-24"
+                    className={`dc__transparent flex icon-dim-24 ${isLoading ? 'dc__disabled' : ''}`}
                     disabled={isLoading}
                     onClick={closeBulkCIModal}
+                    aria-label="Close modal"
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -337,10 +389,10 @@ export default function BulkCITrigger({
                         savingRegexValue={isLoading}
                     />
                     <div className="flex right pr-20 pb-20">
-                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal}>
+                        <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal} type="button">
                             Cancel
                         </button>
-                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName}>
+                        <button className="cta h-28 lh-28-imp" onClick={saveBranchName} type="button">
                             Save
                         </button>
                     </div>
@@ -398,6 +450,11 @@ export default function BulkCITrigger({
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
                 ciBlockState={appPolicy[selectedApp.appId]}
                 isJobCI={selectedApp.isJobCI}
+                currentSidebarTab={currentSidebarTab}
+                handleSidebarTabChange={handleSidebarTabChange}
+                runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
+                handleRuntimeParametersChange={handleRuntimeParametersChange}
+                appName={selectedApp?.name}
             />
         )
     }
@@ -509,7 +566,7 @@ export default function BulkCITrigger({
                 )}
                 {app.appId !== selectedApp.appId && app.errorMessage && (
                     <span className="flex left cr-5 fw-4 fs-12">
-                        <Error className="icon-dim-12 mr-4 mw-14" />
+                        <ICError className="icon-dim-12 mr-4 mw-14" />
                         <span className="dc__block dc__ellipsis-right">{app.errorMessage}</span>
                     </span>
                 )}
@@ -522,9 +579,24 @@ export default function BulkCITrigger({
 
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
-            return <Progressing pageLoader />
+            const message = isBulkBuildTriggered.current
+                ? BULK_CI_BUILD_STATUS(appList.length)
+                : BULK_CI_MATERIAL_STATUS(appList.length)
+            return (
+                <GenericEmptyState
+                    SvgImage={MechanicalOperation}
+                    title={message.title}
+                    subTitle={message.subTitle}
+                    contentClassName="text-center"
+                />
+            )
         }
         const selectedMaterialList = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
+            value: tabValue,
+            label: tabValue,
+        }))
+
         return (
             <div className={`bulk-ci-trigger  ${showWebhookModal ? 'webhook-modal' : ''}`}>
                 {!showWebhookModal && (
@@ -533,8 +605,17 @@ export default function BulkCITrigger({
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
-                            Applications
+                            {GitInfoMaterialTabs ? (
+                                <GitInfoMaterialTabs
+                                    tabs={sidebarTabs}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                />
+                            ) : (
+                                'Applications'
+                            )}
                         </div>
+
                         {appList.map((app, index) => (
                             <div
                                 className={`material-list pr-12 pl-12 pb-12 ${
@@ -556,6 +637,7 @@ export default function BulkCITrigger({
     }
 
     const onClickStartBuild = (e: React.MouseEvent): void => {
+        isBulkBuildTriggered.current = true
         e.stopPropagation()
         onClickTriggerBulkCI(appIgnoreCache)
     }
@@ -609,6 +691,7 @@ export default function BulkCITrigger({
                     data-testid="start-build"
                     onClick={onClickStartBuild}
                     disabled={isStartBuildDisabled()}
+                    type="button"
                 >
                     {isLoading ? (
                         <Progressing />
@@ -625,7 +708,7 @@ export default function BulkCITrigger({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div className="dc__window-bg h-100 bulk-ci-trigger-container" ref={ciTriggerDetailRef}>
+            <div className="dc__window-bg h-100 bulk-ci-trigger-container">
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
@@ -644,3 +727,5 @@ export default function BulkCITrigger({
         </Drawer>
     )
 }
+
+export default BulkCITrigger

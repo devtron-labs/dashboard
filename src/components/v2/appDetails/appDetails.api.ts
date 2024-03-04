@@ -50,6 +50,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                 namespace,
                 name,
             },
+            forceDelete: forceDelete 
         },
         appType: appType == AppType.DEVTRON_APP ? 0 : 1,
         deploymentType: deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,

@@ -2,7 +2,9 @@ import {
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
+    KeyValueListType,
     ResponseType,
+    ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -85,6 +87,10 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    runtimeParams: Record<string, KeyValueListType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
+    setPageViewType: React.Dispatch<React.SetStateAction<string>>
+    httpProtocol: string
 }
 
 export interface BulkCDTriggerType {
@@ -110,6 +116,7 @@ export interface BulkCDTriggerType {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
+    httpProtocol: string
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -458,4 +465,23 @@ export interface ManageAppsResponse {
     skipped?: string
     error?: string
     authError?: boolean
+}
+
+export interface batchConfigType{
+    lastIndex: number
+    results: any[]
+    concurrentCount: number
+    completedCalls: number
+}
+
+export enum ApiQueuingBatchStatusType {
+    FULFILLED = 'fulfilled',
+    REJECTED = 'rejected',
+}
+
+// TODO: use T for value
+export interface ApiQueuingWithBatchResponseItem {
+    status: ApiQueuingBatchStatusType
+    value?: any
+    reason?: ServerErrors
 }

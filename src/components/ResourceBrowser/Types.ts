@@ -62,6 +62,7 @@ export interface ResourceListPayloadType {
             name?: string
         }
         patch?: string
+        forceDelete?: boolean
     }
 }
 
