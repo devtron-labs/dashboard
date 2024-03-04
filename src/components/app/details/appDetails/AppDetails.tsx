@@ -766,6 +766,7 @@ export const Details: React.FC<DetailsType> = ({
              {location.search.includes("deployment-window-status") && DeploymentWindowStatusModal && (
                 <DeploymentWindowStatusModal
                    envId={params.envId}
+                   appId={params.appId}
                 />
             )}
             {showScanDetailsModal && (
