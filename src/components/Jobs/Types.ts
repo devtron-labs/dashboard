@@ -112,6 +112,7 @@ export type JobList = ResponseType<{
         description: {
             description: string
         }
+        projectId: number
     }[]
     jobCount: number
 }>

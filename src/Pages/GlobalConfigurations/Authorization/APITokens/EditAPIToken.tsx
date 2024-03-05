@@ -35,7 +35,7 @@ import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
-} from '../shared/components/PermissionConfigurationForm'
+} from '../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
 
@@ -212,7 +212,7 @@ const EditAPIToken = ({
                         </ButtonWithLoader>
                     </div>
                 </div>
-                <div className="flexbox-col dc__gap-12">
+                <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
                     <label className="form__row">
                         <CustomInput
@@ -279,7 +279,7 @@ const EditAPIToken = ({
                             </span>
                         </div>
                     </label>
-                    <div className="dc__border-top-n1" />
+                    <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>

@@ -24,7 +24,7 @@ import { deleteUser } from '../../authorization.service'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
-import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 

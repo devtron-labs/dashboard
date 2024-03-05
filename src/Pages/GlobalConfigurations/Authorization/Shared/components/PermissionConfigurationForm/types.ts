@@ -17,7 +17,7 @@ export interface PermissionConfigurationFormContext {
     setPermissionType: (permissionType: PermissionType) => void
     data: User | PermissionGroup
     userGroups: User['userRoleGroups']
-    setUserGroups: React.Dispatch<React.SetStateAction<User['userRoleGroups']>>
+    setUserGroups: (groups: User['userRoleGroups']) => void
     userStatus: User['userStatus']
     timeToLive: User['timeToLive']
     handleUserStatusUpdate: (updatedStatus: User['userStatus'], updatedTimeToLive?: string) => void

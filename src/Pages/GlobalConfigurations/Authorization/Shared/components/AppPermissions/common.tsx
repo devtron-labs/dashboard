@@ -74,8 +74,7 @@ export const ValueContainer = (props) => {
                     {React.cloneElement(props.children[1])}
                 </>
             ) : (
-                // eslint-disable-next-line react/jsx-no-useless-fragment
-                <>{props.children}</>
+                props.children
             )}
         </components.ValueContainer>
     )

@@ -40,7 +40,7 @@ import { formatResourceKindOptionLabel, k8sRoleSelectionStyle, multiSelectAllSta
 import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { parseData } from '../../../utils'
 import { authorizationSelectStyles, ALL_NAMESPACE, EntityTypes } from '../../../constants'
-import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE } from './constants'
+import { K8sPermissionActionType, K8S_PERMISSION_INFO_MESSAGE, resourceSelectStyles } from './constants'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { K8sItemCardLoadingState, K8sListItemCardType } from './types'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
@@ -515,34 +515,7 @@ const K8sListItemCard = ({
                             closeMenuOnSelect={false}
                             isMulti
                             hideSelectedOptions={false}
-                            styles={{
-                                ...authorizationSelectStyles,
-                                control: (base, state) => ({
-                                    ...authorizationSelectStyles.control(base, state),
-                                    height: 'auto',
-                                    minHeight: '36px',
-                                }),
-                                valueContainer: (base) => ({
-                                    ...authorizationSelectStyles.valueContainer(base),
-                                    display: 'flex',
-                                    columnGap: '8px',
-                                    rowGap: '4px',
-                                }),
-                                multiValue: (base) => ({
-                                    ...base,
-                                    border: '1px solid var(--N200)',
-                                    borderRadius: '4px',
-                                    background: 'white',
-                                    height: '24px',
-                                    padding: '2px 6px',
-                                    fontSize: '12px',
-                                    lineHeight: '20px',
-                                }),
-                                clearIndicator: (base) => ({
-                                    ...base,
-                                    padding: 0,
-                                }),
-                            }}
+                            styles={resourceSelectStyles}
                             isLoading={isResourceListLoading}
                             menuPlacement="auto"
                             menuPosition="fixed"
@@ -586,6 +559,7 @@ const K8sListItemCard = ({
                                     userEmail=""
                                     handleChange={handleUserStatusUpdate}
                                     disabled={getIsStatusDropdownDisabled(userStatus)}
+                                    showTooltipWhenDisabled
                                 />
                             </div>
                         </>

@@ -233,7 +233,7 @@ export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>,
     entity: EntityTypes.CHART_GROUP
     team?: never
     environment?: never
-    action: string
+    action: ActionTypes.VIEW | ActionTypes.ADMIN | ActionTypes.UPDATE
 }
 
 export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
