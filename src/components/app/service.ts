@@ -7,6 +7,7 @@ import {
     sortCallback,
     DeploymentNodeType,
     put,
+    DATE_TIME_FORMAT_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
@@ -427,25 +428,12 @@ export function getImageTags(pipelineId: number, artifactId: number) {
     return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
 
-function handleTime(ts: string) {
-    let timestamp = ''
-    try {
-        if (ts && ts.length) {
-            const date = moment(ts).utc(true).subtract(5, 'hours').subtract(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
-        }
-    } catch (error) {
-        console.error('Error Parsing Date:', ts)
-    }
-    return timestamp
-}
-
 export function handleTimeWithOffset(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
             const date = moment(ts).add(5, 'hours').add(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
+            timestamp = date.format(DATE_TIME_FORMAT_STRING)
         }
     } catch (error) {
         console.error('Error Parsing Date:', ts)

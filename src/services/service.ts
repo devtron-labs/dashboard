@@ -1,4 +1,4 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash, LastExecutionResponseType, DATE_TIME_FORMAT_STRING } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import {
@@ -6,7 +6,6 @@ import {
     AppListMin,
     ProjectFilteredApps,
     AppOtherEnvironment,
-    LastExecutionResponseType,
     LastExecutionMinResponseType,
     ClusterEnvironmentDetailList,
     EnvironmentListHelmResponse,
@@ -251,7 +250,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
         result: {
             ...response.result,
             scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: moment(response.result.executionTime).utc(false).format('ddd DD MMM YYYY HH:mm:ss'),
+            lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
             objectType: response.result.objectType,
             severityCount: {
                 critical: response.result?.severityCount?.high,
@@ -328,7 +327,7 @@ export function getLastExecutionMinByAppAndEnv(
             code: response.code,
             status: response.status,
             result: {
-                lastExecution: moment(response.result.executionTime).utc(false).format('ddd DD MMM YYYY HH:mm:ss'),
+                lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
                 imageScanDeployInfoId: response.result.imageScanDeployInfoId,
                 severityCount: {
                     critical: response.result.severityCount.high,
