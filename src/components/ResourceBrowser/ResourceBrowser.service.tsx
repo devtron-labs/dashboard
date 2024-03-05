@@ -7,6 +7,7 @@ import {
     CreateResourceResponse,
     ResourceListPayloadType,
     ResourceListResponse,
+    K8AbbreviatesResponse,
 } from './Types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -42,4 +43,38 @@ export const createNewResource = (resourceListPayload: CreateResourcePayload): P
 
 export const deleteResource = (resourceListPayload: ResourceListPayloadType): Promise<CreateResourceResponse> => {
     return post(Routes.DELETE_RESOURCE, resourceListPayload)
+}
+
+export const getK8Abbreviates = (): Promise<K8AbbreviatesResponse> => {
+    return Promise.resolve({
+        code: 200,
+        status: 'success',
+        result: {
+            csr: 'certificatesigningrequest',
+            cs: 'componentstatus',
+            cm: 'configmap',
+            ds: 'daemonset',
+            ns: 'namespaces',
+            deploy: 'deployment',
+            ep: 'endpoints',
+            ev: 'events',
+            hpa: 'horizontalpodautoscaler',
+            ing: 'ingress',
+            limits: 'limitrange',
+            no: 'nodes',
+            pvc: 'persistentvolumeclaim',
+            pv: 'persistentvolume',
+            po: 'pod',
+            pdb: 'poddisruptionbudget',
+            rs: 'replicaset',
+            rc: 'replicationcontroller',
+            quota: 'resourcequota',
+            sa: 'serviceaccount',
+            sc: 'storageclass',
+            svc: 'service',
+            wf: 'workflow',
+            sts: 'statefulset',
+            crd: 'customresourcedefinition',
+        },
+    })
 }

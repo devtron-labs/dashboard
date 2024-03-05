@@ -11,10 +11,12 @@ import {
     K8SObjectMapType,
     K8sObjectOptionType,
     SidebarType,
+    K8Abbreviates,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
-import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS, K8_ABBREVIATES } from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
+import { getK8Abbreviates } from '../ResourceBrowser.service'
 
 const Sidebar = ({
     k8SObjectMap,
@@ -36,6 +38,7 @@ const Sidebar = ({
     const [searchText, setSearchText] = useState('')
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [k8sObjectOptionsList, setK8sObjectOptionsList] = useState<K8sObjectOptionType[]>([])
+    const [k8Abbreviates, setK8Abbreviates] = useState<K8Abbreviates>({})
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
@@ -61,6 +64,16 @@ const Sidebar = ({
             }
         }
     }, [k8SObjectMap?.size, sideBarElementRef.current])
+
+    useEffect(() => {
+        (async () => {
+            const { result } = await getK8Abbreviates()
+            if (!result) {
+                return
+            }
+            setK8Abbreviates(result)
+        })()
+    }, [])
 
     const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
         const _key = e.key
@@ -266,7 +279,7 @@ const Sidebar = ({
         setSearchText(newValue)
         setMenuOpen(!!newValue)
 
-        const abbreviate_expanded = K8_ABBREVIATES[newValue.toLowerCase()]
+        const abbreviate_expanded = k8Abbreviates[newValue.toLowerCase()]
         if (!abbreviate_expanded) {
             return
         }
@@ -276,7 +289,7 @@ const Sidebar = ({
             return
         }
 
-        /* bring element at loc to the start */
+        /* swap element at @loc with element at position 0 */
         const temp = k8sObjectOptionsList[0]
         k8sObjectOptionsList[0] = k8sObjectOptionsList[loc]
         k8sObjectOptionsList[loc] = temp
@@ -327,8 +340,10 @@ const Sidebar = ({
     }
 
     function customFilter(option, searchText) {
-        return option.data.label.toLowerCase() === K8_ABBREVIATES[searchText]
-            || option.data.label.toLowerCase().includes(searchText.toLowerCase())
+        const lowerLabel = option.data.label.toLowerCase()
+        const lowerSearchText = searchText.toLowerCase()
+        return lowerLabel === k8Abbreviates[lowerSearchText]
+            || lowerLabel.includes(lowerSearchText)
     }
 
     const noOptionsMessage = () => 'No matching kind'
