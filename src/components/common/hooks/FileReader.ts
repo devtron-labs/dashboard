@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
+import { FILE_TYPES, MIME_TYPE } from './types'
 
 export const useFileReader = () => {
     const [fileData, setFileData] = useState<FileDataType>(null)
@@ -18,20 +19,20 @@ export const useFileReader = () => {
     }, [])
 
     useEffect(() => {
+        // doing == since we want to check for null and undefined
         if (!fileData || fileData.data == null || !validator) {
             return
         }
 
-        if(fileData.type==""){
-            // If the MIME type is not there
-            // In case of windows, the mime type gives some unexpected results so it needs to be handle accordingly
-            const fileNameEndsWith = fileData.name;
-            const fileType = fileNameEndsWith.split('.').pop();
-            if(fileType=='yaml' || fileType=='yml'){
-                fileData.type = 'text/yaml';
-            }
-            else if(fileType=='json'){
-                fileData.type = 'application/json';
+        // If the MIME type is not there
+        // In case of windows, the mime type gives some unexpected results so it needs to be handle accordingly
+        if (!fileData.type) {
+            const fileNameEndsWith = fileData.name
+            const fileType = fileNameEndsWith.split('.').pop()
+            if (fileType === FILE_TYPES.YAML || fileType === FILE_TYPES.YML) {
+                fileData.type = MIME_TYPE.TEXT_YAML
+            } else if (fileType === FILE_TYPES.JSON) {
+                fileData.type = MIME_TYPE.APPLICATION_JSON
             }
         }
 
