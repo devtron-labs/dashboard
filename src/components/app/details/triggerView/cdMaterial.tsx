@@ -54,6 +54,7 @@ import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
@@ -125,6 +126,8 @@ export default function CDMaterial({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
+    isDeploymentBlocked = true,
+    isUserExcluded = false,
 }: Readonly<CDMaterialProps>) {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
@@ -186,7 +189,7 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === "review-config" && searchParams.deploy && searchParams.config
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -201,7 +204,10 @@ export default function CDMaterial({
     }
 
     const getWfrId = (initSelectedMaterial?: CDMaterialType) => {
-        if (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && state.recentDeploymentConfig) {
+        if (
+            state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            state.recentDeploymentConfig
+        ) {
             return state.recentDeploymentConfig.wfrId
         }
 
@@ -223,34 +229,36 @@ export default function CDMaterial({
             initSelectedMaterial && state.isRollbackTrigger
                 ? getSpecificDeploymentConfig(appId, pipelineId, getWfrId(initSelectedMaterial))
                 : noop,
-        ]).then(
-            ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
-                status: string
-                value?: any
-                reason?: any
-            }[]) => {
-                const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
-                const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
-                const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
-                const _diffOptions = state.isRollbackTrigger
-                    ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
-                    : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
-                setState((prevState) => ({
-                    ...prevState,
-                    recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
-                    latestDeploymentConfig: _latestDeploymentConfig, // last saved config
-                    specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
-                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                    diffOptions: _diffOptions,
-                    checkingDiff: false,
-                }))
-            },
-        ).catch((error) => {
-            showError(error)
-        })
-        .finally(() => {
-            setState((prevState) => ({ ...prevState, checkingDiff: false }))
-        })
+        ])
+            .then(
+                ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
+                    status: string
+                    value?: any
+                    reason?: any
+                }[]) => {
+                    const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
+                    const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
+                    const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
+                    const _diffOptions = state.isRollbackTrigger
+                        ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
+                        : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
+                    setState((prevState) => ({
+                        ...prevState,
+                        recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
+                        latestDeploymentConfig: _latestDeploymentConfig, // last saved config
+                        specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
+                        diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                        diffOptions: _diffOptions,
+                        checkingDiff: false,
+                    }))
+                },
+            )
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setState((prevState) => ({ ...prevState, checkingDiff: false }))
+            })
     }
 
     const setSearchValue = (searchValue: string) => {
@@ -404,25 +412,24 @@ export default function CDMaterial({
         // The above states are derived from material so no need to make a state for them and shift the config diff here
     }, [material])
 
-const getInitialSelectedConfigToDeploy = () => {
-    if (
-        (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
-        searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-    ) {
-        return SPECIFIC_TRIGGER_CONFIG_OPTION
+    const getInitialSelectedConfigToDeploy = () => {
+        if (
+            (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
+            searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+        ) {
+            return SPECIFIC_TRIGGER_CONFIG_OPTION
+        }
+        if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+            return LATEST_TRIGGER_CONFIG_OPTION
+        }
+        return LAST_SAVED_CONFIG_OPTION
     }
-    if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
-        return LATEST_TRIGGER_CONFIG_OPTION
-    }
-    return LAST_SAVED_CONFIG_OPTION
-}
     useEffect(() => {
         setState((prevState) => ({
             ...prevState,
             isRollbackTrigger: materialType === MATERIAL_TYPE.rollbackMaterialList,
             isSelectImageTrigger: materialType === MATERIAL_TYPE.inputMaterialList,
-            selectedConfigToDeploy:
-                getInitialSelectedConfigToDeploy(),
+            selectedConfigToDeploy: getInitialSelectedConfigToDeploy(),
         }))
     }, [materialType])
 
@@ -777,7 +784,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
                 deploy: getConfigToDeployValue(),
             }
-            
+
             history.push({
                 search: new URLSearchParams(newParams).toString(),
             })
@@ -2003,15 +2010,41 @@ const getInitialSelectedConfigToDeploy = () => {
         )
     }
 
-    const getDeployButtonIcon = () =>
-        stageType === STAGE_TYPE.CD ? (
-            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-        ) : (
-            <img src={play} alt="trigger" className="trigger-btn__icon" />
-        )
+    const getDeployButtonIcon = () => {
+        if (isDeploymentBlocked && !isUserExcluded) {
+            return null
+        } else if (stageType !== STAGE_TYPE.CD) {
+            return <img src={play} alt="trigger" className="trigger-btn__icon" />
+        }
+        return <DeployIcon className={`icon-dim-16 dc__no-svg-fill mr-8 ${isDeploymentBlocked ? 'scn-9' : ''}`} />
+    }
+
+    const getCTAClass = (disableDeployButton: boolean): string => {
+        let className = 'cta flex ml-auto h-36'
+        if (disableDeployButton) {
+            className += ' disabled-opacity'
+        } else if (isDeploymentBlocked) {
+            if (isUserExcluded) {
+                className += ' warning'
+            } else {
+                className += ' danger'
+            }
+        }
+        return className
+    }
+
+    const onClickDeploy = (e,disableDeployButton: boolean) => {
+        if (!disableDeployButton) {
+            if (isDeploymentBlocked && !isUserExcluded) {
+            } else {
+                deployTrigger(e)
+            }
+        }
+    }
 
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
-        const buttonLabel = CDButtonLabelMap[stageType]
+        const buttonLabel =
+            isDeploymentBlocked && !isUserExcluded ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
         const disableDeployButton =
             isDeployButtonDisabled() ||
             (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
@@ -2096,8 +2129,8 @@ const getInitialSelectedConfigToDeploy = () => {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
-                        onClick={disableDeployButton ? noop : deployTrigger}
+                        className={getCTAClass(disableDeployButton)}
+                        onClick={(e) => onClickDeploy(e,disableDeployButton)}
                         type="button"
                     >
                         {deploymentLoading || isSaveLoading ? (
@@ -2105,7 +2138,9 @@ const getInitialSelectedConfigToDeploy = () => {
                         ) : (
                             <>
                                 {getDeployButtonIcon()}
-                                {buttonLabel} {isVirtualEnvironment && 'to virtual env'}
+                                {buttonLabel}
+                                {isVirtualEnvironment && 'to virtual env'}
+                                {isDeploymentBlocked && !isUserExcluded && <InfoOutline className="icon-dim-16 ml-5" />}
                             </>
                         )}
                     </button>
@@ -2277,7 +2312,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (
-           renderCDModal(isApprovalConfigured)
+            renderCDModal(isApprovalConfigured)
         )
     }
 

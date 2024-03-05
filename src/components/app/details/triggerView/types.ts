@@ -94,6 +94,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
+    isDeploymentBlocked?: boolean
+    isUserExcluded?: boolean
 }
 
 export enum DeploymentWithConfigType {
