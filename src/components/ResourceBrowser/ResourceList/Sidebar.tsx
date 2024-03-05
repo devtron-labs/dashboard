@@ -17,6 +17,7 @@ import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { getK8Abbreviates } from '../ResourceBrowser.service'
+import { swap } from '../../common/helpers/util'
 
 const Sidebar = ({
     k8SObjectMap,
@@ -281,10 +282,7 @@ const Sidebar = ({
             return
         }
 
-        /* swap element at @loc with element at position 0 */
-        const temp = k8sObjectOptionsList[0]
-        k8sObjectOptionsList[0] = k8sObjectOptionsList[loc]
-        k8sObjectOptionsList[loc] = temp
+        swap(k8sObjectOptionsList, loc, 0);
 
         setK8sObjectOptionsList([...k8sObjectOptionsList])
     }
