@@ -547,7 +547,7 @@ const DirectPermission = ({
             <Tippy className="default-tt" arrow={false} placement="top" content="Delete">
                 <button
                     type="button"
-                    className="dc__transparent flex p-4 icon-delete"
+                    className="dc__transparent flex p-4 icon-delete h-36"
                     onClick={() => removeRow(index)}
                     aria-label="Delete row"
                     style={{ order: showStatus ? 6 : 5 }}
