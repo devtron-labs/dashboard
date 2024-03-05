@@ -26,6 +26,8 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
+const getDeploymentBlockedState = importComponentFromFELibrary('getDeploymentBlockedState', null, 'function')
+
 export const getTriggerWorkflows = (
     appId,
     isJobView: boolean,
@@ -63,30 +65,37 @@ const getInitialWorkflows = (
     blackListedCI: BlackListedCI
 }> => {
     if (useAppWfViewAPI) {
-        return Promise.all([getWorkflowViewList(id, filteredEnvIds), getDeploymentWindowState(id, filteredEnvIds)]).then(
-            (response) => {
-                const workflows = {
-                    appId: id,
-                    workflows: response[0].result?.workflows as Workflow[],
-                } as WorkflowResult
+        return Promise.all([
+            getWorkflowViewList(id, filteredEnvIds),
+            getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+        ]).then((response) => {
+            const workflows = {
+                appId: id,
+                workflows: response[0].result?.workflows as Workflow[],
+            } as WorkflowResult
 
-                const ciConfig: CiPipelineResult = {
-                    appId: id,
-                    ...response[0].result?.ciConfig,
-                }
-               // cdPipeline => blackout
-                return processWorkflow(
-                    workflows,
-                    ciConfig,
-                    response[0].result?.cdConfig as CdPipelineResult,
-                    response[0].result?.externalCiConfig as WebhookDetailsType[],
-                    dimensions,
-                    workflowOffset,
-                    null,
-                    true,
-                )
-            },
-        )
+            const ciConfig: CiPipelineResult = {
+                appId: id,
+                ...response[0].result?.ciConfig,
+            }
+            const cdPipelineData = response[0].result?.cdConfig as CdPipelineResult
+
+            if (response[1] && response[1].result && cdPipelineData) {
+                cdPipelineData.pipelines?.forEach((pipeline) => {
+                    pipeline.isDeploymentBlocked = getDeploymentBlockedState(response[1], pipeline.environmentId)
+                })
+            }
+            return processWorkflow(
+                workflows,
+                ciConfig,
+                cdPipelineData,
+                response[0].result?.externalCiConfig as WebhookDetailsType[],
+                dimensions,
+                workflowOffset,
+                null,
+                true,
+            )
+        })
     }
     if (isJobView) {
         return Promise.all([getWorkflowList(id), getCIConfig(id)]).then(([workflow, ciConfig]) => {
@@ -105,7 +114,13 @@ const getInitialWorkflows = (
         getCIConfig(id),
         getCDConfig(id),
         getExternalCIList(id),
-    ]).then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+        getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
+    ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
+        if (deploymentWindowState?.result && cdConfig) {
+          cdConfig.pipelines?.forEach((pipeline) => {
+                pipeline.isDeploymentBlocked = getDeploymentBlockedState(deploymentWindowState, pipeline.environmentId)
+            })
+        }
         return processWorkflow(
             workflow.result as WorkflowResult,
             ciConfig.result as CiPipelineResult,
@@ -620,8 +635,8 @@ function cdPipelineToNode(
             x: 0,
             y: 0,
             isRoot: false,
-            helmPackageName: cdPipeline?.helmPackageName || '',
-            isDeploymentBlocked: true,
+            helmPackageName: cdPipeline.helmPackageName || '',
+            isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
         } as NodeAttr
         stageIndex++
     }
@@ -671,7 +686,7 @@ function cdPipelineToNode(
         helmPackageName: cdPipeline?.helmPackageName || '',
         isLast,
         deploymentAppCreated: cdPipeline?.deploymentAppCreated,
-        isDeploymentBlocked: true,
+        isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
     } as NodeAttr
     stageIndex++
 
@@ -710,7 +725,7 @@ function cdPipelineToNode(
             y: 0,
             isRoot: false,
             helmPackageName: cdPipeline?.helmPackageName || '',
-            isDeploymentBlocked: true,
+            isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
         } as NodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {

@@ -215,6 +215,7 @@ export interface CIMaterialState {
 
 export interface NodeAttr extends CommonNodeAttr {
     cipipelineId?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface DownStreams {
@@ -621,6 +622,7 @@ export interface CdPipeline {
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
+    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {

@@ -36,7 +36,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         this.state = {
             showDeletePipelinePopup: false,
             showDeleteDialog: false,
-            showDeploymentConfirmtionDeleteDialog: false,
+            showDeploymentConfirmationDeleteDialog: false,
             deleteDialog: DeleteDialogType.showNormalDeleteDialog,
             forceDeleteData: { forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' },
             clusterName: '',
@@ -45,15 +45,13 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         }
     }
 
-    isDeploymentBlocked = true
-
     setDeploymentWindowConfimationValue = (value: string) => {
         this.setState({ deploymentWindowConfimationValue: value })
     }
 
     onClickShowDeletePipelinePopup = () => {
-        if (this.isDeploymentBlocked) {
-            this.setState({ showDeploymentConfirmtionDeleteDialog: true })
+        if (this.props.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmationDeleteDialog: true })
         } else {
             this.setState({
                 showDeletePipelinePopup: true,
@@ -62,7 +60,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     onClickHideDeletePipelinePopup = () => {
-        this.setState({ showDeletePipelinePopup: false, showDeploymentConfirmtionDeleteDialog: false })
+        this.setState({ showDeletePipelinePopup: false, showDeploymentConfirmationDeleteDialog: false })
     }
 
     handleDeleteCDNode = (e: React.MouseEvent) => {
@@ -73,8 +71,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             this.onClickShowDeletePipelinePopup()
             return
         }
-        if(this.isDeploymentBlocked) {
-            this.setState({ showDeploymentConfirmtionDeleteDialog: true })
+        if (this.props.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmationDeleteDialog: true })
         } else {
             this.setState({ showDeleteDialog: true })
         }
@@ -218,8 +216,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         )
     }
 
-    renderDeploymentWindowConfirmtionModal = () =>
-    DeploymentWindowConfirmationDialog && (
+    renderDeploymentWindowConfirmationModal = () => (
         <DeploymentWindowConfirmationDialog
             onClose={this.onClickHideDeletePipelinePopup}
             value={this.state.deploymentWindowConfimationValue}
@@ -235,11 +232,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     )
 
     renderDeleteConformationDialog = () => {
-        if (this.state.showDeploymentConfirmtionDeleteDialog) {
-            return this.renderDeploymentWindowConfirmtionModal()
+        if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
+            return this.renderDeploymentWindowConfirmationModal()
         } else if (this.state.showDeletePipelinePopup) {
             return this.renderConfirmationModal()
         }
+        return null
     }
 
     onClickNodeCard = (event) => {
