@@ -3,6 +3,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
+import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -11,7 +12,6 @@ import {
     K8SObjectMapType,
     K8sObjectOptionType,
     SidebarType,
-    K8Abbreviates,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
@@ -36,9 +36,8 @@ const Sidebar = ({
         group: string
     }>()
     const [searchText, setSearchText] = useState('')
-    const [isMenuOpen, setMenuOpen] = useState(false)
     const [k8sObjectOptionsList, setK8sObjectOptionsList] = useState<K8sObjectOptionType[]>([])
-    const [k8Abbreviates, setK8Abbreviates] = useState<K8Abbreviates>({})
+    const [k8AbbreviatesLoading, k8Abbreviates] = useAsync(getK8Abbreviates)
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
@@ -64,16 +63,6 @@ const Sidebar = ({
             }
         }
     }, [k8SObjectMap?.size, sideBarElementRef.current])
-
-    useEffect(() => {
-        (async () => {
-            const { result } = await getK8Abbreviates()
-            if (!result) {
-                return
-            }
-            setK8Abbreviates(result)
-        })()
-    }, [])
 
     const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
         const _key = e.key
@@ -277,9 +266,12 @@ const Sidebar = ({
         }
 
         setSearchText(newValue)
-        setMenuOpen(!!newValue)
 
-        const abbreviate_expanded = k8Abbreviates[newValue.toLowerCase()]
+        if (!newValue || k8AbbreviatesLoading) {
+            return
+        }
+
+        const abbreviate_expanded = k8Abbreviates?.[newValue.toLowerCase()]
         if (!abbreviate_expanded) {
             return
         }
@@ -298,7 +290,6 @@ const Sidebar = ({
     }
 
     const hideMenu = () => {
-        setMenuOpen(false)
         setSearchText('')
     }
 
@@ -342,8 +333,7 @@ const Sidebar = ({
     function customFilter(option, searchText) {
         const lowerLabel = option.data.label.toLowerCase()
         const lowerSearchText = searchText.toLowerCase()
-        return lowerLabel === k8Abbreviates[lowerSearchText]
-            || lowerLabel.includes(lowerSearchText)
+        return lowerLabel === k8Abbreviates?.[lowerSearchText] || lowerLabel.includes(lowerSearchText)
     }
 
     const noOptionsMessage = () => 'No matching kind'
@@ -361,7 +351,7 @@ const Sidebar = ({
                     onChange={handleOnChange}
                     onBlur={hideMenu}
                     onKeyDown={handleInputShortcut}
-                    menuIsOpen={isMenuOpen}
+                    menuIsOpen={!!searchText}
                     openMenuOnFocus={false}
                     blurInputOnSelect
                     isSearchable

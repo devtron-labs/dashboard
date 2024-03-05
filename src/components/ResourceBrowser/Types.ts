@@ -219,9 +219,5 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8Abbreviates {
-    [key: string]: string,
-}
-
-export interface K8AbbreviatesResponse extends ResponseType {
-    result: K8Abbreviates,
+    [key: string]: string
 }

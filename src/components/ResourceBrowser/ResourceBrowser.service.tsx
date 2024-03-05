@@ -7,7 +7,7 @@ import {
     CreateResourceResponse,
     ResourceListPayloadType,
     ResourceListResponse,
-    K8AbbreviatesResponse,
+    K8Abbreviates,
 } from './Types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -45,7 +45,7 @@ export const deleteResource = (resourceListPayload: ResourceListPayloadType): Pr
     return post(Routes.DELETE_RESOURCE, resourceListPayload)
 }
 
-export const getK8Abbreviates = (): Promise<K8AbbreviatesResponse> => {
+export const getK8AbbreviatesResource = (): Promise<ResponseType<K8Abbreviates>> => {
     return Promise.resolve({
         code: 200,
         status: 'success',
@@ -77,4 +77,12 @@ export const getK8Abbreviates = (): Promise<K8AbbreviatesResponse> => {
             crd: 'customresourcedefinition',
         },
     })
+}
+
+export const getK8Abbreviates = async (): Promise<K8Abbreviates> => {
+    const response = await getK8AbbreviatesResource()
+    if (!response.result || typeof response.result !== 'object') {
+        return {}
+    }
+    return response.result
 }
