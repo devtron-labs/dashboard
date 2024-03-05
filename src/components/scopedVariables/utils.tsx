@@ -10,7 +10,9 @@ import {
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
 
+
 export const validator: ValidatorType = ({ data, type }) => {
+    // Data is loading but the type is showing null here when I run from window, Bcz of that it is switching to dafault - FILE_NOT_SUPPORTED_STATUS
     if (!data) {
         return EMPTY_FILE_STATUS
     }
