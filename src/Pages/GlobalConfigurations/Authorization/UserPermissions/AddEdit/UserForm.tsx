@@ -328,34 +328,29 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                     )}
                     {!isAutoAssignFlowEnabled && <PermissionConfigurationForm showUserPermissionGroupSelector />}
                 </div>
-                {!(isAutoAssignFlowEnabled && !isAddMode) && (
-                    <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
-                        <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>
-                            {submitting ? <Progressing /> : 'Save'}
-                        </button>
-                        <Link
-                            to={URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}
-                            role="button"
-                            aria-disabled={submitting}
-                            className={`cta cancel flex h-32 anchor ${
-                                submitting ? 'dc__disable-click disabled-opacity' : ''
-                            }`}
-                            type="button"
-                        >
-                            Cancel
-                        </Link>
-                        {!isAddMode &&
-                            !deepEqual(
-                                currentK8sPermissionRef.current,
-                                k8sPermission.map(excludeKeyAndClusterValue),
-                            ) && (
-                                <span className="flex dc__gap-4 cy-7">
-                                    <Error className="icon-dim-20 warning-icon-y7" />
-                                    Unsaved changes
-                                </span>
-                            )}
-                    </div>
-                )}
+                <div className="flexbox pt-16 pl-20 pr-20 dc__border-top-n1 dc__align-items-center dc__align-self-stretch dc__gap-8">
+                    <button type="submit" className="cta flex h-32" disabled={submitting} onClick={handleSubmit}>
+                        {submitting ? <Progressing /> : 'Save'}
+                    </button>
+                    <Link
+                        to={URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}
+                        role="button"
+                        aria-disabled={submitting}
+                        className={`cta cancel flex h-32 anchor ${
+                            submitting ? 'dc__disable-click disabled-opacity' : ''
+                        }`}
+                        type="button"
+                    >
+                        Cancel
+                    </Link>
+                    {!isAddMode &&
+                        !deepEqual(currentK8sPermissionRef.current, k8sPermission.map(excludeKeyAndClusterValue)) && (
+                            <span className="flex dc__gap-4 cy-7">
+                                <Error className="icon-dim-20 warning-icon-y7" />
+                                Unsaved changes
+                            </span>
+                        )}
+                </div>
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog

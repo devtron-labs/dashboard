@@ -120,7 +120,7 @@ const AppPermissions = () => {
             } = await getJobs({ teams: missingProjects })
 
             // Group the job list by respective project IDs
-            const projectsMap = jobContainers.reduce(
+            const projectsMap = (jobContainers ?? []).reduce(
                 (map, job) => {
                     const { projectId } = job
                     if (!map.has(projectId)) {

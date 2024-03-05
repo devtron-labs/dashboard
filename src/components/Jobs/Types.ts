@@ -103,7 +103,7 @@ export interface JobsEmptyProps {
 }
 
 export type JobList = ResponseType<{
-    jobContainers: {
+    jobContainers?: {
         id: number
         jobName: string
         appName: string
