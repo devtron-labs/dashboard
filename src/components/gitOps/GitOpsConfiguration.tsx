@@ -1,8 +1,15 @@
 import React, { Component } from 'react'
-import { showError, Progressing, ErrorScreenManager, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { withRouter } from 'react-router-dom'
-import { ViewType, DOCUMENTATION, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    RadioGroup,
+    RadioGroupItem,
+    CustomInput,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ViewType, DOCUMENTATION, repoType, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,
@@ -119,7 +126,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             statusCode: 0,
             gitList: [],
             saveLoading: false,
+            selectedRepoType: repoType.DEFAULT,
             validateLoading: false,
+            allowCustomGitRepo: false,
             providerTab: GitProvider.GITHUB,
             lastActiveGitOp: undefined,
             form: {
@@ -129,6 +138,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 provider: GitProvider.GITHUB,
             },
             isFormEdited: false,
+            validationSkipped: false,
             isError: DefaultShortGitOps,
             validatedTime: '',
             validationError: [],
@@ -140,6 +150,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             deleteRepoError: false,
             isUrlValidationError: false,
         }
+        this.repoTypeChange = this.repoTypeChange.bind(this)
         this.handleGitopsTab = this.handleGitopsTab.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this)
@@ -170,7 +181,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     },
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
+                    allowCustomGitRepo: form.allowCustomRepository,
                 })
+                if (this.state.allowCustomGitRepo) {
+                    this.setState({ selectedRepoType: repoType.CONFIGURE })
+                }
             })
             .catch((error) => {
                 showError(error, true, true)
@@ -319,6 +334,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
             bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
+            allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
         }
         return payload
@@ -350,25 +366,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 .then((response) => {
                     const resp = response.result
                     const errorMap = resp.stageErrorMap
-                    if (errorMap != null && Object.keys(errorMap).length == 0) {
+                    if (errorMap == null || Object.keys(errorMap).length == 0) {
                         this.props.handleChecklistUpdate('gitOps')
-                        toast.success('Configuration validated and saved successfully')
+                        toast.success('Configuration saved successfully')
                         this.setState({
-                            validationStatus: VALIDATION_STATUS.SUCCESS,
+                            validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.SUCCESS : '',
                             saveLoading: false,
                             isFormEdited: false,
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
                         this.fetchGitOpsConfigurationList()
                     } else {
                         this.setState({
-                            validationStatus: VALIDATION_STATUS.FAILURE,
+                            validationStatus: !resp.validationSkipped ? VALIDATION_STATUS.FAILURE : '',
                             saveLoading: false,
                             isFormEdited: false,
                             validationError: errorMap || [],
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
-                        toast.error('Configuration validation failed')
+                        {
+                            this.state.selectedRepoType === repoType.DEFAULT
+                                ? toast.error('Configuration failed')
+                                : toast.success('Configuration saved successfully')
+                        }
                     }
                 })
                 .catch((error) => {
@@ -411,6 +433,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             isFormEdited: false,
                             validationError: errorMap || [],
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
                         toast.error('Configuration validation failed')
                     } else {
@@ -420,6 +443,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             validateLoading: false,
                             isFormEdited: false,
                             deleteRepoError: resp.deleteRepoFailed,
+                            validationSkipped: resp.validationSkipped,
                         })
                         toast.success('Configuration validated')
                     }
@@ -454,6 +478,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 isUrlValidationError: false,
             }
         })
+    }
+
+    repoTypeChange() {
+        if (this.state.selectedRepoType === repoType.DEFAULT) {
+            this.setState({ selectedRepoType: repoType.CONFIGURE })
+        } else {
+            this.setState({ selectedRepoType: repoType.DEFAULT })
+        }
     }
 
     render() {
@@ -635,7 +667,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ) : (
                         <></>
                     )}
-
                     <div className="mt-16 ">
                         {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                             <CustomInput
@@ -756,8 +787,38 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                     </div>
-
-                    <div className="form__buttons">
+                    <hr />
+                    <div>
+                        <div className="form__row flex left">
+                            <div className="fw-6 cn-9 fs-14 mb-16">Directory Managment in Git</div>
+                            <RadioGroup
+                                className="radio-group-no-border"
+                                name="trigger-type"
+                                value={this.state.selectedRepoType}
+                                onChange={this.repoTypeChange}
+                            >
+                                <div>
+                                    <RadioGroupItem value={repoType.DEFAULT}>
+                                        Use default git repository structure
+                                    </RadioGroupItem>
+                                    <div className="ml-26 cn-7">
+                                        Repository will be created automatically with application name. Users can't
+                                        change default repository
+                                    </div>
+                                </div>
+                                <div className="mt-10">
+                                    <RadioGroupItem value={repoType.CONFIGURE}>
+                                        Allow changing git repository for application
+                                    </RadioGroupItem>
+                                    <div className="ml-26 cn-7">
+                                        Application admins can provide desired git repository
+                                    </div>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <hr />
+                    </div>
+                    <div className="form__buttons flex left">
                         <button
                             type="submit"
                             disabled={this.state.saveLoading}

@@ -1,5 +1,5 @@
 import React, { Reducer, createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
     showError,
@@ -30,7 +30,6 @@ import {
     DeploymentConfigStateActionTypes,
     DeploymentConfigStateWithDraft,
 } from './types'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -67,13 +66,11 @@ export const DeploymentConfigContext = createContext<DeploymentConfigContextType
 export default function DeploymentConfig({
     respondOnSuccess,
     isUnSet,
-    navItems,
     isCiPipeline,
     environments,
     isProtected,
     reloadEnvironments,
 }: DeploymentConfigProps) {
-    const history = useHistory()
     const { appId } = useParams<{ appId: string }>()
     const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
@@ -574,7 +571,7 @@ export default function DeploymentConfig({
             }
             reloadEnvironments()
             fetchDeploymentTemplate()
-            respondOnSuccess()
+            respondOnSuccess(!isCiPipeline)
 
             // Resetting the fetchedValues and fetchedValuesManifest caches to avoid showing the old data
             dispatch({
@@ -583,11 +580,6 @@ export default function DeploymentConfig({
             })
 
             toast.success(<SuccessToastBody chartConfig={state.chartConfig} />)
-
-            if (!isCiPipeline) {
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.DEPLOYMENT_TEMPLATE)
-                history.push(navItems[stageIndex + 1].href)
-            }
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
             if (!baseDeploymentAbortController.signal.aborted) {

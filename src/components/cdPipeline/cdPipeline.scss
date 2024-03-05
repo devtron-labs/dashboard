@@ -164,3 +164,10 @@
         border: 0px;
     }
 }
+.loading-dots-cb5::after {
+    animation-name: loadingDots;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    content: ' .';
+    color: var(--B500);
+}
