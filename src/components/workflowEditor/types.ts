@@ -169,6 +169,7 @@ export interface CDNodeProps {
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
+    isDeploymentBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -203,7 +204,7 @@ export interface CDNodeState {
     forceDeleteData: ForceDeleteMessageType
     clusterName: string
     deleteInProgress: boolean
-    showDeploymentConfirmtionDeleteDialog: boolean
+    showDeploymentConfirmationDeleteDialog: boolean
     deploymentWindowConfimationValue: string
 }
 

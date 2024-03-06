@@ -92,6 +92,7 @@ import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerVi
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const getDeploymentWindowStateAppGroup = importComponentFromFELibrary('getDeploymentWindowStateAppGroup', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -260,6 +261,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
+            if(getDeploymentWindowStateAppGroup && _workflows.length){
+              await getDeploymentWindowStateAppGroup(_workflows)
+            }
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {

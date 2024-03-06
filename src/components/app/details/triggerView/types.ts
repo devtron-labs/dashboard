@@ -94,6 +94,8 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
+    isDeploymentBlocked?: boolean
+    isUserExcluded?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -213,6 +215,7 @@ export interface CIMaterialState {
 
 export interface NodeAttr extends CommonNodeAttr {
     cipipelineId?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface DownStreams {
@@ -255,6 +258,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
     appId: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface TriggerCDNodeState {
@@ -286,6 +290,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     index?: number
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
 }
 export interface TriggerPrePostCDNodeState {
     showGitOpsRepoConfiguredWarning: boolean
@@ -636,6 +641,7 @@ export interface CdPipeline {
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
     isGitOpsRepoNotConfigured?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {

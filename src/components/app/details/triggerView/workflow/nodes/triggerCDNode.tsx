@@ -13,6 +13,7 @@ import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
 import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
+import { DO_NOT_DEPLOY } from '../../Constants'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -49,7 +50,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         }
     }
 
-    renderStatus(title?: string) {
+    renderStatus() {
         const url = this.getCDNodeDetailsURL()
         const statusText = this.props.status ? triggerStatus(this.props.status) : ''
         const status = statusText ? statusText.toLowerCase() : ''
@@ -128,8 +129,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                     return (
                         <>
                             <div className="workflow-node">
-                                <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">
-                                    {this.props.triggerType}
+                                <div
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
+                                >
+                                    {this.props.isDeploymentBlocked ? DO_NOT_DEPLOY : this.props.triggerType}
                                 </div>
                                 <div className="workflow-node__title flex">
                                     <div className="workflow-node__full-width-minus-Icon">
@@ -149,7 +152,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         }`}
                                     />
                                 </div>
-                                {this.renderStatus(this.props.title)}
+                                {this.renderStatus()}
                                 <div className="workflow-node__btn-grp">
                                     {!this.props.isVirtualEnvironment && (
                                         <Tippy className="default-tt" arrow placement="bottom" content="Rollback">
