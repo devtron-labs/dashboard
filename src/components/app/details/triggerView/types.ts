@@ -287,7 +287,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
     description: string
-    index?: Number
+    index?: number
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
     isDeploymentBlocked?: boolean
