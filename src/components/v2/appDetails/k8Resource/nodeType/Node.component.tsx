@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+import { TippyCustomized, TippyTheme, copyToClipboard, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { getElapsedTime } from '../../../../common'
@@ -20,7 +19,6 @@ import './nodeType.scss'
 import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 
 const NodeComponent = ({
     handleFocusTabs,
@@ -282,30 +280,7 @@ const NodeComponent = ({
 
         let _currentNodeHeader = ''
         const renderClipboardInteraction = (nodeName: string): JSX.Element => {
-            return copiedNodeName === nodeName ? (
-                <Tippy
-                    className="default-tt"
-                    hideOnClick={false}
-                    arrow={false}
-                    placement="bottom"
-                    content={COPIED_MESSAGE}
-                    duration={[100, 200]}
-                    trigger="mouseenter click"
-                >
-                    <span>
-                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
-                    </span>
-                </Tippy>
-            ) : (
-                <span>
-                    <Clipboard
-                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                        onClick={(event) => {
-                            toggleClipBoard(event, nodeName.split(' ').join(''))
-                        }}
-                    />
-                </span>
-            )
+            return <ClipboardButton content={nodeName} copiedTippyText={COPIED_MESSAGE} duration={1000} />
         }
 
         return nodes.map((node, index) => {
@@ -384,7 +359,7 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name)}
+                                                <div className="pl-8 pr-8">{renderClipboardInteraction(node.name)}</div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${

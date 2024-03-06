@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
-import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { WebhookSelectorCondition } from './WebhookSelectorCondition'
+import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ConfigureWebhook = ({
     webhookConditionList,
-    copyToClipboard,
     gitHost,
     selectedWebhookEvent,
     addWebhookCondition,
@@ -17,27 +15,13 @@ export const ConfigureWebhook = ({
     onWebhookConditionSelectorValueChange,
     canEditPipeline,
 }) => {
-    const [copiedUrl, setCopiedUrl] = useState(false)
-    const [copiedKey, setCopiedKey] = useState(false)
+    const [triggerCopyUrl, setTriggerCopyUrl] = useState<boolean>(false)
+    const [triggerCopyKey, setTriggerCopyKey] = useState<boolean>(false)
 
     const _allSelectorIdsInConditions = []
     webhookConditionList.map((_condition, index) => {
         _allSelectorIdsInConditions.push(Number(_condition.selectorId))
     })
-
-    useEffect(() => {
-        if (!copiedUrl) {
-            return
-        }
-        setTimeout(() => setCopiedUrl(false), 2000)
-    }, [copiedUrl])
-
-    useEffect(() => {
-        if (!copiedKey) {
-            return
-        }
-        setTimeout(() => setCopiedKey(false), 2000)
-    }, [copiedKey])
 
     return (
         <>
@@ -60,32 +44,44 @@ export const ConfigureWebhook = ({
                 </p>
                 <div className="flex left fs-12 fw-6 mt-12">
                     {gitHost.webhookUrl && (
-                        <Tippy content={copiedUrl ? 'Copied!' : 'Copy to clipboard.'}>
-                            <div
-                                className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
-                                data-testid="build-copy-webhook-url-button"
-                                onClick={() => {
-                                    copyToClipboard(gitHost.webhookUrl, () => setCopiedUrl(true))
-                                }}
-                            >
-                                Click to copy webhook URL
-                                <Copy className="icon-dim-16 ml-4" />
+                        <div
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
+                            data-testid="build-copy-webhook-url-button"
+                            onClick={() => {
+                                setTriggerCopyUrl(true)
+                            }}
+                        >
+                            Click to copy webhook URL
+                            <div className="pl-4">
+                                <ClipboardButton
+                                    content={gitHost.webhookUrl}
+                                    copiedTippyText={'Copied!'}
+                                    duration={1000}
+                                    trigger={triggerCopyUrl}
+                                    setTrigger={setTriggerCopyUrl}
+                                />
                             </div>
-                        </Tippy>
+                        </div>
                     )}
                     {gitHost.webhookSecret && (
-                        <Tippy content={copiedKey ? 'Copied!' : 'Copy to clipboard.'}>
-                            <div
-                                className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
-                                data-testid="build-copy-secret-key-button"
-                                onClick={() => {
-                                    copyToClipboard(gitHost.webhookSecret, () => setCopiedKey(true))
-                                }}
-                            >
-                                Click to copy secret key
-                                <Copy className="icon-dim-16 ml-4 " />
+                        <div
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
+                            data-testid="build-copy-secret-key-button"
+                            onClick={() => {
+                                setTriggerCopyKey(true)
+                            }}
+                        >
+                            Click to copy secret key
+                            <div className="pl-4">
+                                <ClipboardButton
+                                    content={gitHost.webhookSecret}
+                                    copiedTippyText={'Copied!'}
+                                    duration={1000}
+                                    trigger={triggerCopyKey}
+                                    setTrigger={setTriggerCopyKey}
+                                />
                             </div>
-                        </Tippy>
+                        </div>
                     )}
                 </div>
             </div>
