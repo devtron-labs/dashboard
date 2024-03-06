@@ -2,15 +2,6 @@ import React, { Component } from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import {
-    CommonNodeAttr,
-    AddCDPositions,
-    noop,
-    WorkflowNodeType,
-    PipelineType,
-    AddPipelineType,
-    SelectedNode,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
 import { StaticNode } from './nodes/StaticNode'
@@ -21,7 +12,6 @@ import {
     getCDPipelineURL,
     getExCIPipelineURL,
     getWebhookDetailsURL,
-    ConditionalWrap,
     importComponentFromFELibrary,
 } from '../common'
 import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
@@ -31,6 +21,17 @@ import { WebhookNode } from './nodes/WebhookNode'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
+import {
+    CommonNodeAttr,
+    AddCDPositions,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+    AddPipelineType,
+    SelectedNode,
+    ConditionalWrap,
+
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'

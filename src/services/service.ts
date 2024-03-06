@@ -59,6 +59,15 @@ export const getTeamList = (): Promise<TeamList> => {
     })
 }
 
+export function gitOpsConfigDevtron(payload): Promise<ResponseType> {
+    return post(Routes.GITOPS_DEVTRON_APP, payload)
+}
+
+export function getGitOpsRepoConfig(appId: number): Promise<ResponseType> {
+    const URL = `${Routes.GITOPS_DEVTRON_APP}/${appId}`
+    return get(URL)
+}
+
 export const getUserTeams = (): Promise<any> => {
     const URL = `${Routes.TEAM_USER}`
     return get(URL)
@@ -391,7 +400,11 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
             return {
                 code: response.code,
                 status: response.status,
-                result: { isInstalled: true, isConfigured: response.result.exists },
+                result: {
+                    isInstalled: true,
+                    isConfigured: response.result.exists,
+                    allowCustomRepository: response.result.allowCustomRepository,
+                },
             }
         })
 }

@@ -231,7 +231,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                 isLoading={rotatingInProgress}
                 type={MODAL_TYPE.RESTART}
                 onClickActionButton={handlePodsRotaionConditinally}
-                name={strategy}
+                strategyName={strategy}
                 appId={appDetails.appId}
                 envId={appDetails.environmentId}
             />

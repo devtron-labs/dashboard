@@ -90,15 +90,29 @@ export interface DeploymentAppSelectorType {
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
+    gitRepoURL: string
 }
 
 export interface DeploymentAppRadioGroupType {
-    isDisabled: boolean
+    isDisabled?: boolean
     deploymentAppType: string
     handleOnChange?: (event) => void
     allowedDeploymentTypes?: DeploymentAppTypes[]
     rootClassName?: string
     isFromCDPipeline?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    gitOpsRepoConfigInfoBar?: (content: string) => JSX.Element
+}
+
+export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
+    commonState: ChartValuesViewState
+    dispatch: React.Dispatch<ChartValuesViewAction>
+    staleData?: boolean
+    setStaleData?: (boolean) => void
+    isDrawerOpen?: boolean
+    handleDrawerState?: (boolean) => void
+    showRepoSelector?: boolean
+    allowedCustomBool: boolean
 }
 
 export interface ChartProjectSelectorType {
@@ -280,6 +294,7 @@ export interface ChartValuesViewState {
     formValidationError: Record<string, boolean>
     showNoGitOpsWarning: boolean
     deploymentAppType: string
+    gitRepoURL: string
 }
 
 export enum ChartValuesViewActionTypes {
@@ -332,6 +347,7 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
+    setGitRepoURL = 'setGitRepoURL',
 }
 
 export interface ChartValuesViewAction {

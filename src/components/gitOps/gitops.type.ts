@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router'
+import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 
 export type GitOpsFieldKeyType =
     | 'host'
@@ -74,8 +75,24 @@ export interface GitOpsState {
     validationStatus: string
     deleteRepoError: boolean
     isUrlValidationError: boolean
+    selectedRepoType: string
+    validationSkipped: boolean
+    allowCustomGitRepo: boolean
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> {
     handleChecklistUpdate: (string) => void
+}
+
+export interface UserGitRepoConfigurationProps {
+    respondOnSuccess: (redirection?:boolean) => void
+    appId: number
+    reloadAppConfig?: () => void
+}
+export interface UserGitRepoProps {
+    setRepoURL: (string) => void
+    setSelectedRepoType: (string) => void
+    repoURL: string
+    selectedRepoType: string
+    staleData?: boolean
 }

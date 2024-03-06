@@ -3286,6 +3286,10 @@ textarea,
     min-height: 92px;
 }
 
+.mh-97 {
+    min-height: 97px;
+}
+
 .mh-150 {
     min-height: 150px !important;
 }
@@ -3944,6 +3948,9 @@ textarea::placeholder {
     color: var(--N000);
     user-select: none;
     border: solid 1px transparent;
+}
+.dc__zi-0 {
+    z-index: 0;
 }
 
 .dc__zi-1 {

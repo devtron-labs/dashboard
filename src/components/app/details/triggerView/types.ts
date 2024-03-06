@@ -255,7 +255,17 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     description: string
     index?: number
     isVirtualEnvironment?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+    appId: number
     isDeploymentBlocked?: boolean
+}
+
+export interface TriggerCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
+    gitopsConflictLoading: boolean
+    reloadNoGitOpsRepoConfiguredModal: boolean
+    gitOpsRepoWarningCondition: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -266,6 +276,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     status: string
     id: string
     environmentId: string
+    environmentName: string
     title: string
     triggerType: string
     colourCode: string
@@ -276,8 +287,13 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
     description: string
-    index?: number
+    index?: Number
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
     isDeploymentBlocked?: boolean
+}
+export interface TriggerPrePostCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
 }
 
 export interface TriggerEdgeType {
@@ -293,7 +309,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    appId?: number
+    appId: number
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number) => void
@@ -317,6 +333,7 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
+    reloadTriggerView: () => void
 }
 
 export enum BulkSelectionEvents {
@@ -467,6 +484,7 @@ export interface Workflow {
 export interface WorkflowResult {
     appId: number
     appName: string
+    isGitOpsRepoNotConfigured: boolean
     workflows: Workflow[]
 }
 // End Workflow Response
@@ -622,6 +640,7 @@ export interface CdPipeline {
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
+    isGitOpsRepoNotConfigured?: boolean
     isDeploymentBlocked?: boolean
 }
 

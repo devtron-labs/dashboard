@@ -475,6 +475,8 @@ src/components/externalLinks/ExternalLinksCRUD/DeleteExternalLinkDialog.tsx
 src/components/externalLinks/ExternalLinksCRUD/IdentifierSelector.tsx
 src/components/externalLinks/ExternalLinksFilters.tsx
 src/components/gitOps/GitOpsConfiguration.tsx
+src/components/gitOps/UserGitRepConfiguration.tsx
+src/components/gitOps/UserGitRepo.tsx
 src/components/gitOps/gitops.service.tsx
 src/components/gitOps/gitops.type.ts
 src/components/gitProvider/AddGitHostConfigModal.tsx
@@ -625,7 +627,6 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ChartValuesView.type.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.utils.ts
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
-src/components/v2/values/chartValuesDiff/constant.ts
 src/components/v2/values/common/ReadmeColumn.component.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
@@ -634,6 +635,7 @@ src/components/workflowEditor/DeprecatedPipelineWarning.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
+src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
 src/components/workflowEditor/SourceTypeCard.tsx
 src/components/workflowEditor/ToggleCDSelectButton.tsx
