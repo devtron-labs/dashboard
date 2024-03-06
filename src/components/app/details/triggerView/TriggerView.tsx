@@ -189,6 +189,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getWorkflows = (isFromOnMount?: boolean) => {
         getTriggerWorkflows(
             this.props.match.params.appId,
+            !this.props.isJobView,
             this.props.isJobView,
             this.props.filteredEnvIds,
         )

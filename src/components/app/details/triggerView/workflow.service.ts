@@ -30,10 +30,11 @@ const getDeploymentBlockedState = importComponentFromFELibrary('getDeploymentBlo
 
 export const getTriggerWorkflows = (
     appId,
+    useAppWfViewAPI: boolean,
     isJobView: boolean,
     filteredEnvIds?: string,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, !isJobView, isJobView, filteredEnvIds)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
 }
 
 export const getCreateWorkflows = (
