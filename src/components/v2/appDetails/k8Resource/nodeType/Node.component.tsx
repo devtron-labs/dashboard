@@ -16,7 +16,6 @@ import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
-import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
 
@@ -280,7 +279,7 @@ const NodeComponent = ({
 
         let _currentNodeHeader = ''
         const renderClipboardInteraction = (nodeName: string): JSX.Element => {
-            return <ClipboardButton content={nodeName} copiedTippyText={COPIED_MESSAGE} duration={1000} />
+            return <ClipboardButton content={nodeName} />
         }
 
         return nodes.map((node, index) => {

@@ -240,6 +240,7 @@ export default function NodeDetails({
     }
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
+        const keyValue = `${key}=${value || ''}`
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
                 <div
@@ -255,7 +256,7 @@ export default function NodeDetails({
                     </div>
                 )}
                 <div className="dc__visible-hover--child">
-                    <ClipboardButton content={`${key}=${value || ''}`} copiedTippyText={'Copied!'} duration={1000} />
+                    <ClipboardButton content={keyValue} />
                 </div>
             </div>
         )
@@ -305,7 +306,7 @@ export default function NodeDetails({
                     interactive
                 >
                     <div className="flex dc__visible-hover--child">
-                        <ClipboardButton content={key} copiedTippyText={'Copied!'} duration={1000} />
+                        <ClipboardButton content={key} />
                     </div>
                 </Tippy>
             </div>
@@ -724,11 +725,7 @@ export default function NodeDetails({
                                             </span>
                                         </Tippy>
                                         <div className="dc__visible-hover--child">
-                                            <ClipboardButton
-                                                content={pod.name}
-                                                copiedTippyText={'Copied!'}
-                                                duration={1000}
-                                            />
+                                            <ClipboardButton content={pod.name} />
                                         </div>
 
                                         <ResourceBrowserActionMenu

@@ -20,7 +20,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-help-outlin
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
-import { ReactComponent as CopyIcon } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as IcCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -319,11 +319,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
                     <div className="bcn-0 pl-8 w-100">{webhookDetails?.webhookUrl}</div>
                     <div className="flex">
-                        <ClipboardButton
-                            content={webhookDetails?.webhookUrl}
-                            copiedTippyText={'Copied!'}
-                            duration={1000}
-                        />
+                        <ClipboardButton content={webhookDetails?.webhookUrl} />
                     </div>
                 </div>
             </div>
@@ -390,7 +386,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp">
                     {token}
                     <div className="flex pl-4">
-                        <ClipboardButton content={token} copiedTippyText={'Copied!'} duration={1000} />
+                        <ClipboardButton content={token} />
                     </div>
                 </div>
             </div>
@@ -491,7 +487,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <code>{value}</code>
                 {showCopyOption && (
                     <div>
-                        <ClipboardButton content={value} copiedTippyText={'Copied!'} duration={1000} />
+                        <ClipboardButton content={value} />
                     </div>
                 )}
             </pre>
@@ -910,7 +906,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </span>
                 </div>
                 <button className="cta flex h-36" onClick={copySharableURL}>
-                    <CopyIcon className="mr-8 icon-dim-16" />
+                    <IcCopy className="mr-8 icon-dim-16" />
                     Copy shareable link
                 </button>
             </div>
