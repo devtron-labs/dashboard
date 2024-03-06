@@ -245,7 +245,7 @@ const getSelectedEnvironments = (permission) => {
     return envList
 }
 
-const handleApproverAction = (permission: DirectPermissionsRoleFilter) => {
+const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
     const labels = [permission.action.value]
 
     if (permission.action.configApprover) {
@@ -274,7 +274,7 @@ export const getRoleFilters = ({
             )
             .map((permission) => ({
                 ...permission,
-                action: handleApproverAction(permission),
+                action: getPermissionActionValue(permission),
                 team: permission.team.value,
                 environment: getSelectedEnvironments(permission),
                 entityName: getSelectedPermissionValues(permission.entityName),
@@ -408,10 +408,7 @@ export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNames
         })),
     }))
 
-export const getPrimaryRoleIndex = (multiRole: string[], excludedRoles: string[]): number =>
-    multiRole.reduce((agg, curr, index) => {
-        if (!excludedRoles.includes(curr)) {
-            return index
-        }
-        return agg
-    }, 0)
+export const getPrimaryRoleIndex = (multiRole: string[], excludedRoles: string[]): number => {
+    const primaryRoleIndex = multiRole.findIndex((role) => !excludedRoles.includes(role))
+    return primaryRoleIndex === -1 ? 0 : primaryRoleIndex
+}

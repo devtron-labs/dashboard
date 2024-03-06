@@ -179,7 +179,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const _nodes = _nodesData.nodes
 
         if (linkedCD) {
-            return _nodes.map((node: CommonNodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.isLinkedCD && LinkedCDNode) {
                     return this.renderLinkedCD(node)
                 }
@@ -196,7 +196,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         }
         if (ci) {
-            return _nodes.map((node: CommonNodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node, ci)
                 }
@@ -216,7 +216,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         }
         if (webhook) {
-            return _nodes.map((node: CommonNodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.type == WorkflowNodeType.WEBHOOK) {
                     return this.renderWebhookNode(node)
                 }
