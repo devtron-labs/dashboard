@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
     Progressing,
@@ -10,11 +12,10 @@ import {
     useAsync,
     getRandomColor,
     noop,
+    StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
-import { getJobCIPipeline, getTeamList } from '../../../services/service'
-import { EditableTextArea, RadioGroup, handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { EditableTextArea, handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'

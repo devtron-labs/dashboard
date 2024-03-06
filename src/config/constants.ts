@@ -1,6 +1,6 @@
 import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
-
-export const DEFAULT_STATUS = 'Checking Status...'
+export const DEFAULT_STATUS = 'checking'
+export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -93,7 +93,9 @@ export const Routes = {
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
+    GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
@@ -300,6 +302,11 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
+}
+
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
 }
 
 export const SourceTypeMap = {
@@ -750,6 +757,7 @@ export const DEPLOYMENT_STATUS = {
     SUPERSEDED: 'superseded',
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
+    CHECKING: 'checking',
 }
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
