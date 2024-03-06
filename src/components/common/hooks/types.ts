@@ -27,7 +27,7 @@ export interface FileDataType {
 
 export type ValidatorType = (fileData: FileDataType) => FileReaderStatusType
 
-export enum FILE_TYPES {
+export enum FILE_EXTENSION {
     JSON = 'json',
     YAML = 'yaml',
     YML = 'yml',
