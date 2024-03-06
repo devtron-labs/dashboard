@@ -20,7 +20,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-help-outlin
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
-import { ReactComponent as IcCopy } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -906,7 +906,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </span>
                 </div>
                 <button className="cta flex h-36" onClick={copySharableURL}>
-                    <IcCopy className="mr-8 icon-dim-16" />
+                    <ICCopy className="mr-8 icon-dim-16" />
                     Copy shareable link
                 </button>
             </div>
