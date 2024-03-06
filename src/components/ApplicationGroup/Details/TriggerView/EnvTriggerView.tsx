@@ -261,7 +261,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
-            if(getDeploymentWindowStateAppGroup){
+            if(getDeploymentWindowStateAppGroup && _workflows.length){
               await getDeploymentWindowStateAppGroup(_workflows)
             }
             if (showCIModal) {
