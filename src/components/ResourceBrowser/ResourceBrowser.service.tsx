@@ -9,6 +9,7 @@ import {
     ResourceListResponse,
     K8Abbreviates,
 } from './Types'
+import { K8_ABBREVIATES } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_PERMISSION)
@@ -45,44 +46,6 @@ export const deleteResource = (resourceListPayload: ResourceListPayloadType): Pr
     return post(Routes.DELETE_RESOURCE, resourceListPayload)
 }
 
-export const getK8AbbreviatesResource = (): Promise<ResponseType<K8Abbreviates>> => {
-    return Promise.resolve({
-        code: 200,
-        status: 'success',
-        result: {
-            csr: 'certificatesigningrequest',
-            cs: 'componentstatus',
-            cm: 'configmap',
-            ds: 'daemonset',
-            ns: 'namespaces',
-            deploy: 'deployment',
-            ep: 'endpoints',
-            ev: 'events',
-            hpa: 'horizontalpodautoscaler',
-            ing: 'ingress',
-            limits: 'limitrange',
-            no: 'nodes',
-            pvc: 'persistentvolumeclaim',
-            pv: 'persistentvolume',
-            po: 'pod',
-            pdb: 'poddisruptionbudget',
-            rs: 'replicaset',
-            rc: 'replicationcontroller',
-            quota: 'resourcequota',
-            sa: 'serviceaccount',
-            sc: 'storageclass',
-            svc: 'service',
-            wf: 'workflow',
-            sts: 'statefulset',
-            crd: 'customresourcedefinition',
-        },
-    })
-}
-
-export const getK8Abbreviates = async (): Promise<K8Abbreviates> => {
-    const response = await getK8AbbreviatesResource()
-    if (!response.result || typeof response.result !== 'object') {
-        return {}
-    }
-    return response.result
+export const getK8Abbreviates = (): Promise<K8Abbreviates> => {
+    return Promise.resolve(K8_ABBREVIATES)
 }

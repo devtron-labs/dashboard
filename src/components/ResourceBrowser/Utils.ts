@@ -5,7 +5,7 @@ import { eventAgeComparator } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
+import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType } from './Types'
 
 const updatePersistedTabsData = (key: string, value: any) => {
     try {
@@ -216,4 +216,80 @@ export const getScrollableResourceClass = (
         _className += ' sync-error'
     }
     return _className
+}
+
+export const convertK8sObjectMapToOptionsList = (k8SObjectMap: Map<string, K8SObjectMapType>): K8sObjectOptionType[] => {
+    let isNamespacesAvailable: boolean
+    let isEventsAvailable: boolean
+    const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
+        return [...k8sObject.child.entries()].flatMap(([key, value]) => {
+            const keyLowerCased = key.toLowerCase()
+            if (
+                keyLowerCased === 'node' ||
+                    keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+                    keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+            ) {
+                isNamespacesAvailable =
+                    isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
+                isEventsAvailable = isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                return []
+            }
+
+            return value.data.map((childData) => {
+                return {
+                    label: childData.gvk.Kind,
+                    value: childData.gvk.Group || K8S_EMPTY_GROUP,
+                    dataset: {
+                        group: childData.gvk.Group,
+                        version: childData.gvk.Version,
+                        kind: childData.gvk.Kind,
+                        namespaced: `${childData.namespaced}`,
+                        grouped: `${k8sObject.child.size > 1}`,
+                    },
+                    groupName: value.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                }
+            })
+        })
+    })
+    if (isEventsAvailable) {
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.events as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.eventGVK.Group,
+                version: SIDEBAR_KEYS.eventGVK.Version,
+                kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
+                namespaced: 'true',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
+    }
+    if (isNamespacesAvailable) {
+        _k8sObjectOptionsList.push({
+            label: SIDEBAR_KEYS.namespaces as Nodes,
+            value: K8S_EMPTY_GROUP,
+            dataset: {
+                group: SIDEBAR_KEYS.namespaceGVK.Group,
+                version: SIDEBAR_KEYS.namespaceGVK.Version,
+                kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
+                namespaced: 'false',
+                grouped: 'false',
+            },
+            groupName: '',
+        })
+    }
+    _k8sObjectOptionsList.push({
+        label: SIDEBAR_KEYS.nodes as Nodes,
+        value: K8S_EMPTY_GROUP,
+        dataset: {
+            group: SIDEBAR_KEYS.nodeGVK.Group,
+            version: SIDEBAR_KEYS.nodeGVK.Version,
+            kind: SIDEBAR_KEYS.nodeGVK.Kind,
+            namespaced: 'false',
+            grouped: 'false',
+        },
+        groupName: '',
+    })
+    return _k8sObjectOptionsList
 }
