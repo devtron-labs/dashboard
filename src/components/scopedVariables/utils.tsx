@@ -1,8 +1,8 @@
 // @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
-import { FileDataType } from '../common/hooks/types'
-import { FileReaderStatus, ValidatorType, MIME_TYPE, FILE_EXTENSION } from '../common/hooks/types'
+import { FileReaderStatus, ValidatorType, FileDataType } from '../common/hooks/types'
+import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -11,17 +11,18 @@ import {
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
 
-export const getFileMimeType = (fileData: FileDataType): string => {
-    if (!fileData.type) {
-        const fileNameEndsWith = fileData.name
-        const fileType = fileNameEndsWith.split('.').pop()
-        if (fileType === FILE_EXTENSION.YAML || fileType === FILE_EXTENSION.YML) {
-            fileData.type = MIME_TYPE.TEXT_YAML
-        } else if (fileType === FILE_EXTENSION.JSON) {
-            fileData.type = MIME_TYPE.APPLICATION_JSON
-        }
+export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
+    const fileNameEndsWith = fileData.name
+    const fileType = fileNameEndsWith.split('.').pop()
+    switch (fileType) {
+        case FILE_EXTENSION.YAML:
+        case FILE_EXTENSION.YML:
+            return MIME_TYPE.TEXT_YAML
+        case FILE_EXTENSION.JSON:
+            return MIME_TYPE.APPLICATION_JSON
+        default: //Ask Vivek for the default type
+            return MIME_TYPE.TEXT_YAML
     }
-    return fileData.type
 }
 
 export const validator: ValidatorType = ({ data, type }) => {
