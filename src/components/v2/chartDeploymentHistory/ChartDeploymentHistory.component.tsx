@@ -571,12 +571,6 @@ function ChartDeploymentHistory({
     // A functional component for showing docker icon inside deployment history
     const DeploymentDockerImagesIcon: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
         return <>
-            {deployment?.deployedBy && (
-                <div className="flex">
-                    <div className="dc__bullet mr-6 ml-6"></div>
-                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
-                </div>
-            )}
             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                 return (
                     <div key={index} className="dc__app-commit__hash ml-10">
@@ -633,6 +627,12 @@ function ChartDeploymentHistory({
                                 <span className="ml-4">Deploy</span>
                             </button>
                         </Tippy>
+                    )}
+                    {deployment.deployedBy && (
+                        <div className="flex">
+                            <div className="dc__bullet mr-6 ml-6"></div>
+                            <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
+                        </div>
                     )}
                     {showDockerInfo && (
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
