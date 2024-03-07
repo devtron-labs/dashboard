@@ -1,7 +1,7 @@
 // @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
-import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
+import { FileReaderStatus, ValidatorType, FileDataType, MIME_TYPE, FILE_EXTENSION } from '../common/hooks/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -10,12 +10,26 @@ import {
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
 
+export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
+    const fileNameEndsWith = fileData.name
+    const fileType = fileNameEndsWith.split('.').pop()
+    switch (fileType) {
+        case FILE_EXTENSION.YAML:
+        case FILE_EXTENSION.YML:
+            return MIME_TYPE.TEXT_YAML
+        case FILE_EXTENSION.JSON:
+            return MIME_TYPE.APPLICATION_JSON
+        default: //Ask Vivek for the default type
+            return MIME_TYPE.TEXT_YAML
+    }
+}
+
 export const validator: ValidatorType = ({ data, type }) => {
     if (!data) {
         return EMPTY_FILE_STATUS
     }
     switch (type) {
-        case 'application/json':
+        case MIME_TYPE.APPLICATION_JSON:
             try {
                 const parsedData = JSON.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
@@ -31,10 +45,10 @@ export const validator: ValidatorType = ({ data, type }) => {
             } catch (e) {
                 return JSON_PARSE_ERROR_STATUS
             }
-        case 'application/x-yaml':
-        case 'application/yaml':
-        case 'text/yaml':
-        case 'text/x-yaml':
+        case MIME_TYPE.APPLICATION_X_YAML:
+        case MIME_TYPE.APPLICATION_YAML:
+        case MIME_TYPE.TEXT_YAML:
+        case MIME_TYPE.TEXT_X_YAML:
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
