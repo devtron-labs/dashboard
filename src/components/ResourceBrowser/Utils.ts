@@ -5,7 +5,7 @@ import { eventAgeComparator } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType } from './Types'
+import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 
 const updatePersistedTabsData = (key: string, value: any) => {
     try {
@@ -218,78 +218,85 @@ export const getScrollableResourceClass = (
     return _className
 }
 
-export const convertK8sObjectMapToOptionsList = (k8SObjectMap: Map<string, K8SObjectMapType>): K8sObjectOptionType[] => {
-    let isNamespacesAvailable: boolean
-    let isEventsAvailable: boolean
-    const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
-        return [...k8sObject.child.entries()].flatMap(([key, value]) => {
-            const keyLowerCased = key.toLowerCase()
-            if (
-                keyLowerCased === 'node' ||
-                    keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                    keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-            ) {
-                isNamespacesAvailable =
-                    isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                isEventsAvailable = isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                return []
-            }
-
-            return value.data.map((childData) => {
-                return {
-                    label: childData.gvk.Kind,
-                    value: childData.gvk.Group || K8S_EMPTY_GROUP,
-                    dataset: {
-                        group: childData.gvk.Group,
-                        version: childData.gvk.Version,
-                        kind: childData.gvk.Kind,
-                        namespaced: `${childData.namespaced}`,
-                        grouped: `${k8sObject.child.size > 1}`,
-                    },
-                    groupName: value.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
-                }
-            })
-        })
-    })
-    if (isEventsAvailable) {
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.events as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.eventGVK.Group,
-                version: SIDEBAR_KEYS.eventGVK.Version,
-                kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
-                namespaced: 'true',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
-    }
-    if (isNamespacesAvailable) {
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.namespaces as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.namespaceGVK.Group,
-                version: SIDEBAR_KEYS.namespaceGVK.Version,
-                kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
-                namespaced: 'false',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
-    }
-    _k8sObjectOptionsList.push({
-        label: SIDEBAR_KEYS.nodes as Nodes,
-        value: K8S_EMPTY_GROUP,
+/* This is a utility function used in #convertK8sObjectMapToOptionsList */
+const newK8sObjectOption = (
+    label: string,
+    gvk: GVKType,
+    namespaced: boolean,
+    grouped: boolean,
+    groupName: string,
+): K8sObjectOptionType => {
+    return {
+        label,
+        value: gvk.Group || K8S_EMPTY_GROUP,
         dataset: {
-            group: SIDEBAR_KEYS.nodeGVK.Group,
-            version: SIDEBAR_KEYS.nodeGVK.Version,
-            kind: SIDEBAR_KEYS.nodeGVK.Kind,
-            namespaced: 'false',
-            grouped: 'false',
+            group: gvk.Group,
+            version: gvk.Version,
+            kind: gvk.Kind,
+            namespaced: `${namespaced}`,
+            grouped: `${grouped}`,
         },
-        groupName: '',
+        groupName,
+    }
+}
+
+export const convertK8sObjectMapToOptionsList = (
+    k8SObjectMap: Map<string, K8SObjectMapType>,
+): K8sObjectOptionType[] => {
+    const _k8sObjectOptionsList = []
+
+    /* NOTE: we will map through all objects and their children to create the options
+     * the options will be provided as a flat list but the groupings and heirarchies
+     * of the options will be decided based on the heirarchy of the @k8SObjectMap
+     * hence the complexity. Please refer mentioned types to untangle the complexity */
+    k8SObjectMap.forEach((k8sObject: K8SObjectMapType) => {
+        const { child }: { child: Map<string, K8SObjectChildMapType> } = k8sObject
+
+        /* if these special items are added once we shouldn't add them again */
+        let namespacesAdded: boolean = false
+        let eventsAdded: boolean = false
+
+        child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
+            switch (key.toLowerCase()) {
+                /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
+                    if (namespacesAdded) {
+                        break
+                    }
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                    )
+                    namespacesAdded = true
+                    break
+
+                /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
+                    if (eventsAdded) {
+                        break
+                    }
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(SIDEBAR_KEYS.events, SIDEBAR_KEYS.eventGVK, true, false, ''),
+                    )
+                    eventsAdded = true
+                    break
+
+                default:
+                    k8sObjectChild.data.forEach((data: ApiResourceGroupType) => {
+                        _k8sObjectOptionsList.push(
+                            newK8sObjectOption(
+                                data.gvk.Kind,
+                                data.gvk,
+                                data.namespaced,
+                                k8sObject.child.size > 1,
+                                k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                            ),
+                        )
+                    })
+            }
+        })
     })
+
+    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, SIDEBAR_KEYS.nodeGVK, false, false, ''))
+
     return _k8sObjectOptionsList
 }

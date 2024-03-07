@@ -1,5 +1,6 @@
 import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { GVKType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -157,7 +158,15 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS = {
+export const SIDEBAR_KEYS: {
+    nodes: string
+    events: string
+    namespaces: string
+    eventGVK: GVKType
+    namespaceGVK: GVKType
+    nodeGVK: GVKType
+    overviewGVK: GVKType
+} = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -179,7 +188,7 @@ export const SIDEBAR_KEYS = {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview,
+        Kind: Nodes.Overview as Nodes,
     },
 }
 

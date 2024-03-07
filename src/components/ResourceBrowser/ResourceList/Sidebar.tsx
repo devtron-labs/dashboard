@@ -3,7 +3,8 @@ import { useHistory, useParams } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import { useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import DOMPurify from 'dompurify'
+import { useAsync, highlightSearchText } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -45,11 +46,15 @@ const Sidebar = ({
     const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(k8SObjectMap), [k8SObjectMap?.size])
 
     const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        const _key = e.key
-        if (_key === 'k') {
-            searchInputRef.current?.focus()
-        } else if (_key === 'Escape' || _key === 'Esc') {
-            searchInputRef.current?.blur()
+        switch (e.key) {
+            case 'k':
+                searchInputRef.current?.focus()
+                break
+            case 'Escape':
+            case 'Esc':
+                searchInputRef.current?.blur()
+                break
+            default:
         }
     }
 
@@ -196,11 +201,8 @@ const Sidebar = ({
     }
 
     const bringMatchedAbbreviatedOptionToFront = (options: K8sObjectOptionType[]): K8sObjectOptionType[] => {
-        if (!searchText || !k8Abbreviates) {
-            return options
-        }
         const lowerSearchText = searchText.toLowerCase()
-        if (!k8Abbreviates[lowerSearchText]) {
+        if (!searchText || !k8Abbreviates?.[lowerSearchText]) {
             return options
         }
         const loc = k8sObjectOptionsList.findIndex(
@@ -242,10 +244,15 @@ const Sidebar = ({
                     ) : (
                         <span
                             className="w-100 dc__ellipsis-right"
+                            /* eslint-disable react/no-danger */
                             dangerouslySetInnerHTML={{
-                                __html: option.label.replace(
-                                    new RegExp(formatOptionLabelMeta.inputValue, 'gi'),
-                                    (highlighted) => `<mark>${highlighted}</mark>`,
+                                // sanitize necessary to prevent XSS attacks
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText: formatOptionLabelMeta.inputValue,
+                                        text: option.label,
+                                        highlightClasses: 'kind-search-select__option--highlight',
+                                    }),
                                 ),
                             }}
                         />
@@ -259,8 +266,8 @@ const Sidebar = ({
     const getOptionLabel = (option: K8sObjectOptionType) => {
         const lowerLabel = option.label.toLowerCase()
         const lowerSearchText = searchText.toLowerCase()
-        const abbreviateExpanded = k8Abbreviates?.[lowerSearchText]
-        return abbreviateExpanded === lowerLabel ? lowerSearchText : lowerLabel
+        const expandedAbbreviateValue = k8Abbreviates?.[lowerSearchText]
+        return expandedAbbreviateValue === lowerLabel ? lowerSearchText : lowerLabel
     }
 
     const noOptionsMessage = () => 'No matching kind'
