@@ -95,8 +95,8 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
         }
         return (
             <div className="dc__border-top flexbox dc__content-space right p-16">
-                <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
-                    <Edit className="icon-dim-16 mr-4" />
+                <button className="flex cta h-36 lh-36" data-testid="edit-yaml-button" onClick={showCodeEditor}>
+                    <Edit  className="icon-dim-16 mr-4" />
                     {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
                 </button>
                 <button
@@ -162,12 +162,14 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
                             <div className="flexbox">
                                 {resource.error ? (
                                     <>
-                                        <Error className="icon-dim-16 mt-3 mr-8" />
+                                        <Error className="icon-dim-16 mt-3 mr-8" data-testid={`${CreateResourceStatus.failed}-status`}/>
                                         {CreateResourceStatus.failed}
                                     </>
                                 ) : (
                                     <>
-                                        <Success className="icon-dim-16 mt-3 mr-8" />
+                                        <Success className="icon-dim-16 mt-3 mr-8" data-testid={`${resource.isUpdate
+                                            ? CreateResourceStatus.updated
+                                            : CreateResourceStatus.created}-status`}/>
                                         {resource.isUpdate
                                             ? CreateResourceStatus.updated
                                             : CreateResourceStatus.created}
