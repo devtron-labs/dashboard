@@ -568,6 +568,40 @@ function ChartDeploymentHistory({
         setShowDockerInfo(false)
     }
 
+    // A functional component for showing docker icon inside deployment history
+    const DeploymentDockerImagesIcon: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
+        return <>
+            {deployment?.deployedBy && (
+                <div className="flex">
+                    <div className="dc__bullet mr-6 ml-6"></div>
+                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
+                </div>
+            )}
+            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
+                return (
+                    <div key={index} className="dc__app-commit__hash ml-10">
+                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
+                            <span>
+                                <img src={docker} className="commit-hash__icon grayscale" />
+                                <span className="ml-3" data-testid="docker-version-deployment-history">
+                                    {dockerImage.split(':')[1] || dockerImage}
+                                </span>
+                            </span>
+                        </Tippy>
+                    </div>
+                )
+            })}
+            {deployment.dockerImages.length > 3 && (
+                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
+                    <span>
+                        <span className="">{deployment.dockerImages.length - 3}</span>
+                        <span className="ml-3">more</span>
+                    </span>
+                </div>
+            )} 
+        </>
+    }
+
     function renderSelectedDeploymentDetailHeader() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -584,34 +618,8 @@ function ChartDeploymentHistory({
                                     Moment12HourFormat,
                                 )}
                             </time>
-                            {deployment?.deployedBy && (
-                                <div className="flex">
-                                    <div className="dc__bullet mr-6 ml-6"></div>
-                                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
-                                </div>
-                            )}
-                            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
-                                return (
-                                    <div key={index} className="dc__app-commit__hash ml-10">
-                                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
-                                            <span>
-                                                <img src={docker} className="commit-hash__icon grayscale" />
-                                                <span className="ml-3" data-testid="docker-version-deployment-history">
-                                                    {dockerImage.split(':')[1] || dockerImage}
-                                                </span>
-                                            </span>
-                                        </Tippy>
-                                    </div>
-                                )
-                            })}
-                            {deployment.dockerImages.length > 3 && (
-                                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
-                                    <span>
-                                        <span className="">{deployment.dockerImages.length - 3}</span>
-                                        <span className="ml-3">more</span>
-                                    </span>
-                                </div>
-                            )}
+                            {deployment.dockerImages?.length && <DeploymentDockerImagesIcon deployment={deployment}/>}
+                            
                         </div>
                     </div>
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
@@ -634,7 +642,7 @@ function ChartDeploymentHistory({
         )
     }
 
-    async function handleDeployClick() {
+    async function handleDeployClick() {                      
         try {
             setDeploying(true)
             const selectedDeploymentHistory = deploymentHistoryArr[selectedDeploymentHistoryIndex]
