@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
-import { not, GenericEmptyState, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { not, GenericEmptyState, showError, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { useKeyDown } from '../../../common'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
@@ -12,7 +12,7 @@ import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { TIMELINE_STATUS } from '../../../../config'
-import { CIListItem, CopyTippyWithText } from './Artifacts'
+import { CIListItem } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { getUserRole } from '../../../../Pages/GlobalConfigurations/Authorization/authorization.service'
@@ -109,7 +109,6 @@ export const GitChanges = ({
             showError(err)
         }
     }
-    const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return (
@@ -168,14 +167,16 @@ export const GitChanges = ({
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">
-                                <CopyTippyWithText
-                                    copyText={extractImage(artifact)}
-                                    copied={copied}
-                                    setCopied={setCopied}
-                                />
+                                {extractImage(artifact)}
+                                <div className="pl-4">
+                                    <ClipboardButton content={extractImage(artifact)} />
+                                </div>
                             </div>
                             <div className="cn-7 fs-12 flex left">
-                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                                {artifact}
+                                <div className="pl-4">
+                                    <ClipboardButton content={artifact} />
+                                </div>
                             </div>
                         </div>
                     </CIListItem>

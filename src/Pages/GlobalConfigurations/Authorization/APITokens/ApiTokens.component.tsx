@@ -25,7 +25,6 @@ const ApiTokens = () => {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '30 days',
         value: 30,
@@ -167,8 +166,6 @@ const ApiTokens = () => {
                             setSelectedExpirationDate={setSelectedExpirationDate}
                             selectedExpirationDate={selectedExpirationDate}
                             tokenList={tokenList}
-                            setCopied={setCopied}
-                            copied={copied}
                             reload={getData}
                         />
                     </Route>

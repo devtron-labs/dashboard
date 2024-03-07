@@ -7,20 +7,18 @@ import {
     InfoColourBar,
     RadioGroup,
     RadioGroupItem,
-    copyToClipboard,
     CustomInput,
     noop,
     OptionType,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
 import { createUserPermissionPayload, isFormComplete, isTokenExpired } from './authorization.utils'
-import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
@@ -48,8 +46,6 @@ const EditAPIToken = ({
     showRegeneratedModal,
     handleRegenerateActionButton,
     tokenList,
-    copied,
-    setCopied,
     reload,
 }: EditTokenType) => {
     const history = useHistory()
@@ -213,11 +209,6 @@ const EditAPIToken = ({
         return <Progressing pageLoader />
     }
 
-    const handleCopyToClipboard = (e) => {
-        e.stopPropagation()
-        copyToClipboard(editData.token, () => setCopied(true))
-    }
-
     return (
         <div className="fs-13 fw-4 w-100 flexbox-col flex-grow-1 dc__content-space pb-16">
             <div className="pl-20 pr-20 pb-20">
@@ -281,24 +272,9 @@ const EditAPIToken = ({
                             <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
                                 {editData.token}
                             </span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy'}
-                                trigger="mouseenter click"
-                                onShow={(_tippy) => {
-                                    setTimeout(() => {
-                                        _tippy.hide()
-                                        setCopied(false)
-                                    }, 5000)
-                                }}
-                                interactive
-                            >
-                                <div className="icon-dim-16 ml-8">
-                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                                </div>
-                            </Tippy>
+                            <div className="icon-dim-16 ml-8">
+                                <ClipboardButton content={editData.token} />
+                            </div>
                         </div>
                     </label>
                     <label className="form__row">
