@@ -26,7 +26,7 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
-const getDeploymentBlockedState = importComponentFromFELibrary('getDeploymentBlockedState', null, 'function')
+const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
 
 export const getTriggerWorkflows = (
     appId,
@@ -85,7 +85,7 @@ const getInitialWorkflows = (
 
             if (response[1] && response[1].result && cdPipelineData) {
                 cdPipelineData.pipelines?.forEach((pipeline) => {
-                    pipeline.isDeploymentBlocked = getDeploymentBlockedState(response[1], pipeline.environmentId)
+                    pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(response[1], pipeline.environmentId)
                 })
             }
             return processWorkflow(
@@ -121,7 +121,7 @@ const getInitialWorkflows = (
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
         if (deploymentWindowState?.result && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
-                pipeline.isDeploymentBlocked = getDeploymentBlockedState(deploymentWindowState, pipeline.environmentId)
+                pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(deploymentWindowState, pipeline.environmentId)
             })
         }
         return processWorkflow(
