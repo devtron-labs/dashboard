@@ -246,38 +246,26 @@ export const convertK8sObjectMapToOptionsList = (
     const _k8sObjectOptionsList = []
 
     /* NOTE: we will map through all objects and their children to create the options
-     * the options will be provided as a flat list but the groupings and heirarchies
+     * The options will be provided as a flat list but the groupings and heirarchies
      * of the options will be decided based on the heirarchy of the @k8SObjectMap
      * hence the complexity. Please refer mentioned types to untangle the complexity */
     k8SObjectMap.forEach((k8sObject: K8SObjectMapType) => {
         const { child }: { child: Map<string, K8SObjectChildMapType> } = k8sObject
 
-        /* if these special items are added once we shouldn't add them again */
-        let namespacesAdded: boolean = false
-        let eventsAdded: boolean = false
-
         child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
             switch (key.toLowerCase()) {
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
-                    if (namespacesAdded) {
-                        break
-                    }
                     _k8sObjectOptionsList.push(
                         newK8sObjectOption(SIDEBAR_KEYS.namespaces, SIDEBAR_KEYS.namespaceGVK, false, false, ''),
                     )
-                    namespacesAdded = true
                     break
 
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
-                    if (eventsAdded) {
-                        break
-                    }
                     _k8sObjectOptionsList.push(
                         newK8sObjectOption(SIDEBAR_KEYS.events, SIDEBAR_KEYS.eventGVK, true, false, ''),
                     )
-                    eventsAdded = true
                     break
 
                 default:
