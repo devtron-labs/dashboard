@@ -573,7 +573,7 @@ const ChartDeploymentHistory = ({
     }
 
     // A functional component for showing docker icon inside deployment history
-    const DeploymentDockerImagesIcon: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
+    const RenderedDockerImageDetails: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
         return <>
             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                 return (
@@ -624,7 +624,7 @@ const ChartDeploymentHistory = ({
                                     </div>
                                 </div>
                             )}
-                            {deployment.dockerImages?.length && <DeploymentDockerImagesIcon deployment={deployment} />}
+                            {deployment.dockerImages?.length && <RenderedDockerImageDetails deployment={deployment} />}
                         </div>
                     </div>
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
