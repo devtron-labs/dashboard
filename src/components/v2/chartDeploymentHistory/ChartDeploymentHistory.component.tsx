@@ -612,6 +612,12 @@ function ChartDeploymentHistory({
                                     Moment12HourFormat,
                                 )}
                             </time>
+                            {deployment.deployedBy && (
+                                <div className="flex">
+                                    <div className="dc__bullet mr-6 ml-6"></div>
+                                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
+                                </div>
+                            )}
                             {deployment.dockerImages?.length && <DeploymentDockerImagesIcon deployment={deployment}/>}
                             
                         </div>
@@ -627,12 +633,6 @@ function ChartDeploymentHistory({
                                 <span className="ml-4">Deploy</span>
                             </button>
                         </Tippy>
-                    )}
-                    {deployment.deployedBy && (
-                        <div className="flex">
-                            <div className="dc__bullet mr-6 ml-6"></div>
-                            <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
-                        </div>
                     )}
                     {showDockerInfo && (
                         <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
