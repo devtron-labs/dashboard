@@ -572,6 +572,34 @@ const ChartDeploymentHistory = ({
         setShowDockerInfo(false)
     }
 
+    // A functional component for showing docker icon inside deployment history
+    const DeploymentDockerImagesIcon: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
+        return <>
+            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
+                return (
+                    <div key={index} className="dc__app-commit__hash ml-10">
+                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
+                            <span>
+                                <img src={docker} className="commit-hash__icon grayscale" />
+                                <span className="ml-3" data-testid="docker-version-deployment-history">
+                                    {dockerImage.split(':')[1] || dockerImage}
+                                </span>
+                            </span>
+                        </Tippy>
+                    </div>
+                )
+            })}
+            {deployment.dockerImages.length > 3 && (
+                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
+                    <span>
+                        <span className="">{deployment.dockerImages.length - 3}</span>
+                        <span className="ml-3">more</span>
+                    </span>
+                </div>
+            )} 
+        </>
+    }
+
     function renderSelectedDeploymentDetailHeader() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -596,28 +624,7 @@ const ChartDeploymentHistory = ({
                                     </div>
                                 </div>
                             )}
-                            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
-                                return (
-                                    <div key={index} className="dc__app-commit__hash ml-10">
-                                        <Tippy arrow className="default-tt" content={dockerImage}>
-                                            <span>
-                                                <img src={docker} className="commit-hash__icon grayscale" />
-                                                <span className="ml-3" data-testid="docker-version-deployment-history">
-                                                    {dockerImage.split(':')[1] || dockerImage}
-                                                </span>
-                                            </span>
-                                        </Tippy>
-                                    </div>
-                                )
-                            })}
-                            {deployment.dockerImages.length > 3 && (
-                                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
-                                    <span>
-                                        <span className="">{deployment.dockerImages.length - 3}</span>
-                                        <span className="ml-3">more</span>
-                                    </span>
-                                </div>
-                            )}
+                            {deployment.dockerImages?.length && <DeploymentDockerImagesIcon deployment={deployment} />}
                         </div>
                     </div>
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
