@@ -1,7 +1,8 @@
 // @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
-import { FileReaderStatus, ValidatorType, FileDataType, MIME_TYPE, FILE_EXTENSION } from '../common/hooks/types'
+import { FileReaderStatus, ValidatorType, FileDataType} from '../common/hooks/types'
+import { MIME_TYPE, FILE_EXTENSION  } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -19,8 +20,8 @@ export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
             return MIME_TYPE.TEXT_YAML
         case FILE_EXTENSION.JSON:
             return MIME_TYPE.APPLICATION_JSON
-        default: //Ask Vivek for the default type
-            return MIME_TYPE.TEXT_YAML
+        default: 
+            return MIME_TYPE.PLAIN_TEXT
     }
 }
 

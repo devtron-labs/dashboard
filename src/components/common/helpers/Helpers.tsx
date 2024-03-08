@@ -20,8 +20,6 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { PATTERNS } from '../../../config/constants'
-import { FileDataType } from '../hooks/types'
-import { MIME_TYPE, FILE_EXTENSION } from './types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1177,19 +1175,4 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     }
 
     return _options
-}
-
-// When we upload a file from windows, file.type can show unusual behaviour so we need to handle this case explicitly
-export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
-    const fileNameEndsWith = fileData.name
-    const fileType = fileNameEndsWith.split('.').pop()
-    switch (fileType) {
-        case FILE_EXTENSION.YAML:
-        case FILE_EXTENSION.YML:
-            return MIME_TYPE.TEXT_YAML
-        case FILE_EXTENSION.JSON:
-            return MIME_TYPE.APPLICATION_JSON
-        default: //Ask Vivek for the default type
-            return MIME_TYPE.TEXT_YAML
-    }
 }
