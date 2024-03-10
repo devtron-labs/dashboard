@@ -31,6 +31,8 @@ import {
     ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
+    ACTION_STATE,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -90,7 +92,6 @@ import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
 import AnnouncementBanner from '../../../common/AnnouncementBanner'
-import { useRouteMatch } from 'react-router-dom'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -100,6 +101,13 @@ const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
+    'getDeploymentWindowProfileMetaData',
+    null,
+    'function',
+)
+const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
 export default function CDMaterial({
     materialType,
@@ -126,8 +134,6 @@ export default function CDMaterial({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
-    isDeploymentBlocked = true,
-    isUserExcluded = false,
 }: Readonly<CDMaterialProps>) {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
@@ -145,35 +151,41 @@ export default function CDMaterial({
     const abortControllerRef = useRef(new AbortController())
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
-    const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
+    const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
         () =>
             abortEarlierRequests(abortControllerRef, () =>
-                genericCDMaterialsService(
-                    materialType === MATERIAL_TYPE.rollbackMaterialList
-                        ? CDMaterialServiceEnum.ROLLBACK
-                        : CDMaterialServiceEnum.CD_MATERIALS,
-                    pipelineId,
-                    // Dont think need to set stageType to approval in case of approval node
-                    stageType ?? DeploymentNodeType.CD,
-                    abortControllerRef.current.signal,
-                    // It is meant to fetch the first 20 materials
-                    {
-                        offset: 0,
-                        size: 20,
-                        search: searchImageTag,
-                        // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
-                        // So there should'nt be any additional api call
-                        // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
-                        // filter:
-                        //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
-                        //         ? CDMaterialFilterQuery.RESOURCE
-                        //         : null,
-                    },
-                ),
+                Promise.all([
+                    genericCDMaterialsService(
+                        materialType === MATERIAL_TYPE.rollbackMaterialList
+                            ? CDMaterialServiceEnum.ROLLBACK
+                            : CDMaterialServiceEnum.CD_MATERIALS,
+                        pipelineId,
+                        // Dont think need to set stageType to approval in case of approval node
+                        stageType ?? DeploymentNodeType.CD,
+                        abortControllerRef.current.signal,
+                        // It is meant to fetch the first 20 materials
+                        {
+                            offset: 0,
+                            size: 20,
+                            search: searchImageTag,
+                            // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
+                            // So there should'nt be any additional api call
+                            // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
+                            // filter:
+                            //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
+                            //         ? CDMaterialFilterQuery.RESOURCE
+                            //         : null,
+                        },
+                    ),
+                    getDeploymentWindowProfileMetaData && !isFromBulkCD ? getDeploymentWindowProfileMetaData(appId, envId) : null,
+                ]),
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
     )
+
+    const materialsResult = responseList?.[0]
+    const deploymentWindowMetadata = responseList?.[1] ?? {}
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
@@ -182,6 +194,8 @@ export default function CDMaterial({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
+    const [value, setValue] = useState()
+    const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
@@ -943,7 +957,7 @@ export default function CDMaterial({
 
     const deployTrigger = (e: React.MouseEvent) => {
         e.stopPropagation()
-
+        handleConfirmationClose(e)
         // Blocking the deploy action if already deploying or config is not available
         if (isLoading || isDeployButtonDisabled()) {
             return
@@ -2000,9 +2014,8 @@ export default function CDMaterial({
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                 <p className="fs-12 fw-4 lh-18 m-0">
                     {state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                    (!state.specificDeploymentConfig ||
-                        !state.specificDeploymentConfig.deploymentTemplate ||
-                        !state.specificDeploymentConfig.pipelineStrategy)
+                    (!state.specificDeploymentConfig?.deploymentTemplate ||
+                        !state.specificDeploymentConfig?.pipelineStrategy)
                         ? 'Please select a different image or configuration to deploy'
                         : 'Please select a different configuration to deploy'}
                 </p>
@@ -2011,31 +2024,35 @@ export default function CDMaterial({
     }
 
     const getDeployButtonIcon = () => {
-        if (isDeploymentBlocked && !isUserExcluded) {
+        if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
         } else if (stageType !== STAGE_TYPE.CD) {
             return <img src={play} alt="trigger" className="trigger-btn__icon" />
         }
-        return <DeployIcon className={`icon-dim-16 dc__no-svg-fill mr-8 ${isDeploymentBlocked ? 'scn-9' : ''}`} />
+        return (
+            <DeployIcon
+                className={`icon-dim-16 dc__no-svg-fill mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
+            />
+        )
     }
 
     const getCTAClass = (disableDeployButton: boolean): string => {
         let className = 'cta flex ml-auto h-36'
         if (disableDeployButton) {
             className += ' disabled-opacity'
-        } else if (isDeploymentBlocked) {
-            if (isUserExcluded) {
-                className += ' warning'
-            } else {
-                className += ' danger'
-            }
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
+            className += ' danger'
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
+            className += ' warning'
         }
         return className
     }
 
-    const onClickDeploy = (e,disableDeployButton: boolean) => {
+    const onClickDeploy = (e, disableDeployButton: boolean) => {
+        e.stopPropagation()
         if (!disableDeployButton) {
-            if (isDeploymentBlocked && !isUserExcluded) {
+            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
+                setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
             }
@@ -2044,7 +2061,9 @@ export default function CDMaterial({
 
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
         const buttonLabel =
-            isDeploymentBlocked && !isUserExcluded ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
+            deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
+                ? 'Deployment is blocked'
+                : CDButtonLabelMap[stageType]
         const disableDeployButton =
             isDeployButtonDisabled() ||
             (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
@@ -2130,7 +2149,7 @@ export default function CDMaterial({
                     <button
                         data-testid="cd-trigger-deploy-button"
                         className={getCTAClass(disableDeployButton)}
-                        onClick={(e) => onClickDeploy(e,disableDeployButton)}
+                        onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
                     >
                         {deploymentLoading || isSaveLoading ? (
@@ -2140,7 +2159,9 @@ export default function CDMaterial({
                                 {getDeployButtonIcon()}
                                 {buttonLabel}
                                 {isVirtualEnvironment && 'to virtual env'}
-                                {isDeploymentBlocked && !isUserExcluded && <InfoOutline className="icon-dim-16 ml-5" />}
+                                {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
+                                    <InfoOutline className="icon-dim-16 ml-5" />
+                                )}
                             </>
                         )}
                     </button>
@@ -2181,6 +2202,11 @@ export default function CDMaterial({
                 : renderMaterialList(isApprovalConfigured)}
         </div>
     )
+
+    const handleConfirmationClose = (e) => {
+        e.stopPropagation()
+        setShowDeploymentWindowConfirmation(false)
+    }
 
     const renderCDModal = (isApprovalConfigured: boolean) => (
         <>
@@ -2226,8 +2252,28 @@ export default function CDMaterial({
                         iconClass="icon-dim-20"
                     />
                 )}
+            {!isFromBulkCD && deploymentWindowMetadata.name && MaintenanceWindowInfoBar && (
+                <MaintenanceWindowInfoBar
+                    windowName={deploymentWindowMetadata.name}
+                    endTime={deploymentWindowMetadata.calculatedTimestamp}
+                />
+            )}
             {renderTriggerBody(isApprovalConfigured)}
             {renderTriggerModalCTA(isApprovalConfigured)}
+            {DeploymentWindowConfirmationDialog && showDeploymentWindowConfirmation && (
+                <DeploymentWindowConfirmationDialog
+                    onClose={handleConfirmationClose}
+                    value={value}
+                    setValue={setValue}
+                    isLoading={isLoading}
+                    type={MODAL_TYPE.DEPLOY}
+                    onClickActionButton={deployTrigger}
+                    appName={'appName'}
+                    envName={envName}
+                    appId={appId}
+                    envId={envId}
+                />
+            )}
         </>
     )
 
