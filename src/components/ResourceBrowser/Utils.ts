@@ -249,7 +249,7 @@ export const convertK8sObjectMapToOptionsList = (
      * The options will be provided as a flat list but the groupings and heirarchies
      * of the options will be decided based on the heirarchy of the @k8SObjectMap
      * hence the complexity. Please refer mentioned types to untangle the complexity */
-    k8SObjectMap.forEach((k8sObject: K8SObjectMapType) => {
+    k8SObjectMap?.forEach((k8sObject: K8SObjectMapType) => {
         const { child }: { child: Map<string, K8SObjectChildMapType> } = k8sObject
 
         child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
