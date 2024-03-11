@@ -56,6 +56,9 @@ interface customEnv {
     SIDEBAR_DT_LOGO?: string
     ENABLE_EXTERNAL_ARGO_CD: boolean
     API_BATCH_SIZE: number
+    DEPLOYMENT_BLACKOUT_PERIOD: number
+    DEPLOYMENT_MAINTENANCE_PERIOD: number
+
 }
 declare global {
     interface Window {
@@ -173,6 +176,8 @@ if (!window || !window._env_) {
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
+        DEPLOYMENT_BLACKOUT_PERIOD: 96,
+        DEPLOYMENT_MAINTENANCE_PERIOD: 96,
     }
 }
 
