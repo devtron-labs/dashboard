@@ -100,7 +100,7 @@ export default function ColumnSelector() {
 
     return (
         <ReactSelect
-        classNamePrefix='node-column-list-filter'
+            classNamePrefix='node-column-list-filter'
             ref={selectRef}
             menuIsOpen={isMenuOpen}
             name="columns"
