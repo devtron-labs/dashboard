@@ -93,7 +93,9 @@ export const Routes = {
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
+    GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
@@ -300,6 +302,11 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
+}
+
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
 }
 
 export const SourceTypeMap = {
