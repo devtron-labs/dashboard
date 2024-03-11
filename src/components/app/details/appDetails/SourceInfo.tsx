@@ -271,6 +271,8 @@ export const SourceInfo = ({
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
+                                  cmBlackout={window._env_.DEPLOYMENT_BLACKOUT_PERIOD}
+                                  cmMaintenance={window._env_.DEPLOYMENT_MAINTENANCE_PERIOD}
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
