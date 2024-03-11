@@ -37,8 +37,8 @@ import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 
-const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
-    'getDeploymentWindowStateAppGroup',
+const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
+    'processDeploymentWindowAppGroupOverviewMap',
     null,
     'function',
 )
@@ -66,9 +66,11 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
-    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(true)
+    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
-    const [hibernateInfoMap, setHibernateInfoMap] = useState<Record<string, { type: string; excludedUserEmails: string[] }>>({})
+    const [hibernateInfoMap, setHibernateInfoMap] = useState<
+        Record<string, { type: string; excludedUserEmails: string[] }>
+    >({})
 
     useEffect(() => {
         return () => {
@@ -78,38 +80,18 @@ export default function EnvironmentOverview({
         }
     }, [])
 
-    async function getDeploymentWindowProfileOverviewAppGroup() {
+    async function getDeploymentWindowEnvOverrideMetaData() {
         const appEnvTuples = selectedAppIds.map((appId) => {
             return {
                 appId: +appId,
                 envId: +envId,
             }
         })
-        try {
-            const { result } = await getDeploymentWindowStateAppGroup(appEnvTuples)
-            if (result.appData) {
-                let _hibernateInfoMap = {}
-                result.appData.forEach((_appData) => {
-                    const appliedProfile = _appData.deploymentProfileList.environmentStateMap[envId].appliedProfile
-                    if (appliedProfile?.deploymentWindowProfile.type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT) {
-                        setShowDefaultDrawer(false)
-                        _hibernateInfoMap[_appData.appId] = {
-                            type: appliedProfile.deploymentWindowProfile.type,
-                            excludedUserEmails: _appData.deploymentProfileList.environmentStateMap[envId].excludedUserEmails,
-                        }
-                    }
-                })
-                setHibernateInfoMap(_hibernateInfoMap)
-            }
-        } catch (error) {
-            throw error
-        } finally {
-             setIsDeploymentLoading(false)
-        }
+       await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setHibernateInfoMap, setShowDefaultDrawer, envId)
     }
 
     useEffect(() => {
-        getDeploymentWindowProfileOverviewAppGroup()
+        getDeploymentWindowEnvOverrideMetaData()
     }, [openHiberateModal, openUnhiberateModal])
 
     useEffect(() => {
