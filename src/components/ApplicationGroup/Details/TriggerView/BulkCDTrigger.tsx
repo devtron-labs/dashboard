@@ -16,6 +16,10 @@ import {
     useSuperAdmin,
     GenericEmptyState,
     DeploymentWindowProfileMetaData,
+    ConditionalWrap,
+    ACTION_STATE,
+    DEPLOYMENT_WINDOW_TYPE,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -39,6 +43,7 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 import { importComponentFromFELibrary } from '../../../common'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
+const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 const processDeploymentWindowMetadata = importComponentFromFELibrary(
     'processDeploymentWindowMetadata',
     null,
@@ -80,6 +85,7 @@ export default function BulkCDTrigger({
     const [appDeploymentWindowMap, setAppDeploymentWindowMap] = useState<
         Record<number, DeploymentWindowProfileMetaData>
     >({})
+    const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -115,6 +121,7 @@ export default function BulkCDTrigger({
     const getDeploymentWindowData = async (_cdMaterialResponse) => {
         const currentEnv = appList[0].envId
         const appEnvMap = []
+        let _isPartialActionAllowed = false
         for (const appDetails of appList) {
             if (_cdMaterialResponse[appDetails.appId]) {
                 appEnvMap.push({ appId: appDetails.appId, envId: appDetails.envId })
@@ -127,7 +134,15 @@ export default function BulkCDTrigger({
                 data.deploymentProfileList,
                 currentEnv,
             )
+            if (!_isPartialActionAllowed) {
+                _isPartialActionAllowed =
+                    _appDeploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
+                    !_appDeploymentWindowMap[data.appId].isActive
+                        ? _appDeploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
+                        : false
+            }
         })
+        setIsPartialActionAllowed(_isPartialActionAllowed)
         setAppDeploymentWindowMap(_appDeploymentWindowMap)
     }
 
@@ -238,7 +253,9 @@ export default function BulkCDTrigger({
         ApiQueuingWithBatch(_cdMaterialFunctionsList, httpProtocol)
             .then(async (responses: any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
-                await getDeploymentWindowData(_cdMaterialResponse)
+                if (getDeploymentWindowStateAppGroup) {
+                    await getDeploymentWindowData(_cdMaterialResponse)
+                }
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -669,29 +686,44 @@ export default function BulkCDTrigger({
         )
     }
 
+    function BulkDeployResistance(children) {
+        return (
+            <BulkDeployResistanceTippy actionHandler={onClickStartDeploy}>
+                <span>{children}</span>
+            </BulkDeployResistanceTippy>
+        )
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button
-                    className="cta flex h-36"
-                    data-testid="deploy-button"
-                    onClick={onClickStartDeploy}
-                    disabled={isDeployDisabled()}
-                    type="button"
-                >
-                    {isLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            {stage === DeploymentNodeType.CD ? (
-                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                <div className="dc__position-rel tippy-over">
+                    <ConditionalWrap
+                        condition={BulkDeployResistanceTippy && isPartialActionAllowed && !isLoading}
+                        wrap={BulkDeployResistance}
+                    >
+                        <button
+                            className="cta flex h-36"
+                            data-testid="deploy-button"
+                            onClick={!(BulkDeployResistanceTippy && isPartialActionAllowed) && onClickStartDeploy}
+                            disabled={isDeployDisabled()}
+                            type="button"
+                        >
+                            {isLoading ? (
+                                <Progressing />
                             ) : (
-                                <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                                <>
+                                    {stage === DeploymentNodeType.CD ? (
+                                        <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                    ) : (
+                                        <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                                    )}
+                                    {BUTTON_TITLE[stage]}
+                                </>
                             )}
-                            {BUTTON_TITLE[stage]}
-                        </>
-                    )}
-                </button>
+                        </button>
+                    </ConditionalWrap>
+                </div>
             </div>
         )
     }
