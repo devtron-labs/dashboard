@@ -25,7 +25,7 @@ export const UnhibernateModal = ({
     isDeploymentLoading,
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
-    const [value, setValue] = useState<string>('')
+    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
 
     const unhibernateApps = (e) => {
         e.preventDefault()
@@ -66,7 +66,9 @@ export const UnhibernateModal = ({
         return (
             <div>
                 Hibernating some applications is blocked due to deployment window
-                {ResistantInput && <ResistantInput value={value} setValue={setValue} type={MODAL_TYPE.HIBERNATE} />}
+                {ResistantInput && (
+                    <ResistantInput type={MODAL_TYPE.HIBERNATE} setActionButtonDisabled={setActionButtonDisabled} />
+                )}
             </div>
         )
     }
@@ -97,10 +99,7 @@ export const UnhibernateModal = ({
                                 rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
                                 loaderColor="#fff"
                                 isLoading={loader}
-                                disabled={
-                                    !showDefaultDrawer &&
-                                    (!value || (value && value !== capitalizeFirstLetter(MODAL_TYPE.HIBERNATE)))
-                                }
+                                disabled={!showDefaultDrawer && isActionButtonDisabled}
                                 onClick={unhibernateApps}
                             >
                                 Unhibernate

@@ -265,7 +265,6 @@ export const Details: React.FC<DetailsType> = ({
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef(null)
     const shouldFetchTimelineRef = useRef(false)
-    const [value, setValue] = useState('')
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -641,8 +640,6 @@ export const Details: React.FC<DetailsType> = ({
             DeploymentWindowConfirmationDialog && (
                 <DeploymentWindowConfirmationDialog
                     onClose={handleHibernateConfimattionModalClose}
-                    value={value}
-                    setValue={setValue}
                     isLoading={hibernating}
                     type={hibernateConfirmationModal === 'hibernate' ? MODAL_TYPE.HIBERNATE : MODAL_TYPE.RESTORE}
                     onClickActionButton={handleHibernate}

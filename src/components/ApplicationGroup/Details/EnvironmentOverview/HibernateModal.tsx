@@ -1,4 +1,10 @@
-import { MODAL_TYPE, Progressing, VisibleModal, capitalizeFirstLetter, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    MODAL_TYPE,
+    Progressing,
+    VisibleModal,
+    showError,
+    stopPropagation,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
@@ -18,7 +24,7 @@ export const HibernateModal = ({
     showDefaultDrawer,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
-    const [value, setValue] = useState<string>('')
+    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
     const hibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
@@ -58,7 +64,9 @@ export const HibernateModal = ({
         return (
             <div>
                 Hibernating some applications is blocked due to deployment window
-                {ResistantInput && <ResistantInput value={value} setValue={setValue} type={MODAL_TYPE.HIBERNATE} />}
+                {ResistantInput && (
+                    <ResistantInput setActionButtonDisabled={setActionButtonDisabled} type={MODAL_TYPE.HIBERNATE} />
+                )}
             </div>
         )
     }
@@ -89,7 +97,7 @@ export const HibernateModal = ({
                                 rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
                                 loaderColor="#fff"
                                 isLoading={loader}
-                                disabled={!showDefaultDrawer && (!value || (value && value !== capitalizeFirstLetter(MODAL_TYPE.HIBERNATE)))}
+                                disabled={!showDefaultDrawer && isActionButtonDisabled}
                                 onClick={hibernateApps}
                             >
                                 Hibernate
