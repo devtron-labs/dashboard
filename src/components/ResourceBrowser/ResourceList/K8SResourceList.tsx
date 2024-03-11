@@ -219,6 +219,7 @@ export const K8SResourceList = ({
                                 )}
                             >
                                 <span
+                                    data-testid={`${columnName}-count`}
                                     dangerouslySetInnerHTML={{
                                         __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
                                     }}
