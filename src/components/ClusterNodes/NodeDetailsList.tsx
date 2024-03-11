@@ -37,7 +37,7 @@ export default function NodeDetailsList({
     const k8sVersion = urlParams.get('k8sversion') ? decodeURIComponent(urlParams.get('k8sversion')) : ''
     const name = decodeURIComponent(urlParams.get('name') || '')
     const label = decodeURIComponent(urlParams.get('label') || '')
-    const group = decodeURIComponent(urlParams.get('group') || '')
+    const group = decodeURIComponent(urlParams.get('nodeGroup') || '')
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState(name || label || group || '')
