@@ -119,7 +119,10 @@ export default function ScopedVariablesEditor({
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
-                            <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
+                            <p
+                                data-testid={`${showSaveView ? 'Review' : 'Edit'}`}
+                                className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right"
+                            >
                                 {showSaveView ? 'Review' : 'Edit'} <span className="fw-7">Variables</span>
                             </p>
                         ) : (
