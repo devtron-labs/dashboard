@@ -33,6 +33,7 @@ import {
     useSuperAdmin,
     ACTION_STATE,
     MODAL_TYPE,
+    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -177,7 +178,9 @@ export default function CDMaterial({
                             //         : null,
                         },
                     ),
-                    getDeploymentWindowProfileMetaData && !isFromBulkCD ? getDeploymentWindowProfileMetaData(appId, envId) : null,
+                    getDeploymentWindowProfileMetaData && !isFromBulkCD
+                        ? getDeploymentWindowProfileMetaData(appId, envId)
+                        : null,
                 ]),
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
@@ -2038,12 +2041,19 @@ export default function CDMaterial({
 
     const getCTAClass = (disableDeployButton: boolean): string => {
         let className = 'cta flex ml-auto h-36'
+        const isMaintenanceWindowActive =
+            deploymentWindowMetadata.type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && deploymentWindowMetadata.isActive
         if (disableDeployButton) {
             className += ' disabled-opacity'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
-            className += ' danger'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
-            className += ' warning'
+        } else if (!isMaintenanceWindowActive) {
+            if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
+                className += ' danger'
+            } else if (
+                deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL &&
+                !isMaintenanceWindowActive
+            ) {
+                className += ' warning'
+            }
         }
         return className
     }
@@ -2051,7 +2061,11 @@ export default function CDMaterial({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
+            if (
+                deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED &&
+                (deploymentWindowMetadata.type !== DEPLOYMENT_WINDOW_TYPE.MAINTENANCE ||
+                    !deploymentWindowMetadata.isActive)
+            ) {
                 setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
@@ -2252,12 +2266,15 @@ export default function CDMaterial({
                         iconClass="icon-dim-20"
                     />
                 )}
-            {!isFromBulkCD && deploymentWindowMetadata.name && MaintenanceWindowInfoBar && (
-                <MaintenanceWindowInfoBar
-                    windowName={deploymentWindowMetadata.name}
-                    endTime={deploymentWindowMetadata.calculatedTimestamp}
-                />
-            )}
+            {!isFromBulkCD &&
+                MaintenanceWindowInfoBar &&
+                deploymentWindowMetadata.type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE &&
+                deploymentWindowMetadata.isActive && (
+                    <MaintenanceWindowInfoBar
+                        windowName={deploymentWindowMetadata.name}
+                        endTime={deploymentWindowMetadata.calculatedTimestamp}
+                    />
+                )}
             {renderTriggerBody(isApprovalConfigured)}
             {renderTriggerModalCTA(isApprovalConfigured)}
             {DeploymentWindowConfirmationDialog && showDeploymentWindowConfirmation && (
