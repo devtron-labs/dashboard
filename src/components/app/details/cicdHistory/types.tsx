@@ -40,6 +40,7 @@ export interface History {
     tagsEditable?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    triggerMetadata?: string
 }
 
 export interface CiMaterial {
@@ -209,6 +210,7 @@ export interface TriggerDetailsType {
     environmentName?: string
     isJobView?: boolean
     workerPodName?: string
+    triggerMetadata?: string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -260,6 +262,7 @@ export interface StartDetailsType {
     type: HistoryComponentType
     environmentName?: string
     isJobView?: boolean
+    triggerMetadata?: string
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {
