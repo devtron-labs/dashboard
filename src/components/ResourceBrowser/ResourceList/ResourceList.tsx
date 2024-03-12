@@ -13,7 +13,6 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
-import queryString from 'query-string'
 import {
     convertToOptionsList,
     createGroupSelectList,
@@ -37,7 +36,7 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS, SEARCH_QUERY_PARAM_KEY } from '../Constants'
 import { URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
@@ -63,7 +62,6 @@ import {
     getUpdatedResourceSelectionData,
     removeDefaultForStorageClass,
     sortEventListData,
-    updateQueryString,
 } from '../Utils'
 import '../ResourceBrowser.scss'
 import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
@@ -109,7 +107,7 @@ export default function ResourceList() {
     const [k8SObjectMapRaw, setK8SObjectMapRaw] = useState<Map<string, K8SObjectMapType>>()
     const [resourceList, setResourceList] = useState<ResourceDetailType>()
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
-    const [searchText, setSearchText] = useState(searchParams['search'] || '')
+    const [searchText, setSearchText] = useState(searchParams[SEARCH_QUERY_PARAM_KEY] || '')
     const [searchApplied, setSearchApplied] = useState(false)
     const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])

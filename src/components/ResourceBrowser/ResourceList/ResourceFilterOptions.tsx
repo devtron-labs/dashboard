@@ -10,7 +10,8 @@ import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.com
 import {
     ALL_NAMESPACE_OPTION,
     FILTER_SELECT_COMMON_STYLES,
-    NAMESPACE_NOT_APPLICABLE_OPTION
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    SEARCH_QUERY_PARAM_KEY,
 } from '../Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
@@ -73,7 +74,7 @@ const ResourceFilterOptions = ({
     const handleOnChangeSearchText = (event): void => {
         const text = event.target.value
         setSearchText(text)
-        const queryStr = updateQueryString(location, [['search', text]])
+        const queryStr = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         push(`?${queryStr}`)
     }
 

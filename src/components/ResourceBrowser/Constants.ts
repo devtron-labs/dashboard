@@ -273,3 +273,5 @@ export const K8_ABBREVIATES = {
     sts: 'statefulset',
     crd: 'customresourcedefinition',
 }
+
+export const SEARCH_QUERY_PARAM_KEY = 'search'
