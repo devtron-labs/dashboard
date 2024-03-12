@@ -1,20 +1,12 @@
-import React, { useState } from 'react'
-import Tippy from '@tippyjs/react'
-import { copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
+import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import 'tippy.js/themes/light.css'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import './cluster.scss'
-import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ClusterStepModal } from './cluster.type'
 import { DOCUMENTATION } from '../../config'
 
 const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
-    const [copied, setCopied] = useState(false)
-    const copyClipboard = (e): void => {
-        e.stopPropagation()
-        setCopied(true)
-        copyToClipboard(command)
-    }
     const infoItems = [
         {
             additionalInfo: (
@@ -33,24 +25,9 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
                     >
                         {command}
                     </div>
-                    <Tippy
-                        className="default-tt p-4"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(_tippy) => {
-                            setTimeout(() => {
-                                _tippy.hide()
-                                setCopied(false)
-                            }, 5000)
-                        }}
-                        interactive
-                    >
-                        <div className="cluster-clipboard dc__position-abs cursor" onClick={copyClipboard}>
-                            <ClipboardIcon className="icon-dim-16" />
-                        </div>
-                    </Tippy>
+                    <div className="cluster-clipboard dc__position-abs">
+                        <ClipboardButton content={command} rootClassName="bcn-1" />
+                    </div>
                 </div>
             ),
         },
