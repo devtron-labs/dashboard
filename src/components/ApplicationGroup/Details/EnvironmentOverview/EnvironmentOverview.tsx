@@ -87,7 +87,8 @@ export default function EnvironmentOverview({
                 envId: +envId,
             }
         })
-       await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setHibernateInfoMap, setShowDefaultDrawer, envId)
+        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
+        setHibernateInfoMap(_hibernate)
     }
 
     useEffect(() => {
