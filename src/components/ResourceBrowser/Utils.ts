@@ -293,7 +293,7 @@ export const convertK8sObjectMapToOptionsList = (
 
 export const updateQueryString = (
     location: ReturnType<typeof useLocation>,
-    entries: [key: string, value: string][]
+    entries: [key: string, value: string][],
 ): string => {
     const qs = queryString.parse(location.search)
     const keys = Object.keys(qs)
@@ -302,7 +302,6 @@ export const updateQueryString = (
         query[key] = qs[key]
     })
     for (const [key, value] of entries) {
-        console.log(key, value)
         if (value) {
             query[key] = value
         } else {
