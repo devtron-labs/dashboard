@@ -45,6 +45,7 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
+    filteredEnvIds
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -271,6 +272,7 @@ export const SourceInfo = ({
                                   cardLoading={cardLoading}
                                   appId={params.appId}
                                   envId={params.envId}
+                                  filteredEnvIds={filteredEnvIds}
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (

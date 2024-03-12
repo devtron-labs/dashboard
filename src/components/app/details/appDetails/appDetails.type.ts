@@ -187,6 +187,7 @@ export interface DetailsType {
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnvRef?: React.MutableRefObject<boolean>
     isDeploymentBlocked?: boolean
+    filteredEnvIds?: string
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {

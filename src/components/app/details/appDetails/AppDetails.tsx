@@ -224,6 +224,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isAppDeleted={isAppDeleted}
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
+                    filteredEnvIds={filteredEnvIds}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -244,6 +245,7 @@ export const Details: React.FC<DetailsType> = ({
     isAppDeleted,
     isVirtualEnvRef,
     isDeploymentBlocked,
+    filteredEnvIds,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()

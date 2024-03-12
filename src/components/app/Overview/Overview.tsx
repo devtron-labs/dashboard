@@ -439,7 +439,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <div>
                 {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
-                {DeploymentWindowOverview && <DeploymentWindowOverview appId={Number(appId)}/>}
+                {DeploymentWindowOverview && (
+                    <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
+                )}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin
