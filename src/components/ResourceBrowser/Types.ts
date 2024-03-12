@@ -114,6 +114,7 @@ export interface SidebarType {
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
     isCreateModalOpen: boolean
     isClusterError?: boolean
+    setResourceListText: (action: React.SetStateAction<string>) => void
 }
 
 export interface ResourceFilterOptionsProps {

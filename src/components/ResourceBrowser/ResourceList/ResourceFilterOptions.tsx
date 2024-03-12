@@ -15,6 +15,7 @@ import {
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { updateQueryString } from '../Utils'
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -70,7 +71,10 @@ const ResourceFilterOptions = ({
     }
 
     const handleOnChangeSearchText = (event): void => {
-        setSearchText(event.target.value)
+        const text = event.target.value
+        setSearchText(text)
+        const queryStr = updateQueryString(location, [['search', text]])
+        push(`?${queryStr}`)
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {

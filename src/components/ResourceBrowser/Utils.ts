@@ -1,4 +1,6 @@
 import moment from 'moment'
+import queryString from 'query-string'
+import { useLocation } from 'react-router-dom'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator } from '../common'
@@ -287,4 +289,25 @@ export const convertK8sObjectMapToOptionsList = (
     _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, SIDEBAR_KEYS.nodeGVK, false, false, ''))
 
     return _k8sObjectOptionsList
+}
+
+export const updateQueryString = (
+    location: ReturnType<typeof useLocation>,
+    entries: [key: string, value: string][]
+): string => {
+    const qs = queryString.parse(location.search)
+    const keys = Object.keys(qs)
+    const query = {}
+    keys.forEach((key) => {
+        query[key] = qs[key]
+    })
+    for (const [key, value] of entries) {
+        console.log(key, value)
+        if (value) {
+            query[key] = value
+        } else {
+            delete query[key]
+        }
+    }
+    return queryString.stringify(query)
 }
