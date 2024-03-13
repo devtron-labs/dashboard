@@ -217,3 +217,7 @@ export interface K8sObjectOptionType extends OptionType {
     }
     groupName: string
 }
+
+export interface K8Abbreviates {
+    [key: string]: string
+}
