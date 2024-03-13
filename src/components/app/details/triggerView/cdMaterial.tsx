@@ -97,6 +97,7 @@ const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -1332,16 +1333,31 @@ const getInitialSelectedConfigToDeploy = () => {
         isSuperAdmin,
     })
 
-    const getSequentialCDCardTitleProps = (mat: CDMaterialType): SequentialCDCardTitleProps => ({
-        isLatest: mat.latest,
-        isRunningOnParentCD: mat.runningOnParentCd,
-        artifactStatus: mat.artifactStatus,
-        environmentName: envName,
-        parentEnvironmentName,
-        stageType,
-        showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
-        isVirtualEnvironment,
-    })
+    const getSequentialCDCardTitleProps = (mat: CDMaterialType): SequentialCDCardTitleProps => {
+        const promotionApprovalMetadata = mat.promotionApprovalMetadata
+        const promotionApprovedBy = promotionApprovalMetadata?.approvedUsersData?.map((users) => users.userEmail)
+
+        return {
+            isLatest: mat.latest,
+            isRunningOnParentCD: mat.runningOnParentCd,
+            artifactStatus: mat.artifactStatus,
+            environmentName: envName,
+            parentEnvironmentName,
+            stageType,
+            showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
+            isVirtualEnvironment,
+            additionalInfo: ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFrom ? (
+                <ImagePromotionInfoChip
+                    promotedTo={envName}
+                    promotedFrom={promotionApprovalMetadata?.promotedFrom}
+                    promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
+                    approvedBy={promotionApprovedBy}
+                    promotionPolicyName={promotionApprovalMetadata?.policy?.name}
+                    showBackgroundColor
+                />
+            ) : null,
+        }
+    }
 
     const renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) =>
         materialList.map((mat) => {

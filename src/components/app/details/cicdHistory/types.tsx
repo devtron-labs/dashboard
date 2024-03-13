@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react'
-import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers, PromotionApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
 
@@ -34,6 +34,7 @@ export interface History {
     tagsEditable?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    promotionApprovalMetadata?: PromotionApprovalMetadataType
 }
 
 export interface CiMaterial {
@@ -77,7 +78,7 @@ export interface CopyTippyWithTextType {
     setCopied: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export interface CIListItemType {
+export interface CIListItemType extends Pick<GitChangesType, 'promotionApprovalMetadata' | 'selectedEnvironmentName'> {
     type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
@@ -117,7 +118,7 @@ export interface ScrollerType {
     style: CSSProperties
 }
 
-export interface GitChangesType {
+export interface GitChangesType extends Pick<History, 'promotionApprovalMetadata'> {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
     artifact?: string
@@ -132,6 +133,7 @@ export interface GitChangesType {
     hideImageTaggingHardDelete?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    selectedEnvironmentName?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
