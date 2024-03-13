@@ -1,11 +1,18 @@
 import React, { useState } from 'react'
-import { showError, Progressing, ConfirmationDialog, not, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    not,
+    TippyTheme,
+    DEPLOYMENT_WINDOW_TYPE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import moment from 'moment'
 import { Link, NavLink } from 'react-router-dom'
-import { createGitCommitUrl, asyncWrap } from '../../../common'
+import { createGitCommitUrl, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import docker from '../../../../assets/icons/misc/docker.svg'
@@ -27,6 +34,8 @@ import {
 import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 import { DEFAULT_ENV } from '../triggerView/Constants'
 import { TIMEOUT_VALUE, WORKER_POD_BASE_URL } from './Constants'
+
+const DeploymentHistoryTriggerMetaText = importComponentFromFELibrary('DeploymentHistoryTriggerMetaText')
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -63,6 +72,7 @@ export const TriggerDetails = React.memo(
         environmentName,
         isJobView,
         workerPodName,
+        triggerMetadata,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -80,6 +90,7 @@ export const TriggerDetails = React.memo(
                         type={type}
                         environmentName={environmentName}
                         isJobView={isJobView}
+                        triggerMetadata={triggerMetadata}
                     />
                     <CurrentStatus
                         status={status}
@@ -361,6 +372,7 @@ const StartDetails = ({
     type,
     environmentName,
     isJobView,
+    triggerMetadata,
 }: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
@@ -421,6 +433,10 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
+
+            {triggerMetadata && DeploymentHistoryTriggerMetaText && (
+                <DeploymentHistoryTriggerMetaText triggerMetaData={triggerMetadata} />
+            )}
             {isJobView && (
                 <div className="pt-4 pb-4 pr-0 pl-0">
                     <span className="fw-6 fs-14">Env</span>

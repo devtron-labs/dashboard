@@ -495,6 +495,7 @@ export const TriggerOutput: React.FC<{
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
+                            triggerMetadata={triggerDetails.triggerMetadata}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppTypes.HELM && (

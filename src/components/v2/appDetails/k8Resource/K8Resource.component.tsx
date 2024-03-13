@@ -18,6 +18,8 @@ export default function K8ResourceComponent({
     monitoringTools,
     isDevtronApp,
     isExternalApp,
+    isDeploymentBlocked,
+    onCloseHideDeploymentWindowConfirmationModal
 }: K8ResourceComponentProps) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
 
@@ -49,6 +51,8 @@ export default function K8ResourceComponent({
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
                             isExternalApp={isExternalApp}
+                            isDeploymentBlocked={isDeploymentBlocked}
+                            onCloseHideDeploymentWindowConfirmationModal={onCloseHideDeploymentWindowConfirmationModal}
                         />
                     </div>
                 </div>
