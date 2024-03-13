@@ -48,7 +48,8 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
+const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowser'))
+const ResourceBrowserList = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
@@ -365,9 +366,12 @@ export default function NavigationRoutes() {
                             <ErrorBoundary>
                                 <Switch>
                                     <Route
-                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
+                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId/:namespace?/:nodeType?/:group?/:node?`}
                                     >
-                                        <ResourceBrowserContainer />
+                                        <ResourceBrowserList />
+                                    </Route>
+                                    <Route path={`${URLS.RESOURCE_BROWSER}`} exact>
+                                        <ResourceBrowser />
                                     </Route>
                                     <Route
                                         path={URLS.GLOBAL_CONFIG}
