@@ -79,7 +79,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
                     onChange={repoTypeChange}
                 >
                     <div>
-                        <RadioGroupItem value={repoType.DEFAULT}>Auto-create repository</RadioGroupItem>
+                        <RadioGroupItem value={repoType.DEFAULT} dataTestId="auto-create-repository">Auto-create repository</RadioGroupItem>
                         <div className="ml-26 cn-7 fs-12 fw-4">
                             Repository will be created automatically using application name
                         </div>
