@@ -120,7 +120,7 @@ export default function ScopedVariablesEditor({
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
                             <p
-                                data-testid={`${showSaveView ? 'Review' : 'Edit'}`}
+                                data-testid={`${showSaveView ? 'review-variables' : 'edit-variables'}`}
                                 className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right"
                             >
                                 {showSaveView ? 'Review' : 'Edit'} <span className="fw-7">Variables</span>

@@ -666,7 +666,7 @@ const Cluster = ({
     return (
         <>
             <article
-                data-testid={`${cluster_name}-cluster-container`}
+                data-testid={`${cluster_name ?? 'create'}-cluster-container`}
                 className={`cluster-list ${
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
                 }`}

@@ -23,7 +23,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
                     placement="top"
                 >
                     {data?.length ? (
-                        <p data-testid={`${data}`} className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">
+                        <p data-testid={data} className="dc__ellipsis-right cn-9 fs-13 fw-4 lh-20 m-0">
                             {data}
                         </p>
                     ) : (
