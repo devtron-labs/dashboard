@@ -166,19 +166,24 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         return []
     }, [filteredEnvIds, otherEnvsResult])
 
+    const onCloseHideDeploymentWindowConfirmationModal = () => {
+        setShowDeploymentWindowConfirmation(false)
+    }
+
     useEffect(() => {
         if (!params.envId) {
             return
         }
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
+        // Need a sync for resource confirmation deletion modal in node delete component 
         if (getDeploymentWindowProfileMetaData) {
             const { userActionState } = getDeploymentWindowProfileMetaData(params.appId, params.envId)
             if (userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
             }
         }
-    }, [params.envId])
+    }, [params.envId, showDeploymentWindowConfirmation])
 
     const renderAppNotConfigured = () => {
         return (
@@ -225,6 +230,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
                     filteredEnvIds={filteredEnvIds}
+                    onCloseHideDeploymentWindowConfirmationModal={onCloseHideDeploymentWindowConfirmationModal}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -245,7 +251,7 @@ export const Details: React.FC<DetailsType> = ({
     isAppDeleted,
     isVirtualEnvRef,
     isDeploymentBlocked,
-    filteredEnvIds,
+    onCloseHideDeploymentWindowConfirmationModal
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -637,6 +643,8 @@ export const Details: React.FC<DetailsType> = ({
                 externalLinks={externalLinksAndTools.externalLinks}
                 monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp
+                isDeploymentBlocked={isDeploymentBlocked}
+                onCloseHideDeploymentWindowConfirmationModal={onCloseHideDeploymentWindowConfirmationModal}
             />
         )
     }
