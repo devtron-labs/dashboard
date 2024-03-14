@@ -1,30 +1,36 @@
 import React, { useMemo, useState } from 'react'
 
-import Tippy from '@tippyjs/react'
-import { Link, useHistory } from 'react-router-dom'
 import {
-    useAsync,
-    getRandomColor,
-    processDeployedTime,
     AppStatus,
     GenericEmptyState,
+    getRandomColor,
+    handleRelativeDateSorting,
+    processDeployedTime,
+    SortableTableHeaderCell,
+    SortingOrder,
+    useAsync,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { Link, useHistory } from 'react-router-dom'
 
-import { ModuleNameMap, URLS } from '../../../config'
-import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
-import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
-import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
-import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
-import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as DockerIcon } from '../../../assets/icons/git/docker.svg'
-import { StatusConstants } from '../list-new/Constants'
+import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
+import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
+import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
+import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { AppMetaInfo, AppOverviewProps } from '../types'
+import CommitChipCell from '../../../Pages/Shared/CommitChipCell'
 import { getAppOtherEnvironment } from '../../../services/service'
+import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { loadingEnvironmentList } from './constants'
-import { AppEnvironment } from '../../../services/service.types'
+import { StatusConstants } from '../list-new/Constants'
+import { TriggerInfoModal, TriggerInfoModalProps } from '../list/TriggerInfo'
+import { AppMetaInfo, AppOverviewProps } from '../types'
+import { EnvironmentListSortableKeys, loadingEnvironmentList } from './constants'
 
 const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
@@ -45,18 +51,34 @@ export const EnvironmentList = ({
         [appId],
     )
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
+    const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
+        TriggerInfoModalProps,
+        'ciArtifactId' | 'envId'
+    > | null>(null)
+    const { sortBy, sortOrder, handleSorting } = useUrlFilters({
+        initialSortKey: EnvironmentListSortableKeys.environmentName,
+    })
 
     const envList = useMemo(() => {
         if (otherEnvsResult?.[0]?.result?.length > 0) {
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
+
             return (
                 otherEnvsResult[0].result
                     .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+                    ?.sort((a, b) => {
+                        if (sortBy === EnvironmentListSortableKeys.deployedAt) {
+                            return handleRelativeDateSorting(a.lastDeployed, b.lastDeployed, sortOrder)
+                        }
+
+                        return sortOrder === SortingOrder.ASC
+                            ? a.environmentName.localeCompare(b.environmentName)
+                            : b.environmentName.localeCompare(a.environmentName)
+                    }) || []
             )
         }
         return otherEnvsLoading ? loadingEnvironmentList : []
-    }, [filteredEnvIds, otherEnvsResult])
+    }, [filteredEnvIds, otherEnvsResult, sortBy, sortOrder])
 
     const toggleIsLastDeployedExpanded = () => {
         setIsLastDeployedExpanded(!isLastDeployedExpanded)
@@ -81,6 +103,18 @@ export const EnvironmentList = ({
             environment.latestCdWorkflowRunnerId ?? ''
         }`
 
+    const closeCommitInfoModal = () => {
+        setCommitInfoModalConfig(null)
+    }
+
+    const sortByEnvironment = () => {
+        handleSorting(EnvironmentListSortableKeys.environmentName)
+    }
+
+    const sortByDeployedAt = () => {
+        handleSorting(EnvironmentListSortableKeys.deployedAt)
+    }
+
     return (
         <div className="flex column left">
             {envList.length > 0 ? (
@@ -94,7 +128,13 @@ export const EnvironmentList = ({
                     >
                         <span />
                         {isArgoInstalled && <ActivityIcon className="icon-dim-16" />}
-                        <span>Environment</span>
+                        <SortableTableHeaderCell
+                            title="Environment"
+                            triggerSorting={sortByEnvironment}
+                            isSorted={sortBy === EnvironmentListSortableKeys.environmentName}
+                            sortOrder={sortOrder}
+                            disabled={otherEnvsLoading}
+                        />
                         <span className={`flex left dc__gap-4 ${lastDeployedClassName}`}>
                             Last deployed
                             <button
@@ -108,12 +148,27 @@ export const EnvironmentList = ({
                                 />
                             </button>
                         </span>
-                        <span>Deployed by</span>
+                        <span>Commit</span>
+                        <SortableTableHeaderCell
+                            title="Deployed At"
+                            triggerSorting={sortByDeployedAt}
+                            isSorted={sortBy === EnvironmentListSortableKeys.deployedAt}
+                            sortOrder={sortOrder}
+                            disabled={otherEnvsLoading}
+                        />
                     </div>
 
                     <div className="env-deployments-info-body show-shimmer-loading">
-                        {envList.map(
-                            (_env) =>
+                        {envList.map((_env) => {
+                            const openCommitInfoModal = (e) => {
+                                e.stopPropagation()
+                                setCommitInfoModalConfig({
+                                    envId: _env.environmentId,
+                                    ciArtifactId: _env.ciArtifactId,
+                                })
+                            }
+
+                            return (
                                 !_env.deploymentAppDeleteRequest && (
                                     <div
                                         key={`${_env.environmentName}-${_env.environmentId}`}
@@ -121,6 +176,7 @@ export const EnvironmentList = ({
                                     >
                                         {otherEnvsLoading ? (
                                             <>
+                                                <div className="child child-shimmer-loading" />
                                                 <div className="child child-shimmer-loading" />
                                                 <div className="child child-shimmer-loading" />
                                                 <div className="child child-shimmer-loading" />
@@ -154,7 +210,8 @@ export const EnvironmentList = ({
                                                             placement="auto"
                                                         >
                                                             <div
-                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 ${lastDeployedClassName}`}
+                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 cursor ${lastDeployedClassName}`}
+                                                                onClick={openCommitInfoModal}
                                                             >
                                                                 <DockerIcon className="icon-dim-14" />
                                                                 {isLastDeployedExpanded ? (
@@ -178,6 +235,10 @@ export const EnvironmentList = ({
                                                         <span>Not Deployed</span>
                                                     </span>
                                                 )}
+                                                <CommitChipCell
+                                                    handleClick={openCommitInfoModal}
+                                                    commits={_env.commits}
+                                                />
                                                 {_env.lastDeployed && (
                                                     <span className="fs-13 fw-4 cn-9 dc__ellipsis-right dc__word-break flex left dc__gap-6">
                                                         <span className="flex left dc__gap-8">
@@ -204,8 +265,9 @@ export const EnvironmentList = ({
                                             </>
                                         )}
                                     </div>
-                                ),
-                        )}
+                                )
+                            )
+                        })}
                     </div>
                 </div>
             ) : (
@@ -220,6 +282,7 @@ export const EnvironmentList = ({
                     />
                 </div>
             )}
+            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
         </div>
     )
 }

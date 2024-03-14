@@ -25,7 +25,7 @@ interface TriggerInfoModalState {
     hideImageTaggingHardDelete?: boolean
 }
 
-interface TriggerInfoModalProps {
+export interface TriggerInfoModalProps {
     close: () => void
     envId: number | string
     ciArtifactId: number
