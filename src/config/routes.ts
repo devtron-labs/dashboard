@@ -81,6 +81,7 @@ export const URLS = {
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
+    LINKED_CI_DETAILS: 'linked-ci-details',
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
