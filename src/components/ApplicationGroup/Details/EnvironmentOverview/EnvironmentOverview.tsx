@@ -429,7 +429,7 @@ export default function EnvironmentOverview({
                         <div
                             className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center">
+                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center dc__ellipsis-right">
                                 <label className="dc__position-rel pointer m-0-imp">
                                     <input
                                         type="checkbox"
