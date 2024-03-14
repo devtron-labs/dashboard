@@ -51,7 +51,15 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
-import { DeleteDialogType, ForceDeleteMessageType, NewCDPipelineProps } from './types'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import {
+    gitOpsRepoNotConfigured,
+    gitOpsRepoNotConfiguredWithEnforcedEnv,
+    gitOpsRepoNotConfiguredWithOptionsHidden,
+} from '../gitOps/constants'
+import { NewCDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 export default function NewCDPipeline({
     match,
@@ -61,7 +69,10 @@ export default function NewCDPipeline({
     getWorkflows,
     refreshParentWorkflows,
     envIds,
+    noGitOpsModuleInstalledAndConfigured,
     changeCIPayload,
+    isGitOpsRepoNotConfigured,
+    reloadAppConfig,
 }: NewCDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -69,10 +80,15 @@ export default function NewCDPipeline({
     const isWebhookCD = window.location.href.includes('webhook')
     const allStrategies = useRef<{ [key: string]: any }>({})
     const noStrategyAvailable = useRef(false)
-    const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
-    const parentPipelineId = urlParams.get('parentPipelineId')
     const addType = urlParams.get('addType')
     const childPipelineId = urlParams.get('childPipelineId')
+    const parentPipelineTypeFromURL = urlParams.get('parentPipelineType')
+    const parentPipelineId = urlParams.get('parentPipelineId')
+    const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
+        show: false,
+        text: '',
+    })
+    const [reloadNoGitOpsRepoConfiguredModal, setReloadNoGitOpsRepoConfiguredModal] = useState<boolean>(false)
 
     let { appId, workflowId, ciPipelineId, cdPipelineId } = useParams<{
         appId: string
@@ -249,6 +265,10 @@ export default function NewCDPipeline({
                 setErrorCode(error.code)
                 setPageState(ViewType.ERROR)
             })
+    }
+
+    const handleShowGitOpsRepoConfiguredWarning = () => {
+        setGitOpsRepoConfiguredWarning({ show: false, text: '' })
     }
 
     const getEnvCDPipelineName = (form) => {
@@ -727,7 +747,52 @@ export default function NewCDPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
+    const checkForGitOpsRepoNotConfigured = () => {
+        const isHelmEnforced =
+            formData.allowedDeploymentTypes.length === 1 &&
+            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
+
+        const gitOpsRepoNotConfiguredAndOptionsHidden =
+            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+            !noGitOpsModuleInstalledAndConfigured &&
+            !isHelmEnforced &&
+            isGitOpsRepoNotConfigured
+
+        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
+        }
+        const isGitOpsRepoNotConfiguredAndOptionsVisible =
+            formData.deploymentAppType === DeploymentAppTypes.GITOPS &&
+            isGitOpsRepoNotConfigured &&
+            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
+
+        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
+            isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
+
+        if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
+        }
+        if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
+            setGitOpsRepoConfiguredWarning({
+                show: true,
+                text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
+            })
+        }
+
+        if (
+            gitOpsRepoNotConfiguredAndOptionsHidden ||
+            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
+            isGitOpsRepoNotConfiguredAndOptionsVisible
+        ) {
+            return true
+        }
+        return false
+    }
+
     const savePipeline = () => {
+        if (checkForGitOpsRepoNotConfigured()) {
+            return
+        }
         const isUnique = checkUniqueness(formData, true)
         if (!isUnique) {
             toast.error('All task names must be unique')
@@ -778,13 +843,21 @@ export default function NewCDPipeline({
                 }
             })
             .catch((error: ServerErrors) => {
-                showError(error)
                 setLoadingData(false)
+                if (error.code === 409) {
+                    setReloadNoGitOpsRepoConfiguredModal(true)
+                } else {
+                    showError(error)
+                }
             })
     }
 
     const hideDeleteModal = () => {
         setShowDeleteModal(false)
+    }
+
+    const handleCloseModal = () => {
+        setReloadNoGitOpsRepoConfiguredModal(false)
     }
 
     const setForceDeleteDialogData = (serverError) => {
@@ -960,6 +1033,7 @@ export default function NewCDPipeline({
             savedCustomTagPattern,
             selectedCDStageTypeValue,
             setSelectedCDStageTypeValue,
+            setReloadNoGitOpsRepoConfiguredModal,
         }
     }, [
         formData,
@@ -1031,6 +1105,8 @@ export default function NewCDPipeline({
                                     isWebhookCD={isWebhookCD}
                                     dockerRegistries={dockerRegistries}
                                     envIds={envIds}
+                                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1090,6 +1166,20 @@ export default function NewCDPipeline({
                         )}
                     </div>
                 )}
+
+                {reloadNoGitOpsRepoConfiguredModal && (
+                    <ReloadNoGitOpsRepoConfiguredModal closePopup={handleCloseModal} reload={reloadAppConfig} />
+                )}
+
+                {gitOpsRepoConfiguredWarning.show && (
+                    <NoGitOpsRepoConfiguredWarning
+                        closePopup={handleShowGitOpsRepoConfiguredWarning}
+                        appId={+appId}
+                        text={gitOpsRepoConfiguredWarning.text}
+                        reload={reloadAppConfig}
+                    />
+                )}
+
                 {cdPipelineId && showDeleteModal && (
                     <DeleteCDNode
                         deleteDialog={deleteDialog}

@@ -2,7 +2,13 @@ import { URLS, DOCUMENTATION } from '../../../../config'
 import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
 
 // stage: last configured stage
-export const isUnlocked = (stage: string): AppStageUnlockedType => {
+const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
+    stage === STAGE_NAME.CI_PIPELINE ||
+    (isGitOpsConfigurationRequired ? stage === STAGE_NAME.GITOPS_CONFIG : stage === STAGE_NAME.DEPLOYMENT_TEMPLATE) ||
+    stage === STAGE_NAME.CD_PIPELINE ||
+    stage === STAGE_NAME.CHART_ENV_CONFIG
+
+export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolean): AppStageUnlockedType => {
     return {
         material:
             stage === STAGE_NAME.APP ||
@@ -10,6 +16,7 @@ export const isUnlocked = (stage: string): AppStageUnlockedType => {
             stage === STAGE_NAME.CI_CONFIG ||
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+            stage === STAGE_NAME.GITOPS_CONFIG ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
         dockerBuildConfig:
@@ -17,44 +24,43 @@ export const isUnlocked = (stage: string): AppStageUnlockedType => {
             stage === STAGE_NAME.CI_CONFIG ||
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+            stage === STAGE_NAME.GITOPS_CONFIG ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
         deploymentTemplate:
             stage === STAGE_NAME.CI_CONFIG ||
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+            stage === STAGE_NAME.GITOPS_CONFIG ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
-        workflowEditor:
+        gitOpsConfig:
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+            stage === STAGE_NAME.GITOPS_CONFIG ||
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
-        configmap:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        secret:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        envOverride:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
+        workflowEditor: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        configmap: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        secret: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+        envOverride: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
     }
 }
 
-export const getCompletedStep = (isUnlocked: AppStageUnlockedType, isJobView: boolean): number => {
+export const getCompletedStep = (
+    isUnlocked: AppStageUnlockedType,
+    isJobView: boolean,
+    isGitOpsConfigurationRequired: boolean,
+): number => {
     if (isJobView) {
         if (isUnlocked.workflowEditor) {
             return 1
         }
     } else {
         if (isUnlocked.workflowEditor) {
+            return isGitOpsConfigurationRequired ? 4 : 3
+        }
+        if (isUnlocked.gitOpsConfig) {
             return 3
         }
         if (isUnlocked.deploymentTemplate) {
@@ -68,8 +74,16 @@ export const getCompletedStep = (isUnlocked: AppStageUnlockedType, isJobView: bo
     return 0
 }
 
-export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJobView: boolean): { navItems } => {
-    const completedSteps = getCompletedStep(isUnlocked, isJobView)
+export const getNavItems = (
+    isUnlocked: AppStageUnlockedType,
+    appId: string,
+    isJobView: boolean,
+    configStatus,
+): { navItems } => {
+    const isGitOpsConfigurationRequired = configStatus.find(
+        (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
+    )?.required
+    const completedSteps = getCompletedStep(isUnlocked, isJobView, isGitOpsConfigurationRequired)
     let navItems = []
     if (isJobView) {
         const completedPercent = completedSteps * 50
@@ -83,6 +97,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                required: true,
             },
             {
                 title: 'Workflow Editor',
@@ -92,6 +107,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                required: true,
             },
             {
                 title: 'ConfigMaps',
@@ -102,6 +118,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 isProtectionAllowed: true,
+                required: true,
             },
             {
                 title: 'Secrets',
@@ -112,6 +129,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 isProtectionAllowed: true,
+                required: true,
             },
             {
                 title: 'Environment Override',
@@ -121,8 +139,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
             },
         ]
     } else {
-        const completedPercent = completedSteps * 25
-
+        const completedPercent = completedSteps * (isGitOpsConfigurationRequired ? 20 : 25)
         navItems = [
             {
                 title: 'Git Repository',
@@ -132,6 +149,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                required: true,
             },
             {
                 title: 'Build Configuration',
@@ -141,6 +159,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                required: true,
             },
             {
                 title: 'Base Deployment Template',
@@ -151,6 +170,16 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 isProtectionAllowed: true,
+                required: true,
+            },
+            {
+                title: 'GitOps Configuration',
+                href: `/app/${appId}/edit/gitops-config`,
+                stage: STAGE_NAME.GITOPS_CONFIG,
+                isLocked: !isUnlocked.gitOpsConfig,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+                required: isGitOpsConfigurationRequired,
             },
             {
                 title: 'Workflow Editor',
@@ -160,6 +189,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
+                required: true,
             },
             {
                 title: 'ConfigMaps',
@@ -170,6 +200,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 isProtectionAllowed: true,
+                required: true,
             },
             {
                 title: 'Secrets',
@@ -180,6 +211,7 @@ export const getNavItems = (isUnlocked: AppStageUnlockedType, appId: string, isJ
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 isProtectionAllowed: true,
+                required: true,
             },
             {
                 title: 'External Links',

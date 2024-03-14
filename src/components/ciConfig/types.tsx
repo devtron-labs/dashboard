@@ -82,7 +82,7 @@ export interface LoadingState {
 }
 
 export interface CIConfigProps {
-    respondOnSuccess: () => void
+    respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
     parentState?: CIConfigParentState
@@ -90,7 +90,6 @@ export interface CIConfigProps {
     updateDockerConfigOverride?: (key, value) => void
     isCDPipeline?: boolean
     isCiPipeline?: boolean
-    navItems?: CustomNavItemsType[]
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
@@ -109,7 +108,7 @@ export interface CIConfigFormProps {
     dockerRegistries: any
     sourceConfig: any
     ciConfig: CiPipelineResult
-    reload: (skipPageReload?: boolean) => Promise<void>
+    reload: (skipPageReload?: boolean, redirection?: boolean) => Promise<void>
     appId: string
     selectedCIPipeline: CIPipelineDataType
     configOverrideView: boolean
@@ -117,7 +116,6 @@ export interface CIConfigFormProps {
     updateDockerConfigOverride: (key: string, value: CIBuildConfigType | boolean | string) => void
     isCDPipeline: boolean
     isCiPipeline: boolean
-    navItems: CustomNavItemsType[]
     parentState: CIConfigParentState
     setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     loadingStateFromParent?: LoadingState

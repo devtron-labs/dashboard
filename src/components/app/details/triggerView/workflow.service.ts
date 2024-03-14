@@ -45,6 +45,7 @@ export const getCreateWorkflows = (
     isJobView: boolean,
     filteredEnvIds?: string,
 ): Promise<{
+    isGitOpsRepoNotConfigured: boolean
     appName: string
     workflows: WorkflowType[]
     filteredCIPipelines
@@ -62,6 +63,7 @@ const getInitialWorkflows = (
     isJobView?: boolean,
     filteredEnvIds?: string,
 ): Promise<{
+    isGitOpsRepoNotConfigured: boolean
     appName: string
     workflows: WorkflowType[]
     filteredCIPipelines
@@ -169,6 +171,7 @@ export function processWorkflow(
     appName: string
     workflows: Array<WorkflowType>
     filteredCIPipelines
+    isGitOpsRepoNotConfigured: boolean
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
 } {
@@ -263,8 +266,14 @@ export function processWorkflow(
             acc[ciPipeline.id] = ciPipeline
             return acc
         }, {})
-
-    return { appName, workflows, filteredCIPipelines, cachedCDConfigResponse: cdResponse, blackListedCI }
+    return {
+        appName,
+        isGitOpsRepoNotConfigured: workflow.isGitOpsRepoNotConfigured,
+        workflows,
+        filteredCIPipelines,
+        cachedCDConfigResponse: cdResponse,
+        blackListedCI,
+    }
 }
 
 function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimensions: WorkflowDimensions) {
@@ -634,6 +643,7 @@ function cdPipelineToNode(
             y: 0,
             isRoot: false,
             helmPackageName: cdPipeline?.helmPackageName || '',
+            isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         } as CommonNodeAttr
         stageIndex++
     }
@@ -682,6 +692,7 @@ function cdPipelineToNode(
         deploymentAppType: cdPipeline.deploymentAppType,
         helmPackageName: cdPipeline?.helmPackageName || '',
         isLast,
+        isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         deploymentAppCreated: cdPipeline?.deploymentAppCreated,
     } as CommonNodeAttr
     stageIndex++
@@ -721,6 +732,7 @@ function cdPipelineToNode(
             y: 0,
             isRoot: false,
             helmPackageName: cdPipeline?.helmPackageName || '',
+            isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         } as CommonNodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {

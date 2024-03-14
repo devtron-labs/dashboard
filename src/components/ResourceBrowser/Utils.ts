@@ -5,7 +5,7 @@ import { eventAgeComparator } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType } from './Types'
+import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 
 const updatePersistedTabsData = (key: string, value: any) => {
     try {
@@ -216,4 +216,75 @@ export const getScrollableResourceClass = (
         _className += ' sync-error'
     }
     return _className
+}
+
+/* This is a utility function used in #convertK8sObjectMapToOptionsList */
+const newK8sObjectOption = (
+    label: string,
+    gvk: GVKType,
+    namespaced: boolean,
+    grouped: boolean,
+    groupName: string,
+): K8sObjectOptionType => {
+    return {
+        label,
+        value: gvk.Group || K8S_EMPTY_GROUP,
+        dataset: {
+            group: gvk.Group,
+            version: gvk.Version,
+            kind: gvk.Kind,
+            namespaced: `${namespaced}`,
+            grouped: `${grouped}`,
+        },
+        groupName,
+    }
+}
+
+export const convertK8sObjectMapToOptionsList = (
+    k8SObjectMap: Map<string, K8SObjectMapType>,
+): K8sObjectOptionType[] => {
+    const _k8sObjectOptionsList = []
+
+    /* NOTE: we will map through all objects and their children to create the options
+     * The options will be provided as a flat list but the groupings and heirarchies
+     * of the options will be decided based on the heirarchy of the @k8SObjectMap
+     * hence the complexity. Please refer mentioned types to untangle the complexity */
+    k8SObjectMap?.forEach((k8sObject: K8SObjectMapType) => {
+        const { child }: { child: Map<string, K8SObjectChildMapType> } = k8sObject
+
+        child.forEach((k8sObjectChild: K8SObjectChildMapType, key: string) => {
+            switch (key.toLowerCase()) {
+                /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                    )
+                    break
+
+                /* this is a special item in the sidebar added based on presence of a key */
+                case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
+                    _k8sObjectOptionsList.push(
+                        newK8sObjectOption(SIDEBAR_KEYS.events, SIDEBAR_KEYS.eventGVK, true, false, ''),
+                    )
+                    break
+
+                default:
+                    k8sObjectChild.data.forEach((data: ApiResourceGroupType) => {
+                        _k8sObjectOptionsList.push(
+                            newK8sObjectOption(
+                                data.gvk.Kind,
+                                data.gvk,
+                                data.namespaced,
+                                k8sObject.child.size > 1,
+                                k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                            ),
+                        )
+                    })
+            }
+        })
+    })
+
+    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, SIDEBAR_KEYS.nodeGVK, false, false, ''))
+
+    return _k8sObjectOptionsList
 }

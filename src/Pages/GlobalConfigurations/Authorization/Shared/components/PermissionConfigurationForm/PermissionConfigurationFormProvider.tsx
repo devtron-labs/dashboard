@@ -48,8 +48,14 @@ export const PermissionConfigurationFormProvider = ({
     /**
      * Sorts the groups alphabetically by name
      */
-    const setUserGroups = (groups: User['userRoleGroups']) => {
-        _setUserGroups(groups.sort((a, b) => a.name.localeCompare(b.name)))
+    const setUserGroups = (groups: User['userRoleGroups'] | React.SetStateAction<User['userRoleGroups']>) => {
+        _setUserGroups((currentGroups) => {
+            // Determine the nextState
+            const nextState = (typeof groups === 'function' ? groups(currentGroups) : groups).sort((a, b) =>
+                a.name.localeCompare(b.name),
+            )
+            return nextState
+        })
     }
 
     useEffect(() => {
@@ -66,8 +72,8 @@ export const PermissionConfigurationFormProvider = ({
         // Not required if the user level timeToLive is less than the permission level timeToLive
         // Note: Not updating for chart permissions since the status is read only
         if (updatedStatus === UserStatus.inactive) {
-            setUserGroups(
-                userGroups.map((userGroup) => ({
+            setUserGroups((_userGroups) =>
+                _userGroups.map((userGroup) => ({
                     ...userGroup,
                     ...changeStatusToInactiveIfTemporary(userGroup.status, userGroup.timeToLive),
                 })),

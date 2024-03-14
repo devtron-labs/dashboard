@@ -559,7 +559,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -612,7 +612,7 @@ export default function CIPipeline({
             {
                 ...formData,
                 materials: _materials,
-                scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
+                scanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.scanEnabled : false,
             },
             _ciPipeline,
             _materials,
