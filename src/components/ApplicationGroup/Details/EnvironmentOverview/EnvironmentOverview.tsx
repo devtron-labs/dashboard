@@ -179,7 +179,7 @@ export default function EnvironmentOverview({
             appInfoList: [],
         }
 
-        data?.apps?.forEach((app, index) => {
+        data?.apps?.forEach((app) => {
             const appInfo = {
                 appId: app.appId,
                 application: app.appName,
