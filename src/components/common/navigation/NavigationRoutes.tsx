@@ -370,7 +370,7 @@ export default function NavigationRoutes() {
                                     >
                                         <ResourceBrowserList />
                                     </Route>
-                                    <Route path={`${URLS.RESOURCE_BROWSER}`} exact>
+                                    <Route path={URLS.RESOURCE_BROWSER} exact>
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
