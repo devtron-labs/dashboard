@@ -273,7 +273,7 @@ export default function EnvironmentOverview({
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
-                    <div className="cn-7 fs-14 flexbox">
+                    <div className="cn-7 fs-14 lh-20 flexbox">
                         <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
                             <div
                                 className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor"
@@ -286,7 +286,7 @@ export default function EnvironmentOverview({
                                     </div>
                                 ) : (
                                     <>
-                                        <div>...</div>
+                                        <div>…</div>
                                         <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
                                             {item.lastDeployedImage.split(':').at(-1)}
                                         </div>

@@ -203,7 +203,7 @@ export const EnvironmentList = ({
                                                     {_env.environmentName}
                                                 </Link>
                                                 {_env.lastDeployedImage ? (
-                                                    <div className="cn-7 fs-14 flexbox">
+                                                    <div className="cn-7 fs-14 lh-20 flexbox">
                                                         <Tippy
                                                             content={_env.lastDeployedImage}
                                                             className="default-tt"
@@ -220,7 +220,7 @@ export const EnvironmentList = ({
                                                                     </div>
                                                                 ) : (
                                                                     <>
-                                                                        <div>...</div>
+                                                                        <div>…</div>
                                                                         <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
                                                                             {_env.lastDeployedImage.split(':').at(-1)}
                                                                         </div>
