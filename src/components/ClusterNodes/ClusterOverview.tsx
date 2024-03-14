@@ -10,7 +10,7 @@ import {
     ClipboardButton,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
+import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType, ClusterCapacityType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
@@ -30,12 +30,8 @@ const Catalog = importComponentFromFELibrary('Catalog')
 
 function ClusterOverview({
     isSuperAdmin,
-    clusterCapacityData,
-    setClusterErrorTitle,
     setSelectedResource,
-    setClusterCapacityData,
     selectedCluster,
-    setSelectedCluster,
     sideDataAbortController,
 }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
@@ -58,6 +54,7 @@ function ClusterOverview({
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
+    const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -186,7 +183,6 @@ function ClusterOverview({
                         errorType: _nodeError,
                         filterText: clusterCapacityResponse.value.result.nodeErrors[_nodeError],
                     })
-                    setClusterErrorTitle(_errorTitle)
                     setClusterErrorList(_errorList)
                 }
             }
@@ -561,9 +557,7 @@ function ClusterOverview({
                     <ConnectingToClusterState
                         loader={isLoading}
                         errorMsg={errorMsg}
-                        setErrorMsg={setErrorMsg}
                         selectedCluster={selectedCluster}
-                        setSelectedCluster={setSelectedCluster}
                         handleRetry={handleRetry}
                         sideDataAbortController={sideDataAbortController}
                     />

@@ -3,6 +3,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
+import { useTabs } from '../common/DynamicTabs'
 
 export interface ResourceDetailType {
     headers: string[]
@@ -110,38 +111,30 @@ export interface SidebarType {
     handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
     isCreateModalOpen: boolean
+    updateTabUrl: ReturnType<typeof useTabs>['updateTabUrl']
     isClusterError?: boolean
 }
 
 export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
-    selectedCluster?: OptionType
+    selectedCluster?: OptionType | ClusterOptionType
     namespaceOptions: OptionType[]
     selectedNamespace: OptionType
-    setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
     hideSearchInput?: boolean
     searchText: string
     setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchApplied: boolean
-    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
-    clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
     renderCallBackSync?: () => JSX.Element
-    syncError?: boolean
 }
 
-export interface K8SResourceListType extends ResourceFilterOptionsProps {
-    filteredResourceList: Record<string, any>[]
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'handleFilterChanges'> {
     noResults: boolean
     resourceListLoader: boolean
-    getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     isCreateModalOpen: boolean
     addTab: (
         idPrefix: string,
@@ -152,13 +145,13 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
         iconPath?: string,
     ) => boolean
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
+    syncError: boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
     removeTabByIdentifier?: (id: string) => string
 }
@@ -167,7 +160,6 @@ export interface DeleteResourcePopupType {
     clusterId: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: (id: string) => string
 }
@@ -196,9 +188,7 @@ export interface ClusterOptionType extends OptionType {
 export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
-    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
     handleRetry: (e) => void
     sideDataAbortController: {
         prev: AbortController

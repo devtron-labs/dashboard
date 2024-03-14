@@ -27,8 +27,7 @@ export default function NodeDetailsList({
     renderCallBackSync,
     addTab,
     syncError,
-    lastDataSync,
-    setLastDataSync,
+    setLastDataSyncTimeString,
 }) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -213,7 +212,7 @@ export default function NodeDetailsList({
                     })
                     setFlattenNodeList(_flattenNodeList)
                 }
-                setLastDataSync(!lastDataSync)
+                setLastDataSyncTimeString(Date())
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {

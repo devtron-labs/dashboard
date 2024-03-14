@@ -9,9 +9,7 @@ import { URLS } from '../../../config'
 export default function ConnectingToClusterState({
     loader,
     errorMsg,
-    setErrorMsg,
     selectedCluster,
-    setSelectedCluster,
     handleRetry,
     sideDataAbortController,
 }: ConnectingToClusterStateProps) {
@@ -68,7 +66,6 @@ export default function ConnectingToClusterState({
     const resetStates = () => {
         setInfoText(TRYING_TO_CONNECT)
         setShowCancel(false)
-        setErrorMsg('')
         setResetProgress(!resetProgress)
     }
 
@@ -76,7 +73,6 @@ export default function ConnectingToClusterState({
         sideDataAbortController.new.abort()
         sideDataAbortController.prev = sideDataAbortController.new
         resetStates()
-        setSelectedCluster(null)
         replace({
             pathname: URLS.RESOURCE_BROWSER,
         })

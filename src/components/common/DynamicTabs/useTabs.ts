@@ -71,7 +71,7 @@ export function useTabs(persistanceKey: string) {
             _id,
             title,
             url,
-            idx === 0,
+            _initTab.isSelected,
             title,
             _initTab.positionFixed,
             _initTab.iconPath,
@@ -289,6 +289,25 @@ export function useTabs(persistanceKey: string) {
         return isTabFound
     }
 
+    const markTabActiveById = (id: string) => {
+        let isTabFound = false
+
+        setTabs((prevTabs) => {
+            const _tabs = prevTabs.map((tab) => {
+                tab.isSelected = false
+                if (tab.id === id) {
+                    tab.isSelected = true
+                    isTabFound = true
+                }
+                return tab
+            })
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            return _tabs
+        })
+
+        return isTabFound
+    }
+
     /**
      * This function marks a tab as deleted by its identifier.
      *
@@ -342,6 +361,7 @@ export function useTabs(persistanceKey: string) {
         addTab,
         removeTabByIdentifier,
         markTabActiveByIdentifier,
+        markTabActiveById,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
         stopTabByIdentifier,

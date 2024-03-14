@@ -33,13 +33,14 @@ let interval
 const DynamicTabs = ({
     tabs,
     removeTabByIdentifier,
+    markTabActiveById,
     stopTabByIdentifier,
     enableShortCut,
     shortcut,
     refreshData,
     loader,
     isOverview,
-    lastDataSync,
+    lastDataSyncTimeString,
     setLastDataSyncTimeString,
     isStaleDataRef,
 }: DynamicTabsProps & IWithShortcut) => {
@@ -71,7 +72,7 @@ const DynamicTabs = ({
             setTimeElapsedLastSync('')
             clearInterval(interval)
         }
-    }, [lastDataSync])
+    }, [lastDataSyncTimeString])
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
@@ -146,6 +147,10 @@ const DynamicTabs = ({
         )
     }
 
+    const markTabActiveOnClickFactory = (tab: DynamicTabType) => (
+        () => markTabActiveById(tab.id)
+    )
+
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
 
@@ -156,6 +161,7 @@ const DynamicTabs = ({
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
                     }`}
+                    onClick={markTabActiveOnClickFactory(tab)}
                 >
                     <ConditionalWrap
                         condition={!isFixed}

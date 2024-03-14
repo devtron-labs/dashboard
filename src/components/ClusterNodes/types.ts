@@ -183,9 +183,8 @@ export interface ClusterListType {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSync: boolean
+    lastDataSyncTimeString: string
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -399,12 +398,8 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
-    clusterCapacityData: ClusterCapacityType
-    setClusterErrorTitle: React.Dispatch<React.SetStateAction<string>>
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    setClusterCapacityData: React.Dispatch<React.SetStateAction<ClusterCapacityType>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
     sideDataAbortController: {
         prev: AbortController
         new: AbortController

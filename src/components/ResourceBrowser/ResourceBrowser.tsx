@@ -6,7 +6,7 @@ import { sortObjectArrayAlphabetically } from '../common'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from './Constants'
 import { URLS } from '../../config'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
-import { getClusterList } from '../ClusterNodes/clusterNodes.service'
+import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import './ResourceBrowser.scss'
@@ -31,9 +31,9 @@ const ResourceBrowser: React.FC<Record<string, never>> = () => {
 
     /* this list is to be used by ClusterSelectionList to refresh on demand;
      * thus not immediately fetching results, it will only run when reloadClusterList is called */
-    const [clusterListLoading, clusterList, clusterListError, reloadClusterList] = useAsync(getClusterList, [], false)
+    const [clusterListLoading, clusterList, clusterListError, reloadClusterList] = useAsync(getClusterList)
     const [initialLoading, data, error] = useAsync(() =>
-        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? null : getUserRole()]),
+        Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
     )
     /* transpose the data */
     const [clusterListData, userRoleData] = data || []

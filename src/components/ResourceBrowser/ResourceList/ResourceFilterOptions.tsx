@@ -21,14 +21,10 @@ const ResourceFilterOptions = ({
     resourceList,
     namespaceOptions,
     selectedNamespace,
-    setSelectedNamespace,
     hideSearchInput,
     searchText,
     setSearchText,
-    searchApplied,
-    setSearchApplied,
     handleFilterChanges,
-    clearSearch,
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
@@ -40,7 +36,7 @@ const ResourceFilterOptions = ({
     const { namespace } = useParams<{
         namespace: string
     }>()
-    const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
+    const [showShortcutKey, setShowShortcutKey] = useState(!!searchText)
     const searchInputRef = useRef<HTMLInputElement>(null)
     useEffect(() => {
         if (!isCreateModalOpen) {
@@ -61,11 +57,8 @@ const ResourceFilterOptions = ({
         const _key = e.key
         if (_key === 'Escape' || _key === 'Esc') {
             searchInputRef.current?.blur()
-        } else if (_key === 'Backspace' && searchText.length === 0) {
-            clearSearch()
         } else {
             handleFilterChanges(e.currentTarget.value, resourceList, true)
-            setSearchApplied(!!e.currentTarget.value)
         }
     }
 
@@ -77,7 +70,6 @@ const ResourceFilterOptions = ({
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        setSelectedNamespace(selected)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
         })
@@ -93,7 +85,7 @@ const ResourceFilterOptions = ({
     }
 
     const clearSearchInput = () => {
-        clearSearch()
+        setSearchText('')
         searchInputRef.current?.focus()
     }
 
@@ -121,7 +113,7 @@ const ResourceFilterOptions = ({
                             disabled={isSearchInputDisabled}
                             data-testid="search-input-for-resource"
                         />
-                        {searchApplied && (
+                        {!!searchText && (
                             <button className="search__clear-button" type="button" onClick={clearSearchInput}>
                                 <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                             </button>
