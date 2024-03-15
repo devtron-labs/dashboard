@@ -4,18 +4,20 @@ import LinkedCIDetailsModal from './LinkedCIDetailsModal'
 import { URLS } from '../../../config'
 import { LinkedCIDetailsModalProps } from './types'
 
-const LinkedCIModalRoute = ({ title, linkedAppCount }: LinkedCIDetailsModalProps) => {
+const LinkedCIDetails = ({ ciPipelineName, linkedWorkflowCount }: LinkedCIDetailsModalProps) => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
             <Route
                 path={`${path}/${URLS.LINKED_CI_DETAILS}/:ciPipelineId`}
-                render={() => <LinkedCIDetailsModal title={title} linkedAppCount={linkedAppCount} />}
+                render={() => (
+                    <LinkedCIDetailsModal ciPipelineName={ciPipelineName} linkedWorkflowCount={linkedWorkflowCount} />
+                )}
                 exact
             />
         </Switch>
     )
 }
 
-export default LinkedCIModalRoute
+export default LinkedCIDetails

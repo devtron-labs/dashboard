@@ -1,4 +1,10 @@
 export interface LinkedCIDetailsModalProps {
-    title: string
-    linkedAppCount: number
+    ciPipelineName: string
+    linkedWorkflowCount: number
+}
+export interface LinkedCIAppListDto {
+    appName: string
+    environment: string
+    triggerMode: string
+    deploymentStatus: string
 }
