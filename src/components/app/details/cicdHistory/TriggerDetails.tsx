@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
 import {
-    showError,
     Progressing,
     ConfirmationDialog,
     not,
     TippyTheme,
-    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -37,23 +35,35 @@ import { TIMEOUT_VALUE, WORKER_POD_BASE_URL } from './Constants'
 
 const DeploymentHistoryTriggerMetaText = importComponentFromFELibrary('DeploymentHistoryTriggerMetaText')
 
-const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
-    return (
-        <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-            <circle
-                cx="12.5"
-                cy="74.5"
-                r="6"
-                fill={colorMap[status]}
-                stroke={colorMap[status]}
-                strokeWidth="12"
-                strokeOpacity="0.3"
-            />
-            <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-        </svg>
-    )
-})
+const TriggerDetailsStatusIcon = React.memo(
+    ({ status, isDeploymentWindowInfo }: TriggerDetailsStatusIconType): JSX.Element => {
+        let viewBox = '0 0 25 87',
+            height = '87',
+            cyEndCircle = '74.5',
+            y2Line = '69'
+        if (isDeploymentWindowInfo) {
+            viewBox = '0 0 25 118'
+            height = '118'
+            cyEndCircle = '105'
+            y2Line = '100'
+        }
+        return (
+            <svg width="25" height={height} viewBox={viewBox} fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+                <circle
+                    cx="12.5"
+                    cy={cyEndCircle}
+                    r="6"
+                    fill={colorMap[status]}
+                    stroke={colorMap[status]}
+                    strokeWidth="12"
+                    strokeOpacity="0.3"
+                />
+                <line x1="12.5" y1="11.9997" x2="12.5362" y2={y2Line} stroke="#3B444C" />
+            </svg>
+        )
+    },
+)
 
 export const TriggerDetails = React.memo(
     ({
@@ -77,7 +87,10 @@ export const TriggerDetails = React.memo(
         return (
             <div className="trigger-details">
                 <div className="flex">
-                    <TriggerDetailsStatusIcon status={status?.toLowerCase()} />
+                    <TriggerDetailsStatusIcon
+                        status={status?.toLowerCase()}
+                        isDeploymentWindowInfo={!!(triggerMetadata && DeploymentHistoryTriggerMetaText)}
+                    />
                 </div>
                 <div className="trigger-details__summary">
                     <StartDetails
