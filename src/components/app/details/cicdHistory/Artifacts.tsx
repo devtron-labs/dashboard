@@ -254,7 +254,8 @@ export const CIListItem = ({
         CIListHeader = importComponentFromFELibrary('CIListHeader')
     }
 
-    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length || !!promotionApprovalMetadata
+    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length || !!promotionApprovalMetadata?.promotedFromType
+
     return (
         <>
             {type === 'deployed-artifact' && (
