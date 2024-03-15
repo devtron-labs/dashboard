@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
 import {
     showError,
@@ -7,7 +7,6 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useSearchString,
-    ACTION_STATE,
     MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
