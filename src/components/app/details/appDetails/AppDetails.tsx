@@ -166,24 +166,20 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         return []
     }, [filteredEnvIds, otherEnvsResult])
 
-    const onCloseHideDeploymentWindowConfirmationModal = () => {
-        setShowDeploymentWindowConfirmation(false)
-    }
-
     useEffect(() => {
         if (!params.envId) {
             return
         }
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
-        // Need a sync for resource confirmation deletion modal in node delete component 
+        // Need a sync for resource confirmation deletion modal in node delete component
         if (getDeploymentWindowProfileMetaData) {
             const { userActionState } = getDeploymentWindowProfileMetaData(params.appId, params.envId)
             if (userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
             }
         }
-    }, [params.envId, showDeploymentWindowConfirmation])
+    }, [params.envId])
 
     const renderAppNotConfigured = () => {
         return (
@@ -230,7 +226,6 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
                     filteredEnvIds={filteredEnvIds}
-                    onCloseHideDeploymentWindowConfirmationModal={onCloseHideDeploymentWindowConfirmationModal}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -251,7 +246,6 @@ export const Details: React.FC<DetailsType> = ({
     isAppDeleted,
     isVirtualEnvRef,
     isDeploymentBlocked,
-    onCloseHideDeploymentWindowConfirmationModal
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -644,7 +638,6 @@ export const Details: React.FC<DetailsType> = ({
                 monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp
                 isDeploymentBlocked={isDeploymentBlocked}
-                onCloseHideDeploymentWindowConfirmationModal={onCloseHideDeploymentWindowConfirmationModal}
             />
         )
     }
@@ -656,7 +649,7 @@ export const Details: React.FC<DetailsType> = ({
         return 'Restore App'
     }
 
-    const handleHibernateConfimattionModalClose = (e) => {
+    const handleHibernateConfirmationModalClose = (e) => {
         e.stopPropagation()
         setHibernateConfirmationModal('')
         setRotateModal(false)
@@ -666,7 +659,7 @@ export const Details: React.FC<DetailsType> = ({
         if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             return (
                 <DeploymentWindowConfirmationDialog
-                    onClose={handleHibernateConfimattionModalClose}
+                    onClose={handleHibernateConfirmationModalClose}
                     isLoading={hibernating}
                     type={hibernateConfirmationModal === 'hibernate' ? MODAL_TYPE.HIBERNATE : MODAL_TYPE.RESTORE}
                     onClickActionButton={handleHibernate}
@@ -704,7 +697,7 @@ export const Details: React.FC<DetailsType> = ({
                     <button
                         className="cta cancel"
                         disabled={hibernating}
-                        onClick={handleHibernateConfimattionModalClose}
+                        onClick={handleHibernateConfirmationModalClose}
                     >
                         Cancel
                     </button>
@@ -725,7 +718,7 @@ export const Details: React.FC<DetailsType> = ({
         if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             return (
                 <DeploymentWindowConfirmationDialog
-                    onClose={handleHibernateConfimattionModalClose}
+                    onClose={handleHibernateConfirmationModalClose}
                     isLoading={hibernating}
                     type={MODAL_TYPE.RESTART}
                     onClickActionButton={handleHibernate}

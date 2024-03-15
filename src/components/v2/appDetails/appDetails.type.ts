@@ -515,7 +515,6 @@ export interface NodeTreeDetailTabProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     isDeploymentBlocked?: boolean
-    onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 
 export interface K8ResourceComponentProps {
@@ -527,7 +526,6 @@ export interface K8ResourceComponentProps {
     isExternalApp?: boolean
     isDevtronApp?: boolean
     isDeploymentBlocked?: boolean
-    onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 
 export interface NodeComponentProps {
@@ -537,7 +535,6 @@ export interface NodeComponentProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     isDeploymentBlocked?: boolean
-    onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
@@ -552,5 +549,4 @@ export interface NodeDeleteComponentType {
     nodeDetails: Node
     appDetails: AppDetails
     isDeploymentBlocked: boolean
-    onCloseHideDeploymentWindowConfirmationModal: () => void
 }

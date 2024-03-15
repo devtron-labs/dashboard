@@ -29,7 +29,6 @@ const NodeComponent = ({
     isDevtronApp,
     isExternalApp,
     isDeploymentBlocked,
-    onCloseHideDeploymentWindowConfirmationModal,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -509,9 +508,6 @@ const NodeComponent = ({
                                         nodeDetails={node}
                                         appDetails={appDetails}
                                         isDeploymentBlocked={isDeploymentBlocked}
-                                        onCloseHideDeploymentWindowConfirmationModal={
-                                            onCloseHideDeploymentWindowConfirmationModal
-                                        }
                                     />
                                 </div>
                             )}
