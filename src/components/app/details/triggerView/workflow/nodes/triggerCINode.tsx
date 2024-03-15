@@ -8,7 +8,7 @@ import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
-import LinkedCIDetails from '../../../../../../Pages/Shared/LinkedCIDetailsModal/LinkedCIDetails'
+import LinkedCIDetail from '../../../../../../Pages/Shared/index'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -68,8 +68,8 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         )
     }
 
-    // function to open linked-ci-details modal on chip click
     handleLinkedCIWorkflowChipClick = (e) => {
+        // stopPropagation to stop redirection to ci-details
         e.stopPropagation()
         this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
@@ -137,7 +137,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                             className="default-tt w-200"
                             arrow={false}
                             placement="top"
-                            content={`Build Pipeline is linked as image source in ${this.props.linkedCount} ${this.props.linkedCount === 1 ? 'workflow.' : 'workflows.'}`}
+                            content={`This build pipeline is linked as image source in ${this.props.linkedCount} ${this.props.linkedCount === 1 ? 'workflow' : 'workflows'}.`}
                         >
                             <span className="link-count" onClick={this.handleLinkedCIWorkflowChipClick}>
                                 <img src={link} className="icon-dim-12 mr-5" alt="" />
@@ -160,7 +160,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         <div className="workflow-node__full-width-minus-Icon">
                             {!this.props.isJobView && (
                                 <span className="workflow-node__text-light">
-                                    {this.props.isJobCI ? ' Job ' : ' Build '}
+                                    {this.props.isJobCI ? 'Job' : 'Build'}
                                 </span>
                             )}
                             <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
@@ -197,7 +197,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         </button>
                     </div>
                 </div>
-                <LinkedCIDetails ciPipelineName={this.props.title} linkedWorkflowCount={this.props.linkedCount} />
+                <LinkedCIDetail
+                    ciPipelineName={this.props.title}
+                    ciPipelineId={this.props.id}
+                    linkedWorkflowCount={this.props.linkedCount}
+                    onCloseUrl={this.props.match.url}
+                />
             </>
         )
     }
