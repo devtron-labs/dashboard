@@ -9,7 +9,6 @@
 | HOTJAR_ENABLED                     | "false"   | Hotjar integration status                      |
 | POSTHOG_ENABLED                    | "true"    | PostHog integration status                     |
 | POSTHOG_TOKEN                      | XXXXXXXX  | PostHog API token                        |
-| SENTRY_ENABLED                     | "false"   | Sentry integration status                      |
 | SENTRY_ENV                         | stage     | Sentry environment                              |
 | SENTRY_ERROR_ENABLED               | false     |  To send uncaught errors to sentry             |
 | SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      |
