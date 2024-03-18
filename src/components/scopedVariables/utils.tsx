@@ -1,7 +1,7 @@
 // @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
-import { FileReaderStatus, ValidatorType, FileDataType } from '../common/hooks/types'
+import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,

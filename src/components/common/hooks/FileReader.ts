@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
 import { getFileMimeType } from '../../scopedVariables/utils'
