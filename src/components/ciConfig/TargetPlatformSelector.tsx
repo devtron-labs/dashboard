@@ -52,7 +52,7 @@ const TargetPlatformSelector = ({
                     />
                 )}
                 <div className="flex left column w-100">
-                    <components.Option className="w-100 option-label-padding" {...props} />
+                    <components.Option className="w-100" {...props} />
                 </div>
             </div>
         )
