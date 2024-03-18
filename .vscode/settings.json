@@ -1,0 +1,24 @@
+{
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": [
+        "source.fixAll.eslint"
+    ],
+    "eslint.validate": [
+        "typescript",
+        "typescriptreact"
+    ],
+    "prettier.requireConfig": true,
+    "[scss]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+}

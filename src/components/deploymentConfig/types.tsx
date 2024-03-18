@@ -71,9 +71,8 @@ export interface ConfigMapRequest {
 }
 
 export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps {
-    respondOnSuccess?: () => void
+    respondOnSuccess?: (redirection: boolean) => void
     isUnSet: boolean
-    navItems: CustomNavItemsType[]
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean

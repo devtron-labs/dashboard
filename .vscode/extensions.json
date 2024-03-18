@@ -1,0 +1,23 @@
+{
+    "recommendations": [
+        "formulahendry.auto-rename-tag",
+        "chouzz.vscode-better-align",
+        "aaron-bond.better-comments",
+        "streetsidesoftware.code-spell-checker",
+        "pranaygp.vscode-css-peek",
+        "usernamehw.errorlens",
+        "dbaeumer.vscode-eslint",
+        "dsznajder.es7-react-js-snippets",
+        "naumovs.color-highlight",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "vincaslt.highlight-matching-tag",
+        "oderwat.indent-rainbow",
+        "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
+        "gencer.html-slim-scss-css-class-completion",
+        "simonsiefke.svg-preview",
+        "shardulm94.trailing-spaces",
+        "chakrounanas.turbo-console-log"
+    ]
+}
