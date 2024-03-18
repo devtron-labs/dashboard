@@ -210,10 +210,10 @@ export const EnvironmentList = ({
                                                             placement="auto"
                                                         >
                                                             <div
-                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 cursor ${lastDeployedClassName}`}
+                                                                className={`env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 cursor max-w-100 ${lastDeployedClassName}`}
                                                                 onClick={openCommitInfoModal}
                                                             >
-                                                                <DockerIcon className="icon-dim-14" />
+                                                                <DockerIcon className="icon-dim-14 mw-14" />
                                                                 {isLastDeployedExpanded ? (
                                                                     <div className="mono dc__ellipsis-left direction-left">
                                                                         {_env.lastDeployedImage}

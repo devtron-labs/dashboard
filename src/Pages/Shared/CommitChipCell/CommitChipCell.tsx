@@ -12,7 +12,7 @@ const CommitChipCell = ({ handleClick, commits }: CommitChipCellProps) => {
                 >
                     <span className="flex dc__gap-4 br-4 pl-6 pr-6 bcb-1">
                         <CommitIcon className="icon-dim-14 dc__no-shrink fcb-5" />
-                        <span>{commits[0].substring(0, 8)}</span>
+                        <span>{commits[0].substring(0, 7)}</span>
                     </span>
                     {commits.length > 1 && <span className="flex br-4 pl-6 pr-6 bcb-1">…</span>}
                 </span>

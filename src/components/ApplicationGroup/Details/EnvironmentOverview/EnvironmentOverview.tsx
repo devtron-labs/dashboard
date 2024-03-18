@@ -147,8 +147,8 @@ export default function EnvironmentOverview({
         handleSorting(EnvironmentOverviewSortableKeys.deployedAt)
     }
 
-    const sortAppListData = () => {
-        setAppListData((_appListData) => ({
+    const sortAndUpdateAppListData = (_appListData) => {
+        setAppListData({
             ..._appListData,
             appInfoList: _appListData.appInfoList.sort((a, b) => {
                 if (sortBy === EnvironmentOverviewSortableKeys.deployedAt) {
@@ -159,14 +159,14 @@ export default function EnvironmentOverview({
                     ? a.application.localeCompare(b.application)
                     : b.application.localeCompare(a.application)
             }),
-        }))
+        })
     }
 
     useEffect(() => {
         if (appListData) {
-            sortAppListData()
+            sortAndUpdateAppListData(appListData)
         }
-    }, [sortBy, sortOrder, JSON.stringify(appListData)])
+    }, [sortBy, sortOrder])
 
     const parseAppListData = (
         data: AppGroupListType,
@@ -195,7 +195,7 @@ export default function EnvironmentOverview({
 
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
 
-        setAppListData(parsedData)
+        sortAndUpdateAppListData(parsedData)
     }
 
     const closePopup = () => {
@@ -276,10 +276,10 @@ export default function EnvironmentOverview({
                     <div className="cn-7 fs-14 lh-20 flexbox">
                         <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
                             <div
-                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor"
+                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor max-w-100"
                                 onClick={openCommitInfoModal}
                             >
-                                <DockerIcon className="icon-dim-14" />
+                                <DockerIcon className="icon-dim-14 mw-14" />
                                 {isLastDeployedExpanded ? (
                                     <div className="mono dc__ellipsis-left direction-left">
                                         {item.lastDeployedImage}
