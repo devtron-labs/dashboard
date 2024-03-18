@@ -2059,7 +2059,7 @@ export default function CDMaterial({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
+            if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
                 setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
