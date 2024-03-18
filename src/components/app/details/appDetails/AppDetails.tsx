@@ -175,7 +175,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         // Need a sync for resource confirmation deletion modal in node delete component
         if (getDeploymentWindowProfileMetaData) {
             const { userActionState } = getDeploymentWindowProfileMetaData(params.appId, params.envId)
-            if (userActionState !== ACTION_STATE.ALLOWED) {
+            if (userActionState === ACTION_STATE.BLOCKED) {
                 setShowDeploymentWindowConfirmation(true)
             }
         }
