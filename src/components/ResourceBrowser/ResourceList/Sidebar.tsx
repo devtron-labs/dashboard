@@ -29,6 +29,7 @@ const Sidebar = ({
     updateResourceSelectionData,
     shortcut,
     isCreateModalOpen,
+    setResourceListText,
 }: SidebarType & IWithShortcut) => {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -98,6 +99,7 @@ const Sidebar = ({
             },
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
+        setResourceListText('')
         setSelectedResource(_selectedResource)
         updateResourceSelectionData(_selectedResource)
 

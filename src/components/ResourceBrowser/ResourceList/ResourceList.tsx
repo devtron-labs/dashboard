@@ -10,6 +10,7 @@ import {
     ErrorScreenManager,
     Reload,
     DevtronProgressing,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import {
@@ -35,7 +36,7 @@ import {
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
 import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
+import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS, SEARCH_QUERY_PARAM_KEY } from '../Constants'
 import { URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
@@ -95,6 +96,7 @@ export default function ResourceList() {
         updateTabUrl,
         stopTabByIdentifier,
     } = useTabs(URLS.RESOURCE_BROWSER)
+    const { searchParams } = useSearchString()
     const [loader, setLoader] = useState(false)
     const [rawGVKLoader, setRawGVKLoader] = useState(false)
     const [clusterLoader, setClusterLoader] = useState(false)
@@ -105,7 +107,7 @@ export default function ResourceList() {
     const [k8SObjectMapRaw, setK8SObjectMapRaw] = useState<Map<string, K8SObjectMapType>>()
     const [resourceList, setResourceList] = useState<ResourceDetailType>()
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
-    const [searchText, setSearchText] = useState('')
+    const [searchText, setSearchText] = useState(searchParams[SEARCH_QUERY_PARAM_KEY] || '')
     const [searchApplied, setSearchApplied] = useState(false)
     const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
     const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])
@@ -315,7 +317,6 @@ export default function ResourceList() {
             !isNodes
         ) {
             selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind && getResourceListData()
-            setSearchText('')
             setSearchApplied(false)
         } else if (isNodes) {
             setResourceListLoader(false)
@@ -984,6 +985,7 @@ export default function ResourceList() {
                     updateResourceSelectionData={updateResourceSelectionData}
                     isCreateModalOpen={showCreateResourceModal}
                     isClusterError={!!clusterErrorTitle}
+                    setResourceListText={setSearchText}
                 />
                 {renderListBar()}
             </div>
