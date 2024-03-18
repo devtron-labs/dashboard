@@ -5,7 +5,7 @@ import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
-import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
+import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
@@ -27,6 +27,7 @@ export default function TerminalView({
     dataTestId,
 }: TerminalViewType) {
     const socket = useRef(null)
+    const termDiv = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
@@ -42,7 +43,13 @@ export default function TerminalView({
         }
     }
 
-    const [myDivRef] = useHeightObserver(resizeSocket)
+    useEffect(() => {
+        /* requestAnimationFrame: will defer the resizeSocket callback to the next repaint;
+         * sparing us from - ResizeObserver loop completed with undelivered notifications */
+        const observer = new ResizeObserver(() => window.requestAnimationFrame(resizeSocket))
+        observer.observe(termDiv.current)
+        return () => observer.disconnect()
+    }, [])
 
     useEffect(() => {
         if (!terminalRef.current) {
@@ -240,7 +247,7 @@ export default function TerminalView({
         <div className="terminal-wrapper" data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
-                ref={myDivRef}
+                ref={termDiv}
                 id="terminal-id"
                 data-testid="terminal-editor-container"
                 className="mt-8 mb-4 terminal-component ml-20"

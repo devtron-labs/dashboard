@@ -105,6 +105,7 @@ const AppDetailsComponent = ({
                 }
             },
         )
+        .catch()
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {

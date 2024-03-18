@@ -334,6 +334,7 @@ export const Details: React.FC<DetailsType> = ({
                     }
                 },
             )
+            .catch()
         },
         [
             params.appId,
