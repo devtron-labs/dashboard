@@ -1,8 +1,8 @@
 // @ts-nocheck
 import yaml from 'yaml'
 import { ScopedVariablesDataType } from './types'
-import { FileReaderStatus, ValidatorType, FileDataType} from '../common/hooks/types'
-import { MIME_TYPE, FILE_EXTENSION  } from '../common/helpers/types'
+import { FileReaderStatus, ValidatorType, FileDataType } from '../common/hooks/types'
+import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -11,8 +11,8 @@ import {
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
 
-export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
-    const fileNameEndsWith = fileData.name
+export const getFileMimeType = (fileDataName: string): MIME_TYPE => {
+    const fileNameEndsWith = fileDataName
     const fileType = fileNameEndsWith.split('.').pop()
     switch (fileType) {
         case FILE_EXTENSION.YAML:
@@ -20,7 +20,7 @@ export const getFileMimeType = (fileData: FileDataType): MIME_TYPE => {
             return MIME_TYPE.TEXT_YAML
         case FILE_EXTENSION.JSON:
             return MIME_TYPE.APPLICATION_JSON
-        default: 
+        default:
             return MIME_TYPE.PLAIN_TEXT
     }
 }

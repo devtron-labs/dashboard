@@ -24,14 +24,6 @@ export const useFileReader = () => {
             return
         }
 
-        // If the MIME type is not there
-        // In case of windows, the mime type gives some unexpected results so it needs to be handle explicitly
-        if (!fileData.type) {
-            setFileData((prevFileData) => ({
-                ...prevFileData,
-                type: getFileMimeType(fileData),
-            }))
-        }
         const { status, message } = validator(fileData)
         setStatus({ message, status })
         if (status === FileReaderStatus.SUCCESS) {
@@ -61,9 +53,11 @@ export const useFileReader = () => {
             setStatus(NO_FILE_SELECTED_STATUS)
             return
         }
+        // If the MIME type is not there
+        // In case of windows, the mime type gives some unexpected results so it needs to be handle explicitly
         setFileData({
             data: null,
-            type: file.type,
+            type: file.type || getFileMimeType(file.name),
             name: file.name,
         })
         setValidator(() => fileValidator)
