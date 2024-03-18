@@ -843,7 +843,7 @@ export default function ResourceList() {
                 <NodeDetailsList
                     clusterId={clusterId}
                     isSuperAdmin={superAdminRef.current}
-                    nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                    nodeK8sVersions={clusterCapacityData?.nodeK8sVersions || selectedTerminal?.nodeK8sVersions}
                     renderCallBackSync={renderRefreshBar}
                     addTab={addTab}
                     syncError={!hideSyncWarning}

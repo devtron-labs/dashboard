@@ -309,7 +309,7 @@ export const NODE_SEARCH_TEXT = {
     LABEL: 'label',
     LABELS: 'labels',
     NODE_GROUP: 'nodeGroup',
-}
+} as const
 
 export const clusterImageSelect = {
     ...clusterSelectStyle,
@@ -327,9 +327,9 @@ export const clusterImageSelect = {
 }
 
 export const SEARCH_OPTION_LABEL = {
-    NAME: 'name',
-    LABEL: 'label',
-    NODE_GROUP: 'nodeGroup',
+    NAME: NODE_SEARCH_TEXT.NAME,
+    LABEL: NODE_SEARCH_TEXT.LABEL,
+    NODE_GROUP: NODE_SEARCH_TEXT.NODE_GROUP,
     NODE_GROUP_TEXT: 'node group',
 }
 

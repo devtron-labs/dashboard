@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { Option } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
@@ -86,6 +86,11 @@ export default function ColumnSelector() {
         setSelectedColumns(appliedColumns)
     }, [])
 
+    const renderMenuList = useCallback(
+        (props) => <MenuList {...props} selectRef={selectRef} />,
+        [selectRef]
+    )
+
     const handleMenuState = (menuOpenState: boolean): void => {
         if (menuOpenState) {
             setSelectedColumns(appliedColumns)
@@ -127,7 +132,7 @@ export default function ColumnSelector() {
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                MenuList: (props) => <MenuList {...props} selectRef={selectRef} />,
+                MenuList: renderMenuList,
             }}
             styles={{
                 ...containerImageSelectStyles,
