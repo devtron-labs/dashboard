@@ -22,6 +22,7 @@ import {
     MultiValueRemove,
     Option,
     CustomInput,
+    ReactSelectInputAction,
     StyledRadioGroup as RadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -158,12 +159,12 @@ const ManageRegistry = ({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setBlackList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setBlackList(clusterOption)
@@ -178,12 +179,12 @@ const ManageRegistry = ({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setWhiteList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setWhiteList(clusterOption)

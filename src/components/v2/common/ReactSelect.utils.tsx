@@ -183,7 +183,7 @@ export const CustomValueContainer = (props): JSX.Element => {
                         {props.selectProps.value.label}
                     </span>
                 ) : (
-                    <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
+                    <span className="dc__position-abs cn-5 ml-4">{props.selectProps.placeholder}</span>
                 ))}
             {React.cloneElement(props.children[1])}
         </components.ValueContainer>

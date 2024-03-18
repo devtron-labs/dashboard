@@ -196,3 +196,22 @@ export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus =>
 export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/
 export const SKIPPED_RESOURCES_MESSAGE = 'Build action is not applicable'
 export const SKIPPED_RESOURCES_STATUS_TEXT = 'Skipped'
+
+export const BULK_CD_MATERIAL_STATUS=(noOfApps)=>({
+    title: `Fetching images for ${noOfApps} Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+
+export const BULK_CD_DEPLOYMENT_STATUS = (noOfApps, env) => ({
+    title: `Verifying selected images for ${noOfApps} Applications & initiating deployment on '${env}'`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+
+export const BULK_CI_MATERIAL_STATUS=(noOfApps)=>({
+    title: `Fetching code sources for ${noOfApps} Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+export const BULK_CI_BUILD_STATUS=(noOfApps)=>({
+    title: `Verifying selected code sources for ${noOfApps} Applications & initiating build pipelines Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})

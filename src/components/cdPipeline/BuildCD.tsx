@@ -8,14 +8,14 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import yamlJsParser from 'yaml'
 import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, TriggerType, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
 import { Environment, GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
@@ -37,6 +37,10 @@ import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
+import { getGitOpsRepoConfig } from '../../services/service'
+
 import PullImageDigestToggle from './PullImageDigestToggle'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -52,6 +56,8 @@ export default function BuildCD({
     isWebhookCD,
     dockerRegistries,
     envIds,
+    isGitOpsRepoNotConfigured,
+    noGitOpsModuleInstalledAndConfigured,
 }) {
     const {
         formData,
@@ -68,8 +74,13 @@ export default function BuildCD({
         savedCustomTagPattern,
         selectedCDStageTypeValue,
         setSelectedCDStageTypeValue,
+        appId,
+        setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
+    const history = useHistory()
+
+    const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
     let { cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -224,6 +235,37 @@ export default function BuildCD({
         return null
     }
 
+    const checkGitOpsRepoConflict = () => {
+        setGitopsConflictLoading(true)
+        getGitOpsRepoConfig(+appId)
+            .then(() => {
+                history.push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+            })
+            .catch((err) => {
+                if (err.code === 409) {
+                    setReloadNoGitOpsRepoConfiguredModal(true)
+                }
+            })
+            .finally(() => {
+                setGitopsConflictLoading(false)
+            })
+    }
+
+    const gitOpsRepoConfigInfoBar = (content: string) => {
+        return (
+            <InfoColourBar
+                message={content}
+                classname="warn mb-16"
+                Icon={Warn}
+                iconClass="warning-icon"
+                linkClass={`flex ${gitopsConflictLoading ? 'loading-dots-cb5 cursor-not-allowed' : ''}`}
+                linkText="Configure GitOps Repository"
+                internalLink
+                linkOnClick={checkGitOpsRepoConflict}
+            />
+        )
+    }
+
     const renderTriggerType = () => {
         return (
             <div className="cd-pipeline__trigger-type">
@@ -331,6 +373,16 @@ export default function BuildCD({
         const handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
             return formatHighlightedTextDescription(opt, inputValue, 'name')
         }
+        const isHelmEnforced =
+            formData.allowedDeploymentTypes.length === 1 &&
+            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
+
+        const gitOpsRepoNotConfiguredAndOptionsHidden =
+            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+            selectedEnv &&
+            !noGitOpsModuleInstalledAndConfigured &&
+            !isHelmEnforced &&
+            isGitOpsRepoNotConfigured
 
         return (
             <>
@@ -392,6 +444,7 @@ export default function BuildCD({
                         />
                     </div>
                 </div>
+                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (
@@ -519,6 +572,8 @@ export default function BuildCD({
                     allowedDeploymentTypes={formData.allowedDeploymentTypes}
                     rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
                     isFromCDPipeline
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 />
             </div>
         )
@@ -693,6 +748,7 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
+                    !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {isAdvanced && ManualApproval && (

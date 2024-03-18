@@ -93,7 +93,9 @@ export const Routes = {
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
+    GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
@@ -300,6 +302,11 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
+}
+
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
 }
 
 export const SourceTypeMap = {
@@ -697,7 +704,6 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
-export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',
@@ -916,3 +922,10 @@ export const API_STATUS_CODES = {
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
+
+export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
+
+/**
+ * Value for select all identifier
+ */
+export const SELECT_ALL_VALUE = '*'

@@ -5,6 +5,7 @@ import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
+import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function AppGroupAppFilter() {
     const {
@@ -49,7 +50,7 @@ export default function AppGroupAppFilter() {
     }
 
     const onAppFilterInputChange = (value, action) => {
-        if (action.action === 'input-change') {
+        if (action.action === ReactSelectInputAction.inputChange) {
             if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
                 setAppFilterAppInput(value)
             } else {
