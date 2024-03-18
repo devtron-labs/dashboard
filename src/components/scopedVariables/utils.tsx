@@ -12,8 +12,7 @@ import {
 } from './constants'
 
 export const getFileMimeType = (fileDataName: string): MIME_TYPE => {
-    const fileNameEndsWith = fileDataName
-    const fileType = fileNameEndsWith.split('.').pop()
+    const fileType = fileDataName.split('.').pop()
     switch (fileType) {
         case FILE_EXTENSION.YAML:
         case FILE_EXTENSION.YML:
