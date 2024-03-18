@@ -757,7 +757,7 @@ export const DEPLOYMENT_STATUS = {
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
     CHECKING: 'checking',
-}
+} as const
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',

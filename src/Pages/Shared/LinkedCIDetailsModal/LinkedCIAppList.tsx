@@ -2,15 +2,16 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import {
     SortableTableHeaderCell,
-    SortingOrder,
     AppStatus,
-    useAsync,
     Pagination,
+    UseUrlFiltersReturnType,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { LinkedCIAppDto } from './types'
-import { getAppList } from './service'
 import appListLoading from './constants'
+import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
+import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 
 const AppListRow = ({
     appId,
@@ -21,7 +22,7 @@ const AppListRow = ({
     triggerMode,
 }: LinkedCIAppDto) => {
     return (
-        <Link to={`${URLS.APP}/${appId}`}>
+        <Link to={`${URLS.APP}/${appId}`} target="_blank" style={{ textDecoration: 'none' }}>
             <div
                 className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 "
                 key={`${appId}-${environmentId}`}
@@ -37,52 +38,68 @@ const AppListRow = ({
     )
 }
 
-const LinkedCIAppList = ({ ciPipelineId }: { ciPipelineId: string }) => {
-    const [loading, result, error] = useAsync(() => getAppList(ciPipelineId))
+const LinkedCIAppList = ({
+    appList,
+    totalCount,
+    isLoading,
+    urlFilters,
+}: {
+    appList: LinkedCIAppDto[]
+    totalCount: number
+    isLoading: boolean
+    urlFilters: UseUrlFiltersReturnType<SortableKeys>
+}) => {
+    const renderClearFiltersButton = () => {
+        return <button type="button">Clear Filters</button>
+    }
 
-    const renderShimmer = () => {
+    if (!isLoading && totalCount === 0) {
         return (
-            <div className="flexbox-col flex-grow-1 show-shimmer-loading">
-                {appListLoading.map((appData) => (
-                    <div
-                        className="display-grid dc__align-items-center linked-ci-detail__table-row pl-20 pr-20 pt-10 pb-10"
-                        key={appData.appId}
-                    >
-                        <span className="child child-shimmer-loading" />
-                        <span className="child child-shimmer-loading" />
-                        <span className="child child-shimmer-loading" />
-                        <span className="child child-shimmer-loading" />
-                    </div>
-                ))}
-            </div>
+            <GenericEmptyState
+                image={EmptyStateImage}
+                classname="fs-16"
+                title="No Results"
+                subTitle="We could not find any matching results"
+                isButtonAvailable
+                renderButton={renderClearFiltersButton}
+            />
         )
     }
-
-    if (error) {
-        return <div className="flexbox-col flex-grow-1 dc__overflow-scroll">Error</div>
-    }
+    const { offset, pageSize, changePage, changePageSize, sortOrder } = urlFilters
 
     return (
-        <div className="flexbox-col flex-grow-1">
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             <div className="flexbox-col flex-grow-1">
                 <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6 cn-7">
                     {/* todo (Arun) -- fix this */}
                     <SortableTableHeaderCell
                         title="Application"
-                        sortOrder={SortingOrder.ASC}
+                        sortOrder={sortOrder}
                         isSorted={false}
                         triggerSorting={() => {}}
-                        disabled={false}
+                        disabled={isLoading}
                     />
                     <span>Deploys To (ENV)</span>
                     <span>Trigger Mode</span>
                     <span>Last Deployment Status</span>
                 </div>
-                {loading ? (
-                    renderShimmer()
+                {isLoading ? (
+                    <div className="flexbox-col flex-grow-1 show-shimmer-loading">
+                        {appListLoading.map((appData) => (
+                            <div
+                                className="display-grid dc__align-items-center linked-ci-detail__table-row pl-20 pr-20 pt-10 pb-10"
+                                key={appData.appId}
+                            >
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                            </div>
+                        ))}
+                    </div>
                 ) : (
-                    <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
-                        {result.data.map((appData) => (
+                    <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+                        {appList.map((appData) => (
                             <AppListRow {...appData} />
                         ))}
                     </div>
@@ -90,14 +107,14 @@ const LinkedCIAppList = ({ ciPipelineId }: { ciPipelineId: string }) => {
             </div>
             <div>
                 {/* todo (Arun) -- fix this */}
-                {!loading && result.totalCount > 20 ? (
+                {!isLoading && totalCount > 20 ? (
                     <Pagination
                         rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
-                        size={result.totalCount}
-                        offset={0}
-                        pageSize={20}
-                        changePage={() => {}}
-                        changePageSize={() => {}}
+                        size={totalCount}
+                        offset={offset}
+                        pageSize={pageSize}
+                        changePage={changePage}
+                        changePageSize={changePageSize}
                     />
                 ) : null}
             </div>

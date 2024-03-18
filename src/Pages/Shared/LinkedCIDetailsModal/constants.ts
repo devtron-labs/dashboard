@@ -4,7 +4,7 @@ import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
 const appListLoading: LinkedCIAppDto[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys()).map((index) => ({
     appId: index,
     appName: '',
-    deploymentStatus: '',
+    deploymentStatus: 'succeeded',
     environmentId: 0,
     environmentName: '',
     triggerMode: '',
