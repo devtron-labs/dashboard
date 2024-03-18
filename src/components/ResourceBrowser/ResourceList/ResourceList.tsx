@@ -261,7 +261,7 @@ const ResourceList = () => {
         )
     }
 
-    const handleGroupHeadingClick = (e: React.Event<HTMLElement>, preventCollapse?: boolean): void => {
+    const handleGroupHeadingClick = (e: React.MouseEvent<HTMLElement>, preventCollapse?: boolean): void => {
         setK8SObjectMap(getK8SObjectMapAfterGroupHeadingClick(e, k8SObjectMap, preventCollapse))
     }
 
@@ -295,7 +295,7 @@ const ResourceList = () => {
             replace({
                 pathname: path,
             })
-            initTabsBasedOnRole(true, isSuperAdmin)
+            initTabsBasedOnRole(true)
         } else {
             push({
                 pathname: path,
