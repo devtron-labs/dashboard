@@ -38,7 +38,6 @@ function ClusterOverview({
         clusterId: string
         namespace: string
     }>()
-    const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
     const [errorMsg, setErrorMsg] = useState('')
 
     const [descriptionData, setDescriptionData] = useState<DescriptionDataType>({
@@ -139,7 +138,6 @@ function ClusterOverview({
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
-            let _errorTitle = ''
             const _errorList = []
             const _nodeErrors = Object.keys(clusterCapacityResponse.value.result.nodeErrors || {})
             const _nodeK8sVersions = clusterCapacityResponse.value.result.nodeK8sVersions || []
@@ -163,7 +161,6 @@ function ClusterOverview({
                     }
                 }
                 if (diffType !== '') {
-                    _errorTitle = 'Version diff'
                     _errorList.push({
                         errorText: `${diffType} version diff identified among nodes. Current versions `,
                         errorType: ERROR_TYPE.VERSION_ERROR,
@@ -173,7 +170,6 @@ function ClusterOverview({
             }
 
             if (_nodeErrors.length > 0) {
-                _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
                 for (const _nodeError of _nodeErrors) {
                     const _errorLength = clusterCapacityResponse.value.result.nodeErrors[_nodeError].length
                     _errorList.push({

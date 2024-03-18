@@ -260,9 +260,9 @@ export function useTabs(persistanceKey: string) {
      * @param {string} [url] - URL for the tab
      * @returns {boolean} - True if the tab was found and marked as active
      */
-    const markTabActiveByIdentifier = (idPrefix: string, name: string, kind?: string, url?: string) => {
+    const markTabActiveByIdentifier = (idPrefix: string, name: string, kind?: string, url?: string): boolean => {
         if (!name) {
-            return
+            return false
         }
 
         let isTabFound = false
@@ -289,23 +289,23 @@ export function useTabs(persistanceKey: string) {
         return isTabFound
     }
 
+    /**
+     * This function is used to mark a tab as active based on its Id
+     *
+     * @param {string} id - Tab Id
+     * @returns {boolean} - True if the tab was found and marked as active
+     */
     const markTabActiveById = (id: string) => {
-        let isTabFound = false
-
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                tab.isSelected = false
-                if (tab.id === id) {
-                    tab.isSelected = true
-                    isTabFound = true
+                return {
+                    ...tab,
+                    isSelected: tab.id === id,
                 }
-                return tab
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
-
-        return isTabFound
     }
 
     /**

@@ -147,9 +147,7 @@ const DynamicTabs = ({
         )
     }
 
-    const markTabActiveOnClickFactory = (tab: DynamicTabType) => (
-        () => markTabActiveById(tab.id)
-    )
+    const markTabActiveOnClickFactory = (tab: DynamicTabType) => () => markTabActiveById(tab.id)
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect

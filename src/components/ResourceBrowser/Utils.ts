@@ -293,8 +293,8 @@ export const convertK8sObjectMapToOptionsList = (
     return _k8sObjectOptionsList
 }
 
-export const getTabsBasedOnRole = (clusterId, namespace, _isSuperAdmin) => {
-    const _tabs = [
+export const getTabsBasedOnRole = (clusterId: string, namespace: string, isSuperAdmin: boolean) => {
+    const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
@@ -316,28 +316,30 @@ export const getTabsBasedOnRole = (clusterId, namespace, _isSuperAdmin) => {
             positionFixed: true,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
+            dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
         },
+        ...(!isSuperAdmin
+            ? []
+            : [
+                  {
+                      idPrefix: AppDetailsTabsIdPrefix.terminal,
+                      name: AppDetailsTabs.terminal,
+                      url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                      isSelected: false,
+                      positionFixed: true,
+                      iconPath: TerminalIcon,
+                      showNameOnSelect: true,
+                  },
+              ]),
     ]
 
-    if (_isSuperAdmin) {
-        _tabs.push({
-            idPrefix: AppDetailsTabsIdPrefix.terminal,
-            name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            isSelected: false,
-            positionFixed: true,
-            iconPath: TerminalIcon,
-            showNameOnSelect: true,
-        })
-    }
-
-    return _tabs
+    return tabs
 }
 
 export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
     const processedData = processK8SObjects(resource, nodeType)
-    const _k8SObjectList = ORDERED_AGGREGATORS
-        .map((element) => processedData.k8SObjectMap.get(element) || null)
-        .filter((element) => !!element)
+    const _k8SObjectList = ORDERED_AGGREGATORS.map((element) => processedData.k8SObjectMap.get(element) || null).filter(
+        (element) => !!element,
+    )
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }

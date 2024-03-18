@@ -12,8 +12,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import './ResourceBrowser.scss'
 
 const addClusterButton = () => (
-    /* funcs returning JSX should be memoized if declared inside react func body
-     * thus declaring it outside to avoid using useCallback */
     <>
         <NavLink
             className="flex dc__no-decor cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"

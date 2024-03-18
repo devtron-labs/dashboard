@@ -28,7 +28,7 @@ export default function DeleteResourcePopup({
                         namespace: resourceData.namespace,
                         name: resourceData.name,
                     },
-                    forceDelete: forceDelete
+                    forceDelete,
                 },
             }
 
@@ -52,7 +52,7 @@ export default function DeleteResourcePopup({
         }
     }
 
-    const forceDeleteHandler = (e) => {
+    const forceDeleteHandler = () => {
         setForceDelete((prevState) => !prevState)
     }
 

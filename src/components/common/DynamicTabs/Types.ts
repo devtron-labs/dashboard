@@ -25,7 +25,7 @@ export interface DynamicTabType extends CommonTabArgsType {
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     removeTabByIdentifier: (id: string) => string
-    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById'],
+    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
     loader: boolean

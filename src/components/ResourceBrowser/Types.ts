@@ -112,8 +112,13 @@ export interface SidebarType {
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     isCreateModalOpen: boolean
+    tabs: ReturnType<typeof useTabs>['tabs']
     updateTabUrl: ReturnType<typeof useTabs>['updateTabUrl']
     isClusterError?: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
 }
 
 export interface ResourceFilterOptionsProps {
@@ -126,6 +131,7 @@ export interface ResourceFilterOptionsProps {
     searchText: string
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
+    updateTabUrl: ReturnType<typeof useAsync>['updateTabUrl']
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
@@ -179,10 +185,6 @@ export interface EventListType {
     paginatedView: boolean
     syncError: boolean
     searchText: string
-}
-
-export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
 }
 
 export interface ConnectingToClusterStateProps {

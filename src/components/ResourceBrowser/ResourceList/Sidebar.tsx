@@ -89,7 +89,13 @@ const Sidebar = ({
             return
         }
 
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`)
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
+        push(_url)
+        updateTabUrl(
+            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+            _url,
+            e.currentTarget.dataset.kind,
+        )
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {
@@ -100,11 +106,6 @@ const Sidebar = ({
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
         setSelectedResource(_selectedResource)
-        updateTabUrl(
-            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`,
-            e.currentTarget.dataset.kind,
-        )
 
         /**
          * If groupName present then kind selection is from search dropdown,
