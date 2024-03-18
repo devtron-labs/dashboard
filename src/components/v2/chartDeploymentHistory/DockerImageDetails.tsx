@@ -1,15 +1,12 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ChartDeploymentDetail } from './chartDeploymentHistory.service'
-import docker from '../../../assets/icons/misc/docker.svg'
+import { dockerImageDetailsProps } from './chartDeploymentHistory.service'
+import { ReactComponent as DockerIcon } from '../../../assets/icons/misc/docker.svg'
 
-const DockerImageDetails = ({
-    deployment,
-    setShowDockerInfo,
-}: {
-    deployment: ChartDeploymentDetail
-    setShowDockerInfo: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+const DockerImageDetails = ({ deployment, setShowDockerInfo }: dockerImageDetailsProps) => {
+    const handleOnClick = () => {
+        setShowDockerInfo(true)
+    }
     return (
         <div>
             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
@@ -18,7 +15,7 @@ const DockerImageDetails = ({
                     <div key={index} className="dc__app-commit__hash ml-10">
                         <Tippy arrow className="default-tt" content={dockerImage}>
                             <span>
-                                <img src={docker} className="commit-hash__icon grayscale" alt="" />
+                                <DockerIcon className="commit-hash__icon grayscale" alt="" />
                                 <span className="ml-3" data-testid="docker-version-deployment-history">
                                     {dockerImage.split(':')[1] || dockerImage}
                                 </span>
@@ -28,9 +25,9 @@ const DockerImageDetails = ({
                 )
             })}
             {deployment.dockerImages.length > 3 && (
-                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
+                <div onClick={handleOnClick} className="cursor anchor ml-10">
                     <span>
-                        <span className="">{deployment.dockerImages.length - 3}</span>
+                        <span>{deployment.dockerImages.length - 3}</span>
                         <span className="ml-3">more</span>
                     </span>
                 </div>
