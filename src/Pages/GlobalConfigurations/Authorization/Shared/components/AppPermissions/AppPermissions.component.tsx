@@ -274,18 +274,22 @@ const AppPermissions = () => {
 
     async function setAllWorkflows(jobOptions) {
         const jobNames = jobOptions.filter((job) => job.value !== SELECT_ALL_VALUE).map((job) => job.label)
-        const { result } = await getAllWorkflowsForAppNames(jobNames)
-        const { appIdWorkflowNamesMapping } = result
+        try {
+            const { result } = await getAllWorkflowsForAppNames(jobNames)
+            const { appIdWorkflowNamesMapping } = result
 
-        const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
-
-        return [
-            { label: 'All Workflows', value: SELECT_ALL_VALUE },
-            ...workflowOptions.reduce((acc, option) => {
-                acc.push(...option.options)
-                return acc
-            }, [] as OptionType[]),
-        ]
+            const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)
+            return [
+                { label: 'All Workflows', value: SELECT_ALL_VALUE },
+                ...workflowOptions.reduce((acc, option) => {
+                    acc.push(...option.options)
+                    return acc
+                }, [] as OptionType[]),
+            ]
+        } catch (err) {
+            showError(err)
+            return [{ label: 'All Workflows', value: SELECT_ALL_VALUE }]
+        }
     }
 
     function setClusterValues(startsWithHash, clusterName) {
