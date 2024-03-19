@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { FileDataType, FileReaderStatus, FileReaderStatusType, ReadFileAs, ValidatorType } from './types'
 import { FILE_READING_FAILED_STATUS, NO_FILE_SELECTED_STATUS } from './constants'
+import { getFileMimeType } from '../../scopedVariables/utils'
 
 export const useFileReader = () => {
     const [fileData, setFileData] = useState<FileDataType>(null)
@@ -22,6 +23,7 @@ export const useFileReader = () => {
         if (!fileData || fileData.data == null || !validator) {
             return
         }
+
         const { status, message } = validator(fileData)
         setStatus({ message, status })
         if (status === FileReaderStatus.SUCCESS) {
@@ -51,9 +53,11 @@ export const useFileReader = () => {
             setStatus(NO_FILE_SELECTED_STATUS)
             return
         }
+        // If the MIME type is not there
+        // In case of windows, the mime type gives some unexpected results so it needs to be handle explicitly
         setFileData({
             data: null,
-            type: file.type,
+            type: file.type || getFileMimeType(file.name),
             name: file.name,
         })
         setValidator(() => fileValidator)
