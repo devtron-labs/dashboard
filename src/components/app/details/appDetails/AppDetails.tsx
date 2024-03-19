@@ -652,7 +652,6 @@ export const Details: React.FC<DetailsType> = ({
     const handleHibernateConfirmationModalClose = (e) => {
         e.stopPropagation()
         setHibernateConfirmationModal('')
-        setRotateModal(false)
     }
 
     const renderHibernateModal = (): JSX.Element => {
@@ -715,21 +714,6 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const renderRestartWorkload = () => {
-        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
-            return (
-                <DeploymentWindowConfirmationDialog
-                    onClose={handleHibernateConfirmationModalClose}
-                    isLoading={hibernating}
-                    type={MODAL_TYPE.RESTART}
-                    onClickActionButton={handleHibernate}
-                    appName={appDetails.appName}
-                    envName={appDetails.environmentName}
-                    appId={params.appId}
-                    envId={params.envId}
-                />
-            )
-        }
-
         return (
             <RotatePodsModal
                 onClose={() => setRotateModal(false)}

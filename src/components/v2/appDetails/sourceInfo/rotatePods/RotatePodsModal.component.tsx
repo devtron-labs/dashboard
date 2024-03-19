@@ -239,10 +239,10 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     const handleRestartWorkloads = (e: any) => {
         e.preventDefault()
-        if (isDeploymentBlocked) {
+        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             setShowDeploymentWindowConfirmationModal(true)
         }
-        handlePodsRotaionConditinally()
+        else handlePodsRotaionConditinally()
     }
 
     const renderRestartWorkloadsList = (): JSX.Element => {
@@ -342,7 +342,8 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
     }
 
     if (showDeploymentWindowConfirmationModal) {
-        return renderDeploymentWindowConfirmtionModal()}
+        return renderDeploymentWindowConfirmtionModal()
+    }
 
     return (
         <Drawer position="right" width="1024px">

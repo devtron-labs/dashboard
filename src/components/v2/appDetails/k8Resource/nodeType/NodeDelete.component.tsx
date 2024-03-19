@@ -61,6 +61,10 @@ const NodeDeleteComponent = ({
                     envName={appDetails.environmentName}
                     appId={params.appId}
                     envId={params.envId}
+                    forceDelete={forceDelete}
+                    apiCallInProgress={apiCallInProgress}
+                    forceDeleteHandler={forceDeleteHandler}
+                    resourceName={nodeDetails?.name}
                 />
             )
         }
