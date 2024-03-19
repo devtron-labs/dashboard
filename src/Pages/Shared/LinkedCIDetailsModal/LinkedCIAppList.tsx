@@ -7,19 +7,12 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { LinkedCIAppDto } from './types'
-import appListLoading from './constants'
-import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
+import { LinkedCIApp } from './types'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
+import { StatusConstants } from '../../../components/app/list-new/Constants'
+import { SortableKeys, appListLoading } from './constants'
 
-const AppListRow = ({
-    appId,
-    appName,
-    deploymentStatus,
-    environmentName,
-    triggerMode,
-    environmentId,
-}: LinkedCIAppDto) => {
+const AppListRow = ({ appId, appName, deploymentStatus, environmentName, triggerMode, environmentId }: LinkedCIApp) => {
     return (
         <Link
             to={`${URLS.APP}/${appId}/${URLS.APP_DETAILS}${environmentId ? `/${environmentId}` : ''}`}
@@ -30,7 +23,14 @@ const AppListRow = ({
                 <span className="dc__ellipsis-right">{appName}</span>
                 <span>{environmentName}</span>
                 <span className="dc__first-letter-capitalize">{triggerMode}</span>
-                <AppStatus appStatus={deploymentStatus} isDeploymentStatus />
+                <AppStatus
+                    appStatus={
+                        deploymentStatus === StatusConstants.NOT_DEPLOYED.titleCase
+                            ? StatusConstants.NOT_DEPLOYED.noSpaceLower
+                            : deploymentStatus
+                    }
+                    isDeploymentStatus
+                />
             </div>
         </Link>
     )
@@ -42,7 +42,7 @@ const LinkedCIAppList = ({
     isLoading,
     urlFilters,
 }: {
-    appList: LinkedCIAppDto[]
+    appList: LinkedCIApp[]
     totalCount: number
     isLoading: boolean
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
@@ -65,18 +65,21 @@ const LinkedCIAppList = ({
             />
         )
     }
-    const { sortOrder } = urlFilters
+    const { sortOrder, handleSorting } = urlFilters
+
+    const sortByAppName = () => {
+        handleSorting(SortableKeys.appName)
+    }
 
     return (
         <div className="flexbox-col dc__content-space flex-grow-1">
             <div className="flexbox-col flex-grow-1">
-                <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6 cn-7">
-                    {/* todo (Arun) -- fix this */}
+                <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6 cn-7 dc__position-sticky dc__top-0 bcn-0 dc__zi-4">
                     <SortableTableHeaderCell
                         title="Application"
                         sortOrder={sortOrder}
                         isSorted
-                        triggerSorting={() => {}}
+                        triggerSorting={sortByAppName}
                         disabled={isLoading}
                     />
                     <span>Deploys To (ENV)</span>

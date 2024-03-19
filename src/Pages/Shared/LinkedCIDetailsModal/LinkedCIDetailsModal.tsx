@@ -18,17 +18,17 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
-import { LinkedCIDetailModalProps } from './types'
+import { LinkedCIAppListFilterParams, LinkedCIDetailModalProps } from './types'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import LinkedCIAppList from './LinkedCIAppList'
 import './linkedCIAppList.scss'
 import { getAppList, getEnvironmentList } from './service'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
-import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
 import { LinkedCITippyContent, parseSearchParams } from './utils'
-import { API_STATUS_CODES } from '../../../config'
+import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
 import { NodeAttr } from '../../../components/app/details/triggerView/types'
+import { SortableKeys } from './constants'
 
 const commonStyles = getCommonSelectStyle()
 
@@ -48,12 +48,10 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
         )
     }
 
-    const urlFilters = useUrlFilters<
-        SortableKeys,
-        {
-            environment: string
-        }
-    >({ initialSortKey: SortableKeys.name, parseSearchParams })
+    const urlFilters = useUrlFilters<SortableKeys, Pick<LinkedCIAppListFilterParams, 'environment'>>({
+        initialSortKey: SortableKeys.appName,
+        parseSearchParams,
+    })
     const { pageSize, offset, searchKey, sortOrder, sortBy, handleSearch, environment, changePage, changePageSize } =
         urlFilters
     const filterConfig = useMemo(
@@ -86,7 +84,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
     }
 
     const selectOptions = [
-        { label: 'All Environments', value: '*' },
+        { label: 'All Environments', value: SELECT_ALL_VALUE },
         ...(envList ?? []).map((env) => ({ label: env, value: env })),
     ]
 
@@ -127,6 +125,11 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                 </Drawer>
             )
         }
+    }
+
+    const selectedOption = selectOptions.find((option) => option.value === environment) ?? {
+        label: 'All Environments',
+        value: SELECT_ALL_VALUE,
     }
 
     return (
@@ -190,6 +193,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                                     LoadingIndicator,
                                     IndicatorSeparator: null,
                                 }}
+                                value={selectedOption}
                             />
                         </div>
                         <LinkedCIAppList
