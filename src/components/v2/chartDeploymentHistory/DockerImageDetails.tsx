@@ -15,7 +15,7 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: dockerImageDetail
                     <div key={index} className="dc__app-commit__hash ml-10">
                         <Tippy arrow className="default-tt" content={dockerImage}>
                             <span>
-                                <DockerIcon className="commit-hash__icon grayscale" alt="" />
+                                <DockerIcon className="commit-hash__icon grayscale" />
                                 <span className="ml-3" data-testid="docker-version-deployment-history">
                                     {dockerImage.split(':')[1] || dockerImage}
                                 </span>
@@ -25,12 +25,12 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: dockerImageDetail
                 )
             })}
             {deployment.dockerImages.length > 3 && (
-                <div onClick={handleOnClick} className="cursor anchor ml-10">
+                <button type="button" onClick={handleOnClick} className="cursor anchor ml-10">
                     <span>
                         <span>{deployment.dockerImages.length - 3}</span>
                         <span className="ml-3">more</span>
                     </span>
-                </div>
+                </button>
             )}
         </div>
     )
