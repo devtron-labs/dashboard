@@ -1,13 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import {
-    SortableTableHeaderCell,
-    AppStatus,
-    UseUrlFiltersReturnType,
-    GenericEmptyState,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { LinkedCIApp } from './types'
+import { LinkedCIApp, LinkedCIAppListProps } from './types'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
@@ -21,32 +16,28 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
         >
             <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
                 <span className="dc__ellipsis-right">{appName}</span>
-                <span>{environmentName}</span>
-                <span className="dc__first-letter-capitalize">{triggerMode}</span>
-                <AppStatus
-                    appStatus={
-                        deploymentStatus === StatusConstants.NOT_DEPLOYED.titleCase
-                            ? StatusConstants.NOT_DEPLOYED.noSpaceLower
-                            : deploymentStatus
-                    }
-                    isDeploymentStatus
-                />
+                {environmentName ? (
+                    <>
+                        <span>{environmentName}</span>
+                        <span className="dc__first-letter-capitalize">{triggerMode}</span>
+                        <AppStatus
+                            appStatus={
+                                deploymentStatus === StatusConstants.NOT_DEPLOYED.titleCase
+                                    ? StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                    : deploymentStatus
+                            }
+                            isDeploymentStatus
+                        />
+                    </>
+                ) : (
+                    <span className="cn-7">Does not deploy</span>
+                )}
             </div>
         </Link>
     )
 }
 
-const LinkedCIAppList = ({
-    appList,
-    totalCount,
-    isLoading,
-    urlFilters,
-}: {
-    appList: LinkedCIApp[]
-    totalCount: number
-    isLoading: boolean
-    urlFilters: UseUrlFiltersReturnType<SortableKeys>
-}) => {
+const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedCIAppListProps) => {
     const renderClearFilterButton = () => (
         <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
             Clear Filters

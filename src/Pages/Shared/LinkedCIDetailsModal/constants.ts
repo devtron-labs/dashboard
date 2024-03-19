@@ -1,5 +1,5 @@
 import { LinkedCIApp } from './types'
-import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
+import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS, SELECT_ALL_VALUE } from '../../../config'
 
 export const appListLoading: LinkedCIApp[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys()).map(
     (index) => ({
@@ -13,5 +13,7 @@ export const appListLoading: LinkedCIApp[] = Array.from(Array(DEFAULT_SHIMMER_LO
 )
 
 export enum SortableKeys {
-    appName = 'appName',
+    appName = 'app_name',
 }
+
+export const DEFAULT_ALL_ENV = { label: 'All Environments', value: SELECT_ALL_VALUE }

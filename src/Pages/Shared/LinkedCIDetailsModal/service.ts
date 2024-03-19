@@ -1,10 +1,12 @@
 import { get, showError, ResponseType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
-import { LinkedCIAppDto, LinkedCIAppListFilterParams } from './types'
-import { SELECT_ALL_VALUE } from '../../../config'
+import { LinkedCIAppDto, LinkedCIAppListFilterParams, CIPpelineEnviromentList } from './types'
+import { Routes, SELECT_ALL_VALUE } from '../../../config'
 
-export const getEnvironmentList = async (ciPipelineId: string): Promise<string[]> => {
+export const getLinkedCIPipelineEnvironmentList = async (ciPipelineId: string): Promise<CIPpelineEnviromentList> => {
     try {
-        const { result } = (await get(`app/ci-pipeline/${ciPipelineId}/linked-ci/downstream/env`)) as ResponseType<{
+        const { result } = (await get(
+            `${Routes.CI_CONFIG_GET}/${ciPipelineId}/${Routes.LINKED_CI_DOWNSTREAM}/${Routes.ENVIRONMENT}`,
+        )) as ResponseType<{
             envNames: string[]
         }>
         return result.envNames
@@ -31,7 +33,10 @@ export const getAppList = async (
         const {
             result: { data, totalCount },
         } = (await get(
-            getUrlWithSearchParams(`app/ci-pipeline/${ciPipelineId}/linked-ci/downstream/cd`, queryParams ?? {}),
+            getUrlWithSearchParams(
+                `${Routes.CI_CONFIG_GET}/${ciPipelineId}/${Routes.LINKED_CI_DOWNSTREAM}/cd`,
+                queryParams ?? {},
+            ),
             { signal },
         )) as ResponseType<{
             data: LinkedCIAppDto[]
@@ -43,7 +48,9 @@ export const getAppList = async (
             totalCount,
         }
     } catch (error) {
-        showError(error)
+        if (!signal?.aborted) {
+            showError(error)
+        }
         throw error
     }
 }

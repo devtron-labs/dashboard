@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
     Drawer,
     InfoColourBar,
@@ -23,30 +23,20 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import LinkedCIAppList from './LinkedCIAppList'
 import './linkedCIAppList.scss'
-import { getAppList, getEnvironmentList } from './service'
-import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
+import { getAppList, getLinkedCIPipelineEnvironmentList } from './service'
 import { LinkedCITippyContent, parseSearchParams } from './utils'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
 import { NodeAttr } from '../../../components/app/details/triggerView/types'
-import { SortableKeys } from './constants'
-
-const commonStyles = getCommonSelectStyle()
+import { DEFAULT_ALL_ENV, SortableKeys } from './constants'
+import { preventBodyScroll } from '../../../components/common'
 
 const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalProps) => {
     const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
-
+    const commonStyles = getCommonSelectStyle()
     const selectedNode =
         workflows?.map((workflow) => workflow.nodes.find((node) => node.id === ciPipelineId))?.[0] ?? ({} as NodeAttr)
 
     const { title: ciPipelineName, linkedCount: linkedWorkflowCount } = selectedNode
-
-    const renderCloseModalButton = () => {
-        return (
-            <button type="button" onClick={handleClose}>
-                Close
-            </button>
-        )
-    }
 
     const urlFilters = useUrlFilters<SortableKeys, Pick<LinkedCIAppListFilterParams, 'environment'>>({
         initialSortKey: SortableKeys.appName,
@@ -75,7 +65,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
             ),
         [filterConfig],
     )
-    const [envLoading, envList] = useAsync(() => getEnvironmentList(ciPipelineId))
+    const [envLoading, envList] = useAsync(() => getLinkedCIPipelineEnvironmentList(ciPipelineId))
 
     const updateEnvironmentFilter = (environmentOption: OptionType) => {
         urlFilters.updateSearchParams({
@@ -83,10 +73,20 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
         })
     }
 
-    const selectOptions = [
-        { label: 'All Environments', value: SELECT_ALL_VALUE },
-        ...(envList ?? []).map((env) => ({ label: env, value: env })),
-    ]
+    const selectOptions = [DEFAULT_ALL_ENV, ...(envList ?? []).map((env) => ({ label: env, value: env }))]
+
+    const selectedOption = selectOptions.find((option) => option.value === environment) ?? {
+        label: 'All Environments',
+        value: SELECT_ALL_VALUE,
+    }
+
+    useEffect(() => {
+        preventBodyScroll(true)
+
+        return () => {
+            preventBodyScroll(false)
+        }
+    }, [])
 
     const showLoadingState = loading || getIsRequestAborted(error)
 
@@ -108,28 +108,27 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
             )
         }
 
-        const areFiltersApplied = searchKey
+        const areFiltersApplied = searchKey || (environment && environment !== SELECT_ALL_VALUE)
 
         // The null state is shown only when filters are not applied
         if (result.totalCount === 0 && !areFiltersApplied) {
+            const renderBackButton = () => (
+                <button type="button" onClick={handleClose} className="cta secondary flex h-32">
+                    Go back
+                </button>
+            )
+
             return (
                 <Drawer position="right" width="800px">
                     <GenericEmptyState
-                        image={EmptyStateImage}
-                        classname="bcn-0 h-100 flexbox-col flex-grow-1 fs-16"
-                        title="No Results"
-                        subTitle="We could not find any matching results"
+                        title="The requested resource doesn't exist"
+                        classname="flex-grow-1 bcn-0"
                         isButtonAvailable
-                        renderButton={renderCloseModalButton}
+                        renderButton={renderBackButton}
                     />
                 </Drawer>
             )
         }
-    }
-
-    const selectedOption = selectOptions.find((option) => option.value === environment) ?? {
-        label: 'All Environments',
-        value: SELECT_ALL_VALUE,
     }
 
     return (
@@ -137,53 +136,47 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
             <div className="bcn-0 h-100 flexbox-col show-shimmer-loading">
                 <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
                     <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20 dc__position-sticky">
-                        {loading ? (
-                            <span className="h-24 w-250 child child-shimmer-loading" />
-                        ) : (
-                            <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
-                        )}
+                        <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
                         <button
                             type="button"
                             className="dc__transparent dc__no-shrink flexbox"
                             aria-label="close-modal"
                             onClick={handleClose}
-                            disabled={loading}
+                            disabled={showLoadingState}
                         >
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
                     <div className="flexbox-col flex-grow-1">
-                        {!loading && (
-                            <InfoColourBar
-                                message={LinkedCITippyContent(linkedWorkflowCount)}
-                                classname="info_bar dc__position-sticky"
-                                Icon={Info}
-                            />
-                        )}
+                        <InfoColourBar
+                            message={LinkedCITippyContent(linkedWorkflowCount || 0)}
+                            classname="info_bar dc__position-sticky"
+                            Icon={Info}
+                        />
                         <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20">
                             <SearchBar
                                 containerClassName="w-250"
                                 inputProps={{
                                     placeholder: 'Search application',
                                     autoFocus: true,
-                                    disabled: loading,
+                                    disabled: showLoadingState,
                                 }}
                                 initialSearchText={searchKey}
                                 handleEnter={handleSearch}
                             />
                             <ReactSelect
-                                isDisabled={loading || envLoading}
+                                isDisabled={showLoadingState || envLoading}
                                 styles={{
                                     ...commonStyles,
-                                    control: (base) => ({
-                                        ...base,
-                                        ...commonStyles.control,
-                                        backgroundColor: 'var(--N50)',
+                                    control: (base, state) => ({
+                                        ...commonStyles.control(base, state),
                                         width: 200,
                                         height: 32,
                                         minHeight: 32,
-                                        fontSize: 13,
-                                        fontWeight: 400,
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        zIndex: 5,
                                     }),
                                 }}
                                 options={selectOptions}
@@ -199,12 +192,12 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                         <LinkedCIAppList
                             appList={result?.data || []}
                             totalCount={result?.totalCount || 0}
-                            isLoading={loading}
+                            isLoading={showLoadingState}
                             urlFilters={urlFilters}
                         />
                     </div>
                 </div>
-                {!loading && result.totalCount > DEFAULT_BASE_PAGE_SIZE ? (
+                {!showLoadingState && result.totalCount > DEFAULT_BASE_PAGE_SIZE ? (
                     <Pagination
                         rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top dc__no-shrink"
                         size={result.totalCount}

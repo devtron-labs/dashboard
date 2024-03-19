@@ -1,4 +1,4 @@
-import { BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseFilterQueryParams, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { WorkflowType } from '../../../components/app/details/triggerView/types'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
@@ -25,4 +25,12 @@ export interface LinkedCIApp extends LinkedCIAppDto {}
 
 export type LinkedCIAppListFilterParams = BaseFilterQueryParams<SortableKeys> & {
     environment: string
+}
+
+export type CIPpelineEnviromentList = string[]
+export interface LinkedCIAppListProps {
+    appList: LinkedCIApp[]
+    totalCount: number
+    isLoading: boolean
+    urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }
