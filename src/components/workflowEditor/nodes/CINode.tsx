@@ -9,7 +9,7 @@ import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-
 import link from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
-import { LinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
 export interface CINodeProps extends RouteComponentProps<{}>{
     x: number
@@ -117,7 +117,7 @@ export class CINode extends Component<CINodeProps> {
             <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={LinkedCITippyContent(this.props.linkedCount)}>
+                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
                             <span
                                 className={`link-count ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey

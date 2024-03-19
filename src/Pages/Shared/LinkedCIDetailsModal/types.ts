@@ -28,6 +28,7 @@ export type LinkedCIAppListFilterParams = BaseFilterQueryParams<SortableKeys> & 
 }
 
 export type CIPpelineEnviromentList = string[]
+
 export interface LinkedCIAppListProps {
     appList: LinkedCIApp[]
     totalCount: number

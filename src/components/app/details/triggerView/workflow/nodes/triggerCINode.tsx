@@ -8,7 +8,7 @@ import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
-import { LinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -136,7 +136,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         className="default-tt w-200"
                         arrow={false}
                         placement="top"
-                        content={LinkedCITippyContent(this.props.linkedCount)}
+                        content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
                         <span className="link-count" onClick={this.handleLinkedCIWorkflowChipClick}>
                             <img src={link} className="icon-dim-12 mr-5" alt="" />
