@@ -1,11 +1,13 @@
 import moment from 'moment'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { SOME_ERROR_MSG } from '../../config/constantMessaging'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
+import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 import { URLS } from '../../config'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -69,6 +71,34 @@ export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType
         }
     }
     return null
+}
+
+export const getResourceFromK8SObjectMap = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
+    switch(nodeType) {
+        case SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase():
+            return {
+                namespaced: false,
+                grouped: false,
+                gvk: SIDEBAR_KEYS.nodeGVK,
+            }
+        case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
+            return {
+                namespaced: false,
+                grouped: false,
+                gvk: SIDEBAR_KEYS.eventGVK,
+            }
+        case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
+            return {
+                namespaced: false,
+                grouped: false,
+                gvk: SIDEBAR_KEYS.namespaceGVK
+            }
+        default:
+            let data = null
+            const _selectedGroup = k8SObjectMap?.get(getAggregator(nodeType as NodeType))
+            _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data) 
+            return data && {...data, grouped: data.isExpanded || true}
+    }
 }
 
 // Converts k8SObjects list to grouped map
@@ -192,20 +222,6 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
     }
 }
 
-export const checkIfDataIsStale = (
-    isStaleDataRef: React.MutableRefObject<boolean>,
-    _staleDataCheckTime: moment.Moment,
-) => {
-    /**
-     * Stale data warning to be shown after 15 min. However, kept the cut off mins at 13 instead of 15 to,
-     * 1. skip 1st min as render for 1st min has already been started/done
-     * 2. skip maintaining unnecessary state just for re-rendering
-     */
-    if (!isStaleDataRef.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
-        isStaleDataRef.current = true
-    }
-}
-
 export const getScrollableResourceClass = (
     className: string,
     showPaginatedView: boolean,
@@ -293,7 +309,12 @@ export const convertK8sObjectMapToOptionsList = (
     return _k8sObjectOptionsList
 }
 
-export const getTabsBasedOnRole = (clusterId: string, namespace: string, isSuperAdmin: boolean) => {
+export const getTabsBasedOnRole = (
+    selectedCluster: ClusterOptionType,
+    namespace: string,
+    isSuperAdmin: boolean,
+) => {
+    const clusterId = selectedCluster.value
     const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
@@ -329,6 +350,7 @@ export const getTabsBasedOnRole = (clusterId: string, namespace: string, isSuper
                       positionFixed: true,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
+                      dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
                   },
               ]),
     ]

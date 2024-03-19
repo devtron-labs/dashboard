@@ -28,6 +28,7 @@ import {
 } from '../Utils'
 import { URLS } from '../../../config'
 import { Nodes } from '../../app/types'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 
 export const K8SResourceList = ({
     selectedResource,
@@ -204,7 +205,7 @@ export const K8SResourceList = ({
                 key={`row--${index}-${resourceData.name}`}
                 className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__hover-n50"
             >
-                {resourceList.headers.map((columnName, idx) =>
+                {resourceList?.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.name}-${idx}`}
@@ -280,11 +281,11 @@ export const K8SResourceList = ({
     }
 
     const emptyStateActionHandler = () => {
-        setFilteredResourceList(resourceList.data)
+        setFilteredResourceList(resourceList?.data)
         setSearchText('')
-        replace({
-            pathname: location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`),
-        })
+        const pathname = location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`)
+        updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, pathname)
+        replace({ pathname })
     }
 
     const renderEmptyPage = (): JSX.Element => {
@@ -329,7 +330,7 @@ export const K8SResourceList = ({
                 className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
             >
                 <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
-                    {resourceList.headers.map((columnName) => (
+                    {resourceList?.headers.map((columnName) => (
                         <div
                             key={columnName}
                             className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${

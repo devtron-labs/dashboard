@@ -65,7 +65,7 @@ export default function NodeDetails({
     markTabActiveByIdentifier,
     addTab,
     k8SObjectMapRaw,
-    lastDataSyncTimeString,
+    lastDataSyncMoment,
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -156,7 +156,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node, lastDataSyncTimeString])
+    }, [node, lastDataSyncMoment])
 
     useEffect(() => {
         if (queryParams.has('tab')) {

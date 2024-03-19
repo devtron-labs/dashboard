@@ -110,7 +110,6 @@ export interface SidebarType {
     k8SObjectMap: Map<string, K8SObjectMapType>
     handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
     selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     isCreateModalOpen: boolean
     updateTabUrl: ReturnType<typeof useTabs>['updateTabUrl']
     isClusterError?: boolean
@@ -191,10 +190,7 @@ export interface ConnectingToClusterStateProps {
     errorMsg: string
     selectedCluster: ClusterOptionType
     handleRetry: (e) => void
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
+    sideDataAbortController: any
 }
 
 export interface K8sObjectOptionType extends OptionType {

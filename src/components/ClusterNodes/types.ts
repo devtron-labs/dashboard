@@ -1,5 +1,6 @@
 import React from 'react'
 import { MultiValue } from 'react-select'
+import moment from 'moment'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
@@ -184,7 +185,7 @@ export interface ClusterListType {
         iconPath?: string,
     ) => boolean
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSyncTimeString: string
+    lastDataSyncMoment: moment.Moment
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -398,10 +399,5 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     selectedCluster: ClusterOptionType
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
 }

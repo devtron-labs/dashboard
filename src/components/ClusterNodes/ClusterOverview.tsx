@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 import {
@@ -30,9 +30,7 @@ const Catalog = importComponentFromFELibrary('Catalog')
 
 function ClusterOverview({
     isSuperAdmin,
-    setSelectedResource,
     selectedCluster,
-    sideDataAbortController,
 }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
@@ -54,6 +52,8 @@ function ClusterOverview({
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
+
+    const sideDataAbortController = useRef(null)
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -194,22 +194,17 @@ function ClusterOverview({
         }
     }
     const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
-        if (emptyPrev) {
-            sideDataAbortController.prev = null
-        } else {
-            sideDataAbortController.new.abort()
-            sideDataAbortController.prev = sideDataAbortController.new
-        }
+        sideDataAbortController.current.abort()
         setErrorMsg('')
     }
 
     const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
         setErrorMsg('')
         setIsLoading(true)
-        sideDataAbortController.new = new AbortController()
+        sideDataAbortController.current = new AbortController()
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterDetails(clusterId, sideDataAbortController.new.signal),
-            getClusterCapacity(clusterId, sideDataAbortController.new.signal),
+            getClusterDetails(clusterId, sideDataAbortController.current.signal),
+            getClusterCapacity(clusterId, sideDataAbortController.current.signal),
         ])
         setClusterNoteDetails(clusterNoteResponse)
         setClusterCapacityDetails(clusterCapacityResponse)
@@ -224,6 +219,10 @@ function ClusterOverview({
         getClusterNoteAndCapacity(clusterId)
     }, [selectedCluster])
 
+    useEffect(() => {
+        return () => sideDataAbortController.current?.abort()
+    }, [])
+
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
@@ -234,11 +233,6 @@ function ClusterOverview({
                 group: K8S_EMPTY_GROUP,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
-
-        setSelectedResource({
-            namespaced: false,
-            gvk: SIDEBAR_KEYS.nodeGVK,
-        })
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -555,7 +549,7 @@ function ClusterOverview({
                         errorMsg={errorMsg}
                         selectedCluster={selectedCluster}
                         handleRetry={handleRetry}
-                        sideDataAbortController={sideDataAbortController}
+                        sideDataAbortController={sideDataAbortController.current}
                     />
                 </div>
             )

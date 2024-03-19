@@ -26,7 +26,6 @@ const Sidebar = ({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
-    setSelectedResource,
     updateTabUrl,
     shortcut,
     isCreateModalOpen,
@@ -96,16 +95,6 @@ const Sidebar = ({
             _url,
             e.currentTarget.dataset.kind,
         )
-        const _selectedResource = {
-            namespaced: e.currentTarget.dataset.namespaced === 'true',
-            gvk: {
-                Group: e.currentTarget.dataset.group,
-                Version: e.currentTarget.dataset.version,
-                Kind: e.currentTarget.dataset.kind as Nodes,
-            },
-            isGrouped: e.currentTarget.dataset.grouped === 'true',
-        }
-        setSelectedResource(_selectedResource)
 
         /**
          * If groupName present then kind selection is from search dropdown,

@@ -70,8 +70,7 @@ export default function ConnectingToClusterState({
     }
 
     const handleCancelClick = () => {
-        sideDataAbortController.new.abort()
-        sideDataAbortController.prev = sideDataAbortController.new
+        sideDataAbortController.abort()
         resetStates()
         replace({
             pathname: URLS.RESOURCE_BROWSER,

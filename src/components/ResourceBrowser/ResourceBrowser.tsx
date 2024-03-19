@@ -26,32 +26,32 @@ const addClusterButton = () => (
 
 const ResourceBrowser: React.FC<Record<string, never>> = () => {
     const { push } = useHistory()
-
-    /* this list is to be used by ClusterSelectionList to refresh on demand;
-     * thus not immediately fetching results, it will only run when reloadClusterList is called */
-    const [clusterListLoading, clusterList, clusterListError, reloadClusterList] = useAsync(getClusterList)
+    const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =
+        useAsync(getClusterList)
     const [initialLoading, data, error] = useAsync(() =>
-        Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
+        Promise.all([getClusterListMin(), window._env_?.K8S_CLIENT ? null : getUserRole()]),
     )
     /* transpose the data */
-    const [clusterListData, userRoleData] = data || []
+    const [clusterListMinData = null, userRoleData = null] = data || []
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
             sortObjectArrayAlphabetically(
-                clusterList?.result || clusterListData?.result || [],
+                detailClusterList?.result || clusterListMinData?.result || [],
                 'name',
             ) as ClusterDetail[],
-        [clusterListLoading, initialLoading],
+        [detailClusterList, clusterListMinData],
     )
+
+    const isSuperAdmin = userRoleData?.result.superAdmin || false
 
     const onChangeCluster = (selected): void => {
         const url = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
         push(url)
     }
 
-    if (error || clusterListError) {
-        showError(error || clusterListError)
+    if (error || detailClusterListError) {
+        showError(error || detailClusterListError)
     }
 
     return (
@@ -69,9 +69,9 @@ const ResourceBrowser: React.FC<Record<string, never>> = () => {
                 <ClusterSelectionList
                     clusterOptions={sortedClusterList}
                     onChangeCluster={onChangeCluster}
-                    isSuperAdmin={userRoleData?.result.superAdmin || false}
-                    clusterListLoader={clusterListLoading}
-                    refreshData={reloadClusterList}
+                    isSuperAdmin={isSuperAdmin}
+                    clusterListLoader={detailClusterListLoading}
+                    refreshData={reloadDetailClusterList}
                 />
             )}
         </div>

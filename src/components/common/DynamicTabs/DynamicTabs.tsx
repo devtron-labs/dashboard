@@ -1,25 +1,22 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
+import moment from 'moment'
 import { stopPropagation, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import Select from 'react-select/dist/declarations/src/Select'
-import moment from 'moment'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData } from './Utils'
+import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import Timer from './DynamicTabs.timer'
 import './DynamicTabs.scss'
-import { handleUTCTime, getTimeElapsed } from '../helpers/time'
-import { checkIfDataIsStale } from '../../ResourceBrowser/Utils'
-
-let interval
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -40,9 +37,8 @@ const DynamicTabs = ({
     refreshData,
     loader,
     isOverview,
-    lastDataSyncTimeString,
-    setLastDataSyncTimeString,
-    isStaleDataRef,
+    lastDataSyncMoment,
+    setIsDataStale,
 }: DynamicTabsProps & IWithShortcut) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -56,23 +52,6 @@ const DynamicTabs = ({
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const tabPopupMenuRef = useRef(null)
     const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
-    const [timeElapsedLastSync, setTimeElapsedLastSync] = useState('')
-
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        const _staleDataCheckTime = moment()
-        isStaleDataRef.current = false
-        setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-        interval = setInterval(() => {
-            checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
-            setLastDataSyncTimeString(` ${handleUTCTime(_lastDataSyncTime, true)}`)
-            setTimeElapsedLastSync(getTimeElapsed(_lastDataSyncTime, moment()))
-        }, 1000)
-        return () => {
-            setTimeElapsedLastSync('')
-            clearInterval(interval)
-        }
-    }, [lastDataSyncTimeString])
 
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
@@ -87,8 +66,6 @@ const DynamicTabs = ({
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
         const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
-        const _showNameOnSelect = showNameOnSelect ? !!url.split('?')[1] : true
-        const tabName = dynamicTitle || name
 
         return (
             <NavLink
@@ -103,12 +80,12 @@ const DynamicTabs = ({
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
-                    {_showNameOnSelect && (
+                    {(showNameOnSelect && isSelected || !showNameOnSelect) && (
                         <span
                             className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
                             data-testid={name}
                         >
-                            {tabName}
+                            {dynamicTitle || name}
                         </span>
                     )}
                 </div>
@@ -153,7 +130,7 @@ const DynamicTabs = ({
         const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
 
         return (
-            <Fragment key={`${idx}-tab`}>
+            <Fragment key={tab.id}>
                 <li
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
@@ -294,8 +271,15 @@ const DynamicTabs = ({
         }
     }
 
+    const updateOnStaleData = (now: moment.Moment) => {
+        if (!now || !checkIfDataIsStale(lastDataSyncMoment, now)) {
+            return
+        }
+        setIsDataStale(true)
+    }
+
     const timerForSync = () => {
-        if (loader || !timeElapsedLastSync) {
+        if (loader) {
             return (
                 <div className="ml-12 mr-4 flex">
                     <Progressing size={18} />
@@ -310,16 +294,15 @@ const DynamicTabs = ({
                         <RefreshIcon
                             data-testid="refresh-icon"
                             className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                            onClick={() => {
-                                clearInterval(interval)
-                                setTimeElapsedLastSync('')
-                                refreshData()
-                            }}
+                            onClick={refreshData}
                         />
                     </div>
                 </Tippy>
                 {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                    <div className="flex">{timeElapsedLastSync} ago </div>
+                    <div className="flex">
+                        <Timer start={lastDataSyncMoment} callback={updateOnStaleData} />
+                        {' ago'}
+                    </div>
                 )}
             </>
         )

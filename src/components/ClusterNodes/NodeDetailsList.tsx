@@ -3,6 +3,7 @@ import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-do
 import Tippy from '@tippyjs/react'
 import * as queryString from 'query-string'
 import { MultiValue } from 'react-select'
+import moment from 'moment'
 import { getNodeList } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
@@ -27,7 +28,7 @@ export default function NodeDetailsList({
     renderCallBackSync,
     addTab,
     syncError,
-    setLastDataSyncTimeString,
+    setLastDataSyncMoment,
 }) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -212,7 +213,7 @@ export default function NodeDetailsList({
                     })
                     setFlattenNodeList(_flattenNodeList)
                 }
-                setLastDataSyncTimeString(Date())
+                setLastDataSyncMoment(moment())
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import moment from 'moment'
 import { useTabs } from './useTabs'
 
 interface CommonTabArgsType {
@@ -31,9 +32,8 @@ export interface DynamicTabsProps {
     loader: boolean
     refreshData: () => void
     isOverview: boolean
-    lastDataSyncTimeString: string
-    setLastDataSyncTimeString: (time: string) => void
-    isStaleDataRef: any
+    lastDataSyncMoment: moment.Moment
+    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface TabsDataType {
@@ -47,4 +47,9 @@ export interface MoreButtonWrapperProps {
     readonly onClose: () => void
     readonly toggleMenu: () => void
     tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
+}
+
+export interface TimerType {
+    start: moment.Moment
+    callback?: (now: moment.Moment) => void
 }
