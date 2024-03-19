@@ -9,7 +9,6 @@ import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-
 import link from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
-import { LinkedCIDetail } from '../../../Pages/Shared/LinkedCIDetailsModal'
 import { LinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
 export interface CINodeProps extends RouteComponentProps<{}>{
@@ -44,7 +43,6 @@ export interface CINodeProps extends RouteComponentProps<{}>{
 }
 
 export class CINode extends Component<CINodeProps> {
-
     handleLinkedCIWorkflowChipClick = (e) => {
         // stopPropagation to stop redirection to ci-details
         e.stopPropagation()

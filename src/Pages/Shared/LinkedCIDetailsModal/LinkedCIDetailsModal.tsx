@@ -14,8 +14,9 @@ import {
     ErrorScreenNotAuthorized,
     Reload,
     Pagination,
+    DEFAULT_BASE_PAGE_SIZE,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { LinkedCIDetailModalProps } from './types'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
@@ -27,15 +28,18 @@ import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
 import { LinkedCITippyContent, parseSearchParams } from './utils'
 import { API_STATUS_CODES } from '../../../config'
+import { NodeAttr } from '../../../components/app/details/triggerView/types'
 
 const commonStyles = getCommonSelectStyle()
 
-const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl }: LinkedCIDetailModalProps) => {
-    const history = useHistory()
+const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalProps) => {
     const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
-    const handleClose = () => {
-        history.push(onCloseUrl)
-    }
+
+    const selectedNode =
+        workflows?.map((workflow) => workflow.nodes.find((node) => node.id === ciPipelineId))?.[0] ?? ({} as NodeAttr)
+
+    const { title: ciPipelineName, linkedCount: linkedWorkflowCount } = selectedNode
+
     const renderCloseModalButton = () => {
         return (
             <button type="button" onClick={handleClose}>
@@ -50,7 +54,8 @@ const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl 
             environment: string
         }
     >({ initialSortKey: SortableKeys.name, parseSearchParams })
-    const { pageSize, offset, searchKey, sortOrder, handleSearch, environment, changePage, changePageSize } = urlFilters
+    const { pageSize, offset, searchKey, sortOrder, sortBy, handleSearch, environment, changePage, changePageSize } =
+        urlFilters
     const filterConfig = useMemo(
         () => ({
             size: pageSize,
@@ -58,8 +63,9 @@ const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl 
             searchKey,
             environment,
             sortOrder,
+            sortBy,
         }),
-        [pageSize, offset, searchKey, sortOrder, environment],
+        [pageSize, offset, searchKey, sortOrder, sortBy, environment],
     )
 
     const abortControllerRef = useRef(new AbortController())
@@ -194,7 +200,7 @@ const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl 
                         />
                     </div>
                 </div>
-                {!loading && result.totalCount > 20 ? (
+                {!loading && result.totalCount > DEFAULT_BASE_PAGE_SIZE ? (
                     <Pagination
                         rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top dc__no-shrink"
                         size={result.totalCount}

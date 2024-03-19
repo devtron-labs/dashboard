@@ -12,14 +12,25 @@ import appListLoading from './constants'
 import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 
-const AppListRow = ({ appId, appName, deploymentStatus, environmentName, triggerMode }: LinkedCIAppDto) => {
+const AppListRow = ({
+    appId,
+    appName,
+    deploymentStatus,
+    environmentName,
+    triggerMode,
+    environmentId,
+}: LinkedCIAppDto) => {
     return (
-        <Link to={`${URLS.APP}/${appId}`} target="_blank" style={{ textDecoration: 'none' }}>
+        <Link
+            to={`${URLS.APP}/${appId}/${URLS.APP_DETAILS}${environmentId ? `/${environmentId}` : ''}`}
+            target="_blank"
+            className="dc__no-decor"
+        >
             <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
                 <span className="dc__ellipsis-right">{appName}</span>
                 <span>{environmentName}</span>
-                <span>{triggerMode}</span>
-                <AppStatus appStatus={deploymentStatus} />
+                <span className="dc__first-letter-capitalize">{triggerMode}</span>
+                <AppStatus appStatus={deploymentStatus} isDeploymentStatus />
             </div>
         </Link>
     )
@@ -36,23 +47,21 @@ const LinkedCIAppList = ({
     isLoading: boolean
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }) => {
-    const renderClearFiltersButton = () => {
-        return (
-            <button type="button" className="bcb-5 w-125px-imp fs-13 fw-6 lh-20 cn-0 dc__border-radius-4-imp">
-                <span className="pl-12 pr-12 pb-8 pt-8">Clear Filters</span>
-            </button>
-        )
-    }
+    const renderClearFilterButton = () => (
+        <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
+            Clear Filters
+        </button>
+    )
 
     if (!isLoading && totalCount === 0) {
         return (
             <GenericEmptyState
                 image={EmptyStateImage}
-                classname="fs-16"
+                classname="flex-grow-1"
                 title="No Results"
                 subTitle="We could not find any matching results"
                 isButtonAvailable
-                renderButton={renderClearFiltersButton}
+                renderButton={renderClearFilterButton}
             />
         )
     }
