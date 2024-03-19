@@ -6,6 +6,7 @@ import {
     Pagination,
     UseUrlFiltersReturnType,
     GenericEmptyState,
+    DEFAULT_BASE_PAGE_SIZE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { LinkedCIAppDto } from './types'
@@ -22,14 +23,18 @@ const AppListRow = ({
     triggerMode,
 }: LinkedCIAppDto) => {
     return (
-        <Link to={`${URLS.APP}/${appId}`} target="_blank" style={{ textDecoration: 'none' }}>
+        <Link
+            to={`${URLS.APP}/${appId}/${URLS.APP_DETAILS}${environmentId ? `/${environmentId}` : ''}`}
+            target="_blank"
+            className="dc__no-decor"
+        >
             <div
                 className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 "
                 key={`${appId}-${environmentId}`}
             >
                 <span className="dc__ellipsis-right">{appName}</span>
                 <span>{environmentName}</span>
-                <span>{triggerMode}</span>
+                <span className="dc__first-letter-capitalize">{triggerMode}</span>
                 <span>
                     <AppStatus appStatus={deploymentStatus} />
                 </span>
@@ -108,8 +113,7 @@ const LinkedCIAppList = ({
                 )}
             </div>
             <div>
-                {/* todo (Arun) -- fix this */}
-                {!isLoading && totalCount > 20 ? (
+                {!isLoading && totalCount > DEFAULT_BASE_PAGE_SIZE ? (
                     <Pagination
                         rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
                         size={totalCount}
