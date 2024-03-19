@@ -10,7 +10,7 @@ import {
     OptionType,
     LoadingIndicator,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { LinkedCIDetailModalProps } from './types'
 import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg'
@@ -21,15 +21,18 @@ import { getAppList, getEnvironmentList } from './service'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
 import { parseSearchParams } from './utils'
+import { NodeAttr } from '../../../components/app/details/triggerView/types'
 
 const commonStyles = getCommonSelectStyle()
 
-const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl }: LinkedCIDetailModalProps) => {
-    const history = useHistory()
+const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalProps) => {
     const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
-    const handleClose = () => {
-        history.push(onCloseUrl)
-    }
+
+    const selectedNode =
+        workflows.map((workflow) => workflow.nodes.find((node) => node.id === ciPipelineId))?.[0] ?? ({} as NodeAttr)
+
+    const { title: ciPipelineName, linkedCount: linkedWorkflowCount } = selectedNode
+
     const renderCloseModalButton = () => {
         return (
             <button type="button" onClick={handleClose}>
@@ -50,7 +53,7 @@ const LinkedCIDetailsModal = ({ ciPipelineName, linkedWorkflowCount, onCloseUrl 
             size: pageSize,
             offset,
             searchKey,
-            order: sortOrder,
+            sortOrder,
             environment,
         }),
         [pageSize, offset, searchKey, sortOrder, environment],

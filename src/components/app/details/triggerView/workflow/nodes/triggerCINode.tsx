@@ -8,7 +8,6 @@ import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
-import { LinkedCIDetail } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/index'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -193,11 +192,6 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         Select Material
                     </button>
                 </div>
-                <LinkedCIDetail
-                    ciPipelineName={this.props.title}
-                    linkedWorkflowCount={this.props.linkedCount}
-                    onCloseUrl={this.props.match.url}
-                />
             </div>
         )
     }

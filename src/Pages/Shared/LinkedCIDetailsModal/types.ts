@@ -1,10 +1,11 @@
+import { WorkflowType } from '../../../components/app/details/triggerView/types'
 import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
 
 export interface LinkedCIDetailModalProps {
-    ciPipelineName: string
-    linkedWorkflowCount: number
-    onCloseUrl: string
+    workflows: WorkflowType[]
+    handleClose: () => void
 }
+
 export interface LinkedCIAppDto {
     appId: number
     appName: string
