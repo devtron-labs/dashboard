@@ -304,6 +304,7 @@ const DynamicTabs = ({
                 <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
                     <div>
                         <RefreshIcon
+                            data-testid="refresh-icon"
                             className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
                             onClick={() => {
                                 clearInterval(interval)

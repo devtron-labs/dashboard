@@ -3,8 +3,8 @@ import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-la
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import GenerateActionButton from './GenerateActionButton'
-import { getDateInMilliseconds } from './authorization.utils'
-import { RegenerateModalType, TokenResponseType } from './authorization.type'
+import { getDateInMilliseconds } from './apiToken.utils'
+import { RegenerateModalType, TokenResponseType } from './apiToken.type'
 import { updateGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
 import ExpirationDate from './ExpirationDate'
@@ -20,8 +20,7 @@ const RegeneratedModal = ({
 }: RegenerateModalType) => {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: any }>({
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '30 days',
         value: 30,
     })
@@ -31,8 +30,7 @@ const RegeneratedModal = ({
     )
     const [invalidCustomDate, setInvalidCustomDate] = useState(false)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onChangeSelectFormData = (selectedOption: { label: string; value: any }) => {
+    const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
         setRegeneratedExpireAtInMs(selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value))
         setSelectedExpirationDate(selectedOption)
 
