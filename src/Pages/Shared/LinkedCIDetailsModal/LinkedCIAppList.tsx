@@ -1,49 +1,122 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    SortableTableHeaderCell,
+    AppStatus,
+    Pagination,
+    UseUrlFiltersReturnType,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { LinkedCIAppListDto } from './types'
-import AppListData from './constants'
+import { LinkedCIAppDto } from './types'
+import appListLoading from './constants'
+import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
+import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 
-const AppListRow = ({ appName, environment, triggerMode, deploymentStatus }: LinkedCIAppListDto) => {
+const AppListRow = ({
+    appId,
+    appName,
+    deploymentStatus,
+    environmentId,
+    environmentName,
+    triggerMode,
+}: LinkedCIAppDto) => {
     return (
-        <Link to={URLS.APP}>
-            <div className="linked-ci-apps pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
+        <Link to={`${URLS.APP}/${appId}`} target="_blank" style={{ textDecoration: 'none' }}>
+            <div
+                className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 "
+                key={`${appId}-${environmentId}`}
+            >
                 <span className="dc__ellipsis-right">{appName}</span>
-                <span>{environment}</span>
+                <span>{environmentName}</span>
                 <span>{triggerMode}</span>
-                <span> {deploymentStatus} </span>
+                <span>
+                    <AppStatus appStatus={deploymentStatus} />
+                </span>
             </div>
         </Link>
     )
 }
 
-const LinkedCIAppList = () => {
-    const [sortOrder, setSortOrder] = useState(SortingOrder.ASC)
-
-    const handleSorting = () => {
-        setSortOrder(SortingOrder.DESC)
+const LinkedCIAppList = ({
+    appList,
+    totalCount,
+    isLoading,
+    urlFilters,
+}: {
+    appList: LinkedCIAppDto[]
+    totalCount: number
+    isLoading: boolean
+    urlFilters: UseUrlFiltersReturnType<SortableKeys>
+}) => {
+    const renderClearFiltersButton = () => {
+        return <button type="button">Clear Filters</button>
     }
 
+    if (!isLoading && totalCount === 0) {
+        return (
+            <GenericEmptyState
+                image={EmptyStateImage}
+                classname="fs-16"
+                title="No Results"
+                subTitle="We could not find any matching results"
+                isButtonAvailable
+                renderButton={renderClearFiltersButton}
+            />
+        )
+    }
+    const { offset, pageSize, changePage, changePageSize, sortOrder } = urlFilters
+
     return (
-        <div>
-            <div className="linked-ci-apps dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6">
-                {/* todo (Arun) -- fix this */}
-                <SortableTableHeaderCell
-                    title="Application"
-                    sortOrder={sortOrder}
-                    isSorted={false}
-                    triggerSorting={handleSorting}
-                    disabled={false}
-                />
-                <span>Deploys To (ENV)</span>
-                <span>Trigger Mode</span>
-                <span>Last Deployment Status</span>
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+            <div className="flexbox-col flex-grow-1">
+                <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6 cn-7">
+                    {/* todo (Arun) -- fix this */}
+                    <SortableTableHeaderCell
+                        title="Application"
+                        sortOrder={sortOrder}
+                        isSorted={false}
+                        triggerSorting={() => {}}
+                        disabled={isLoading}
+                    />
+                    <span>Deploys To (ENV)</span>
+                    <span>Trigger Mode</span>
+                    <span>Last Deployment Status</span>
+                </div>
+                {isLoading ? (
+                    <div className="flexbox-col flex-grow-1 show-shimmer-loading">
+                        {appListLoading.map((appData) => (
+                            <div
+                                className="display-grid dc__align-items-center linked-ci-detail__table-row pl-20 pr-20 pt-10 pb-10"
+                                key={appData.appId}
+                            >
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                                <span className="child child-shimmer-loading" />
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+                        {appList.map((appData) => (
+                            <AppListRow {...appData} />
+                        ))}
+                    </div>
+                )}
             </div>
-            <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
-                {AppListData.map((appData) => (
-                    <AppListRow {...appData} />
-                ))}
+            <div>
+                {/* todo (Arun) -- fix this */}
+                {!isLoading && totalCount > 20 ? (
+                    <Pagination
+                        rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
+                        size={totalCount}
+                        offset={offset}
+                        pageSize={pageSize}
+                        changePage={changePage}
+                        changePageSize={changePageSize}
+                    />
+                ) : null}
             </div>
         </div>
     )

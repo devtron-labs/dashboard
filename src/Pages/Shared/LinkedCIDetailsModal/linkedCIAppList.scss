@@ -1,6 +1,6 @@
-.linked-ci-apps {
-    display: grid;
-    grid-template-columns: 200px 200px 100px auto;
-    column-gap: 16px;
-    align-items: center;
+.linked-ci-detail {
+    &__table-row {
+        grid-template-columns: 200px 200px 100px auto;
+        column-gap: 16px;
+    }
 }

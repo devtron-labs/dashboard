@@ -8,7 +8,7 @@ import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
-import LinkedCIDetails from '../../../../../../Pages/Shared/LinkedCIDetailsModal/LinkedCIDetails'
+import { LinkedCIDetail } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/index'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -68,8 +68,8 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         )
     }
 
-    // function to open linked-ci-details modal on chip click
     handleLinkedCIWorkflowChipClick = (e) => {
+        // stopPropagation to stop redirection to ci-details
         e.stopPropagation()
         this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
@@ -123,82 +123,82 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
         }
         return (
-            <>
+            <div
+                className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
+                onClick={(e) => {
+                    if (!hideDetails) {
+                        this.redirectToCIDetails()
+                    }
+                }}
+            >
+                {this.props.linkedCount ? (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content={`This build pipeline is linked as image source in ${this.props.linkedCount} ${this.props.linkedCount === 1 ? 'workflow' : 'workflows'}.`}
+                    >
+                        <span className="link-count" onClick={this.handleLinkedCIWorkflowChipClick}>
+                            <img src={link} className="icon-dim-12 mr-5" alt="" />
+                            {this.props.linkedCount}
+                        </span>
+                    </Tippy>
+                ) : null}
                 <div
-                    className={`${hideDetails ? 'workflow-node' : 'workflow-node cursor'}`}
-                    onClick={(e) => {
-                        if (!hideDetails) {
-                            this.redirectToCIDetails()
-                        }
+                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
+                        this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                    }`}
+                    style={{
+                        opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
                     }}
                 >
-                    {this.props.linkedCount ? (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top"
-                            content={`Build Pipeline is linked as image source in ${this.props.linkedCount} ${this.props.linkedCount === 1 ? 'workflow.' : 'workflows.'}`}
-                        >
-                            <span className="link-count" onClick={this.handleLinkedCIWorkflowChipClick}>
-                                <img src={link} className="icon-dim-12 mr-5" alt="" />
-                                {this.props.linkedCount}
-                            </span>
+                    {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
+                </div>
+                <div className="workflow-node__title flex">
+                    {/* <img src={build} className="icon-dim-24 mr-16" /> */}
+                    <div className="workflow-node__full-width-minus-Icon">
+                        {!this.props.isJobView && (
+                            <span className="workflow-node__text-light">{this.props.isJobCI ? 'Job' : 'Build'}</span>
+                        )}
+                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
+                            <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
-                    ) : null}
+                        {this.props.isJobView && _selectedEnv && (
+                            <>
+                                <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
+                                {_selectedEnv.name === DEFAULT_ENV && (
+                                    <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>
+                                )}
+                            </>
+                        )}
+                    </div>
                     <div
-                        className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
-                            this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
+                        className={`workflow-node__icon-common ml-8 ${
+                            this.props.isJobView || this.props.isJobCI
+                                ? 'workflow-node__job-icon'
+                                : 'workflow-node__CI-icon'
                         }`}
-                        style={{
-                            opacity: this.props.isCITriggerBlocked ? 1 : 0.4,
+                    />
+                </div>
+                {this.renderStatus()}
+                <div className="workflow-node__btn-grp">
+                    <button
+                        data-testid={`workflow-build-select-material-button-${this.props.index}`}
+                        className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            context.onClickCIMaterial(this.props.id, this.props.title)
                         }}
                     >
-                        {this.props.isCITriggerBlocked ? 'BLOCKED' : this.props.triggerType}
-                    </div>
-                    <div className="workflow-node__title flex">
-                        {/* <img src={build} className="icon-dim-24 mr-16" /> */}
-                        <div className="workflow-node__full-width-minus-Icon">
-                            {!this.props.isJobView && (
-                                <span className="workflow-node__text-light">
-                                    {this.props.isJobCI ? ' Job ' : ' Build '}
-                                </span>
-                            )}
-                            <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
-                                <div className="dc__ellipsis-left">{this.props.title}</div>
-                            </Tippy>
-                            {this.props.isJobView && _selectedEnv && (
-                                <>
-                                    <span className="fw-4 fs-11">Env: {_selectedEnv.name}</span>
-                                    {_selectedEnv.name === DEFAULT_ENV && (
-                                        <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>
-                                    )}
-                                </>
-                            )}
-                        </div>
-                        <div
-                            className={`workflow-node__icon-common ml-8 ${
-                                this.props.isJobView || this.props.isJobCI
-                                    ? 'workflow-node__job-icon'
-                                    : 'workflow-node__CI-icon'
-                            }`}
-                        />
-                    </div>
-                    {this.renderStatus()}
-                    <div className="workflow-node__btn-grp">
-                        <button
-                            data-testid={`workflow-build-select-material-button-${this.props.index}`}
-                            className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                context.onClickCIMaterial(this.props.id, this.props.title)
-                            }}
-                        >
-                            Select Material
-                        </button>
-                    </div>
+                        Select Material
+                    </button>
                 </div>
-                <LinkedCIDetails ciPipelineName={this.props.title} linkedWorkflowCount={this.props.linkedCount} />
-            </>
+                <LinkedCIDetail
+                    ciPipelineName={this.props.title}
+                    linkedWorkflowCount={this.props.linkedCount}
+                    onCloseUrl={this.props.match.url}
+                />
+            </div>
         )
     }
 
