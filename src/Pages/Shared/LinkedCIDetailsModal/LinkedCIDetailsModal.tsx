@@ -156,7 +156,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                 </div>
                 <div className="flexbox-col flex-grow-1">
                     <InfoColourBar
-                        message={getLinkedCITippyContent(linkedWorkflowCount || 0)}
+                        message={getLinkedCITippyContent(linkedWorkflowCount)}
                         classname="info_bar dc__position-sticky"
                         Icon={Info}
                     />

@@ -119,7 +119,7 @@ export class CINode extends Component<CINodeProps> {
                     {this.props.linkedCount > 0 && (
                         <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
                             <span
-                                className={`link-count ${
+                                className={`link-count cursor dc__hover-border-n300 ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey
                                         ? 'link-count--include-add-cd'
                                         : ''

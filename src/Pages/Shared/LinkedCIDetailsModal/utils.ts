@@ -5,5 +5,5 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
     environment: searchParams.get(ENVIRONMENT_FILTER_SEARCH_KEY) || SELECT_ALL_VALUE,
 })
 
-export const getLinkedCITippyContent = (workflowCount: number) =>
+export const getLinkedCITippyContent = (workflowCount: number = 0) =>
     `This build pipeline is linked as image source in ${workflowCount} ${workflowCount === 1 ? 'workflow' : 'workflows'}.`
