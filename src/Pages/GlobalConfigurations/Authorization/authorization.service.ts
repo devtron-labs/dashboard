@@ -10,9 +10,9 @@ import {
     trash,
     UserListFilterParams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CustomRoles } from './shared/components/userGroups/userGroups.types'
 import { Routes } from '../../../config'
 import {
+    CustomRoles,
     PermissionGroup,
     PermissionGroupBulkDeletePayload,
     PermissionGroupCreateOrUpdatePayload,
@@ -23,8 +23,16 @@ import {
     UserDto,
     UserRole,
 } from './types'
-import { transformUserResponse } from './utils'
+import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
+import { importComponentFromFELibrary } from '../../../components/common'
+
+const getUserStatusAndTimeoutPayload = importComponentFromFELibrary(
+    'getUserStatusAndTimeoutPayload',
+    () => ({}),
+    'function',
+)
+const getStatusAndTimeoutPayload = importComponentFromFELibrary('getStatusAndTimeoutPayload', () => ({}), 'function')
 
 // User Permissions
 export const getUserById = async (userId: User['id']): Promise<User> => {
@@ -38,11 +46,33 @@ export const getUserById = async (userId: User['id']): Promise<User> => {
     }
 }
 
-export const createOrUpdateUser = ({ emailId, ...data }: UserCreateOrUpdatePayload) => {
+export const createOrUpdateUser = ({
+    emailId,
+    userStatus,
+    timeToLive,
+    userRoleGroups,
+    roleFilters,
+    ...data
+}: UserCreateOrUpdatePayload) => {
     const _data: UserDto = {
         ...data,
         email_id: emailId,
+        userRoleGroups: userRoleGroups.map(({ id, name, status: groupStatus, timeToLive: groupTimeToLive }) => ({
+            roleGroup: {
+                id,
+                name,
+            },
+            ...getStatusAndTimeoutPayload(groupStatus, groupTimeToLive),
+        })),
+        roleFilters: roleFilters.map(
+            ({ status: roleFilterStatus, timeToLive: roleFilterTimeToLive, ...roleFilter }) => ({
+                ...roleFilter,
+                ...getStatusAndTimeoutPayload(roleFilterStatus, roleFilterTimeToLive),
+            }),
+        ),
+        ...getUserStatusAndTimeoutPayload(userStatus, timeToLive),
     }
+
     const isUpdate = !!_data.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
@@ -95,20 +125,38 @@ export const deleteUserInBulk = (payload: UserBulkDeletePayload) =>
 export const getPermissionGroupById = async (groupId: PermissionGroup['id']): Promise<PermissionGroup> => {
     try {
         const { result } = (await get(`${Routes.USER_ROLE_GROUP}/${groupId}`)) as ResponseType<PermissionGroupDto>
-        return result
+        return transformPermissionGroupResponse(result)
     } catch (error) {
         showError(error)
         throw error
     }
 }
 
-export const createOrUpdatePermissionGroup = (payload: PermissionGroupCreateOrUpdatePayload) => {
+export const createOrUpdatePermissionGroup = ({
+    name,
+    description,
+    roleFilters,
+    ...payload
+}: PermissionGroupCreateOrUpdatePayload) => {
+    const _payload = {
+        ...payload,
+        name: name.trim(),
+        description: description?.trim(),
+        roleFilters: roleFilters.map(
+            // Remove the status and timestamp from the payload for permission group
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            ({ status: _roleFilterStatus, timeToLive: _roleFilterTimeToLive, ...roleFilter }) => ({
+                ...roleFilter,
+            }),
+        ),
+    }
+
     const isUpdate = !!payload.id
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : null,
     }
 
-    return isUpdate ? put(Routes.USER_ROLE_GROUP, payload, options) : post(Routes.USER_ROLE_GROUP, payload, options)
+    return isUpdate ? put(Routes.USER_ROLE_GROUP, _payload, options) : post(Routes.USER_ROLE_GROUP, _payload, options)
 }
 
 export const getPermissionGroupList = async (
@@ -130,7 +178,7 @@ export const getPermissionGroupList = async (
         }>
 
         return {
-            permissionGroups,
+            permissionGroups: permissionGroups.map(transformPermissionGroupResponse),
             totalCount,
         }
     } catch (error) {

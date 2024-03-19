@@ -14,7 +14,7 @@ import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-i
 
 import { PermissionGroupRowProps } from './types'
 import { deletePermissionGroup } from '../../authorization.service'
-import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const PermissionGroupRow = ({
     id,
@@ -93,10 +93,10 @@ const PermissionGroupRow = ({
                     </Link>
                 </span>
                 <span className="dc__ellipsis-right">{description || '-'}</span>
-                <div className="flex dc__gap-12">
+                <div className="flex dc__gap-4">
                     <Link
                         type="button"
-                        className="dc__visible-hover--child dc__transparent"
+                        className="dc__visible-hover--child dc__transparent p-4 flex"
                         data-testid={`user-permission__edit-button-${index}`}
                         aria-label="Edit permission group"
                         to={`${path}/${id}`}
@@ -105,12 +105,12 @@ const PermissionGroupRow = ({
                     </Link>
                     <button
                         type="button"
-                        className="dc__visible-hover--child dc__transparent"
+                        className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
                         data-testid={`permission-group__delete-button-${index}`}
                         onClick={toggleDeleteModal}
                         aria-label="Delete permission group"
                     >
-                        <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                        <Trash className="scn-6 icon-dim-16 mw-16" />
                     </button>
                 </div>
             </div>

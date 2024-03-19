@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { useParams, useRouteMatch, generatePath, useHistory, Route, Switch } from 'react-router'
-import { Progressing, multiSelectStyles, Option, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, multiSelectStyles, Option, useAsync, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import Select, { components } from 'react-select'
 import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import moment from 'moment'
@@ -310,10 +310,10 @@ const TestsFilter: React.FC<{ component }> = ({ component: Component }) => {
 
     function handleChange(selected, change) {
         const { action, name, option } = change
-        if (action === 'select-option' && name === 'type') {
+        if (action === ReactSelectInputAction.selectOption && name === 'type') {
             setSelectedType(option?.value)
             setSelectionState('name')
-        } else if (action === 'remove-value') {
+        } else if (action === ReactSelectInputAction.removeValue) {
             const {
                 removedValue: { label, value, type },
             } = change

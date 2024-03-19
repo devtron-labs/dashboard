@@ -6,7 +6,7 @@ import { InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-commo
 import { MomentDateFormat } from '../../../../config'
 import { SingleDatePickerComponent } from '../../../../components/common'
 import { DropdownIndicator } from '../../../../components/security/security.util'
-import { getOptions, getDateInMilliseconds } from './authorization.utils'
+import { getOptions, getDateInMilliseconds } from './apiToken.utils'
 import { Option } from '../../../../components/v2/common/ReactSelect.utils'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 

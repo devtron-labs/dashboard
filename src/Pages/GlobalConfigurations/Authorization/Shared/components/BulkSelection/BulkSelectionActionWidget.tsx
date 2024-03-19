@@ -77,12 +77,12 @@ const BulkSelectionActionWidget = ({
                     >
                         <button
                             type="button"
-                            className="dc__transparent flex p-0"
+                            className="dc__transparent flex p-0 icon-delete"
                             onClick={openBulkDeleteModal}
                             aria-label="Delete selected user"
                             disabled={areActionsDisabled}
                         >
-                            <Trash className="scn-6 icon-dim-28 p-6 icon-delete" />
+                            <Trash className="scn-6 icon-dim-28 p-6" />
                         </button>
                     </Tippy>
                     <div className="dc__divider h-16" />

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
 import { DOCUMENTATION } from '../../config'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -21,7 +20,6 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
     parentReloading,
@@ -36,13 +34,11 @@ export default function CIConfigForm({
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems,
     parentState,
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
 }: CIConfigFormProps) {
-    const history = useHistory()
     const currentMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
@@ -216,12 +212,7 @@ export default function CIConfigForm({
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
             toast.success('Successfully saved.')
-            reload()
-
-            if (!isCiPipeline) {
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.CI_CONFIG)
-                history.push(navItems[stageIndex + 1].href)
-            }
+            reload(false, !isCiPipeline)
         } catch (err) {
             showError(err)
         } finally {
