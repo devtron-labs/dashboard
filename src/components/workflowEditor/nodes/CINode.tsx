@@ -1,15 +1,18 @@
 import React, { Component } from 'react'
 import { WorkflowNodeType, SelectedNode } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
 import link from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { URLS } from '../../../config'
+import { LinkedCIDetail } from '../../../Pages/Shared/LinkedCIDetailsModal'
+import { LinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
-export interface CINodeProps {
+export interface CINodeProps extends RouteComponentProps<{}>{
     x: number
     y: number
     width: number
@@ -41,6 +44,14 @@ export interface CINodeProps {
 }
 
 export class CINode extends Component<CINodeProps> {
+
+    handleLinkedCIWorkflowChipClick = (e) => {
+        // stopPropagation to stop redirection to ci-details
+        e.stopPropagation()
+        e.preventDefault()
+        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
+    }
+
     onClickAddNode = (event: any) => {
         event.preventDefault()
         event.stopPropagation()
@@ -108,7 +119,7 @@ export class CINode extends Component<CINodeProps> {
             <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.linkedCount}>
+                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={LinkedCITippyContent(this.props.linkedCount)}>
                             <span
                                 className={`link-count ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey
@@ -116,6 +127,7 @@ export class CINode extends Component<CINodeProps> {
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
+                                onClick={this.handleLinkedCIWorkflowChipClick}
                             >
                                 <img src={link} className="icon-dim-12 mr-5" alt="" />
                                 {this.props.linkedCount}

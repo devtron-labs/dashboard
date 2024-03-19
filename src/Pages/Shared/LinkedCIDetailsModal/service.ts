@@ -16,8 +16,10 @@ export const getEnvironmentList = async (ciPipelineId: string): Promise<string[]
 
 export const getAppList = async (
     ciPipelineId: string,
+    // todo (arun) - add type for filterConfig
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filterConfig: Record<string, any>,
+    signal?: AbortSignal,
 ): Promise<{
     data: LinkedCIAppDto[]
     totalCount: number
@@ -32,6 +34,7 @@ export const getAppList = async (
             result: { data, totalCount },
         } = (await get(
             getUrlWithSearchParams(`app/ci-pipeline/${ciPipelineId}/linked-ci/downstream/cd`, queryParams ?? {}),
+            { signal },
         )) as ResponseType<{
             data: LinkedCIAppDto[]
             totalCount: number

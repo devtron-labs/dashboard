@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import {
     SortableTableHeaderCell,
     AppStatus,
-    Pagination,
     UseUrlFiltersReturnType,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -13,26 +12,14 @@ import appListLoading from './constants'
 import { SortableKeys } from '../../GlobalConfigurations/Authorization/PermissionGroups/List/constants'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 
-const AppListRow = ({
-    appId,
-    appName,
-    deploymentStatus,
-    environmentId,
-    environmentName,
-    triggerMode,
-}: LinkedCIAppDto) => {
+const AppListRow = ({ appId, appName, deploymentStatus, environmentName, triggerMode }: LinkedCIAppDto) => {
     return (
         <Link to={`${URLS.APP}/${appId}`} target="_blank" style={{ textDecoration: 'none' }}>
-            <div
-                className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 "
-                key={`${appId}-${environmentId}`}
-            >
+            <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
                 <span className="dc__ellipsis-right">{appName}</span>
                 <span>{environmentName}</span>
                 <span>{triggerMode}</span>
-                <span>
-                    <AppStatus appStatus={deploymentStatus} />
-                </span>
+                <AppStatus appStatus={deploymentStatus} />
             </div>
         </Link>
     )
@@ -50,7 +37,11 @@ const LinkedCIAppList = ({
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }) => {
     const renderClearFiltersButton = () => {
-        return <button type="button">Clear Filters</button>
+        return (
+            <button type="button" className="bcb-5 w-125px-imp fs-13 fw-6 lh-20 cn-0 dc__border-radius-4-imp">
+                <span className="pl-12 pr-12 pb-8 pt-8">Clear Filters</span>
+            </button>
+        )
     }
 
     if (!isLoading && totalCount === 0) {
@@ -65,17 +56,17 @@ const LinkedCIAppList = ({
             />
         )
     }
-    const { offset, pageSize, changePage, changePageSize, sortOrder } = urlFilters
+    const { sortOrder } = urlFilters
 
     return (
-        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+        <div className="flexbox-col dc__content-space flex-grow-1">
             <div className="flexbox-col flex-grow-1">
                 <div className="display-grid dc__align-items-center linked-ci-detail__table-row dc__uppercase pl-20 pr-20 pt-6 pb-6 dc__border-bottom fs-12 fw-6 cn-7">
                     {/* todo (Arun) -- fix this */}
                     <SortableTableHeaderCell
                         title="Application"
                         sortOrder={sortOrder}
-                        isSorted={false}
+                        isSorted
                         triggerSorting={() => {}}
                         disabled={isLoading}
                     />
@@ -100,23 +91,10 @@ const LinkedCIAppList = ({
                 ) : (
                     <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                         {appList.map((appData) => (
-                            <AppListRow {...appData} />
+                            <AppListRow {...appData} key={`${appData.appId}-${appData.environmentId}`} />
                         ))}
                     </div>
                 )}
-            </div>
-            <div>
-                {/* todo (Arun) -- fix this */}
-                {!isLoading && totalCount > 20 ? (
-                    <Pagination
-                        rootClassName="flex dc__content-space pl-20 pr-20 dc__border-top"
-                        size={totalCount}
-                        offset={offset}
-                        pageSize={pageSize}
-                        changePage={changePage}
-                        changePageSize={changePageSize}
-                    />
-                ) : null}
             </div>
         </div>
     )

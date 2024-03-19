@@ -9,6 +9,7 @@ import link from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
 import { LinkedCIDetail } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/index'
+import { LinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -136,7 +137,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         className="default-tt w-200"
                         arrow={false}
                         placement="top"
-                        content={`This build pipeline is linked as image source in ${this.props.linkedCount} ${this.props.linkedCount === 1 ? 'workflow' : 'workflows'}.`}
+                        content={LinkedCITippyContent(this.props.linkedCount)}
                     >
                         <span className="link-count" onClick={this.handleLinkedCIWorkflowChipClick}>
                             <img src={link} className="icon-dim-12 mr-5" alt="" />
