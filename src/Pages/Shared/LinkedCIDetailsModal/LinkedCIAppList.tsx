@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { URLS } from '../../../config'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
@@ -14,7 +15,11 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
         className="dc__no-decor"
     >
         <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
-            <span className="dc__ellipsis-right">{appName}</span>
+            <span className="dc__ellipsis-right">
+                <Tippy className="default-tt" placement="right" arrow={false} content={appName}>
+                    <span>{appName}</span>
+                </Tippy>
+            </span>
             {environmentName ? (
                 <>
                     <span>{environmentName}</span>
