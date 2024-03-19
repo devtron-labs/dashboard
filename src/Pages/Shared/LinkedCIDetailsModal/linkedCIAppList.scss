@@ -1,6 +1,6 @@
 .linked-ci-detail {
     &__table-row {
-        grid-template-columns: 200px 200px 100px auto;
+        grid-template-columns: 200px 200px 100px 1fr;
         column-gap: 16px;
     }
 }

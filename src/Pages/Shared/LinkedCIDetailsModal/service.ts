@@ -1,5 +1,5 @@
 import { get, showError, ResponseType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
-import { LinkedCIAppDto } from './types'
+import { LinkedCIAppDto, LinkedCIAppListFilterParams } from './types'
 import { SELECT_ALL_VALUE } from '../../../config'
 
 export const getEnvironmentList = async (ciPipelineId: string): Promise<string[]> => {
@@ -16,8 +16,8 @@ export const getEnvironmentList = async (ciPipelineId: string): Promise<string[]
 
 export const getAppList = async (
     ciPipelineId: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filterConfig: Record<string, any>,
+    filterConfig: LinkedCIAppListFilterParams,
+    signal?: AbortSignal,
 ): Promise<{
     data: LinkedCIAppDto[]
     totalCount: number
@@ -32,6 +32,7 @@ export const getAppList = async (
             result: { data, totalCount },
         } = (await get(
             getUrlWithSearchParams(`app/ci-pipeline/${ciPipelineId}/linked-ci/downstream/cd`, queryParams ?? {}),
+            { signal },
         )) as ResponseType<{
             data: LinkedCIAppDto[]
             totalCount: number

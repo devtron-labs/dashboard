@@ -1,5 +1,8 @@
+import { BaseFilterQueryParams } from '@devtron-labs/devtron-fe-common-lib'
 import { WorkflowType } from '../../../components/app/details/triggerView/types'
+import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
+import { SortableKeys } from './constants'
 
 export interface LinkedCIDetailModalProps {
     workflows: WorkflowType[]
@@ -9,7 +12,9 @@ export interface LinkedCIDetailModalProps {
 export interface LinkedCIAppDto {
     appId: number
     appName: string
-    deploymentStatus: (typeof DEPLOYMENT_STATUS)[keyof typeof DEPLOYMENT_STATUS]
+    deploymentStatus:
+        | (typeof DEPLOYMENT_STATUS)[keyof typeof DEPLOYMENT_STATUS]
+        | typeof StatusConstants.NOT_DEPLOYED.titleCase
     environmentId: number
     environmentName: string
     triggerMode: (typeof TriggerType)[keyof typeof TriggerType]
@@ -17,3 +22,7 @@ export interface LinkedCIAppDto {
 
 // Another interface to create segregation from LinkedCIAppDto
 export interface LinkedCIApp extends LinkedCIAppDto {}
+
+export type LinkedCIAppListFilterParams = BaseFilterQueryParams<SortableKeys> & {
+    environment: string
+}

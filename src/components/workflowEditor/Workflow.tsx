@@ -384,9 +384,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
-                match={this.props.match}
                 history={this.props.history}
                 location={this.props.location}
+                match={this.props.match}
             />
         )
     }
