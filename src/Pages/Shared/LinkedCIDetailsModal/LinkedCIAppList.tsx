@@ -49,19 +49,21 @@ const LinkedCIAppList = ({
     isLoading: boolean
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }) => {
-    const renderClearFiltersButton = () => {
-        return <button type="button">Clear Filters</button>
-    }
+    const renderClearFilterButton = () => (
+        <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
+            Clear Filters
+        </button>
+    )
 
     if (!isLoading && totalCount === 0) {
         return (
             <GenericEmptyState
                 image={EmptyStateImage}
-                classname="fs-16"
+                classname="flex-grow-1"
                 title="No Results"
                 subTitle="We could not find any matching results"
                 isButtonAvailable
-                renderButton={renderClearFiltersButton}
+                renderButton={renderClearFilterButton}
             />
         )
     }
