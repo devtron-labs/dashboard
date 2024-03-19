@@ -173,10 +173,12 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
         if (getDeploymentWindowProfileMetaData) {
-            const { userActionState } = getDeploymentWindowProfileMetaData(params.appId, params.envId)
+          getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({userActionState}) =>{
             if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
             }
+           })
+            
         }
     }, [params.envId])
 
