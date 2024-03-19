@@ -206,7 +206,9 @@ const TerminalComponent = ({
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.TERMINAL, url)
+        if (showTerminal) {
+            selectedTab(NodeDetailTab.TERMINAL, `${url}/terminal`)
+        }
     }, [showTerminal])
 
     useEffect(() => {
