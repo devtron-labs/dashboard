@@ -36,6 +36,11 @@ export interface RollbackReleaseRequest {
     installedAppVersionId?: number
 }
 
+export interface DockerImageDetailsProps {
+    deployment: ChartDeploymentDetail
+    setShowDockerInfo: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 interface RollbackReleaseResponse extends ResponseType {
     result?: ActionResponse
 }
@@ -58,9 +63,4 @@ export const getDeploymentManifestDetails = (
 
 export const rollbackApplicationDeployment = (request: RollbackReleaseRequest): Promise<RollbackReleaseResponse> => {
     return put(Routes.HELM_DEPLOYMENT_ROLLBACK_API, request)
-}
-
-export interface dockerImageDetailsProps {
-    deployment: ChartDeploymentDetail
-    setShowDockerInfo: React.Dispatch<React.SetStateAction<boolean>>
 }
