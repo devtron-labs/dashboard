@@ -1,12 +1,12 @@
+import { Drawer, GenericEmptyState, Progressing, ReleaseTag, showError } from '@devtron-labs/devtron-fe-common-lib'
 import React, { Component } from 'react'
-import { showError, Progressing, Drawer, ReleaseTag, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { getCITriggerInfoModal } from '../service'
-import { ViewType } from '../../../config'
+import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 import close from '../../../assets/icons/ic-close.svg'
-import { MaterialHistory, CIMaterialType } from '../details/triggerView/MaterialHistory'
+import { ViewType } from '../../../config'
 import Artifacts from '../details/cicdHistory/Artifacts'
 import { HistoryComponentType, ImageComment } from '../details/cicdHistory/types'
-import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
+import { CIMaterialType, MaterialHistory } from '../details/triggerView/MaterialHistory'
+import { getCITriggerInfoModal } from '../service'
 
 interface TriggerInfoModalState {
     statusCode: number
@@ -29,7 +29,6 @@ export interface TriggerInfoModalProps {
     close: () => void
     envId: number | string
     ciArtifactId: number
-    commit?: string
 }
 
 export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerInfoModalState> {
@@ -73,7 +72,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId,
         }
-        getCITriggerInfoModal(params, this.props.commit)
+        getCITriggerInfoModal(params)
             .then((response) => {
                 this.setState({
                     statusCode: response.code,
@@ -159,16 +158,18 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                 />
             )
         } else {
-            const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
-                <div className="m-lr-0 flexbox trigger-modal-body-height dc__overflow-scroll">
+                <div className="m-lr-0 flexbox trigger-modal-body-height dc__overflow-scroll pb-12">
                     <div className="select-material">
-                        <MaterialHistory
-                            material={selectedMaterial}
-                            pipelineName=""
-                            toggleChanges={this.toggleChanges}
-                        />
+                        {this.state.materials.map((material) => (
+                            <MaterialHistory
+                                material={material}
+                                pipelineName=""
+                                toggleChanges={this.toggleChanges}
+                                key={material.id}
+                            />
+                        ))}
                         <div className="dc__dashed_icon_grid-container">
                             <hr className="dc__dotted-line" />
                             <div className="flex">
@@ -185,7 +186,8 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             type={HistoryComponentType.CI}
                             imageReleaseTags={this.state.imageReleaseTags}
                             imageComment={this.state.imageComment}
-                            ciPipelineId={selectedMaterial.id}
+                            // FIXME: This is a existing issue, we should be sending the pipeline if instead of the artifact if
+                            ciPipelineId={this.state.materials[0].id}
                             artifactId={this.props.ciArtifactId}
                             appReleaseTagNames={this.state.appReleaseTags}
                             tagsEditable={this.state.tagsEditable}
