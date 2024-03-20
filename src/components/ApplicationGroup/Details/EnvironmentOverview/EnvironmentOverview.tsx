@@ -189,6 +189,8 @@ export default function EnvironmentOverview({
                 lastDeployed: app.lastDeployedTime,
                 lastDeployedBy: app.lastDeployedBy,
                 lastDeployedImage: app.lastDeployedImage,
+                commits: app.commits,
+                ciArtifactId: app.ciArtifactId,
             }
             parsedData.appInfoList.push(appInfo)
         })

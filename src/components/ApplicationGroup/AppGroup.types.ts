@@ -344,6 +344,8 @@ export interface ApplistEnvType {
     lastDeployedTime: string
     lastDeployedBy?: string
     lastDeployedImage?: string
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppGroupListType {
