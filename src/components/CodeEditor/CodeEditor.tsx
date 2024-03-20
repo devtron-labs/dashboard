@@ -12,6 +12,7 @@ import ReactGA from 'react-ga4'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { configureMonacoYaml } from 'monaco-yaml'
 
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useJsonYaml, Select } from '../common'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
@@ -19,7 +20,6 @@ import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg
 import './codeEditor.scss'
 import 'monaco-editor'
 
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import YamlWorker from '../../yaml.worker.js?worker'
 import { cleanKubeManifest } from '../../util/Util'
 

@@ -28,12 +28,8 @@ import {
     getUserRole,
     createOrUpdateUser,
 } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
-import {
-    ActionTypes,
-    EntityTypes,
-} from '../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import {
     CURL_PREFIX,
     PLAYGROUND_TAB_LIST,
@@ -46,7 +42,10 @@ import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, W
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { UserCreateOrUpdatePayload } from '../../../Pages/GlobalConfigurations/Authorization/types'
+import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
+import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
+import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { getDefaultStatusAndTimeout, getDefaultUserStatusAndTimeout } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -197,10 +196,20 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             }
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
-                const userPermissionPayload: UserCreateOrUpdatePayload = {
-                    id: result.userId,
-                    emailId: result.userIdentifier,
-                    groups: [],
+                const userPermissionPayload = createUserPermissionPayload({
+                    id: result.id,
+                    userIdentifier: result.userIdentifier,
+                    userGroups: [],
+                    serverMode: SERVER_MODE.FULL,
+                    directPermission: [],
+                    chartPermission: {} as ChartGroupPermissionsFilter,
+                    k8sPermission: [],
+                    permissionType: PermissionType.SPECIFIC,
+                    ...getDefaultUserStatusAndTimeout(),
+                })
+                const { result: userPermissionResponse } = await createOrUpdateUser({
+                    ...userPermissionPayload,
+                    // Override the role filter
                     roleFilters: [
                         {
                             entity: EntityTypes.DIRECT,
@@ -209,11 +218,10 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                             team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
                             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+                            ...getDefaultStatusAndTimeout(),
                         },
                     ],
-                    superAdmin: false,
-                }
-                const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
+                })
                 if (userPermissionResponse) {
                     setGeneratedAPIToken(result.token)
                 }

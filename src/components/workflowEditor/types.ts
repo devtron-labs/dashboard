@@ -65,10 +65,12 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
+    noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
     envIds?: number[]
+    isGitOpsRepoNotConfigured?: boolean
     showWorkflowOptionsModal: boolean
     cachedCDConfigResponse: CdPipelineResult
     blackListedCI: BlackListedCI
@@ -88,6 +90,7 @@ export interface WorkflowEditProps
     ciPipelines?: any[]
     filteredEnvIds?: string
     reloadEnvironments?: () => void
+    reloadAppConfig?: () => void
 }
 
 export interface AddWorkflowState {
@@ -125,6 +128,17 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
+export interface NoGitOpsRepoConfiguredWarningType {
+    closePopup: () => void
+    appId: number
+    text: string
+    reload: () => void
+}
+
+export interface ReloadNoGitOpsRepoConfiguredModalType {
+    closePopup: () => void
+    reload: () => void
+}
 export interface CDNodeProps {
     id: string
     deploymentStrategy: string
@@ -292,6 +306,7 @@ export interface PipelineContext {
     savedCustomTagPattern?: string
     selectedCDStageTypeValue?: OptionType
     setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
+    setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface SourceTypeCardProps {

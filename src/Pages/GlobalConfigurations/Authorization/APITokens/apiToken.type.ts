@@ -71,8 +71,7 @@ export interface APITokenListType {
 export interface EditDataType {
     name: string
     description: string
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expireAtInMs: any
+    expireAtInMs: number
     token: string
     id: number
     userId: number

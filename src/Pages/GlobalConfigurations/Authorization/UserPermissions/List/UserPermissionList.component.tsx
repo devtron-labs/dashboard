@@ -17,7 +17,7 @@ import { importComponentFromFELibrary } from '../../../../../components/common'
 import { User } from '../../types'
 import { getIsAdminOrSystemUser, parseSearchParams } from '../utils'
 import UserPermissionContainer from './UserPermissionContainer'
-import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../shared/components/BulkSelection'
+import { BulkSelectionModalConfig, BulkSelectionModalTypes } from '../../Shared/components/BulkSelection'
 import { UserListFilter } from './types'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')

@@ -1,13 +1,76 @@
 import moment from 'moment'
-import { BulkSelectionEvents } from '@devtron-labs/devtron-fe-common-lib'
-import { CustomRoleAndMeta, CustomRoles, EntityTypes } from './shared/components/userGroups/userGroups.types'
-import { ACCESS_TYPE_MAP, Moment12HourFormat, ZERO_TIME_STRING } from '../../../config'
-import { PermissionGroup, User, UserDto } from './types'
+import {
+    BulkSelectionEvents,
+    noop,
+    OptionType,
+    UserStatus,
+    UserStatusDto,
+    ZERO_TIME_STRING,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import {
+    ACCESS_TYPE_MAP,
+    Moment12HourFormat,
+    REQUIRED_FIELDS_MISSING,
+    SELECT_ALL_VALUE,
+    SERVER_MODE,
+} from '../../../config'
+import {
+    APIRoleFilter,
+    APIRoleFilterDto,
+    CreateUserPermissionPayloadParams,
+    CustomRoleAndMeta,
+    CustomRoles,
+    MetaPossibleRoles,
+    PermissionGroup,
+    PermissionGroupDto,
+    User,
+    UserCreateOrUpdatePayload,
+    UserDto,
+} from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
-import { useAuthorizationBulkSelection } from './shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
+import { CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
+import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
+import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
+import { importComponentFromFELibrary } from '../../../components/common'
+import { getFormattedTimeToLive } from './libUtils'
+
+const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
+    'getUserStatus',
+    noop,
+    'function',
+)
+const getStatusExportText: (status: UserStatus, timeToLive: string) => string = importComponentFromFELibrary(
+    'getStatusExportText',
+    noop,
+    'function',
+)
+
+const transformRoleFilters = (roleFilters: APIRoleFilterDto[]): APIRoleFilter[] =>
+    roleFilters?.map(
+        ({ status: roleFilterStatus, timeoutWindowExpression: roleFilterTimeoutWindowExpression, ...roleFilter }) => {
+            const roleFilterTimeToLive = getFormattedTimeToLive(roleFilterTimeoutWindowExpression)
+
+            return {
+                ...roleFilter,
+                status: getUserStatus(roleFilterStatus, roleFilterTimeToLive),
+                timeToLive: roleFilterTimeToLive,
+            }
+        },
+    ) ?? []
 
 export const transformUserResponse = (_user: UserDto): User => {
-    const { lastLoginTime, timeoutWindowExpression, email_id: emailId, ...user } = _user
+    const {
+        lastLoginTime,
+        timeoutWindowExpression,
+        email_id: emailId,
+        userStatus,
+        userRoleGroups,
+        roleFilters,
+        ...user
+    } = _user
+    const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
         ...user,
@@ -16,27 +79,78 @@ export const transformUserResponse = (_user: UserDto): User => {
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
                 ? LAST_LOGIN_TIME_NULL_STATE
                 : moment(lastLoginTime).format(Moment12HourFormat),
-        timeToLive:
-            timeoutWindowExpression === ZERO_TIME_STRING || !timeoutWindowExpression
-                ? ''
-                : moment(timeoutWindowExpression).format(Moment12HourFormat),
+        userStatus: getUserStatus(userStatus, timeToLive),
+        timeToLive,
+        userRoleGroups:
+            userRoleGroups?.map(
+                ({
+                    roleGroup: { id, name, description },
+                    status: groupStatus,
+                    timeoutWindowExpression: groupTimeoutWindowExpression,
+                }) => {
+                    const groupTimeToLive = getFormattedTimeToLive(groupTimeoutWindowExpression)
+
+                    return {
+                        id,
+                        name,
+                        description,
+                        status: getUserStatus(groupStatus, groupTimeToLive),
+                        timeToLive: groupTimeToLive,
+                    }
+                },
+            ) ?? [],
+        roleFilters: transformRoleFilters(roleFilters),
     }
 }
 
-export const getMetaPossibleRoles = (customRoles: CustomRoles[], entity: string, accessType?: string) => {
-    let possibleRolesMeta = {}
+export const transformPermissionGroupResponse = (_permissionGroup: PermissionGroupDto): PermissionGroup => {
+    const { roleFilters, ...permissionGroup } = _permissionGroup
+
+    return {
+        ...permissionGroup,
+        roleFilters: transformRoleFilters(roleFilters),
+    }
+}
+
+const getUpdatedMetaPossibleRoles = (possibleMetaRoles: MetaPossibleRoles, role: CustomRoles) => ({
+    ...possibleMetaRoles,
+    [role.roleName]: {
+        value: role.roleDisplayName,
+        description: role.roleDescription,
+    },
+})
+
+export const getMetaPossibleRoles = (customRoles: CustomRoles[]): CustomRoleAndMeta => {
+    let possibleRolesMeta: MetaPossibleRoles = {}
+    let possibleRolesMetaForHelm: MetaPossibleRoles = {}
+    let possibleRolesMetaForCluster: MetaPossibleRoles = {}
+    let possibleRolesMetaForJob: MetaPossibleRoles = {}
+
     customRoles.forEach((role) => {
-        if (role.entity === entity && (entity !== EntityTypes.DIRECT || role.accessType === accessType)) {
-            possibleRolesMeta = {
-                ...possibleRolesMeta,
-                [role.roleName]: {
-                    value: role.roleDisplayName,
-                    description: role.roleDescription,
-                },
-            }
+        switch (role.entity) {
+            case EntityTypes.DIRECT:
+                if (role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                    possibleRolesMeta = getUpdatedMetaPossibleRoles(possibleRolesMeta, role)
+                } else if (role.accessType === ACCESS_TYPE_MAP.HELM_APPS) {
+                    possibleRolesMetaForHelm = getUpdatedMetaPossibleRoles(possibleRolesMetaForHelm, role)
+                }
+                break
+            case EntityTypes.CLUSTER:
+                possibleRolesMetaForCluster = getUpdatedMetaPossibleRoles(possibleRolesMetaForCluster, role)
+                break
+            case EntityTypes.JOB:
+                possibleRolesMetaForJob = getUpdatedMetaPossibleRoles(possibleRolesMetaForJob, role)
+                break
+            default:
         }
     })
-    return possibleRolesMeta
+    return {
+        customRoles,
+        possibleRolesMeta,
+        possibleRolesMetaForHelm,
+        possibleRolesMetaForCluster,
+        possibleRolesMetaForJob,
+    }
 }
 
 /**
@@ -45,6 +159,7 @@ export const getMetaPossibleRoles = (customRoles: CustomRoles[], entity: string,
 export const getRoleFiltersToExport = (
     roleFilters: User['roleFilters'] | PermissionGroup['roleFilters'],
     customRoles: CustomRoleAndMeta,
+    { showStatus = false }: { showStatus?: boolean } = {},
 ) =>
     roleFilters
         .filter((roleFilter) => roleFilter.team && roleFilter.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
@@ -53,6 +168,9 @@ export const getRoleFiltersToExport = (
             environment: roleFilter.environment?.split(',').join(', ') || 'All existing + future environments',
             application: roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications',
             role: customRoles.possibleRolesMeta[roleFilter.action]?.value || '-',
+            ...(showStatus && {
+                permissionStatus: getStatusExportText(roleFilter.status, roleFilter.timeToLive),
+            }),
         }))
 
 export const handleToggleCheckForBulkSelection =
@@ -94,3 +212,177 @@ export const handleToggleCheckForBulkSelection =
                   },
         )
     }
+
+const getSelectedPermissionValues = (options: OptionType[]) => {
+    return options.some((option) => option.value === SELECT_ALL_VALUE)
+        ? ''
+        : options.map((option) => option.value).join(',')
+}
+
+const getSelectedEnvironments = (permission) => {
+    if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
+        return getSelectedPermissionValues(permission.environment)
+    }
+    const allFutureCluster = {}
+    let envList = ''
+    permission.environment.forEach((element) => {
+        if (element.clusterName === '' && element.value.startsWith(ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE)) {
+            const clusterName = element.value.substring(1)
+            allFutureCluster[clusterName] = true
+            envList += `${(envList !== '' ? ',' : '') + clusterName}__${SELECT_ALL_VALUE}`
+        } else if (element.clusterName !== '' && !allFutureCluster[element.clusterName]) {
+            envList += (envList !== '' ? ',' : '') + element.value
+        }
+    })
+    return envList
+}
+
+export const getRoleFilters = ({
+    directPermission,
+    k8sPermission,
+    chartPermission,
+    serverMode,
+}: Pick<
+    CreateUserPermissionPayloadParams,
+    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
+>) => {
+    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+        ...directPermission
+            .filter(
+                (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
+            )
+            .map((permission) => ({
+                ...permission,
+                action: permission.action.configApprover
+                    ? `${permission.action.value},configApprover`
+                    : permission.action.value,
+                team: permission.team.value,
+                environment: getSelectedEnvironments(permission),
+                entityName: getSelectedPermissionValues(permission.entityName),
+                entity: permission.entity,
+                ...(permission.entity === EntityTypes.JOB && {
+                    workflow: permission.workflow?.length ? getSelectedPermissionValues(permission.workflow) : '',
+                }),
+            })),
+        ...k8sPermission.map((permission) => ({
+            ...permission,
+            entity: EntityTypes.CLUSTER as APIRoleFilter['entity'],
+            action: permission.action.value,
+            cluster: permission.cluster.label,
+            group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
+            kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
+            namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
+            resource: getSelectedPermissionValues(permission.resource),
+        })),
+    ]
+
+    if (serverMode !== SERVER_MODE.EA_ONLY) {
+        roleFilters.push({
+            ...chartPermission,
+            team: '',
+            environment: '',
+            entityName: chartPermission.entityName?.map((entity) => entity.value).join(',') ?? '',
+        })
+        if (chartPermission.action !== ActionTypes.VIEW) {
+            roleFilters.push({
+                ...ViewChartGroupPermission,
+                team: '',
+                environment: '',
+            })
+        }
+    }
+
+    return roleFilters
+}
+
+export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
+    permissionType === PermissionType.SUPER_ADMIN
+
+export const createUserPermissionPayload = ({
+    id,
+    userIdentifier,
+    userGroups,
+    serverMode,
+    directPermission,
+    chartPermission,
+    k8sPermission,
+    permissionType,
+    userStatus,
+    timeToLive,
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    // ID 0 denotes create operation
+    id: id || 0,
+    emailId: userIdentifier,
+    userRoleGroups: userGroups,
+    superAdmin: getIsSuperAdminPermission(permissionType),
+    userStatus,
+    timeToLive,
+    roleFilters: getRoleFilters({
+        k8sPermission,
+        directPermission,
+        serverMode,
+        chartPermission,
+    }),
+})
+
+export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
+    let isComplete = true
+    const tempPermissions = directPermission.reduce((agg, curr) => {
+        if (curr.team) {
+            if (curr.entityName.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.entityNameError = `${curr.entity === EntityTypes.JOB ? 'Jobs' : 'Applications'} are mandatory`
+            }
+            if (curr.environment.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.environmentError = 'Environments are mandatory'
+            }
+            if (curr.entity === EntityTypes.JOB && curr.workflow?.length === 0) {
+                isComplete = false
+                // eslint-disable-next-line no-param-reassign
+                curr.workflowError = 'Workflows are mandatory'
+            }
+        }
+        agg.push(curr)
+        return agg
+    }, [])
+
+    if (!isComplete) {
+        toast.error(REQUIRED_FIELDS_MISSING)
+        setDirectPermission(tempPermissions)
+    }
+
+    return isComplete
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseData(dataList: any[], entity: string, accessType?: string) {
+    switch (entity) {
+        case EntityTypes.DIRECT:
+            if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                return dataList.filter(
+                    (role) =>
+                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                )
+            }
+            return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+
+        case EntityTypes.CLUSTER:
+        case EntityTypes.CHART_GROUP:
+        case EntityTypes.JOB:
+            return dataList.filter((role) => role.entity === entity)
+        default:
+            throw new Error(`Unknown entity ${entity}`)
+    }
+}
+
+export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNamesMapping['appIdWorkflowNamesMapping']) =>
+    Object.entries(appIdWorkflowNamesMapping ?? {}).map(([jobName, jobWorkflows]) => ({
+        label: jobName,
+        options: jobWorkflows.map((workflow) => ({
+            label: workflow,
+            value: workflow,
+        })),
+    }))

@@ -5,7 +5,7 @@ import { ReactComponent as Success } from '../../../../assets/icons/ic-success-o
 import { ReactComponent as ICCopy } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
-import { GenerateTokenModalType } from './authorization.type'
+import { GenerateTokenModalType } from './apiToken.type'
 
 const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) => {
     const [copied, setCopied] = useState(false)
@@ -31,12 +31,12 @@ const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerati
     return (
         <VisibleModal className="generate-token-modal">
             <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column">
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                 <button
                     type="button"
                     data-testid={`${modelType}-token-modal-close`}
                     className="w-100 flex right dc__transparent"
                     onClick={handleCloseButton}
+                    aria-label="Close modal"
                 >
                     <Close className="icon-dim-24" />
                 </button>
