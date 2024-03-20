@@ -8,15 +8,15 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetail
         setShowDockerInfo(true)
     }
     return (
-        <div>
+        <>
             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                 return (
                     // eslint-disable-next-line react/no-array-index-key
                     <div key={index} className="dc__app-commit__hash ml-10">
                         <Tippy arrow className="default-tt" content={dockerImage}>
-                            <span>
+                            <span className="flex">
                                 <DockerIcon className="commit-hash__icon grayscale" />
-                                <span className="ml-3" data-testid="docker-version-deployment-history">
+                                <span className="pl-3" data-testid="docker-version-deployment-history">
                                     {dockerImage.split(':')[1] || dockerImage}
                                 </span>
                             </span>
@@ -32,7 +32,7 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetail
                     </span>
                 </button>
             )}
-        </div>
+        </>
     )
 }
 
