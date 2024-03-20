@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -60,7 +60,11 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
-            getSaveTelemetry(params.appId)
+            try {
+                getSaveTelemetry(params.appId)
+            } catch (err) {
+                showError(err)
+            }
         }
     }, [])
     useEffect(() => {
@@ -97,14 +101,16 @@ const AppDetailsComponent = ({
         const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
 
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true).then(
-            (deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true)
+            .then((deploymentStatusDetailRes) => {
                 processDeploymentStatusData(deploymentStatusDetailRes.result)
                 if (shouldFetchTimeline) {
                     setIsInitialTimelineDataLoading(false)
                 }
-            },
-        )
+            })
+            .catch((err) => {
+                showError(err)
+            })
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {

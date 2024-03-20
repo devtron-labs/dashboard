@@ -26,6 +26,8 @@ import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
 import PageHeader from '../common/header/PageHeader'
+import KIND_UNDEFINED_ERR from './constants'
+
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
@@ -33,7 +35,7 @@ export enum OutputObjectTabs {
 }
 
 const STATUS = {
-    ERROR: "Please check the apiVersion and kind, apiVersion and kind provided by you don't exist",
+    ERROR: "The apiVersion or Kind provided by you is incorrect or doesn't exist",
     EMPTY_IMPACTED: 'We could not find any matching devtron applications.',
 }
 
@@ -110,6 +112,23 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             })
     }
 
+    parseToYaml = () => {
+        let configJson: any = {}
+        try {
+            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
+            if (!configJson.kind) {
+                throw new Error(KIND_UNDEFINED_ERR)
+            }
+        } catch (error) {
+            if (error.message === KIND_UNDEFINED_ERR) {
+                toast.error('Invalid Yaml: Provide kind') // Invalid YAML, kind not defined. Show error toast
+            } 
+            else toast.error('Invalid Yaml') // Invalid YAML, couldn't be parsed to JSON. Show error toast
+            this.setState({ view: ViewType.FORM })
+        }
+        return configJson
+    }
+
     handleRunButton = (e) => {
         const outputDiv = document.querySelector('.code-editor-body')
         outputDiv.scrollTop = outputDiv.scrollHeight
@@ -119,15 +138,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputName: 'output',
         })
 
-        let configJson: any = {}
-        try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
-        } catch (error) {
-            // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
-            this.setState({ view: ViewType.FORM })
+        const configJson = this.parseToYaml()
+        if (Object.keys(configJson).length === 0) {
             return
         }
+
         const errorMessage = []
         errorMessage.push(STATUS.ERROR)
 
@@ -161,13 +176,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputName: 'impacted',
         })
 
-        let configJson: any = {}
-        try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
-        } catch (error) {
-            // Invalid YAML, couldn't be parsed to JSON. Show error toast
-            toast.error('Invalid Yaml')
-            this.setState({ view: ViewType.FORM })
+        const configJson = this.parseToYaml()
+        if (Object.keys(configJson).length === 0) {
             return
         }
 

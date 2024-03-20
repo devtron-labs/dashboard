@@ -34,7 +34,7 @@ export default function AdvancedConfigOptions({ ciPipeline }: AdvancedConfigOpti
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(false)
 
     const isGlobalAndNotBuildpack =
-        !allowOverride && parentState.ciConfig?.ciBuildConfig.ciBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE
+        !allowOverride && parentState.ciConfig?.ciBuildConfig?.ciBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE
     const isCurrentCITypeBuildpack = parentState.currentCIBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
     const hasParentLoaded = parentState?.loadingState === ComponentStates.loaded
     const showNonBuildpackOptions = hasParentLoaded && (isGlobalAndNotBuildpack || !isCurrentCITypeBuildpack)
