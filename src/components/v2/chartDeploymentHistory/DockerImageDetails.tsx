@@ -9,10 +9,9 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetail
     }
     return (
         <>
-            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
+            {deployment.dockerImages.slice(0, 3).map((dockerImage) => {
                 return (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <div key={index} className="dc__app-commit__hash ml-10">
+                    <div key={dockerImage} className="dc__app-commit__hash ml-10">
                         <Tippy arrow className="default-tt" content={dockerImage}>
                             <span className="flex">
                                 <DockerIcon className="commit-hash__icon grayscale" />
