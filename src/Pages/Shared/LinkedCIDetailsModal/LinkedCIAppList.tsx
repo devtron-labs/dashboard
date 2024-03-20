@@ -15,9 +15,9 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
         className="dc__no-decor"
     >
         <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
-            <span className="dc__ellipsis-right">
+            <span className="dc__truncate">
                 <Tippy className="default-tt" placement="right" arrow={false} content={appName}>
-                    <span>{appName}</span>
+                    <span className="dc__truncate dc__w-fit-content">{appName}</span>
                 </Tippy>
             </span>
             {environmentName ? (
