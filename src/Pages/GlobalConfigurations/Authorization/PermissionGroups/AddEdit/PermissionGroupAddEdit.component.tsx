@@ -11,6 +11,7 @@ import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getPermissionGroupById } from '../../authorization.service'
+import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
 import PermissionGroupForm from './PermissionGroupForm'
 
 const PermissionGroupAddEdit = () => {
@@ -56,7 +57,11 @@ const PermissionGroupAddEdit = () => {
         return <Reload reload={reload} />
     }
 
-    return <PermissionGroupForm permissionGroup={permissionGroup} isAddMode={isAddMode} />
+    return (
+        <PermissionConfigurationFormProvider data={permissionGroup} showStatus={false}>
+            <PermissionGroupForm isAddMode={isAddMode} />
+        </PermissionConfigurationFormProvider>
+    )
 }
 
 export default PermissionGroupAddEdit

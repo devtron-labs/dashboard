@@ -34,6 +34,7 @@ export const YAML_PARSE_ERROR_STATUS = {
     },
     status: FileReaderStatus.FAILED,
 }
+
 export const FILE_NOT_SUPPORTED_STATUS = {
     message: {
         data: null,
@@ -41,6 +42,7 @@ export const FILE_NOT_SUPPORTED_STATUS = {
     },
     status: FileReaderStatus.FAILED,
 }
+
 export const EMPTY_FILE_STATUS = {
     message: {
         data: null,

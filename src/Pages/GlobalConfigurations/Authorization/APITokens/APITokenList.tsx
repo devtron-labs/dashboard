@@ -6,8 +6,8 @@ import { DOCUMENTATION, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { APITokenListType, TokenListType } from './authorization.type'
-import { isTokenExpired } from './authorization.utils'
+import { APITokenListType, TokenListType } from './apiToken.type'
+import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
@@ -24,9 +24,8 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
         history.push(id ? `${key}/${id}` : key)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const handleDeleteButton = (tokenList) => {
-        setSelectedToken(tokenList)
+    const handleDeleteButton = (_tokenList) => {
+        setSelectedToken(_tokenList)
         setDeleteConfirmation(true)
     }
 
@@ -109,8 +108,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (
                               <div
-                                  // eslint-disable-next-line react/no-array-index-key
-                                  key={`api_${index}`}
+                                  key={`api_${list.id}`}
                                   data-testid="api-list-row"
                                   className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                   style={{ height: '45px' }}
@@ -147,26 +145,26 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           </>
                                       )}
                                   </div>
-                                  <div className="api__row-actions flex right">
+                                  <div className="api__row-actions flex right dc__gap-8">
                                       <button
                                           type="button"
-                                          className="dc__transparent mr-12"
+                                          className="dc__transparent flex p-4"
                                           data-index={index}
                                           data-testid="api-token-edit-button"
                                           onClick={handleEditRowAction}
                                           aria-label="Edit api token"
                                       >
-                                          <Edit className="icon-dim-20" />
+                                          <Edit className="scn-6 icon-dim-16" />
                                       </button>
                                       <button
                                           type="button"
-                                          className="dc__transparent"
+                                          className="dc__transparent flex p-4 icon-delete"
                                           data-index={index}
                                           data-testid="api-token-delete-button"
                                           onClick={handleDelete}
                                           aria-label="Delete api token"
                                       >
-                                          <Trash className="scn-6 icon-dim-20" />
+                                          <Trash className="scn-6 icon-dim-16" />
                                       </button>
                                   </div>
                               </div>

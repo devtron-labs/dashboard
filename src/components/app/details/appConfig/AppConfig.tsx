@@ -40,11 +40,11 @@ import {
     DEFAULT_LANDING_STAGE,
 } from './appConfig.type'
 import { getUserRole } from '../../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../config/constantMessaging'
 import { getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './AppComposeRouter'
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
+import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/constants'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')

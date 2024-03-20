@@ -28,9 +28,9 @@ import {
     GenericEmptyState,
     ConditionalWrap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
