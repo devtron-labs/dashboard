@@ -4,7 +4,7 @@ import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import DOMPurify from 'dompurify'
-import { useAsync, highlightSearchText } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync, highlightSearchText, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -192,8 +192,7 @@ const Sidebar = ({
     }
 
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
-        // TODO: replace with enum after merge of feat/user-status-p3
-        if (actionMeta.action !== 'input-change') {
+        if (actionMeta.action !== ReactSelectInputAction.inputChange) {
             return
         }
 

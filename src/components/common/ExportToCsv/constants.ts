@@ -38,11 +38,12 @@ export const USER_EXPORT_HEADERS = [
     ...(showStatus ? [{ label: 'User status', key: 'status' }] : []),
     { label: 'Last login time', key: 'lastLoginTime' },
     { label: 'Super admin', key: 'superAdmin' },
-    { label: 'Group permissions', key: 'groups' },
+    { label: 'Group permissions', key: 'group' },
     { label: 'Project', key: 'project' },
     { label: 'Environment', key: 'environment' },
     { label: 'Application', key: 'application' },
     { label: 'Role', key: 'role' },
+    ...(showStatus ? [{ label: 'Permission Status', key: 'permissionStatus' }] : []),
 ]
 
 export const USER_EXPORT_HEADER_ROW = {
@@ -55,11 +56,16 @@ export const USER_EXPORT_HEADER_ROW = {
         : {}),
     lastLoginTime: 'Last login time',
     superAdmin: 'Super admin',
-    groups: 'Group permissions',
+    group: 'Group permissions',
     project: 'Project',
     environment: 'Environment',
     application: 'Application',
     role: 'Role',
+    ...(showStatus
+        ? {
+              permissionStatus: 'Permission Status',
+          }
+        : {}),
 }
 
 export const GROUP_EXPORT_HEADERS = [

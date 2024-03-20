@@ -42,6 +42,7 @@ const ExportUserPermissionsToCsv = ({
                 ...(showStatus
                     ? {
                           status: getStatusExportText(_user.userStatus, _user.timeToLive),
+                          permissionStatus: '-',
                       }
                     : {}),
                 lastLoginTime:
@@ -49,7 +50,7 @@ const ExportUserPermissionsToCsv = ({
                         ? _user.lastLoginTime
                         : `${moment.utc(_user.lastLoginTime).format(Moment12HourExportFormat)} (UTC)`,
                 superAdmin: _user.superAdmin,
-                groups: '-',
+                group: '-',
                 project: '-',
                 environment: '-',
                 application: '-',
@@ -59,21 +60,36 @@ const ExportUserPermissionsToCsv = ({
             if (_user.superAdmin) {
                 _pushToUserList(_userData)
             } else {
-                if (_user.groups?.length) {
-                    _userData.groups = _user.groups.join(', ')
-                    _pushToUserList(_userData)
+                if (_user.userRoleGroups?.length) {
+                    _user.userRoleGroups.forEach((userRoleGroup) => {
+                        const _userPermissions = {
+                            ..._userData,
+                            group: userRoleGroup.name,
+                            ...(showStatus
+                                ? {
+                                      permissionStatus: getStatusExportText(
+                                          userRoleGroup.status,
+                                          userRoleGroup.timeToLive,
+                                      ),
+                                  }
+                                : {}),
+                        }
+                        _pushToUserList(_userPermissions)
+                    })
                 }
 
                 if (_user.roleFilters?.length) {
-                    getRoleFiltersToExport(_user.roleFilters, customRoles).forEach((roleFilterToExport) => {
-                        const _userPermissions = {
-                            ..._userData,
-                            groups: '-',
-                            ...roleFilterToExport,
-                        }
+                    getRoleFiltersToExport(_user.roleFilters, customRoles, { showStatus }).forEach(
+                        (roleFilterToExport) => {
+                            const _userPermissions = {
+                                ..._userData,
+                                group: '-',
+                                ...roleFilterToExport,
+                            }
 
-                        _pushToUserList(_userPermissions)
-                    })
+                            _pushToUserList(_userPermissions)
+                        },
+                    )
                 }
             }
 
