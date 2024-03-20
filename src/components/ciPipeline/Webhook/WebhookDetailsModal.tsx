@@ -494,9 +494,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             >
                 <code>{value}</code>
                 {showCopyOption && (
-                    <div>
                         <ClipboardButton content={value} />
-                    </div>
                 )}
             </pre>
         )

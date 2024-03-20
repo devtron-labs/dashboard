@@ -30,8 +30,6 @@ const NodeComponent = ({
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
-    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
-    const [copiedPortName, setCopiedPortName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
@@ -75,13 +73,6 @@ const NodeComponent = ({
             setContainerLevelExternalLinks([])
         }
     }, [externalLinks])
-
-    useEffect(() => {
-        if (!copiedNodeName) {
-            return
-        }
-        setTimeout(() => setCopiedNodeName(''), 2000)
-    }, [copiedNodeName])
 
     useEffect(() => {
         if (params.nodeType) {
@@ -204,15 +195,15 @@ const NodeComponent = ({
             return (
                 <>
                     {portList.map((val, idx) => {
-                        const copyText = `${node.name}.${node.namespace}:${val}`
+                        const text = `${node.name}.${node.namespace}:${val}`
                         if (idx > 0) {
                             return (
                                 <div className="flex left cn-9 m-0 dc__no-decore">
                                     <div className="" key={node.name}>
-                                        {node.name}.{node.namespace}:{val}
+                                        {text}
                                     </div>
                                     <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
-                                        <ClipboardButton content={copyText} />
+                                        <ClipboardButton content={text} />
                                     </div>
                                 </div>
                             )
@@ -223,16 +214,16 @@ const NodeComponent = ({
         }
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
-                const copyText = `${node.name}.${node.namespace}:${node.port[0]}`
+                const text = `${node.name}.${node.namespace}:${node.port[0]}`
                 return (
                     <>
                         <div>
                             <span>
-                                {node.name}.{node.namespace}:{node.port[0]}
+                                {text}
                             </span>
                         </div>
                         <span className="pl-4">
-                            <ClipboardButton content={copyText} />
+                            <ClipboardButton content={text} />
                         </span>
                         <TippyCustomized
                             hideHeading
@@ -261,9 +252,6 @@ const NodeComponent = ({
         }
 
         let _currentNodeHeader = ''
-        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
-            return <ClipboardButton content={nodeName} />
-        }
 
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : ${node.port}`
@@ -341,7 +329,7 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8">{renderClipboardInteraction(node.name)}</div>
+                                                <div className="pl-8 pr-8"><ClipboardButton content={nodeName.split(' ').join('')} /></div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -413,7 +401,7 @@ const NodeComponent = ({
                                 <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     <div className="pl-8">
-                                        {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
+                                        {node.port > 1 ? <ClipboardButton content={nodeName.split(' ').join('')} /> : null}
                                     </div>
                                 </div>
                             )}

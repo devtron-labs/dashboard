@@ -118,6 +118,8 @@ export const GitChanges = ({
             />
         )
     }
+    
+    const extractImageArtifact = extractImage(artifact)
 
     return (
         <div className="flex column left w-100 ">
@@ -167,9 +169,9 @@ export const GitChanges = ({
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">
-                                {extractImage(artifact)}
+                                {extractImageArtifact}
                                 <div className="pl-4">
-                                    <ClipboardButton content={extractImage(artifact)} />
+                                    <ClipboardButton content={extractImageArtifact} />
                                 </div>
                             </div>
                             <div className="cn-7 fs-12 flex left">
