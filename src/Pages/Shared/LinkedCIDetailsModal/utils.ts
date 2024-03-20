@@ -1,6 +1,6 @@
 import { SELECT_ALL_VALUE, URLS } from '../../../config'
 import { ENVIRONMENT_FILTER_SEARCH_KEY } from './constants'
-import { LinkedCIAppURLProps as LinkedCIAppUrlProps } from './types'
+import { LinkedCIAppUrlProps } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     environment: searchParams.get(ENVIRONMENT_FILTER_SEARCH_KEY) || SELECT_ALL_VALUE,
