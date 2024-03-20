@@ -27,7 +27,7 @@ const DockerImageDetails = ({ deployment, setShowDockerInfo }: DockerImageDetail
                 <button type="button" onClick={handleOnClick} className="cursor anchor ml-10">
                     <span>
                         <span>{deployment.dockerImages.length - 3}</span>
-                        <span className="ml-3">more</span>
+                        <span className="pl-3">more</span>
                     </span>
                 </button>
             )}
