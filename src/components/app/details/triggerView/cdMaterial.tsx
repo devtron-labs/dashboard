@@ -62,7 +62,7 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
@@ -2035,7 +2035,11 @@ export default function CDMaterial({
         if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
         } else if (stageType !== STAGE_TYPE.CD) {
-            return <img src={play} alt="trigger" className="trigger-btn__icon" />
+            return (
+                <PlayIC
+                    className={`icon-dim-16 mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9 dc__no-svg-fill' : ''}`}
+                />
+            )
         }
         return (
             <DeployIcon
