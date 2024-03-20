@@ -118,7 +118,8 @@ export class CINode extends Component<CINodeProps> {
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
                         <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
-                            <span
+                            <button
+                                type="button"
                                 className={`link-count cursor dc__hover-border-n300 ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey
                                         ? 'link-count--include-add-cd'
@@ -129,7 +130,7 @@ export class CINode extends Component<CINodeProps> {
                             >
                                 <img src={link} className="icon-dim-12 mr-5" alt="" />
                                 {this.props.linkedCount}
-                            </span>
+                            </button>
                         </Tippy>
                     )}
                     <div className="workflow-node__trigger-type workflow-node__trigger-type--create">

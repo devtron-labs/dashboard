@@ -3,17 +3,19 @@ import { Link } from 'react-router-dom'
 import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { URLS } from '../../../config'
-import { LinkedCIApp, LinkedCIAppListProps } from './types'
+import { LinkedCIApp, LinkedCIAppListProps, appLinkProps } from './types'
 import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
 
+const appLink = ({ appId, environmentId }: appLinkProps): string => {
+    const envId = environmentId ? `/${environmentId}` : ''
+    const link = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}${envId}`
+    return link
+}
+
 const AppListRow = ({ appId, appName, deploymentStatus, environmentName, triggerMode, environmentId }: LinkedCIApp) => (
-    <Link
-        to={`${URLS.APP}/${appId}/${URLS.APP_DETAILS}${environmentId ? `/${environmentId}` : ''}`}
-        target="_blank"
-        className="dc__no-decor"
-    >
+    <Link to={appLink({ appId, environmentId })} target="_blank" className="dc__no-decor">
         <div className="display-grid dc__align-items-center linked-ci-detail__table-row cn-9 pl-20 pr-20 pt-8 pb-8 fs-13 fw-4 dc__hover-n50 ">
             <span className="dc__truncate">
                 <Tippy className="default-tt" placement="right" arrow={false} content={appName}>

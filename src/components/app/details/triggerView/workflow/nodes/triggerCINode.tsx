@@ -138,10 +138,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         placement="top"
                         content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
-                        <span className="link-count cursor dc__hover-border-n300" onClick={this.handleLinkedCIWorkflowChipClick}>
+                        <button type="button" className="link-count cursor dc__hover-border-n300" onClick={this.handleLinkedCIWorkflowChipClick}>
                             <img src={link} className="icon-dim-12 mr-5" alt="" />
                             {this.props.linkedCount}
-                        </span>
+                        </button>
                     </Tippy>
                 ) : null}
                 <div

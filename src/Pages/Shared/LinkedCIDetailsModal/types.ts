@@ -35,3 +35,8 @@ export interface LinkedCIAppListProps {
     isLoading: boolean
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }
+
+export interface appLinkProps {
+    appId: number
+    environmentId: number
+}
