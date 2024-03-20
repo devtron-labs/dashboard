@@ -2037,7 +2037,7 @@ export default function CDMaterial({
         } else if (stageType !== STAGE_TYPE.CD) {
             return (
                 <PlayIC
-                    className={`icon-dim-16 mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9 dc__no-svg-fill' : ''}`}
+                    className={`icon-dim-16 mr-8 dc__no-svg-fill ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
                 />
             )
         }
