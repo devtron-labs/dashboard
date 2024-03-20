@@ -3844,6 +3844,12 @@ textarea::placeholder {
     user-select: none;
 }
 
+.dc__stroke-width-2 {
+    path {
+        stroke-width: 2px;
+    }
+}
+
 .dc__stroke-width-4 {
     path {
         stroke-width: 4px;
