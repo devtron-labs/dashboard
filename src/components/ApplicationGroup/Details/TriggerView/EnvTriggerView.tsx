@@ -2225,11 +2225,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const renderWorkflow = (): JSX.Element => {
-        const handleModalClose = () => {
-            history.push(match.url)
-        }
+    const handleModalClose = () => {
+        history.push(match.url)
+    }
 
+    const renderWorkflow = (): JSX.Element => {
         return (
             <>
                 {filteredWorkflows.map((workflow, index) => {

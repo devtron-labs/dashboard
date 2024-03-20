@@ -36,7 +36,7 @@ export interface LinkedCIAppListProps {
     urlFilters: UseUrlFiltersReturnType<SortableKeys>
 }
 
-export interface appLinkProps {
+export interface LinkedCIAppUrlProps {
     appId: number
     environmentId: number
 }

@@ -1314,11 +1314,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
-    renderWorkflow() {
-        const handleModalClose = () => {
-            this.props.history.push(this.props.match.url)
-        }
+    handleModalClose = () => {
+        this.props.history.push(this.props.match.url)
+    }
 
+    renderWorkflow() {
         return (
             <>
                 {this.state.workflows.map((workflow, index) => {
@@ -1343,7 +1343,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         />
                     )
                 })}
-                <LinkedCIDetail workflows={this.state.workflows} handleClose={handleModalClose} />
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
             </>
         )
     }
