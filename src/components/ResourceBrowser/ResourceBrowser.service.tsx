@@ -7,7 +7,9 @@ import {
     CreateResourceResponse,
     ResourceListPayloadType,
     ResourceListResponse,
+    K8Abbreviates,
 } from './Types'
+import { K8_ABBREVIATES } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_PERMISSION)
@@ -42,4 +44,8 @@ export const createNewResource = (resourceListPayload: CreateResourcePayload): P
 
 export const deleteResource = (resourceListPayload: ResourceListPayloadType): Promise<CreateResourceResponse> => {
     return post(Routes.DELETE_RESOURCE, resourceListPayload)
+}
+
+export const getK8Abbreviates = (): Promise<K8Abbreviates> => {
+    return Promise.resolve(K8_ABBREVIATES)
 }
