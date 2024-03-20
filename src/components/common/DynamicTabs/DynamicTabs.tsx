@@ -80,7 +80,7 @@ const DynamicTabs = ({
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
-                    {(showNameOnSelect && isSelected || !showNameOnSelect) && (
+                    {(!showNameOnSelect || isSelected) && (
                         <span
                             className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
                             data-testid={name}

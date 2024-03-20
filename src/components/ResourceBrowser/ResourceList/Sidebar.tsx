@@ -88,6 +88,7 @@ const Sidebar = ({
             return
         }
 
+        /* TODO: should we retain namespace on resource change ? */
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
         push(_url)
         updateTabUrl(

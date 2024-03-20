@@ -99,6 +99,7 @@ const ResourceList = () => {
         [clusterId],
     )
 
+    /* TODO: on resourceSwitch update namespace to default ? */
     const k8SObjectMapRaw = useMemo(
         () => convertResourceGroupListToK8sObjectList(_k8SObjectMapRaw?.result.apiResources || [], nodeType),
         [_k8SObjectMapRaw, nodeType],
@@ -199,7 +200,7 @@ const ResourceList = () => {
     }
 
     /* FIXME: should we retain tab data ? */
-    useEffect(() => initTabsBasedOnRole(true), [isSuperAdmin])
+    useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
 
     const namespaceDefaultList = namespaceList?.result || []
 
@@ -389,7 +390,7 @@ const ResourceList = () => {
         )
     }
 
-    const renderClusterTerminal = (): JSX.Element => {
+    const renderClusterTerminalLoader = (): JSX.Element => {
         if (detailClusterListLoading) {
             return (
                 <div className="h-100 node-data-container bcn-0">
@@ -407,13 +408,17 @@ const ResourceList = () => {
             )
         }
 
+        return null
+    }
+
+    const renderClusterTerminal = (): JSX.Element => {
         return (
             <ClusterTerminal
-                showTerminal
+                showTerminal={!detailClusterListLoading && !detailClusterListError && nodeType === AppDetailsTabs.terminal}
                 clusterId={+clusterId}
                 nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
                 taints={createTaintsList(selectedDetailsCluster.nodeDetails, 'nodeName')}
-                clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion)}
+                clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion) || []}
                 namespaceList={namespaceDefaultList[selectedDetailsCluster.name]}
                 isNodeDetailsPage
             />
@@ -432,7 +437,7 @@ const ResourceList = () => {
                 />
             )
         }
-        if (node) {
+        if (node && !rawGVKLoader) {
             return (
                 <div className="resource-details-container">
                     <NodeDetailComponent
@@ -519,7 +524,8 @@ const ResourceList = () => {
                         />
                     </div>
                 </div>
-                {nodeType === AppDetailsTabs.terminal ? renderClusterTerminal() : renderDetails()}
+                {nodeType === AppDetailsTabs.terminal ? renderClusterTerminalLoader() : renderDetails()}
+                {renderClusterTerminal()}
             </>
         )
     }

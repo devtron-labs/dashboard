@@ -279,6 +279,7 @@ export function useTabs(persistanceKey: string) {
                 if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
                     tab.isSelected = true
                     tab.url = url || tab.url
+                    tab.showNameOnSelect = false
                     isTabFound = true
                 }
                 return tab
@@ -301,6 +302,7 @@ export function useTabs(persistanceKey: string) {
                 return {
                     ...tab,
                     isSelected: tab.id === id,
+                    showNameOnSelect: false
                 }
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
