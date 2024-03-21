@@ -57,6 +57,7 @@ export const mainContext = createContext<MainContext>(null)
 export const useMainContext = () => useContext(mainContext)
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -408,6 +409,12 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
+                                        ...(Releases
+                                            ? [
+                                                  // TODO (v1): Move to common lib
+                                                  <Route key="/releases" path="/releases" component={Releases} />,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
