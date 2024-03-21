@@ -149,7 +149,7 @@ const ResourceList = () => {
         [_k8SObjectMap, nodeType],
     )
 
-    const errorMessage = sidebarDataError?.errors[0]?.userMessage || sidebarDataError?.['message'] || ''
+    const errorMessage = sidebarDataError?.errors?.[0]?.userMessage || sidebarDataError?.['message'] || ''
 
     const [loading, data, error] = useAsync(() =>
         Promise.all([
