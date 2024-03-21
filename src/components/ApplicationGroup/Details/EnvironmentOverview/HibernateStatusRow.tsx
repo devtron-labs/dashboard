@@ -4,6 +4,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
+import { DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
 
 export const HibernateStatusRow = ({
     rowData,
@@ -42,8 +43,19 @@ export const HibernateStatusRow = ({
         if (hibernateInfoMap[rowData.id]) {
             return (
                 <div>
-                    <div>You are not authorised to deploy during {hibernateInfoMap[rowData.id].type.toLowerCase()} window</div>
-                    <div><span className="cb-5 mr-6">{hibernateInfoMap[rowData.id].excludedUserEmails.length} users</span> are allowed to take action</div>
+                    <div>
+                        You are not authorised to deploy&nbsp;
+                        {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
+                            ? 'during'
+                            : 'outside'}&nbsp;
+                        {hibernateInfoMap[rowData.id].type.toLowerCase()} window
+                    </div>
+                    <div>
+                        <span className="cb-5 mr-6">
+                            {hibernateInfoMap[rowData.id].excludedUserEmails.length} users
+                        </span>
+                        are allowed to take action
+                    </div>
                 </div>
             )
         }

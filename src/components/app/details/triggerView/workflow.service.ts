@@ -83,7 +83,7 @@ const getInitialWorkflows = (
             }
             const cdPipelineData = response[0].result?.cdConfig as CdPipelineResult
 
-            if (response[1] && response[1].result && cdPipelineData) {
+            if (Object.keys(response[1]?.result || {}).length>0 && cdPipelineData) {
                 cdPipelineData.pipelines?.forEach((pipeline) => {
                     pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(response[1], pipeline.environmentId)
                 })
@@ -119,7 +119,7 @@ const getInitialWorkflows = (
         getExternalCIList(id),
         getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
-        if (deploymentWindowState?.result && cdConfig) {
+        if (Object.keys(deploymentWindowState?.result || {}).length>0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
                 pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(deploymentWindowState, pipeline.environmentId)
             })

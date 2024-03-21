@@ -86,6 +86,7 @@ export default function BulkCDTrigger({
         Record<number, DeploymentWindowProfileMetaData>
     >({})
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
+    const [showResistanceBox, setShowResistanceBox] = useState(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -594,7 +595,7 @@ export default function BulkCDTrigger({
                             {app.name}
                             {app.warningMessage ||
                                 tagNotFoundWarningsMap.has(app.appId) ||
-                                (appDeploymentWindowMap[app.appId] && (
+                                (appDeploymentWindowMap[app.appId]?.warningMessage && (
                                     <span
                                         className={`flex left top fw-4 m-0 fs-12 ${
                                             tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
@@ -673,11 +674,19 @@ export default function BulkCDTrigger({
             </div>
         )
     }
+    const hideResistanceBox = (e?): void => {
+        setShowResistanceBox(false)
+    }
 
     const onClickStartDeploy = (e): void => {
-        isBulkDeploymentTriggered.current = true
-        stopPropagation(e)
-        onClickTriggerBulkCD()
+        if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
+            setShowResistanceBox(true)
+        } else {
+            isBulkDeploymentTriggered.current = true
+            stopPropagation(e)
+            onClickTriggerBulkCD()
+            setShowResistanceBox(false)
+        }
     }
 
     const isDeployDisabled = (): boolean => {
@@ -686,43 +695,30 @@ export default function BulkCDTrigger({
         )
     }
 
-    function BulkDeployResistance(children) {
-        return (
-            <BulkDeployResistanceTippy actionHandler={onClickStartDeploy}>
-                <span>{children}</span>
-            </BulkDeployResistanceTippy>
-        )
-    }
-
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
                 <div className="dc__position-rel tippy-over">
-                    <ConditionalWrap
-                        condition={BulkDeployResistanceTippy && isPartialActionAllowed && !isLoading}
-                        wrap={BulkDeployResistance}
+                    <button
+                        className="cta flex h-36"
+                        data-testid="deploy-button"
+                        onClick={onClickStartDeploy}
+                        disabled={isDeployDisabled()}
+                        type="button"
                     >
-                        <button
-                            className="cta flex h-36"
-                            data-testid="deploy-button"
-                            onClick={!(BulkDeployResistanceTippy && isPartialActionAllowed) && onClickStartDeploy}
-                            disabled={isDeployDisabled()}
-                            type="button"
-                        >
-                            {isLoading ? (
-                                <Progressing />
-                            ) : (
-                                <>
-                                    {stage === DeploymentNodeType.CD ? (
-                                        <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                    ) : (
-                                        <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
-                                    )}
-                                    {BUTTON_TITLE[stage]}
-                                </>
-                            )}
-                        </button>
-                    </ConditionalWrap>
+                        {isLoading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                {stage === DeploymentNodeType.CD ? (
+                                    <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                ) : (
+                                    <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                                )}
+                                {BUTTON_TITLE[stage]}
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         )
@@ -749,6 +745,9 @@ export default function BulkCDTrigger({
                     </>
                 )}
             </div>
+            {showResistanceBox && (
+                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} />
+            )}
         </Drawer>
     )
 }

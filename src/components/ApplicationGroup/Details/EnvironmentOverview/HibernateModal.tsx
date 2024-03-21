@@ -62,7 +62,7 @@ export const HibernateModal = ({
             )
         }
         return (
-            <div>
+            <div className="mt-16">
                 Hibernating some applications is blocked due to deployment window
                 {ResistantInput && (
                     <ResistantInput setActionButtonDisabled={setActionButtonDisabled} type={MODAL_TYPE.HIBERNATE} />

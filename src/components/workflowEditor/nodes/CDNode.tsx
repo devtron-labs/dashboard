@@ -28,6 +28,7 @@ import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types
 import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
 import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
 import { importComponentFromFELibrary } from '../../common'
+import { handleDeleteCDNodePipeline } from '../../cdPipeline/cdpipeline.util'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
@@ -221,9 +222,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             onClose={this.onClickHideDeletePipelinePopup}
             value={this.state.deploymentWindowConfimationValue}
             setValue={this.setDeploymentWindowConfimationValue}
-            isLoading={false}
+            isLoading={this.state.deleteInProgress}
             type={MODAL_TYPE.PIPELINE}
-            onClickActionButton={this.deleteCD}
+            onClickActionButton={() => handleDeleteCDNodePipeline(this.deleteCD, this.props.deploymentAppType as DeploymentAppTypes)}
             appName={this.props.appName}
             envName={this.props.environmentName}
             appId={this.props.appId}

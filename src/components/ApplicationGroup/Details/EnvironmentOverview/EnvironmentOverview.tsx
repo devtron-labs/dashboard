@@ -92,7 +92,9 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
+        if(openHiberateModal || openUnhiberateModal) {
         getDeploymentWindowEnvOverrideMetaData()
+        }
     }, [openHiberateModal, openUnhiberateModal])
 
     useEffect(() => {

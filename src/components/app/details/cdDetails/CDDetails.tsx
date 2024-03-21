@@ -479,7 +479,9 @@ export const TriggerOutput: React.FC<{
 
     return (
         <>
-            <div className="trigger-details-container">
+            <div
+                className={`trigger-details-container ${triggerDetails.triggerMetadata ? 'with-trigger-metadata' : ''}`}
+            >
                 {!fullScreenView && (
                     <>
                         <TriggerDetails

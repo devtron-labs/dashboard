@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
 import {
     showError,
@@ -7,7 +7,6 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useSearchString,
-    ACTION_STATE,
     MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -24,7 +23,11 @@ import { importComponentFromFELibrary } from '../../../../common'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
-const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked, onCloseHideDeploymentWindowConfirmationModal }: NodeDeleteComponentType) => {
+const NodeDeleteComponent = ({
+    nodeDetails,
+    appDetails,
+    isDeploymentBlocked,
+}: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -43,11 +46,14 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked, onC
         history.push(generatePath(updatedPath, { ...params, tab }))
     }
 
-    const onClickDeleteResourceButton = () => {
-        if(isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
+    const renderDeleteResourcePopup = () => {
+        if (!showDeleteConfirmation) {
+            return null
+        }
+        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
             return (
                 <DeploymentWindowConfirmationDialog
-                    onClose={onCloseHideDeploymentWindowConfirmationModal}
+                    onClose={toggleShowDeleteConfirmation}
                     isLoading={apiCallInProgress}
                     type={MODAL_TYPE.RESOURCE}
                     onClickActionButton={deleteResourceAction}
@@ -55,10 +61,34 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked, onC
                     envName={appDetails.environmentName}
                     appId={params.appId}
                     envId={params.envId}
+                    forceDelete={forceDelete}
+                    apiCallInProgress={apiCallInProgress}
+                    forceDeleteHandler={forceDeleteHandler}
+                    resourceName={nodeDetails?.name}
                 />
             )
         }
-            setShowDeleteConfirmation(true)
+        return (
+            <DeleteDialog
+                title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
+                delete={deleteResourceAction}
+                closeDelete={toggleShowDeleteConfirmation}
+                apiCallInProgress={apiCallInProgress}
+            >
+                <DeleteDialog.Description>
+                    <p className="mb-12">Are you sure, you want to delete this resource?</p>
+                    <Checkbox
+                        rootClassName="resource-force-delete"
+                        isChecked={forceDelete}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        disabled={apiCallInProgress}
+                        onChange={forceDeleteHandler}
+                    >
+                        Force delete resource
+                    </Checkbox>
+                </DeleteDialog.Description>
+            </DeleteDialog>
+        )
     }
 
     const PodPopup: React.FC<{
@@ -93,7 +123,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked, onC
                     <span
                         data-testid="delete-resource-button"
                         className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                        onClick={onClickDeleteResourceButton}
+                        onClick={toggleShowDeleteConfirmation}
                     >
                         <span>Delete</span>
                         <Trash className="icon-dim-20 scr-5" />
@@ -145,27 +175,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked, onC
                     <PodPopup kind={nodeDetails?.kind} describeNode={describeNodeWrapper} />
                 </PopupMenu.Body>
             </PopupMenu>
-            {showDeleteConfirmation && (
-                <DeleteDialog
-                    title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                    delete={deleteResourceAction}
-                    closeDelete={toggleShowDeleteConfirmation}
-                    apiCallInProgress={apiCallInProgress}
-                >
-                    <DeleteDialog.Description>
-                        <p className="mb-12">Are you sure, you want to delete this resource?</p>
-                        <Checkbox
-                            rootClassName="resource-force-delete"
-                            isChecked={forceDelete}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            disabled={apiCallInProgress}
-                            onChange={forceDeleteHandler}
-                        >
-                            Force delete resource
-                        </Checkbox>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
-            )}
+            {renderDeleteResourcePopup()}
         </div>
     )
 }

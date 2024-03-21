@@ -62,7 +62,7 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
@@ -1231,7 +1231,10 @@ export default function CDMaterial({
                     CiConfigureSourceValue: '',
                 }
 
-                if (materialData.appliedFilters?.length > 0 && CDMaterialInfo) {
+                if (
+                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    CDMaterialInfo
+                ) {
                     return (
                         <CDMaterialInfo
                             commitTimestamp={handleUTCTime(materialData.createdTime)}
@@ -1241,6 +1244,8 @@ export default function CDMaterial({
                             showConfiguredFilters={(e: React.MouseEvent) => handleShowAppliedFilters(e, materialData)}
                             filterState={materialData.appliedFiltersState}
                             dataSource={materialData.dataSource}
+                            deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
+                            isFilterApplied={materialData.appliedFilters?.length > 0}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -2030,7 +2035,11 @@ export default function CDMaterial({
         if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
         } else if (stageType !== STAGE_TYPE.CD) {
-            return <img src={play} alt="trigger" className="trigger-btn__icon" />
+            return (
+                <PlayIC
+                    className={`icon-dim-16 mr-8 dc__no-svg-fill dc__stroke-width-2 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : 'scn-0'}`}
+                />
+            )
         }
         return (
             <DeployIcon
@@ -2041,19 +2050,12 @@ export default function CDMaterial({
 
     const getCTAClass = (disableDeployButton: boolean): string => {
         let className = 'cta flex ml-auto h-36'
-        const isMaintenanceWindowActive =
-            deploymentWindowMetadata.type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && deploymentWindowMetadata.isActive
         if (disableDeployButton) {
             className += ' disabled-opacity'
-        } else if (!isMaintenanceWindowActive) {
-            if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
-                className += ' danger'
-            } else if (
-                deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL &&
-                !isMaintenanceWindowActive
-            ) {
-                className += ' warning'
-            }
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
+            className += ' danger'
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
+            className += ' warning'
         }
         return className
     }
@@ -2061,11 +2063,7 @@ export default function CDMaterial({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            if (
-                deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED &&
-                (deploymentWindowMetadata.type !== DEPLOYMENT_WINDOW_TYPE.MAINTENANCE ||
-                    !deploymentWindowMetadata.isActive)
-            ) {
+            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
@@ -2285,8 +2283,6 @@ export default function CDMaterial({
                     isLoading={isLoading}
                     type={MODAL_TYPE.DEPLOY}
                     onClickActionButton={deployTrigger}
-                    appName={'appName'}
-                    envName={envName}
                     appId={appId}
                     envId={envId}
                 />

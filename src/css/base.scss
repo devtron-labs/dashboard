@@ -343,6 +343,10 @@ a:focus {
     bottom: 0;
 }
 
+.dc__bottom-12 {
+    bottom: 12px;
+}
+
 .dc__right-0 {
     right: 0;
 }
@@ -3286,8 +3290,12 @@ textarea,
     min-height: 92px;
 }
 
-.mh-97 {
-    min-height: 97px;
+.mh-95 {
+    min-height: 95px;
+}
+
+.mh-98 {
+    min-height: 98px;
 }
 
 .mh-150 {
@@ -3335,7 +3343,7 @@ textarea,
 }
 
 .mxh-250 {
-    max-height: 210px;
+    max-height: 250px;
 }
 
 .mxh-300 {
@@ -3344,6 +3352,10 @@ textarea,
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-350 {
+    max-height: 350px;
 }
 
 .mxh-504 {
@@ -3840,6 +3852,12 @@ textarea::placeholder {
     user-select: none;
 }
 
+.dc__stroke-width-2 {
+    path {
+        stroke-width: 2px;
+    }
+}
+
 .dc__stroke-width-4 {
     path {
         stroke-width: 4px;
@@ -3963,6 +3981,10 @@ textarea::placeholder {
 
 .dc__zi-5 {
     z-index: 5;
+}
+
+.dc__zi-10 {
+    z-index: 10;
 }
 
 .dc__zi-20 {
@@ -4161,6 +4183,10 @@ textarea::placeholder {
 
 .fs-11-imp{
     font-size: 11px !important;
+}
+
+.fs-12-imp {
+    font-size: 12px !important;
 }
 
 .fs-13-imp {
