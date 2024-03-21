@@ -6,7 +6,7 @@ import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { NodeAttr } from '../../app/details/triggerView/types'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
-import link from '../../../assets/icons/ic-link.svg'
+import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
@@ -120,7 +120,7 @@ export class CINode extends Component<CINodeProps> {
                         <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
                             <button
                                 type="button"
-                                className={`link-count cursor dc__hover-border-n300 ${
+                                className={`link-count cursor dc__hover-border-n300 flex dc__gap-4 ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey
                                         ? 'link-count--include-add-cd'
                                         : ''
@@ -128,8 +128,8 @@ export class CINode extends Component<CINodeProps> {
                                 data-testid="linked-symbol"
                                 onClick={this.handleLinkedCIWorkflowChipClick}
                             >
-                                <img src={link} className="icon-dim-12 mr-5" alt="" />
-                                {this.props.linkedCount}
+                                <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                                <span>{this.props.linkedCount}</span>
                             </button>
                         </Tippy>
                     )}
