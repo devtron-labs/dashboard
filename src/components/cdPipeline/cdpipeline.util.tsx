@@ -3,6 +3,7 @@ import { components } from 'react-select'
 import {
     BuildStageVariable,
     ConditionType,
+    DeploymentAppTypes,
     PluginType,
     RefVariableStageType,
     RefVariableType,
@@ -16,6 +17,7 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { DELETE_ACTION } from '../../config'
 
 export const styles = {
     control: (base, state) => ({
@@ -346,4 +348,21 @@ export const calculateLastStepDetailsLogic = (
     }
 
     return { stepsLength, _inputVariablesListPerTask }
+}
+
+// Handle delete cd node
+
+export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD, deploymentAppType) => {
+    switch (deleteAction) {
+        case DELETE_ACTION.DELETE:
+            return deleteCD(false, true)
+        case DELETE_ACTION.NONCASCADE_DELETE:
+            return deploymentAppType === DeploymentAppTypes.GITOPS ? deleteCD(false, false) : deleteCD(false, true)
+        case DELETE_ACTION.FORCE_DELETE:
+            return deleteCD(true, false)
+    }
+}
+
+export const handleDeleteCDNodePipeline = (deleteCD, deploymentAppType) => {
+    handleDeletePipeline(DELETE_ACTION.DELETE, deleteCD, deploymentAppType)
 }

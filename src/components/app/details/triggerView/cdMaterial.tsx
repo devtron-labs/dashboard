@@ -2283,8 +2283,6 @@ export default function CDMaterial({
                     isLoading={isLoading}
                     type={MODAL_TYPE.DEPLOY}
                     onClickActionButton={deployTrigger}
-                    appName={'appName'}
-                    envName={envName}
                     appId={appId}
                     envId={envId}
                 />
