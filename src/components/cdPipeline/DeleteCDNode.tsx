@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { CustomInput, DeleteDialog, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
@@ -65,7 +65,7 @@ export default function DeleteCDNode({
         <DeleteDialog
             title={deleteTitle}
             description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
-            delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType)}
+            delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)}
             closeDelete={hideDeleteModal}
             apiCallInProgress={isLoading}
             disabled={showConfirmationBar && deleteInput !== deleteTitleName}

@@ -352,7 +352,7 @@ export const calculateLastStepDetailsLogic = (
 
 // Handle delete cd node
 
-export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD, deploymentAppType) => {
+export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType) => {
     switch (deleteAction) {
         case DELETE_ACTION.DELETE:
             return deleteCD(false, true)
@@ -363,6 +363,6 @@ export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD, depl
     }
 }
 
-export const handleDeleteCDNodePipeline = (deleteCD, deploymentAppType) => {
+export const handleDeleteCDNodePipeline = (deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType: DeploymentAppTypes) => {
     handleDeletePipeline(DELETE_ACTION.DELETE, deleteCD, deploymentAppType)
 }

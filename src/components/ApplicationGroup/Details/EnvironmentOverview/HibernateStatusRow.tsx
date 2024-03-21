@@ -44,7 +44,7 @@ export const HibernateStatusRow = ({
             return (
                 <div>
                     <div>
-                        You are not authorised to deploy{' '}
+                        You are not authorised to deploy&nbsp;
                         {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
                             ? 'during'
                             : 'outside'}&nbsp;
