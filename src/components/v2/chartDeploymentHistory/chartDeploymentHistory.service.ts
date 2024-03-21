@@ -36,6 +36,11 @@ export interface RollbackReleaseRequest {
     installedAppVersionId?: number
 }
 
+export interface DockerImageDetailsProps {
+    deployment: ChartDeploymentDetail
+    setShowDockerInfo: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 interface RollbackReleaseResponse extends ResponseType {
     result?: ActionResponse
 }
