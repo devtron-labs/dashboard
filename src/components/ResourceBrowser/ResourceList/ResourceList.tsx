@@ -9,6 +9,7 @@ import {
     Reload,
     DevtronProgressing,
     useAsync,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import moment from 'moment'
@@ -55,6 +56,7 @@ import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+import { useOnComponentUpdate } from '../../common/helpers/Helpers'
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -75,7 +77,6 @@ const ResourceList = () => {
         updateTabUrl,
         stopTabByIdentifier,
     } = useTabs(URLS.RESOURCE_BROWSER)
-    console.log('re-render')
     const [searchText, setSearchText] = useState('')
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [lastDataSyncMoment, setLastDataSyncMoment] = useState<moment.Moment>()
@@ -115,7 +116,6 @@ const ResourceList = () => {
         if (!selectedResource) {
             return null
         }
-        resourceListAbortController.current?.abort()
         const resourceListPayload: ResourceListPayloadType = {
             clusterId: +clusterId,
             k8sRequest: {
@@ -127,8 +127,10 @@ const ResourceList = () => {
                 },
             },
         }
-        resourceListAbortController.current = new AbortController()
-        return getResourceList(resourceListPayload, resourceListAbortController.current.signal)
+        return abortPreviousRequests(
+            () => getResourceList(resourceListPayload, resourceListAbortController.current.signal),
+            resourceListAbortController,
+        )
     }, [selectedResource, clusterId, namespace])
 
     useEffect(() => setLastDataSyncMoment(moment()), [resourceListData])
@@ -136,9 +138,10 @@ const ResourceList = () => {
     const resourceList = useMemo(() => resourceListData?.result || null, [resourceListData])
 
     const [sidebarDataLoading, _k8SObjectMap, sidebarDataError, getSidebarData] = useAsync(async () => {
-        sideDataAbortController.current?.abort()
-        sideDataAbortController.current = new AbortController()
-        return getResourceGroupList(clusterId, sideDataAbortController.current.signal)
+        return abortPreviousRequests(
+            () => getResourceGroupList(clusterId, sideDataAbortController.current.signal),
+            sideDataAbortController,
+        )
     }, [clusterId])
 
     const [k8SObjectMapLoading, k8SObjectMap, , , setK8SObjectMap] = useAsync<Map<string, K8SObjectMapType>>(
@@ -172,15 +175,8 @@ const ResourceList = () => {
         [clusterList],
     )
 
-    const selectedCluster = useMemo(
-        () =>
-            clusterOptions.find((cluster) => String(cluster.value) === clusterId) || {
-                label: '',
-                value: clusterId,
-                errorInConnecting: '',
-            },
-        [clusterOptions, clusterId],
-    )
+    const selectedCluster = clusterOptions.find((cluster) => String(cluster.value) === clusterId)
+                            || { label: '', value: clusterId, errorInConnecting: '' }
 
     const imageList = useMemo(() => JSON.parse(hostUrlConfig?.result.value || '[]'), [hostUrlConfig?.result])
 
@@ -201,6 +197,7 @@ const ResourceList = () => {
 
     /* FIXME: should we retain tab data ? */
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
+    useOnComponentUpdate(() => initTabsBasedOnRole(true), [clusterId])
 
     const namespaceDefaultList = namespaceList?.result || []
 
@@ -271,8 +268,9 @@ const ResourceList = () => {
         }
 
         sideDataAbortController.current?.abort()
+        resourceListAbortController.current?.abort()
 
-        /* TODO: is this required? */
+        /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
@@ -287,7 +285,6 @@ const ResourceList = () => {
         replace({
             pathname: path,
         })
-        initTabsBasedOnRole(true)
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -414,7 +411,7 @@ const ResourceList = () => {
 
     const renderClusterTerminal = (): JSX.Element => {
         return (
-            <ClusterTerminal
+            null && <ClusterTerminal
                 showTerminal={!detailClusterListLoading && !detailClusterListError && nodeType === AppDetailsTabs.terminal}
                 clusterId={+clusterId}
                 nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}

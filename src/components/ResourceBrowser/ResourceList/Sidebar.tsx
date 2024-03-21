@@ -88,10 +88,11 @@ const Sidebar = ({
             return
         }
 
-        /* TODO: should we retain namespace on resource change ? */
+        /* NOTE: on resource change specified namespace is retained since resource change is done through url */
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
         push(_url)
         updateTabUrl(
+            /* TODO: can be constant? */
             `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
             _url,
             e.currentTarget.dataset.kind,
