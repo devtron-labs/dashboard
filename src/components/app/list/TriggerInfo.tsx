@@ -1,8 +1,8 @@
-import { Drawer, GenericEmptyState, Progressing, ReleaseTag, showError } from '@devtron-labs/devtron-fe-common-lib'
-import React, { Component } from 'react'
+import { Drawer, GenericEmptyState, Progressing, ReleaseTag, Reload, showError } from '@devtron-labs/devtron-fe-common-lib'
+import React, { Component, SyntheticEvent } from 'react'
 import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 import close from '../../../assets/icons/ic-close.svg'
-import { ViewType } from '../../../config'
+import { API_STATUS_CODES, ViewType } from '../../../config'
 import Artifacts from '../details/cicdHistory/Artifacts'
 import { HistoryComponentType, ImageComment } from '../details/cicdHistory/types'
 import { CIMaterialType, MaterialHistory } from '../details/triggerView/MaterialHistory'
@@ -67,11 +67,19 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
         document.removeEventListener('click', this.outsideClickHandler)
     }
 
-    componentDidMount() {
+    fetchCITriggerInfo = (e?: SyntheticEvent) => {
+        // To prevent the modal from closing
+        e?.stopPropagation()
+
+        this.setState({
+            view: ViewType.LOADING
+        })
+
         const params = {
             envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId,
         }
+
         getCITriggerInfoModal(params)
             .then((response) => {
                 this.setState({
@@ -82,7 +90,16 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             })
             .catch((error) => {
                 showError(error)
+
+                this.setState({
+                    view: ViewType.ERROR,
+                    statusCode: error?.code,
+                })
             })
+    }
+
+    componentDidMount() {
+        this.fetchCITriggerInfo()
         document.addEventListener('click', this.outsideClickHandler)
     }
 
@@ -149,6 +166,19 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                     </div>
                 </div>
             )
+        } else if (this.state.view === ViewType.ERROR) {
+            headerDescription = null
+            if (this.state.statusCode === API_STATUS_CODES.NOT_FOUND) {
+                body = (
+                    <GenericEmptyState
+                        title="Data not available"
+                        subTitle="The data you are looking for is not available"
+                        classname="h-100 bcn-0"
+                    />
+                )
+            } else {
+                body = <Reload className="h-100 bcn-0" reload={this.fetchCITriggerInfo} />
+            }
         } else if (!this.state.materials?.length) {
             body = (
                 <GenericEmptyState
