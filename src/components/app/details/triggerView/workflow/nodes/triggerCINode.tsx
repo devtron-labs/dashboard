@@ -5,7 +5,7 @@ import Tippy from '@tippyjs/react'
 import { TriggerStatus } from '../../../../config'
 import { CIMaterialType } from '../../MaterialHistory'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
-import link from '../../../../../../assets/icons/ic-link.svg'
+import {ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
@@ -138,9 +138,9 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         placement="top"
                         content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
-                        <button type="button" className="link-count cursor dc__hover-border-n300" onClick={this.handleLinkedCIWorkflowChipClick}>
-                            <img src={link} className="icon-dim-12 mr-5" alt="" />
-                            {this.props.linkedCount}
+                        <button type="button" className="link-count cursor dc__hover-border-n300 flex dc__gap-4" onClick={this.handleLinkedCIWorkflowChipClick}>
+                            <IcLink  className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                            <span>{this.props.linkedCount}</span>
                         </button>
                     </Tippy>
                 ) : null}

@@ -5,14 +5,14 @@ import LinkedCIDetailsModal from './LinkedCIDetailsModal'
 import { URLS } from '../../../config'
 import { LinkedCIDetailModalProps } from './types'
 
-const LinkedCIDetail = (props: LinkedCIDetailModalProps) => {
+const LinkedCIDetail = ({ workflows, handleClose }: LinkedCIDetailModalProps) => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
             <Route path={`${path}/${URLS.LINKED_CI_DETAILS}/:ciPipelineId`} exact>
-                <Drawer position="right" width="800px">
-                    <LinkedCIDetailsModal {...props} />
+                <Drawer position="right" width="800px" onEscape={handleClose}>
+                    <LinkedCIDetailsModal workflows={workflows} handleClose={handleClose} />
                 </Drawer>
             </Route>
         </Switch>

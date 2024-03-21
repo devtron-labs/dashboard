@@ -142,24 +142,26 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
     return (
         <div className="bcn-0 h-100 flexbox-col show-shimmer-loading">
             <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
-                <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20 dc__position-sticky">
-                    <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
-                    <button
-                        type="button"
-                        className="dc__transparent dc__no-shrink flexbox"
-                        aria-label="close-modal"
-                        onClick={handleClose}
-                        disabled={showLoadingState}
-                    >
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-                <div className="flexbox-col flex-grow-1">
+                <div className="dc__position-sticky dc__top-0 bcn-0 dc__zi-20">
+                    <div className="flex flex-justify dc__border-bottom pt-10 pr-20 pb-10 pl-20">
+                        <h2 className="fs-16 fw-6 lh-24 m-0 dc__ellipsis-right">{ciPipelineName}</h2>
+                        <button
+                            type="button"
+                            className="dc__transparent dc__no-shrink flexbox"
+                            aria-label="close-modal"
+                            onClick={handleClose}
+                            disabled={showLoadingState}
+                        >
+                            <Close className="icon-dim-24" />
+                        </button>
+                    </div>
                     <InfoColourBar
                         message={getLinkedCITippyContent(linkedWorkflowCount)}
-                        classname="info_bar dc__position-sticky"
+                        classname="bcb-1 dc__border-bottom--b2"
                         Icon={Info}
                     />
+                </div>
+                <div className="flexbox-col flex-grow-1">
                     <div className="flex flex-justify-start dc__gap-8 pl-20 pr-20 pt-8 pb-8 lh-20">
                         <SearchBar
                             containerClassName="w-250"
