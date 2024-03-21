@@ -50,7 +50,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -177,7 +177,7 @@ export default function Docker({ ...props }) {
                     interactive
                 >
                     <div className="flex">
-                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                        <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
                     </div>
                 </TippyCustomized>
             </div>
@@ -1075,7 +1075,7 @@ const DockerForm = ({
                                 interactive
                             >
                                 <div className="flex">
-                                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                                    <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
                                 </div>
                             </TippyCustomized>
                         </div>
@@ -1329,7 +1329,7 @@ const DockerForm = ({
                         }
                     >
                         <div className="flex">
-                            <Question className="icon-dim-20 ml-8" />
+                            <ICHelpOutline className="icon-dim-20 ml-8" />
                         </div>
                     </Tippy>
                 </div>
@@ -1738,7 +1738,7 @@ const DockerForm = ({
                                             content={<span className="dc__block w-160">{tippy}</span>}
                                         >
                                             <div className="flex">
-                                                <Question className="icon-dim-16 ml-4" />
+                                                <ICHelpOutline className="icon-dim-16 ml-4" />
                                             </div>
                                         </Tippy>
                                     )}

@@ -21,7 +21,7 @@ import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
@@ -744,7 +744,7 @@ const LogsComponent = ({
                             }
                         >
                             <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
-                                <Question className="icon-dim-18 cursor ml-8 mr-8" />
+                                <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
                             </div>
                         </Tippy>
                     </form>

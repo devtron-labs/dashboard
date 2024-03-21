@@ -6,7 +6,7 @@ import { DescriptorProps } from './types'
 import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
@@ -36,7 +36,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             theme={TippyTheme.white}
                             className="w-300 h-100 fcv-5"
                             placement="right"
-                            Icon={QuestionFilled}
+                            Icon={Help}
                             heading={DEFAULT_TITLE}
                             infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
                             showCloseButton

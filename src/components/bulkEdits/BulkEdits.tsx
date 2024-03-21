@@ -13,7 +13,7 @@ import {
     DtOutputKeys,
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
@@ -751,7 +751,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <PageHeader
                     headerName="Bulk Edit"
                     isTippyShown
-                    TippyIcon={Question}
+                    TippyIcon={ICHelpOutline}
                     tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
                     tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
                 />

@@ -417,7 +417,7 @@ export default function EnvironmentOverrideRouter({
         if (!isJobView) {
             return (
                 <InfoColourBar
-                    classname="question-bar no-env-overrides"
+                    classname="ICHelpOutline-bar no-env-overrides"
                     message={<EnvOverridesHelpNote />}
                     Icon={Help}
                     iconClass="fcv-5"

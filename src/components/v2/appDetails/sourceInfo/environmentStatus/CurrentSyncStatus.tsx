@@ -1,6 +1,6 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
 import { CurrentSyncStatusType } from './notesDrawer.type'
 
 const CurrentSyncStatus = ({ status, loadingResourceTree }: CurrentSyncStatusType): JSX.Element => {
@@ -33,7 +33,7 @@ const CurrentSyncStatus = ({ status, loadingResourceTree }: CurrentSyncStatusTyp
             <div className="cn-9 flex left">
                 <span data-testid="application-status-heading">Application status</span>
                 <Tippy className="default-tt cursor" arrow={false} content="The health status of your app">
-                    <Question className="cursor icon-dim-16 ml-4" />
+                    <ICHelpOutline className="cursor icon-dim-16 ml-4" />
                 </Tippy>
             </div>
             {loadingResourceTree ? renderloadingShimmer() : renderStatusCard()}

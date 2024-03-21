@@ -6,7 +6,7 @@ import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-upload.svg'
 import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getChartList } from './customChart.service'
 import {
@@ -207,7 +207,7 @@ export default function CustomChartList() {
                 documentationLink={DOCUMENTATION.CUSTOM_CHART}
             >
                 <div className="flex">
-                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                    <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
                 </div>
             </TippyCustomized>
         )

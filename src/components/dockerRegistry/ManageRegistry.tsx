@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
@@ -348,7 +348,7 @@ const ManageRegistry = ({
                         interactive
                     >
                         <div className="flex">
-                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
+                            <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
                         </div>
                     </TippyCustomized>
                 </div>

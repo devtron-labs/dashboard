@@ -7,7 +7,7 @@ import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/ic-exit-fullscreen-2.svg'
-import { ReactComponent as HelpIcon } from '../../../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
 import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play-filled.svg'
@@ -51,7 +51,7 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     additionalContent={selectData.infoContent}
                 >
                     <div className="flex">
-                        <HelpIcon className="icon-dim-16 cursor" />
+                        <ICHelpOutline className="icon-dim-16 cursor" />
                     </div>
                 </TippyCustomized>
             )}
@@ -249,7 +249,7 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                     }
                 >
                     <div>
-                        <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                        <ICHelpOutline className="icon-dim-16 mr-8 cursor" />
                     </div>
                 </TippyCustomized>
             )}

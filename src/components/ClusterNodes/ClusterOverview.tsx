@@ -12,8 +12,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
@@ -312,7 +312,7 @@ function ClusterOverview({
                     theme={TippyTheme.white}
                     className="w-300 h-100 fcv-5 dc__align-left"
                     placement="bottom"
-                    Icon={QuestionFilled}
+                    Icon={Help}
                     heading="Metrics API is not available"
                     showCloseButton
                     trigger="click"
@@ -322,7 +322,7 @@ function ClusterOverview({
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
                 >
                     <div className="flex">
-                        <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
+                        <ICHelpOutline className="icon-dim-20 ml-8 cursor fcn-5" />
                     </div>
                 </TippyCustomized>
             </>

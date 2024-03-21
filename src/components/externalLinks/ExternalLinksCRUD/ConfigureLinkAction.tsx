@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import {
     ConfigureLinkActionType,
@@ -242,7 +242,7 @@ export default function ConfigureLinkAction({
                             interactive
                         >
                             <div className="flex">
-                                <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
+                                <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
                             </div>
                         </TippyCustomized>
                     </div>

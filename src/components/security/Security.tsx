@@ -5,7 +5,7 @@ import { SecurityScansTab } from './SecurityScansTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import PageHeader from '../common/header/PageHeader'
 
 interface SecurityProps extends RouteComponentProps<{}> {
@@ -54,7 +54,7 @@ export class Security extends Component<SecurityProps> {
                 isTippyShown
                 tippyRedirectLink={DOCUMENTATION.SECURITY}
                 tippyMessage="Learn more"
-                TippyIcon={Question}
+                TippyIcon={ICHelpOutline}
                 showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
             />

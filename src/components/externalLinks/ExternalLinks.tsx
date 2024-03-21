@@ -22,7 +22,7 @@ import {
 import { getClusterListMin } from '../../services/service'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
@@ -425,7 +425,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             interactive
                         >
                             <div className="flex">
-                                <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
+                                <ICHelpOutline className="icon-dim-20 fcn-6 cursor ml-8" />
                             </div>
                         </TippyCustomized>
                     </h3>

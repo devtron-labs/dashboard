@@ -27,7 +27,7 @@ import {
 } from '../v2/common/ReactSelect.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -663,7 +663,7 @@ export default function BuildCD({
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                        <Question />
+                        <ICHelpOutline />
                     </div>
                 </TippyCustomized>
             )

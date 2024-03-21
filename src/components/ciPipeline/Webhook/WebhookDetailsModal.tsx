@@ -15,7 +15,7 @@ import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
@@ -44,7 +44,10 @@ import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessagin
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
-import { getDefaultStatusAndTimeout, getDefaultUserStatusAndTimeout } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
+import {
+    getDefaultStatusAndTimeout,
+    getDefaultUserStatusAndTimeout,
+} from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -381,7 +384,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     }
                 >
                     <div className="flex">
-                        <Question className="icon-dim-16 ml-6" />
+                        <ICHelpOutline className="icon-dim-16 ml-6" />
                     </div>
                 </Tippy>
             </div>
