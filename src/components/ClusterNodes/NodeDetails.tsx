@@ -775,6 +775,7 @@ export default function NodeDetails({
                                             clusterId={clusterId}
                                             resourceData={pod}
                                             selectedResource={selectedResource}
+                                            getResourceListData={getPodListData}
                                             handleResourceClick={handleResourceClick}
                                         />
                                     </div>

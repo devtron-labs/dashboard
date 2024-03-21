@@ -158,15 +158,16 @@ export interface ResourceBrowserActionMenuType {
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: any) => void
     removeTabByIdentifier?: (id: string) => string
+    getResourceListData?: () => Promise<void>
 }
 
 export interface DeleteResourcePopupType {
     clusterId: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData?: () => Promise<void>
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: (id: string) => string
+    getResourceListData?: () => Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
