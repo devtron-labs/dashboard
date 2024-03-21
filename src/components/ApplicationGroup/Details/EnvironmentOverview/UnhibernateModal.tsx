@@ -64,12 +64,12 @@ export const UnhibernateModal = ({
             )
         }
         return (
-            <div>
-                Hibernating some applications is blocked due to deployment window
+            <>
+                <div>Hibernating some applications is blocked due to deployment window</div>
                 {ResistantInput && (
-                    <ResistantInput type={MODAL_TYPE.HIBERNATE} setActionButtonDisabled={setActionButtonDisabled} />
+                    <ResistantInput type={MODAL_TYPE.UNHIBERNATE} setActionButtonDisabled={setActionButtonDisabled} />
                 )}
-            </div>
+            </>
         )
     }
 
