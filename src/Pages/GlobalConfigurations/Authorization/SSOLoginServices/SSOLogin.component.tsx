@@ -53,6 +53,7 @@ import {
     autoAssignPermissionsFlowActiveProviders,
     ssoDocumentationMap,
     ssoProviderToDisplayNameMap,
+    SsoSecretsToHide,
 } from './constants'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
@@ -195,14 +196,25 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             })
     }
 
-    setConfig(response, newsso): void {
+    setSecretPlaceHolderInResponse(response): void {
         const config = response.result?.config?.config
-        if (config?.hasOwnProperty('clientID') && config?.clientID === '') {
+        if (config?.hasOwnProperty(SsoSecretsToHide.clientID) && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
+        if (config?.hasOwnProperty(SsoSecretsToHide.clientSecret) && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
+        if (config?.hasOwnProperty(SsoSecretsToHide.bindPW) && config?.bindPW === '') {
+            response.result.config.config.bindPW = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (config?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && config?.usernamePrompt === '') {
+            response.result.config.config.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
+    setConfig(response, newsso): void {
+        this.setSecretPlaceHolderInResponse(response)
+
         let newConfig: SSOConfigType
         if (response.result) {
             newConfig = this.parseResponse(response.result)
@@ -249,16 +261,28 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     checkConfigJson(ssoConfig) {
         if (
-            ssoConfig?.hasOwnProperty('clientID') &&
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientID) &&
             (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
         ) {
             ssoConfig.clientID = ''
         }
         if (
-            ssoConfig?.hasOwnProperty('clientID') &&
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientSecret) &&
             (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
         ) {
             ssoConfig.clientSecret = ''
+        }
+        if (
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.bindPW) &&
+            (ssoConfig?.bindPW === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.bindPW)
+        ) {
+            ssoConfig.bindPW = ''
+        }
+        if (
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) &&
+            (ssoConfig?.usernamePrompt === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.usernamePrompt)
+        ) {
+            ssoConfig.usernamePrompt = ''
         }
         return ssoConfig
     }
@@ -314,13 +338,24 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return { isValid: true, configJSON }
     }
 
-    saveSSO(response): void {
-        if (response.result.config.config.hasOwnProperty('clientID')) {
+    sanitiseSecretDataFromResponse(response): void {
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientID)) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config.config.hasOwnProperty('clientSecret')) {
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientSecret)) {
             response.result.config.config.clientSecret = ''
         }
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.bindPW)) {
+            response.result.config.config.bindPW = ''
+        }
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.usernamePrompt)) {
+            response.result.config.config.usernamePrompt = ''
+        }
+    }
+
+    saveSSO(response): void {
+        this.sanitiseSecretDataFromResponse(response)
+
         this.setConfig(response, this.state.sso.toLowerCase())
         const ssoConfig = response.result
         const shouldAutoAssignPermissions =
@@ -542,6 +577,21 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
+    setDefaultSecretPlaceHolder(newConfig): void {
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientID) && !newConfig.clientID) {
+            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
+            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
+            newConfig.bindPW = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
+            newConfig.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) {
             return
@@ -555,14 +605,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
         if (newConfig) {
-            // eslint-disable-next-line no-prototype-builtins
-            if (newConfig.hasOwnProperty('clientID') && !newConfig.clientID) {
-                newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
-            }
-            // eslint-disable-next-line no-prototype-builtins
-            if (newConfig.hasOwnProperty('clientSecret') && !newConfig.clientSecret) {
-                newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
-            }
+            this.setDefaultSecretPlaceHolder(newConfig)
         }
         const value = yamlJsParser.stringify(newConfig)
 
