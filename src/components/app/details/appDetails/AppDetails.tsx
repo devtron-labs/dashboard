@@ -173,12 +173,14 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         setEnvironmentId(Number(params.envId))
         setIsAppDeleted(false)
         if (getDeploymentWindowProfileMetaData) {
-          getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({userActionState}) =>{
-            if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
-                setShowDeploymentWindowConfirmation(true)
-            }
-           })
-            
+            getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
+                if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
+                    setShowDeploymentWindowConfirmation(true)
+                }
+                else {
+                    setShowDeploymentWindowConfirmation(false)
+                }
+            })
         }
     }, [params.envId])
 

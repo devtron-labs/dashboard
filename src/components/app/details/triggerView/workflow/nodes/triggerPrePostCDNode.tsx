@@ -95,7 +95,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                                 }}
                             >
                                 <div
-                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
                                 >
                                     {this.props.isDeploymentBlocked ? DO_NOT_DEPLOY : this.props.triggerType}
                                 </div>
