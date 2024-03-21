@@ -2,9 +2,9 @@ import React from 'react'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { InfoIconWithTippyType } from './Types'
+import { InfoIconTippyType } from './Types'
 
-export default function InfoIconWithTippy({ titleText, infoText, documentationLink }: InfoIconWithTippyType) {
+export default function InfoIconWithTippy({ titleText, infoText, documentationLink }: InfoIconTippyType) {
     return (
         <TippyCustomized
             theme={TippyTheme.white}
