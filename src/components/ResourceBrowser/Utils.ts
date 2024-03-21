@@ -96,7 +96,7 @@ export const getResourceFromK8SObjectMap = (k8SObjectMap: Map<string, K8SObjectM
         default:
             let data = null
             const _selectedGroup = k8SObjectMap?.get(getAggregator(nodeType as NodeType))
-            _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data) 
+            _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data)
             return data && {...data, grouped: data.isExpanded || true}
     }
 }

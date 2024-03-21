@@ -301,7 +301,7 @@ const DynamicTabs = ({
                 {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
                     <div className="flex">
                         <Timer start={lastDataSyncMoment} callback={updateOnStaleData} />
-                        {' ago'}
+                        <span className="ml-2">ago</span>
                     </div>
                 )}
             </>

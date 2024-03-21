@@ -111,7 +111,7 @@ const ResourceList = () => {
     )
 
     /* TODO: propagate resourceListDataError rename this to resourceListBody or something */
-    const [resourceListLoader, resourceListData, resourceListDataError] = useAsync(() => {
+    const [resourceListLoader, resourceListData, resourceListDataError, reloadResourceListData] = useAsync(() => {
         if (!selectedResource) {
             return null
         }
@@ -241,6 +241,7 @@ const ResourceList = () => {
     const refreshData = (): void => {
         setLastDataSyncMoment(moment())
         setIsDataStale(false)
+        reloadResourceListData()
     }
 
     const renderRefreshBar = () => {

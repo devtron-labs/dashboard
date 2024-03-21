@@ -435,6 +435,7 @@ const NodeDetailComponent = ({
                         },
                         namespaced: false,
                     }}
+                    getResourceListData={getContainersFromManifest}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
                 />
