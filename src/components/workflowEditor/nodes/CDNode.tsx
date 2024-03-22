@@ -330,7 +330,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         </div>
                     </div>
                 </Link>
-                {this.renderDeleteConformationDialog()}
             </>
         )
     }
@@ -365,6 +364,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         showConfirmationBar
                     />
                 )}
+                {this.renderDeleteConformationDialog()}
             </>
         )
     }

@@ -1448,7 +1448,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403) {
+                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],

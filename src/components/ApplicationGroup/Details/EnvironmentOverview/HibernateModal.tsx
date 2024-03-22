@@ -1,10 +1,4 @@
-import {
-    MODAL_TYPE,
-    Progressing,
-    VisibleModal,
-    showError,
-    stopPropagation,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { MODAL_TYPE, Progressing, VisibleModal, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
@@ -62,12 +56,12 @@ export const HibernateModal = ({
             )
         }
         return (
-            <div className="mt-16">
-                Hibernating some applications is blocked due to deployment window
+            <>
+                <div>Hibernating some applications is blocked due to deployment window</div>
                 {ResistantInput && (
                     <ResistantInput setActionButtonDisabled={setActionButtonDisabled} type={MODAL_TYPE.HIBERNATE} />
                 )}
-            </div>
+            </>
         )
     }
 
