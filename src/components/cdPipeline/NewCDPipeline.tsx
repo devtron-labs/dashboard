@@ -424,13 +424,15 @@ export default function NewCDPipeline({
     }
 
     const getCDeploymentWindowState = (envId: string) => {
-        getDeploymentWindowProfileMetaData(appId, envId).then(({ userActionState }) => {
-            if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
-                setShowDeploymentWindowConfirmation(true)
-            } else {
-                setShowDeploymentWindowConfirmation(false)
-            }
-        })
+        if (getDeploymentWindowProfileMetaData) {
+            getDeploymentWindowProfileMetaData(appId, envId).then(({ userActionState }) => {
+                if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
+                    setShowDeploymentWindowConfirmation(true)
+                } else {
+                    setShowDeploymentWindowConfirmation(false)
+                }
+            })
+        }
     }
 
     const getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
