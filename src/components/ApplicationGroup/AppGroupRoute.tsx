@@ -9,9 +9,12 @@ import AppGroupDetailsRoute from './AppGroupDetailsRoute'
 export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentEnvironmentName, setCurrentEnvironmentName] = useState<string>('')
 
     return (
-        <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+        <AppContext.Provider
+            value={{ environmentId, setEnvironmentId, currentEnvironmentName, setCurrentEnvironmentName }}
+        >
             <Switch>
                 <Route path={`${path}/${URLS.APP_LIST}`}>
                     <EnvironmentsList isSuperAdmin={isSuperAdmin} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { Route } from 'react-router-dom'
-import { useInterval, mapByKey, asyncWrap } from '../../../common'
+import { useInterval, mapByKey, asyncWrap, useAppContext } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
@@ -55,7 +55,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     )
     const { path } = useRouteMatch()
     const { replace } = useHistory()
+    const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
+
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
@@ -150,8 +152,17 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
         if (triggerId === triggerDetail?.id) {
+            const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
+            const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
+            const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
+            const additionalDataObject = {
+                ...(appliedFilters.length ? { appliedFilters } : {}),
+                ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
+                ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
+            }
+
             setTriggerHistory((triggerHistory) => {
-                triggerHistory.set(triggerId, triggerDetail)
+                triggerHistory.set(triggerId,  { ...triggerDetail, ...additionalDataObject })
                 return new Map(triggerHistory)
             })
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
@@ -233,6 +244,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchTriggerIdData}
+                        selectedEnvironmentName={currentEnvironmentName}
                     />
                 </Route>
             )

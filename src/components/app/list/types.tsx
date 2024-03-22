@@ -65,6 +65,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     updateDataSyncing: (loading: boolean) => void
     isArgoInstalled: boolean
     environmentClusterList: EnvironmentClusterList
+    setCurrentAppName: (appName: string) => void
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {

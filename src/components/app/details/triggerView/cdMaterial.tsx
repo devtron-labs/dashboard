@@ -185,7 +185,7 @@ const CDMaterial = ({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === "review-config" && searchParams.deploy && searchParams.config
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -200,7 +200,10 @@ const CDMaterial = ({
     }
 
     const getWfrId = (initSelectedMaterial?: CDMaterialType) => {
-        if (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && state.recentDeploymentConfig) {
+        if (
+            state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            state.recentDeploymentConfig
+        ) {
             return state.recentDeploymentConfig.wfrId
         }
 
@@ -222,34 +225,36 @@ const CDMaterial = ({
             initSelectedMaterial && state.isRollbackTrigger
                 ? getSpecificDeploymentConfig(appId, pipelineId, getWfrId(initSelectedMaterial))
                 : noop,
-        ]).then(
-            ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
-                status: string
-                value?: any
-                reason?: any
-            }[]) => {
-                const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
-                const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
-                const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
-                const _diffOptions = state.isRollbackTrigger
-                    ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
-                    : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
-                setState((prevState) => ({
-                    ...prevState,
-                    recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
-                    latestDeploymentConfig: _latestDeploymentConfig, // last saved config
-                    specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
-                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                    diffOptions: _diffOptions,
-                    checkingDiff: false,
-                }))
-            },
-        ).catch((error) => {
-            showError(error)
-        })
-        .finally(() => {
-            setState((prevState) => ({ ...prevState, checkingDiff: false }))
-        })
+        ])
+            .then(
+                ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
+                    status: string
+                    value?: any
+                    reason?: any
+                }[]) => {
+                    const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
+                    const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
+                    const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
+                    const _diffOptions = state.isRollbackTrigger
+                        ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
+                        : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
+                    setState((prevState) => ({
+                        ...prevState,
+                        recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
+                        latestDeploymentConfig: _latestDeploymentConfig, // last saved config
+                        specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
+                        diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                        diffOptions: _diffOptions,
+                        checkingDiff: false,
+                    }))
+                },
+            )
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setState((prevState) => ({ ...prevState, checkingDiff: false }))
+            })
     }
 
     const setSearchValue = (searchValue: string) => {
@@ -403,25 +408,24 @@ const CDMaterial = ({
         // The above states are derived from material so no need to make a state for them and shift the config diff here
     }, [material])
 
-const getInitialSelectedConfigToDeploy = () => {
-    if (
-        (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
-        searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-    ) {
-        return SPECIFIC_TRIGGER_CONFIG_OPTION
+    const getInitialSelectedConfigToDeploy = () => {
+        if (
+            (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
+            searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+        ) {
+            return SPECIFIC_TRIGGER_CONFIG_OPTION
+        }
+        if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+            return LATEST_TRIGGER_CONFIG_OPTION
+        }
+        return LAST_SAVED_CONFIG_OPTION
     }
-    if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
-        return LATEST_TRIGGER_CONFIG_OPTION
-    }
-    return LAST_SAVED_CONFIG_OPTION
-}
     useEffect(() => {
         setState((prevState) => ({
             ...prevState,
             isRollbackTrigger: materialType === MATERIAL_TYPE.rollbackMaterialList,
             isSelectImageTrigger: materialType === MATERIAL_TYPE.inputMaterialList,
-            selectedConfigToDeploy:
-                getInitialSelectedConfigToDeploy(),
+            selectedConfigToDeploy: getInitialSelectedConfigToDeploy(),
         }))
     }, [materialType])
 
@@ -718,7 +722,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
                 deploy: getConfigToDeployValue(),
             }
-            
+
             history.push({
                 search: new URLSearchParams(newParams).toString(),
             })
@@ -1284,12 +1288,7 @@ const getInitialSelectedConfigToDeploy = () => {
                         )}
                     </>
                 )}
-                {renderMaterialCTA(
-                    mat,
-                    isImageApprover,
-                    disableSelection,
-                    shouldRenderExpireApproval,
-                )}
+                {renderMaterialCTA(mat, isImageApprover, disableSelection, shouldRenderExpireApproval)}
             </>
         )
     }
@@ -1346,17 +1345,18 @@ const getInitialSelectedConfigToDeploy = () => {
             stageType,
             showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
             isVirtualEnvironment,
-            additionalInfo: ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
-                <ImagePromotionInfoChip
-                    promotedTo={envName}
-                    promotedFromType={promotionApprovalMetadata?.promotedFromType}
-                    promotedFrom={promotionApprovalMetadata?.promotedFrom}
-                    promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
-                    approvedBy={promotionApprovedBy}
-                    promotionPolicyName={promotionApprovalMetadata?.policy?.name}
-                    showBackgroundColor
-                />
-            ) : null,
+            additionalInfo:
+                ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
+                    <ImagePromotionInfoChip
+                        promotedTo={envName}
+                        promotedFromType={promotionApprovalMetadata?.promotedFromType}
+                        promotedFrom={promotionApprovalMetadata?.promotedFrom}
+                        promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
+                        approvedBy={promotionApprovedBy}
+                        promotionPolicyName={promotionApprovalMetadata?.policy?.name}
+                        showBackgroundColor
+                    />
+                ) : null,
         }
     }
 
@@ -1915,7 +1915,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (
-           renderCDModal(isApprovalConfigured)
+            renderCDModal(isApprovalConfigured)
         )
     }
 
