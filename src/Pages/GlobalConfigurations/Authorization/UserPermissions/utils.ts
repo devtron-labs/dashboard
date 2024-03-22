@@ -1,7 +1,7 @@
+import { DefaultUserKey } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary, validateEmail } from '../../../../components/common'
 import { authorizationSelectStyles } from '../constants'
 import { User } from '../types'
-import { DefaultUserKey } from './constants'
 import { UserListFilter } from './List/types'
 
 const getStatusFromSearchParams = importComponentFromFELibrary('getStatusFromSearchParams', null, 'function')

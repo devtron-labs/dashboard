@@ -320,12 +320,6 @@ export interface LinkedCIPipelineState {
     }
 }
 
-export interface Material {
-    source: { type: string; value: string }
-    gitMaterialId: number
-    isSave: boolean
-}
-
 export interface CIPipelineProps
     extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }> {
     appName: string

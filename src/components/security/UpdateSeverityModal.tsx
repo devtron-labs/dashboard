@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import ReactSelect from 'react-select'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, Severity } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { VulnerabilityAction, Severity } from './security.types'
+import { VulnerabilityAction } from './security.types'
 import { styles, DropdownIndicator } from './security.util'
 
 export interface UpdateSeverityModalProps {

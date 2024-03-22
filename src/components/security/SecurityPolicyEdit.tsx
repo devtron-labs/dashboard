@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactSelect from 'react-select'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, Severity } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
@@ -10,7 +10,6 @@ import {
     SeverityPolicy,
     CvePolicy,
     VulnerabilityAction,
-    Severity,
     ResourceLevel,
     VulnerabilityPolicy,
 } from './security.types'

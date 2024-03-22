@@ -6,6 +6,7 @@ import {
     GenericEmptyState,
     useAsync,
     PipelineType,
+    ScannedByToolModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -35,7 +36,6 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdData
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
-import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])

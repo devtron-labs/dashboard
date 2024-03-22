@@ -1,8 +1,7 @@
-import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, IMAGE_SCAN_TOOL } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { ModuleNameMap } from '../../../config'
 import { SuccessModalType } from './DevtronStackManager.type'
-import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 

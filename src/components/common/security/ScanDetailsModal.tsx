@@ -5,13 +5,13 @@ import {
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,
+    ScannedByToolModal,
     Drawer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ViewType, URLS } from '../../../config'
 import { getLastExecutionByImageScanDeploy } from '../../../services/service'
-import { ScannedByToolModal } from './ScannedByToolModal'
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
 interface ScanDetailsModalProps {
@@ -88,7 +88,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     }
     outsideClickHandler = (evt): void => {
         if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
-            console.log('outside click', evt)
             this.props.close()
         }
     }

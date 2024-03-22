@@ -5,10 +5,10 @@ import {
     BlockedStateData,
     ConsequenceType,
     ConsequenceAction,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
-import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
 

@@ -22,6 +22,7 @@ import {
     ToastBody3 as UpdateToast,
     ErrorBoundary,
     importComponentFromFELibrary,
+    getApprovalModalTypeFromURL,
 } from './components/common'
 import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
@@ -97,11 +98,7 @@ export default function App() {
 
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
-        if (location.pathname && location.pathname.includes('deployment')) {
-            setApprovalType(APPROVAL_MODAL_TYPE.DEPLOYMENT)
-        } else {
-            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
-        }
+        setApprovalType(getApprovalModalTypeFromURL(location.pathname))
 
         const queryString = new URLSearchParams(location.search)
         const token = queryString.get('token')

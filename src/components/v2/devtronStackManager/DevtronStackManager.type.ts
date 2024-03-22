@@ -3,6 +3,9 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
 
+/**
+ * @deprecated Use from fe-common-lib
+ */
 export enum ModuleStatus {
     HEALTHY = 'healthy',
     NONE = 'none',

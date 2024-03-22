@@ -1,4 +1,4 @@
-import { VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib'
+import { VulnerabilityType, Severity } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 
 export interface SecurityPolicyClusterState {
@@ -168,7 +168,6 @@ export interface Error {
  * Resource Level can be one of global, cluster, environment, application
  */
 export type ResourceLevel = 'global' | 'cluster' | 'environment' | 'application'
-export type Severity = 'critical' | 'moderate' | 'low'
 
 /**
  * actions which can be taken on vulnerabilities
