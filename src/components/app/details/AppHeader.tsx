@@ -89,11 +89,10 @@ export const AppHeader = ({
 
     useEffect(() => {
         setCurrentAppName(appName)
-    }, [])
+    }, [appName])
 
     const handleAppChange = useCallback(
         ({ label, value }) => {
-            setCurrentAppName(label)
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
             const newUrl = generatePath(match.path, { appId: value })
             history.push(`${newUrl}/${tab}`)
