@@ -82,6 +82,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
+    LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
@@ -302,7 +303,7 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
+} as const
 
 export const repoType = {
     DEFAULT: 'DEFAULT',
@@ -757,7 +758,7 @@ export const DEPLOYMENT_STATUS = {
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
     CHECKING: 'checking',
-}
+} as const
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
