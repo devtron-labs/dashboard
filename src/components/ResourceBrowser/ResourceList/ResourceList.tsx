@@ -103,7 +103,7 @@ const ResourceList = () => {
 
     /* TODO: on resourceSwitch update namespace to default ? */
     const k8SObjectMapRaw = useMemo(
-        () => convertResourceGroupListToK8sObjectList(_k8SObjectMapRaw?.result.apiResources || [], nodeType),
+        () => convertResourceGroupListToK8sObjectList(_k8SObjectMapRaw?.result.apiResources || null, nodeType),
         [_k8SObjectMapRaw, nodeType],
     )
 
@@ -140,7 +140,7 @@ const ResourceList = () => {
 
     useEffect(() => setLastDataSyncMoment(moment()), [resourceListData])
 
-    const resourceList = useMemo(() => resourceListData?.result || null, [resourceListData])
+    const resourceList = resourceListData?.result || null
 
     const [sidebarDataLoading, _k8SObjectMap, sidebarDataError, getSidebarData] = useAsync(() => (
         abortPreviousRequests(
@@ -167,11 +167,11 @@ const ResourceList = () => {
 
     const [clusterListData = null, hostUrlConfig = null, userRole = null, namespaceList = null] = data || []
 
-    const clusterList = useMemo(() => clusterListData?.result || [], [clusterListData])
+    const clusterList = clusterListData?.result || null
 
     const clusterOptions: ClusterOptionType[] = useMemo(
         () =>
-            convertToOptionsList(
+            clusterList && convertToOptionsList(
                 sortObjectArrayAlphabetically(clusterList, 'name'),
                 'name',
                 'id',
@@ -180,8 +180,11 @@ const ResourceList = () => {
         [clusterList],
     )
 
-    const selectedCluster = clusterOptions.find((cluster) => String(cluster.value) === clusterId)
-                            || { label: '', value: clusterId, errorInConnecting: '' }
+    /* NOTE: this is being used as dependency in useEffect down the tree */
+    const selectedCluster = useMemo(() =>
+        clusterOptions?.find((cluster) => String(cluster.value) === clusterId)
+            || { label: '', value: clusterId, errorInConnecting: '' }
+    , [clusterId, clusterOptions])
 
     const imageList = useMemo(() => JSON.parse(hostUrlConfig?.result.value || '[]'), [hostUrlConfig?.result])
 
@@ -303,7 +306,7 @@ const ResourceList = () => {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}
-                            clusterList={clusterOptions}
+                            clusterList={clusterOptions || []}
                             clusterId={clusterId}
                         />
                     ),

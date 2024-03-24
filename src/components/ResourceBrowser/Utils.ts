@@ -341,7 +341,11 @@ export const getTabsBasedOnRole = (
     return tabs
 }
 
+/* TODO: add types */
 export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
+    if (!resource) {
+        return null
+    }
     const processedData = processK8SObjects(resource, nodeType)
     const _k8SObjectList = ORDERED_AGGREGATORS.map((element) => processedData.k8SObjectMap.get(element) || null).filter(
         (element) => !!element,
@@ -350,6 +354,9 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
 }
 
 export const reversedMapForGroupedK8sObjectList = (map: Map<string, K8SObjectMapType>) => {
+    if (!map) {
+        return null
+    }
     const reverseMap = {}
     map.forEach((value, key) => {
         value.child.forEach((_value, _key) => reverseMap[_key.toLowerCase()] = key)

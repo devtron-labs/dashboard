@@ -130,7 +130,7 @@ const DynamicTabs = ({
         const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
 
         return (
-            <Fragment key={tab.id}>
+            <Fragment key={`${idx}-tab`}>
                 <li
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
