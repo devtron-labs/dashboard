@@ -45,6 +45,7 @@ import {
     convertResourceGroupListToK8sObjectList,
     getEventObjectTypeGVK,
     getResourceFromK8SObjectMap,
+    reversedMapForGroupedK8sObjectList,
 } from '../Utils'
 import '../ResourceBrowser.scss'
 import { getHostURLConfiguration } from '../../../services/service'
@@ -91,8 +92,8 @@ const ResourceList = () => {
     )
 
     /* FIXME: check proper usage of controllers */
-    const resourceListAbortController = useRef(null)
-    const sideDataAbortController = useRef(null)
+    const resourceListAbortController = useRef(new AbortController())
+    const sideDataAbortController = useRef(new AbortController())
 
     /* TODO: Find use for this error */
     const [rawGVKLoader, _k8SObjectMapRaw, rawGVKError] = useAsync(
@@ -106,8 +107,12 @@ const ResourceList = () => {
         [_k8SObjectMapRaw, nodeType],
     )
 
+    const reversedMapK8sObjectList = useMemo(() =>
+       reversedMapForGroupedK8sObjectList(k8SObjectMapRaw)
+    , [k8SObjectMapRaw])
+
     const selectedResource = useMemo(
-        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, nodeType),
+        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, reversedMapK8sObjectList, nodeType),
         [k8SObjectMapRaw, nodeType]
     )
 
@@ -128,7 +133,7 @@ const ResourceList = () => {
             },
         }
         return abortPreviousRequests(
-            () => getResourceList(resourceListPayload, resourceListAbortController.current.signal),
+            () => getResourceList(resourceListPayload, resourceListAbortController.current?.signal),
             resourceListAbortController,
         )
     }, [selectedResource, clusterId, namespace])
@@ -137,12 +142,12 @@ const ResourceList = () => {
 
     const resourceList = useMemo(() => resourceListData?.result || null, [resourceListData])
 
-    const [sidebarDataLoading, _k8SObjectMap, sidebarDataError, getSidebarData] = useAsync(async () => {
-        return abortPreviousRequests(
-            () => getResourceGroupList(clusterId, sideDataAbortController.current.signal),
+    const [sidebarDataLoading, _k8SObjectMap, sidebarDataError, getSidebarData] = useAsync(() => (
+        abortPreviousRequests(
+            () => getResourceGroupList(clusterId, sideDataAbortController.current?.signal),
             sideDataAbortController,
         )
-    }, [clusterId])
+    ), [clusterId])
 
     const [k8SObjectMapLoading, k8SObjectMap, , , setK8SObjectMap] = useAsync<Map<string, K8SObjectMapType>>(
         async () => convertResourceGroupListToK8sObjectList(_k8SObjectMap?.result.apiResources || [], nodeType),
@@ -325,7 +330,6 @@ const ResourceList = () => {
     }
 
     const handleRetry = () => {
-        sideDataAbortController.current?.abort()
         getSidebarData()
     }
 
@@ -346,13 +350,6 @@ const ResourceList = () => {
     }
 
     const renderSelectedResourceBody = () => {
-        if (!selectedResource) {
-            return (
-                <div className="h-100 node-data-container bcn-0">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
         if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
             return (
                 <NodeDetailsList
@@ -372,6 +369,7 @@ const ResourceList = () => {
                 selectedResource={selectedResource}
                 resourceList={resourceList}
                 noResults={!resourceListData}
+                reloadResourceListData={reloadResourceListData}
                 selectedCluster={selectedCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}

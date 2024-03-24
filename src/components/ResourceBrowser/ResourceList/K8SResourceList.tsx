@@ -34,6 +34,7 @@ export const K8SResourceList = ({
     selectedResource,
     resourceList,
     noResults,
+    reloadResourceListData,
     selectedCluster,
     namespaceOptions,
     selectedNamespace,
@@ -240,6 +241,7 @@ export const K8SResourceList = ({
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
                                     resourceData={resourceData}
+                                    getResourceListData={reloadResourceListData}
                                     selectedResource={selectedResource}
                                     handleResourceClick={handleResourceClick}
                                 />

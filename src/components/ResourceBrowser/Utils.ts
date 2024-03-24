@@ -73,32 +73,15 @@ export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType
     return null
 }
 
-export const getResourceFromK8SObjectMap = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
-    switch(nodeType) {
-        case SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase():
-            return {
-                namespaced: false,
-                grouped: false,
-                gvk: SIDEBAR_KEYS.nodeGVK,
-            }
-        case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
-            return {
-                namespaced: false,
-                grouped: false,
-                gvk: SIDEBAR_KEYS.eventGVK,
-            }
-        case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
-            return {
-                namespaced: false,
-                grouped: false,
-                gvk: SIDEBAR_KEYS.namespaceGVK
-            }
-        default:
-            let data = null
-            const _selectedGroup = k8SObjectMap?.get(getAggregator(nodeType as NodeType))
-            _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data)
-            return data && {...data, grouped: data.isExpanded || true}
-    }
+export const getResourceFromK8SObjectMap = (
+    k8SObjectMap: Map<string, K8SObjectMapType>,
+    reverseMap: object,
+    nodeType: string,
+) => {
+    let data = null
+    const _selectedGroup = k8SObjectMap?.get(reverseMap[nodeType.toLowerCase()])
+    _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data)
+    return data && {...data, grouped: data.isExpanded || true}
 }
 
 // Converts k8SObjects list to grouped map
@@ -364,4 +347,12 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
         (element) => !!element,
     )
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
+}
+
+export const reversedMapForGroupedK8sObjectList = (map: Map<string, K8SObjectMapType>) => {
+    const reverseMap = {}
+    map.forEach((value, key) => {
+        value.child.forEach((_value, _key) => reverseMap[_key.toLowerCase()] = key)
+    })
+    return reverseMap
 }

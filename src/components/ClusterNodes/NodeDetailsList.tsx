@@ -29,6 +29,7 @@ export default function NodeDetailsList({
     addTab,
     syncError,
     setLastDataSyncMoment,
+    refreshData = false,
 }) {
     const match = useRouteMatch()
     const location = useLocation()
@@ -228,6 +229,8 @@ export default function NodeDetailsList({
     useEffect(() => {
         getNodeListData()
     }, [clusterId])
+
+    useEffect(() => refreshData && getNodeListData(), [refreshData])
 
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)

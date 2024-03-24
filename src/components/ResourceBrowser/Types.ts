@@ -150,6 +150,7 @@ export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'h
     ) => boolean
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
     syncError: boolean
+    reloadResourceListData?: () => void | Promise<void>
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -158,7 +159,7 @@ export interface ResourceBrowserActionMenuType {
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: any) => void
     removeTabByIdentifier?: (id: string) => string
-    getResourceListData?: () => Promise<void>
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface DeleteResourcePopupType {
@@ -167,7 +168,7 @@ export interface DeleteResourcePopupType {
     selectedResource: ApiResourceGroupType
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: (id: string) => string
-    getResourceListData?: () => Promise<void>
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
