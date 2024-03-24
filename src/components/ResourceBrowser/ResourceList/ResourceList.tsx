@@ -365,7 +365,6 @@ const ResourceList = () => {
         }
         return (
             <K8SResourceList
-                /* TODO: propagate resourceListDataError */
                 selectedResource={selectedResource}
                 resourceList={resourceList}
                 noResults={!resourceListData}
@@ -409,7 +408,8 @@ const ResourceList = () => {
 
     const renderClusterTerminal = (): JSX.Element => {
         return (
-            null && <ClusterTerminal
+            /* FIXME: write a better way to test this */
+            namespaceDefaultList?.[selectedDetailsCluster.name] && <ClusterTerminal
                 showTerminal={!detailClusterListLoading && !detailClusterListError && nodeType === AppDetailsTabs.terminal}
                 clusterId={+clusterId}
                 nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
