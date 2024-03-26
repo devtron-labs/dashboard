@@ -348,7 +348,7 @@ export function useTabs(persistanceKey: string) {
             const _tabs = prevTabs.map((tab) => {
                 if (tab.id === id) {
                     tab.url = url
-                    tab.dynamicTitle = dynamicTitle || ''
+                    tab.dynamicTitle = dynamicTitle || tab.dynamicTitle
                 }
                 return tab
             })
