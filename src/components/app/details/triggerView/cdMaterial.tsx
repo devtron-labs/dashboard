@@ -2285,6 +2285,7 @@ export default function CDMaterial({
                     onClickActionButton={deployTrigger}
                     appId={appId}
                     envId={envId}
+                    envName={envName}
                 />
             )}
         </>
