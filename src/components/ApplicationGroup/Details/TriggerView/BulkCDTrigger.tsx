@@ -745,7 +745,7 @@ export default function BulkCDTrigger({
                     </>
                 )}
             </div>
-            {showResistanceBox && (
+            {showResistanceBox && !isLoading && (
                 <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} />
             )}
         </Drawer>
