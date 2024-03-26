@@ -214,14 +214,6 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         handleAllScaleObjectsName()
     }
 
-    const handlePodsRotaionConditinally = () => {
-        const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
-        const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
-        if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
-            handlePodsRotation()
-        }
-    }
-
     const renderDeploymentWindowConfirmtionModal = () =>
         DeploymentWindowConfirmationDialog && (
             <DeploymentWindowConfirmationDialog
@@ -230,7 +222,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
                 setValue={setDeploymentWindowConfimationValue}
                 isLoading={rotatingInProgress}
                 type={MODAL_TYPE.RESTART}
-                onClickActionButton={handlePodsRotaionConditinally}
+                onClickActionButton={handlePodsRotation}
                 strategyName={strategy}
                 appId={appDetails.appId}
                 envId={appDetails.environmentId}
@@ -239,10 +231,15 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     const handleRestartWorkloads = (e: any) => {
         e.preventDefault()
-        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
-            setShowDeploymentWindowConfirmationModal(true)
+        const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
+        const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
+        if(!rotatingInProgress && isWorkloadPresent && isAnySelected){
+            if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
+                // Show deployment window confirmation modal if deployment is blocked
+                setShowDeploymentWindowConfirmationModal(true)
+            }
+            else handlePodsRotation()
         }
-        else handlePodsRotaionConditinally()
     }
 
     const renderRestartWorkloadsList = (): JSX.Element => {
