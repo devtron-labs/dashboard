@@ -79,10 +79,6 @@ export default function EnvironmentOverview({
         }
     }, [])
 
-    const onClickStopLoading = () => {
-        setIsDeploymentLoading(false)
-    }
-
     async function getDeploymentWindowEnvOverrideMetaData() {
         const appEnvTuples = selectedAppIds.map((appId) => {
             return {
@@ -90,8 +86,9 @@ export default function EnvironmentOverview({
                 envId: +envId,
             }
         })
-        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId, onClickStopLoading)
+        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
         setHibernateInfoMap(_hibernate)
+        setIsDeploymentLoading(false)
     }
 
     useEffect(() => {
