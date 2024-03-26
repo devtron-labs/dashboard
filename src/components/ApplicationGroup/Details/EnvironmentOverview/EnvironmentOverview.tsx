@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
     AppStatus,
-    DEPLOYMENT_WINDOW_TYPE,
     Progressing,
     getRandomColor,
     processDeployedTime,
@@ -87,13 +86,15 @@ export default function EnvironmentOverview({
                 envId: +envId,
             }
         })
+        setIsDeploymentLoading(true)
         const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
         setHibernateInfoMap(_hibernate)
+        setIsDeploymentLoading(false)
     }
 
     useEffect(() => {
-        if(openHiberateModal || openUnhiberateModal) {
-        getDeploymentWindowEnvOverrideMetaData()
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal)) {
+            getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openHiberateModal, openUnhiberateModal])
 

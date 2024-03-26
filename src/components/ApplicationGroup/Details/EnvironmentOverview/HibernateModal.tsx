@@ -67,10 +67,12 @@ export const HibernateModal = ({
 
     return (
         <VisibleModal close={closeModal} onEscape={closeModal} className="generate-token-modal">
-            {isDeploymentLoading ? (
-                <Progressing />
-            ) : (
-                <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
+            <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
+                {isDeploymentLoading ? (
+                    <div className="mh-320 flex">
+                        <Progressing pageLoader />
+                    </div>
+                ) : (
                     <>
                         <div className="flexbox-col dc__gap-12">
                             <HibernateModalIcon className="dc__align-left" />
@@ -98,8 +100,8 @@ export const HibernateModal = ({
                             </ButtonWithLoader>
                         </div>
                     </>
-                </div>
-            )}
+                )}
+            </div>
         </VisibleModal>
     )
 }
