@@ -353,7 +353,7 @@ export default function NewCDPipeline({
 
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
-            .then((result) => {
+            .then(async (result) => {
                 const pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
                 const preBuildVariable = calculateLastStepDetail(
@@ -380,9 +380,9 @@ export default function NewCDPipeline({
                     clusterId: result.form?.clusterId,
                 })
                 setSavedCustomTagPattern(pipelineConfigFromRes.customTag?.tagPattern)
-                setPageState(ViewType.FORM)
                 setSelectedCDStageTypeValue(getCDStageTypeSelectorValue(form.customTagStage))
-                getCDeploymentWindowState(result.form?.environmentId)
+                await getCDeploymentWindowState(result.form?.environmentId)
+                setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -423,15 +423,14 @@ export default function NewCDPipeline({
             })
     }
 
-    const getCDeploymentWindowState = (envId: string) => {
+    const getCDeploymentWindowState = async (envId: string) => {
         if (getDeploymentWindowProfileMetaData) {
-            getDeploymentWindowProfileMetaData(appId, envId).then(({ userActionState }) => {
-                if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
-                    setShowDeploymentWindowConfirmation(true)
-                } else {
-                    setShowDeploymentWindowConfirmation(false)
-                }
-            })
+            const { userActionState } = await getDeploymentWindowProfileMetaData(appId, envId)
+            if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
+                setShowDeploymentWindowConfirmation(true)
+            } else {
+                setShowDeploymentWindowConfirmation(false)
+            }
         }
     }
 
