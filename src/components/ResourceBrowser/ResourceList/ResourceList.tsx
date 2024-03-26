@@ -207,7 +207,7 @@ const ResourceList = () => {
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
     useOnComponentUpdate(() => initTabsBasedOnRole(true), [clusterId])
 
-    const namespaceDefaultList = namespaceList?.result || []
+    const namespaceDefaultList = namespaceList?.result || null
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -234,6 +234,7 @@ const ResourceList = () => {
     )
 
     const namespaceOptions = useMemo(
+        /* FIXME: will we get an error here on other kinds of result objects without result field? */
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result.sort() || [])],
         [namespaceByClusterIdList],
     )
@@ -397,7 +398,7 @@ const ResourceList = () => {
             )
         }
 
-        if (detailClusterListError || !namespaceDefaultList[selectedDetailsCluster.name]) {
+        if (detailClusterListError || !namespaceDefaultList?.[selectedDetailsCluster.name]) {
             const errCode = detailClusterListError?.errors[0]?.['code'] || detailClusterListError?.['code']
             return (
                 <div className="bcn-0 node-data-container flex">
