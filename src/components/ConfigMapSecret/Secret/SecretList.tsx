@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
-import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '../../common'
@@ -145,10 +144,11 @@ export default function SecretList({
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
-                    <InfoIconWithTippy
-                        titleText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
+                    <InfoIconTippy
+                        heading={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].learnMoreLink}
+                        iconClass="fcv-5"
                     />
                 </h1>
                 <div className="mt-20">
