@@ -65,7 +65,7 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
-    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(true)
+    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[] }>
@@ -86,14 +86,15 @@ export default function EnvironmentOverview({
                 envId: +envId,
             }
         })
+        setIsDeploymentLoading(true)
         const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
         setHibernateInfoMap(_hibernate)
         setIsDeploymentLoading(false)
     }
 
     useEffect(() => {
-        if(openHiberateModal || openUnhiberateModal) {
-        getDeploymentWindowEnvOverrideMetaData()
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal)) {
+            getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openHiberateModal, openUnhiberateModal])
 

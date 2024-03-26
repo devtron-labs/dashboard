@@ -77,7 +77,7 @@ export const UnhibernateModal = ({
         <VisibleModal close={closeModal} onEscape={closeModal} className="generate-token-modal">
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentLoading ? (
-                     <div className="mh-350 flex"><Progressing pageLoader /></div>
+                     <div className="mh-320 flex"><Progressing pageLoader /></div>
                 ) : (
                     <>
                         <div className="flexbox-col dc__gap-12">
