@@ -132,9 +132,10 @@ export const NO_ACCESS_TOAST_MESSAGE = {
 export const OVERVIEW_HEADER = {
     APPLICATION: 'application',
     APP_STATUS: 'app status',
+    COMMIT: 'commit',
     DEPLOYMENT_STATUS: 'deployment status',
     LAST_DEPLOYED: 'last deployed',
-    DEPLOYED_BY: 'deployed by',
+    DEPLOYED_AT: 'deployed at',
 }
 
 export const ENV_APP_GROUP_GA_EVENTS = {
@@ -197,7 +198,7 @@ export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/
 export const SKIPPED_RESOURCES_MESSAGE = 'Build action is not applicable'
 export const SKIPPED_RESOURCES_STATUS_TEXT = 'Skipped'
 
-export const BULK_CD_MATERIAL_STATUS=(noOfApps)=>({
+export const BULK_CD_MATERIAL_STATUS = (noOfApps) => ({
     title: `Fetching images for ${noOfApps} Applications`,
     subTitle: 'It might take some time depending upon the number of applications',
 })
@@ -207,11 +208,16 @@ export const BULK_CD_DEPLOYMENT_STATUS = (noOfApps, env) => ({
     subTitle: 'It might take some time depending upon the number of applications',
 })
 
-export const BULK_CI_MATERIAL_STATUS=(noOfApps)=>({
+export const BULK_CI_MATERIAL_STATUS = (noOfApps) => ({
     title: `Fetching code sources for ${noOfApps} Applications`,
     subTitle: 'It might take some time depending upon the number of applications',
 })
-export const BULK_CI_BUILD_STATUS=(noOfApps)=>({
+export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
     title: `Verifying selected code sources for ${noOfApps} Applications & initiating build pipelines Applications`,
     subTitle: 'It might take some time depending upon the number of applications',
 })
+
+export enum EnvironmentOverviewSortableKeys {
+    application = 'application',
+    deployedAt = 'deployedAt',
+}
