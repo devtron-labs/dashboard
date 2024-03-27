@@ -103,3 +103,5 @@ export const EMPTY_STATE = {
 
 export const EXCLUDED_IMAGE_TOOLTIP =
     'This image is excluded for new deployment as it does not match the filter conditions configured for this environment.'
+
+export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'

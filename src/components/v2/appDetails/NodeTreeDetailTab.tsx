@@ -17,6 +17,7 @@ const NodeTreeDetailTab = ({
     monitoringTools,
     isDevtronApp = false,
     isExternalApp,
+    isDeploymentBlocked,
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -49,22 +50,6 @@ const NodeTreeDetailTab = ({
                     />
                     <Switch>
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
-                            render={() => {
-                                return (
-                                    <K8ResourceComponent
-                                        clickedNodes={clickedNodes}
-                                        registerNodeClick={registerNodeClick}
-                                        handleFocusTabs={handleFocusTabs}
-                                        externalLinks={externalLinks}
-                                        monitoringTools={monitoringTools}
-                                        isDevtronApp={isDevtronApp}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
-                        />
-                        <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
                             render={() => {
                                 return (
@@ -77,6 +62,23 @@ const NodeTreeDetailTab = ({
                             }}
                         />
                         <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType?/(group)?/:resourceName?`}
+                            render={() => {
+                                return (
+                                    <K8ResourceComponent
+                                        clickedNodes={clickedNodes}
+                                        registerNodeClick={registerNodeClick}
+                                        handleFocusTabs={handleFocusTabs}
+                                        externalLinks={externalLinks}
+                                        monitoringTools={monitoringTools}
+                                        isDevtronApp={isDevtronApp}
+                                        isExternalApp={isExternalApp}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                    />
+                                )
+                            }}
+                        />
+                        {/* <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
                             render={() => {
                                 return (
@@ -106,7 +108,7 @@ const NodeTreeDetailTab = ({
                                     />
                                 )
                             }}
-                        />
+                        />*/}
                         <Route
                             exact
                             path={`${path}/${URLS.APP_DETAILS_LOG}`}

@@ -3,6 +3,7 @@ import { CustomInput, DeleteDialog, DeploymentAppTypes, ForceDeleteDialog } from
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
+import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
 export default function DeleteCDNode({
     deleteDialog,
@@ -26,32 +27,17 @@ export default function DeleteCDNode({
         setDeleteInput(e.target.value)
     }
 
-    const handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
-        switch (deleteAction) {
-            case DELETE_ACTION.DELETE:
-                return deleteCD(false, true)
-            case DELETE_ACTION.NONCASCADE_DELETE:
-                return deploymentAppType === DeploymentAppTypes.GITOPS ? deleteCD(false, false) : deleteCD(false, true)
-            case DELETE_ACTION.FORCE_DELETE:
-                return deleteCD(true, false)
-        }
-    }
-
     const onClickHideNonCascadeDeletePopup = () => {
         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
     }
 
     const onClickNonCascadeDelete = () => {
         onClickHideNonCascadeDeletePopup()
-        handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE)
-    }
-
-    const handleDeleteCDNode = () => {
-        handleDeletePipeline(DELETE_ACTION.DELETE)
+        handleDeletePipeline(DELETE_ACTION.NONCASCADE_DELETE, deleteCD, deploymentAppType)
     }
 
     const handleForceDeleteCDNode = () => {
-        handleDeletePipeline(DELETE_ACTION.FORCE_DELETE)
+        handleDeletePipeline(DELETE_ACTION.FORCE_DELETE, deleteCD, deploymentAppType)
     }
 
     if (deleteDialog === DeleteDialogType.showForceDeleteDialog) {
@@ -79,7 +65,7 @@ export default function DeleteCDNode({
         <DeleteDialog
             title={deleteTitle}
             description={`Are you sure you want to delete this CD Pipeline from '${appName}' ?`}
-            delete={handleDeleteCDNode}
+            delete={() => handleDeleteCDNodePipeline(deleteCD, deploymentAppType as DeploymentAppTypes)}
             closeDelete={hideDeleteModal}
             apiCallInProgress={isLoading}
             disabled={showConfirmationBar && deleteInput !== deleteTitleName}

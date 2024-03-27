@@ -23,6 +23,7 @@ import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -44,6 +45,7 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
+    filteredEnvIds
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -263,6 +265,14 @@ export const SourceInfo = ({
                                   showCommitInfoDrawer={onClickShowCommitInfo}
                                   envId={envId}
                                   ciArtifactId={ciArtifactId}
+                              />
+                          )}
+                          {DeploymentWindowStatusCard && (
+                              <DeploymentWindowStatusCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  filteredEnvIds={filteredEnvIds}
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (

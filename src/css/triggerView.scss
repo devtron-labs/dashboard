@@ -515,8 +515,8 @@
     top: 0;
     &.contains-diff-view {
         width: 100%;
-        min-width: 992px;
-        max-width: 1112px;
+        min-width: 800px;
+        max-width: 1024px;
         .material-history:last-child {
             margin-bottom: 8px;
         }
@@ -525,7 +525,8 @@
 
 .modal-body--ci-material {
     position: fixed;
-    width: 800px;
+    min-width: 800px;
+    max-width: 1024px;
     right: 0;
     background: var(--N000);
     top: 0;

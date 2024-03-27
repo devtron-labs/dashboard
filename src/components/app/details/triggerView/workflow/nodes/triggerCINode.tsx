@@ -145,7 +145,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     </Tippy>
                 ) : null}
                 <div
-                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
+                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci fw-6 ${
                         this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
                     }`}
                     style={{

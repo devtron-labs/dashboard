@@ -8,11 +8,9 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { EditableTextArea } from '../../../common'
+import { EditableTextArea, importComponentFromFELibrary } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
@@ -36,6 +34,13 @@ import { HibernateModal } from './HibernateModal'
 import { UnhibernateModal } from './UnhibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
+import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
+
+const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
+    'processDeploymentWindowAppGroupOverviewMap',
+    null,
+    'function',
+)
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -60,6 +65,11 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
+    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
+    const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
+    const [hibernateInfoMap, setHibernateInfoMap] = useState<
+        Record<string, { type: string; excludedUserEmails: string[] }>
+    >({})
 
     useEffect(() => {
         return () => {
@@ -68,6 +78,25 @@ export default function EnvironmentOverview({
             }
         }
     }, [])
+
+    async function getDeploymentWindowEnvOverrideMetaData() {
+        const appEnvTuples = selectedAppIds.map((appId) => {
+            return {
+                appId: +appId,
+                envId: +envId,
+            }
+        })
+        setIsDeploymentLoading(true)
+        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
+        setHibernateInfoMap(_hibernate)
+        setIsDeploymentLoading(false)
+    }
+
+    useEffect(() => {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal)) {
+            getDeploymentWindowEnvOverrideMetaData()
+        }
+    }, [openHiberateModal, openUnhiberateModal])
 
     useEffect(() => {
         setLoading(true)
@@ -418,6 +447,8 @@ export default function EnvironmentOverview({
                     setOpenHiberateModal={setOpenHiberateModal}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
                 />
             )}
             {openUnhiberateModal && (
@@ -428,6 +459,8 @@ export default function EnvironmentOverview({
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (
@@ -437,6 +470,7 @@ export default function EnvironmentOverview({
                     responseList={appStatusResponseList}
                     getAppListData={getAppListData}
                     isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
+                    hibernateInfoMap={hibernateInfoMap}
                 />
             )}
         </div>

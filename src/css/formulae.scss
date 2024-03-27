@@ -91,10 +91,20 @@
 }
 
 // margins and paddings from 0-40
-$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+$margins: (
+    mb: margin-bottom,
+    mt: margin-top,
+    ml: margin-left,
+    mr: margin-right,
+    m: margin,
+    pb: padding-bottom,
+    pt: padding-top,
+    pl: padding-left,
+    pr: padding-right,
+    p: padding,
+);
 
-@each $margin,
-$style in $margins {
+@each $margin, $style in $margins {
     @for $i from 0 through 42 {
         $tempStyle: $style;
 
@@ -119,12 +129,7 @@ $style in $margins {
 }
 
 //color from B,N,G,Y,R and 100 to 900
-$colors: B,
-N,
-G,
-Y,
-R,
-V;
+$colors: B, N, G, Y, R, V;
 $color-suffix: 00;
 
 @each $color in $colors {
@@ -179,7 +184,7 @@ $color-suffix: 00;
     font-family: 'Merriweather';
 }
 
-@mixin cta($bg, $color, $border, $cursor:pointer) {
+@mixin cta($bg, $color, $border, $cursor: pointer) {
     background: $bg;
     color: $color;
     border: 1px solid $border;
@@ -207,7 +212,6 @@ $color-suffix: 00;
 }
 
 .cta,
-
 .cta-with-img {
     height: 40px;
     font-size: 12px;
@@ -223,7 +227,7 @@ $color-suffix: 00;
     @include cta(var(--B500), var(--white), transparent);
 
     &.disabled-opacity {
-        @include cta-disabled-opacity(var(--B500), var(--white), transparent)
+        @include cta-disabled-opacity(var(--B500), var(--white), transparent);
     }
 
     &.small {
@@ -300,6 +304,13 @@ $color-suffix: 00;
         &:focus {
             @include cta(var(--R600), var(--N0), transparent);
         }
+        &.action-blocked {
+            &:hover,
+            &:active,
+            &:focus {
+                @include cta(var(--R500), var(--N0), transparent, not-allowed);
+            }
+        }
     }
 
     &.warning {
@@ -344,7 +355,6 @@ $color-suffix: 00;
     &.success,
     &.warning,
     & {
-
         &:disabled,
         :disabled:hover,
         &.disabled,
@@ -364,16 +374,16 @@ $color-suffix: 00;
     line-height: 1.43;
 }
 
-.lh-1-33{
+.lh-1-33 {
     line-height: 1.33;
- }
+}
 
-.lh-1-25{
+.lh-1-25 {
     line-height: 1.25;
- }
- .lh-1-5{
+}
+.lh-1-5 {
     line-height: 1.5;
- }
+}
 
 .divider {
     border-top: 1px solid var(--N200);
@@ -391,11 +401,11 @@ $color-suffix: 00;
 }
 
 .lh-1-54 {
-    line-height: 1.54
+    line-height: 1.54;
 }
 
 .lh-1-25 {
-    line-height: 1.25
+    line-height: 1.25;
 }
 
 .ml-auto {
@@ -418,12 +428,11 @@ $color-suffix: 00;
     border-bottom: 1px dashed var(--N200);
 }
 
-
 .header {
     position: fixed;
     top: 0;
     z-index: 999;
-    width: 800px
+    width: 800px;
 }
 
 .modal__top-fixed {

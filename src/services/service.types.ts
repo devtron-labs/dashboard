@@ -42,6 +42,7 @@ export interface CDPipeline {
     runPostStageInEnv: boolean
     isClusterCdActive: boolean
     deploymentAppType?: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
 }
 
 export interface AppListMin extends ResponseType {

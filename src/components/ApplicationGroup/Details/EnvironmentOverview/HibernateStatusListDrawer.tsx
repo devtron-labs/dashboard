@@ -9,6 +9,7 @@ export default function HibernateStatusListDrawer({
     isLoading,
     getAppListData,
     isHibernateOperation,
+    hibernateInfoMap
 }) {
     useEffect(() => {
         return () => {
@@ -54,6 +55,7 @@ export default function HibernateStatusListDrawer({
                         rowData={response}
                         index={index}
                         isHibernateOperation={isHibernateOperation}
+                        hibernateInfoMap={hibernateInfoMap}
                     />
                 ))}
             </div>
