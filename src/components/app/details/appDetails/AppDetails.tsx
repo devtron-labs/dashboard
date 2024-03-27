@@ -663,7 +663,7 @@ export const Details: React.FC<DetailsType> = ({
                 <DeploymentWindowConfirmationDialog
                     onClose={handleHibernateConfirmationModalClose}
                     isLoading={hibernating}
-                    type={hibernateConfirmationModal === 'hibernate' ? MODAL_TYPE.HIBERNATE : MODAL_TYPE.RESTORE}
+                    type={hibernateConfirmationModal === 'hibernate' ? MODAL_TYPE.HIBERNATE : MODAL_TYPE.UNHIBERNATE}
                     onClickActionButton={handleHibernate}
                     appName={appDetails.appName}
                     envName={appDetails.environmentName}
