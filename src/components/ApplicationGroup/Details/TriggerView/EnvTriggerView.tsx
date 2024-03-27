@@ -18,6 +18,8 @@ import {
     KeyValueListType,
     HandleKeyValueChangeType,
     KeyValueListActionType,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -461,7 +463,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         workflows: WorkflowType[],
         _selectedMaterial: CIMaterialType,
     ) => {
-        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+        abortPreviousRequests(
+            () =>
+                getGitMaterialByCommitHash(
+                    ciPipelineMaterialId.toString(),
+                    commitHash,
+                    abortControllerRef.current.signal,
+                ),
+            abortControllerRef,
+        )
             .then((response) => {
                 const _result = response.result
                 if (_result) {
@@ -496,12 +506,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedMaterial.isMaterialSelectionError = true
                     _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
-                setFilteredWorkflows(workflows)
+                setFilteredWorkflows([...workflows])
             })
             .catch((error: ServerErrors) => {
-                showError(error)
-                _selectedMaterial.isMaterialLoading = false
-                setFilteredWorkflows(workflows)
+                if (!getIsRequestAborted(error)) {
+                    showError(error)
+                    _selectedMaterial.isMaterialLoading = false
+                    setFilteredWorkflows([...workflows])
+                }
             })
     }
 
@@ -540,18 +552,22 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
+                // TODO: Ask if should abort request here or in getCommitHistory
                 getCommitHistory(ciPipelineMaterialId, commitHash, _workflows, _selectedMaterial)
             }
         } else {
             setFilteredWorkflows(_workflows)
-            abortControllerRef.current = new AbortController()
-            getMaterialHistory(
-                selectedCINode.id.toString(),
-                abortControllerRef.current.signal,
-                gitMaterialId,
-                false,
+            abortPreviousRequests(
+                () =>
+                    getMaterialHistory(
+                        selectedCINode.id.toString(),
+                        abortControllerRef.current.signal,
+                        gitMaterialId,
+                        false,
+                    ),
+                abortControllerRef,
             ).catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(errors)) {
                     showError(errors)
                 }
             })
@@ -576,14 +592,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = new AbortController()
-        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
-            (errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(errors)
-                }
-            },
-        )
+        abortPreviousRequests(
+            () =>
+                getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded),
+            abortControllerRef,
+        ).catch((errors: ServerErrors) => {
+            if (!getIsRequestAborted(errors)) {
+                showError(errors)
+            }
+            // TODO: Test if need to stop loader
+        })
     }
 
     const getMaterialHistory = (
@@ -667,8 +685,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = abortController ?? new AbortController()
-        refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
+
+        // Would be only aborting the calls before refreshGitMaterial and not the subsequent calls
+        abortPreviousRequests(
+            () => refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal),
+            abortControllerRef,
+        )
             .then((response) => {
                 getMaterialHistory(
                     ciNodeId.toString(),
@@ -676,13 +698,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     gitMaterialId,
                     showExcluded,
                 ).catch((errors: ServerErrors) => {
-                    if (!abortControllerRef.current.signal.aborted) {
+                    if (!getIsRequestAborted(errors)) {
                         showError(errors)
                     }
                 })
             })
             .catch((error: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(error)) {
                     showError(error)
                 }
             })
@@ -771,6 +793,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowCIModal(true)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
+        // TODO: Test this as well
+        abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
         for (const _wf of filteredWorkflows) {
@@ -823,7 +847,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(errors)) {
                     showError(errors)
                     setErrorCode(errors.code)
                     setPageViewType(ViewType.ERROR)
