@@ -11,8 +11,8 @@ import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
@@ -35,7 +35,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                 theme={TippyTheme.white}
                 className="w-300 h-100 fcv-5"
                 placement="right"
-                Icon={QuestionFilled}
+                Icon={Help}
                 heading="API tokens"
                 infoText="Tokens you have generated that can be used to access the Devtron API."
                 showCloseButton
@@ -45,7 +45,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                 documentationLinkText="View Documentation"
             >
                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                    <Question />
+                    <ICHelpOutline />
                 </div>
             </TippyCustomized>
         )

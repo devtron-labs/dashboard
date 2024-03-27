@@ -15,8 +15,8 @@ import {
     POSTHOG_EVENT_ONBOARDING,
 } from '../../onboardingGuide/onboarding.utils'
 import HelpNav from './HelpNav'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
@@ -109,7 +109,7 @@ const PageHeader = ({
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
                     <span className="icon-dim-24 fcn-9 mr-4 ml-16">
-                        <Question />
+                        <ICHelpOutline />
                     </span>
                     <span className="fs-13 cn-9" data-testid="go-to-get-started">
                         Help
@@ -194,7 +194,7 @@ const PageHeader = ({
                             theme={TippyTheme.white}
                             className="w-300 h-100 fcv-5"
                             placement="bottom"
-                            Icon={QuestionFilled}
+                            Icon={Help}
                             heading={headerName}
                             infoText={tippyMessage}
                             showCloseButton

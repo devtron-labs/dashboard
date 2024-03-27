@@ -20,7 +20,7 @@ import {
 import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
@@ -106,7 +106,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePo
                             Restart workloads
                         </h1>
                         <span className="icon-dim-24 fcn-6 mr-4 ml-10 fs-10">
-                            <Question onClick={() => setShowHelp(!showHelp)} />
+                            <ICHelpOutline onClick={() => setShowHelp(!showHelp)} />
                         </span>
                     </div>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>

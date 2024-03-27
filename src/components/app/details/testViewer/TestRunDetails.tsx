@@ -13,7 +13,7 @@ import { ReactComponent as ErrorIcon } from '../../../../assets/icons/misc/error
 import { ReactComponent as Briefcase } from '../../../../assets/icons/ic-briefcase.svg'
 import { ReactComponent as FileIcon } from '../../../../assets/icons/ic-file.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
 import { getTestSuites, getTestCase, getSuiteDetail } from './service'
 import { SelectedNames } from './Test.types'
 
@@ -411,7 +411,7 @@ const StatusIcon = ({ status, width = '24', height = '24' }) => {
         case 'errors':
             return <WarnIcon width={width} height={height} />
         case 'unknown':
-            return <Question width={width} height={height} />
+            return <QuestionIcon width={width} height={height} />
         default:
             return <SkipIcon width={width} height={height} />
     }

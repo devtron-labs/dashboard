@@ -3,7 +3,7 @@ import { SearchBar, TippyCustomized, TippyTheme, TippyCustomizedProps } from '@d
 import { Link, useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as HelpOutlineIcon } from '../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
 
@@ -56,7 +56,7 @@ const UserPermissionListHeader = ({
                     }
                 >
                     <div className="flex">
-                        <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
+                        <ICHelpOutline className="mw-20 icon-dim-20 fcn-6 cursor" />
                     </div>
                 </TippyCustomized>
             </div>

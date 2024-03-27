@@ -86,7 +86,7 @@ src/components/ConfigMapSecret/ConfigMap/ConfigMapList.tsx
 src/components/ConfigMapSecret/ConfigMapSecret.components.tsx
 src/components/ConfigMapSecret/ConfigMapSecretDataEditorContainer.tsx
 src/components/ConfigMapSecret/ConfigMapSecretForm.tsx
-src/components/ConfigMapSecret/InfoIconWithTippy.tsx
+src/components/ConfigMapSecret/InfoIconTippy.tsx
 src/components/ConfigMapSecret/Secret/SecretList.tsx
 src/components/ConfigMapSecret/Secret/secret.utils.tsx
 src/components/ConfigMapSecret/Types.ts

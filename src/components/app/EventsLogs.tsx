@@ -18,7 +18,7 @@ import WebWorker from './WebWorker'
 import { Subject } from '../../util/Subject'
 import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes, AppDetails } from './types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-question.svg'
 import { TerminalView } from '../terminal'
 import { getSelectedNodeItems } from './details/appDetails/utils'
 import { useKeyDown } from '../common'
@@ -399,7 +399,7 @@ export const LogsView: React.FC<LogsView> = ({
     function getLogsURL() {
         let prefix = ''
         if (import.meta.env.VITE_NODE_ENV === 'production') {
-            prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+            prefix = `${location.protocol}//${location.host}` // eslint-disable-line
         }
         const pods = getPods()
 
@@ -545,7 +545,7 @@ export const LogsView: React.FC<LogsView> = ({
                                 }
                             >
                                 <div className="flex">
-                                    <Question />
+                                    <QuestionIcon />
                                 </div>
                             </Tippy>
                         </form>
