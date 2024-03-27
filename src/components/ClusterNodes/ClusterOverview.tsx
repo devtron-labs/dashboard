@@ -3,17 +3,13 @@ import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router
 import moment from 'moment'
 import {
     ErrorScreenManager,
-    TippyCustomized,
-    TippyTheme,
     showError,
     getRandomColor,
-    ClipboardButton,
     ServerErrors,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
@@ -308,23 +304,15 @@ function ClusterOverview({
         return (
             <>
                 <span>NA</span>
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300 h-100 fcv-5 dc__align-left"
-                    placement="bottom"
-                    Icon={Help}
+                <InfoIconTippy
+                    iconClass="fcv-5"
                     heading="Metrics API is not available"
-                    showCloseButton
-                    trigger="click"
+                    infoText=""
                     additionalContent={metricsApiTippyContent()}
-                    interactive
                     documentationLinkText="View metrics-server helm chart"
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
-                >
-                    <div className="flex">
-                        <ICHelpOutline className="icon-dim-20 ml-8 cursor fcn-5" />
-                    </div>
-                </TippyCustomized>
+                    className="icon-dim-20 ml-8 fcn-5"
+                />
             </>
         )
     }

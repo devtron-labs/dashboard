@@ -20,6 +20,7 @@ import {
     ServerErrors,
     useAsync,
     CustomInput,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -60,7 +61,6 @@ import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import { CredentialType, CustomCredential } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
@@ -148,12 +148,8 @@ export default function Docker({ ...props }) {
                 {props.isHyperionMode
                     ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
                     : REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
-
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300"
+                <InfoIconTippy
                     placement="top"
-                    Icon={HelpIcon}
                     iconClass="fcv-5"
                     heading={
                         props.isHyperionMode
@@ -172,14 +168,8 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    showCloseButton
-                    trigger="click"
-                    interactive
-                >
-                    <div className="flex">
-                        <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </div>
-                </TippyCustomized>
+                    className="icon-dim-16 ml-4"
+                />
             </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
@@ -1059,25 +1049,16 @@ const DockerForm = ({
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-332"
+                            <InfoIconTippy
                                 placement="top"
-                                Icon={HelpIcon}
                                 iconClass="fcv-5"
                                 heading="Manage access of registry credentials"
                                 infoText="Clusters need permission to pull container image from private repository in
-                                    the registry. You can control which clusters have access to the pull image
-                                    from private repositories.
-                                "
-                                showCloseButton
-                                trigger="click"
-                                interactive
-                            >
-                                <div className="flex">
-                                    <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
-                                </div>
-                            </TippyCustomized>
+                                            the registry. You can control which clusters have access to the pull image
+                                            from private repositories.
+                                        "
+                                className="icon-dim-16 fcn-6"
+                            />
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
                             Manage

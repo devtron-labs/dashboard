@@ -149,6 +149,7 @@ export default function SecretList({
                         infoText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].learnMoreLink}
                         iconClass="fcv-5"
+                        placement="right"
                     />
                 </h1>
                 <div className="mt-20">

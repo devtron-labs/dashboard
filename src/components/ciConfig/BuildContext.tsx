@@ -2,13 +2,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
-import { CustomInput, OptionType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 import { _multiSelectStyles, getBuildContextCheckoutSelectStyles } from './CIConfig.utils'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
 const getBuildContextAdditionalContent = () => {
@@ -27,23 +25,15 @@ const getBuildContextAdditionalContent = () => {
 const InfoCard: FunctionComponent = () => {
     return (
         <div className="row ml-0">
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={Help}
+            <InfoIconTippy
                 heading="Docker build context"
                 infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                showCloseButton
-                trigger="click"
-                interactive
                 documentationLinkText="View Documentation"
                 additionalContent={getBuildContextAdditionalContent()}
-            >
-                <div className="flex icon-dim-16 fcn-5 ml-8 cursor">
-                    <ICHelpOutline />
-                </div>
-            </TippyCustomized>
+                iconClass="fcv-5"
+                className="icon-dim-16 fcn-6"
+                placement="right"
+            />
         </div>
     )
 }

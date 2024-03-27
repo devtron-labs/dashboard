@@ -19,6 +19,7 @@ import {
     closeOnEscKeyPressed,
     Host,
     TippyCustomized,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
@@ -192,24 +193,18 @@ export default function CustomChartList() {
 
     const handleQuestion = () => {
         return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={HelpIcon}
-                heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
-                additionalContent={additionalRegistryTitleTippyContent()}
-                showCloseButton
-                trigger="click"
-                interactive
-                documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                documentationLink={DOCUMENTATION.CUSTOM_CHART}
-            >
-                <div className="flex">
-                    <ICHelpOutline className="icon-dim-16 fcn-6 ml-4 cursor" />
-                </div>
-            </TippyCustomized>
+            <>
+                <InfoIconTippy
+                    iconClass="fcv-5"
+                    heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
+                    infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
+                    additionalContent={additionalRegistryTitleTippyContent()}
+                    documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                    documentationLink={DOCUMENTATION.CUSTOM_CHART}
+                    placement="right"
+                    className="icon-dim-16 fcn-6 ml-4"
+                />
+            </>
         )
     }
 

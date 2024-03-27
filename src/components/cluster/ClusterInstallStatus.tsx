@@ -18,7 +18,7 @@ const handleQuestion = () => {
             trigger="click"
             interactive
         >
-            <div className="icon-dim-16 fcn-9 mt-23 ml-5 cursor">
+            <div className="icon-dim-16 fcn-9 mt-23 ml-5">
                 <ICHelpOutline />
             </div>
         </TippyCustomized>

@@ -164,6 +164,8 @@ export default function ConfigMapList({
                         infoText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].learnMoreLink}
                         iconClass="fcv-5"
+                        className="icon-dim-16"
+                        placement="right"
                     />
                 </h1>
                 <div className="mt-20">
