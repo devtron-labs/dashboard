@@ -39,7 +39,7 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
-const Catalog = importComponentFromFELibrary('Catalog')
+const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const DependencyList = importComponentFromFELibrary('DependencyList')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
