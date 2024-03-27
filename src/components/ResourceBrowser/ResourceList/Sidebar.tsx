@@ -20,13 +20,14 @@ import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceLi
 import { getK8Abbreviates } from '../ResourceBrowser.service'
 import { swap } from '../../common/helpers/util'
 import { convertK8sObjectMapToOptionsList } from '../Utils'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 
 const Sidebar = ({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
     setSelectedResource,
-    updateResourceSelectionData,
+    updateTabUrl,
     shortcut,
     isCreateModalOpen,
 }: SidebarType & IWithShortcut) => {
@@ -43,7 +44,7 @@ const Sidebar = ({
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
-    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(k8SObjectMap), [k8SObjectMap?.size])
+    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(k8SObjectMap), [k8SObjectMap])
 
     const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
         switch (e.key) {
@@ -99,7 +100,11 @@ const Sidebar = ({
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
         setSelectedResource(_selectedResource)
-        updateResourceSelectionData(_selectedResource)
+        updateTabUrl(
+            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`,
+            e.currentTarget.dataset.kind,
+        )
 
         /**
          * If groupName present then kind selection is from search dropdown,

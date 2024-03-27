@@ -1,11 +1,15 @@
 import moment from 'moment'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
-import { eventAgeComparator } from '../common'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { eventAgeComparator, processK8SObjects } from '../common'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
+import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
+import { URLS } from '../../config'
+import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
+import K8ResourceIcon from '../../assets/icons/ic-object.svg'
+import ClusterIcon from '../../assets/icons/ic-world-black.svg'
 
 const updatePersistedTabsData = (key: string, value: any) => {
     try {
@@ -68,7 +72,7 @@ export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType
 }
 
 // Converts k8SObjects list to grouped map
-export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType: string) => {
+export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType: string): Map<string, K8SObjectMapType> => {
     return _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
@@ -287,4 +291,53 @@ export const convertK8sObjectMapToOptionsList = (
     _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, SIDEBAR_KEYS.nodeGVK, false, false, ''))
 
     return _k8sObjectOptionsList
+}
+
+export const getTabsBasedOnRole = (clusterId, namespace, _isSuperAdmin) => {
+    const _tabs = [
+        {
+            idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
+            name: AppDetailsTabs.cluster_overview,
+            url: `${
+                URLS.RESOURCE_BROWSER
+            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            isSelected: false,
+            positionFixed: true,
+            iconPath: ClusterIcon,
+            showNameOnSelect: false,
+        },
+        {
+            idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
+            name: AppDetailsTabs.k8s_Resources,
+            url: `${
+                URLS.RESOURCE_BROWSER
+            }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+            isSelected: true,
+            positionFixed: true,
+            iconPath: K8ResourceIcon,
+            showNameOnSelect: false,
+        },
+    ]
+
+    if (_isSuperAdmin) {
+        _tabs.push({
+            idPrefix: AppDetailsTabsIdPrefix.terminal,
+            name: AppDetailsTabs.terminal,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+            isSelected: false,
+            positionFixed: true,
+            iconPath: TerminalIcon,
+            showNameOnSelect: true,
+        })
+    }
+
+    return _tabs
+}
+
+export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
+    const processedData = processK8SObjects(resource, nodeType)
+    const _k8SObjectList = ORDERED_AGGREGATORS
+        .map((element) => processedData.k8SObjectMap.get(element) || null)
+        .filter((element) => !!element)
+    return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }

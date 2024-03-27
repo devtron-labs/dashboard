@@ -64,9 +64,8 @@ export default function NodeDetails({
     isSuperAdmin,
     markTabActiveByIdentifier,
     addTab,
-    updateNodeSelectionData,
     k8SObjectMapRaw,
-    lastDataSync,
+    lastDataSyncTimeString,
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -157,7 +156,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node, lastDataSync])
+    }, [node, lastDataSyncTimeString])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -657,7 +656,6 @@ export default function NodeDetails({
         }`
         const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
         if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData, _group)
             push(_url)
         } else {
             toast.error(
@@ -777,7 +775,6 @@ export default function NodeDetails({
                                             clusterId={clusterId}
                                             resourceData={pod}
                                             selectedResource={selectedResource}
-                                            getResourceListData={getPodListData}
                                             handleResourceClick={handleResourceClick}
                                         />
                                     </div>

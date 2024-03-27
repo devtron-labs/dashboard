@@ -10,7 +10,6 @@ export default function DeleteResourcePopup({
     clusterId,
     resourceData,
     selectedResource,
-    getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
 }: DeleteResourcePopupType) {
@@ -35,7 +34,6 @@ export default function DeleteResourcePopup({
 
             await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            getResourceListData(true)
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
                 const pushURL = removeTabByIdentifier(

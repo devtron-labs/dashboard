@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { useTabs } from './useTabs'
 
 interface CommonTabArgsType {
     name: string
@@ -24,12 +25,13 @@ export interface DynamicTabType extends CommonTabArgsType {
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     removeTabByIdentifier: (id: string) => string
+    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById'],
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
     loader: boolean
     refreshData: () => void
     isOverview: boolean
-    lastDataSync: boolean
+    lastDataSyncTimeString: string
     setLastDataSyncTimeString: (time: string) => void
     isStaleDataRef: any
 }
