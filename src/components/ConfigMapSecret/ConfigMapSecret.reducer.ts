@@ -9,7 +9,10 @@ const secureValues = (data, isExternalType) => {
     return Object.keys(decodedData).map((k) => {
         return {
             k,
-            v: typeof decodedData[k] === 'object' ? YAML.stringify(decodedData[k], { indent: 2 }) : decodedData[k],
+            v:
+                typeof decodedData[k] === 'object'
+                    ? YAML.stringify(decodedData[k], { indent: 2, lineWidth: 0 })
+                    : decodedData[k],
             keyError: '',
             valueError: '',
         }
@@ -50,7 +53,7 @@ export const initState = (
                   k,
                   v:
                       typeof configMapSecretData.data[k] === 'object'
-                          ? YAML.stringify(configMapSecretData.data[k], { indent: 2 })
+                          ? YAML.stringify(configMapSecretData.data[k], { indent: 2, lineWidth: 0 })
                           : configMapSecretData.data[k],
                   keyError: '',
                   valueError: '',

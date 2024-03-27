@@ -253,7 +253,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 name: ssoConfig.config.name,
                 type: ssoConfig.config.type,
                 id: ssoConfig.config.id,
-                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2, lineWidth: 0 }),
             },
             active: ssoConfig.active,
         }
@@ -621,7 +621,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
+        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2, lineWidth: 0 })
         if (this.state.sso === OIDCType) {
             const config = {
                 name: this.state.ssoConfig.config.name,
@@ -636,7 +636,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         const codeEditorBody =
             this.state.configMap === SwitchItemValues.Configuration
                 ? ssoConfig
-                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
+                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2, lineWidth: 0 })
 
         let presetConfig = (
             <div

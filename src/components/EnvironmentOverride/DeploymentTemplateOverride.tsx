@@ -210,7 +210,7 @@ export default function DeploymentTemplateOverride({
         const payload = {
             chartConfigLoading: false,
             duplicate: envOverrideValues,
-            draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
+            draftValues: YAML.stringify(envOverrideValues, { indent: 2, lineWidth: 0  }),
             environmentConfig: {
                 id,
                 status,
