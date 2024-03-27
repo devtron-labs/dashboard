@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import moment from 'moment'
 import { useTabs } from './useTabs'
 
 interface CommonTabArgsType {
@@ -12,6 +13,7 @@ interface CommonTabArgsType {
     iconPath?: string
     dynamicTitle?: string
     showNameOnSelect?: boolean
+    isAlive?: boolean
 }
 
 export interface InitTabType extends CommonTabArgsType {
@@ -25,15 +27,14 @@ export interface DynamicTabType extends CommonTabArgsType {
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
     removeTabByIdentifier: (id: string) => string
-    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById'],
+    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: (title: string) => string
     enableShortCut?: boolean
     loader: boolean
     refreshData: () => void
     isOverview: boolean
-    lastDataSyncTimeString: string
-    setLastDataSyncTimeString: (time: string) => void
-    isStaleDataRef: any
+    lastDataSyncMoment: moment.Moment
+    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface TabsDataType {
@@ -47,4 +48,9 @@ export interface MoreButtonWrapperProps {
     readonly onClose: () => void
     readonly toggleMenu: () => void
     tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
+}
+
+export interface TimerType {
+    start: moment.Moment
+    callback?: (now: moment.Moment) => void
 }

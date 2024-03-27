@@ -1,4 +1,6 @@
+import moment from 'moment'
 import { TabsDataType } from './Types'
+import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
 
 export const COMMON_TABS_SELECT_STYLES = {
     control: (base) => ({
@@ -70,4 +72,8 @@ export const initTabsData = (
     if (dynamicTabs.length === 0) {
         updateMenuState()
     }
+}
+
+export const checkIfDataIsStale = (start: moment.Moment, now: moment.Moment): boolean => {
+    return now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
 }

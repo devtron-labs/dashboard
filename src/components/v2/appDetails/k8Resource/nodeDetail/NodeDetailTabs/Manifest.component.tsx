@@ -42,7 +42,6 @@ import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../
 const ManifestComponent = ({
     selectedTab,
     hideManagedFields,
-    toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
@@ -81,7 +80,6 @@ const ManifestComponent = ({
         if (isDeleted) {
             return
         }
-        toggleManagedFields(false)
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -157,7 +155,6 @@ const ManifestComponent = ({
             setActiveManifestEditorData(modifiedManifest)
         }
         if (isEditmode) {
-            toggleManagedFields(false)
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
@@ -176,7 +173,6 @@ const ManifestComponent = ({
         if (activeTab === 'Live manifest') {
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
-                toggleManagedFields(true)
                 if (hideManagedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
@@ -291,9 +287,6 @@ const ManifestComponent = ({
     }
 
     const markActiveTab = (_tabName: string) => {
-        if (_tabName !== 'Live manifest') {
-            toggleManagedFields(false)
-        }
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName,

@@ -7,14 +7,11 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import {
-    ALL_NAMESPACE_OPTION,
-    FILTER_SELECT_COMMON_STYLES,
-    NAMESPACE_NOT_APPLICABLE_OPTION
-} from '../Constants'
+import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -30,6 +27,7 @@ const ResourceFilterOptions = ({
     shortcut,
     isCreateModalOpen,
     renderCallBackSync,
+    updateTabUrl,
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { push } = useHistory()
     const location = useLocation()
@@ -70,9 +68,9 @@ const ResourceFilterOptions = ({
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        push({
-            pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
-        })
+        const pathname = location.pathname.replace(`/${namespace}/`, `/${selected.value}/`)
+        updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, pathname)
+        push({ pathname })
     }
 
     const focusHandler = (e) => {

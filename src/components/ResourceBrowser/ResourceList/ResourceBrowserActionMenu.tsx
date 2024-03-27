@@ -15,6 +15,7 @@ export default function ResourceBrowserActionMenu({
     clusterId,
     resourceData,
     selectedResource,
+    getResourceListData,
     handleResourceClick,
     removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
@@ -96,6 +97,7 @@ export default function ResourceBrowserActionMenu({
                     clusterId={clusterId}
                     resourceData={resourceData}
                     selectedResource={selectedResource}
+                    getResourceListData={getResourceListData}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
                 />

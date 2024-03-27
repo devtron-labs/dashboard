@@ -110,10 +110,13 @@ export interface SidebarType {
     k8SObjectMap: Map<string, K8SObjectMapType>
     handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
     selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     isCreateModalOpen: boolean
     updateTabUrl: ReturnType<typeof useTabs>['updateTabUrl']
     isClusterError?: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
 }
 
 export interface ResourceFilterOptionsProps {
@@ -126,6 +129,7 @@ export interface ResourceFilterOptionsProps {
     searchText: string
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
+    updateTabUrl: ReturnType<typeof useTabs>['updateTabUrl']
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     isCreateModalOpen?: boolean
@@ -146,6 +150,7 @@ export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'h
     ) => boolean
     k8SObjectMapRaw: Map<string, K8SObjectMapType>
     syncError: boolean
+    reloadResourceListData?: () => void | Promise<void>
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -154,6 +159,7 @@ export interface ResourceBrowserActionMenuType {
     selectedResource: ApiResourceGroupType
     handleResourceClick: (e: any) => void
     removeTabByIdentifier?: (id: string) => string
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface DeleteResourcePopupType {
@@ -162,6 +168,7 @@ export interface DeleteResourcePopupType {
     selectedResource: ApiResourceGroupType
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: (id: string) => string
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
@@ -181,19 +188,12 @@ export interface EventListType {
     searchText: string
 }
 
-export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
-}
-
 export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
     selectedCluster: ClusterOptionType
     handleRetry: (e) => void
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
+    sideDataAbortController: any
 }
 
 export interface K8sObjectOptionType extends OptionType {

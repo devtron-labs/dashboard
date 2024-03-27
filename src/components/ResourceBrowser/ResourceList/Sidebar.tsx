@@ -26,7 +26,6 @@ const Sidebar = ({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
-    setSelectedResource,
     updateTabUrl,
     shortcut,
     isCreateModalOpen,
@@ -89,20 +88,13 @@ const Sidebar = ({
             return
         }
 
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`)
-        const _selectedResource = {
-            namespaced: e.currentTarget.dataset.namespaced === 'true',
-            gvk: {
-                Group: e.currentTarget.dataset.group,
-                Version: e.currentTarget.dataset.version,
-                Kind: e.currentTarget.dataset.kind as Nodes,
-            },
-            isGrouped: e.currentTarget.dataset.grouped === 'true',
-        }
-        setSelectedResource(_selectedResource)
+        /* NOTE: on resource change specified namespace is retained since resource change is done through url */
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
+        push(_url)
         updateTabUrl(
+            /* TODO: can be constant? */
             `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`,
+            _url,
             e.currentTarget.dataset.kind,
         )
 

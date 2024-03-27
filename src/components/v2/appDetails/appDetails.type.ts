@@ -505,7 +505,6 @@ export interface ResourceInfoActionPropsType {
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
-    toggleManagedFields: (managedFieldsExist: boolean) => void
 }
 
 export interface NodeTreeDetailTabProps {

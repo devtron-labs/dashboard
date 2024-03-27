@@ -70,8 +70,7 @@ export default function ConnectingToClusterState({
     }
 
     const handleCancelClick = () => {
-        sideDataAbortController.new.abort()
-        sideDataAbortController.prev = sideDataAbortController.new
+        sideDataAbortController?.abort()
         resetStates()
         replace({
             pathname: URLS.RESOURCE_BROWSER,
@@ -85,7 +84,8 @@ export default function ConnectingToClusterState({
     }
 
     const renderSelectionState = () => {
-        if (loader && !errorMsg) {
+        /* NOTE: should show loading irrespective of errorMsg */
+        if (loader) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />

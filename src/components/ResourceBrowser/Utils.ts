@@ -1,11 +1,13 @@
 import moment from 'moment'
+import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { SOME_ERROR_MSG } from '../../config/constantMessaging'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
+import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 import { URLS } from '../../config'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
@@ -69,6 +71,17 @@ export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType
         }
     }
     return null
+}
+
+export const getResourceFromK8SObjectMap = (
+    k8SObjectMap: Map<string, K8SObjectMapType>,
+    reverseMap: object,
+    nodeType: string,
+) => {
+    let data = null
+    const _selectedGroup = k8SObjectMap?.get(reverseMap[nodeType.toLowerCase()])
+    _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data)
+    return data && {...data, grouped: data.isExpanded || true}
 }
 
 // Converts k8SObjects list to grouped map
@@ -192,20 +205,6 @@ export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType
     }
 }
 
-export const checkIfDataIsStale = (
-    isStaleDataRef: React.MutableRefObject<boolean>,
-    _staleDataCheckTime: moment.Moment,
-) => {
-    /**
-     * Stale data warning to be shown after 15 min. However, kept the cut off mins at 13 instead of 15 to,
-     * 1. skip 1st min as render for 1st min has already been started/done
-     * 2. skip maintaining unnecessary state just for re-rendering
-     */
-    if (!isStaleDataRef.current && moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS) {
-        isStaleDataRef.current = true
-    }
-}
-
 export const getScrollableResourceClass = (
     className: string,
     showPaginatedView: boolean,
@@ -293,8 +292,13 @@ export const convertK8sObjectMapToOptionsList = (
     return _k8sObjectOptionsList
 }
 
-export const getTabsBasedOnRole = (clusterId, namespace, _isSuperAdmin) => {
-    const _tabs = [
+export const getTabsBasedOnRole = (
+    selectedCluster: ClusterOptionType,
+    namespace: string,
+    isSuperAdmin: boolean,
+) => {
+    const clusterId = selectedCluster.value
+    const tabs = [
         {
             idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
@@ -316,28 +320,46 @@ export const getTabsBasedOnRole = (clusterId, namespace, _isSuperAdmin) => {
             positionFixed: true,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
+            dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
         },
+        ...(!isSuperAdmin
+            ? []
+            : [
+                  {
+                      idPrefix: AppDetailsTabsIdPrefix.terminal,
+                      name: AppDetailsTabs.terminal,
+                      url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                      isSelected: false,
+                      positionFixed: true,
+                      iconPath: TerminalIcon,
+                      showNameOnSelect: true,
+                      dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
+                  },
+              ]),
     ]
 
-    if (_isSuperAdmin) {
-        _tabs.push({
-            idPrefix: AppDetailsTabsIdPrefix.terminal,
-            name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            isSelected: false,
-            positionFixed: true,
-            iconPath: TerminalIcon,
-            showNameOnSelect: true,
-        })
-    }
-
-    return _tabs
+    return tabs
 }
 
+/* TODO: add types */
 export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
+    if (!resource) {
+        return null
+    }
     const processedData = processK8SObjects(resource, nodeType)
-    const _k8SObjectList = ORDERED_AGGREGATORS
-        .map((element) => processedData.k8SObjectMap.get(element) || null)
-        .filter((element) => !!element)
+    const _k8SObjectList = ORDERED_AGGREGATORS.map((element) => processedData.k8SObjectMap.get(element) || null).filter(
+        (element) => !!element,
+    )
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
+}
+
+export const reversedMapForGroupedK8sObjectList = (map: Map<string, K8SObjectMapType>) => {
+    if (!map) {
+        return null
+    }
+    const reverseMap = {}
+    map.forEach((value, key) => {
+        value.child.forEach((_value, _key) => reverseMap[_key.toLowerCase()] = key)
+    })
+    return reverseMap
 }

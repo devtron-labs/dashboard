@@ -98,7 +98,7 @@
         }
     }
 
-    .dynamic-tab__border:not(:last-of-type) {
+    .dynamic-tab__border:not(:first-of-type) {
         height: 16px;
         border-left: 1px solid var(--N200);
     }
