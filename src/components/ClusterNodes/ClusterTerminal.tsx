@@ -55,6 +55,7 @@ export default function ClusterTerminal({
     taints,
     setSelectedNode,
     showTerminal,
+    updateTerminalTabUrl,
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
@@ -137,7 +138,18 @@ export default function ClusterTerminal({
     }, [location.search])
 
     useEffect(() => {
-        handleUrlChanges()
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('image', selectedImage.value)
+        queryParams.set('namespace', selectedNamespace.value)
+        queryParams.set('shell', selectedTerminalType.value)
+        queryParams.set('node', selectedNodeName.value)
+        updateTerminalTabUrl(queryParams.toString())
+        /* FIXME: what if the tab is active i.e component is mounted but hidden
+         * and then the useEffect goes off while switch to another tab? */
+        /* NOTE: Hoo-ah, my suspicions were right! */
+        // history.replace({
+        //     search: queryParamsString,
+        // })
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
@@ -344,7 +356,7 @@ export default function ClusterTerminal({
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
             }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0].containerName || ''
+                resourceData?.containers?.[0].containerName || ''
             }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
@@ -545,17 +557,6 @@ export default function ClusterTerminal({
                 }
             })
         }
-    }
-
-    function handleUrlChanges() {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('image', selectedImage.value)
-        queryParams.set('namespace', selectedNamespace.value)
-        queryParams.set('shell', selectedTerminalType.value)
-        queryParams.set('node', selectedNodeName.value)
-        history.replace({
-            search: queryParams.toString(),
-        })
     }
 
     const reconnectTerminal = (): void => {

@@ -111,12 +111,14 @@ const ResourceList = () => {
        reversedMapForGroupedK8sObjectList(k8SObjectMapRaw)
     , [k8SObjectMapRaw])
 
+    /* FIXME: should we reload this data on tab switch? */
     const selectedResource = useMemo(
         () => getResourceFromK8SObjectMap(k8SObjectMapRaw, reversedMapK8sObjectList, nodeType),
         [k8SObjectMapRaw, nodeType]
     )
 
     /* TODO: propagate resourceListDataError rename this to resourceListBody or something */
+    /* FIXME: should we reload this data on tab switch? */
     const [resourceListLoader, resourceListData, resourceListDataError, reloadResourceListData] = useAsync(() => {
         if (!selectedResource) {
             return null
@@ -138,7 +140,10 @@ const ResourceList = () => {
         )
     }, [selectedResource, clusterId, namespace])
 
-    useEffect(() => setLastDataSyncMoment(moment()), [resourceListData])
+    useEffect(() => {
+        setLastDataSyncMoment(moment())
+        setIsDataStale(false)
+    }, [resourceListData])
 
     const resourceList = resourceListData?.result || null
 
@@ -150,11 +155,11 @@ const ResourceList = () => {
     ), [clusterId])
 
     const [k8SObjectMapLoading, k8SObjectMap, , , setK8SObjectMap] = useAsync<Map<string, K8SObjectMapType>>(
-        async () => convertResourceGroupListToK8sObjectList(_k8SObjectMap?.result.apiResources || [], nodeType),
+        async () => convertResourceGroupListToK8sObjectList(_k8SObjectMap?.result.apiResources || null, nodeType),
         [_k8SObjectMap, nodeType],
     )
 
-    const errorMessage = sidebarDataError?.errors?.[0]?.userMessage || sidebarDataError?.['message'] || ''
+    const errorMessage = sidebarDataError?.errors?.[0]?.userMessage || sidebarDataError?.['message'] || null
 
     const [loading, data, error] = useAsync(() =>
         Promise.all([
@@ -225,7 +230,7 @@ const ResourceList = () => {
         }
     }, [])
 
-    const hideSyncWarning = sidebarDataLoading || rawGVKLoader || !isDataStale || resourceListLoader || node
+    const hideSyncWarning = !isDataStale || resourceListLoader
 
     /* TODO: Find use for this loading state */
     const [namespaceByClusterIdListLoading, namespaceByClusterIdList] = useAsync(
@@ -334,20 +339,19 @@ const ResourceList = () => {
     }
 
     const handleRetry = () => {
+        setLastDataSyncMoment(moment())
         getSidebarData()
     }
 
-    const getSelectedResourceData = () => {
-        return {
-            clusterId: +clusterId,
-            kind: selectedResource.gvk.Kind as string,
-            version: selectedResource.gvk.Version,
-            group: selectedResource.gvk.Group,
-            namespace: namespace,
-            name: node,
-            containers: [],
-        } as SelectedResourceType
-    }
+    const selectedResourceData = {
+        clusterId: +clusterId,
+        kind: selectedResource?.gvk.Kind as string,
+        version: selectedResource?.gvk.Version,
+        group: selectedResource?.gvk.Group,
+        namespace: namespace,
+        name: node,
+        containers: [],
+    } as SelectedResourceType
 
     const renderBreadcrumbs = () => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -364,6 +368,7 @@ const ResourceList = () => {
                     addTab={addTab}
                     syncError={!hideSyncWarning}
                     setLastDataSyncMoment={setLastDataSyncMoment}
+                    refreshData={resourceListLoader}
                 />
             )
         }
@@ -371,12 +376,12 @@ const ResourceList = () => {
             <K8SResourceList
                 selectedResource={selectedResource}
                 resourceList={resourceList}
-                noResults={!resourceListData}
+                noResults={!resourceList?.data.length}
                 reloadResourceListData={reloadResourceListData}
                 selectedCluster={selectedCluster}
                 namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
-                resourceListLoader={resourceListLoader || !selectedResource || rawGVKLoader}
+                resourceListLoader={resourceListLoader}
                 searchText={searchText}
                 setSearchText={setSearchText}
                 isCreateModalOpen={showCreateResourceModal}
@@ -398,7 +403,7 @@ const ResourceList = () => {
             )
         }
 
-        if (detailClusterListError || !namespaceDefaultList?.[selectedDetailsCluster.name]) {
+        if (detailClusterListError || !namespaceDefaultList?.[selectedDetailsCluster?.name]) {
             const errCode = detailClusterListError?.errors[0]?.['code'] || detailClusterListError?.['code']
             return (
                 <div className="bcn-0 node-data-container flex">
@@ -410,16 +415,35 @@ const ResourceList = () => {
         return null
     }
 
+    const updateTerminalTabUrl = (queryParams: string) => {
+        /* FIXME: is this a okay way? Or should i've used an useEffect? */
+        /* Personally i feel an useEffect would trigger way too many times
+         * & be hard to properly coordinate */
+        /* UPDATE: maybe it makes sense. Check ClusterTerminal comment
+         * on why replace is being done here instead of there */
+        const terminalTab = tabs[2]
+        if (!terminalTab
+            && terminalTab.name !== AppDetailsTabs.terminal) {
+            return
+        }
+        updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
+        if (!terminalTab.isSelected) {
+            return
+        }
+        replace({ search: queryParams })
+    }
+
     const renderClusterTerminal = (): JSX.Element => {
         return (
             /* FIXME: write a better way to test this */
-            namespaceDefaultList?.[selectedDetailsCluster.name] && <ClusterTerminal
+            tabs[2]?.isAlive && namespaceDefaultList?.[selectedDetailsCluster?.name] && <ClusterTerminal
                 showTerminal={!detailClusterListLoading && !detailClusterListError && nodeType === AppDetailsTabs.terminal}
                 clusterId={+clusterId}
                 nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
                 taints={createTaintsList(selectedDetailsCluster.nodeDetails, 'nodeName')}
                 clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion) || []}
                 namespaceList={namespaceDefaultList[selectedDetailsCluster.name]}
+                updateTerminalTabUrl={updateTerminalTabUrl}
                 isNodeDetailsPage
             />
         )
@@ -443,7 +467,7 @@ const ResourceList = () => {
                     <NodeDetailComponent
                         loadingResources={rawGVKLoader}
                         isResourceBrowserView
-                        selectedResource={getSelectedResourceData()}
+                        selectedResource={selectedResourceData}
                         markTabActiveByIdentifier={markTabActiveByIdentifier}
                         addTab={addTab}
                         logSearchTerms={logSearchTerms}
@@ -462,9 +486,10 @@ const ResourceList = () => {
             )
         }
 
-        return sidebarDataLoading || rawGVKLoader || sidebarDataError ? (
+        return sidebarDataLoading || rawGVKLoader || sidebarDataError || rawGVKError ? (
             <ConnectingToClusterState
                 loader={sidebarDataLoading || rawGVKLoader}
+                /* NOTE: errorMessage will be retained when loading */
                 errorMsg={errorMessage}
                 selectedCluster={selectedCluster}
                 handleRetry={handleRetry}

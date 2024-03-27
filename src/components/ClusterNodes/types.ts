@@ -225,6 +225,7 @@ export interface ClusterTerminalType {
     nodeGroups?: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
     showTerminal: boolean
+    updateTerminalTabUrl?: (queryParams: string) => void
 }
 
 export const TEXT_COLOR_CLASS = {

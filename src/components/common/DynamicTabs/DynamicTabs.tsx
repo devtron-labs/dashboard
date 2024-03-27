@@ -65,7 +65,7 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
-        const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect } = tab
+        const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect, isAlive } = tab
 
         return (
             <NavLink
@@ -80,7 +80,7 @@ const DynamicTabs = ({
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
-                    {(!showNameOnSelect || isSelected) && (
+                    {(!showNameOnSelect || isAlive || isSelected) && (
                         <span
                             className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
                             data-testid={name}
@@ -96,21 +96,25 @@ const DynamicTabs = ({
     const handleTabCloseAction = (e) => {
         e.stopPropagation()
         const pushURL = removeTabByIdentifier(e.currentTarget.dataset.id)
-        setTimeout(() => {
-            if (pushURL) {
-                push(pushURL)
-            }
-        }, 1)
+        /* NOTE: was bad programming here using setTimeout to negate async */
+        if (!pushURL) {
+            return
+        }
+        push(pushURL)
     }
 
     const handleTabStopAction = (e) => {
         e.stopPropagation()
-        const pushURL = stopTabByIdentifier(e.currentTarget.dataset.title)
-        setTimeout(() => {
-            if (pushURL) {
-                push(pushURL)
-            }
-        }, 1)
+        const pushURL = stopTabByIdentifier(e.currentTarget.dataset.id)
+        /* NOTE: was bad programming here using setTimeout to negate async */
+        /* Internally stopTabByIdentifier was doing all the logic inside
+         * callback func to state setter, which is async; therefore in a lot
+         * of cases pushURL was '' or null; to account for async was using setTimeout;
+         * !facepalm! :-| */
+        if (!pushURL) {
+            return
+        }
+        push(pushURL)
     }
 
     const getTabTippyContent = (title: string) => {
@@ -127,10 +131,11 @@ const DynamicTabs = ({
     const markTabActiveOnClickFactory = (tab: DynamicTabType) => () => markTabActiveById(tab.id)
 
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
-        const _showNameOnSelect = (tab.isSelected || !!tab.url.split('?')[1]) && isFixed && tab.showNameOnSelect
+        const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive
 
         return (
             <Fragment key={`${idx}-tab`}>
+                <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
                 <li
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
@@ -163,7 +168,7 @@ const DynamicTabs = ({
                                 {_showNameOnSelect && (
                                     <div
                                         className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
-                                        data-title={tab.title}
+                                        data-id={tab.id}
                                         onClick={handleTabStopAction}
                                     >
                                         <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
@@ -182,7 +187,6 @@ const DynamicTabs = ({
                         </div>
                     </ConditionalWrap>
                 </li>
-                <div className={` ${!tab.isSelected || !(tab.isSelected && idx - 1) ? 'dynamic-tab__border' : ''}`} />
             </Fragment>
         )
     }
@@ -317,7 +321,7 @@ const DynamicTabs = ({
                 </div>
             )}
             {tabsData.dynamicTabs.length > 0 && (
-                <div className="dynamic-tabs-container dc__border-left">
+                <div className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected ? '' : 'dc__border-left'}`}>
                     <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
                         {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                     </ul>

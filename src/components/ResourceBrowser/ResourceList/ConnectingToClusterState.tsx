@@ -84,7 +84,8 @@ export default function ConnectingToClusterState({
     }
 
     const renderSelectionState = () => {
-        if (loader && !errorMsg) {
+        /* NOTE: should show loading irrespective of errorMsg */
+        if (loader) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />

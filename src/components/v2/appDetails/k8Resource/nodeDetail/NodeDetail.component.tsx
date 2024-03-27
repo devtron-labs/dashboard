@@ -60,13 +60,6 @@ const NodeDetailComponent = ({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const toggleManagedFields = (managedFieldsExist: boolean) => {
-        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
-            setManagedFields(true)
-        } else {
-            setManagedFields(false)
-        }
-    }
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
@@ -77,7 +70,7 @@ const NodeDetailComponent = ({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
-    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    useEffect(() => setManagedFields(selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -190,10 +183,12 @@ const NodeDetailComponent = ({
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        setSelectedTabName(_tabName)
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
+                /* NOTE: shouldn't this be _url instead of url */
+                let _urlToCreate = `${_url}/${_tabName.toLowerCase()}`
 
                 const query = new URLSearchParams(window.location.search)
 
@@ -206,10 +201,7 @@ const NodeDetailComponent = ({
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
-                setSelectedTabName(_tabName)
             }, 500)
-        } else if (selectedTabName !== _tabName) {
-            setSelectedTabName(_tabName)
         }
     }
 
@@ -359,7 +351,6 @@ const NodeDetailComponent = ({
                         <ManifestComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
-                            toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}

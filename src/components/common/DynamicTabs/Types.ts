@@ -13,6 +13,7 @@ interface CommonTabArgsType {
     iconPath?: string
     dynamicTitle?: string
     showNameOnSelect?: boolean
+    isAlive?: boolean
 }
 
 export interface InitTabType extends CommonTabArgsType {

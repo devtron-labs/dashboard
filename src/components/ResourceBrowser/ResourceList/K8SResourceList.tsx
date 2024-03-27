@@ -69,7 +69,8 @@ export const K8SResourceList = ({
         if (!resourceList) {
             return
         }
-        let data = resourceList.data
+        /* NOTE: don't modify param data */
+        let data = [...resourceList.data]
         if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && data.length) {
             data = sortEventListData(data)
         }
