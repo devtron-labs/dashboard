@@ -62,7 +62,6 @@ export const ERROR_MESSAGE_FOR_VALIDATION =
     "Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
 export const CHARACTER_ERROR_MIN = 'At least 2 characters required'
 export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
-export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CustomErrorMessage = {

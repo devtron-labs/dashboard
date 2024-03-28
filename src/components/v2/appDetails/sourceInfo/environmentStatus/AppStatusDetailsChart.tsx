@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { ReactComponent as InfoIcon } from '../../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Chat } from '../../../../../assets/icons/ic-chat-circle-dots.svg'
+import Tippy from '@tippyjs/react'
 import { APP_STATUS_HEADERS, DEPLOYMENT_STATUS } from '../../../../../config'
 import { StatusFilterButtonComponent } from '../../k8Resource/StatusFilterButton.component'
 import IndexStore from '../../index.store'
@@ -87,7 +88,14 @@ export default function AppStatusDetailsChart({ filterRemoveHealth = false, show
                                     className="app-status-row pt-8 pr-20 pb-8 pl-20"
                                     key={`${nodeDetails.kind}/${nodeDetails.name}`}
                                 >
-                                    <div>{nodeDetails.kind}</div>
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={false}
+                                        placement="right"
+                                        content={nodeDetails.kind}
+                                    >
+                                        <div className="dc__ellipsis-right">{nodeDetails.kind}</div>
+                                    </Tippy>
                                     <div>{nodeDetails.name}</div>
                                     <div
                                         className={`app-summary__status-name f-${

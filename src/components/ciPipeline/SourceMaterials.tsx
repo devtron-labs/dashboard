@@ -272,7 +272,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                                 webhookConditionList={props.webhookData.webhookConditionList}
                                 gitHost={props.webhookData.gitHost}
                                 selectedWebhookEvent={_selectedWebhookEvent}
-                                copyToClipboard={props.webhookData.copyToClipboard}
                                 addWebhookCondition={props.webhookData.addWebhookCondition}
                                 deleteWebhookCondition={props.webhookData.deleteWebhookCondition}
                                 onWebhookConditionSelectorChange={props.webhookData.onWebhookConditionSelectorChange}

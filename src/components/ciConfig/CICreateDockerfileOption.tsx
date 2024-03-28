@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Tippy from '@tippyjs/react'
-import { showError, Progressing, CIBuildType, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
 import { RootBuildContext } from './ciConfigConstant'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
-import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -34,7 +32,6 @@ export default function CICreateDockerfileOption({
     const [selectedFramework, setSelectedFramework] = useState<FrameworkOptionType>()
     const [templateData, setTemplateData] = useState<Record<string, TemplateDataType>>() // key: language-framework
     const [editorValue, setEditorValue] = useState<string>('')
-    const [copied, setCopied] = useState(false)
     const controller = new AbortController()
     const { signal } = controller
 
@@ -230,11 +227,6 @@ export default function CICreateDockerfileOption({
         })
     }
 
-    const handleCopyToClipboard = (e) => {
-        e.stopPropagation()
-        copyToClipboard(editorValue, () => setCopied(true))
-    }
-
     const handleEditorValueChange = (value: string) => {
         setEditorValue(value)
 
@@ -290,26 +282,7 @@ export default function CICreateDockerfileOption({
                                 readOnly={configOverrideView && !allowOverride}
                             />
 
-                            {(!configOverrideView || allowOverride) && (
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy'}
-                                    trigger="mouseenter click"
-                                    onShow={(_tippy) => {
-                                        setTimeout(() => {
-                                            _tippy.hide()
-                                            setCopied(false)
-                                        }, 5000)
-                                    }}
-                                    interactive
-                                >
-                                    <div className="flex">
-                                        <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                                    </div>
-                                </Tippy>
-                            )}
+                            {(!configOverrideView || allowOverride) && <ClipboardButton content={editorValue} />}
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>

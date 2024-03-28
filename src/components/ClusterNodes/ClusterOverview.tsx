@@ -7,7 +7,6 @@ import {
     TippyTheme,
     showError,
     getRandomColor,
-    ClipboardButton,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'

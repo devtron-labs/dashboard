@@ -3,9 +3,9 @@ import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
 import {
     MODES,
     Progressing,
-    copyToClipboard,
     useWindowSize,
     StyledRadioGroup as RadioGroup,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import ReactGA from 'react-ga4'
@@ -14,7 +14,6 @@ import { configureMonacoYaml } from 'monaco-yaml'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useJsonYaml, Select } from '../common'
-import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
@@ -388,7 +387,7 @@ const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition 
 }) => {
     const { defaultValue } = useCodeEditorContext()
     return (
-        <div className={className || 'code-editor__header flex left'}>
+        <div className={className || 'code-editor__header flex right'}>
             {children}
             {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
         </div>
@@ -481,11 +480,7 @@ const Information: React.FC<InformationBarProps> = (props) => {
 
 const Clipboard = () => {
     const { state } = useCodeEditorContext()
-    return (
-        <button type="button" className="clipboard" onClick={(e) => copyToClipboard(state.code)}>
-            <ClipboardIcon />
-        </button>
-    )
+    return <ClipboardButton content={state.code} rootClassName="bcn-1" iconSize={20} />
 }
 
 const SplitPane = ({}) => {

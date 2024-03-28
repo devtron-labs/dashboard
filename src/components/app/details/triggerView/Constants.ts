@@ -79,6 +79,13 @@ export const TRIGGER_VIEW_GA_EVENTS = {
     },
 }
 
+export const CD_MATERIAL_GA_EVENT = {
+    FetchMoreImagesClicked: {
+        category: 'CD Material',
+        action: 'Fetch More Images Clicked',
+    },
+}
+
 export const ARTIFACT_STATUS = {
     Progressing: 'Progressing',
     Degraded: 'Degraded',
