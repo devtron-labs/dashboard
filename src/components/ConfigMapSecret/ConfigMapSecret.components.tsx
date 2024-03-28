@@ -788,7 +788,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
         setYaml(
             YAML.stringify(
                 keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
-                { indent: 10, lineWidth: 0 },
+                { indent: 2, lineWidth: 0 },
             ),
         )
     }, [keyValueArray])
