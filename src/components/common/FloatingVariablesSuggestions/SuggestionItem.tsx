@@ -88,6 +88,7 @@ export default function SuggestionItem({
 
                     <ClipboardButton
                         content={`@{{${variableName}}}`}
+                        copiedTippyText={`Copied: @{{${variableName}}}`}
                         trigger={triggerCopy}
                         setTrigger={setTriggerCopy}
                     />

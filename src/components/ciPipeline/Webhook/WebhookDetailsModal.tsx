@@ -76,7 +76,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
-    const [copied, setCopied] = useState(false)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const schemaRef = useRef<Array<HTMLDivElement | null>>([])

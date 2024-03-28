@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
