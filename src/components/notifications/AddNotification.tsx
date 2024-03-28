@@ -10,6 +10,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     CHECKBOX_VALUE,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -133,6 +134,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     filterOptionsInner = []
 
+    abortController: AbortController
+
     constructor(props) {
         super(props)
         this.state = {
@@ -166,6 +169,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.openAddEmailConfigPopup = this.openAddEmailConfigPopup.bind(this)
         this.changeEmailAgent = this.changeEmailAgent.bind(this)
         this.onSaveWebhookConfig = this.onSaveWebhookConfig.bind(this)
+        this.abortController = new AbortController()
     }
 
     componentDidMount() {
@@ -515,17 +519,36 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
     getData(text) {
         this.setState({ isApplistLoading: true })
         if (text.length > 2) {
-            getAppListMin(null, null, text).then((response) => {
-                const state = { ...this.state }
-                state.options.application = response.result.map((elem) => {
-                    return {
-                        label: `${elem.name.toLowerCase()}`,
-                        value: elem.id,
-                        type: FilterOptions.APPLICATION,
+            this.abortController.abort()
+            this.abortController = new AbortController()
+
+            getAppListMin(null, { signal: this.abortController.signal }, text)
+                .then((response) => {
+                    const state = { ...this.state }
+                    state.options.application = response.result.map((elem) => {
+                        return {
+                            label: `${elem.name.toLowerCase()}`,
+                            value: elem.id,
+                            type: FilterOptions.APPLICATION,
+                        }
+                    })
+                    state.isApplistLoading = false
+                    this.setState(state)
+                })
+                .catch((error) => {
+                    if (!getIsRequestAborted(error)) {
+                        showError(error)
+                        this.setState({ isApplistLoading: false })
                     }
                 })
-                state.isApplistLoading = false
-                this.setState(state)
+        }
+        else {
+            this.setState({
+                ...this.state,
+                options: {
+                    ...this.state.options,
+                    application: [],
+                },
             })
         }
     }
