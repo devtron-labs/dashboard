@@ -727,7 +727,7 @@ export default function ResourceList() {
                     component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
                     linked: true,
                 },
-                ':clusterId?': {
+                ':clusterId': {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}
@@ -1048,18 +1048,6 @@ export default function ResourceList() {
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
-            )
-        }
-        if (!selectedCluster?.value) {
-            return (
-                <ClusterSelectionList
-                    clusterOptions={clusterList}
-                    onChangeCluster={onChangeCluster}
-                    isSuperAdmin={superAdminRef.current}
-                    clusterListLoader={terminalLoader}
-                    refreshData={refreshSync}
-                    initTabsBasedOnRole={initTabsBasedOnRole}
-                />
             )
         }
         return (

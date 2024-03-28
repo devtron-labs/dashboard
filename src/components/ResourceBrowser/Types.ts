@@ -98,7 +98,6 @@ export interface ClusterSelectionType {
     isSuperAdmin: boolean
     clusterListLoader: boolean
     refreshData: () => void
-    initTabsBasedOnRole: (reInit: boolean, _isSuperAdmin?: boolean) => void
 }
 
 export interface CreateResourceType {
