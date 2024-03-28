@@ -241,7 +241,7 @@ export default function DeploymentTemplateOverrideForm({
             }
 
             if (envOverrideValuesWithBasic) {
-                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
+                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2, lineWidth: 0  }), true)
             } else {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
@@ -316,7 +316,7 @@ export default function DeploymentTemplateOverrideForm({
             }
             const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
             updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate, { indent: 2 }), state.yamlMode)
+            editorOnChange(YAML.stringify(newTemplate, { indent: 2, lineWidth: 0  }), state.yamlMode)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.yamlMode,
@@ -494,16 +494,16 @@ export default function DeploymentTemplateOverrideForm({
                 state.publishedState.isOverride &&
                 (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
             ) {
-                return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2 })
+                return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2, lineWidth: 0  })
             }
         } else if (
             state.selectedCompareOption?.id === Number(envId) &&
             state.data.environmentConfig.envOverrideValues
         ) {
-            return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2 })
+            return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2, lineWidth: 0  })
         }
 
-        return YAML.stringify(state.data.globalConfig, { indent: 2 })
+        return YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
     }
 
     useEffect(() => {
@@ -536,7 +536,7 @@ export default function DeploymentTemplateOverrideForm({
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
             if (applyPatches && hideLockedKeys) {
@@ -545,8 +545,8 @@ export default function DeploymentTemplateOverrideForm({
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? YAML.stringify(state.duplicate, { indent: 2 })
-                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                ? YAML.stringify(state.duplicate, { indent: 2, lineWidth: 0  })
+                : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
         }
         const manifestEditorValue = await fetchManifestData(codeEditorValue)
         return manifestEditorValue
@@ -560,14 +560,14 @@ export default function DeploymentTemplateOverrideForm({
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? YAML.stringify(state.duplicate, { indent: 2 })
-                : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                ? YAML.stringify(state.duplicate, { indent: 2, lineWidth: 0  })
+                : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
         }
 
         return codeEditorValue

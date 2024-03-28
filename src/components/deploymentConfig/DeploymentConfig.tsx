@@ -253,7 +253,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2 })
+        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2, lineWidth: 0  })
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -402,7 +402,7 @@ export default function DeploymentConfig({
                     },
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
-            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2 })
+            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2, lineWidth: 0  })
             const templateData = {
                 template: defaultAppOverride,
                 schema,

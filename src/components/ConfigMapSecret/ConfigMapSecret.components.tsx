@@ -788,7 +788,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
         setYaml(
             YAML.stringify(
                 keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
-                { indent: 2 },
+                { indent: 2, lineWidth: 0 },
             ),
         )
     }, [keyValueArray])
@@ -811,7 +811,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 }
                 const v =
                     obj[k] && typeof obj[k] === 'object'
-                        ? YAML.stringify(obj[k], { indent: 2 })
+                        ? YAML.stringify(obj[k], { indent: 2, lineWidth: 0  })
                         : convertToValidValue(obj[k])
                 let keyErr: string
                 if (k && keyPattern.test(k)) {

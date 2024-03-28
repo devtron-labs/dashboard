@@ -527,7 +527,7 @@ export default function BuildCD({
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
-                yamlStr = yamlJsParser.stringify(json, { indent: 2 })
+                yamlStr = yamlJsParser.stringify(json, { indent: 2, lineWidth: 0 })
             } catch (error) {}
         } else {
             yamlStr = value

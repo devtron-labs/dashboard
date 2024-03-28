@@ -61,11 +61,11 @@ export default function DeploymentTemplateOptionsTab({
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
-                : YAML.stringify(state.duplicate, { indent: 2 })
+                : YAML.stringify(state.duplicate, { indent: 2, lineWidth: 0  })
             const _envValues =
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -74,7 +74,7 @@ export default function DeploymentTemplateOptionsTab({
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+                payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2, lineWidth: 0  }),
             })
         }
     }

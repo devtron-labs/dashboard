@@ -234,7 +234,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
                 >
                     <MonacoEditor
                         language="yaml"
-                        value={YamljsParser.stringify(manifest, { indent: 2 })}
+                        value={YamljsParser.stringify(manifest, { indent: 2, lineWidth: 0 })}
                         theme="vs-dark--dt"
                         options={{
                             selectOnLineNumbers: true,

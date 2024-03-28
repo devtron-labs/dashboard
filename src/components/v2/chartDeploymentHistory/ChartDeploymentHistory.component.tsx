@@ -389,7 +389,7 @@ const ChartDeploymentHistory = ({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAML.stringify(parsedJson, { indent: 2 })
+                return YAML.stringify(parsedJson, { indent: 2, lineWidth: 0  })
             } catch (e) {
                 return value
             }

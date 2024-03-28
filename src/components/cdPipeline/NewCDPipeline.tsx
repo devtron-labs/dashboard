@@ -699,7 +699,7 @@ export default function NewCDPipeline({
         newSelection['isCollapsed'] = true
         newSelection['default'] = true
         newSelection['jsonStr'] = JSON.stringify(allStrategies.current[value], null, 4)
-        newSelection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[value], { indent: 2 })
+        newSelection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[value], { indent: 2, lineWidth: 0  })
 
         const _form = { ...formData }
         _form.savedStrategies.push(newSelection)

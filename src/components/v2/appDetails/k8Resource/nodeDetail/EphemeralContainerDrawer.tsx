@@ -70,7 +70,7 @@ const EphemeralContainerDrawer = ({
     })
     const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
         advancedData: {
-            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 }),
+            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2, lineWidth: 0  }),
         },
     })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
@@ -95,7 +95,7 @@ const EphemeralContainerDrawer = ({
                     setEphemeralFormAdvanced({
                         ...ephemeralFormAdvanced,
                         advancedData: {
-                            manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
+                            manifest: yamlJsParser.stringify(jsonManifest, { indent: 2, lineWidth: 0  }),
                         },
                     })
                 } else {
@@ -380,7 +380,7 @@ const EphemeralContainerDrawer = ({
         const codeEditorBody =
             switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
-                : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
+                : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2, lineWidth: 0  })
         return (
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor

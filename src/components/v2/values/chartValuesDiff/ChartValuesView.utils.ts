@@ -1,5 +1,4 @@
-import YAML from 'yaml'
-import { Collection } from 'yaml/types'
+import YAML,{ YAMLMap } from 'yaml'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import { getGeneratedHelmManifest } from '../common/chartValues.api'
@@ -255,7 +254,7 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
             if (
                 typeof _valueInCurrentPath === 'undefined' ||
                 _valueInCurrentPath === null ||
-                (_valueInCurrentPath instanceof Collection &&
+                (_valueInCurrentPath instanceof YAMLMap &&
                     _valueInCurrentPath.items &&
                     !_valueInCurrentPath.items.length)
             ) {
@@ -284,7 +283,7 @@ export const getPathAndValueToSetIn = (
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
-        (parentValue instanceof Collection && parentValue.items && !parentValue.items.length)
+        (parentValue instanceof YAMLMap && parentValue.items && !parentValue.items.length)
     ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
