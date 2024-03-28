@@ -79,7 +79,7 @@ export interface WorkflowProps
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
-    handleDisplayLoader: () => void
+    handleDisplayLoader?: () => void
 }
 
 interface WorkflowState {
