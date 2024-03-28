@@ -704,7 +704,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .catch((errors: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {
                     showError(errors)
-                    this.setState({ code: errors.code, view: ViewType.ERROR })
+                    this.setState({ showCIModal:false })
                 }
             })
             .finally(() => {
