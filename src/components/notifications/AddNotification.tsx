@@ -543,13 +543,14 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 })
         }
         else {
-            this.setState({
-                ...this.state,
+            this.setState(prevState => ({
+                ...prevState,
                 options: {
-                    ...this.state.options,
-                    application: [],
+                    ...prevState.options,
+                    application: []
                 },
-            })
+                isApplistLoading: false
+            }))
         }
     }
 

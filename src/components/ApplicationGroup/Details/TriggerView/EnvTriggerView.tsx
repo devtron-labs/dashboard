@@ -552,7 +552,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
-                // TODO: Ask if should abort request here or in getCommitHistory
+                // QUESTION: Ask if should abort request here or in getCommitHistory
                 getCommitHistory(ciPipelineMaterialId, commitHash, _workflows, _selectedMaterial)
             }
         } else {
@@ -600,7 +600,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if (!getIsRequestAborted(errors)) {
                 showError(errors)
             }
-            // TODO: Test if need to stop loader
         })
     }
 
@@ -793,7 +792,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowCIModal(true)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
-        // TODO: Test this as well
         abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
