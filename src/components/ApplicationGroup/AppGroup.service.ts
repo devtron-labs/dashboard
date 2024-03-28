@@ -181,12 +181,17 @@ export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigA
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getEnvAppList = (params?: {
-    envName?: string
-    clusterIds?: string
-    offset?: string
-    size?: string
-}): Promise<EnvAppType> => {
+export const getEnvAppList = (
+    params?: {
+        envName?: string
+        clusterIds?: string
+        offset?: string
+        size?: string
+    },
+    signal?: AbortSignal,
+): Promise<EnvAppType> => {
+    const optionsArray = signal ? [{ signal }] : []
+
     if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
             if (!value) {
@@ -194,9 +199,9 @@ export const getEnvAppList = (params?: {
             }
             return `${key}=${value}`
         })
-        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, ...optionsArray)
     }
-    return get(Routes.ENVIRONMENT_APPS)
+    return get(Routes.ENVIRONMENT_APPS, ...optionsArray)
 }
 
 export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {

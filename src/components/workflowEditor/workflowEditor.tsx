@@ -224,6 +224,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ showWorkflowOptionsModal: false })
     }
 
+    handleDisplayLoader = () => {
+        this.setState({ view: ViewType.LOADING })
+    }
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
@@ -236,6 +240,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                 if (response.status.toLowerCase() === 'ok') {
                     this.setState({ showDeleteDialog: false })
+                    this.handleDisplayLoader()
                     toast.success('Workflow Deleted')
                     this.getWorkflows()
                     this.props.getWorkflows()
@@ -549,6 +554,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                     changeCIPayload={this.state.changeCIPayload}
                                     reloadAppConfig={this.props.reloadAppConfig}
+                                    handleDisplayLoader={this.handleDisplayLoader}
                                 />
                             )
                         }}
@@ -820,6 +826,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             getWorkflows={this.getWorkflows}
                             reloadEnvironments={this.props.reloadEnvironments}
                             workflowPositionState={this.state.workflowPositionState}
+                            handleDisplayLoader={this.handleDisplayLoader}
                         />
                     )
                 })}

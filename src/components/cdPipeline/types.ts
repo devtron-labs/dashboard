@@ -13,6 +13,7 @@ export interface NewCDPipelineProps {
     noGitOpsModuleInstalledAndConfigured: any
     isGitOpsRepoNotConfigured: any
     reloadAppConfig: () => void
+    handleDisplayLoader: () => void
 }
 
 export enum DeleteDialogType {
