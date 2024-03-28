@@ -26,7 +26,7 @@ import ConnectingToClusterState from '../ResourceBrowser/ResourceList/Connecting
 import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
 import { importComponentFromFELibrary } from '../common'
 
-const Catalog = importComponentFromFELibrary('Catalog')
+const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 
 function ClusterOverview({
     isSuperAdmin,
