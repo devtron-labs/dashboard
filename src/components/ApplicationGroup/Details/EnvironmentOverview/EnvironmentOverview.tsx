@@ -323,15 +323,18 @@ export default function EnvironmentOverview({
                     </div>
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
-                            <div
-                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                                style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
-                            >
-                                {appGroupListData.createdBy[0]}
-                            </div>
-                            {appGroupListData.createdBy}
-                        </div>
+                        {appGroupListData.createdBy
+                            ? (
+                                <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                                    <div
+                                        className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                        style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
+                                    >
+                                        {appGroupListData.createdBy[0]}
+                                    </div>
+                                    {appGroupListData.createdBy}
+                                </div>
+                            ) : '-'}
                     </div>
                 </div>
             </aside>

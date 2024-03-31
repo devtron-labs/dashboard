@@ -72,7 +72,7 @@ export default function DeploymentConfigFormCTA({
                     payload: true,
                 })
                 const deploymentTemplateResp = await checkForProtectedLockedChanges()
-                if (deploymentTemplateResp.result.isLockConfigError) {
+                if (deploymentTemplateResp.result?.isLockConfigError) {
                     setShowLockedDiffForApproval(true)
                     setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                     handleLockedDiffDrawer(true)

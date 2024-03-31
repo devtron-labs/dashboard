@@ -185,6 +185,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const _isDefaultConfig = response.result.is_default_configured
             this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
         })
+        .catch()
     }
 
     getWorkflows = (isFromOnMount?: boolean) => {
