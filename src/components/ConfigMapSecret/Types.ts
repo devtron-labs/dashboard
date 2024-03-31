@@ -234,10 +234,4 @@ export interface ConfigMapAction {
     payload?: any
 }
 
-export interface InfoIconTippyType {
-    titleText: string
-    infoText: string
-    documentationLink?: string
-    additionalContent?: ReactNode
-    variant?: string
-}
+

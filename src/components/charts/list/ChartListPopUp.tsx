@@ -147,7 +147,7 @@ const ChartListPopUp = ({
                 })}
                 <InfoColourBar
                     message={renderInfoText()}
-                    classname="ICHelpOutline-bar m-16"
+                    classname="question-bar m-16"
                     Icon={Help}
                     iconClass="icon-dim-20 fcv-5"
                 />

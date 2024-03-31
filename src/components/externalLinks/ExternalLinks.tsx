@@ -482,10 +482,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     }
 
     return isLoading ? (
-        <>
-            <Progressing pageLoader />
-            {renderExternalLinksContainer()}
-        </>
+        <Progressing pageLoader />
     ) : (
         <div className={`external-links-container dc__m-auto ${errorStatusCode > 0 ? 'error-view' : ''}`}>
             {renderExternalLinksContainer()}
