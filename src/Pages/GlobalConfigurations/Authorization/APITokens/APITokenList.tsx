@@ -32,7 +32,6 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
             <InfoIconTippy
                 heading="API tokens"
                 infoText="Tokens you have generated that can be used to access the Devtron API."
-                iconClass="fcv-5"
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
                 className="icon-dim-16 fcn-9"

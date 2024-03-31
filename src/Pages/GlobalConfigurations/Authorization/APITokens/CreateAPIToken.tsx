@@ -38,7 +38,6 @@ const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'fun
 export const renderQuestionwithTippy = () => {
     return (
         <InfoIconTippy
-            iconClass="fcv-5"
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}

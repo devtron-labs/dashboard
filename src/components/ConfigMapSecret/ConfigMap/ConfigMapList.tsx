@@ -163,7 +163,6 @@ export default function ConfigMapList({
                         heading={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].learnMoreLink}
-                        iconClass="fcv-5"
                         className="icon-dim-16"
                         placement="right"
                     />

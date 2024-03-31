@@ -871,7 +871,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
                                     : DOCUMENTATION.APP_CREATE_WORKFLOW
                             }
-                            iconClass="fcv-5"
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
                             placement="right"
                         />

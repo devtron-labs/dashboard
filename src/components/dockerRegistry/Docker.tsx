@@ -149,8 +149,6 @@ export default function Docker({ ...props }) {
                     ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
                     : REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
                 <InfoIconTippy
-                    placement="top"
-                    iconClass="fcv-5"
                     heading={
                         props.isHyperionMode
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
@@ -1050,8 +1048,6 @@ const DockerForm = ({
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
                             <InfoIconTippy
-                                placement="top"
-                                iconClass="fcv-5"
                                 heading="Manage access of registry credentials"
                                 infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image

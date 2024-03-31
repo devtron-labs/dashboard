@@ -31,7 +31,6 @@ const UserPermissionListHeader = ({
                 <InfoIconTippy
                     infoText="Manage your organization's users and their permissions."
                     heading="User Permissions"
-                    iconClass="fcv-5"
                     additionalContent={
                         <div className="pl-12 pb-12">
                             <a

@@ -329,8 +329,6 @@ const ManageRegistry = ({
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
                     <InfoIconTippy
-                        placement="top"
-                        iconClass="fcv-5"
                         heading="Manage access of registry credentials"
                         infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image

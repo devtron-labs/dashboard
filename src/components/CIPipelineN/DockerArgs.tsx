@@ -88,8 +88,6 @@ const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgs
                 {heading}
                 <InfoIconTippy
                     heading={heading}
-                    iconClass="fcv-5"
-                    placement="right"
                     infoText={`Key/value pair will be appended as
                             ${
                                 fromBuildPack

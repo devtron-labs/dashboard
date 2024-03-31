@@ -30,8 +30,6 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                     <div className="flex dc__gap-8">
                         <p className="cn-9 fs-16 fw-6 m-0">{DEFAULT_TITLE}</p>
                         <InfoIconTippy
-                            iconClass="fcv-5"
-                            placement="right"
                             heading={DEFAULT_TITLE}
                             infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
                             additionalContent={additonalTippyContent?.()}

@@ -23,7 +23,6 @@ const PermissionGroupListHeader = ({
             <div className="flex dc__gap-8">
                 <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">Permission Groups</h2>
                 <InfoIconTippy
-                    iconClass="fcv-5"
                     infoText="Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions."
                     heading="Permission Groups"
                     additionalContent={

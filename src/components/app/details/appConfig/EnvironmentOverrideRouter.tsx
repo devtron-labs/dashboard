@@ -420,7 +420,6 @@ export default function EnvironmentOverrideRouter({
                     classname="question-bar no-env-overrides"
                     message={<EnvOverridesHelpNote />}
                     Icon={Help}
-                    iconClass="fcv-5"
                     iconSize={16}
                 />
             )

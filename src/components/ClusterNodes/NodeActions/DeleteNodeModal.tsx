@@ -55,7 +55,6 @@ export default function DeleteNodeModal({ name, version, kind, closePopup }: Nod
                 classname="question-bar p-lr-12"
                 message={<RecommendedNote />}
                 Icon={Help}
-                iconClass="fcv-5"
             />
             <DeleteDialog.Description>
                 <p className="mt-12 mb-12">{DELETE_NODE_MODAL_MESSAGING.description}</p>

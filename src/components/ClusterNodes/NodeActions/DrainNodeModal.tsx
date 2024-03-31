@@ -8,6 +8,7 @@ import {
     stopPropagation,
     Checkbox,
     CHECKBOX_VALUE,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -137,22 +138,11 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                             sec
                         </span>
                     </span>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
+                    <InfoIconTippy
                         heading={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.heading}
                         infoText={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText}
-                        showCloseButton
-                        trigger="click"
-                        interactive
-                    >
-                        <div className="flex">
-                            <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" onClick={stopPropagation} />
-                        </div>
-                    </TippyCustomized>
+                        className="icon-dim-16 fcn-6 ml-8"
+                    />
                 </div>
                 {DRAIN_NODE_OPTIONS.map((option) => {
                     return (

@@ -227,8 +227,6 @@ export default function ConfigureLinkAction({
                             <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
                         </Checkbox>
                         <InfoIconTippy
-                            placement="top"
-                            iconClass="fcv-5"
                             heading="Who can edit this link?"
                             infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
                             className="icon-dim-16 fcn-6"

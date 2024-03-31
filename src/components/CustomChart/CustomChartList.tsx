@@ -195,13 +195,11 @@ export default function CustomChartList() {
         return (
             <>
                 <InfoIconTippy
-                    iconClass="fcv-5"
                     heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
                     infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
                     additionalContent={additionalRegistryTitleTippyContent()}
                     documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
                     documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                    placement="right"
                     className="icon-dim-16 fcn-6 ml-4"
                 />
             </>

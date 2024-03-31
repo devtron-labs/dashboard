@@ -305,9 +305,7 @@ function ClusterOverview({
             <>
                 <span>NA</span>
                 <InfoIconTippy
-                    iconClass="fcv-5"
                     heading="Metrics API is not available"
-                    infoText=""
                     additionalContent={metricsApiTippyContent()}
                     documentationLinkText="View metrics-server helm chart"
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
