@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { TippyCustomized, TippyTheme, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
@@ -11,8 +11,6 @@ import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
@@ -31,23 +29,14 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
 
     const handleQuestion = () => {
         return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={Help}
+            <InfoIconTippy
                 heading="API tokens"
                 infoText="Tokens you have generated that can be used to access the Devtron API."
-                showCloseButton
-                trigger="click"
-                interactive
+                iconClass="fcv-5"
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
-            >
-                <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                    <ICHelpOutline />
-                </div>
-            </TippyCustomized>
+                className="icon-dim-16 fcn-9"
+            />
         )
     }
 

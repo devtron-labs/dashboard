@@ -2,14 +2,12 @@ import React from 'react'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
-import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/ic-exit-fullscreen-2.svg'
-import { ReactComponent as ICHelpOutline } from '../../../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
-import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play-filled.svg'
 import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-check.svg'
@@ -38,22 +36,13 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
         <>
             <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />
             {selectData.showInfoTippy && (
-                <TippyCustomized
-                    theme={TippyTheme.white}
+                <InfoIconTippy
                     heading="Image"
-                    placement="top"
-                    interactive
-                    trigger="click"
-                    className="w-300"
-                    Icon={Help}
-                    showCloseButton
+                    infoText=""
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
-                >
-                    <div className="flex">
-                        <ICHelpOutline className="icon-dim-16 cursor" />
-                    </div>
-                </TippyCustomized>
+                    className="icon-dim-16 fcn-6"
+                />
             )}
             <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
             <div>
@@ -234,24 +223,15 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {selectData.showInfoTippy && (
-                <TippyCustomized
-                    theme={TippyTheme.white}
+                <InfoIconTippy
                     heading="Debug mode"
-                    placement="top"
-                    interactive
-                    trigger="click"
-                    className="w-300"
-                    Icon={Help}
-                    showCloseButton
+                    infoText=""
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={
                         <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>
                     }
-                >
-                    <div>
-                        <ICHelpOutline className="icon-dim-16 mr-8 cursor" />
-                    </div>
-                </TippyCustomized>
+                    className="icon-dim-16 fcn-6 mr-8"
+                />
             )}
             <span>Debug Mode</span>
             <span className="toggle-icon-dim ml-8">

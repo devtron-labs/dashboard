@@ -25,7 +25,6 @@ import {
     appListLoading,
 } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { TIPPY_ICON_DIM } from '../../../../../devtron-fe-common-lib/src/Common/Constants'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -135,7 +134,7 @@ export class AppListView extends Component<AppListViewProps> {
                             content="Environment is a unique combination of cluster and namespace"
                         >
                             <div className="flex">
-                                <ICHelpOutline className={TIPPY_ICON_DIM.MEDIUM} />
+                                <ICHelpOutline className="icon-dim-16" />
                             </div>
                         </Tippy>
                     </div>
