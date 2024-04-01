@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterInstallStatusProps } from './cluster.type'
 import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}> {
     render() {

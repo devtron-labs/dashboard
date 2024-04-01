@@ -6,7 +6,6 @@ import emptyCustomChart from '../../assets/img/ic-empty-custom-charts.png'
 import { ReactComponent as Upload } from '../../assets/icons/ic-upload.svg'
 import { ReactComponent as Download } from '../../assets/icons/ic-arrow-line-up.svg'
 import { ReactComponent as DevtronIcon } from '../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getChartList } from './customChart.service'
 import {
@@ -14,11 +13,9 @@ import {
     Progressing,
     ErrorScreenManager,
     GenericEmptyState,
-    TippyTheme,
     InfoColourBar,
     closeOnEscKeyPressed,
     Host,
-    TippyCustomized,
     InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
