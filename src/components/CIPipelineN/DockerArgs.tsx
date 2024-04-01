@@ -94,7 +94,7 @@ const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgs
                                     ? ' buildpack env arguments (--env).'
                                     : ' docker build arguments (--build-args).'
                             }`}
-                    className="icon-dim-16 fcn-6"
+                    className="icon-dim-16 fcn-6 ml-4"
                 />
             </h3>
 

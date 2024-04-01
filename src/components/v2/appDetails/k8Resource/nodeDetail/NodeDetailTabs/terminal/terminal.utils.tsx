@@ -38,7 +38,6 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Image"
-                    infoText=""
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
                     className="icon-dim-16 fcn-6"
@@ -225,7 +224,6 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
             {selectData.showInfoTippy && (
                 <InfoIconTippy
                     heading="Debug mode"
-                    infoText=""
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={
                         <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>

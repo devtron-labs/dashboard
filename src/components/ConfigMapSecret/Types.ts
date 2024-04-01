@@ -1,7 +1,6 @@
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CM_SECRET_STATE } from './Constants'
 import { ExtendedOptionType } from '../app/types'
-import { ReactNode } from 'react'
 
 export interface KeyValueInputInterface {
     keyLabel: string
@@ -233,5 +232,3 @@ export interface ConfigMapAction {
     type: ConfigMapActionTypes
     payload?: any
 }
-
-

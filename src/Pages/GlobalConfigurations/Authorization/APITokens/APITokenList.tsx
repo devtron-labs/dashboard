@@ -34,7 +34,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                 infoText="Tokens you have generated that can be used to access the Devtron API."
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
-                className="icon-dim-16 fcn-9"
+                className="icon-dim-16 fcn-9 ml-4"
             />
         )
     }

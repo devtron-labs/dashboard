@@ -42,7 +42,7 @@ export const renderQuestionwithTippy = () => {
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
-            className="icon-dim-20 fcn-9"
+            className="icon-dim-20 fcn-9 ml-4"
         />
     )
 }

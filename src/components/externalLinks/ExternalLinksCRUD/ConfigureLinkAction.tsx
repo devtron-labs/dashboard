@@ -229,7 +229,7 @@ export default function ConfigureLinkAction({
                         <InfoIconTippy
                             heading="Who can edit this link?"
                             infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
-                            className="icon-dim-16 fcn-6"
+                            className="icon-dim-16 fcn-6 ml-4"
                         />
                     </div>
                 )}
