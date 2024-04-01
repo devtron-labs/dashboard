@@ -335,8 +335,13 @@ a:focus {
 .dc__top-26 {
     top: 26px;
 }
+
 .dc__top-47 {
     top: 47px;
+}
+
+.dc__top-88 {
+    top: 88px;
 }
 
 .dc__bottom-0 {
@@ -2102,6 +2107,10 @@ button.anchor {
 
 .dc__border-bottom {
     border-bottom: solid 1px var(--N200);
+
+    &--b2 {
+        border-bottom: solid 1px var(--B200);
+    }
 }
 
 .dc__border-bottom-v2 {

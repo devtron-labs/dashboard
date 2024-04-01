@@ -71,6 +71,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
+import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -1316,6 +1317,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    handleModalClose = () => {
+        this.props.history.push(this.props.match.url)
+    }
+
     renderWorkflow() {
         return (
             <>
@@ -1342,6 +1347,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         />
                     )
                 })}
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
             </>
         )
     }

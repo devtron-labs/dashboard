@@ -90,6 +90,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
+import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -2227,6 +2228,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const handleModalClose = () => {
+        history.push(match.url)
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2261,6 +2266,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         {renderBulkTriggerActionButtons()}
                     </div>
                 )}
+                <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
             </>
         )
     }

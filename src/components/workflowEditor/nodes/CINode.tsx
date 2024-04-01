@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
 import { WorkflowNodeType, SelectedNode, CommonNodeAttr } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
-import link from '../../../assets/icons/ic-link.svg'
+import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { URLS } from '../../../config'
+import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
-export interface CINodeProps {
+export interface CINodeProps extends RouteComponentProps<{}>{
     x: number
     y: number
     width: number
@@ -40,6 +42,13 @@ export interface CINodeProps {
 }
 
 export class CINode extends Component<CINodeProps> {
+    handleLinkedCIWorkflowChipClick = (e) => {
+        // stopPropagation to stop redirection to ci-details
+        e.stopPropagation()
+        e.preventDefault()
+        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
+    }
+
     onClickAddNode = (event: any) => {
         event.preventDefault()
         event.stopPropagation()
@@ -107,18 +116,20 @@ export class CINode extends Component<CINodeProps> {
             <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt" arrow placement="bottom" content={this.props.linkedCount}>
-                            <span
-                                className={`link-count ${
+                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
+                            <button
+                                type="button"
+                                className={`link-count cursor dc__hover-border-n300 flex dc__gap-4 ${
                                     !this.props.isJobView && selectedNodeKey !== currentNodeKey
                                         ? 'link-count--include-add-cd'
                                         : ''
                                 }`}
                                 data-testid="linked-symbol"
+                                onClick={this.handleLinkedCIWorkflowChipClick}
                             >
-                                <img src={link} className="icon-dim-12 mr-5" alt="" />
-                                {this.props.linkedCount}
-                            </span>
+                                <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                                <span>{this.props.linkedCount}</span>
+                            </button>
                         </Tippy>
                     )}
                     <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
