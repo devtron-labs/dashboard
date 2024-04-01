@@ -189,6 +189,7 @@ export interface DetailsType {
     isDeploymentBlocked?: boolean
     filteredEnvIds?: string
     onCloseHideDeploymentWindowConfirmationModal?: () => void
+    setShowDeploymentWindowConfirmation?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {

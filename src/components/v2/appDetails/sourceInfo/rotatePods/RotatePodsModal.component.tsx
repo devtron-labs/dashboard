@@ -199,6 +199,7 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
             showError(e)
         } finally {
             setRotatingInProgress(false)
+            setShowDeploymentWindowConfirmationModal(false)
             setNameSelection({
                 ...nameSelection,
                 rotate: {

@@ -229,6 +229,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
                     filteredEnvIds={filteredEnvIds}
+                    setShowDeploymentWindowConfirmation={setShowDeploymentWindowConfirmation}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -249,6 +250,7 @@ export const Details: React.FC<DetailsType> = ({
     isAppDeleted,
     isVirtualEnvRef,
     isDeploymentBlocked,
+    setShowDeploymentWindowConfirmation,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -568,6 +570,7 @@ export const Details: React.FC<DetailsType> = ({
             showError(err)
         } finally {
             setHibernating(false)
+            setShowDeploymentWindowConfirmation(false)
         }
     }
 
