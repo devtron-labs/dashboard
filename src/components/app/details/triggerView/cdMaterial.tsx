@@ -1346,9 +1346,10 @@ const getInitialSelectedConfigToDeploy = () => {
             stageType,
             showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
             isVirtualEnvironment,
-            additionalInfo: ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFrom ? (
+            additionalInfo: ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
                 <ImagePromotionInfoChip
                     promotedTo={envName}
+                    promotedFromType={promotionApprovalMetadata?.promotedFromType}
                     promotedFrom={promotionApprovalMetadata?.promotedFrom}
                     promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
                     approvedBy={promotionApprovedBy}
