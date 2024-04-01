@@ -14,6 +14,7 @@ import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetails
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import './appDetails/appDetails.scss'
 import './app.scss'
+import { useAppContext } from '../../common'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -38,6 +39,8 @@ export const AppHeader = ({
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+    const { setCurrentAppName } = useAppContext()
+
     const [isMenuOpen, setMenuOpen] = useState(false)
 
     const contextValue = useMemo(
@@ -83,6 +86,10 @@ export const AppHeader = ({
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
+
+    useEffect(() => {
+        setCurrentAppName(appName)
+    }, [appName])
 
     const handleAppChange = useCallback(
         ({ label, value }) => {

@@ -245,6 +245,14 @@ export interface EnvironmentsListViewType {
     isSuperAdmin: boolean
 }
 
+export interface EnvironmentLinkProps {
+    namespace: string
+    environmentId: number
+    appCount: number
+    handleClusterClick: (e) => void
+    environmentName: string
+}
+
 export interface AppOverridesType {
     appList?: ConfigAppList[]
     environments: any
