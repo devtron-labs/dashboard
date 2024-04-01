@@ -190,7 +190,7 @@ export const getEnvAppList = (
     },
     signal?: AbortSignal,
 ): Promise<EnvAppType> => {
-    const optionsArray = signal ? [{ signal }] : []
+    const options = signal ? { signal } : null
 
     if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
@@ -199,9 +199,9 @@ export const getEnvAppList = (
             }
             return `${key}=${value}`
         })
-        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, ...optionsArray)
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, options)
     }
-    return get(Routes.ENVIRONMENT_APPS, ...optionsArray)
+    return get(Routes.ENVIRONMENT_APPS, options)
 }
 
 export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {

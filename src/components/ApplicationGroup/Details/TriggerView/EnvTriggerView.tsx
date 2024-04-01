@@ -517,6 +517,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
     }
 
+    const getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) =>
+        abortPreviousRequests(
+            () => getMaterialHistory(nodeId, abortControllerRef.current.signal, gitMaterialId, showExcluded),
+            abortControllerRef,
+        ).catch((errors: ServerErrors) => {
+            if (!getIsRequestAborted(errors)) {
+                showError(errors)
+            }
+        })
+
     const getMaterialByCommit = async (
         _ciNodeId: number,
         ciPipelineMaterialId: number,
@@ -552,25 +562,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
-                // QUESTION: Ask if should abort request here or in getCommitHistory
                 getCommitHistory(ciPipelineMaterialId, commitHash, _workflows, _selectedMaterial)
             }
         } else {
             setFilteredWorkflows(_workflows)
-            abortPreviousRequests(
-                () =>
-                    getMaterialHistory(
-                        selectedCINode.id.toString(),
-                        abortControllerRef.current.signal,
-                        gitMaterialId,
-                        false,
-                    ),
-                abortControllerRef,
-            ).catch((errors: ServerErrors) => {
-                if (!getIsRequestAborted(errors)) {
-                    showError(errors)
-                }
-            })
+            getMaterialHistoryWrapper(selectedCINode.id.toString(), gitMaterialId, false)
         }
     }
 
@@ -592,15 +588,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortPreviousRequests(
-            () =>
-                getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded),
-            abortControllerRef,
-        ).catch((errors: ServerErrors) => {
-            if (!getIsRequestAborted(errors)) {
-                showError(errors)
-            }
-        })
+        getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
     }
 
     const getMaterialHistory = (
