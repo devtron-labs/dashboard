@@ -193,16 +193,14 @@ export default function CustomChartList() {
 
     const handleQuestion = () => {
         return (
-            <>
-                <InfoIconTippy
-                    heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
-                    infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
-                    additionalContent={additionalRegistryTitleTippyContent()}
-                    documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                    documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                    className="icon-dim-16 fcn-6 ml-4"
-                />
-            </>
+            <InfoIconTippy
+                heading={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.heading}
+                infoText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.infoText}
+                additionalContent={additionalRegistryTitleTippyContent()}
+                documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
+                documentationLink={DOCUMENTATION.CUSTOM_CHART}
+                className="icon-dim-16 fcn-6 ml-4"
+            />
         )
     }
 

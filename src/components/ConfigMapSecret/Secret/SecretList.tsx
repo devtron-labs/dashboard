@@ -148,6 +148,7 @@ export default function SecretList({
                         heading={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].learnMoreLink}
+                        className="icon-dim-16 ml-4"
                     />
                 </h1>
                 <div className="mt-20">
