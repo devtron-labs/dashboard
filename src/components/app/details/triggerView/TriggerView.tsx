@@ -412,20 +412,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     workflows,
                 },
                 () => {
-                    this.abortController.abort()
-                    this.abortController = new AbortController()
-
-                    this.getMaterialHistory(
-                        ciNodeId.toString(),
-                        this.abortController.signal,
-                        gitMaterialId,
-                        false,
-                    ).catch((errors: ServerErrors) => {
-                        if (!getIsRequestAborted(errors)) {
-                            showError(errors)
-                            this.setState({ code: errors.code })
-                        }
-                    })
+                    this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, false)
                 },
             )
         }
@@ -453,20 +440,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 workflows,
             },
             () => {
-                this.abortController.abort()
-                this.abortController = new AbortController()
-
-                this.getMaterialHistory(
-                    ciNodeId.toString(),
-                    this.abortController.signal,
-                    gitMaterialId,
-                    showExcluded,
-                ).catch((errors: ServerErrors) => {
-                    if (!getIsRequestAborted(errors)) {
-                        showError(errors)
-                        this.setState({ code: errors.code })
-                    }
-                })
+                this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
             },
         )
     }
@@ -525,6 +499,20 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 },
             )
         })
+    }
+
+    getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) => {
+        this.abortController.abort()
+        this.abortController = new AbortController()
+
+        this.getMaterialHistory(nodeId, this.abortController.signal, gitMaterialId, showExcluded).catch(
+            (errors: ServerErrors) => {
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
+                }
+            },
+        )
     }
 
     // NOTE: GIT MATERIAL ID
