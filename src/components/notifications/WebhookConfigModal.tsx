@@ -121,7 +121,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             try {
                 isValid[key] = event.target.value.length !== 0
                 if (isValid[key]) {
-                    JSON.parse(this.state.form.payload)
+                    // JSON.parse(this.state.form.payload)
                     isValid[key] = true
                 }
             } catch (err) {
