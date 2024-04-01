@@ -76,6 +76,8 @@ export interface AppEnvironment {
     isProtected?: boolean
     pipelineId?: number
     latestCdWorkflowRunnerId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppIdWorkflowNamesMapping {

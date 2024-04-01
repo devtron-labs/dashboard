@@ -78,8 +78,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     let _date: string
 
     const setActiveTab = (selectedTab: AvailableTabs) => {
-        searchParams.set(TAB_SEARCH_KEY, selectedTab)
-        history.replace({ search: searchParams.toString() })
+        const _searchParams = new URLSearchParams({
+            [TAB_SEARCH_KEY]: selectedTab,
+        })
+        history.replace({ search: _searchParams.toString() })
     }
 
     const toggleUpdateDependencyModal = () => {

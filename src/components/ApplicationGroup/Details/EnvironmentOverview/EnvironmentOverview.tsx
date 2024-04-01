@@ -1,17 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
 import {
     AppStatus,
-    Progressing,
     getRandomColor,
+    handleRelativeDateSorting,
     processDeployedTime,
+    Progressing,
     showError,
+    SortableTableHeaderCell,
+    SortingOrder,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 import Tippy from '@tippyjs/react'
+import moment from 'moment'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { Moment12HourFormat } from '../../../../config'
+import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
+import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
 import { EditableTextArea, importComponentFromFELibrary } from '../../../common'
-import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
@@ -21,26 +27,26 @@ import {
     ManageAppsResponse,
     StatusDrawer,
 } from '../../AppGroup.types'
-import './envOverview.scss'
-import { Moment12HourFormat } from '../../../../config'
-import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
+import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
+import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
 import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
-import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
-import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
+import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
+import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
 import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
-import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
-import { HibernateModal } from './HibernateModal'
-import { UnhibernateModal } from './UnhibernateModal'
-import HibernateStatusListDrawer from './HibernateStatusListDrawer'
-import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
+import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
+import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
     null,
     'function',
 )
+import './envOverview.scss'
+import { HibernateModal } from './HibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { UnhibernateModal } from './UnhibernateModal'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -64,12 +70,20 @@ export default function EnvironmentOverview({
     const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
+    const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
+        TriggerInfoModalProps,
+        'ciArtifactId' | 'envId'
+    > | null>(null)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[] }>
     >({})
+
+    const { sortBy, sortOrder, handleSorting } = useUrlFilters({
+        initialSortKey: EnvironmentOverviewSortableKeys.application,
+    })
 
     useEffect(() => {
         return () => {
@@ -123,9 +137,9 @@ export default function EnvironmentOverview({
                         },
                     }
                 })
-                setLoading(false)
 
                 parseAppListData(appGroupListData, statusRecord)
+                setLoading(false)
             }
         } catch (err) {
             showError(err)
@@ -155,6 +169,35 @@ export default function EnvironmentOverview({
     const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
         `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
 
+    const sortByApplication = () => {
+        handleSorting(EnvironmentOverviewSortableKeys.application)
+    }
+
+    const sortByDeployedAt = () => {
+        handleSorting(EnvironmentOverviewSortableKeys.deployedAt)
+    }
+
+    const sortAndUpdateAppListData = (_appListData) => {
+        setAppListData({
+            ..._appListData,
+            appInfoList: _appListData.appInfoList.sort((a, b) => {
+                if (sortBy === EnvironmentOverviewSortableKeys.deployedAt) {
+                    return handleRelativeDateSorting(a.lastDeployed, b.lastDeployed, sortOrder)
+                }
+
+                return sortOrder === SortingOrder.ASC
+                    ? a.application.localeCompare(b.application)
+                    : b.application.localeCompare(a.application)
+            }),
+        })
+    }
+
+    useEffect(() => {
+        if (appListData) {
+            sortAndUpdateAppListData(appListData)
+        }
+    }, [sortBy, sortOrder])
+
     const parseAppListData = (
         data: AppGroupListType,
         statusRecord: Record<string, { status: string; pipelineId: number }>,
@@ -176,13 +219,15 @@ export default function EnvironmentOverview({
                 lastDeployed: app.lastDeployedTime,
                 lastDeployedBy: app.lastDeployedBy,
                 lastDeployedImage: app.lastDeployedImage,
+                commits: app.commits,
+                ciArtifactId: app.ciArtifactId,
             }
             parsedData.appInfoList.push(appInfo)
         })
 
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
 
-        setAppListData(parsedData)
+        sortAndUpdateAppListData(parsedData)
     }
 
     const closePopup = () => {
@@ -200,6 +245,10 @@ export default function EnvironmentOverview({
         setOpenUnhiberateModal(true)
     }
 
+    const closeCommitInfoModal = () => {
+        setCommitInfoModalConfig(null)
+    }
+
     if (loading) {
         return (
             <div className="loading-state">
@@ -210,6 +259,15 @@ export default function EnvironmentOverview({
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
         const isSelected = selectedAppIds.includes(item.appId)
+
+        const openCommitInfoModal = (e) => {
+            e.stopPropagation()
+            setCommitInfoModalConfig({
+                envId,
+                ciArtifactId: item.ciArtifactId,
+            })
+        }
+
         return (
             <div
                 key={`${item.application}-${index}`}
@@ -220,7 +278,7 @@ export default function EnvironmentOverview({
                 onMouseLeave={() => setIsHovered(null)}
             >
                 <div
-                    className={`pl-16 pr-16 app-deployment-info-row-leftsection h-100 dc__border-right-n1 dc__align-items-center display-grid dc__position-sticky sticky-column ${
+                    className={`pl-16 pr-16 app-deployment-info-row-leftsection h-100 dc__border-right-n1 dc__align-items-center display-grid dc__position-sticky sticky-column dc__ellipsis-right  ${
                         isHovered === index ? 'bc-n50' : 'bcn-0'
                     }`}
                 >
@@ -247,17 +305,20 @@ export default function EnvironmentOverview({
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
-                    <div className="cn-7 fs-13 flexbox">
+                    <div className="cn-7 fs-14 lh-20 flexbox">
                         <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                            <div className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4">
-                                <DockerIcon className="icon-dim-14" />
+                            <div
+                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor max-w-100"
+                                onClick={openCommitInfoModal}
+                            >
+                                <DockerIcon className="icon-dim-14 mw-14" />
                                 {isLastDeployedExpanded ? (
                                     <div className="mono dc__ellipsis-left direction-left">
                                         {item.lastDeployedImage}
                                     </div>
                                 ) : (
                                     <>
-                                        <div>...</div>
+                                        <div>…</div>
                                         <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
                                             {item.lastDeployedImage.split(':').at(-1)}
                                         </div>
@@ -267,6 +328,7 @@ export default function EnvironmentOverview({
                         </Tippy>
                     </div>
                 )}
+                <CommitChipCell handleClick={openCommitInfoModal} commits={item?.commits} />
                 {item?.lastDeployedBy && (
                     <span
                         className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8 mw-none"
@@ -399,7 +461,7 @@ export default function EnvironmentOverview({
                         <div
                             className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
                         >
-                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center">
+                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center dc__ellipsis-right">
                                 <label className="dc__position-rel pointer m-0-imp">
                                     <input
                                         type="checkbox"
@@ -419,7 +481,13 @@ export default function EnvironmentOverview({
                                     />
                                 </label>
                                 {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
-                                <span>{OVERVIEW_HEADER.APPLICATION}</span>
+                                <SortableTableHeaderCell
+                                    title={OVERVIEW_HEADER.APPLICATION}
+                                    triggerSorting={sortByApplication}
+                                    isSorted={sortBy === EnvironmentOverviewSortableKeys.application}
+                                    sortOrder={sortOrder}
+                                    disabled={loading}
+                                />
                             </div>
                             <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
                             <button
@@ -433,7 +501,14 @@ export default function EnvironmentOverview({
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
-                            <span>{OVERVIEW_HEADER.DEPLOYED_BY}</span>
+                            <span>{OVERVIEW_HEADER.COMMIT}</span>
+                            <SortableTableHeaderCell
+                                title={OVERVIEW_HEADER.DEPLOYED_AT}
+                                triggerSorting={sortByDeployedAt}
+                                isSorted={sortBy === EnvironmentOverviewSortableKeys.deployedAt}
+                                sortOrder={sortOrder}
+                                disabled={loading}
+                            />
                         </div>
                         <div>{appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}</div>
                     </div>
@@ -473,6 +548,7 @@ export default function EnvironmentOverview({
                     hibernateInfoMap={hibernateInfoMap}
                 />
             )}
+            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
         </div>
     ) : null
 }

@@ -220,6 +220,8 @@ export interface AppInfoListType {
     appId: number
     envId: number
     pipelineId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppListDataType {
@@ -342,6 +344,8 @@ export interface ApplistEnvType {
     lastDeployedTime: string
     lastDeployedBy?: string
     lastDeployedImage?: string
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppGroupListType {
@@ -476,7 +480,7 @@ export interface ManageAppsResponse {
     authError?: boolean
 }
 
-export interface batchConfigType{
+export interface batchConfigType {
     lastIndex: number
     results: any[]
     concurrentCount: number
