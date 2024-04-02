@@ -31,10 +31,7 @@ export function getCITriggerInfo(params: { envId: number | string; ciArtifactId:
     return get(URL)
 }
 
-export function getCITriggerInfoModal(
-    params: { envId: number | string; ciArtifactId: number | string },
-    commit: string,
-) {
+export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
         materials = materials.map((mat) => {
@@ -58,10 +55,6 @@ export function getCITriggerInfoModal(
                         webhookData: hist.WebhookData,
                     }
                 }),
-                isSelected:
-                    mat.history.find((h) =>
-                        mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
-                    ) || false,
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
