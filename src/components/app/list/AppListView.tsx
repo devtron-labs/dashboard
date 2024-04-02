@@ -202,7 +202,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             )}
                                         </div>
                                         <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value" data-testid="app-list-for-sort">
+                                            <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
                                                 {app.name}
                                             </p>
                                         </div>
