@@ -18,10 +18,11 @@ import {
     VIEW_MODE,
 } from './Secret/secret.utils'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
     ({
@@ -331,6 +332,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             return null
         }
 
+        const renderInfotext = () => (
+            <div className="flex top">
+                GUI Recommended for multi-line data.
+                <br />
+                Boolean and numeric values must be wrapped in double quotes Eg. "true", "123"
+            </div>
+        )
+
         const renderDataEditorSelector = (): JSX.Element => {
             if (
                 (componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
@@ -338,6 +347,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             ) {
                 return null
             }
+
             return (
                 <>
                     <div className="flex left mb-16">
@@ -359,12 +369,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         {renderSecretShowHide()}
                     </div>
                     {componentType !== 'secret' && !state.external && state.yamlMode && (
-                        <div className="dc__info-container info__container--configmap mb-16">
-                            <Info />
-                            <div className="flex column left">
-                                <div className="dc__info-subtitle">GUI Recommended for multi-line data.</div>
-                            </div>
-                        </div>
+                        <InfoColourBar
+                            message={renderInfotext()}
+                            Icon={InfoIcon}
+                            iconSize={20}
+                            classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                        />
                     )}
                 </>
             )
