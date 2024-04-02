@@ -1,5 +1,7 @@
-import React, { useEffect, useCallback, useReducer, useRef } from 'react'
+import React, { useEffect, useCallback, useReducer, useRef, useState } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor'
+import Tippy from '@tippyjs/react'
+import ReactDOM from 'react-dom'
 import {
     MODES,
     Progressing,
@@ -146,6 +148,28 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         defaultValue = cleanKubeManifest(defaultValue)
     }
 
+    const comments = [
+        {
+            id: '1',
+            comment: 'This is a comment at line 1',
+            line: 1,
+        },
+        {
+            id: '2',
+            comment: 'This is a comment at line 10',
+            line: 10,
+        },
+        {
+            id: '3',
+            comment: 'This is a comment at line 20',
+            line: 20,
+        },
+    ]
+
+    const [viewZoneMap, setViewZoneMap] = useState<{
+        [key in string]: string
+    }>({})
+
     const editorRef = useRef(null)
     const monacoRef = useRef(null)
     const { width, height: windowHeight } = useWindowSize()
@@ -256,6 +280,103 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [validatorSchema, chartVersion])
+
+    const pushViewZone = (lineNumber: number): monaco.editor.IViewZone => {
+        const commentContent = comments.find((comment) => comment.line === lineNumber)?.comment
+
+        const reactComponent = (
+            <div className="flexbox-col w-100 h-100 bcn-0 dc__border dc__position-abs">
+                <h2 className="flexbox dc__no-shrink h-32 dc__border-bottom-n1 bcb-5 cn-0 fs-13 m-0 p-8">Comment</h2>
+
+                <div className="flexbox-col h-100 p-8 dc__content-space">
+                    <p className="m-0 fs-13 cn-7 bcn-3">{commentContent}</p>
+
+                    <div className="flexbox dc__content-space w-100 bcn-0 dc__border-top">
+                        <button className="cta secondary h-16 flex">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+
+        const htmlElement = document.createElement('div')
+        ReactDOM.render(reactComponent, htmlElement)
+
+        return {
+            afterLineNumber: lineNumber,
+            heightInPx: 120,
+            domNode: htmlElement,
+        }
+    }
+
+    const closeViewZone = (viewZoneId: string) => {
+        monaco.editor.getEditors()[0].changeViewZones((changeAccessor) => {
+            changeAccessor.removeZone(viewZoneId)
+        })
+    }
+
+    const addViewZone = (lineNumber: number) => {
+        let viewZoneId = null
+        monaco.editor.getEditors()[0].changeViewZones((changeAccessor) => {
+            viewZoneId = changeAccessor.addZone(pushViewZone(lineNumber))
+        })
+        setViewZoneMap({
+            ...viewZoneMap,
+            [lineNumber]: viewZoneId,
+        })
+    }
+
+    const handleViewZone = (lineNumber: number) => {
+        if (viewZoneMap[lineNumber]) {
+            closeViewZone(viewZoneMap[lineNumber])
+            setViewZoneMap({
+                ...viewZoneMap,
+                [lineNumber]: null,
+            })
+        } else {
+            addViewZone(lineNumber)
+        }
+    }
+
+    const createCustomComponent = (lineNumber: number): monaco.editor.IGlyphMarginWidget => {
+        const reactComponent = (
+            <Tippy content="Open/Close comment pop up" className="default-tt" placement="right" arrow={false}>
+                <button
+                    className="dc__no-background dc__no-border pr-0 pb-0 pt-0 pl-6 icon-dim-20"
+                    onClick={() => handleViewZone(lineNumber)}
+                >
+                    <Info className="icon-dim-20" />
+                </button>
+            </Tippy>
+        )
+        const container = document.createElement('div')
+        ReactDOM.render(reactComponent, container)
+
+        return {
+            getId: () => `${lineNumber}`,
+            getDomNode: () => container,
+            getPosition: () => ({
+                lane: monaco.editor.GlyphMarginLane.Left,
+                zIndex: 1,
+                range: {
+                    startLineNumber: lineNumber,
+                    startColumn: 2,
+                    endColumn: 5,
+                    endLineNumber: lineNumber,
+                },
+            }),
+        }
+    }
+
+    useEffect(() => {
+        if (editorRef.current && !loading && !diffView) {
+            comments.forEach((comment) => {
+                monaco.editor.getEditors()[0].addGlyphMarginWidget(createCustomComponent(comment.line))
+            })
+        }
+    }, [editorRef, loading, diffView, comments])
+
     useEffect(() => {
         if (!editorRef.current) {
             return
@@ -333,6 +454,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             alwaysConsumeMouseWheel: false,
             vertical: inline ? 'hidden' : 'auto',
         },
+        glyphMargin: true,
         lineNumbers(lineNumber) {
             return `<span style="padding-right:6px">${lineNumber}</span>`
         },
