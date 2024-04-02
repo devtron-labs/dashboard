@@ -88,7 +88,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     }
     outsideClickHandler = (evt): void => {
         if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
-            console.log('outside click', evt)
             this.props.close()
         }
     }
