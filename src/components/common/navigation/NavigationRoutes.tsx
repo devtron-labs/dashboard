@@ -409,12 +409,8 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        ...(Releases
-                                            ? [
-                                                  // TODO (v1): Move to common lib
-                                                  <Route key="/releases" path="/releases" component={Releases} />,
-                                              ]
-                                            : []),
+                                        // TODO (v1): Move to common lib
+                                        <Route key="/releases" path="/releases">{Releases ? <Releases /> : <h1>Releases</h1>}</Route>,
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

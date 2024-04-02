@@ -3817,6 +3817,10 @@ textarea::placeholder {
     background-color: var(--B500);
 }
 
+.dc__hover-b50-imp:hover {
+    background-color: var(--B50) !important;
+}
+
 .dc__hover-color-b500:hover {
     color: var(--B500);
 }
