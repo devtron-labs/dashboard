@@ -8,6 +8,7 @@ import {
     GenericEmptyState,
     DetailsProgressing,
     DeploymentAppTypes,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -37,7 +38,7 @@ import {
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
-import { YAMLStringifyWithIndentation, importComponentFromFELibrary } from '../../common'
+import { importComponentFromFELibrary } from '../../common'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -389,7 +390,7 @@ const ChartDeploymentHistory = ({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAMLStringifyWithIndentation(parsedJson)
+                return YAMLStringify(parsedJson)
             } catch (e) {
                 return value
             }

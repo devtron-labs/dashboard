@@ -12,9 +12,9 @@ import {
     TippyCustomized,
     TippyTheme,
     StyledRadioGroup as RadioGroup,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { YAMLStringifyWithIndentation } from '../../common'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
@@ -62,11 +62,11 @@ export default function DeploymentTemplateOptionsTab({
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
-                : YAMLStringifyWithIndentation(state.duplicate)
+                : YAMLStringify(state.duplicate)
             const _envValues =
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
-                    : YAMLStringifyWithIndentation(state.data.globalConfig)
+                    : YAMLStringify(state.data.globalConfig)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -75,7 +75,7 @@ export default function DeploymentTemplateOptionsTab({
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: state.latestDraft ? state.draftValues : YAMLStringifyWithIndentation(state.template),
+                payload: state.latestDraft ? state.draftValues : YAMLStringify(state.template),
             })
         }
     }

@@ -6,6 +6,7 @@ import {
     ResizableTextarea,
     TippyTheme,
     ToastBody,
+    YAMLStringify,
     noop,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -35,7 +36,7 @@ import {
 } from './Types'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
-import { YAMLStringifyWithIndentation, hasApproverAccess, importComponentFromFELibrary } from '../common'
+import { hasApproverAccess, importComponentFromFELibrary } from '../common'
 import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
@@ -786,7 +787,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             return
         }
         setYaml(
-            YAMLStringifyWithIndentation( keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}))
+            YAMLStringify( keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}))
         )
     }, [keyValueArray])
 
@@ -810,7 +811,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 }
                 const v =
                     obj[k] && typeof obj[k] === 'object'
-                        ? YAMLStringifyWithIndentation(obj[k])
+                        ? YAMLStringify(obj[k])
                         : convertToValidValue(obj[k])
                 let keyErr: string
                 let valErr: string
@@ -845,7 +846,6 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                     .join(', ')}`
             }
             setError(error)
-            setKeyValueArray(error)
         } catch (err) {
             setError('Could not parse to valid YAML')
         }
