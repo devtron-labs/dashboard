@@ -6,6 +6,7 @@ import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.sv
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { CLUSTER_NOT_REACHABLE, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
@@ -120,5 +121,23 @@ export const KindSearchClearIndicator = (props) => {
                 {!props.isFocused && <ShortcutKeyBadge shortcutKey="k" rootClassName="kind-search-shortcut-key" />}
             </div>
         </components.ClearIndicator>
+    )
+}
+
+export const renderRefreshBar = (
+    show: boolean,
+    lastSyncTime: string,
+    callback: () => void,
+): () => JSX.Element => {
+    return () => !show ? null : (
+        <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
+            <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
+                <Warning className="icon-dim-20 mr-8" />
+                <span>Last synced {lastSyncTime}. The data might be stale. </span>
+                <span className="cb-5 ml-4 fw-6 cursor" onClick={callback}>
+                    Sync now
+                </span>
+            </div>
+        </div>
     )
 }

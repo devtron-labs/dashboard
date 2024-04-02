@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import moment from 'moment'
-import { stopPropagation, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import Select from 'react-select/dist/declarations/src/Select'
@@ -13,7 +13,7 @@ import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-cl
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
-import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
+import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import Timer from './DynamicTabs.timer'
 import './DynamicTabs.scss'
@@ -35,9 +35,8 @@ const DynamicTabs = ({
     enableShortCut,
     shortcut,
     refreshData,
-    loader,
+    /* NOTE: shouldn't this be named showTimer or hideTimer? */
     isOverview,
-    lastDataSyncMoment,
     setIsDataStale,
 }: DynamicTabsProps & IWithShortcut) => {
     const { push } = useHistory()
@@ -50,6 +49,7 @@ const DynamicTabs = ({
     const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [dataLoader, setDataLoader] = useState(false)
     const tabPopupMenuRef = useRef(null)
     const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
 
@@ -95,26 +95,14 @@ const DynamicTabs = ({
 
     const handleTabCloseAction = (e) => {
         e.stopPropagation()
-        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.id)
-        /* NOTE: was bad programming here using setTimeout to negate async */
-        if (!pushURL) {
-            return
-        }
-        push(pushURL)
+        const pushURLPromise = removeTabByIdentifier(e.currentTarget.dataset.id)
+        pushURLPromise.then((url) => url && push(url))
     }
 
     const handleTabStopAction = (e) => {
         e.stopPropagation()
-        const pushURL = stopTabByIdentifier(e.currentTarget.dataset.id)
-        /* NOTE: was bad programming here using setTimeout to negate async */
-        /* Internally stopTabByIdentifier was doing all the logic inside
-         * callback func to state setter, which is async; therefore in a lot
-         * of cases pushURL was '' or null; to account for async was using setTimeout;
-         * !facepalm! :-| */
-        if (!pushURL) {
-            return
-        }
-        push(pushURL)
+        const pushURLPromise = stopTabByIdentifier(e.currentTarget.dataset.id)
+        pushURLPromise.then((url) => url && push(url))
     }
 
     const getTabTippyContent = (title: string) => {
@@ -276,21 +264,13 @@ const DynamicTabs = ({
     }
 
     const updateOnStaleData = (now: moment.Moment) => {
-        if (!now || !checkIfDataIsStale(lastDataSyncMoment, now)) {
+        if (!now || !checkIfDataIsStale(selectedTab.lastSyncMoment, now)) {
             return
         }
         setIsDataStale(true)
     }
 
-    const timerForSync = () => {
-        if (loader) {
-            return (
-                <div className="ml-12 mr-4 flex">
-                    <Progressing size={18} />
-                    <div className="fs-13 ml-8">Syncing...</div>
-                </div>
-            )
-        }
+    const timerTranspose = (output: string) => {
         return (
             <>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
@@ -304,13 +284,25 @@ const DynamicTabs = ({
                 </Tippy>
                 {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
                     <div className="flex">
-                        <Timer start={lastDataSyncMoment} callback={updateOnStaleData} />
+                        {output}
                         <span className="ml-2">ago</span>
                     </div>
                 )}
             </>
         )
     }
+
+    const timerForSync = () => {
+        return (
+            selectedTab && <Timer
+                start={selectedTab.lastSyncMoment}
+                callback={updateOnStaleData}
+                transition={timerTransition}
+                transpose={timerTranspose}
+            />
+        )
+    }
+
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flex left pl-12 pr-12 w-100 dc__outline-none-imp">
             {tabsData.fixedTabs.length > 0 && (

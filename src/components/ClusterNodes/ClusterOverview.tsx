@@ -556,7 +556,7 @@ function ClusterOverview({
         }
         return (
             <div
-                className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
+                className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
                 style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
             >
                 {renderSideInfoData()}

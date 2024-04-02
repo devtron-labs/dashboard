@@ -14,6 +14,8 @@ interface CommonTabArgsType {
     dynamicTitle?: string
     showNameOnSelect?: boolean
     isAlive?: boolean
+    lastSyncMoment?: moment.Moment
+    componentKey?: string
 }
 
 export interface InitTabType extends CommonTabArgsType {
@@ -26,14 +28,12 @@ export interface DynamicTabType extends CommonTabArgsType {
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
-    removeTabByIdentifier: (id: string) => string
+    removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
     markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
-    stopTabByIdentifier: (title: string) => string
+    stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     enableShortCut?: boolean
-    loader: boolean
     refreshData: () => void
     isOverview: boolean
-    lastDataSyncMoment: moment.Moment
     setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -53,4 +53,7 @@ export interface MoreButtonWrapperProps {
 export interface TimerType {
     start: moment.Moment
     callback?: (now: moment.Moment) => void
+    transition?: () => JSX.Element
+    transpose?: (output: string) => JSX.Element
+    format?: (start: moment.Moment, now: moment.Moment) => string
 }

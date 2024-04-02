@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -8,16 +8,18 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
+import { convertToOptionsList} from '../../common'
+import { namespaceListByClusterId } from '../ResourceBrowser.service'
 
 const ResourceFilterOptions = ({
     selectedResource,
     resourceList,
-    namespaceOptions,
     selectedNamespace,
+    setSelectedNamespace,
     hideSearchInput,
     searchText,
     setSearchText,
@@ -25,26 +27,40 @@ const ResourceFilterOptions = ({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
-    isCreateModalOpen,
-    renderCallBackSync,
-    updateTabUrl,
+    enableShortcut,
+    renderRefreshBar,
+    updateK8sResourceTab,
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { push } = useHistory()
     const location = useLocation()
-    const { namespace } = useParams<{
-        namespace: string
+    const { clusterId,  namespace } = useParams<{
+        clusterId: string,
+        namespace: string,
     }>()
-    const [showShortcutKey, setShowShortcutKey] = useState(!!searchText)
+    const [showShortcutKey, setShowShortcutKey] = useState(!searchText)
     const searchInputRef = useRef<HTMLInputElement>(null)
+
+    /* TODO: Find use for this loading state */
+    const [, namespaceByClusterIdList] = useAsync(
+        () => namespaceListByClusterId(clusterId),
+        [clusterId],
+    )
+
+    const namespaceOptions = useMemo(
+        /* FIXME: will we get an error here on other kinds of result objects without result field? */
+        () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result.sort() || [])],
+        [namespaceByClusterIdList],
+    )
+
     useEffect(() => {
-        if (!isCreateModalOpen) {
+        if (enableShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
         }
 
         return (): void => {
             shortcut.unregisterShortcut(['r'])
         }
-    }, [isCreateModalOpen])
+    }, [enableShortcut])
 
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
@@ -69,7 +85,8 @@ const ResourceFilterOptions = ({
             return
         }
         const pathname = location.pathname.replace(`/${namespace}/`, `/${selected.value}/`)
-        updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, pathname)
+        updateK8sResourceTab(pathname)
+        setSelectedNamespace(selected)
         push({ pathname })
     }
 
@@ -89,7 +106,7 @@ const ResourceFilterOptions = ({
 
     return (
         <>
-            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
+            {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
                 className={`resource-filter-options-container flexbox ${
                     hideSearchInput ? 'dc__content-end' : 'dc__content-space'

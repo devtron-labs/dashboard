@@ -13,22 +13,27 @@ import {
     K8SObjectMapType,
     K8sObjectOptionType,
     SidebarType,
+    GVKType,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { getK8Abbreviates } from '../ResourceBrowser.service'
 import { swap } from '../../common/helpers/util'
-import { convertK8sObjectMapToOptionsList } from '../Utils'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
+import {
+    convertK8sObjectMapToOptionsList,
+    convertResourceGroupListToK8sObjectList,
+    getK8SObjectMapAfterGroupHeadingClick,
+} from '../Utils'
 
 const Sidebar = ({
-    k8SObjectMap,
+    apiResources,
     selectedResource,
-    handleGroupHeadingClick,
-    updateTabUrl,
+    setSelectedResource,
+    updateK8sResourceTab,
+    updateK8sResourceTabLastSyncMoment,
+    enableShortcut,
     shortcut,
-    isCreateModalOpen,
 }: SidebarType & IWithShortcut) => {
     const { push } = useHistory()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -39,11 +44,13 @@ const Sidebar = ({
         group: string
     }>()
     const [searchText, setSearchText] = useState('')
+    /* NOTE: apiResources prop will only change after a component mount/dismount */
+    const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))
     const [, k8Abbreviates] = useAsync(getK8Abbreviates)
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
-    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(k8SObjectMap), [k8SObjectMap])
+    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
 
     const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
         switch (e.key) {
@@ -59,22 +66,46 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (!isCreateModalOpen) {
+        if (enableShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
         return (): void => {
             shortcut.unregisterShortcut(['k'])
         }
-    }, [isCreateModalOpen])
+    }, [enableShortcut])
 
     useEffect(() => {
-        if (k8SObjectMap?.size) {
-            if (!preventScrollRef.current && sideBarElementRef.current) {
-                sideBarElementRef.current.scrollIntoView({ block: 'center' })
-            }
+        if (!list?.size || !sideBarElementRef.current) {
+            return
+        }
+        /* NOTE: on a reload selectedResource will be null
+         * Set it to the correct resource figured from nodeType
+         * Need to  */
+        if (!selectedResource) {
+            setSelectedResource({
+                gvk: {
+                    Kind: sideBarElementRef.current.dataset.kind as GVKType['Kind'],
+                    Group: sideBarElementRef.current.dataset.group,
+                    Version: sideBarElementRef.current.dataset.version,
+                },
+                namespaced: sideBarElementRef.current.dataset.namespaced === 'true',
+                isGrouped: sideBarElementRef.current.dataset.grouped === 'true',
+            })
+            updateK8sResourceTabLastSyncMoment()
+        }
+        if (!preventScrollRef.current) {
+            sideBarElementRef.current.scrollIntoView({ block: 'center' })
         }
     }, [sideBarElementRef.current])
+
+    const handleGroupHeadingClick = (
+        /* TODO: simplify this */
+        e: React.MouseEvent<HTMLElement> | { currentTarget: { dataset: { groupName: string } } },
+        preventCollapse = false,
+    ): void => {
+        setList(getK8SObjectMapAfterGroupHeadingClick(e, list, preventCollapse))
+    }
 
     const selectNode = (
         e: React.MouseEvent<HTMLDivElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
@@ -88,15 +119,20 @@ const Sidebar = ({
             return
         }
 
-        /* NOTE: on resource change specified namespace is retained since resource change is done through url */
+        const _selectedResource = {
+            namespaced: e.currentTarget.dataset.namespaced === 'true',
+            gvk: {
+                Group: e.currentTarget.dataset.group,
+                Version: e.currentTarget.dataset.version,
+                Kind: e.currentTarget.dataset.kind as Nodes,
+            },
+            isGrouped: e.currentTarget.dataset.grouped === 'true',
+        }
+        setSelectedResource(_selectedResource)
+        updateK8sResourceTabLastSyncMoment()
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
         push(_url)
-        updateTabUrl(
-            /* TODO: can be constant? */
-            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-            _url,
-            e.currentTarget.dataset.kind,
-        )
+        updateK8sResourceTab(_url, e.currentTarget.dataset.kind)
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -127,7 +163,7 @@ const Sidebar = ({
         }
     }
 
-    const renderChild = (childData: ApiResourceGroupType, useGroupName?: boolean) => {
+    const renderChild = (childData: ApiResourceGroupType, useGroupName = false) => {
         const nodeName = useGroupName && childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
         const isSelected =
             useGroupName && childData.gvk.Group
@@ -310,6 +346,7 @@ const Sidebar = ({
                         data-kind={SIDEBAR_KEYS.nodeGVK.Kind}
                         data-group={SIDEBAR_KEYS.nodeGVK.Group}
                         data-version={SIDEBAR_KEYS.nodeGVK.Version}
+                        data-selected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
                         className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
                             nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
                                 ? 'bcb-1 cb-5'
@@ -318,7 +355,7 @@ const Sidebar = ({
                     >
                         {SIDEBAR_KEYS.nodes}
                     </div>
-                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Events) && (
+                    {list?.size && list.get(AggregationKeys.Events) && (
                         <div
                             key={SIDEBAR_KEYS.eventGVK.Kind}
                             ref={updateRef}
@@ -337,7 +374,7 @@ const Sidebar = ({
                             {SIDEBAR_KEYS.events}
                         </div>
                     )}
-                    {k8SObjectMap?.size && k8SObjectMap.get(AggregationKeys.Namespaces) && (
+                    {list?.size && list.get(AggregationKeys.Namespaces) && (
                         <div
                             key={SIDEBAR_KEYS.namespaceGVK.Kind}
                             ref={updateRef}
@@ -357,8 +394,8 @@ const Sidebar = ({
                         </div>
                     )}
                 </div>
-                {k8SObjectMap?.size &&
-                    [...k8SObjectMap.values()].map((k8sObject) =>
+                {list?.size &&
+                    [...list.values()].map((k8sObject) =>
                         k8sObject.name === AggregationKeys.Events ||
                         k8sObject.name === AggregationKeys.Namespaces ? null : (
                             <Fragment key={`${k8sObject.name}-parent`}>

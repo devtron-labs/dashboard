@@ -1,88 +1,13 @@
-import moment from 'moment'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
-import { SOME_ERROR_MSG } from '../../config/constantMessaging'
 import { LAST_SEEN } from '../../config'
-import { Nodes } from '../app/types'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
-import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 import { URLS } from '../../config'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
-
-const updatePersistedTabsData = (key: string, value: any) => {
-    try {
-        const persistedTabsData = localStorage.getItem('persisted-tabs-data')
-        if (persistedTabsData) {
-            localStorage.setItem(
-                'persisted-tabs-data',
-                JSON.stringify({
-                    ...JSON.parse(persistedTabsData),
-                    [key]: value,
-                }),
-            )
-        }
-    } catch (err) {}
-}
-
-export const getUpdatedResourceSelectionData = (
-    prevData: Record<string, ApiResourceGroupType>,
-    selected: ApiResourceGroupType,
-    initSelection: boolean,
-    group: string,
-): Record<string, ApiResourceGroupType> => {
-    const _updatedResourceSelectionData = {
-        ...prevData,
-        [`${selected.gvk.Kind.toLowerCase()}_${
-            (initSelection && group) || selected.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-        }`]: selected,
-    }
-    updatePersistedTabsData('resourceSelectionData', _updatedResourceSelectionData)
-
-    return _updatedResourceSelectionData
-}
-
-export const getUpdatedNodeSelectionData = (
-    prevData: Record<string, Record<string, any>>,
-    selected: Record<string, any>,
-    resourceKey: string,
-    resourceName?: string,
-): Record<string, Record<string, any>> => {
-    const _updatedNodeSelectionData = {
-        ...prevData,
-        [resourceKey]: resourceName ? { ...selected, name: resourceName } : selected,
-    }
-    updatePersistedTabsData('nodeSelectionData', _updatedNodeSelectionData)
-
-    return _updatedNodeSelectionData
-}
-
-export const getEventObjectTypeGVK = (k8SObjectMap: Map<string, K8SObjectMapType>, nodeType: string) => {
-    const _resourceGroupType = getAggregator(nodeType as NodeType)
-    const _selectedGroup = k8SObjectMap?.get(_resourceGroupType)
-    if (_selectedGroup) {
-        for (const [key, value] of _selectedGroup.child) {
-            if (key.toLowerCase() === nodeType) {
-                return value.data[0].gvk
-            }
-        }
-    }
-    return null
-}
-
-export const getResourceFromK8SObjectMap = (
-    k8SObjectMap: Map<string, K8SObjectMapType>,
-    reverseMap: object,
-    nodeType: string,
-) => {
-    let data = null
-    const _selectedGroup = k8SObjectMap?.get(reverseMap[nodeType.toLowerCase()])
-    _selectedGroup?.child.forEach((_value, key) => data = key.toLowerCase() === nodeType ? _value.data[0] : data)
-    return data && {...data, grouped: data.isExpanded || true}
-}
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType: string): Map<string, K8SObjectMapType> => {
@@ -117,6 +42,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
 ) => {
     const splittedKey = e.currentTarget.dataset.groupName.split('/')
     const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
+    _k8SObjectMap.forEach((value) => value.isExpanded = false)
 
     if (splittedKey.length > 1) {
         const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
@@ -165,44 +91,6 @@ export const removeDefaultForStorageClass = (storageList: Record<string, any>[])
         }
     }
     return storageList
-}
-
-export const getParentAndChildNodes = (_k8SObjectList: K8SObjectType[], nodeType: string, group: string) => {
-    const parentNode = _k8SObjectList?.[0]
-    const childNode = parentNode?.child?.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode?.child?.[0]
-    let isResourceGroupPresent = false
-    let groupedChild = null
-
-    if (nodeType === AppDetailsTabs.terminal || FIXED_GVK_Keys[nodeType]) {
-        isResourceGroupPresent = SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase() !== nodeType
-        groupedChild = {
-            namespaced: SIDEBAR_KEYS.eventGVK.Kind.toLowerCase() === nodeType,
-            gvk: nodeType === AppDetailsTabs.terminal ? SIDEBAR_KEYS.nodeGVK : SIDEBAR_KEYS[FIXED_GVK_Keys[nodeType]],
-            isGrouped: false,
-        }
-    } else if (nodeType) {
-        for (const _parentNode of _k8SObjectList) {
-            for (const _childNode of _parentNode.child) {
-                if (
-                    _childNode.gvk.Kind.toLowerCase() === nodeType &&
-                    (_childNode.gvk.Group.toLowerCase() === group ||
-                        SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
-                        K8S_EMPTY_GROUP === group)
-                ) {
-                    isResourceGroupPresent = true
-                    groupedChild = _childNode
-                    break
-                }
-            }
-        }
-    }
-
-    return {
-        parentNode,
-        childNode,
-        isResourceGroupPresent,
-        groupedChild,
-    }
 }
 
 export const getScrollableResourceClass = (
@@ -353,13 +241,14 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }
 
-export const reversedMapForGroupedK8sObjectList = (map: Map<string, K8SObjectMapType>) => {
-    if (!map) {
-        return null
+export const getResourceFromK8SObjectMap = (
+    map: ApiResourceGroupType[],
+    nodeType: string,
+) => {
+    const resource = map?.find((value) => value.gvk.Kind.toLowerCase() === nodeType.toLowerCase())
+    return resource && {
+        gvk: resource.gvk,
+        namespaced: resource.namespaced,
+        isGrouped: false,
     }
-    const reverseMap = {}
-    map.forEach((value, key) => {
-        value.child.forEach((_value, _key) => reverseMap[_key.toLowerCase()] = key)
-    })
-    return reverseMap
 }

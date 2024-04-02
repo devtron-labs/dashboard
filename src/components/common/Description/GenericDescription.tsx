@@ -328,7 +328,7 @@ export default function GenericDescription({
     }
 
     return (
-        <div className={`cluster__body-details ${initialEditDescriptionView ? 'pb-16 dc__overflow-scroll' : ''}`}>
+        <div className="cluster__body-details">
             <div
                 data-testid="cluster-note-wrapper"
                 className={!isEditDescriptionView ? 'dc__overflow-auto' : 'dc__overflow-hidden'}

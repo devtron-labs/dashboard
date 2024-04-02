@@ -16,7 +16,7 @@ import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
 
 export default function ClusterSelectionList({
     clusterOptions,
-    onChangeCluster,
+    onClusterSelection,
     isSuperAdmin,
     clusterListLoader,
     refreshData,
@@ -111,7 +111,7 @@ export default function ClusterSelectionList({
 
     const selectCluster = (e): void => {
         const data = e.currentTarget.dataset
-        onChangeCluster({ label: data.label, value: +data.value }, true)
+        onClusterSelection({ label: data.label, value: +data.value })
     }
 
     const hideDataOnLoad = (value) => {

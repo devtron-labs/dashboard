@@ -4,6 +4,8 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
+import { useTabs } from '../../common/DynamicTabs/useTabs'
+import { ApiResourceGroupType } from '../../ResourceBrowser/Types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -410,7 +412,8 @@ export interface NodeDetailPropsType extends LogSearchTermType {
         iconPath?: string,
     ) => boolean
     selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: (id: string) => string
+    k8SObjectMapRaw?: ApiResourceGroupType[]
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     isExternalApp?: boolean
 }
 

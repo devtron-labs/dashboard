@@ -38,14 +38,10 @@ export default function DeleteResourcePopup({
             getResourceListData()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
-                const pushURL = removeTabByIdentifier(
+                const pushURLPromise = removeTabByIdentifier(
                     `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
                 )
-                setTimeout(() => {
-                    if (pushURL) {
-                        push(pushURL)
-                    }
-                }, 1)
+                pushURLPromise.then((url) => url && push(url))
             }
         } catch (err) {
             showError(err)

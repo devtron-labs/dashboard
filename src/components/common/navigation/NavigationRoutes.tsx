@@ -264,7 +264,7 @@ export default function NavigationRoutes() {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
                 if (
-                    location.pathname !== parsedTabsData.key &&
+                    location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
                     localStorage.removeItem('persisted-tabs-data')

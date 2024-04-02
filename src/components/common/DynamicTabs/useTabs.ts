@@ -1,11 +1,20 @@
 import { useState } from 'react'
+import moment from 'moment'
 import { DynamicTabType, InitTabType } from './Types'
 
+/* TODO: refactor this file */
+
 /* TODO: should this be provided when creating useTabs? */
-const FALLBACK_TAB = 0
+const FALLBACK_TAB = 1
+
+/* TODO: cleanup this with reusable functions */
 
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
+
+    const getNewTabComponentKey = (id) => {
+        return `${id}-${moment().toString()}`
+    }
 
     const populateTabData = (
         id: string,
@@ -31,6 +40,8 @@ export function useTabs(persistanceKey: string) {
             dynamicTitle,
             showNameOnSelect,
             isAlive,
+            lastSyncMoment: moment(),
+            componentKey: getNewTabComponentKey(id),
         } as DynamicTabType
     }
 
@@ -200,61 +211,72 @@ export function useTabs(persistanceKey: string) {
      * it ensures that another tab becomes selected.
      *
      * @param {string} id - The identifier of the tab to be removed
-     * @returns {string} - URL of the tab to navigate to after removal
+     * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was removed
      */
-    const removeTabByIdentifier = (id: string): string => {
-        let pushURL = null
-        let selectedRemoved = false
+    const removeTabByIdentifier = (id: string): Promise<string> => {
+        // @ts-ignore available on all latest browsers
+        const { promise, resolve } = Promise.withResolvers()
 
-        /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
-        const _tabs = tabs.filter((tab) => {
-            if (tab.id === id) {
-                selectedRemoved = tab.isSelected
-                return false
+        setTabs((prevTabs) => {
+            let selectedRemoved = false
+
+            /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
+            const _tabs = prevTabs.filter((tab) => {
+                if (tab.id === id) {
+                    selectedRemoved = tab.isSelected
+                    return false
+                }
+                return true
+            })
+            if (selectedRemoved) {
+                /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
+                _tabs[FALLBACK_TAB].isSelected = true
+                resolve(_tabs[FALLBACK_TAB].url)
+            } else {
+                resolve('')
             }
-            return true
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            return _tabs
         })
-        if (selectedRemoved) {
-            /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
-            _tabs[FALLBACK_TAB].isSelected = true
-            pushURL = _tabs[FALLBACK_TAB].url
-        }
-        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-        setTabs(_tabs)
 
-        return pushURL
+        return promise
     }
 
     /**
      * Stops or deactivate a tab by its title.
      *
      * @param {string} title - The title of the tab to be stopped
-     * @returns {string} - URL of the tab to navigate to after stopping
+     * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was stopped
      */
-    const stopTabByIdentifier = (id: string): string => {
-        let pushURL = null
-        let selectedRemoved = false
+    const stopTabByIdentifier = (id: string): Promise<string> => {
+        // @ts-ignore available on all latest browsers
+        const { promise, resolve } = Promise.withResolvers()
 
-        /* FIX: wasnt this asynchronous? why expect pushURL to not be null? */
-        const _tabs = tabs.map((tab) => {
-            if (tab.id === id) {
-                selectedRemoved = tab.isSelected
-                return {
-                    ...tab,
-                    isSelected: false,
-                    isAlive: false,
+        setTabs((prevTabs) => {
+            let selectedRemoved = false
+
+            const _tabs = prevTabs.map((tab) => {
+                if (tab.id === id) {
+                    selectedRemoved = tab.isSelected
+                    return {
+                        ...tab,
+                        isSelected: false,
+                        isAlive: false,
+                    }
                 }
+                return tab
+            })
+            if (selectedRemoved) {
+                _tabs[FALLBACK_TAB].isSelected = true
+                resolve(_tabs[FALLBACK_TAB].url)
+            } else {
+                resolve('')
             }
-            return tab
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            return _tabs
         })
-        if (selectedRemoved) {
-            _tabs[FALLBACK_TAB].isSelected = true
-            pushURL = _tabs[FALLBACK_TAB].url
-        }
-        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-        setTabs(_tabs)
 
-        return pushURL
+        return promise
     }
 
     /**
@@ -365,6 +387,37 @@ export function useTabs(persistanceKey: string) {
         })
     }
 
+    /* TODO: reuse this */
+    const getTabId = (idPrefix: string, name: string) => {
+        return `${idPrefix}-${name}`
+    }
+
+    const updateTabComponentKey = (id: string) => {
+        setTabs((prevTabs) => {
+            const _tabs = prevTabs.map((tab) => {
+                return {
+                    ...tab,
+                    componentKey: getNewTabComponentKey(tab.id)
+                }
+            })
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            return _tabs
+        })
+    }
+
+    const updateTabLastSyncMoment = (id: string) => {
+        setTabs((prevTabs) => {
+            const _tabs = prevTabs.map((tab) => {
+                return {
+                    ...tab,
+                    lastSyncMoment: moment()
+                }
+            })
+            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+            return _tabs
+        })
+    }
+
     return {
         tabs,
         initTabs,
@@ -374,6 +427,9 @@ export function useTabs(persistanceKey: string) {
         markTabActiveById,
         markTabResourceDeletedByIdentifier,
         updateTabUrl,
+        getTabId,
+        updateTabComponentKey,
+        updateTabLastSyncMoment,
         stopTabByIdentifier,
     }
 }

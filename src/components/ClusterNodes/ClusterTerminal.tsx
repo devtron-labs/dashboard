@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
@@ -32,6 +32,7 @@ import {
 } from './constants'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     TERMINAL_STATUS,
     TERMINAL_TEXT,
@@ -57,6 +58,7 @@ export default function ClusterTerminal({
     showTerminal,
     updateTerminalTabUrl,
 }: ClusterTerminalType) {
+    const { nodeType } = useParams<{ [key: string]: string }>()
     const location = useLocation()
     const history = useHistory()
     const queryParams = new URLSearchParams(location.search)
@@ -1004,7 +1006,7 @@ export default function ClusterTerminal({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: !selectedTabIndex,
+                isTerminalTab: nodeType === AppDetailsTabs.terminal,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, memo } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
-import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, Progressing, useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -16,12 +16,12 @@ import {
     SIDEBAR_KEYS,
     EVENT_LIST,
 } from '../Constants'
+import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, ResourceDetailType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import {
-    getEventObjectTypeGVK,
     getScrollableResourceClass,
     sortEventListData,
     removeDefaultForStorageClass,
@@ -32,21 +32,12 @@ import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appD
 
 export const K8SResourceList = ({
     selectedResource,
-    resourceList,
-    noResults,
-    reloadResourceListData,
     selectedCluster,
-    namespaceOptions,
-    selectedNamespace,
-    resourceListLoader,
-    searchText,
-    setSearchText,
-    isCreateModalOpen,
+    enableShortcut,
     addTab,
-    renderCallBackSync,
-    syncError,
-    k8SObjectMapRaw,
-    updateTabUrl,
+    renderRefreshBar,
+    showStaleDataWarning,
+    updateK8sResourceTab,
 }: K8SResourceListType) => {
     const { push, replace } = useHistory()
     const { url } = useRouteMatch()
@@ -57,13 +48,37 @@ export const K8SResourceList = ({
         nodeType: string
         node: string
     }>()
+    const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
+    const [searchText, setSearchText] = useState('')
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(100)
     const [filteredResourceList, setFilteredResourceList] = useState([])
     const resourceListRef = useRef<HTMLDivElement>(null)
-    const showPaginatedView = resourceList?.data?.length >= 100
     const searchWorkerRef = useRef(null)
+    const abortControllerRef = useRef(new AbortController())
+
+    /* TODO: what to do with the error? */
+    const [resourceListLoader, _resourceList, resourceListDataError, reloadResourceListData] = useAsync(() => {
+        if (!selectedResource || selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+            return null
+        }
+        return abortPreviousRequests(
+            () => getResourceList(
+                getResourceListPayload(
+                    clusterId,
+                    selectedNamespace.value.toLowerCase(),
+                    selectedResource,
+                ),
+                abortControllerRef.current.signal,
+            ),
+            abortControllerRef,
+        )
+    }, [selectedResource, clusterId, selectedNamespace])
+
+    const resourceList = _resourceList?.result || null
+
+    const showPaginatedView = resourceList?.data?.length >= 100
 
     useEffect(() => {
         if (!resourceList) {
@@ -159,8 +174,7 @@ export const K8SResourceList = ({
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
-            _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
+            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
@@ -287,12 +301,13 @@ export const K8SResourceList = ({
         setFilteredResourceList(resourceList?.data)
         setSearchText('')
         const pathname = location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`)
-        updateTabUrl(`${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`, pathname)
+        updateK8sResourceTab(pathname)
+        setSelectedNamespace(ALL_NAMESPACE_OPTION)
         replace({ pathname })
     }
 
     const renderEmptyPage = (): JSX.Element => {
-        if (noResults) {
+        if (!resourceList) {
             return (
                 <ResourceListEmptyState
                     title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
@@ -330,7 +345,7 @@ export const K8SResourceList = ({
         return (
             <div
                 ref={resourceListRef}
-                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
+                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, showStaleDataWarning)}
             >
                 <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList?.headers.map((columnName) => (
@@ -369,7 +384,7 @@ export const K8SResourceList = ({
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                         handleResourceClick={handleResourceClick}
                         paginatedView={showPaginatedView}
-                        syncError={syncError}
+                        syncError={showStaleDataWarning}
                         searchText={searchText}
                     />
                 ) : (
@@ -398,17 +413,17 @@ export const K8SResourceList = ({
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                selectedCluster={selectedCluster}
-                namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
+                setSelectedNamespace={setSelectedNamespace}
+                selectedCluster={selectedCluster}
                 searchText={searchText}
                 resourceList={resourceList}
                 setSearchText={setSearchText}
                 handleFilterChanges={handleFilterChanges}
                 isSearchInputDisabled={resourceListLoader}
-                isCreateModalOpen={isCreateModalOpen}
-                renderCallBackSync={renderCallBackSync}
-                updateTabUrl={updateTabUrl}
+                enableShortcut={enableShortcut}
+                renderRefreshBar={renderRefreshBar}
+                updateK8sResourceTab={updateK8sResourceTab}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

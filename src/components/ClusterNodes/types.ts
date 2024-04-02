@@ -184,8 +184,7 @@ export interface ClusterListType {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
-    k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSyncMoment: moment.Moment
+    k8SObjectMapRaw: ApiResourceGroupType[]
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {

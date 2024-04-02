@@ -1,5 +1,6 @@
 import React from 'react'
 import { components, MenuProps } from 'react-select'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-arrow-left.svg'
 import { MoreButtonWrapperProps } from './Types'
 
@@ -42,3 +43,11 @@ export const MoreButtonWrapper = ({
 )
 
 export const noMatchingTabs = () => 'No matching tabs'
+
+export const timerTransition = (): JSX.Element => {
+    return (
+        <div className="ml-12 mr-4 flex">
+            <Progressing size={18} />
+        </div>
+    )
+}
