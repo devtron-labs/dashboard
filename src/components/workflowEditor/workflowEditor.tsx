@@ -49,6 +49,7 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
 import { WorkflowCreate } from '../app/details/triggerView/config'
+import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -779,42 +780,51 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        return this.state.workflows.map((wf) => {
-            return (
-                <Workflow
-                    id={wf.id}
-                    key={wf.id}
-                    name={wf.name}
-                    startX={wf.startX}
-                    startY={wf.startY}
-                    width={wf.width}
-                    height={wf.height}
-                    nodes={wf.nodes}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    handleCDSelect={this.handleCDSelect}
-                    handleCISelect={this.handleCISelect}
-                    openEditWorkflow={this.openEditWorkflow}
-                    showDeleteDialog={this.showDeleteDialog}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={wf.showTippy}
-                    hideWebhookTippy={this.hideWebhookTippy}
-                    isJobView={this.props.isJobView}
-                    envList={this.props.envList}
-                    filteredCIPipelines={this.state.filteredCIPipelines}
-                    addNewPipelineBlocked={!!this.props.filteredEnvIds}
-                    handleChangeCI={this.handleChangeCI}
-                    selectedNode={this.state.selectedNode}
-                    handleSelectedNodeChange={this.handleSelectedNodeChange}
-                    appName={this.state.appName}
-                    getWorkflows={this.getWorkflows}
-                    reloadEnvironments={this.props.reloadEnvironments}
-                    workflowPositionState={this.state.workflowPositionState}
-                />
-            )
-        })
+        const handleModalClose = () => {
+            this.props.history.push(this.props.match.url)
+        }
+
+        return (
+            <>
+                {this.state.workflows.map((wf) => {
+                    return (
+                        <Workflow
+                            id={wf.id}
+                            key={wf.id}
+                            name={wf.name}
+                            startX={wf.startX}
+                            startY={wf.startY}
+                            width={wf.width}
+                            height={wf.height}
+                            nodes={wf.nodes}
+                            history={this.props.history}
+                            location={this.props.location}
+                            match={this.props.match}
+                            handleCDSelect={this.handleCDSelect}
+                            handleCISelect={this.handleCISelect}
+                            openEditWorkflow={this.openEditWorkflow}
+                            showDeleteDialog={this.showDeleteDialog}
+                            addCIPipeline={this.addCIPipeline}
+                            addWebhookCD={this.addWebhookCD}
+                            showWebhookTippy={wf.showTippy}
+                            hideWebhookTippy={this.hideWebhookTippy}
+                            isJobView={this.props.isJobView}
+                            envList={this.props.envList}
+                            filteredCIPipelines={this.state.filteredCIPipelines}
+                            addNewPipelineBlocked={!!this.props.filteredEnvIds}
+                            handleChangeCI={this.handleChangeCI}
+                            selectedNode={this.state.selectedNode}
+                            handleSelectedNodeChange={this.handleSelectedNodeChange}
+                            appName={this.state.appName}
+                            getWorkflows={this.getWorkflows}
+                            reloadEnvironments={this.props.reloadEnvironments}
+                            workflowPositionState={this.state.workflowPositionState}
+                        />
+                    )
+                })}
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={handleModalClose} />
+            </>
+        )
     }
 
     renderOpenCIPipelineBanner = () => {

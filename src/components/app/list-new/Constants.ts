@@ -45,6 +45,7 @@ export const DefaultJobNote = `## Describe this job\n\nDescribe this job in a fe
 
 export const StatusConstants = {
     NOT_DEPLOYED: {
+        titleCase: 'Not Deployed',
         noSpaceLower: 'notdeployed',
         normalCase: 'Not deployed',
         lowerCase: 'not-deployed',
@@ -72,4 +73,4 @@ export const StatusConstants = {
     NOT_AVILABLE: {
         normalCase: 'Not available',
     },
-}
+} as const

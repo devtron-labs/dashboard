@@ -19,7 +19,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                 ciArtifactId,
             }
 
-            getCITriggerInfoModal(params, null)
+            getCITriggerInfoModal(params)
                 .then((response) => {
                     const materials = response.result?.materials
                     if (materials && materials.length > 0) {
