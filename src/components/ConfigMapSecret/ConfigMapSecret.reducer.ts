@@ -1,18 +1,15 @@
-import YAML from 'yaml'
 import { CM_SECRET_STATE } from './Constants'
 import { getSecretInitState } from './Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
 import { decode } from '../../util/Util'
+import { YAMLStringifyWithIndentation } from '../common'
 
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
     return Object.keys(decodedData).map((k) => {
         return {
             k,
-            v:
-                typeof decodedData[k] === 'object'
-                    ? YAML.stringify(decodedData[k], { indent: 2, lineWidth: 0 })
-                    : decodedData[k],
+            v: typeof decodedData[k] === 'object' ? YAMLStringifyWithIndentation(decodedData[k]) : decodedData[k],
             keyError: '',
             valueError: '',
         }
@@ -53,7 +50,7 @@ export const initState = (
                   k,
                   v:
                       typeof configMapSecretData.data[k] === 'object'
-                          ? YAML.stringify(configMapSecretData.data[k], { indent: 2, lineWidth: 0 })
+                          ? YAMLStringifyWithIndentation(configMapSecretData.data[k])
                           : configMapSecretData.data[k],
                   keyError: '',
                   valueError: '',

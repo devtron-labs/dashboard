@@ -21,7 +21,7 @@ import {
     getIfLockedConfigNonProtected,
 } from './service'
 import { getChartReferences } from '../../services/service'
-import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
+import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions, YAMLStringifyWithIndentation } from '../common'
 import {
     ConfigKeysWithLockType,
     DeploymentConfigContextType,
@@ -253,7 +253,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2, lineWidth: 0  })
+        const _codeEditorStringifyData = YAMLStringifyWithIndentation(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -402,7 +402,7 @@ export default function DeploymentConfig({
                     },
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
-            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2, lineWidth: 0  })
+            const _codeEditorStringifyData = YAMLStringifyWithIndentation(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
                 schema,

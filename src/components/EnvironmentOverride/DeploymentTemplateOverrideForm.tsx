@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing, getLockedJSON, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import * as jsonpatch from 'fast-json-patch'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
+import { FloatingVariablesSuggestions, YAMLStringifyWithIndentation, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
@@ -241,7 +241,7 @@ export default function DeploymentTemplateOverrideForm({
             }
 
             if (envOverrideValuesWithBasic) {
-                editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2, lineWidth: 0  }), true)
+                editorOnChange(YAMLStringifyWithIndentation(envOverrideValuesWithBasic), true)
             } else {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
@@ -316,7 +316,7 @@ export default function DeploymentTemplateOverrideForm({
             }
             const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
             updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAML.stringify(newTemplate, { indent: 2, lineWidth: 0  }), state.yamlMode)
+            editorOnChange(YAMLStringifyWithIndentation(newTemplate), state.yamlMode)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.yamlMode,
@@ -494,16 +494,16 @@ export default function DeploymentTemplateOverrideForm({
                 state.publishedState.isOverride &&
                 (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
             ) {
-                return YAML.stringify(state.publishedState.environmentConfig.envOverrideValues, { indent: 2, lineWidth: 0  })
+                return YAMLStringifyWithIndentation(state.publishedState.environmentConfig.envOverrideValues)
             }
         } else if (
             state.selectedCompareOption?.id === Number(envId) &&
             state.data.environmentConfig.envOverrideValues
         ) {
-            return YAML.stringify(state.data.environmentConfig.envOverrideValues, { indent: 2, lineWidth: 0  })
+            return YAMLStringifyWithIndentation(state.data.environmentConfig.envOverrideValues)
         }
 
-        return YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
+        return YAMLStringifyWithIndentation(state.data.globalConfig)
     }
 
     useEffect(() => {
@@ -536,17 +536,17 @@ export default function DeploymentTemplateOverrideForm({
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
+                    : YAMLStringifyWithIndentation(state.data.globalConfig)
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
             if (applyPatches && hideLockedKeys) {
-                codeEditorValue = YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current))
+                codeEditorValue = YAMLStringifyWithIndentation(applyPatches(YAML.parse(state.tempFormData), removedPatches.current))
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? YAML.stringify(state.duplicate, { indent: 2, lineWidth: 0  })
-                : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
+                ? YAMLStringifyWithIndentation(state.duplicate)
+                : YAMLStringifyWithIndentation(state.data.globalConfig)
         }
         const manifestEditorValue = await fetchManifestData(codeEditorValue)
         return manifestEditorValue
@@ -560,14 +560,14 @@ export default function DeploymentTemplateOverrideForm({
             codeEditorValue =
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
+                    : YAMLStringifyWithIndentation(state.data.globalConfig)
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
             codeEditorValue = isOverridden
-                ? YAML.stringify(state.duplicate, { indent: 2, lineWidth: 0  })
-                : YAML.stringify(state.data.globalConfig, { indent: 2, lineWidth: 0  })
+                ? YAMLStringifyWithIndentation(state.duplicate)
+                : YAMLStringifyWithIndentation(state.data.globalConfig)
         }
 
         return codeEditorValue

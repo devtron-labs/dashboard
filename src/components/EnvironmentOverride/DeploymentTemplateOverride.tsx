@@ -4,7 +4,7 @@ import YAML from 'yaml'
 import { showError, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
-import { importComponentFromFELibrary } from '../common'
+import { YAMLStringifyWithIndentation, importComponentFromFELibrary } from '../common'
 import '../deploymentConfig/deploymentConfig.scss'
 import {
     DeploymentConfigStateAction,
@@ -210,7 +210,7 @@ export default function DeploymentTemplateOverride({
         const payload = {
             chartConfigLoading: false,
             duplicate: envOverrideValues,
-            draftValues: YAML.stringify(envOverrideValues, { indent: 2, lineWidth: 0  }),
+            draftValues: YAMLStringifyWithIndentation(envOverrideValues),
             environmentConfig: {
                 id,
                 status,

@@ -511,6 +511,10 @@ function useDelayedEffect(callback, delay, deps = []) {
     }, deps)
 }
 
+export const YAMLStringifyWithIndentation = (obj: string, option?: object) => (
+    YAML.stringify(obj, { indent: 2, lineWidth: 0, ...option  })
+)
+
 export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = false) {
     const [json, setJson] = useState('')
     const [yaml, setYaml] = useState('')
@@ -563,7 +567,7 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
         }
         if (obj && typeof obj === 'object') {
             setJson(JSON.stringify(obj, null, tabSize))
-            setYaml(YAML.stringify(obj, { indent: 2, lineWidth: 0  }))
+            setYaml(YAMLStringifyWithIndentation(obj))
             setNativeObject(obj)
             setError('')
         } else {

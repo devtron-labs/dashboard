@@ -37,7 +37,7 @@ import {
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
-import { importComponentFromFELibrary } from '../../common'
+import { YAMLStringifyWithIndentation, importComponentFromFELibrary } from '../../common'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -389,7 +389,7 @@ const ChartDeploymentHistory = ({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAML.stringify(parsedJson, { indent: 2, lineWidth: 0  })
+                return YAMLStringifyWithIndentation(parsedJson)
             } catch (e) {
                 return value
             }

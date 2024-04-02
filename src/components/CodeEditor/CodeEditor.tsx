@@ -13,7 +13,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { configureMonacoYaml } from 'monaco-yaml'
 
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import { useJsonYaml, Select } from '../common'
+import { useJsonYaml, Select, YAMLStringifyWithIndentation } from '../common'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
@@ -295,7 +295,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         let final = value
         if (obj) {
-            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 2, lineWidth: 0  })
+            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAMLStringifyWithIndentation(obj)
         }
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])
