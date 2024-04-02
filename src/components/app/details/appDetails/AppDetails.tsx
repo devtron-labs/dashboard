@@ -563,11 +563,11 @@ export const Details: React.FC<DetailsType> = ({
             await stopStartApp(Number(params.appId), Number(params.envId), isUnHibernateReq ? 'START' : 'STOP')
             await callAppDetailsAPI()
             toast.success(isUnHibernateReq ? 'Pods restore initiated' : 'Pods scale down initiated')
-            setHibernateConfirmationModal('')
         } catch (err) {
             showError(err)
         } finally {
             setHibernating(false)
+            setHibernateConfirmationModal('')
         }
     }
 
