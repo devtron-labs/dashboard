@@ -982,10 +982,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.64":
-  version "0.0.64"
-  resolved "https://registry.npmjs.org/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.64.tgz"
-  integrity sha512-3aSxCCuDjaKX2M6TACfZNCJkijCmta8SNepxtYkGa+X+vRTC9/65W3M/mwNo6r9Pt/GceuY426NnrwidZbEixA==
+"@devtron-labs/devtron-fe-common-lib@0.0.71":
+  version "0.0.71"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.71.tgz#e0c2956029d2139186ac200ff4a98b25ee013424"
+  integrity sha512-RcPYnk2LONrRQ855HLMmEohG7gTQft0HQs5Nqsllj3Df1o2QpmQn876WmIfoBRylbOkqKClrfqfatDv/9SP7Dw==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
@@ -1907,13 +1907,6 @@
   version "4.7.11"
   resolved "https://registry.npmjs.org/@types/history/-/history-4.7.11.tgz"
   integrity sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==
-
-"@types/http-proxy@^1.17.8":
-  version "1.17.14"
-  resolved "https://registry.npmjs.org/@types/http-proxy/-/http-proxy-1.17.14.tgz"
-  integrity sha512-SSrD0c1OQzlFX7pGu1eXxSEjemej64aaNPRhhVYUGqXh0BtldAAx37MG8btcumvpgKyZp1F5Gn3JkktdxiFv6w==
-  dependencies:
-    "@types/node" "*"
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.6"
@@ -3767,7 +3760,7 @@ esutils@^2.0.2:
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
 
-eventemitter3@^4.0.0, eventemitter3@^4.0.1:
+eventemitter3@^4.0.1:
   version "4.0.7"
   resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.7.tgz"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
@@ -3915,11 +3908,6 @@ flexsearch@^0.6.32:
   version "0.6.32"
   resolved "https://registry.npmjs.org/flexsearch/-/flexsearch-0.6.32.tgz"
   integrity sha512-EF1BWkhwoeLtbIlDbY/vDSLBen/E5l/f1Vg7iX5CDymQCamcx1vhlc3tIZxIDplPjgi0jhG37c67idFbjg+v+Q==
-
-follow-redirects@^1.0.0:
-  version "1.15.5"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.5.tgz"
-  integrity sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==
 
 fontfaceobserver@2.*:
   version "2.3.0"
@@ -4180,26 +4168,6 @@ http-parser-js@>=0.5.1:
   resolved "https://registry.npmjs.org/http-parser-js/-/http-parser-js-0.5.8.tgz"
   integrity sha512-SGeBX54F94Wgu5RH3X5jsDtf4eHyRogWX1XGT3b4HuW3tQPM4AaBzoUji/4AAJNXCEOWZ5O0DgZmJw1947gD5Q==
 
-http-proxy-middleware@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.npmjs.org/http-proxy-middleware/-/http-proxy-middleware-2.0.6.tgz"
-  integrity sha512-ya/UeJ6HVBYxrgYotAZo1KvPWlgB48kUJLDePFeneHsVujFaW5WNj2NgWCAE//B1Dl02BIfYlpNgBy8Kf8Rjmw==
-  dependencies:
-    "@types/http-proxy" "^1.17.8"
-    http-proxy "^1.18.1"
-    is-glob "^4.0.1"
-    is-plain-obj "^3.0.0"
-    micromatch "^4.0.2"
-
-http-proxy@^1.18.1:
-  version "1.18.1"
-  resolved "https://registry.npmjs.org/http-proxy/-/http-proxy-1.18.1.tgz"
-  integrity sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==
-  dependencies:
-    eventemitter3 "^4.0.0"
-    follow-redirects "^1.0.0"
-    requires-port "^1.0.0"
-
 https-proxy-agent@^5.0.0:
   version "5.0.1"
   resolved "https://registry.npmjs.org/https-proxy-agent/-/https-proxy-agent-5.0.1.tgz"
@@ -4429,11 +4397,6 @@ is-path-inside@^3.0.3:
   version "3.0.3"
   resolved "https://registry.npmjs.org/is-path-inside/-/is-path-inside-3.0.3.tgz"
   integrity sha512-Fd4gABb+ycGAmKou8eMftCupSir5lRxqf4aD/vd0cD2qc4HL07OjCeuHMr8Ro4CoMaeCKDB0/ECBOVWjTwUvPQ==
-
-is-plain-obj@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/is-plain-obj/-/is-plain-obj-3.0.0.tgz"
-  integrity sha512-gwsOE28k+23GP1B6vFl1oVh/WOzmawBrKwo5Ev6wMKzPkaXaCDIQKzLnvsA42DRlbVTWorkgTKIviAKCWkfUwA==
 
 is-regex@^1.1.0, is-regex@^1.1.4:
   version "1.1.4"
@@ -5028,7 +4991,7 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-micromatch@^4.0.2, micromatch@^4.0.4, micromatch@^4.0.5:
+micromatch@^4.0.4, micromatch@^4.0.5:
   version "4.0.5"
   resolved "https://registry.npmjs.org/micromatch/-/micromatch-4.0.5.tgz"
   integrity sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==
