@@ -805,31 +805,50 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 return null
             }
             const errorneousKeys = []
+            const errorneousValues = []
+
             const tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) {
                     return agg
                 }
                 const v =
                     obj[k] && typeof obj[k] === 'object'
-                        ? YAML.stringify(obj[k], { indent: 2, lineWidth: 0  })
+                        ? YAML.stringify(obj[k], { indent: 2, lineWidth: 0 })
                         : convertToValidValue(obj[k])
                 let keyErr: string
+                let valErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
                 } else {
                     keyErr = keyError
                     errorneousKeys.push(k)
                 }
+
+                if (
+                    v &&
+                    (typeof obj[k] === 'object' || typeof obj[k] === 'boolean' || typeof obj[k] === 'number')
+                ) {
+                    errorneousValues.push(v)
+                }
                 return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
             }, [])
             setKeyValueArray(tempArray)
             let error = ''
             if (errorneousKeys.length > 0) {
-                error = `Keys can contain: (Alphanumeric) (-) (_) (.) > Errors: ${errorneousKeys
+                error = `Error: Keys can contain: (Alphanumeric) (-) (_) (.) | Invalid key(s): ${errorneousKeys
+                    .map((e) => `"${e}"`)
+                    .join(', ')}`
+            }
+            if (errorneousValues.length > 0) {
+                if (error !== '') {
+                    error += '\n';
+                }
+                error += `Error: Boolean and numeric values must be wrapped in double quotes Eg. ${errorneousValues
                     .map((e) => `"${e}"`)
                     .join(', ')}`
             }
             setError(error)
+            setKeyValueArray(error)
         } catch (err) {
             setError('Could not parse to valid YAML')
         }
