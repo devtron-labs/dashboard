@@ -6,11 +6,10 @@ import { createGroupSelectList, filterImageList } from '../../common'
 import { createTaintsList } from '../../cluster/cluster.util'
 import { getClusterList, clusterNamespaceList } from '../../ClusterNodes/clusterNodes.service'
 import { getHostURLConfiguration } from '../../../services/service'
-import { AdminTerminalProps } from '../Types'
+import { AdminTerminalProps, URLParams } from '../Types'
 
 const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTerminalTabUrl }: AdminTerminalProps) => {
-    /* TODO: create a proper type and reuse everywhere or use ParamsType from NodeDetail.component */
-    const { clusterId } = useParams<{ [key: string]: string }>()
+    const { clusterId } = useParams<URLParams>()
 
     const [loading, data, error] = useAsync(() =>
         Promise.all([getClusterList(), getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'), clusterNamespaceList()]),

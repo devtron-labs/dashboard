@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
-import { K8SResourceTabComponentProps } from '../Types'
+import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { SIDEBAR_KEYS } from '../Constants'
 import Sidebar from './Sidebar'
@@ -20,7 +20,7 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTabLastSyncMoment,
     enableShortcut,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId } = useParams<{ clusterId: string }>()
+    const { clusterId } = useParams<URLParams>()
     const [selectedResource, setSelectedResource] = useState(null)
 
     const abortControllerRef = useRef(new AbortController())

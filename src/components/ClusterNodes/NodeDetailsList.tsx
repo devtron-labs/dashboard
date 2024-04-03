@@ -3,14 +3,18 @@ import { NavLink, useLocation, useRouteMatch, useHistory, useParams } from 'reac
 import Tippy from '@tippyjs/react'
 import * as queryString from 'query-string'
 import { MultiValue } from 'react-select'
-import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { getNodeList } from './clusterNodes.service'
+import {
+    useAsync,
+    abortPreviousRequests,
+    showError,
+    Progressing,
+    ConditionalWrap,
+    ErrorScreenManager,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getNodeList, getClusterCapacity  } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
-import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail } from './types'
-import { getClusterCapacity } from './clusterNodes.service'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'

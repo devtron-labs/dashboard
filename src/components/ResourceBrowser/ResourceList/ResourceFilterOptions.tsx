@@ -3,7 +3,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import { ResourceFilterOptionsProps } from '../Types'
+import { ResourceFilterOptionsProps, URLParams } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
@@ -11,7 +11,6 @@ import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLIC
 import { ConditionalWrap, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import { convertToOptionsList} from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 
@@ -33,10 +32,7 @@ const ResourceFilterOptions = ({
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { push } = useHistory()
     const location = useLocation()
-    const { clusterId,  namespace } = useParams<{
-        clusterId: string,
-        namespace: string,
-    }>()
+    const { clusterId,  namespace } = useParams<URLParams>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchText)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -47,8 +43,7 @@ const ResourceFilterOptions = ({
     )
 
     const namespaceOptions = useMemo(
-        /* FIXME: will we get an error here on other kinds of result objects without result field? */
-        () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result.sort() || [])],
+        () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],
         [namespaceByClusterIdList],
     )
 

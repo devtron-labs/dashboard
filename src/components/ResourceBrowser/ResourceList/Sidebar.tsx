@@ -14,6 +14,7 @@ import {
     K8sObjectOptionType,
     SidebarType,
     GVKType,
+    URLParams,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
@@ -36,13 +37,7 @@ const Sidebar = ({
     shortcut,
 }: SidebarType & IWithShortcut) => {
     const { push } = useHistory()
-    const { clusterId, namespace, nodeType, group } = useParams<{
-        clusterId: string
-        namespace: string
-        nodeType: string
-        node: string
-        group: string
-    }>()
+    const { clusterId, namespace, nodeType, group } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))

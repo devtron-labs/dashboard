@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
-import { ConnectingToClusterStateProps } from '../Types'
+import { ConnectingToClusterStateProps, URLParams } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
@@ -14,7 +14,7 @@ export default function ConnectingToClusterState({
     sideDataAbortController,
 }: ConnectingToClusterStateProps) {
     const { replace } = useHistory()
-    const { clusterId } = useParams<{ clusterId: string }>()
+    const { clusterId } = useParams<URLParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)

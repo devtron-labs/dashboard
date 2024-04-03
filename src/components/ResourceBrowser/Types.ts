@@ -67,6 +67,14 @@ export interface ResourceListPayloadType {
     }
 }
 
+export interface URLParams {
+    clusterId: string,
+    namespace: string,
+    nodeType: string,
+    group: string,
+    node: string,
+}
+
 export interface CreateResourcePayload {
     clusterId: number
     manifest: string

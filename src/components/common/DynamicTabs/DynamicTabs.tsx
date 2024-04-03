@@ -49,7 +49,6 @@ const DynamicTabs = ({
     const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
     const [tabSearchText, setTabSearchText] = useState('')
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [dataLoader, setDataLoader] = useState(false)
     const tabPopupMenuRef = useRef(null)
     const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
 
@@ -124,7 +123,7 @@ const DynamicTabs = ({
         return (
             <Fragment key={`${idx}-tab`}>
                 <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
-                <li
+                <button
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
@@ -174,7 +173,7 @@ const DynamicTabs = ({
                             </div>
                         </div>
                     </ConditionalWrap>
-                </li>
+                </button>
             </Fragment>
         )
     }

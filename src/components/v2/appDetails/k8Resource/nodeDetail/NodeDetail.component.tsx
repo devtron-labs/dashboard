@@ -43,7 +43,6 @@ const NodeDetailComponent = ({
         AppDetailsStore.getAppDetailsTabsObservable(),
     )
     const appDetails = IndexStore.getAppDetails()
-    /* TODO: use this type everywhere else */
     const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')

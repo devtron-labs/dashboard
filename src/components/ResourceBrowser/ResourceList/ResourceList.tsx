@@ -9,18 +9,16 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
-import moment from 'moment'
 import PageHeader from '../../common/header/PageHeader'
-import { ClusterOptionType } from '../Types'
+import { ClusterOptionType, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
 import { CreateResource } from './CreateResource'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { getTabsBasedOnRole, convertResourceGroupListToK8sObjectList } from '../Utils'
+import { getTabsBasedOnRole } from '../Utils'
 import { getResourceGroupListRaw } from '../ResourceBrowser.service'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
@@ -35,14 +33,8 @@ import { renderRefreshBar } from './ResourceList.component'
 import '../ResourceBrowser.scss'
 
 const ResourceList = () => {
-    const { clusterId, namespace, nodeType, node, group } = useParams<{
-        clusterId: string
-        namespace: string
-        nodeType: string
-        node: string
-        group: string
-    }>()
-    const { replace, push } = useHistory()
+    const { clusterId, namespace, nodeType, node } = useParams<URLParams>()
+    const { replace } = useHistory()
     const {
         tabs,
         initTabs,
@@ -60,7 +52,7 @@ const ResourceList = () => {
     const [isDataStale, setIsDataStale] = useState(false)
 
     /* TODO: Find use for this error */
-    const [rawGVKLoader, k8SObjectMapRaw, rawGVKError] = useAsync(
+    const [rawGVKLoader, k8SObjectMapRaw /*rawGVKError*/] = useAsync(
         () => getResourceGroupListRaw(clusterId),
         [clusterId],
     )

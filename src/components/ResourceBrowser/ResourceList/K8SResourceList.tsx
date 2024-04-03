@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, memo } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import { ConditionalWrap, Progressing, useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -17,7 +17,7 @@ import {
     EVENT_LIST,
 } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceDetailType } from '../Types'
+import { K8SResourceListType, ResourceDetailType, URLParams } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -28,7 +28,6 @@ import {
 } from '../Utils'
 import { URLS } from '../../../config'
 import { Nodes } from '../../app/types'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 
 export const K8SResourceList = ({
     selectedResource,
@@ -42,12 +41,7 @@ export const K8SResourceList = ({
     const { push, replace } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
-    const { clusterId, namespace, nodeType, node } = useParams<{
-        clusterId: string
-        namespace: string
-        nodeType: string
-        node: string
-    }>()
+    const { clusterId, namespace, nodeType } = useParams<URLParams>()
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [searchText, setSearchText] = useState('')
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
@@ -59,7 +53,7 @@ export const K8SResourceList = ({
     const abortControllerRef = useRef(new AbortController())
 
     /* TODO: what to do with the error? */
-    const [resourceListLoader, _resourceList, resourceListDataError, reloadResourceListData] = useAsync(() => {
+    const [resourceListLoader, _resourceList, /*resourceListDataError*/, reloadResourceListData] = useAsync(() => {
         if (!selectedResource || selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
             return null
         }
