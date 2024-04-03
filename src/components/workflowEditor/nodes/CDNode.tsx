@@ -147,7 +147,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 showError(error)
             })
             .finally(() => {
-                this.setState({ deleteInProgress: false })
+                this.setState({ deleteInProgress: false, showDeploymentConfirmationDeleteDialog: false })
             })
     }
 

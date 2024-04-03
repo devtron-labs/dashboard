@@ -963,6 +963,9 @@ export default function NewCDPipeline({
                     showError(error)
                 }
             })
+            .finally(() => {
+                setShowDeploymentConfirmationDeleteDialog(false)
+            })
     }
 
     const handleAdvanceClick = () => {
