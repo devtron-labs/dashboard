@@ -30,7 +30,7 @@ const InfoCard: FunctionComponent = () => {
                 infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
                 documentationLinkText="View Documentation"
                 additionalContent={getBuildContextAdditionalContent()}
-                className="icon-dim-16 fcn-6"
+                className="icon-dim-16 fcn-6 ml-4"
                 placement="right"
             />
         </div>

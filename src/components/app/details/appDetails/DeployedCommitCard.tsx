@@ -60,6 +60,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                             arrow={false}
                             placement="top"
                             content="Last deployment was triggered with this commit"
+                            maxWidth={250}
                         >
                             <div className="flex">
                                 <ICHelpOutline className="icon-dim-16 mt-2" />

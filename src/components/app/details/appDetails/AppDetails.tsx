@@ -180,7 +180,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const environment = useMemo(() => {
         return envList.find((env) => env.environmentId === +params.envId)
     }, [envList, params.envId])
-    
+
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && envList.length > 0 && (
@@ -555,10 +555,13 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    const showVulnerabilitiesModal = useCallback((e) => {
-        e.stopPropagation()
-        toggleScanDetailsModal(true)
-    }, [toggleScanDetailsModal])
+    const showVulnerabilitiesModal = useCallback(
+        (e) => {
+            e.stopPropagation()
+            toggleScanDetailsModal(true)
+        },
+        [toggleScanDetailsModal],
+    )
 
     if (
         !loadingResourceTree &&
@@ -672,12 +675,7 @@ export const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
 
-            {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    showAppStatusMessage={false}
-                />
-            )}
+            {detailedStatus && <AppStatusDetailModal close={hideAppDetailsStatus} showAppStatusMessage={false} />}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails?.appName}
@@ -778,9 +776,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
         return (
             <>
                 <div className="mt-16 mb-9">
-                    <SyncErrorComponent
-                        showApplicationDetailedModal={showApplicationDetailedModal}
-                    />
+                    <SyncErrorComponent showApplicationDetailedModal={showApplicationDetailedModal} />
                 </div>
                 <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />
             </>

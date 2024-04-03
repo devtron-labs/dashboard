@@ -45,6 +45,7 @@ const DeploymentStatusCard = ({
                                 arrow={false}
                                 placement="top"
                                 content="Status of last triggered deployment"
+                                maxWidth={250}
                             >
                                 <div className="flex">
                                     <ICHelpOutline className="icon-dim-16 mt-2" />

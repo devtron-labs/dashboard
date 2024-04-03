@@ -32,7 +32,12 @@ const CurrentSyncStatus = ({ status, loadingResourceTree }: CurrentSyncStatusTyp
         <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor">
             <div className="cn-9 flex left">
                 <span data-testid="application-status-heading">Application status</span>
-                <Tippy className="default-tt cursor" arrow={false} content="The health status of your app">
+                <Tippy
+                    className="default-tt cursor"
+                    arrow={false}
+                    content="The health status of your app"
+                    maxWidth={250}
+                >
                     <ICHelpOutline className="cursor icon-dim-16 ml-4" />
                 </Tippy>
             </div>

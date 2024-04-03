@@ -1,20 +1,16 @@
 import React, { useState } from 'react'
+import Tippy from '@tippyjs/react'
 import {
     showError,
     Progressing,
     ConfirmationDialog,
-    TippyCustomized,
-    TippyTheme,
-    stopPropagation,
     Checkbox,
     CHECKBOX_VALUE,
-    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import DrainIcon from '../../../assets/icons/ic-clean-brush-medium.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as TimerIcon } from '../../../assets/icons/ic-timer.svg'
 import { DRAIN_NODE_MODAL_MESSAGING } from '../constants'
 import { NodeActionModalPropType } from '../types'
@@ -138,11 +134,17 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                             sec
                         </span>
                     </span>
-                    <InfoIconTippy
-                        heading={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.heading}
-                        infoText={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText}
-                        className="icon-dim-16 fcn-6 ml-8"
-                    />
+                    <Tippy
+                        className="default-tt"
+                        arrow={false}
+                        placement="top"
+                        content={DRAIN_NODE_MODAL_MESSAGING.GracePeriod.infoText}
+                        maxWidth={250}
+                    >
+                        <button className="dc__no-background dc__no-border">
+                            <QuestionIcon className="icon-dim-16" />
+                        </button>
+                    </Tippy>
                 </div>
                 {DRAIN_NODE_OPTIONS.map((option) => {
                     return (
@@ -156,25 +158,17 @@ export default function DrainNodeModal({ name, version, kind, closePopup }: Node
                             >
                                 {option.heading}
                             </Checkbox>
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300"
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
                                 placement="top"
-                                Icon={HelpIcon}
-                                iconClass="fcv-5"
-                                heading={option.heading}
-                                infoText={option.infoText}
-                                showCloseButton
-                                trigger="click"
-                                interactive
+                                content={option.infoText}
+                                maxWidth={250}
                             >
-                                <div>
-                                    <QuestionIcon
-                                        className="drain-option-help-icon icon-dim-16 fcn-6 ml-8 cursor"
-                                        onClick={stopPropagation}
-                                    />
-                                </div>
-                            </TippyCustomized>
+                                <button className="dc__no-background dc__no-border">
+                                    <QuestionIcon className="icon-dim-16" />
+                                </button>
+                            </Tippy>
                         </div>
                     )
                 })}
