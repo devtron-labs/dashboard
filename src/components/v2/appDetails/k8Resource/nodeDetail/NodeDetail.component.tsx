@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -8,7 +8,7 @@ import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { ManifestViewRef, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -76,6 +76,18 @@ const NodeDetailComponent = ({
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
+
+    // States uplifted from Manifest Component
+    const manifestViewRef = useRef<ManifestViewRef>({
+        error: false,
+        secretViewAccess: false,
+        desiredManifest: '',
+        manifest: '',
+        activeManifestEditorData: '',
+        modifiedManifest: '',
+        isEditmode: false,
+    })
+
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
@@ -363,6 +375,7 @@ const NodeDetailComponent = ({
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            manifestViewRef={manifestViewRef}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

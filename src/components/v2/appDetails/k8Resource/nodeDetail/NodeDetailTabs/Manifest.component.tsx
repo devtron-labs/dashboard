@@ -46,6 +46,7 @@ const ManifestComponent = ({
     isDeleted,
     isResourceBrowserView,
     selectedResource,
+    manifestViewRef,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -59,22 +60,49 @@ const ManifestComponent = ({
         group: string
         namespace: string
     }>()
-    const [manifest, setManifest] = useState('')
-    const [modifiedManifest, setModifiedManifest] = useState('')
-    const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
-    const [trimedManifestEditorData, setTrimedManifestEditorData] = useState('')
+    const [error, setError] = useState(false)
+    const [secretViewAccess, setSecretViewAccess] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
+    const [manifest, setManifest] = useState('')
+    const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
+    const [modifiedManifest, setModifiedManifest] = useState('')
+
+    const [trimedManifestEditorData, setTrimedManifestEditorData] = useState('')
     const appDetails = IndexStore.getAppDetails()
     const [loading, setLoading] = useState(true)
     const [loadingMsg, setLoadingMsg] = useState('Fetching manifest')
-    const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('')
     const [isEditmode, setIsEditmode] = useState(false)
     const [showDesiredAndCompareManifest, setShowDesiredAndCompareManifest] = useState(false)
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
     const [showDecodedData, setShowDecodedData] = useState(false)
-    const [secretViewAccess, setSecretViewAccess] = useState(false)
+
+    const handleManifestRefUpdate = () => {
+        manifestViewRef.current = {
+            error,
+            secretViewAccess,
+            desiredManifest,
+            manifest,
+            activeManifestEditorData,
+            modifiedManifest,
+            isEditmode,
+        }
+    }
+
+    const handleDeriveStatesFromManifestRef = () => {
+        setError(manifestViewRef.current.error)
+        setSecretViewAccess(manifestViewRef.current.secretViewAccess)
+        setDesiredManifest(manifestViewRef.current.desiredManifest)
+        setManifest(manifestViewRef.current.manifest)
+        setActiveManifestEditorData(manifestViewRef.current.activeManifestEditorData)
+        setModifiedManifest(manifestViewRef.current.modifiedManifest)
+        setIsEditmode(manifestViewRef.current.isEditmode)
+    }
+
+    useEffect(() => {
+        return () => handleManifestRefUpdate()
+    })
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -102,7 +130,6 @@ const ManifestComponent = ({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
             !_selectedResource?.['parentRefs']?.length
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
-        setLoading(true)
 
         if (
             isResourceBrowserView ||
@@ -111,44 +138,52 @@ const ManifestComponent = ({
         ) {
             markActiveTab('Live manifest')
         }
-        try {
-            Promise.all([
-                !_isResourceMissing &&
-                    getManifestResource(
-                        appDetails,
-                        params.podName,
-                        params.nodeType,
-                        isResourceBrowserView,
-                        selectedResource,
-                    ),
-                _showDesiredAndCompareManifest &&
-                    getDesiredManifestResource(appDetails, params.podName, params.nodeType),
-            ])
-                .then((response) => {
-                    let _manifest: string
-                    setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
-                    _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
-                    setDesiredManifest(response[1]?.result?.manifest || '')
 
-                    if (_manifest) {
-                        setManifest(_manifest)
-                        setActiveManifestEditorData(_manifest)
-                        setModifiedManifest(_manifest)
-                    }
-                    setLoading(false)
-
-                    // Clear out error on pod/node change
-                    if (error) {
-                        setError(false)
-                    }
-                })
-                .catch((err) => {
-                    setError(true)
-                    showError(err)
-                    setLoading(false)
-                })
-        } catch (err) {
+        if (manifestViewRef.current.manifest) {
+            handleDeriveStatesFromManifestRef()
             setLoading(false)
+        } else {
+            setLoading(true)
+
+            try {
+                Promise.all([
+                    !_isResourceMissing &&
+                        getManifestResource(
+                            appDetails,
+                            params.podName,
+                            params.nodeType,
+                            isResourceBrowserView,
+                            selectedResource,
+                        ),
+                    _showDesiredAndCompareManifest &&
+                        getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                ])
+                    .then((response) => {
+                        let _manifest: string
+                        setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
+                        _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
+                        setDesiredManifest(response[1]?.result?.manifest || '')
+
+                        if (_manifest) {
+                            setManifest(_manifest)
+                            setActiveManifestEditorData(_manifest)
+                            setModifiedManifest(_manifest)
+                        }
+                        setLoading(false)
+
+                        // Clear out error on pod/node change
+                        if (error) {
+                            setError(false)
+                        }
+                    })
+                    .catch((err) => {
+                        setError(true)
+                        showError(err)
+                        setLoading(false)
+                    })
+            } catch (err) {
+                setLoading(false)
+            }
         }
     }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
 
