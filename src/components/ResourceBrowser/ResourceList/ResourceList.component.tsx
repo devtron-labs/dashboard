@@ -134,7 +134,7 @@ export const renderRefreshBar = (
             <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
                 <Warning className="icon-dim-20 mr-8" />
                 <span>Last synced {lastSyncTime}. The data might be stale. </span>
-                <button className="cb-5 ml-4 fw-6 cursor" onClick={callback}>
+                <button className="cb-5 ml-4 fw-6 unset-button-styles cursor" onClick={callback}>
                     Sync now
                 </button>
             </div>

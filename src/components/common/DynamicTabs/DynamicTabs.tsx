@@ -127,7 +127,7 @@ const DynamicTabs = ({
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
-                    }`}
+                    } unset-button-styles`}
                     onClick={markTabActiveOnClickFactory(tab)}
                 >
                     <ConditionalWrap
