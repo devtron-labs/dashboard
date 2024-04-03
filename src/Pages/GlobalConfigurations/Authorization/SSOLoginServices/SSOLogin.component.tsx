@@ -14,6 +14,7 @@ import {
     ConfirmationDialog,
     CustomInput,
     noop,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
@@ -253,7 +254,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 name: ssoConfig.config.name,
                 type: ssoConfig.config.type,
                 id: ssoConfig.config.id,
-                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2, lineWidth: 0 }),
+                config: YAMLStringify(ssoConfig.config.config),
             },
             active: ssoConfig.active,
         }
@@ -634,9 +635,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         }
 
         const codeEditorBody =
-            this.state.configMap === SwitchItemValues.Configuration
-                ? ssoConfig
-                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2, lineWidth: 0 })
+            this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
             <div

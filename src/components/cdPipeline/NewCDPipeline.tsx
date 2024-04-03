@@ -11,6 +11,7 @@ import {
     VariableType,
     VisibleModal,
     PipelineType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -699,7 +700,7 @@ export default function NewCDPipeline({
         newSelection['isCollapsed'] = true
         newSelection['default'] = true
         newSelection['jsonStr'] = JSON.stringify(allStrategies.current[value], null, 4)
-        newSelection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[value], { indent: 2, lineWidth: 0  })
+        newSelection['yamlStr'] = YAMLStringify(allStrategies.current[value])
 
         const _form = { ...formData }
         _form.savedStrategies.push(newSelection)

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError, Progressing, get, Host, useSearchString, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, get, Host, useSearchString, useAsync, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import YamljsParser from 'yaml'
 import { useParams } from 'react-router'
@@ -234,7 +234,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
                 >
                     <MonacoEditor
                         language="yaml"
-                        value={YamljsParser.stringify(manifest, { indent: 2, lineWidth: 0 })}
+                        value={YAMLStringify(manifest)}
                         theme="vs-dark--dt"
                         options={{
                             selectOnLineNumbers: true,

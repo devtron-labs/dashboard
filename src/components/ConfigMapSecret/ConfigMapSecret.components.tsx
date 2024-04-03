@@ -743,16 +743,6 @@ export function ProtectedConfigMapSecretDetails({
     return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
-export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
-        // Note: all long integers  & floating values in "double quotes" with spaces will be handled in this check
-        // eg val: "123678765678756764\n" or val: "1234.67856756787676\n" or "1276767634.67856\n" to trim down \n
-        const replacePattern = /\s/g
-        return k.toString().replace(replacePattern, '')
-    }
-    return k.toString()
-}
-
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     let isValid = true
     arr = arr.reduce((agg, { k, v }) => {
@@ -812,7 +802,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 const v =
                     obj[k] && typeof obj[k] === 'object'
                         ? YAMLStringify(obj[k])
-                        : convertToValidValue(obj[k])
+                        : (obj[k] && obj[k].toString())
                 let keyErr: string
                 let valErr: string
                 if (k && keyPattern.test(k)) {
