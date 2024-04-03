@@ -12,6 +12,10 @@ export interface ButtonProps {
     type?: 'submit' | 'reset' | 'button'
 }
 
+/**
+ * @deprecated Use `ButtonWithLoader` from common lib instead
+ */
+
 export class ButtonWithLoader extends Component<ButtonProps> {
     constructor(props) {
         super(props)

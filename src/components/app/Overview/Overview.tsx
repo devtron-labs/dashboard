@@ -13,9 +13,10 @@ import {
     getRandomColor,
     noop,
     StyledRadioGroup as RadioGroup,
+    EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { EditableTextArea, handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
