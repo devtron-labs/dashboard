@@ -107,10 +107,10 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal)) {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus)) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal])
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus])
 
     useEffect(() => {
         setLoading(true)
