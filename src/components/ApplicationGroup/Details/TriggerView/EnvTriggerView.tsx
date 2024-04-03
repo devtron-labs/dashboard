@@ -835,8 +835,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             .catch((errors: ServerErrors) => {
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    setErrorCode(errors.code)
-                    setPageViewType(ViewType.ERROR)
+                    setShowCIModal(false)
                 }
             })
             .finally(() => {
