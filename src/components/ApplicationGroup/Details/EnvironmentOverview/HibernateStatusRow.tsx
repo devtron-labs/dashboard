@@ -5,6 +5,9 @@ import { ReactComponent as Success } from '../../../../assets/icons/appstatus/he
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
 import { DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../../common'
+
+const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
 
 export const HibernateStatusRow = ({
     rowData,
@@ -50,12 +53,7 @@ export const HibernateStatusRow = ({
                             : 'outside'}&nbsp;
                         {hibernateInfoMap[rowData.id].type.toLowerCase()} window
                     </div>
-                    <div>
-                        <span className="cb-5 mr-6">
-                            {hibernateInfoMap[rowData.id].excludedUserEmails.length} users
-                        </span>
-                        are allowed to take action
-                    </div>
+                    <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[rowData.id].excludedUserEmails} />
                 </div>
             )
         }
