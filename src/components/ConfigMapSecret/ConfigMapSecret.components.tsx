@@ -802,7 +802,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 const v =
                     obj[k] && typeof obj[k] === 'object'
                         ? YAMLStringify(obj[k])
-                        : (obj[k] && obj[k].toString())
+                        : obj[k].toString()
                 let keyErr: string
                 let valErr: string
                 if (k && keyPattern.test(k)) {
