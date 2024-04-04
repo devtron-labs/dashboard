@@ -97,8 +97,9 @@ const ManifestComponent = ({
             manifest,
             modifiedManifest,
             isEditmode,
+            activeTab,
         },
-        [error, secretViewAccess, desiredManifest, manifest, modifiedManifest, isEditmode],
+        [error, secretViewAccess, desiredManifest, manifest, modifiedManifest, isEditmode, activeTab],
     )
 
     useEffect(() => {
@@ -133,7 +134,7 @@ const ManifestComponent = ({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
             (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
-            markActiveTab('Live manifest')
+            markActiveTab(manifestViewRef.current.activeTab || 'Live manifest')
         }
 
         if (manifestViewRef.current.manifest) {
@@ -189,7 +190,7 @@ const ManifestComponent = ({
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
-        if (isEditmode && !manifestViewRef.current.modifiedManifest) {
+        if (isEditmode && manifestViewRef.current.modifiedManifest !== activeManifestEditorData) {
             toggleManagedFields(false)
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
@@ -206,7 +207,7 @@ const ManifestComponent = ({
 
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
-        if (activeTab === 'Live manifest' && !manifestViewRef.current.modifiedManifest) {
+        if (activeTab === 'Live manifest' && manifestViewRef.current.modifiedManifest !== activeManifestEditorData) {
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 toggleManagedFields(true)

@@ -8,7 +8,7 @@ import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { ManifestViewRef, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { ManifestViewRefType, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -78,13 +78,14 @@ const NodeDetailComponent = ({
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
     // States uplifted from Manifest Component
-    const manifestViewRef = useRef<ManifestViewRef>({
+    const manifestViewRef = useRef<ManifestViewRefType>({
         error: false,
         secretViewAccess: false,
         desiredManifest: '',
         manifest: '',
         modifiedManifest: '',
         isEditmode: false,
+        activeTab: '',
     })
 
 

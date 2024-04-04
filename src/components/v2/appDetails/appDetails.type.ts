@@ -503,19 +503,20 @@ export interface ResourceInfoActionPropsType {
     selectedResource?: SelectedResourceType
 }
 
-export interface ManifestViewRef {
+export interface ManifestViewRefType {
     error: boolean
     secretViewAccess: boolean
     desiredManifest: string
     manifest: string
     modifiedManifest: string
     isEditmode: boolean
+    activeTab: string
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
-    manifestViewRef: MutableRefObject<ManifestViewRef>
+    manifestViewRef: MutableRefObject<ManifestViewRefType>
 }
 
 export interface NodeTreeDetailTabProps {
