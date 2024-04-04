@@ -10,6 +10,7 @@ import {
     noop,
     showError,
     ToastBody,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -17,7 +18,6 @@ import { iLink } from '../../../../utils/tabUtils/link.type'
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { useOnComponentUpdate } from '../../../../../common/helpers/Helpers'
 import {
     createResource,
     getDesiredManifestResource,
@@ -84,22 +84,33 @@ const ManifestComponent = ({
         setSecretViewAccess(manifestViewRef.current.secretViewAccess)
         setDesiredManifest(manifestViewRef.current.desiredManifest)
         setManifest(manifestViewRef.current.manifest)
-        setActiveManifestEditorData(manifestViewRef.current.modifiedManifest)
+        switch (manifestViewRef.current.activeTab) {
+            case 'Helm generated manifest':
+                setActiveManifestEditorData(manifestViewRef.current.desiredManifest)
+                break
+            case 'Compare':
+                setActiveManifestEditorData(manifestViewRef.current.manifest)
+                break
+            case 'Live manifest':
+            default:
+                setActiveManifestEditorData(manifestViewRef.current.modifiedManifest)
+        }
         setModifiedManifest(manifestViewRef.current.modifiedManifest)
         setIsEditmode(manifestViewRef.current.isEditmode)
     }
 
-    useOnComponentUpdate(() =>
+    useEffectAfterMount(() =>
         manifestViewRef.current = {
             error,
             secretViewAccess,
             desiredManifest,
             manifest,
+            activeManifestEditorData,
             modifiedManifest,
             isEditmode,
             activeTab,
         },
-        [error, secretViewAccess, desiredManifest, manifest, modifiedManifest, isEditmode, activeTab],
+        [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, isEditmode, activeTab],
     )
 
     useEffect(() => {
@@ -107,7 +118,6 @@ const ManifestComponent = ({
         if (isDeleted) {
             return
         }
-        toggleManagedFields(false)
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -190,12 +200,14 @@ const ManifestComponent = ({
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
-        if (isEditmode && manifestViewRef.current.modifiedManifest !== activeManifestEditorData) {
+        if (isEditmode) {
+            try {
+                const jsonManifestData = YAML.parse(activeManifestEditorData)
+                if (jsonManifestData?.metadata?.managedFields) {
+                    setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
+                }
+            } catch {}
             toggleManagedFields(false)
-            const jsonManifestData = YAML.parse(activeManifestEditorData)
-            if (jsonManifestData?.metadata?.managedFields) {
-                setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
-            }
         }
     }, [isEditmode])
 
@@ -207,14 +219,16 @@ const ManifestComponent = ({
 
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
-        if (activeTab === 'Live manifest' && manifestViewRef.current.modifiedManifest !== activeManifestEditorData) {
-            const jsonManifestData = YAML.parse(activeManifestEditorData)
-            if (jsonManifestData?.metadata?.managedFields) {
-                toggleManagedFields(true)
-                if (hideManagedFields) {
-                    setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
+        if (activeTab === 'Live manifest') {
+            try {
+                const jsonManifestData = YAML.parse(activeManifestEditorData)
+                if (jsonManifestData?.metadata?.managedFields) {
+                    toggleManagedFields(true)
+                    if (hideManagedFields) {
+                        setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
+                    }
                 }
-            }
+            } catch {}
         }
     }, [activeManifestEditorData, hideManagedFields, activeTab])
 
@@ -325,9 +339,7 @@ const ManifestComponent = ({
     }
 
     const markActiveTab = (_tabName: string) => {
-        if (_tabName !== 'Live manifest') {
-            toggleManagedFields(false)
-        }
+        toggleManagedFields(_tabName === 'Live manifest' && !isEditmode)
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName,
@@ -336,16 +348,15 @@ const ManifestComponent = ({
 
     const updateEditor = (_tabName: string) => {
         switch (_tabName) {
-            case 'Live manifest':
-                setActiveManifestEditorData(modifiedManifest)
-                break
             case 'Compare':
                 setActiveManifestEditorData(manifest)
                 break
             case 'Helm generated manifest':
-                return setTimeout(() => {
-                    setActiveManifestEditorData(desiredManifest)
-                }, 0)
+                setActiveManifestEditorData(desiredManifest)
+                break
+            case 'Live manifest':
+            default:
+                setActiveManifestEditorData(modifiedManifest)
         }
     }
 

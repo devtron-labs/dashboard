@@ -83,13 +83,14 @@ const NodeDetailComponent = ({
         secretViewAccess: false,
         desiredManifest: '',
         manifest: '',
+        activeManifestEditorData: '',
         modifiedManifest: '',
         isEditmode: false,
         activeTab: '',
     })
 
 
-    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
