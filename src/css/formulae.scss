@@ -91,7 +91,7 @@
 }
 
 // margins and paddings from 0-40
-$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding, px: padding-inline, py: padding-block);
 
 @each $margin,
 $style in $margins {

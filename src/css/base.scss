@@ -2104,6 +2104,10 @@ button.anchor {
 .dc__border-bottom {
     border-bottom: solid 1px var(--N200);
 
+    &--b1 {
+        border-bottom: solid 1px var(--B100);
+    }
+
     &--b2 {
         border-bottom: solid 1px var(--B200);
     }
@@ -2139,6 +2143,10 @@ button.anchor {
 
 .dc__border-right {
     border-right: solid 1px var(--N200);
+
+    &--b1 {
+        border-right: solid 1px var(--B100);
+    }
 }
 
 .dc__border-top-n1 {
