@@ -4,18 +4,16 @@ import {
     Progressing,
     getTeamListMin as getProjectListMin,
     Drawer,
-    copyToClipboard,
     CustomInput,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ViewType } from '../../config/constants'
 import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types'
 import CreateHeaderDetails from './CreateHeaderDetails'
@@ -51,7 +49,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.removeHeader = this.removeHeader.bind(this)
         this.renderHeadersList = this.renderHeadersList.bind(this)
         this.setCopied = this.setCopied.bind(this)
-        this.copyToClipboard = this.copyToClipboard.bind(this)
         this.isValid = this.isValid.bind(this)
         this.onSaveClickHandler = this.onSaveClickHandler.bind(this)
         this.onClickSave = this.onClickSave.bind(this)
@@ -208,41 +205,17 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
         this.setState({ copyAttribute: value })
     }
 
-    copyToClipboard(e) {
-        e.stopPropagation()
-        copyToClipboard(e.currentTarget.dataset.value, () => this.setCopied(true))
-    }
-
     renderDataList(attribute, index) {
         return (
             <div
-                className="w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger"
+                className="dc__visible-hover dc__visible-hover--parent w-100-imp cn-7 fs-12 mb-8 flex left data-conatiner hover-trigger"
                 data-testid={`${this.state.webhookAttribute[attribute]}-${index}`}
                 key={`${index}-${attribute}`}
             >
                 <span className="bcn-1 br-4 fs-12 fw-4 lh-16 p-4">{this.state.webhookAttribute[attribute]}</span>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={this.state.copyAttribute ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(_tippy) => {
-                        setTimeout(() => {
-                            _tippy.hide()
-                            this.setCopied(false)
-                        }, 4000)
-                    }}
-                    interactive
-                >
-                    <div className="flex">
-                        <Clipboard
-                            data-value={this.state.webhookAttribute[attribute]}
-                            className="ml-8 pointer hover-only icon-dim-16"
-                            onClick={this.copyToClipboard}
-                        />
-                    </div>
-                </Tippy>
+                <div className="flex dc__visible-hover--child pl-4">
+                    <ClipboardButton content={this.state.webhookAttribute[attribute]} />
+                </div>
             </div>
         )
     }

@@ -73,6 +73,7 @@ export default function NewCDPipeline({
     changeCIPayload,
     isGitOpsRepoNotConfigured,
     reloadAppConfig,
+    handleDisplayLoader,
 }: NewCDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
@@ -903,6 +904,7 @@ export default function NewCDPipeline({
                         setFormData(form)
                         setDeleteDialog(DeleteDialogType.showNormalDeleteDialog)
                         close()
+                        handleDisplayLoader()
                         if (isWebhookCD) {
                             refreshParentWorkflows()
                         }
