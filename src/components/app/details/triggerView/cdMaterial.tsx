@@ -88,8 +88,7 @@ import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
-import AnnouncementBanner from '../../../common/AnnouncementBanner'
-import { useRouteMatch } from 'react-router-dom'
+import AnnouncementBanner from '@devtron-labs/devtron-fe-common-lib'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')

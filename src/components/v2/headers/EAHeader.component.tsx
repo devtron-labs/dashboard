@@ -4,7 +4,7 @@ import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch } from 'react-router'
 import { URLS, AppListConstants } from '../../../config'
 import './header.scss'
-import PageHeader from '../../common/header/PageHeader'
+import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EAHeaderComponentType } from './appHeader.type'
 

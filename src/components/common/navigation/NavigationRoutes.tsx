@@ -7,6 +7,8 @@ import {
     Reload,
     useAsync,
     DevtronProgressing,
+    useMainContext,
+    MainContextProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -51,10 +53,6 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
-
-export const mainContext = createContext<MainContext>(null)
-
-export const useMainContext = () => useContext(mainContext)
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
@@ -319,7 +317,7 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
     return (
-        <mainContext.Provider
+        <MainContextProvider
             value={{
                 serverMode,
                 setServerMode,
@@ -442,7 +440,7 @@ export default function NavigationRoutes() {
                     </div>
                 )}
             </main>
-        </mainContext.Provider>
+        </MainContextProvider>
     )
 }
 
@@ -543,7 +541,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
 
 export const RedirectToAppList = () => {
     const { replace } = useHistory()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     useEffect(() => {
         const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {

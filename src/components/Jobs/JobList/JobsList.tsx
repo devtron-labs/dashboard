@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     ErrorScreenManager,
@@ -7,11 +7,12 @@ import {
     ServerErrors,
     useAsync,
     DevtronProgressing,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import { URLS } from '../../../config'
 import { Filter, FilterOption } from '../../common'
-import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
+import HeaderWithCreateButton from '@devtron-labs/devtron-fe-common-lib'
 import { JobListViewType, JobsFilterTypeText, JobsStatusConstants } from '../Constants'
 import JobListContainer from './JobListContainer'
 import { OrderBy } from '../../app/list/types'
@@ -22,7 +23,6 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import '../../app/list/list.scss'
 
@@ -30,7 +30,7 @@ export default function JobsList() {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
-    const { setPageOverflowEnabled } = useContext(mainContext)
+    const { setPageOverflowEnabled } = useMainContext()
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
@@ -342,7 +342,7 @@ export default function JobsList() {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" isSuperAdmin />
+                    <HeaderWithCreateButton headerName="Jobs" />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}

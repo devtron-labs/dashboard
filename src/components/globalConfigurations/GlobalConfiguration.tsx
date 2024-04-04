@@ -8,6 +8,8 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
+    useMainContext,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -23,9 +25,7 @@ import {
     Routes,
     SERVER_MODE,
 } from '../../config/constants'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
-import PageHeader from '../common/header/PageHeader'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
@@ -63,7 +63,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -158,7 +158,7 @@ export default function GlobalConfiguration(props) {
 
 const NavItem = ({ serverMode }) => {
     const location = useLocation()
-    const { installedModuleMap } = useContext(mainContext)
+    const { installedModuleMap } = useMainContext()
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({

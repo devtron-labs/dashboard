@@ -1,4 +1,4 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
+import React, { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -8,6 +8,7 @@ import {
     Progressing,
     getLockedJSON,
     getUnlockedJSON,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
@@ -34,7 +35,6 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
     groupDataByType,
@@ -72,7 +72,7 @@ export default function DeploymentConfig({
     reloadEnvironments,
 }: DeploymentConfigProps) {
     const { appId } = useParams<{ appId: string }>()
-    const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useMainContext()
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({

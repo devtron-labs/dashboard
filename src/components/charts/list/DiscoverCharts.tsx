@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef, useContext, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,
     ConditionalWrap,
     InfoColourBar,
     DevtronProgressing,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
@@ -28,9 +29,7 @@ import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-tr
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
-import PageHeader from '../../common/header/PageHeader'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -41,6 +40,7 @@ import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 // TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -60,7 +60,7 @@ export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[
 }
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch()
