@@ -36,7 +36,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -55,7 +55,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -79,7 +79,7 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => yaml.stringify(data, { simpleKeys: true })
+export const parseIntoYAMLString = (data: any) => YAMLStringify(data, { simpleKeys: true })
 
 export const parseYAMLStringToObj = (data: string) => yaml.parse(data)
 

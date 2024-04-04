@@ -6,6 +6,7 @@ import {
     ServerErrors,
     ErrorScreenManager,
     copyToClipboard,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -127,7 +128,7 @@ export default function NodeDetails({
                     } else if (isShowWarning) {
                         setIsShowWarning(false)
                     }
-                    setModifiedManifest(YAML.stringify(manifestData))
+                    setModifiedManifest(YAMLStringify(manifestData))
                 }
                 setLoader(false)
             })
@@ -916,7 +917,7 @@ export default function NodeDetails({
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
         setIsEdit(false)
-        setModifiedManifest(YAML.stringify(nodeDetail.manifest))
+        setModifiedManifest(YAMLStringify(nodeDetail.manifest))
     }
 
     const handleEditorValueChange = (codeEditorData: string): void => {
@@ -997,7 +998,7 @@ export default function NodeDetails({
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
+                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
                     height={getCodeEditorHeight()}
                     readOnly={!isEdit}
                     theme="vs-dark--dt"

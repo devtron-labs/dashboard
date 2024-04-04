@@ -14,7 +14,6 @@ import {
     StyledRadioGroup as RadioGroup,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean

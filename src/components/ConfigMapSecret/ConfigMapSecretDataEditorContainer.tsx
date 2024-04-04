@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React from 'react'
-import YAML from 'yaml'
 import { Info } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -18,7 +17,7 @@ import {
     VIEW_MODE,
 } from './Secret/secret.utils'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
-import { InfoColourBar, StyledRadioGroup as RadioGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, StyledRadioGroup as RadioGroup, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
@@ -75,7 +74,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
 
-        const sample = YAML.stringify(sampleJSONs[state.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
+        const sample = YAMLStringify(sampleJSONs[state.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
         function changeEditorMode() {
@@ -139,7 +138,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
             dispatch({
                 type: ConfigMapActionTypes.setSecretDataYaml,
-                payload: YAML.stringify(json),
+                payload: YAMLStringify(json),
             })
         }
 
@@ -161,7 +160,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
             dispatch({
                 type: ConfigMapActionTypes.setSecretDataYaml,
-                payload: YAML.stringify(json),
+                payload: YAMLStringify(json),
             })
         }
 

@@ -705,7 +705,7 @@ export default function DeploymentConfig({
             } else {
                 const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
                 updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
+                editorOnChange(YAMLStringify(newTemplate), !state.yamlMode)
             }
             toggleYamlMode(!state.yamlMode)
         } catch (error) {}
@@ -872,7 +872,7 @@ export default function DeploymentConfig({
             result = await fetchManifestData(state.draftValues)
         } else if (applyPatches && hideLockedKeys) {
             result = fetchManifestData(
-                YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+                YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
             )
         } else {
             result = await fetchManifestData(state.tempFormData)

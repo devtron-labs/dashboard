@@ -245,7 +245,7 @@ export default function DeploymentTemplateOverrideForm({
             } else {
                 dispatch({
                     type: DeploymentConfigStateActionTypes.tempFormData,
-                    payload: YAML.stringify(deploymentTemplateResp.result.envOverrideValues),
+                    payload: YAMLStringify(deploymentTemplateResp.result.envOverrideValues),
                 })
             }
             toast.success(
