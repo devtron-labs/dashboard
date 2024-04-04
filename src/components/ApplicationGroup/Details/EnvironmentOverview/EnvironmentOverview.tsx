@@ -547,6 +547,7 @@ export default function EnvironmentOverview({
                     getAppListData={getAppListData}
                     isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
                     hibernateInfoMap={hibernateInfoMap}
+                    isDeploymentLoading={isDeploymentLoading}
                 />
             )}
             {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
