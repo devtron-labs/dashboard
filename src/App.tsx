@@ -164,6 +164,16 @@ export default function App() {
         }
     }, [])
 
+    const serviceWorkerTimeout = (()=> {
+        const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
+
+        if (parsedTimeout) {
+            return parsedTimeout
+        }
+
+        return 1
+    })()
+
     const {
         needRefresh: [needRefresh],
         updateServiceWorker,
@@ -183,7 +193,7 @@ export default function App() {
                     })
 
                     if (resp?.status === 200) await r.update()
-                }, 1000 * 60)
+                }, serviceWorkerTimeout * 1000 * 60)
         },
         onRegisterError(error) {
             console.log('SW registration error', error)
@@ -192,8 +202,6 @@ export default function App() {
 
     function update() {
         updateServiceWorker(true)
-        // Trigger page reload
-        window.location.reload()
     }
 
     useEffect(() => {
