@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../common'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
@@ -10,6 +11,10 @@ import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 import { Nodes } from '../../app/types'
 import DeleteResourcePopup from './DeleteResourcePopup'
+import { AggregationKeys, getAggregator } from '../../v2/appDetails/appDetails.type'
+
+const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
+const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
 
 export default function ResourceBrowserActionMenu({
     clusterId,
@@ -20,9 +25,20 @@ export default function ResourceBrowserActionMenu({
     removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
+
+    const aggregator = getAggregator(selectedResource?.gvk?.Kind as any)
 
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
+    }
+
+    const handleShowVulnerabilityModal = (e: React.MouseEvent) => {
+        setShowVulnerabilityModal(true)
+    }
+
+    const handleCloseVulnerabilityModal = () => {
+        setShowVulnerabilityModal(false)
     }
 
     return (
@@ -55,6 +71,11 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
+                        {aggregator === AggregationKeys.Workloads && OpenVulnerabilityModalButton && (
+                            <OpenVulnerabilityModalButton
+                                handleShowVulnerabilityModal={handleShowVulnerabilityModal}
+                            />
+                        )}
                         {selectedResource?.gvk?.Kind === Nodes.Pod && (
                             <>
                                 <span
@@ -100,6 +121,18 @@ export default function ResourceBrowserActionMenu({
                     getResourceListData={getResourceListData}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
+                />
+            )}
+
+            {showVulnerabilityModal && ScanResourceModal && (
+                <ScanResourceModal
+                    name={resourceData.name}
+                    namespace={resourceData.namespace}
+                    group={selectedResource?.gvk?.Group}
+                    kind={selectedResource?.gvk?.Kind}
+                    version={selectedResource?.gvk?.Version}
+                    clusterId={clusterId}
+                    handleCloseVulnerabilityModal={handleCloseVulnerabilityModal}
                 />
             )}
         </>

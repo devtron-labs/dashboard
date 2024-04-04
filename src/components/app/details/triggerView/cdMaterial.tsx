@@ -1384,7 +1384,7 @@ const getInitialSelectedConfigToDeploy = () => {
                                     isEditing={false}
                                     tagId={0}
                                     softDeleteTags={[]}
-                                    isSuperAdmin={[]}
+                                    isSuperAdmin={isSuperAdmin}
                                 />
                             </div>
                         )}

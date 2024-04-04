@@ -108,8 +108,13 @@ export enum NodeType {
 
 // export type NodeType = keyof typeof NodeType;
 
+/**
+ * 
+ * @param nodeType 
+ * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
+ */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-    switch (nodeType.toLowerCase()) {
+    switch (nodeType?.toLowerCase()) {
         case NodeType.DaemonSet.toLowerCase():
         case NodeType.Deployment.toLowerCase():
         case NodeType.Pod.toLowerCase():

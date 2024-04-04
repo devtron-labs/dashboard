@@ -345,6 +345,9 @@ export enum AppListColumnSort {
     lastDeployedSort = 'lastDeployedAt',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -388,6 +391,9 @@ export enum Nodes {
     Namespace = 'Namespace',
     Overview = 'Overview',
 }
+/**
+ * @deprecated - use from fe-common
+ */
 export type NodeType = keyof typeof Nodes
 
 export enum AggregationKeys {

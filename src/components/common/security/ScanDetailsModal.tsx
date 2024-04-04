@@ -6,6 +6,7 @@ import {
     ScanVulnerabilitiesTable,
     VulnerabilityType,
     Drawer,
+    ScannedObjectBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -186,44 +187,13 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         <p className="scanned-object__value">{this.state.lastExecution}</p>
                     </>
                 )}
-                {this.renderCount()}
-            </div>
-        )
-    }
 
-    renderCount() {
-        let total = this.state.severityCount.critical + this.state.severityCount.moderate + this.state.severityCount.low
-        return (
-            <>
-                <div className="scanned-object__bar mb-16">
-                    <div
-                        className="scanned-object__critical-count"
-                        style={{ width: `${(100 * this.state.severityCount.critical) / total}%` }}
-                    ></div>
-                    <div
-                        className="scanned-object__moderate-count"
-                        style={{ width: `${(100 * this.state.severityCount.moderate) / total}%` }}
-                    ></div>
-                    <div
-                        className="scanned-object__low-count"
-                        style={{ width: `${(100 * this.state.severityCount.low) / total}%` }}
-                    ></div>
-                </div>
-                <div className="flexbox">
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__critical-count"></span>Critical
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.critical}</span>
-                    </p>
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__moderate-count"></span>Moderate
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.moderate}</span>
-                    </p>
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__low-count"></span>Low
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.low}</span>
-                    </p>
-                </div>
-            </>
+                <ScannedObjectBar
+                    criticalVulnerabilitiesCount={this.state.severityCount.critical}
+                    moderateVulnerabilitiesCount={this.state.severityCount.moderate}
+                    lowVulnerabilitiesCount={this.state.severityCount.low}
+                />
+            </div>
         )
     }
 
