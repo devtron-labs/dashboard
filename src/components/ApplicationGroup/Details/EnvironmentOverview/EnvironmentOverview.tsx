@@ -1,4 +1,5 @@
 import {
+    ACTION_STATE,
     AppStatus,
     getRandomColor,
     handleRelativeDateSorting,
@@ -78,7 +79,7 @@ export default function EnvironmentOverview({
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
-        Record<string, { type: string; excludedUserEmails: string[] }>
+        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
     >({})
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({

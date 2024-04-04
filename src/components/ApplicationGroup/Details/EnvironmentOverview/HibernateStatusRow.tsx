@@ -4,7 +4,7 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
-import { DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../common'
 
 const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
@@ -43,7 +43,7 @@ export const HibernateStatusRow = ({
     }
 
     const getMessage = () => {
-        if (hibernateInfoMap[rowData.id]) {
+        if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
             return (
                 <div>
                     <div>
