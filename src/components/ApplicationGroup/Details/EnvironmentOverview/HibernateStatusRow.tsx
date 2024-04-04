@@ -46,13 +46,14 @@ export const HibernateStatusRow = ({
         if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
             return (
                 <div>
-                    <div>
+                    {hibernateInfoMap[rowData.id].userActionState === ACTION_STATE.BLOCKED && <div>
                         You are not authorised to deploy&nbsp;
                         {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
                             ? 'during'
                             : 'outside'}&nbsp;
                         {hibernateInfoMap[rowData.id].type.toLowerCase()} window
                     </div>
+        }
                     <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[rowData.id].excludedUserEmails} />
                 </div>
             )
