@@ -1,4 +1,5 @@
 import {
+    ACTION_STATE,
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
@@ -453,6 +454,7 @@ export interface BaseModalProps {
 export interface HibernateInfoMapProps  {
     type: string
     excludedUserEmails: string[]
+    userActionState: ACTION_STATE
 }
 export interface HibernateModalProps extends BaseModalProps {
     setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>

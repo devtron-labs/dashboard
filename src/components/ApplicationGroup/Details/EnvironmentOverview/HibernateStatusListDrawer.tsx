@@ -9,7 +9,8 @@ export default function HibernateStatusListDrawer({
     isLoading,
     getAppListData,
     isHibernateOperation,
-    hibernateInfoMap
+    hibernateInfoMap,
+    isDeploymentLoading,
 }) {
     useEffect(() => {
         return () => {
@@ -36,7 +37,7 @@ export default function HibernateStatusListDrawer({
     }
 
     const renderResponseBodySection = (): JSX.Element => {
-        if (isLoading) {
+        if (isLoading || isDeploymentLoading) {
             return <Progressing pageLoader />
         }
         return (
