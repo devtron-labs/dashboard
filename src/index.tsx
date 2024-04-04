@@ -33,6 +33,7 @@ interface customEnv {
     HIDE_GITOPS_OR_HELM_OPTION?: boolean
     CONFIGURABLE_TIMEOUT?: string
     HIDE_APPLICATION_GROUPS?: boolean
+    HIDE_RELEASES?: boolean
     K8S_CLIENT?: boolean
     CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
     CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
@@ -153,6 +154,7 @@ if (!window || !window._env_) {
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
+        HIDE_RELEASES: true,
         K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
