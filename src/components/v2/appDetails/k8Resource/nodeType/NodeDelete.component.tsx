@@ -150,6 +150,7 @@ const NodeDeleteComponent = ({
             showError(err)
         } finally {
             setApiCallInProgress(false)
+            setShowDeleteConfirmation(false)
         }
     }
 

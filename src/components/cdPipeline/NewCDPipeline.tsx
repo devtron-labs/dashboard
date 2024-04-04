@@ -955,13 +955,15 @@ export default function NewCDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                if (!force && error.code != 403 && error.code != 412) {
+                // 422 is for deployment window
+                if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
                     setForceDeleteDialogData(error)
                     hideDeleteModal()
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
                 }
+                setShowDeploymentConfirmationDeleteDialog(false)
             })
     }
 
