@@ -539,7 +539,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             })
             let configValue = ''
             if (config?.config) {
-                configValue = yamlJsParser.stringify(config.config)
+                configValue = YAMLStringify(config.config)
             }
             this.setState({
                 ssoConfig: {
@@ -608,7 +608,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         if (newConfig) {
             this.setDefaultSecretPlaceHolder(newConfig)
         }
-        const value = yamlJsParser.stringify(newConfig)
+        const value = YAMLStringify(newConfig)
 
         this.setState({
             ssoConfig: {
@@ -622,14 +622,14 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2, lineWidth: 0 })
+        let ssoConfig = this.state.ssoConfig.config.config || YAMLStringify({})
         if (this.state.sso === OIDCType) {
             const config = {
                 name: this.state.ssoConfig.config.name,
                 id: this.state.ssoConfig.config.id,
                 config: yamlJsParser.parse(this.state.ssoConfig.config.config),
             }
-            const stringifyConfig = yamlJsParser.stringify(config, { indent: 1 })
+            const stringifyConfig = YAMLStringify(config, { indent: 1 })
 
             ssoConfig = stringifyConfig.replaceAll('null', '')
         }
