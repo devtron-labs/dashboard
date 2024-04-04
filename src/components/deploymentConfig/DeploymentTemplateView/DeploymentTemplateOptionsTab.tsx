@@ -74,7 +74,8 @@ export default function DeploymentTemplateOptionsTab({
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: state.latestDraft ? state.draftValues : YAMLStringify(state.template),
+                // Explicitly setting getTrimmedManifestData(parsedManifest) as object to avoid type error from YAMLStringify.
+                payload: state.latestDraft ? state.draftValues : YAMLStringify(state.template as unknown as object) as unknown,
             })
         }
     }
