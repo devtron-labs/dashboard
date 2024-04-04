@@ -508,7 +508,6 @@ export interface ManifestViewRef {
     secretViewAccess: boolean
     desiredManifest: string
     manifest: string
-    activeManifestEditorData: string
     modifiedManifest: string
     isEditmode: boolean
 }

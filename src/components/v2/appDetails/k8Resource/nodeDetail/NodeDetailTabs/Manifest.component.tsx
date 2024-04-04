@@ -17,6 +17,7 @@ import { iLink } from '../../../../utils/tabUtils/link.type'
 import { TabActions, useTab } from '../../../../utils/tabUtils/useTab'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-edit.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
+import { useOnComponentUpdate } from '../../../../../common/helpers/Helpers'
 import {
     createResource,
     getDesiredManifestResource,
@@ -78,31 +79,27 @@ const ManifestComponent = ({
     const [showInfoText, setShowInfoText] = useState(false)
     const [showDecodedData, setShowDecodedData] = useState(false)
 
-    const handleManifestRefUpdate = () => {
-        manifestViewRef.current = {
-            error,
-            secretViewAccess,
-            desiredManifest,
-            manifest,
-            activeManifestEditorData,
-            modifiedManifest,
-            isEditmode,
-        }
-    }
-
     const handleDeriveStatesFromManifestRef = () => {
         setError(manifestViewRef.current.error)
         setSecretViewAccess(manifestViewRef.current.secretViewAccess)
         setDesiredManifest(manifestViewRef.current.desiredManifest)
         setManifest(manifestViewRef.current.manifest)
-        setActiveManifestEditorData(manifestViewRef.current.activeManifestEditorData)
+        setActiveManifestEditorData(manifestViewRef.current.modifiedManifest)
         setModifiedManifest(manifestViewRef.current.modifiedManifest)
         setIsEditmode(manifestViewRef.current.isEditmode)
     }
 
-    useEffect(() => {
-        return () => handleManifestRefUpdate()
-    })
+    useOnComponentUpdate(() =>
+        manifestViewRef.current = {
+            error,
+            secretViewAccess,
+            desiredManifest,
+            manifest,
+            modifiedManifest,
+            isEditmode,
+        },
+        [error, secretViewAccess, desiredManifest, manifest, modifiedManifest, isEditmode],
+    )
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -185,13 +182,14 @@ const ManifestComponent = ({
                 setLoading(false)
             }
         }
+        /* TODO: check if the deps are redundant */
     }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
-        if (isEditmode) {
+        if (isEditmode && !manifestViewRef.current.modifiedManifest) {
             toggleManagedFields(false)
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
@@ -208,7 +206,7 @@ const ManifestComponent = ({
 
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
-        if (activeTab === 'Live manifest') {
+        if (activeTab === 'Live manifest' && !manifestViewRef.current.modifiedManifest) {
             const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 toggleManagedFields(true)

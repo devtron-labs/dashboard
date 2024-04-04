@@ -83,7 +83,6 @@ const NodeDetailComponent = ({
         secretViewAccess: false,
         desiredManifest: '',
         manifest: '',
-        activeManifestEditorData: '',
         modifiedManifest: '',
         isEditmode: false,
     })

@@ -1025,6 +1025,18 @@ export const handleOnFocus = (e): void => {
     }
 }
 
+export const useOnComponentUpdate = (callback: () => void, dependencies: unknown[]): void => {
+    const initialRender = useRef(true)
+
+    useEffect(() => {
+        if (initialRender.current) {
+            initialRender.current = false
+            return
+        }
+        callback()
+    }, [...dependencies])
+}
+
 /**
  * @deprecated
  */
