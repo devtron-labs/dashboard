@@ -11,6 +11,7 @@ import {
     ToastBody,
     HandleKeyValueChangeType,
     KeyValueListActionType,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -125,6 +126,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
         this.getConfigs = this.getConfigs.bind(this)
+        this.abortController = new AbortController()
     }
 
     componentWillUnmount() {
@@ -303,7 +305,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         workflows: WorkflowType[],
         _selectedMaterial: CIMaterialType,
     ) {
-        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+        this.abortController.abort()
+        this.abortController = new AbortController()
+
+        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash, this.abortController.signal)
             .then((response) => {
                 const _result = response.result
                 if (_result) {
@@ -343,11 +348,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
             })
             .catch((error: ServerErrors) => {
-                showError(error)
-                _selectedMaterial.isMaterialLoading = false
-                this.setState({
-                    workflows,
-                })
+                if (!getIsRequestAborted(error)) {
+                    showError(error)
+                    _selectedMaterial.isMaterialLoading = false
+                    this.setState({
+                        workflows,
+                    })
+                }
             })
     }
 
@@ -405,18 +412,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     workflows,
                 },
                 () => {
-                    this.abortController = new AbortController()
-                    this.getMaterialHistory(
-                        ciNodeId.toString(),
-                        this.abortController.signal,
-                        gitMaterialId,
-                        false,
-                    ).catch((errors: ServerErrors) => {
-                        if (!this.abortController.signal.aborted) {
-                            showError(errors)
-                            this.setState({ code: errors.code })
-                        }
-                    })
+                    this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, false)
                 },
             )
         }
@@ -444,18 +440,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 workflows,
             },
             () => {
-                this.abortController = new AbortController()
-                this.getMaterialHistory(
-                    ciNodeId.toString(),
-                    this.abortController.signal,
-                    gitMaterialId,
-                    showExcluded,
-                ).catch((errors: ServerErrors) => {
-                    if (!this.abortController.signal.aborted) {
-                        showError(errors)
-                        this.setState({ code: errors.code })
-                    }
-                })
+                this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
             },
         )
     }
@@ -516,6 +501,20 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
+    getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) => {
+        this.abortController.abort()
+        this.abortController = new AbortController()
+
+        this.getMaterialHistory(nodeId, this.abortController.signal, gitMaterialId, showExcluded).catch(
+            (errors: ServerErrors) => {
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
+                }
+            },
+        )
+    }
+
     // NOTE: GIT MATERIAL ID
     refreshMaterial(ciNodeId: number, gitMaterialId: number) {
         let showExcluded = false
@@ -536,7 +535,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return wf
         })
         this.setState({ workflows })
+        this.abortController.abort()
         this.abortController = new AbortController()
+
         refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
             .then((response) => {
                 this.getMaterialHistory(
@@ -545,14 +546,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     gitMaterialId,
                     showExcluded,
                 ).catch((errors: ServerErrors) => {
-                    if (!this.abortController.signal.aborted) {
+                    if (!getIsRequestAborted(errors)) {
                         showError(errors)
                         this.setState({ code: errors.code })
                     }
                 })
             })
             .catch((error: ServerErrors) => {
-                if (!this.abortController.signal.aborted) {
+                if (!getIsRequestAborted(error)) {
                     showError(error)
                 }
             })
@@ -660,6 +661,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true, showCIModal: true, materialType: 'inputMaterialList' })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
+        this.abortController.abort()
         this.abortController = new AbortController()
 
         Promise.all([
@@ -702,7 +704,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (!this.abortController.signal.aborted) {
+                if (!getIsRequestAborted(errors)) {
                     showError(errors)
                     this.setState({ showCIModal:false })
                 }
