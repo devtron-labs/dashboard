@@ -31,6 +31,8 @@ import {
     ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
+    AnnouncementBanner,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -60,7 +62,7 @@ import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -88,7 +90,6 @@ import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
-import AnnouncementBanner from '@devtron-labs/devtron-fe-common-lib'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1089,7 +1090,6 @@ const getInitialSelectedConfigToDeploy = () => {
             onClick={loadOlderImages}
             disabled={state.loadingMore}
             isLoading={state.loadingMore}
-            loaderColor="blue"
         >
             Fetch More Images
         </ButtonWithLoader>

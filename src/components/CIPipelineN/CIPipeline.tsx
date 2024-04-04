@@ -13,11 +13,11 @@ import {
     MandatoryPluginDataType,
     MandatoryPluginDetailType,
     PluginDetailType,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
-    ButtonWithLoader,
     FloatingVariablesSuggestions,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -826,7 +826,6 @@ export default function CIPipeline({
                         {formData.ciPipelineEditable && (
                             <ButtonWithLoader
                                 rootClassName="cta cta--workflow"
-                                loaderColor="white"
                                 dataTestId="build-pipeline-button"
                                 onClick={savePipeline}
                                 disabled={

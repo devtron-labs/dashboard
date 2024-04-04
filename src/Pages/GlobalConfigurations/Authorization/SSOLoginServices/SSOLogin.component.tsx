@@ -14,6 +14,7 @@ import {
     ConfirmationDialog,
     CustomInput,
     noop,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
@@ -22,7 +23,6 @@ import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType 
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
 import { ViewType, DOCUMENTATION, URLS, DEFAULT_SECRET_PLACEHOLDER } from '../../../../config'
 import {
-    ButtonWithLoader,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
@@ -874,7 +874,6 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 dataTestId="confirm-sso-button"
                                 disabled={this.state.saveLoading}
                                 isLoading={this.state.saveLoading}
-                                loaderColor=""
                                 onClick={this.saveNewSSO}
                             >
                                 Confirm

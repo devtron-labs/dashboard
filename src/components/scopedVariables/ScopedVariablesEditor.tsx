@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { ButtonWithLoader } from '../common'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
@@ -195,7 +194,6 @@ export default function ScopedVariablesEditor({
                         <ButtonWithLoader
                             rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border h-32 cta"
                             onClick={showSaveView ? handleSave : handleReview}
-                            loaderColor="white"
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >

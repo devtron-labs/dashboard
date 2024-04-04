@@ -1,8 +1,7 @@
-import { VisibleModal, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal, showError, stopPropagation, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
-import { ButtonWithLoader } from '../../../common'
 import { HibernateModalProps } from '../../AppGroup.types'
 
 export const HibernateModal = ({
@@ -63,7 +62,6 @@ export const HibernateModal = ({
                     </button>
                     <ButtonWithLoader
                         rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
-                        loaderColor="#fff"
                         isLoading={loader}
                         disabled={false}
                         onClick={hibernateApps}

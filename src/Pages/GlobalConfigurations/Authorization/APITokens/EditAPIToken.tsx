@@ -10,6 +10,7 @@ import {
     ClipboardButton,
     ResizableTextarea,
     useMainContext,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -21,7 +22,7 @@ import { isTokenExpired } from './apiToken.utils'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../../components/common'
+import { importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
@@ -196,7 +197,6 @@ const EditAPIToken = ({
                             disabled={loader}
                             isLoading={false}
                             dataTestId="delete-token"
-                            loaderColor="white"
                         >
                             <Delete className="icon-dim-16 mr-8" />
                             <span>Delete</span>

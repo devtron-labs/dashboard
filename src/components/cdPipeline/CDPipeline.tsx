@@ -21,6 +21,7 @@ import {
     PipelineType,
     CustomInput,
     ConditionalWrap,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
@@ -28,7 +29,6 @@ import Tippy from '@tippyjs/react'
 import { DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
-    ButtonWithLoader,
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -1872,7 +1872,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             dataTestId="create-update-pipeline-button"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}
-                            loaderColor="white"
                         >
                             {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
                         </ButtonWithLoader>

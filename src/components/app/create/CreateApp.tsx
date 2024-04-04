@@ -14,11 +14,12 @@ import {
     RadioGroupItem,
     noop,
     CustomInput,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
@@ -478,7 +479,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     }-button-on-drawer`}
                     disabled={this.state.createAppLoader}
                     isLoading={this.state.createAppLoader}
-                    loaderColor="white"
                 >
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'

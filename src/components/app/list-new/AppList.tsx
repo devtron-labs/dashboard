@@ -9,6 +9,7 @@ import {
     ServerErrors,
     useAsync,
     useMainContext,
+    HeaderWithCreateButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
@@ -29,10 +30,8 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
-import HeaderWithCreateButton from '@devtron-labs/devtron-fe-common-lib'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import ExternalArgoList from './ExternalArgoList'
 import {
     buildArgoAppListUrl,
     buildDevtronAppListUrl,
