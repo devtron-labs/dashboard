@@ -20,6 +20,7 @@ import {
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
+import { WorkflowProps } from './Workflow'
 
 export enum DisableType {
     COMING_SOON = 'COMING SOON',
@@ -139,7 +140,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps {
+export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
     id: string
     deploymentStrategy: string
     triggerType: string
