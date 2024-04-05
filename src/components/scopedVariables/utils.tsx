@@ -1,5 +1,6 @@
 // @ts-nocheck
 import yaml from 'yaml'
+import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
@@ -52,6 +53,8 @@ export const validator: ValidatorType = ({ data, type }) => {
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
+                    debugger
+                    const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
@@ -62,6 +65,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
+                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
