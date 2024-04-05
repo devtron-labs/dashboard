@@ -61,6 +61,7 @@ const ManifestComponent = ({
         group: string
         namespace: string
     }>()
+    const key = `${params.nodeType}-${params.podName}`
     const [error, setError] = useState(false)
     const [secretViewAccess, setSecretViewAccess] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
@@ -80,38 +81,51 @@ const ManifestComponent = ({
     const [showDecodedData, setShowDecodedData] = useState(false)
 
     const handleDeriveStatesFromManifestRef = () => {
-        setError(manifestViewRef.current.error)
-        setSecretViewAccess(manifestViewRef.current.secretViewAccess)
-        setDesiredManifest(manifestViewRef.current.desiredManifest)
-        setManifest(manifestViewRef.current.manifest)
-        switch (manifestViewRef.current.activeTab) {
+        setError(manifestViewRef.current.data.error)
+        setSecretViewAccess(manifestViewRef.current.data.secretViewAccess)
+        setDesiredManifest(manifestViewRef.current.data.desiredManifest)
+        setManifest(manifestViewRef.current.data.manifest)
+        switch (manifestViewRef.current.data.activeTab) {
             case 'Helm generated manifest':
-                setActiveManifestEditorData(manifestViewRef.current.desiredManifest)
+                setActiveManifestEditorData(manifestViewRef.current.data.desiredManifest)
                 break
             case 'Compare':
-                setActiveManifestEditorData(manifestViewRef.current.manifest)
+                setActiveManifestEditorData(manifestViewRef.current.data.manifest)
                 break
             case 'Live manifest':
             default:
-                setActiveManifestEditorData(manifestViewRef.current.modifiedManifest)
+                setActiveManifestEditorData(manifestViewRef.current.data.modifiedManifest)
         }
-        setModifiedManifest(manifestViewRef.current.modifiedManifest)
-        setIsEditmode(manifestViewRef.current.isEditmode)
+        setModifiedManifest(manifestViewRef.current.data.modifiedManifest)
+        setIsEditmode(manifestViewRef.current.data.isEditmode)
     }
 
-    useEffectAfterMount(() =>
+    useEffectAfterMount(() => {
         manifestViewRef.current = {
-            error,
-            secretViewAccess,
-            desiredManifest,
-            manifest,
-            activeManifestEditorData,
-            modifiedManifest,
-            isEditmode,
-            activeTab,
-        },
-        [error, secretViewAccess, desiredManifest, activeManifestEditorData, manifest, modifiedManifest, isEditmode, activeTab],
-    )
+            data: {
+                error,
+                secretViewAccess,
+                desiredManifest,
+                manifest,
+                activeManifestEditorData,
+                modifiedManifest,
+                isEditmode,
+                activeTab,
+            },
+            /* NOTE: key is unlikely to change but still kept as dep */
+            key,
+        }
+    }, [
+        error,
+        secretViewAccess,
+        desiredManifest,
+        activeManifestEditorData,
+        manifest,
+        modifiedManifest,
+        isEditmode,
+        activeTab,
+        key,
+    ])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
@@ -144,10 +158,11 @@ const ManifestComponent = ({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
             (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
-            markActiveTab(manifestViewRef.current.activeTab || 'Live manifest')
+            markActiveTab(manifestViewRef.current.data.activeTab || 'Live manifest')
         }
 
-        if (manifestViewRef.current.manifest) {
+        /* NOTE: key helps discern data between manifests of different resources */
+        if (manifestViewRef.current.data.manifest && manifestViewRef.current.key === key) {
             handleDeriveStatesFromManifestRef()
             setLoading(false)
         } else {
@@ -194,7 +209,7 @@ const ManifestComponent = ({
             }
         }
         /* TODO: check if the deps are redundant */
-    }, [params.podName, params.node, params.nodeType, params.group, params.namespace])
+    }, [])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -206,7 +221,9 @@ const ManifestComponent = ({
                 if (jsonManifestData?.metadata?.managedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
-            } catch {}
+            } catch {
+                noop
+            }
             toggleManagedFields(false)
         }
     }, [isEditmode])
@@ -228,7 +245,9 @@ const ManifestComponent = ({
                         setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                     }
                 }
-            } catch {}
+            } catch {
+                noop
+            }
         }
     }, [activeManifestEditorData, hideManagedFields, activeTab])
 

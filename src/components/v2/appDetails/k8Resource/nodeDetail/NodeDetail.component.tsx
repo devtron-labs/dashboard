@@ -79,16 +79,18 @@ const NodeDetailComponent = ({
 
     // States uplifted from Manifest Component
     const manifestViewRef = useRef<ManifestViewRefType>({
-        error: false,
-        secretViewAccess: false,
-        desiredManifest: '',
-        manifest: '',
-        activeManifestEditorData: '',
-        modifiedManifest: '',
-        isEditmode: false,
-        activeTab: '',
+        data: {
+            error: false,
+            secretViewAccess: false,
+            desiredManifest: '',
+            manifest: '',
+            activeManifestEditorData: '',
+            modifiedManifest: '',
+            isEditmode: false,
+            activeTab: '',
+        },
+        key: `${params.nodeType}-${params.podName}`,
     })
-
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
@@ -267,12 +269,17 @@ const NodeDetailComponent = ({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
+    const getComponentKeyFromParams = () => {
+        return Object.values(params).join('/')
+    }
+
     const renderPodTerminal = (): JSX.Element => {
         if (!startTerminal) {
             return null
         }
         return (
             <TerminalComponent
+                key={getComponentKeyFromParams()}
                 showTerminal={location.pathname.endsWith('/terminal')}
                 selectedTab={handleSelectedTab}
                 isDeleted={isDeleted}
@@ -370,6 +377,7 @@ const NodeDetailComponent = ({
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
                         <ManifestComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
@@ -381,6 +389,7 @@ const NodeDetailComponent = ({
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
                         <EventsComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
@@ -395,6 +404,7 @@ const NodeDetailComponent = ({
                             }}
                         >
                             <LogsComponent
+                                key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}
                                 logSearchTerms={logSearchTerms}

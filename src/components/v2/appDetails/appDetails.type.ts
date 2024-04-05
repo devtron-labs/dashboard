@@ -504,14 +504,17 @@ export interface ResourceInfoActionPropsType {
 }
 
 export interface ManifestViewRefType {
-    error: boolean
-    secretViewAccess: boolean
-    desiredManifest: string
-    manifest: string
-    activeManifestEditorData: string
-    modifiedManifest: string
-    isEditmode: boolean
-    activeTab: string
+    data: {
+        error: boolean
+        secretViewAccess: boolean
+        desiredManifest: string
+        manifest: string
+        activeManifestEditorData: string
+        modifiedManifest: string
+        isEditmode: boolean
+        activeTab: string
+    },
+    key: string,
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
