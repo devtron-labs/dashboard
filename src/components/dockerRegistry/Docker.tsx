@@ -65,7 +65,6 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { error } from 'console'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -559,7 +558,7 @@ const DockerForm = ({
         updateWithCustomStateValidation(e.target.name, e.target.value)
     }
 
-    const changeSSHAuthenticationType = (authType) => {
+    const changeSSHAuthenticationType = (authType: SSHAuthenticationType) => {
         setSSHConnectionType(authType)
     }
 
@@ -574,7 +573,7 @@ const DockerForm = ({
         return !!errorMessage
     }
 
-    const updateWithCustomStateValidationForRemoteConnectionConfig = (name: string, value: any): boolean => {
+    const updateWithCustomStateValidationForRemoteConnectionConfig = (name: string, value: string): boolean => {
         let errorMessage: string = ''
         customStateValidator[name]?.forEach((validator) => {
             if (!validator.regex.test(value)) {
@@ -1343,7 +1342,6 @@ const DockerForm = ({
                             How do you want Devtron to connect with this cluster?
                         </span>
                         <span className="pb-20">
-                            {console.log('remote connection config at the end = ', customState.remoteConnectionConfig)}
                             {RemoteConnectionRadio && (
                                 <RemoteConnectionRadio
                                     connectionMethod={customState.remoteConnectionConfig.connectionMethod}
