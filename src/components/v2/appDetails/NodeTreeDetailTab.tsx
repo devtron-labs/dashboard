@@ -59,7 +59,6 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
-                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -87,7 +86,6 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
-                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}

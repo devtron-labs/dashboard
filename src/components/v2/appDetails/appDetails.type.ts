@@ -527,7 +527,6 @@ export interface K8ResourceComponentProps {
     handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isExternalApp?: boolean
     isDevtronApp?: boolean
 }
 
