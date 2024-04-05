@@ -33,7 +33,7 @@ export default function ResourceBrowserActionMenu({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const handleShowVulnerabilityModal = (e: React.MouseEvent) => {
+    const handleShowVulnerabilityModal = () => {
         setShowVulnerabilityModal(true)
     }
 

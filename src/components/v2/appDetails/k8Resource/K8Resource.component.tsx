@@ -48,7 +48,6 @@ export default function K8ResourceComponent({
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
-                            isExternalApp={isExternalApp}
                         />
                     </div>
                 </div>

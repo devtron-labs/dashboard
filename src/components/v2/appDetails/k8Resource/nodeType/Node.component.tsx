@@ -27,7 +27,6 @@ const NodeComponent = ({
     externalLinks,
     monitoringTools,
     isDevtronApp,
-    isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -500,8 +499,7 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' &&
-                            !isExternalApp && (
+                            node?.kind !== 'EndpointSlice' && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
                                 </div>

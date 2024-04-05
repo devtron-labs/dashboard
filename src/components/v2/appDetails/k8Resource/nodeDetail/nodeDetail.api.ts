@@ -63,6 +63,7 @@ export const getEvent = (
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
+// TODO: This should be moved into common since going to use it in resource-scan
 function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
     const requestBody = {
         appId: '',
@@ -85,7 +86,8 @@ function createResourceRequestBody(selectedResource: SelectedResourceType, updat
     return requestBody
 }
 
-function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
+// TODO: This should be moved into common since going to use it in resource-scan
+export function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]

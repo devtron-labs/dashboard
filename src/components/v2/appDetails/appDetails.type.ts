@@ -536,7 +536,6 @@ export interface NodeComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
-    isExternalApp?: boolean
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
