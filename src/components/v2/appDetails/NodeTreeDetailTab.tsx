@@ -50,19 +50,7 @@ const NodeTreeDetailTab = ({
                     />
                     <Switch>
                         <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
-                            render={() => {
-                                return (
-                                    <NodeDetailComponent
-                                        logSearchTerms={logSearchTerms}
-                                        setLogSearchTerms={setLogSearchTerms}
-                                        isExternalApp={isExternalApp}
-                                    />
-                                )
-                            }}
-                        />
-                        <Route
-                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType?/(group)?/:resourceName?`}
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/group/:resourceName`}
                             render={() => {
                                 return (
                                     <K8ResourceComponent
@@ -78,7 +66,19 @@ const NodeTreeDetailTab = ({
                                 )
                             }}
                         />
-                        {/* <Route
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType/:podName`}
+                            render={() => {
+                                return (
+                                    <NodeDetailComponent
+                                        logSearchTerms={logSearchTerms}
+                                        setLogSearchTerms={setLogSearchTerms}
+                                        isExternalApp={isExternalApp}
+                                    />
+                                )
+                            }}
+                        />
+                        <Route
                             path={`${path}/${URLS.APP_DETAILS_K8}/:nodeType`}
                             render={() => {
                                 return (
@@ -90,6 +90,7 @@ const NodeTreeDetailTab = ({
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
                                         isExternalApp={isExternalApp}
+                                        isDeploymentBlocked={isDeploymentBlocked}
                                     />
                                 )
                             }}
@@ -105,10 +106,11 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isDeploymentBlocked={isDeploymentBlocked}
                                     />
                                 )
                             }}
-                        />*/}
+                        />
                         <Route
                             exact
                             path={`${path}/${URLS.APP_DETAILS_LOG}`}
