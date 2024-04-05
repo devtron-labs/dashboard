@@ -6,6 +6,7 @@ import {
     ResizableTextarea,
     TippyTheme,
     ToastBody,
+    YAMLStringify,
     noop,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -742,16 +743,6 @@ export function ProtectedConfigMapSecretDetails({
     return selectedTab === 2 ? renderDiffView() : renderForm()
 }
 
-export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
-        // Note: all long integers  & floating values in "double quotes" with spaces will be handled in this check
-        // eg val: "123678765678756764\n" or val: "1234.67856756787676\n" or "1276767634.67856\n" to trim down \n
-        const replacePattern = /\s/g
-        return k.toString().replace(replacePattern, '')
-    }
-    return k.toString()
-}
-
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
     let isValid = true
     arr = arr.reduce((agg, { k, v }) => {
@@ -786,10 +777,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             return
         }
         setYaml(
-            YAML.stringify(
-                keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
-                { indent: 2 },
-            ),
+            YAMLStringify( keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}))
         )
     }, [keyValueArray])
 
@@ -805,27 +793,45 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 return null
             }
             const errorneousKeys = []
+            const errorneousValues = []
+
             const tempArray = Object.keys(obj).reduce((agg, k) => {
                 if (!k && !obj[k]) {
                     return agg
                 }
                 const v =
                     obj[k] && typeof obj[k] === 'object'
-                        ? YAML.stringify(obj[k], { indent: 2 })
-                        : convertToValidValue(obj[k])
+                        ? YAMLStringify(obj[k])
+                        : obj[k].toString()
                 let keyErr: string
+                let valErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
                 } else {
                     keyErr = keyError
                     errorneousKeys.push(k)
                 }
+
+                if (
+                    v &&
+                    (typeof obj[k] === 'boolean' || typeof obj[k] === 'number')
+                ) {
+                    errorneousValues.push(v)
+                }
                 return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
             }, [])
             setKeyValueArray(tempArray)
             let error = ''
             if (errorneousKeys.length > 0) {
-                error = `Keys can contain: (Alphanumeric) (-) (_) (.) > Errors: ${errorneousKeys
+                error = `Error: Keys can contain: (Alphanumeric) (-) (_) (.) | Invalid key(s): ${errorneousKeys
+                    .map((e) => `"${e}"`)
+                    .join(', ')}`
+            }
+            if (errorneousValues.length > 0) {
+                if (error !== '') {
+                    error += '\n';
+                }
+                error += `Error: Boolean and numeric values must be wrapped in double quotes Eg. ${errorneousValues
                     .map((e) => `"${e}"`)
                     .join(', ')}`
             }

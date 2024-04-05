@@ -5,6 +5,7 @@ import {
     Progressing,
     useWindowSize,
     StyledRadioGroup as RadioGroup,
+    YAMLStringify,
     ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -294,7 +295,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         }
         let final = value
         if (obj) {
-            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAML.stringify(obj, { indent: 2 })
+            final = state.mode === 'json' ? JSON.stringify(obj, null, tabSize) : YAMLStringify(obj)
         }
         dispatch({ type: 'setCode', value: final })
     }, [value, noParsing])
