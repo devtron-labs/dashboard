@@ -1,4 +1,4 @@
-import { get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
@@ -22,8 +22,9 @@ export const namespaceListByClusterId = (clusterId: string): Promise<ResponseTyp
 export const getResourceList = (
     resourceListPayload: ResourceListPayloadType,
     signal?: AbortSignal,
+    searchParams?,
 ): Promise<ResourceListResponse> => {
-    return post(Routes.K8S_RESOURCE_LIST, resourceListPayload, {
+    return post(getUrlWithSearchParams(Routes.K8S_RESOURCE_LIST, searchParams), resourceListPayload, {
         signal,
     })
 }

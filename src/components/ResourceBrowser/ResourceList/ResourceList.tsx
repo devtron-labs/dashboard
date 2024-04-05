@@ -10,6 +10,7 @@ import {
     ErrorScreenManager,
     Reload,
     DevtronProgressing,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import {
@@ -143,12 +144,25 @@ export default function ResourceList() {
     const isTerminal = nodeType === AppDetailsTabs.terminal
     const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
     const searchWorkerRef = useRef(null)
+    const searchParams = new URLSearchParams(location.search)
+    const labelSelector = searchParams.get('labelSelector') || ''
+    const fieldSelector = searchParams.get('fieldSelector') || ''
+    const filter = searchParams.get('filter') || ''
+
+    const newParams = {
+        ...searchParams,
+        labelSelector,
+        fieldSelector,
+        filter
+    }
+
     const hideSyncWarning: boolean =
         loader ||
         rawGVKLoader ||
         showErrorState ||
         !isStaleDataRef.current ||
         !(!node && lastDataSyncTimeString && !resourceListLoader)
+    
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -253,22 +267,25 @@ export default function ResourceList() {
     // Update K8sResources tab url on cluster/namespace/kind changes
 
     useEffect(() => {
+     
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
+            const queryParams = new URLSearchParams({
+                labelSelector: labelSelector,
+                fieldSelector: fieldSelector,
+                filter: filter
+            }).toString()
+    
             const updateData = [
                 {
                     id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-                    url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                        selectedNamespace.value
-                    }/${selectedResource.gvk.Kind.toLowerCase()}/${
-                        selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                    }`,
+                    url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${selectedNamespace.value}/${
+                        selectedResource.gvk.Kind.toLowerCase()}/${
+                        selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}?${queryParams}`,
                     dynamicTitle: selectedResource.gvk.Kind,
                 },
                 {
                     id: `${AppDetailsTabsIdPrefix.cluster_overview}-${AppDetailsTabs.cluster_overview}`,
-                    url: `${
-                        URLS.RESOURCE_BROWSER
-                    }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
+                    url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}?${queryParams}`,
                 },
             ]
             updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
@@ -276,7 +293,7 @@ export default function ResourceList() {
         return (): void => {
             resourceListAbortController.abort()
         }
-    }, [selectedCluster, selectedNamespace, selectedResource])
+    }, [location, selectedCluster, selectedNamespace, selectedResource, history])
 
     useEffect(() => {
         if (!superAdminRef.current) {
@@ -651,7 +668,7 @@ export default function ResourceList() {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
                     namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
             }
-            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
+            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal, newParams)
             if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
                 result.data = sortEventListData(result.data)
             }
