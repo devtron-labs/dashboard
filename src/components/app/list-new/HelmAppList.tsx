@@ -705,7 +705,13 @@ export default function HelmAppList({
             )
         )
     }
-
+    if (dataStateType == AppListViewType.ERROR) {
+        return (
+            <div className="dc__loading-wrapper">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
+    }
     return (
         <>
             {dataStateType == AppListViewType.LOADING && (
@@ -721,11 +727,6 @@ export default function HelmAppList({
                         ))}
                     </div>
                 </>
-            )}
-            {dataStateType == AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
             )}
             {dataStateType == AppListViewType.LIST && (
                 <div>
