@@ -57,6 +57,7 @@ interface customEnv {
     ENABLE_EXTERNAL_ARGO_CD: boolean
     API_BATCH_SIZE: number
     SERVICE_WORKER_TIMEOUT?: string
+    ENABLE_RESOURCE_SCAN?: string
 }
 declare global {
     interface Window {
@@ -175,6 +176,7 @@ if (!window || !window._env_) {
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
+        ENABLE_RESOURCE_SCAN: 'false',
     }
 }
 

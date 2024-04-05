@@ -7,6 +7,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useSearchString,
+    STRINGIFIED_TRUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
@@ -57,7 +58,7 @@ const PodPopup: React.FC<{
             ) : (
                 ''
             )}
-            {aggregator === AggregationKeys.Workloads && OpenVulnerabilityModalButton && (
+            {window._env_.ENABLE_RESOURCE_SCAN === STRINGIFIED_TRUE && aggregator === AggregationKeys.Workloads && OpenVulnerabilityModalButton && (
                 <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
             )}
             {!isExternalArgoApp && (
@@ -166,6 +167,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
                     appType={manifestPayload.appType}
                     deploymentType={manifestPayload.deploymentType}
                     handleCloseVulnerabilityModal={handleCloseVulnerabilityModal}
+                    isAppDetailView
                 />
             )}
 
