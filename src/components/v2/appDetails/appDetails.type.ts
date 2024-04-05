@@ -514,13 +514,14 @@ export interface ManifestViewRefType {
         isEditmode: boolean
         activeTab: string
     },
-    key: string,
+    id: string,
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
+    getComponentKey: () => string
 }
 
 export interface NodeTreeDetailTabProps {

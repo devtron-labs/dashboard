@@ -89,7 +89,7 @@ const NodeDetailComponent = ({
             isEditmode: false,
             activeTab: '',
         },
-        key: `${params.nodeType}-${params.podName}`,
+        id: '',
     })
 
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
@@ -385,6 +385,7 @@ const NodeDetailComponent = ({
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
+                            getComponentKey={getComponentKeyFromParams}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

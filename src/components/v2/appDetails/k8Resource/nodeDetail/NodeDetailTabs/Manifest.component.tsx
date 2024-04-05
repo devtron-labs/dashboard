@@ -47,6 +47,7 @@ const ManifestComponent = ({
     isResourceBrowserView,
     selectedResource,
     manifestViewRef,
+    getComponentKey,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -60,7 +61,7 @@ const ManifestComponent = ({
         group: string
         namespace: string
     }>()
-    const key = `${params.nodeType}-${params.podName}`
+    const id = getComponentKey()
     const [error, setError] = useState(false)
     const [secretViewAccess, setSecretViewAccess] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
@@ -111,8 +112,8 @@ const ManifestComponent = ({
                 isEditmode,
                 activeTab,
             },
-            /* NOTE: key is unlikely to change but still kept as dep */
-            key,
+            /* NOTE: id is unlikely to change but still kept as dep */
+            id,
         }
     }, [
         error,
@@ -123,7 +124,7 @@ const ManifestComponent = ({
         modifiedManifest,
         isEditmode,
         activeTab,
-        key,
+        id,
     ])
 
     useEffect(() => {
@@ -160,8 +161,8 @@ const ManifestComponent = ({
             markActiveTab(manifestViewRef.current.data.activeTab || 'Live manifest')
         }
 
-        /* NOTE: key helps discern data between manifests of different resources */
-        if (manifestViewRef.current.data.manifest && manifestViewRef.current.key === key) {
+        /* NOTE: id helps discern data between manifests of different resources */
+        if (manifestViewRef.current.data.manifest && manifestViewRef.current.id === id) {
             handleDeriveStatesFromManifestRef()
             setLoading(false)
         } else {
