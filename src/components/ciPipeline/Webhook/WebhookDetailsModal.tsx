@@ -7,6 +7,7 @@ import {
     Reload,
     copyToClipboard,
     CustomInput,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -19,7 +20,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-help-outlin
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
-import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
+import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -75,7 +76,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
-    const [copied, setCopied] = useState(false)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const schemaRef = useRef<Array<HTMLDivElement | null>>([])
@@ -325,28 +325,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
                     <div className="bcn-0 pl-8 w-100">{webhookDetails?.webhookUrl}</div>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive
-                    >
-                        <div className="flex">
-                            <Clipboard
-                                className="pointer hover-only icon-dim-16"
-                                onClick={() => {
-                                    copyToClipboard(webhookDetails?.webhookUrl, () => {
-                                        setCopied(true)
-                                    })
-                                }}
-                            />
-                        </div>
-                    </Tippy>
+                    <div className="flex">
+                        <ClipboardButton content={webhookDetails?.webhookUrl} />
+                    </div>
                 </div>
             </div>
         )
@@ -411,28 +392,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
                 <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp">
                     {token}
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive
-                    >
-                        <div className="flex">
-                            <Clipboard
-                                className="ml-8 mt-5 pointer hover-only icon-dim-16"
-                                onClick={() => {
-                                    copyToClipboard(token, () => {
-                                        setCopied(true)
-                                    })
-                                }}
-                            />
-                        </div>
-                    </Tippy>
+                    <div className="flex pl-4">
+                        <ClipboardButton content={token} />
+                    </div>
                 </div>
             </div>
         )
@@ -525,33 +487,14 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
-                {showCopyOption && (
-                    <Tippy
-                        className="default-tt font-open-sans"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive
-                    >
-                        <div className="flex">
-                            <Clipboard
-                                className="pointer hover-only icon-dim-16 dc__position-abs"
-                                style={{ right: '8px' }}
-                                onClick={() => {
-                                    copyToClipboard(value, () => {
-                                        setCopied(true)
-                                    })
-                                }}
-                            />
-                        </div>
-                    </Tippy>
-                )}
+            <pre
+                className="br-4 fs-13 fw-4 cn-9 flexbox dc__content-space dc__position-rel dc__word-break"
+                data-testid="sample-script"
+            >
                 <code>{value}</code>
+                {showCopyOption && (
+                        <ClipboardButton content={value} />
+                )}
             </pre>
         )
     }
@@ -968,7 +911,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </span>
                 </div>
                 <button className="cta flex h-36" onClick={copySharableURL}>
-                    <Clipboard className="mr-8 icon-dim-16" />
+                    <ICCopy className="mr-8 icon-dim-16" />
                     Copy shareable link
                 </button>
             </div>

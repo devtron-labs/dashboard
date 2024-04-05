@@ -132,6 +132,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
+                        this.props.handleDisplayLoader?.()
                         this.props.getWorkflows?.()
                         this.props.reloadEnvironments?.()
                     }

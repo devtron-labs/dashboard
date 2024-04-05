@@ -18,6 +18,8 @@ import {
     KeyValueListType,
     HandleKeyValueChangeType,
     KeyValueListActionType,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -465,7 +467,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         workflows: WorkflowType[],
         _selectedMaterial: CIMaterialType,
     ) => {
-        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+        abortPreviousRequests(
+            () =>
+                getGitMaterialByCommitHash(
+                    ciPipelineMaterialId.toString(),
+                    commitHash,
+                    abortControllerRef.current.signal,
+                ),
+            abortControllerRef,
+        )
             .then((response) => {
                 const _result = response.result
                 if (_result) {
@@ -500,14 +510,26 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedMaterial.isMaterialSelectionError = true
                     _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
-                setFilteredWorkflows(workflows)
+                setFilteredWorkflows([...workflows])
             })
             .catch((error: ServerErrors) => {
-                showError(error)
-                _selectedMaterial.isMaterialLoading = false
-                setFilteredWorkflows(workflows)
+                if (!getIsRequestAborted(error)) {
+                    showError(error)
+                    _selectedMaterial.isMaterialLoading = false
+                    setFilteredWorkflows([...workflows])
+                }
             })
     }
+
+    const getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) =>
+        abortPreviousRequests(
+            () => getMaterialHistory(nodeId, abortControllerRef.current.signal, gitMaterialId, showExcluded),
+            abortControllerRef,
+        ).catch((errors: ServerErrors) => {
+            if (!getIsRequestAborted(errors)) {
+                showError(errors)
+            }
+        })
 
     const getMaterialByCommit = async (
         _ciNodeId: number,
@@ -548,17 +570,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         } else {
             setFilteredWorkflows(_workflows)
-            abortControllerRef.current = new AbortController()
-            getMaterialHistory(
-                selectedCINode.id.toString(),
-                abortControllerRef.current.signal,
-                gitMaterialId,
-                false,
-            ).catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(errors)
-                }
-            })
+            getMaterialHistoryWrapper(selectedCINode.id.toString(), gitMaterialId, false)
         }
     }
 
@@ -580,14 +592,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = new AbortController()
-        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
-            (errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(errors)
-                }
-            },
-        )
+        getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
     }
 
     const getMaterialHistory = (
@@ -671,8 +676,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = abortController ?? new AbortController()
-        refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
+
+        // Would be only aborting the calls before refreshGitMaterial and not the subsequent calls
+        abortPreviousRequests(
+            () => refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal),
+            abortControllerRef,
+        )
             .then((response) => {
                 getMaterialHistory(
                     ciNodeId.toString(),
@@ -680,13 +689,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     gitMaterialId,
                     showExcluded,
                 ).catch((errors: ServerErrors) => {
-                    if (!abortControllerRef.current.signal.aborted) {
+                    if (!getIsRequestAborted(errors)) {
                         showError(errors)
                     }
                 })
             })
             .catch((error: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(error)) {
                     showError(error)
                 }
             })
@@ -775,6 +784,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowCIModal(true)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
+        abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
         for (const _wf of filteredWorkflows) {
@@ -827,7 +837,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(errors)) {
                     showError(errors)
                     setShowCIModal(false)
                 }
