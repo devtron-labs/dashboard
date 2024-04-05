@@ -2135,6 +2135,10 @@ button.anchor {
 
 .dc__border-left {
     border-left: solid 1px var(--N200);
+
+    &--b1 {
+        border-left: solid 1px var(--B100);
+    }
 }
 
 .dc__border-left-b4 {
