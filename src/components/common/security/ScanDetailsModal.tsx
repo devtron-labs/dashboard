@@ -89,7 +89,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     }
     outsideClickHandler = (evt): void => {
         if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
-            console.log('outside click', evt)
             this.props.close()
         }
     }
@@ -208,9 +207,9 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     render() {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div className="modal-body--scan-details">
+                <div className="modal-body--scan-details" ref={this.scanDetailsRef}>
                     {this.renderHeader()}
-                    <div className="trigger-modal__body trigger-modal__body--security-scan" ref={this.scanDetailsRef}>
+                    <div className="trigger-modal__body trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (
                             <Progressing pageLoader />
                         ) : this.state.view === ViewType.ERROR ? (

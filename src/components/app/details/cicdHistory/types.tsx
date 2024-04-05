@@ -90,12 +90,6 @@ export interface ArtifactType {
     jobCIClass?: string
 }
 
-export interface CopyTippyWithTextType {
-    copyText: string
-    copied: boolean
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
-}
-
 export interface CIListItemType {
     type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
