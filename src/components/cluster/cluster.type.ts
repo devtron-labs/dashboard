@@ -47,6 +47,11 @@ export interface DataListType {
     proxyUrl: string
     isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>
+    remoteConnectionConfig: {
+        connectionMethod: string
+        proxyConfig: Record<string, string>
+        sshConfig: Record<string, string>
+    }
 }
 
 export interface SaveClusterPayloadType {
@@ -61,6 +66,11 @@ export interface SaveClusterPayloadType {
     proxyUrl: string
     isConnectedViaSSHTunnel: boolean
     sshTunnelConfig: Record<string, string>
+    remoteConnectionConfig: {
+        connectionMethod: string
+        proxyConfig: Record<string, string>
+        sshConfig: Record<string, string>
+    }
 }
 
 export enum ClusterComponentStatus {

@@ -43,6 +43,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
+import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -161,6 +162,18 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 environments: [],
                 insecureSkipTlsVerify: true,
                 isVirtualCluster: false,
+                remoteConnectionConfig: {
+                    connectionMethod: '',
+                    proxyConfig: {
+                        proxyUrl: '',
+                    },
+                    sshConfig: {
+                        sshServerAddress: '',
+                        sshUsername: '',
+                        sshPassword: '',
+                        sshAuthKey: '',
+                    }
+                }
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters })
@@ -293,10 +306,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isTlsConnection={this.state.isTlsConnection}
                             isClusterDetails={this.state.isClusterDetails}
                             proxyUrl={this.state.proxyUrl}
-                            sshTunnelUser={this.state.sshTunnelUser}
-                            sshTunnelPassword={this.state.sshTunnelPassword}
-                            sshTunnelPrivateKey={this.state.sshTunnelPrivateKey}
-                            sshTunnelUrl={this.state.sshTunnelUrl}
+                            sshUsername={this.state.sshUsername}
+                            sshPassword={this.state.sshPassword}
+                            sshAuthKey={this.state.sshAuthKey}
+                            sshServerAddress={this.state.sshServerAddress}
                             isConnectedViaProxy={this.state.isConnectedViaProxy}
                             isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -337,6 +350,7 @@ const Cluster = ({
     setTlsConnectionFalse,
     isVirtualCluster,
 }) => {
+    console.log('proxy url in cluster = ', proxyUrl)
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
@@ -368,10 +382,10 @@ const Cluster = ({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl, error: '' },
-            sshTunnelUser: { value: sshTunnelConfig?.user, error: '' },
-            sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
-            sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
-            sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
+            sshUsername: { value: sshTunnelConfig?.user, error: '' },
+            sshPassword: { value: sshTunnelConfig?.password, error: '' },
+            sshAuthKey: { value: sshTunnelConfig?.authKey, error: '' },
+            sshServerAddress: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: !!proxyUrl?.length,
             isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
             tlsClientKey: { value: config.tls_key, error: '' },
@@ -402,22 +416,22 @@ const Cluster = ({
             toConnectWithSSHTunnel: {
                 required: false,
             },
-            sshTunnelUser: {
+            sshUsername: {
                 required: false,
                 validator: {
                     error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
                     regex: /^[A-Za-z0-9_-]+$/,
                 },
             },
-            sshTunnelPassword: {
+            sshPassword: {
                 required: false,
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
-            sshTunnelPrivateKey: {
+            sshAuthKey: {
                 required: false,
                 validator: { error: 'ssh private key is required', regex: /^(?!\s*$).+/ },
             },
-            sshTunnelUrl: {
+            sshServerAddress: {
                 required: false,
                 validator: { error: 'URL is required', regex: /^.*$/ },
             },
@@ -537,14 +551,14 @@ const Cluster = ({
         }
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
-            payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
+            payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
         } else {
-            payload['proxyUrl'] = proxyUrlValue
+            payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue
         }
-        payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
-        payload.sshTunnelConfig['password'] = state.sshTunnelPassword?.value
-        payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
-        payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
+        payload.remoteConnectionConfig.sshConfig['sshUsername'] = state.sshUsername?.value
+        payload.remoteConnectionConfig.sshConfig['sshPassword'] = state.sshPassword?.value
+        payload.remoteConnectionConfig.sshConfig['sshAuthKey'] = state.sshAuthKey?.value
+        payload.remoteConnectionConfig.sshConfig['sshServerAddress'] = state.sshServerAddress?.value
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -572,13 +586,25 @@ const Cluster = ({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
-            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
-            sshTunnelConfig: {
-                user: state.sshTunnelUser?.value,
-                password: state.sshTunnelPassword?.value,
-                authKey: state.sshTunnelPrivateKey?.value,
-                sshServerAddress: state.sshServerAddress?.value,
+            // proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
+            // toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
+            // sshTunnelConfig: {
+            //     user: state.sshUsername?.value,
+            //     password: state.sshPassword?.value,
+            //     authKey: state.sshAuthKey?.value,
+            //     sshServerAddress: state.sshServerAddress?.value,
+            // },
+            remoteConnectionConfig: {
+                connectionMethod: (state.isConnectedViaProxy) ? RemoteConnectionType.Proxy : ((state.isConnectedViaSSHTunnel) ? RemoteConnectionType.SSHTunnel : RemoteConnectionType.Direct),
+                proxyConfig: (state.isConnectedViaProxy) ? {
+                    proxyUrl: state.proxyUrl?.value,
+                } : null,
+                sshConfig: (state.isConnectedViaSSHTunnel) ? {
+                    sshServerAddress: state.sshServerAddress?.value,
+                    sshUsername: state.sshUsername?.value,
+                    sshPassword: state.sshPassword?.value,
+                    sshAuthKey: state.sshAuthKey?.value,
+                } : null,
             },
             insecureSkipTlsVerify: !isTlsConnection,
         }
@@ -854,10 +880,10 @@ const Cluster = ({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={proxyUrl}
-                                sshTunnelUser={sshTunnelConfig?.user}
-                                sshTunnelPassword={sshTunnelConfig?.password}
-                                sshTunnelPrivateKey={sshTunnelConfig?.authKey}
-                                sshTunnelUrl={sshTunnelConfig?.sshServerAddress}
+                                sshUsername={sshTunnelConfig?.user}
+                                sshPassword={sshTunnelConfig?.password}
+                                sshAuthKey={sshTunnelConfig?.authKey}
+                                sshServerAddress={sshTunnelConfig?.sshServerAddress}
                                 isConnectedViaProxy={!!proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
