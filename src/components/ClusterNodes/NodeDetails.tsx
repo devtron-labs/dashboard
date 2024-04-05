@@ -5,7 +5,7 @@ import {
     toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
-    copyToClipboard,
+    ClipboardButton,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
@@ -32,7 +32,6 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
@@ -242,8 +241,9 @@ export default function NodeDetails({
     }
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
+        const keyValue = `${key}=${value || ''}`
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
@@ -256,29 +256,9 @@ export default function NodeDetails({
                         {value}
                     </div>
                 )}
-
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(instance) => {
-                        setCopied(false)
-                    }}
-                    interactive
-                >
-                    <div className="flex">
-                        <Clipboard
-                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(`${key}=${value || ''}`, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
-                    </div>
-                </Tippy>
+                <div className="dc__visible-hover--child">
+                    <ClipboardButton content={keyValue} />
+                </div>
             </div>
         )
     }
@@ -313,7 +293,7 @@ export default function NodeDetails({
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -326,15 +306,8 @@ export default function NodeDetails({
                     }}
                     interactive
                 >
-                    <div className="flex">
-                        <Clipboard
-                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(key, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
+                    <div className="flex dc__visible-hover--child">
+                        <ClipboardButton content={key} />
                     </div>
                 </Tippy>
             </div>
@@ -734,7 +707,7 @@ export default function NodeDetails({
                                     <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
-                                    <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         <Tippy
                                             className="default-tt"
                                             arrow={false}
@@ -752,28 +725,10 @@ export default function NodeDetails({
                                                 {pod.name}
                                             </span>
                                         </Tippy>
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="bottom"
-                                            content={copied ? 'Copied!' : 'Copy'}
-                                            trigger="mouseenter click"
-                                            onShow={(instance) => {
-                                                setCopied(false)
-                                            }}
-                                            interactive
-                                        >
-                                            <div className="flex">
-                                                <Clipboard
-                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
-                                                    onClick={() => {
-                                                        copyToClipboard(pod.name, () => {
-                                                            setCopied(true)
-                                                        })
-                                                    }}
-                                                />
-                                            </div>
-                                        </Tippy>
+                                        <div className="dc__visible-hover--child">
+                                            <ClipboardButton content={pod.name} />
+                                        </div>
+
                                         <ResourceBrowserActionMenu
                                             clusterId={clusterId}
                                             resourceData={pod}
