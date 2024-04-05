@@ -7,7 +7,6 @@ import {
     CHECKBOX_VALUE,
     ConditionalWrap,
     DeploymentAppTypes,
-    noop,
     showError,
     ToastBody,
     useEffectAfterMount,
@@ -221,9 +220,7 @@ const ManifestComponent = ({
                 if (jsonManifestData?.metadata?.managedFields) {
                     setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                 }
-            } catch {
-                noop
-            }
+            } catch {}
             toggleManagedFields(false)
         }
     }, [isEditmode])
@@ -245,9 +242,7 @@ const ManifestComponent = ({
                         setTrimedManifestEditorData(getTrimmedManifestData(jsonManifestData, true) as string)
                     }
                 }
-            } catch {
-                noop
-            }
+            } catch {}
         }
     }, [activeManifestEditorData, hideManagedFields, activeTab])
 
