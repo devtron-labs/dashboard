@@ -154,7 +154,6 @@ export default function ClusterForm({
           ? RemoteConnectionType.SSHTunnel
           : RemoteConnectionType.Direct
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
-    console.log('remote conneciton method = ', remoteConnectionMethod)
     const initialSSHAuthenticationType =
         sshPassword && sshAuthKey
             ? SSHAuthenticationType.Password_And_SSH_Private_Key
@@ -162,14 +161,6 @@ export default function ClusterForm({
               ? SSHAuthenticationType.SSH_Private_Key
               : SSHAuthenticationType.Password
     const [SSHConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
-    console.log('ssh connection type = ', SSHConnectionType)
-    console.log(
-        'required auth key = ',
-        RemoteConnectionRadio &&
-            remoteConnectionMethod === RemoteConnectionType.SSHTunnel &&
-            (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
-    )
 
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -286,7 +277,6 @@ export default function ClusterForm({
         },
         onValidation,
     )
-    console.log('state after = ', state)
 
     const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
 
@@ -329,7 +319,6 @@ export default function ClusterForm({
     async function saveClustersDetails() {
         try {
             const payload = getSaveClusterPayload(dataList)
-            console.log('save cluster payload = ', payload)
             await saveClusters(payload).then((response) => {
                 const _clusterList = response.result.map((_clusterSaveDetails, index) => {
                     let status
@@ -358,7 +347,6 @@ export default function ClusterForm({
             })
             setLoadingState(false)
         } catch (err) {
-            console.log('payload in err state = ', payload)
             setLoadingState(false)
             showError(err)
         }
@@ -440,7 +428,6 @@ export default function ClusterForm({
     }
 
     const getClusterPayload = () => {
-        console.log('state = ', state)
         return {
             id,
             insecureSkipTlsVerify: !isTlsConnection,
@@ -490,8 +477,6 @@ export default function ClusterForm({
 
     async function onValidation() {
         const payload = getClusterPayload()
-        console.log('payload = ', payload)
-        console.log('state = ', state)
         const urlValue = state.url.value?.trim() ?? ''
         if (urlValue.endsWith('/')) {
             payload['server_url'] = urlValue.slice(0, -1)
@@ -499,35 +484,29 @@ export default function ClusterForm({
             payload['server_url'] = urlValue
         }
         if (remoteConnectionMethod === RemoteConnectionType.Proxy) {
-            payload.remoteConnectionConfig.proxyConfig = {
-                proxyUrl: '',
-            }
-            const proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
+            let proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
             if (proxyUrlValue.endsWith('/')) {
-                payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-            } else {
-                payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue
+                proxyUrlValue = proxyUrlValue.slice(0, -1)
+            }
+            payload.remoteConnectionConfig.proxyConfig = {
+                proxyUrl: proxyUrlValue,
             }
         }
         if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
             payload.remoteConnectionConfig.sshConfig = {
-                sshServerAddress: '',
-                sshUsername: '',
-                sshPassword: '',
-                sshAuthKey: '',
+                sshServerAddress: state.sshServerAddress?.value || '',
+                sshUsername: state.sshUsername?.value || '',
+                sshPassword:
+                    SSHConnectionType === SSHAuthenticationType.Password ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? state.sshPassword?.value
+                        : '',
+                sshAuthKey:
+                    SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? state.sshAuthKey?.value
+                        : '',
             }
-            payload.remoteConnectionConfig.sshConfig['sshUsername'] = state.sshUsername?.value
-            payload.remoteConnectionConfig.sshConfig['sshPassword'] =
-                SSHConnectionType === SSHAuthenticationType.Password ||
-                SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                    ? state.sshPassword?.value
-                    : ''
-            payload.remoteConnectionConfig.sshConfig['sshAuthKey'] =
-                SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                    ? state.sshAuthKey?.value
-                    : ''
-            payload.remoteConnectionConfig.sshConfig['sshServerAddress'] = state.sshServerAddress?.value
         }
 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
@@ -565,7 +544,6 @@ export default function ClusterForm({
             reload()
             toggleEditMode((e) => !e)
         } catch (err) {
-            console.log('payload in err on validation = ', payload)
             showError(err)
         } finally {
             setLoadingState(false)
@@ -808,9 +786,6 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {console.log('remote connection method just before rendering = ', passedRemoteConnectionMethod)}
-                {console.log('remote connection proxy config just before rendering = ', proxyConfig)}
-                {console.log('remote connection ssh config just before rendering = ', sshConfig)}
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
                         <hr />

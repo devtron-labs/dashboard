@@ -132,7 +132,7 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: 'https://devtron-8.devtron.info/',
+                    target: 'https://preview.devtron.ai/',
                     changeOrigin: true,
                 },
                 '/grafana': 'https://preview.devtron.ai/',

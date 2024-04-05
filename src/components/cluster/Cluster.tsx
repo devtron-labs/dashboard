@@ -350,7 +350,6 @@ const Cluster = ({
     setTlsConnectionFalse,
     isVirtualCluster,
 }) => {
-    console.log('proxy url in cluster = ', proxyUrl)
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
@@ -586,14 +585,6 @@ const Cluster = ({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            // proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
-            // toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
-            // sshTunnelConfig: {
-            //     user: state.sshUsername?.value,
-            //     password: state.sshPassword?.value,
-            //     authKey: state.sshAuthKey?.value,
-            //     sshServerAddress: state.sshServerAddress?.value,
-            // },
             remoteConnectionConfig: {
                 connectionMethod: (state.isConnectedViaProxy) ? RemoteConnectionType.Proxy : ((state.isConnectedViaSSHTunnel) ? RemoteConnectionType.SSHTunnel : RemoteConnectionType.Direct),
                 proxyConfig: (state.isConnectedViaProxy) ? {
