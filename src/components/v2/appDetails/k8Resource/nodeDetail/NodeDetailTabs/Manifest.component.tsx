@@ -207,7 +207,6 @@ const ManifestComponent = ({
                 setLoading(false)
             }
         }
-        /* TODO: check if the deps are redundant */
     }, [])
 
     useEffect(() => {
