@@ -1,5 +1,4 @@
-import { get, put, post } from '@devtron-labs/devtron-fe-common-lib'
-import yaml from 'yaml'
+import { get, put, post, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
 
@@ -118,8 +117,8 @@ function configMapModal(configMap, appId: number) {
             secretsValuesOverride: configMap.secret_data,
             configMapJsonStr: JSON.stringify(configMap.config_map_data || {}, undefined, 2),
             secretsJsonStr: JSON.stringify(configMap.secret_data || {}, undefined, 2),
-            configMapYaml: yaml.stringify(configMap.config_map_data),
-            secretsYaml: yaml.stringify(configMap.secret_data),
+            configMapYaml: YAMLStringify(configMap.config_map_data),
+            secretsYaml: YAMLStringify(configMap.secret_data),
         }
     }
     return null
