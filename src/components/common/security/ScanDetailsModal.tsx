@@ -191,6 +191,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     criticalVulnerabilitiesCount={this.state.severityCount.critical}
                     moderateVulnerabilitiesCount={this.state.severityCount.moderate}
                     lowVulnerabilitiesCount={this.state.severityCount.low}
+                    objectBarClassName="mb-16"
                 />
             </div>
         )
