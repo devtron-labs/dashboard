@@ -7,19 +7,18 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useSearchString,
-    STRINGIFIED_TRUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AggregationKeys, AppType, getAggregator, NodeType } from '../../appDetails.type'
+import { AppType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { importComponentFromFELibrary } from '../../../../common'
+import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { createBody } from '../nodeDetail/nodeDetail.api'
 
 const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
@@ -32,7 +31,7 @@ const PodPopup: React.FC<{
     setShowDeleteConfirmation: React.Dispatch<React.SetStateAction<boolean>>
     handleShowVulnerabilityModal: () => void
 }> = ({ kind, describeNode, isExternalArgoApp, setShowDeleteConfirmation, handleShowVulnerabilityModal }) => {
-    const aggregator = getAggregator(kind)
+    const showResourceScanModal = getShowResourceScanModal(kind)
 
     return (
         <div className="pod-info__popup-container">
@@ -58,7 +57,7 @@ const PodPopup: React.FC<{
             ) : (
                 ''
             )}
-            {window._env_.ENABLE_RESOURCE_SCAN === STRINGIFIED_TRUE && aggregator === AggregationKeys.Workloads && OpenVulnerabilityModalButton && (
+            {showResourceScanModal && OpenVulnerabilityModalButton && (
                 <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
             )}
             {!isExternalArgoApp && (

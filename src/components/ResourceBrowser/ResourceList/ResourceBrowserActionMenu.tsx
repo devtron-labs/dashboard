@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { PopupMenu, STRINGIFIED_TRUE } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, Nodes } from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
-import { importComponentFromFELibrary } from '../../common'
+import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
@@ -10,8 +10,6 @@ import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-in
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
-import { Nodes } from '../../app/types'
-import { AggregationKeys, getAggregator } from '../../v2/appDetails/appDetails.type'
 
 const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
 const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
@@ -27,8 +25,6 @@ export default function ResourceBrowserActionMenu({
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
-    const aggregator = getAggregator(selectedResource?.gvk?.Kind as any)
-
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
     }
@@ -41,6 +37,7 @@ export default function ResourceBrowserActionMenu({
         setShowVulnerabilityModal(false)
     }
 
+    const showResourceScanModal = getShowResourceScanModal(selectedResource?.gvk?.Kind as any)
     return (
         <>
             <PopupMenu autoClose>
@@ -71,7 +68,7 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
-                        {window._env_.ENABLE_RESOURCE_SCAN === STRINGIFIED_TRUE && aggregator === AggregationKeys.Workloads && OpenVulnerabilityModalButton && (
+                        {showResourceScanModal && OpenVulnerabilityModalButton && (
                             <OpenVulnerabilityModalButton
                                 handleShowVulnerabilityModal={handleShowVulnerabilityModal}
                             />
