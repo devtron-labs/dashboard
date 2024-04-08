@@ -11,70 +11,18 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
-import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
 import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
+import { importComponentFromFELibrary } from '../../../../common'
 import { createBody } from '../nodeDetail/nodeDetail.api'
+import PodPopup from './PodPopup'
 
-const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
 const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-
-const PodPopup: React.FC<{
-    kind: NodeType
-    describeNode: (tab?: NodeDetailTabsType) => void
-    isExternalArgoApp: boolean
-    toggleShowDeleteConfirmation: () => void
-    handleShowVulnerabilityModal: () => void
-}> = ({ kind, describeNode, isExternalArgoApp, toggleShowDeleteConfirmation, handleShowVulnerabilityModal }) => {
-    const showResourceScanModal = getShowResourceScanModal(kind)
-
-    return (
-        <div className="pod-info__popup-container">
-            {kind === NodeType.Pod ? (
-                <span
-                    data-testid="view-events-button"
-                    className="flex pod-info__popup-row"
-                    onClickCapture={(e) => describeNode(NodeDetailTabs.EVENTS)}
-                >
-                    View Events
-                </span>
-            ) : (
-                ''
-            )}
-            {kind === NodeType.Pod ? (
-                <span
-                    data-testid="view-logs-button"
-                    className="flex pod-info__popup-row"
-                    onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
-                >
-                    View Container Logs
-                </span>
-            ) : (
-                ''
-            )}
-            {showResourceScanModal && OpenVulnerabilityModalButton && (
-                <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
-            )}
-            {!isExternalArgoApp && (
-                <span
-                    data-testid="delete-resource-button"
-                    className="flex dc__gap-8 pod-info__popup-row cr-5"
-                    onClick={toggleShowDeleteConfirmation}
-                >
-                    <Trash className="icon-dim-16 scr-5" />
-                    <span>Delete</span>
-                </span>
-            )}
-        </div>
-    )
-}
 
 const NodeDeleteComponent = ({
     nodeDetails,

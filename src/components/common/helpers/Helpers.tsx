@@ -7,7 +7,6 @@ import {
     getLoginInfo,
     APIOptions,
     useWindowSize,
-    STRINGIFIED_TRUE,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -1182,5 +1181,5 @@ export const getShowResourceScanModal = (selectedResourceKind: NodeType): boolea
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN === STRINGIFIED_TRUE && fromWorkloadOrRollout
+    return window._env_.ENABLE_RESOURCE_SCAN && fromWorkloadOrRollout
 }
