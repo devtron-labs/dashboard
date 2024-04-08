@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -36,10 +36,10 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         validateStage,
         pageState,
     } = useContext(pipelineContext)
-    const [editorValue, setEditorValue] = useState<string>(YAML.stringify(formData[activeStageName]))
+    const [editorValue, setEditorValue] = useState<string>(YAMLStringify(formData[activeStageName]))
     useEffect(() => {
         if (configurationType === ConfigurationType.YAML) {
-            setEditorValue(YAML.stringify(formData[activeStageName]))
+            setEditorValue(YAMLStringify(formData[activeStageName]))
         }
     }, [configurationType])
 

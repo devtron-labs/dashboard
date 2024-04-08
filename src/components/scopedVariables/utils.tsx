@@ -1,5 +1,6 @@
 // @ts-nocheck
 import yaml from 'yaml'
+import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
@@ -36,7 +37,7 @@ export const validator: ValidatorType = ({ data, type }) => {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -52,16 +53,19 @@ export const validator: ValidatorType = ({ data, type }) => {
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
+                    debugger
+                    const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
+                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
@@ -79,7 +83,7 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => yaml.stringify(data, { simpleKeys: true })
+export const parseIntoYAMLString = (data: any) => YAMLStringify(data, { simpleKeys: true })
 
 export const parseYAMLStringToObj = (data: string) => yaml.parse(data)
 
