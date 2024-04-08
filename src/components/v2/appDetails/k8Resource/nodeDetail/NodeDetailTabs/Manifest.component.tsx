@@ -10,6 +10,7 @@ import {
     showError,
     ToastBody,
     useEffectAfterMount,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -130,8 +131,10 @@ const ManifestComponent = ({
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
         if (isDeleted) {
-            return
+            /* NOTE:(linting) useEffect callback should have uniform return values; see cleanup at line 223 */
+            return () => {}
         }
+        const abortController = new AbortController()
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -177,14 +180,14 @@ const ManifestComponent = ({
                             params.nodeType,
                             isResourceBrowserView,
                             selectedResource,
+                            abortController.signal,
                         ),
                     _showDesiredAndCompareManifest &&
-                        getDesiredManifestResource(appDetails, params.podName, params.nodeType),
+                        getDesiredManifestResource(appDetails, params.podName, params.nodeType, abortController.signal),
                 ])
                     .then((response) => {
-                        let _manifest: string
                         setSecretViewAccess(response[0]?.result?.secretViewAccess || false)
-                        _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
+                        const _manifest = JSON.stringify(response[0]?.result?.manifestResponse?.manifest || '')
                         setDesiredManifest(response[1]?.result?.manifest || '')
 
                         if (_manifest) {
@@ -200,14 +203,24 @@ const ManifestComponent = ({
                         }
                     })
                     .catch((err) => {
+                        setLoading(false)
+                        /* if the user aborted using tab switch don't show error */
+                        if (
+                            err instanceof ServerErrors &&
+                            Array.isArray(err.errors) &&
+                            err.errors.find((_error) => _error.code === 0)
+                        ) {
+                            return
+                        }
                         setError(true)
                         showError(err)
-                        setLoading(false)
                     })
             } catch (err) {
                 setLoading(false)
             }
         }
+
+        return () => abortController.abort()
     }, [])
 
     useEffect(() => {
