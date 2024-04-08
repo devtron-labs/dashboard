@@ -515,6 +515,7 @@ export interface NodeTreeDetailTabProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     clusterId?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface K8ResourceComponentProps {
@@ -526,6 +527,7 @@ export interface K8ResourceComponentProps {
     isExternalApp?: boolean
     isDevtronApp?: boolean
     clusterId?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface NodeComponentProps {
@@ -535,6 +537,7 @@ export interface NodeComponentProps {
     isDevtronApp?: boolean
     isExternalApp?: boolean
     clusterId?: number
+    isDeploymentBlocked?: boolean
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
@@ -543,4 +546,10 @@ export interface AppDetailsComponentType {
     _init?: () => void
     loadingDetails: boolean
     loadingResourceTree: boolean
+}
+
+export interface NodeDeleteComponentType {
+    nodeDetails: Node
+    appDetails: AppDetails
+    isDeploymentBlocked: boolean
 }
