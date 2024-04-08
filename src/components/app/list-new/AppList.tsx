@@ -992,6 +992,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     if (dataStateType === AppListViewType.ERROR) {
         return <ErrorScreenManager code={errorResponseCode} />
     }
+
     return (
         <>
             <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
