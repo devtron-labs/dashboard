@@ -546,10 +546,6 @@ const Cluster = ({
         if (proxyUrlValue.endsWith('/')) {
             payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
         } 
-        payload.remoteConnectionConfig.sshConfig['sshUsername'] = state.sshUsername?.value
-        payload.remoteConnectionConfig.sshConfig['sshPassword'] = state.sshPassword?.value
-        payload.remoteConnectionConfig.sshConfig['sshAuthKey'] = state.sshAuthKey?.value
-        payload.remoteConnectionConfig.sshConfig['sshServerAddress'] = state.sshServerAddress?.value
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
