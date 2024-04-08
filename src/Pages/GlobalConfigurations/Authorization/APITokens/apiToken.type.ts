@@ -43,8 +43,6 @@ export interface EditTokenType {
     setSelectedExpirationDate
     selectedExpirationDate
     tokenList: TokenListType[]
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
-    copied: boolean
     reload: () => void
 }
 

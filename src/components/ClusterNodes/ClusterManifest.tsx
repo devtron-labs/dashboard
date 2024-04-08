@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal2, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
@@ -36,7 +36,7 @@ export default function ClusterManifest({
             setManifestMode(EditModeType.NON_EDIT)
             getClusterManifest(terminalAccessId)
                 .then((response) => {
-                    const _manifest = YAML.stringify(response.result?.manifest)
+                    const _manifest = YAMLStringify(response.result?.manifest)
                     setOriginalManifest(_manifest)
                     const trimmedManifest = YAML.stringify(getTrimmedManifestData(response.result?.manifest))
                     setDefaultManifest(trimmedManifest)
@@ -94,7 +94,8 @@ export default function ClusterManifest({
                 // Parsing will remove earlier comments, which will fix internal issues of code, currently the errorMessage is not getting cleared due to line 83.
                 const parsedManifest = YAML.parse(manifestValue)
                 if (parsedManifest) {
-                    const trimmedManifest = YAML.stringify(getTrimmedManifestData(parsedManifest))
+                    // Explicitly setting getTrimmedManifestData(parsedManifest) as object to avoid type error from YAMLStringify.
+                    const trimmedManifest = YAMLStringify(getTrimmedManifestData(parsedManifest) as object)
                     const errorDetails = errorMessage?.length ? `${defaultManifestErrorText}# ${errorMessage}\n#\n` : ''
                     setManifest(errorDetails + trimmedManifest)
                 } else {

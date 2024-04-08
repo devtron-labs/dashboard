@@ -1,6 +1,6 @@
 import React from 'react'
 import { components } from 'react-select'
-import { OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, YAMLStringify, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { NavLink } from 'react-router-dom'
@@ -352,7 +352,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
             })
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
-                payload: { secretDataYaml: YAML.stringify(configMapSecretData.secretData), secretData: json },
+                payload: { secretDataYaml: YAMLStringify(configMapSecretData.secretData), secretData: json },
             })
         }
         if (configMapSecretData.esoSecretData?.esoData) {
@@ -363,7 +363,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
                     secretStore: configMapSecretData.esoSecretData.secretStore,
                     secretStoreRef: configMapSecretData.esoSecretData.secretStoreRef,
                     refreshInterval: configMapSecretData.esoSecretData.refreshInterval,
-                    esoSecretYaml: YAML.stringify(configMapSecretData.esoSecretData),
+                    esoSecretYaml: YAMLStringify(configMapSecretData.esoSecretData),
                 },
             })
         }
@@ -481,13 +481,13 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         },
         esoData: tempEsoSecretData?.esoData,
         secretData: tempSecretData,
-        secretDataYaml: YAML.stringify(jsonForSecretDataYaml),
+        secretDataYaml: YAMLStringify(jsonForSecretDataYaml),
         codeEditorRadio: CODE_EDITOR_RADIO_STATE.DATA,
         esoDataSecret: tempEsoSecretData?.esoData,
         secretStore: tempEsoSecretData?.secretStore,
         secretStoreRef: tempEsoSecretData?.secretStoreRef,
         refreshInterval: tempEsoSecretData?.refreshInterval,
-        esoSecretYaml: isEsoSecretData ? YAML.stringify(tempEsoSecretData) : '',
+        esoSecretYaml: isEsoSecretData ? YAMLStringify(tempEsoSecretData) : '',
         secretMode: false,
         unAuthorized: configMapSecretData?.unAuthorized ?? !!configMapSecretData?.name,
     }
