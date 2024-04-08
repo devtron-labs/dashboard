@@ -27,7 +27,7 @@ const PodPopup = ({
 
     return (
         <div className="pod-info__popup-container">
-            {kind === NodeType.Pod ? (
+            {kind === NodeType.Pod && (
                 <span
                     data-testid="view-events-button"
                     className="flex pod-info__popup-row"
@@ -35,15 +35,11 @@ const PodPopup = ({
                 >
                     View Events
                 </span>
-            ) : (
-                ''
             )}
-            {kind === NodeType.Pod ? (
+            {kind === NodeType.Pod && (
                 <span data-testid="view-logs-button" className="flex pod-info__popup-row" onClick={handleDescribeLogs}>
                     View Container Logs
                 </span>
-            ) : (
-                ''
             )}
             {showResourceScanModal && OpenVulnerabilityModalButton && (
                 <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
