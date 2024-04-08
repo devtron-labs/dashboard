@@ -170,6 +170,7 @@ export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> 
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
+    isDeploymentBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -204,6 +205,8 @@ export interface CDNodeState {
     forceDeleteData: ForceDeleteMessageType
     clusterName: string
     deleteInProgress: boolean
+    showDeploymentConfirmationDeleteDialog: boolean
+    deploymentWindowConfimationValue: string
 }
 
 export interface PipelineBuildStageType {
