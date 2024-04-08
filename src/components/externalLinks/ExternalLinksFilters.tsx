@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { InputActionMeta } from 'react-select'
-import { Option } from '@devtron-labs/devtron-fe-common-lib'
+import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -81,7 +81,7 @@ export const ClusterFilter = ({
     }
 
     const onInputChangeHandler = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setClusterSearchInput(value)
         }
     }
@@ -206,7 +206,7 @@ export const ApplicationFilter = ({
     }
 
     const onInputChangeHandler = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setAppSearchInput(value)
         }
     }

@@ -82,6 +82,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
+    LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
@@ -302,7 +303,7 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
+} as const
 
 export const repoType = {
     DEFAULT: 'DEFAULT',
@@ -704,7 +705,6 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
-export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',
@@ -758,7 +758,7 @@ export const DEPLOYMENT_STATUS = {
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
     CHECKING: 'checking',
-}
+} as const
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
@@ -923,3 +923,10 @@ export const API_STATUS_CODES = {
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
+
+export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
+
+/**
+ * Value for select all identifier
+ */
+export const SELECT_ALL_VALUE = '*'

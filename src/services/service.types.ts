@@ -42,6 +42,7 @@ export interface CDPipeline {
     runPostStageInEnv: boolean
     isClusterCdActive: boolean
     deploymentAppType?: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
 }
 
 export interface AppListMin extends ResponseType {
@@ -75,6 +76,8 @@ export interface AppEnvironment {
     isProtected?: boolean
     pipelineId?: number
     latestCdWorkflowRunnerId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppIdWorkflowNamesMapping {

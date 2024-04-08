@@ -79,6 +79,7 @@ export interface WorkflowProps
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
+    handleDisplayLoader?: () => void
 }
 
 interface WorkflowState {
@@ -384,6 +385,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
+                history={this.props.history}
+                location={this.props.location}
+                match={this.props.match}
             />
         )
     }
@@ -458,6 +462,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
                 deploymentAppCreated={node.deploymentAppCreated}
+                isDeploymentBlocked={node.isDeploymentBlocked}
+                handleDisplayLoader={this.props.handleDisplayLoader}
             />
         )
     }
@@ -752,7 +758,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 : 'flexbox dc__align-items-center dc__align-self_center dc__gap-8'
                         }
                     >
-                        <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
+                        <span className="m-0 cn-9 fs-13 fw-6 lh-20" data-testid={`${this.props.name}`}>{this.props.name}</span>
                         {!configDiffView && (
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />

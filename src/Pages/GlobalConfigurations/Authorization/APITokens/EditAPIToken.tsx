@@ -5,97 +5,64 @@ import {
     showError,
     Progressing,
     InfoColourBar,
-    RadioGroup,
-    RadioGroupItem,
-    copyToClipboard,
     CustomInput,
     noop,
-    OptionType,
+    ClipboardButton,
+    ResizableTextarea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
-import { EditDataType, EditTokenType } from './authorization.type'
-import { createUserPermissionPayload, isFormComplete, isTokenExpired } from './authorization.utils'
-import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.svg'
+import { EditDataType, EditTokenType } from './apiToken.type'
+import { isTokenExpired } from './apiToken.utils'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
-import { ButtonWithLoader } from '../../../../components/common'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
-import GroupPermission from './GroupPermission'
-import {
-    ActionTypes,
-    ChartGroupPermissionsFilter,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../shared/components/userGroups/userGroups.types'
 import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { renderQuestionwithTippy } from './CreateAPIToken'
-import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { User } from '../types'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
+import {
+    PermissionConfigurationForm,
+    PermissionConfigurationFormProvider,
+    usePermissionConfiguration,
+} from '../Shared/components/PermissionConfigurationForm'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 const EditAPIToken = ({
     setShowRegeneratedModal,
     showRegeneratedModal,
     handleRegenerateActionButton,
-    tokenList,
-    copied,
-    setCopied,
     reload,
-}: EditTokenType) => {
+    editData,
+    setEditData,
+    isLoading,
+}: Omit<EditTokenType, 'tokenList'> & {
+    editData: EditDataType
+    isLoading: boolean
+    setEditData: (editData: EditDataType) => void
+}) => {
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+        usePermissionConfiguration()
+
     const history = useHistory()
     const match = useRouteMatch()
-    const params = useParams<{ id: string }>()
     const { serverMode } = useContext(mainContext)
-    const [isLoading, setLoading] = useState(true)
     const [loader, setLoader] = useState(false)
-    const [adminPermission, setAdminPermission] = useState('')
-    const [userData, setUserData] = useState<User>()
-    const [editData, setEditData] = useState<EditDataType>()
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+
     const [customDate, setCustomDate] = useState<number>(undefined)
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
-
-    const getUserData = async (userId: number) => {
-        try {
-            const user = await getUserById(userId)
-            setUserData(user)
-            setAdminPermission(user.superAdmin ? PermissionType.SUPER_ADMIN : PermissionType.SPECIFIC)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        // eslint-disable-next-line radix
-        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
-
-        if (_editData) {
-            setEditData(_editData)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getUserData(_editData.userId)
-        }
-    }, [])
 
     const renderActionButton = () => {
         return (
@@ -126,8 +93,7 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!isFormComplete(directPermission, setDirectPermission)) {
-            toast.error('Some required fields are missing')
+        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             return
         }
 
@@ -145,16 +111,17 @@ const EditAPIToken = ({
             const { result } = await updateGeneratedAPIToken(payload, tokenId)
 
             if (result) {
-                const userPermissionPayload = createUserPermissionPayload(
-                    editData.userId,
-                    editData.userIdentifier,
-                    serverMode,
+                const userPermissionPayload = createUserPermissionPayload({
+                    id: editData.userId,
+                    userIdentifier: editData.userIdentifier,
                     userGroups,
+                    serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    adminPermission === PermissionType.SUPER_ADMIN,
-                )
+                    permissionType,
+                    ...getDefaultUserStatusAndTimeout(),
+                })
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
                 if (userPermissionResponse) {
@@ -184,10 +151,6 @@ const EditAPIToken = ({
         setEditData(_editData)
     }
 
-    const handlePermissionType = (e) => {
-        setAdminPermission(e.target.value)
-    }
-
     const getExpirationText = () => {
         if (isTokenExpired(editData.expireAtInMs)) {
             return (
@@ -211,11 +174,6 @@ const EditAPIToken = ({
 
     if (isLoading || !editData) {
         return <Progressing pageLoader />
-    }
-
-    const handleCopyToClipboard = (e) => {
-        e.stopPropagation()
-        copyToClipboard(editData.token, () => setCopied(true))
     }
 
     return (
@@ -245,7 +203,7 @@ const EditAPIToken = ({
                         </ButtonWithLoader>
                     </div>
                 </div>
-                <div className="flexbox-col dc__gap-12">
+                <div className="flexbox-col dc__gap-16">
                     {renderRegenerateInfoBar()}
                     <label className="form__row">
                         <CustomInput
@@ -259,14 +217,14 @@ const EditAPIToken = ({
                     </label>
                     <label className="form__row">
                         <span className="form__label">Description</span>
-                        <textarea
-                            tabIndex={1}
+                        <ResizableTextarea
+                            name="description"
+                            maxHeight={300}
+                            className="w-100"
+                            value={editData.description}
+                            onChange={onChangeEditData}
                             data-testid="api-token-description-textbox"
                             placeholder="Enter a description to remember where you have used this token"
-                            className="form__textarea"
-                            value={editData.description}
-                            name="description"
-                            onChange={onChangeEditData}
                         />
                         {invalidDescription && (
                             <span className="form__error flexbox-imp flex-align-center">
@@ -281,24 +239,9 @@ const EditAPIToken = ({
                             <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
                                 {editData.token}
                             </span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy'}
-                                trigger="mouseenter click"
-                                onShow={(_tippy) => {
-                                    setTimeout(() => {
-                                        _tippy.hide()
-                                        setCopied(false)
-                                    }, 5000)
-                                }}
-                                interactive
-                            >
-                                <div className="icon-dim-16 ml-8">
-                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                                </div>
-                            </Tippy>
+                            <div className="icon-dim-16 ml-8">
+                                <ClipboardButton content={editData.token} />
+                            </div>
                         </div>
                     </label>
                     <label className="form__row">
@@ -312,48 +255,8 @@ const EditAPIToken = ({
                             </span>
                         </div>
                     </label>
-                    <div className="dc__border-top-n1" />
-                    <div className="flex left">
-                        <RadioGroup
-                            className="permission-type__radio-group"
-                            value={adminPermission}
-                            name="permission-type"
-                            onChange={handlePermissionType}
-                        >
-                            {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                                <RadioGroupItem
-                                    key={value}
-                                    dataTestId={`${
-                                        value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                    }-permission-radio-button`}
-                                    value={value}
-                                >
-                                    <span
-                                        className={`dc__no-text-transform ${
-                                            adminPermission === value ? 'fw-6' : 'fw-4'
-                                        }`}
-                                    >
-                                        {label}
-                                    </span>
-                                </RadioGroupItem>
-                            ))}
-                        </RadioGroup>
-                    </div>
-                    {adminPermission === PermissionType.SPECIFIC ? (
-                        <GroupPermission
-                            userData={userData}
-                            userGroups={userGroups}
-                            setUserGroups={setUserGroups}
-                            directPermission={directPermission}
-                            setDirectPermission={setDirectPermission}
-                            chartPermission={chartPermission}
-                            setChartPermission={setChartPermission}
-                            setK8sPermission={setK8sPermission}
-                            k8sPermission={k8sPermission}
-                        />
-                    ) : (
-                        <SuperAdminInfoBar />
-                    )}
+                    <div className="dc__border-top" />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>
             <GenerateActionButton
@@ -385,4 +288,39 @@ const EditAPIToken = ({
     )
 }
 
-export default EditAPIToken
+const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
+    const params = useParams<{ id: string }>()
+    const [isLoading, setLoading] = useState(true)
+    const [userData, setUserData] = useState<User>()
+    const [editData, setEditData] = useState<EditDataType>()
+
+    const getUserData = async (userId: number) => {
+        try {
+            const user = await getUserById(userId)
+            setUserData(user)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line radix
+        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
+
+        if (_editData) {
+            setEditData(_editData)
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            getUserData(_editData.userId)
+        }
+    }, [])
+
+    return (
+        <PermissionConfigurationFormProvider data={userData} showStatus={showStatus}>
+            <EditAPIToken {...props} editData={editData} setEditData={setEditData} isLoading={isLoading} />
+        </PermissionConfigurationFormProvider>
+    )
+}
+
+export default EditAPITokenContainer

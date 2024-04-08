@@ -96,7 +96,7 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
         return (
             <div className="dc__border-top flexbox dc__content-space right p-16">
                 <button className="flex cta h-36 lh-36" data-testid="edit-yaml-button" onClick={showCodeEditor}>
-                    <Edit  className="icon-dim-16 mr-4" />
+                    <Edit className="icon-dim-16 mr-4" />
                     {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
                 </button>
                 <button

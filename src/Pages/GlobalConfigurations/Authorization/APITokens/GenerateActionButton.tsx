@@ -1,6 +1,6 @@
 import React from 'react'
 import { ButtonWithLoader } from '../../../../components/common'
-import { GenerateActionButtonType } from './authorization.type'
+import { GenerateActionButtonType } from './apiToken.type'
 
 const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerateButton }: GenerateActionButtonType) => {
     return (

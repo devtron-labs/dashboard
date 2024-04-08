@@ -7,11 +7,12 @@ import {
     getLoginInfo,
     APIOptions,
     useWindowSize,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/authorization.utils'
+import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
@@ -37,12 +38,6 @@ export function validateEmail(email) {
         /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     const result = re.test(String(email).toLowerCase())
     return result
-}
-
-export function removeItemsFromArray(array: any[], index: number, items: number, ...itemsToAdd) {
-    const newArray = [...array]
-    newArray.splice(index, items, ...itemsToAdd)
-    return newArray
 }
 
 export function useForm(stateSchema, validationSchema = {}, callback) {
@@ -149,10 +144,10 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     return { state, disable, handleOnChange, handleOnSubmit }
 }
 
-export function mapByKey(arr: any[], id: string): Map<any, any> {
+export function mapByKey<T = Map<any, any>>(arr: any[], id: string): T {
     if (!Array.isArray(arr)) {
         console.error(arr, 'is not array')
-        return new Map()
+        return new Map() as T
     }
     return arr.reduce((agg, curr) => agg.set(curr[id], curr), new Map())
 }
@@ -569,7 +564,7 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
         }
         if (obj && typeof obj === 'object') {
             setJson(JSON.stringify(obj, null, tabSize))
-            setYaml(YAML.stringify(obj, { indent: 2 }))
+            setYaml(YAMLStringify(obj))
             setNativeObject(obj)
             setError('')
         } else {

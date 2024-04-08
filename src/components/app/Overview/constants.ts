@@ -12,6 +12,8 @@ export const loadingEnvironmentList: AppEnvironment[] = Array.from(
     appMetrics: false,
     infraMetrics: false,
     prod: false,
+    commits: [],
+    ciArtifactId: 0,
 }))
 
 /**
@@ -36,3 +38,8 @@ export const MODAL_STATE = {
      */
     value: 'open',
 } as const
+
+export enum EnvironmentListSortableKeys {
+    environmentName = 'environment',
+    deployedAt = 'deployedAt',
+}
