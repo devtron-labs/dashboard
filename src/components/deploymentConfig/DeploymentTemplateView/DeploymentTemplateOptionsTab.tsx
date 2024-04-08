@@ -12,8 +12,8 @@ import {
     TippyCustomized,
     TippyTheme,
     StyledRadioGroup as RadioGroup,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
@@ -61,11 +61,11 @@ export default function DeploymentTemplateOptionsTab({
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
-                : YAML.stringify(state.duplicate, { indent: 2 })
+                : YAMLStringify(state.duplicate)
             const _envValues =
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : YAMLStringify(state.data.globalConfig)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -74,7 +74,8 @@ export default function DeploymentTemplateOptionsTab({
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+                // Explicitly setting getTrimmedManifestData(parsedManifest) as object to avoid type error from YAMLStringify.
+                payload: state.latestDraft ? state.draftValues : YAMLStringify(state.template),
             })
         }
     }

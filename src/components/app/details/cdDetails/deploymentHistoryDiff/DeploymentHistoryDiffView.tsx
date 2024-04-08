@@ -1,8 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import YAML from 'yaml'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { Toggle, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { DeploymentHistorySingleValue } from '../cd.type'
 import { DeploymentHistoryParamsType, DeploymentTemplateHistoryType } from './types'
@@ -61,12 +60,12 @@ export default function DeploymentHistoryDiffView({
                 value={
                     !baseTemplateConfiguration?.codeEditorValue?.value || isDeleteDraft
                         ? ''
-                        : YAML.stringify(JSON.parse(editorValuesRHS))
+                        : YAMLStringify(JSON.parse(editorValuesRHS))
                 }
                 defaultValue={
                     !currentConfiguration?.codeEditorValue?.value || isUnpublished
                         ? ''
-                        : YAML.stringify(JSON.parse(editorValuesLHS))
+                        : YAMLStringify(JSON.parse(editorValuesLHS))
                 }
                 height={codeEditorHeight}
                 diffView={previousConfigAvailable && true}

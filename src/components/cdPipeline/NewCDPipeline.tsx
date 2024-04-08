@@ -11,6 +11,9 @@ import {
     VariableType,
     VisibleModal,
     PipelineType,
+    MODAL_TYPE,
+    ACTION_STATE,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -18,7 +21,12 @@ import yamlJsParser from 'yaml'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ButtonWithLoader, FloatingVariablesSuggestions, sortObjectArrayAlphabetically } from '../common'
+import {
+    ButtonWithLoader,
+    FloatingVariablesSuggestions,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -46,7 +54,12 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
 } from '../../config/constantMessaging'
-import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from './cdpipeline.util'
+import {
+    calculateLastStepDetailsLogic,
+    checkUniqueness,
+    handleDeleteCDNodePipeline,
+    validateTask,
+} from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
@@ -60,6 +73,13 @@ import {
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
 import { NewCDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
+    'getDeploymentWindowProfileMetaData',
+    null,
+    'function',
+)
 
 export default function NewCDPipeline({
     match,
@@ -198,6 +218,8 @@ export default function NewCDPipeline({
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
     const [selectedCDStageTypeValue, setSelectedCDStageTypeValue] = useState<OptionType>(customTagStageTypeOptions[0])
+    const [showDeploymentConfirmationDeleteDialog, setShowDeploymentConfirmationDeleteDialog] = useState<boolean>(false)
+    const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
     useEffect(() => {
         getInit()
@@ -333,7 +355,7 @@ export default function NewCDPipeline({
 
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
-            .then((result) => {
+            .then(async (result) => {
                 const pipelineConfigFromRes = result.pipelineConfig
                 updateStateFromResponse(pipelineConfigFromRes, result.environments, form, dockerRegistries)
                 const preBuildVariable = calculateLastStepDetail(
@@ -360,8 +382,9 @@ export default function NewCDPipeline({
                     clusterId: result.form?.clusterId,
                 })
                 setSavedCustomTagPattern(pipelineConfigFromRes.customTag?.tagPattern)
-                setPageState(ViewType.FORM)
                 setSelectedCDStageTypeValue(getCDStageTypeSelectorValue(form.customTagStage))
+                await getCDeploymentWindowState(result.form?.environmentId)
+                setPageState(ViewType.FORM)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -402,6 +425,17 @@ export default function NewCDPipeline({
             })
     }
 
+    const getCDeploymentWindowState = async (envId: string) => {
+        if (getDeploymentWindowProfileMetaData) {
+            const { userActionState } = await getDeploymentWindowProfileMetaData(appId, envId)
+            if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
+                setShowDeploymentWindowConfirmation(true)
+            } else {
+                setShowDeploymentWindowConfirmation(false)
+            }
+        }
+    }
+
     const getPrePostStageInEnv = (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean): boolean => {
         if (isVirtualEnvironment) {
             return true
@@ -436,7 +470,7 @@ export default function NewCDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                    selection: yamlJsParser.stringify(
+                    selection: YAMLStringify(
                         allStrategies.current[pipelineConfigFromRes.strategies[i].config],
                         {
                             indent: 2,
@@ -700,7 +734,7 @@ export default function NewCDPipeline({
         newSelection['isCollapsed'] = true
         newSelection['default'] = true
         newSelection['jsonStr'] = JSON.stringify(allStrategies.current[value], null, 4)
-        newSelection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[value], { indent: 2 })
+        newSelection['yamlStr'] = YAMLStringify(allStrategies.current[value])
 
         const _form = { ...formData }
         _form.savedStrategies.push(newSelection)
@@ -857,6 +891,10 @@ export default function NewCDPipeline({
         setShowDeleteModal(false)
     }
 
+    const onClickHideDeletePipelinePopup = () => {
+        setShowDeploymentConfirmationDeleteDialog(false)
+    }
+
     const handleCloseModal = () => {
         setReloadNoGitOpsRepoConfiguredModal(false)
     }
@@ -920,13 +958,15 @@ export default function NewCDPipeline({
             })
             .catch((error: ServerErrors) => {
                 // 412 is for linked pipeline and 403 is for RBAC
-                if (!force && error.code != 403 && error.code != 412) {
+                // 422 is for deployment window
+                if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
                     setForceDeleteDialogData(error)
                     hideDeleteModal()
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
                 }
+                setShowDeploymentConfirmationDeleteDialog(false)
             })
     }
 
@@ -941,7 +981,11 @@ export default function NewCDPipeline({
     }
 
     const openDeleteModal = () => {
-        setShowDeleteModal(true)
+        if (showDeploymentWindowConfirmation) {
+            setShowDeploymentConfirmationDeleteDialog(true)
+        } else {
+            setShowDeleteModal(true)
+        }
     }
 
     const getNavLink = (toLink: string, stageName: string) => {
@@ -1193,6 +1237,20 @@ export default function NewCDPipeline({
                         deploymentAppType={formData.deploymentAppType}
                         forceDeleteData={forceDeleteData}
                         deleteTitleName={formData.name}
+                    />
+                )}
+
+                {DeploymentWindowConfirmationDialog && showDeploymentConfirmationDeleteDialog && (
+                    <DeploymentWindowConfirmationDialog
+                        onClose={onClickHideDeletePipelinePopup}
+                        type={MODAL_TYPE.PIPELINE}
+                        onClickActionButton={() =>
+                            handleDeleteCDNodePipeline(deleteCD, formData.deploymentAppType as DeploymentAppTypes)
+                        }
+                        appName={appName}
+                        appId={appId}
+                        envName={formData.environmentName}
+                        envId={formData.environmentId}
                     />
                 )}
             </div>
