@@ -1415,7 +1415,7 @@ export default function CDMaterial({
                                     isEditing={false}
                                     tagId={0}
                                     softDeleteTags={[]}
-                                    isSuperAdmin={isSuperAdmin}
+                                    isSuperAdmin
                                 />
                             </div>
                         )}
