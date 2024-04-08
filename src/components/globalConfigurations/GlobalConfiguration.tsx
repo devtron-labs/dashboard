@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import {

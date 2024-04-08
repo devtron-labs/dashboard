@@ -6,6 +6,7 @@ import {
     InfoColourBar,
     DevtronProgressing,
     PageHeader,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
@@ -40,7 +41,6 @@ import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
-import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 // TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
