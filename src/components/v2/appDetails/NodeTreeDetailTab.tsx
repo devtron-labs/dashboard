@@ -17,6 +17,7 @@ const NodeTreeDetailTab = ({
     monitoringTools,
     isDevtronApp = false,
     isExternalApp,
+    clusterId
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -88,6 +89,7 @@ const NodeTreeDetailTab = ({
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
                                         isExternalApp={isExternalApp}
+                                        clusterId={clusterId}
                                     />
                                 )
                             }}

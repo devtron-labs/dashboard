@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import { getElapsedTime } from '../../../../common'
+import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -18,12 +18,15 @@ import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+
 const NodeComponent = ({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
     isExternalApp,
+    clusterId,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -218,9 +221,7 @@ const NodeComponent = ({
                 return (
                     <>
                         <div>
-                            <span>
-                                {text}
-                            </span>
+                            <span>{text}</span>
                         </div>
                         <span className="pl-4">
                             <ClipboardButton content={text} />
@@ -329,7 +330,9 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8"><ClipboardButton content={nodeName.split(' ').join('')} /></div>
+                                                <div className="pl-8 pr-8">
+                                                    <ClipboardButton content={nodeName.split(' ').join('')} />
+                                                </div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -401,7 +404,9 @@ const NodeComponent = ({
                                 <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     <div className="pl-8">
-                                        {node.port > 1 ? <ClipboardButton content={nodeName.split(' ').join('')} /> : null}
+                                        {node.port > 1 ? (
+                                            <ClipboardButton content={nodeName.split(' ').join('')} />
+                                        ) : null}
                                     </div>
                                 </div>
                             )}
@@ -415,6 +420,9 @@ const NodeComponent = ({
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
+                                {PodRestartIcon && (
+                                    <PodRestartIcon clusterId={clusterId} name={node.name} namespace={node.namespace} />
+                                )}
                             </div>
                         )}
 

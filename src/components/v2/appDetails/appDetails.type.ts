@@ -514,6 +514,7 @@ export interface NodeTreeDetailTabProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
+    clusterId?: number
 }
 
 export interface K8ResourceComponentProps {
@@ -524,6 +525,7 @@ export interface K8ResourceComponentProps {
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp?: boolean
     isDevtronApp?: boolean
+    clusterId?: number
 }
 
 export interface NodeComponentProps {
@@ -532,6 +534,7 @@ export interface NodeComponentProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
+    clusterId?: number
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]

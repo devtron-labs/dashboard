@@ -613,6 +613,7 @@ export const Details: React.FC<DetailsType> = ({
                 externalLinks={externalLinksAndTools.externalLinks}
                 monitoringTools={externalLinksAndTools.monitoringTools}
                 isDevtronApp
+                clusterId={appDetails?.clusterId}
             />
         )
     }
