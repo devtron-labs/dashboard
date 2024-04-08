@@ -44,10 +44,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
-import { RemoteConnectionType } from '../dockerRegistry/dockerType'
-import { config } from 'process'
 
-// TODO: Update the noop
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
