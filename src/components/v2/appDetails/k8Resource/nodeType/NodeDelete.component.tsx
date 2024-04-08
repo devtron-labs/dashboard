@@ -9,17 +9,17 @@ import {
     useSearchString,
     MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import PodPopup from './PodPopup'
+import AppDetailsStore from '../../appDetails.store'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
 import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { createBody } from '../nodeDetail/nodeDetail.api'
-import PodPopup from './PodPopup'
 
 const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
@@ -147,7 +147,6 @@ const NodeDeleteComponent = ({
                         toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
                         isExternalArgoApp={isExternalArgoApp}
                         handleShowVulnerabilityModal={handleShowVulnerabilityModal}
-
                     />
                 </PopupMenu.Body>
             </PopupMenu>

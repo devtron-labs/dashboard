@@ -68,11 +68,6 @@ export default function ResourceBrowserActionMenu({
                             <CalendarIcon className="icon-dim-16 mr-8" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
-                        {showResourceScanModal && OpenVulnerabilityModalButton && (
-                            <OpenVulnerabilityModalButton
-                                handleShowVulnerabilityModal={handleShowVulnerabilityModal}
-                            />
-                        )}
                         {selectedResource?.gvk?.Kind === Nodes.Pod && (
                             <>
                                 <span
@@ -98,6 +93,11 @@ export default function ResourceBrowserActionMenu({
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
                                 </span>
                             </>
+                        )}
+                        {showResourceScanModal && OpenVulnerabilityModalButton && (
+                            <OpenVulnerabilityModalButton
+                                handleShowVulnerabilityModal={handleShowVulnerabilityModal}
+                            />
                         )}
                         <span
                             className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
