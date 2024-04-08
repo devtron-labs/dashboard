@@ -6,12 +6,13 @@ import {
     Reload,
     Drawer,
     sortCallback,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
-import { useForm } from '../common'
+import { importComponentFromFELibrary, useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
@@ -44,6 +45,11 @@ import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../..
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
+import { config } from 'process'
+
+// TODO: Update the noop
+const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
+const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -146,6 +152,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                       }
                   })
                 : []
+
+            const defaultRemoteConnectionConfig = getRemoteConnectionConfig()
             clusters = clusters.concat({
                 id: null,
                 cluster_name: '',
@@ -162,18 +170,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 environments: [],
                 insecureSkipTlsVerify: true,
                 isVirtualCluster: false,
-                remoteConnectionConfig: {
-                    connectionMethod: '',
-                    proxyConfig: {
-                        proxyUrl: '',
-                    },
-                    sshConfig: {
-                        sshServerAddress: '',
-                        sshUsername: '',
-                        sshPassword: '',
-                        sshAuthKey: '',
-                    }
-                }
+                remoteConnectionConfig: defaultRemoteConnectionConfig,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters })
@@ -293,6 +290,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 {this.state.showAddCluster && (
                     <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
                         <ClusterForm
+                            {...getSSHConfig(this.state)}
                             id={null}
                             cluster_name={this.state.cluster_name}
                             server_url={this.state.server_url}
@@ -306,10 +304,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isTlsConnection={this.state.isTlsConnection}
                             isClusterDetails={this.state.isClusterDetails}
                             proxyUrl={this.state.proxyUrl}
-                            sshUsername={this.state.sshUsername}
-                            sshPassword={this.state.sshPassword}
-                            sshAuthKey={this.state.sshAuthKey}
-                            sshServerAddress={this.state.sshServerAddress}
                             isConnectedViaProxy={this.state.isConnectedViaProxy}
                             isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -585,18 +579,7 @@ const Cluster = ({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            remoteConnectionConfig: {
-                connectionMethod: (state.isConnectedViaProxy) ? RemoteConnectionType.Proxy : ((state.isConnectedViaSSHTunnel) ? RemoteConnectionType.SSHTunnel : RemoteConnectionType.Direct),
-                proxyConfig: (state.isConnectedViaProxy) ? {
-                    proxyUrl: state.proxyUrl?.value,
-                } : null,
-                sshConfig: (state.isConnectedViaSSHTunnel) ? {
-                    sshServerAddress: state.sshServerAddress?.value,
-                    sshUsername: state.sshUsername?.value,
-                    sshPassword: state.sshPassword?.value,
-                    sshAuthKey: state.sshAuthKey?.value,
-                } : null,
-            },
+            remoteConnectionConfig: getRemoteConnectionConfig(state),
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -859,6 +842,7 @@ const Cluster = ({
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
                             <ClusterForm
+                                {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}
                                 cluster_name={cluster_name}
                                 server_url={server_url}
@@ -871,10 +855,6 @@ const Cluster = ({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={proxyUrl}
-                                sshUsername={sshTunnelConfig?.user}
-                                sshPassword={sshTunnelConfig?.password}
-                                sshAuthKey={sshTunnelConfig?.authKey}
-                                sshServerAddress={sshTunnelConfig?.sshServerAddress}
                                 isConnectedViaProxy={!!proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}

@@ -13,6 +13,7 @@ import {
     ResizableTextarea,
     useAsync,
     CustomInput,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -57,6 +58,7 @@ import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 
 const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 
 const PrometheusWarningInfo = () => {
     return (
@@ -440,24 +442,7 @@ export default function ClusterForm({
                 cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
-            remoteConnectionConfig: {
-                connectionMethod: remoteConnectionMethod,
-                proxyConfig:
-                    remoteConnectionMethod === RemoteConnectionType.Proxy
-                        ? {
-                              proxyUrl: state.proxyUrl?.value,
-                          }
-                        : null,
-                sshConfig:
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel
-                        ? {
-                              sshServerAddress: state.sshServerAddress?.value,
-                              sshUsername: state.sshUsername?.value,
-                              sshPassword: state.sshPassword?.value,
-                              sshAuthKey: state.sshAuthKey?.value,
-                          }
-                        : null,
-            },
+            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
                 userName:
@@ -575,24 +560,7 @@ export default function ClusterForm({
             tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
             tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
-        remoteConnectionConfig: {
-            connectionMethod: remoteConnectionMethod,
-            proxyConfig:
-                remoteConnectionMethod === RemoteConnectionType.Proxy
-                    ? {
-                          proxyUrl: state.proxyUrl?.value,
-                      }
-                    : null,
-            sshConfig:
-                remoteConnectionMethod === RemoteConnectionType.SSHTunnel
-                    ? {
-                          sshServerAddress: state.sshServerAddress?.value,
-                          sshUsername: state.sshUsername?.value,
-                          sshPassword: state.sshPassword?.value,
-                          sshAuthKey: state.sshAuthKey?.value,
-                      }
-                    : null,
-        },
+        remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
         server_url,
         defaultClusterComponent,
         k8sversion: '',

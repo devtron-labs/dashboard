@@ -20,6 +20,7 @@ import {
     ServerErrors,
     useAsync,
     CustomInput,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -68,6 +69,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -222,18 +224,7 @@ const CollapsedList = ({
               ignoredClusterIdsCsv: '',
           }
         : null,
-    remoteConnectionConfig = {
-        connectionMethod: '',
-        proxyConfig: {
-            proxyUrl: '',
-        },
-        sshConfig: {
-            sshServerAddress: '',
-            sshUsername: '',
-            sshPassword: '',
-            sshAuthKey: '',
-        },
-    },
+    remoteConnectionConfig = getRemoteConnectionConfig(),
     clusterOption,
     repositoryList = [],
     disabledFields = [],
@@ -814,32 +805,11 @@ const DockerForm = ({
                                   : ignoredClusterIdsCsv,
                       }
                     : null,
-            remoteConnectionConfig: {
-                connectionMethod: customState.remoteConnectionConfig.connectionMethod.value,
-                proxyConfig:
-                    customState.remoteConnectionConfig.connectionMethod.value === RemoteConnectionType.Proxy
-                        ? {
-                              proxyUrl: customState.remoteConnectionConfig.proxyConfig.proxyUrl.value,
-                          }
-                        : null,
-                sshConfig:
-                    customState.remoteConnectionConfig.connectionMethod.value === RemoteConnectionType.SSHTunnel
-                        ? {
-                              sshServerAddress: customState.remoteConnectionConfig.sshConfig.sshServerAddress.value,
-                              sshUsername: customState.remoteConnectionConfig.sshConfig.sshUsername.value,
-                              sshPassword:
-                                  sshConnectionType === SSHAuthenticationType.Password ||
-                                  sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                                      ? customState.remoteConnectionConfig.sshConfig.sshPassword.value
-                                      : '',
-                              sshAuthKey:
-                                  sshConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                                  sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                                      ? customState.remoteConnectionConfig.sshConfig.sshAuthKey.value
-                                      : '',
-                          }
-                        : null,
-            },
+            remoteConnectionConfig: getRemoteConnectionConfig(
+                customState.remoteConnectionConfig,
+                customState.remoteConnectionConfig.connectionMethod.value,
+                sshConnectionType,
+            ),
         }
     }
 
