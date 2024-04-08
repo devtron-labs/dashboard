@@ -293,12 +293,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     if (errorStatusCode) {
         return (
-            <div className="dc__loading-wrapper">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                    subtitle="You do not have access to view information on this page."
-                />
-            </div>
+            <ErrorScreenManager
+                code={errorStatusCode}
+                subtitle="You do not have access to view information on this page."
+            />
         )
     }
 

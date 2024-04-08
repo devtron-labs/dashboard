@@ -32,7 +32,6 @@ import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import ExternalArgoList from './ExternalArgoList'
 import {
     buildArgoAppListUrl,
     buildDevtronAppListUrl,

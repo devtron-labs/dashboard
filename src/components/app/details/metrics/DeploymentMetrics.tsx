@@ -617,11 +617,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             )
         }
         if (this.state.view === ViewType.ERROR) {
-            return (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={this.state.code} />
-                </div>
-            )
+            return <ErrorScreenManager code={this.state.code} />
         }
         if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
             return this.renderNoEnvironmentView()

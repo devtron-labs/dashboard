@@ -328,16 +328,15 @@ export default function JobsList() {
         )
     }
 
+    if (dataStateType === JobListViewType.ERROR) {
+        return <ErrorScreenManager code={errorResponseCode} />
+    }
+
     return (
-        <div className="jobs-view-container">
+        <div className="jobs-view-container h-100">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="w-100 h-100vh">
                     <DevtronProgressing parentClasses="h-100 w-100 flex bcn-0" classes="icon-dim-80" />
-                </div>
-            )}
-            {dataStateType === JobListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
             {dataStateType === JobListViewType.LIST && (

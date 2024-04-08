@@ -1791,7 +1791,7 @@ const ChartValuesView = ({
     }
     if (commonState.errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="dc__height-reduce-48">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )
