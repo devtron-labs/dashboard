@@ -24,6 +24,7 @@ export interface HibernateTargetObject {
 export interface RotatePodsModalProps {
     onClose: () => void
     callAppDetailsAPI: () => void
+    isDeploymentBlocked: boolean
 }
 
 export interface RotateResponseModalProps {

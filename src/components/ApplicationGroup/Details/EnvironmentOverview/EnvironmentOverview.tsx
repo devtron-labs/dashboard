@@ -1,4 +1,5 @@
 import {
+    ACTION_STATE,
     AppStatus,
     getRandomColor,
     handleRelativeDateSorting,
@@ -14,18 +15,11 @@ import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
-import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
-import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
-import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
-import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
-import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
-import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
 import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
+import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
@@ -37,6 +31,20 @@ import {
 } from '../../AppGroup.types'
 import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
+import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
+import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
+import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
+import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
+import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
+import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
+
+const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
+    'processDeploymentWindowAppGroupOverviewMap',
+    null,
+    'function',
+)
 import './envOverview.scss'
 import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
@@ -69,6 +77,11 @@ export default function EnvironmentOverview({
         'ciArtifactId' | 'envId'
     > | null>(null)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
+    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
+    const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
+    const [hibernateInfoMap, setHibernateInfoMap] = useState<
+        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+    >({})
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -81,6 +94,25 @@ export default function EnvironmentOverview({
             }
         }
     }, [])
+
+    async function getDeploymentWindowEnvOverrideMetaData() {
+        const appEnvTuples = selectedAppIds.map((appId) => {
+            return {
+                appId: +appId,
+                envId: +envId,
+            }
+        })
+        setIsDeploymentLoading(true)
+        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
+        setHibernateInfoMap(_hibernate)
+        setIsDeploymentLoading(false)
+    }
+
+    useEffect(() => {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus)) {
+            getDeploymentWindowEnvOverrideMetaData()
+        }
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus])
 
     useEffect(() => {
         setLoading(true)
@@ -492,6 +524,8 @@ export default function EnvironmentOverview({
                     setOpenHiberateModal={setOpenHiberateModal}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
                 />
             )}
             {openUnhiberateModal && (
@@ -502,6 +536,8 @@ export default function EnvironmentOverview({
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (
@@ -511,6 +547,8 @@ export default function EnvironmentOverview({
                     responseList={appStatusResponseList}
                     getAppListData={getAppListData}
                     isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
+                    hibernateInfoMap={hibernateInfoMap}
+                    isDeploymentLoading={isDeploymentLoading}
                 />
             )}
             {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}

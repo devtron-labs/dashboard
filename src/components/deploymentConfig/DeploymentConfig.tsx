@@ -9,6 +9,7 @@ import {
     getLockedJSON,
     getUnlockedJSON,
     useMainContext,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
@@ -253,7 +254,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2 })
+        const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -402,7 +403,7 @@ export default function DeploymentConfig({
                     },
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
-            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2 })
+            const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
                 schema,
@@ -704,7 +705,7 @@ export default function DeploymentConfig({
             } else {
                 const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
                 updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
+                editorOnChange(YAMLStringify(newTemplate), !state.yamlMode)
             }
             toggleYamlMode(!state.yamlMode)
         } catch (error) {}
@@ -871,7 +872,7 @@ export default function DeploymentConfig({
             result = await fetchManifestData(state.draftValues)
         } else if (applyPatches && hideLockedKeys) {
             result = fetchManifestData(
-                YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+                YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
             )
         } else {
             result = await fetchManifestData(state.tempFormData)

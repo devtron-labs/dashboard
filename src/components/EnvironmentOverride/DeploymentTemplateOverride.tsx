@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
-import { showError, Progressing, useAsync, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, useAsync, useMainContext, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
@@ -209,7 +209,7 @@ export default function DeploymentTemplateOverride({
         const payload = {
             chartConfigLoading: false,
             duplicate: envOverrideValues,
-            draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
+            draftValues: YAMLStringify(envOverrideValues),
             environmentConfig: {
                 id,
                 status,
