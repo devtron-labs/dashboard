@@ -14,6 +14,7 @@ import {
     ResponseType,
     DeploymentAppTypes,
     StyledRadioGroup as RadioGroup,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -255,7 +256,7 @@ const ChartValuesView = ({
                         }
                         setChartValuesList([_chartValues])
 
-                        const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
+                        const _valuesYaml = YAMLStringify(JSON.parse(_releaseInfo.mergedValues))
                         getAndUpdateSchemaValue(
                             _valuesYaml,
                             convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
@@ -410,7 +411,7 @@ const ChartValuesView = ({
                     type: ChartValuesViewActionTypes.multipleOptions,
                     payload: {
                         fetchingValuesYaml: false,
-                        modifiedValuesYaml: YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues)),
+                        modifiedValuesYaml: YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues)),
                     },
                 })
             }
@@ -1389,7 +1390,7 @@ const ChartValuesView = ({
                         valuesText={commonState.modifiedValuesYaml}
                         defaultValuesText={
                             isExternalApp
-                                ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
+                                ? YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues))
                                 : commonState.installedConfig?.valuesOverrideYaml
                         }
                         onChange={onEditorValueChange}

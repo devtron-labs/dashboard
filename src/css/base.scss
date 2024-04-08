@@ -357,6 +357,10 @@ a:focus {
     bottom: 0;
 }
 
+.dc__bottom-12 {
+    bottom: 12px;
+}
+
 .dc__right-0 {
     right: 0;
 }
@@ -3312,6 +3316,14 @@ textarea,
     min-height: 92px;
 }
 
+.mh-95 {
+    min-height: 95px;
+}
+
+.mh-98 {
+    min-height: 98px;
+}
+
 .mh-150 {
     min-height: 150px !important;
 }
@@ -3320,8 +3332,20 @@ textarea,
     min-height: 200px;
 }
 
+.mh-250 {
+    min-height: 250px;
+}
+
 .mh-300 {
     min-height: 300px;
+}
+
+.mh-320 {
+    min-height: 320px;
+}
+
+.mh-350 {
+    min-height: 350px;
 }
 
 .mh-400 {
@@ -3357,7 +3381,7 @@ textarea,
 }
 
 .mxh-250 {
-    max-height: 210px;
+    max-height: 250px;
 }
 
 .mxh-300 {
@@ -3366,6 +3390,10 @@ textarea,
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-350 {
+    max-height: 350px;
 }
 
 .mxh-504 {
@@ -3820,6 +3848,10 @@ textarea::placeholder {
     opacity: 0.5;
 }
 
+.dc__opacity-1 {
+    opacity: 1;
+}
+
 // blur
 .dc__blur-1_5 {
     filter: blur(1.5px);
@@ -3860,6 +3892,12 @@ textarea::placeholder {
 
 .dc__user-select-none {
     user-select: none;
+}
+
+.dc__stroke-width-2 {
+    path {
+        stroke-width: 2px;
+    }
 }
 
 .dc__stroke-width-4 {
@@ -3985,6 +4023,10 @@ textarea::placeholder {
 
 .dc__zi-5 {
     z-index: 5;
+}
+
+.dc__zi-10 {
+    z-index: 10;
 }
 
 .dc__zi-20 {
@@ -4185,6 +4227,10 @@ textarea::placeholder {
     font-size: 11px !important;
 }
 
+.fs-12-imp {
+    font-size: 12px !important;
+}
+
 .fs-13-imp {
     font-size: 13px !important;
 }
@@ -4192,33 +4238,33 @@ textarea::placeholder {
 // Start: accouncement banner
 .announcement-banner-container {
     &.page-header-banner {
-        width: fit-content;
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        text-align: center;
-    }
+            width: fit-content;
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 0;
+            text-align: center;
+        }
 
-    &.cd-trigger-announcement {
-        .info-bar-container {
-            .announcement-bar {
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid var(--Y700);
+        &.cd-trigger-announcement {
+            .info-bar-container {
+                .announcement-bar {
+                    border-radius: 0;
+                    border: none;
+                    border-bottom: 1px solid var(--Y700);
+                }
             }
         }
     }
-}
 
-.announcement-bar {
-    background-color: var(--Y500);
-    border: 1px solid var(--Y700);
-    border-top: none;
-    padding: 8px 12px !important;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    .announcement-bar {
+        background-color: var(--Y500);
+        border: 1px solid var(--Y700);
+        border-top: none;
+        padding: 8px 12px !important;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
 }
 
 // End: accouncement banner

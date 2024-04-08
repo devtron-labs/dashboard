@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import {
     ConfirmationDialog,
     DeploymentAppTypes,
+    MODAL_TYPE,
     ServerErrors,
     showError,
     WorkflowNodeType,
@@ -26,28 +27,41 @@ import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
 import { DeleteDialogType, ForceDeleteMessageType } from '../../cdPipeline/types'
 import { CD_PATCH_ACTION } from '../../cdPipeline/cdPipeline.types'
 import { deleteCDPipeline } from '../../cdPipeline/cdPipeline.service'
+import { importComponentFromFELibrary } from '../../common'
+import { handleDeleteCDNodePipeline } from '../../cdPipeline/cdpipeline.util'
 
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
         super(props)
         this.state = {
             showDeletePipelinePopup: false,
             showDeleteDialog: false,
+            showDeploymentConfirmationDeleteDialog: false,
             deleteDialog: DeleteDialogType.showNormalDeleteDialog,
             forceDeleteData: { forceDeleteDialogMessage: '', forceDeleteDialogTitle: '' },
             clusterName: '',
             deleteInProgress: false,
+            deploymentWindowConfimationValue: '',
         }
     }
 
+    setDeploymentWindowConfimationValue = (value: string) => {
+        this.setState({ deploymentWindowConfimationValue: value })
+    }
+
     onClickShowDeletePipelinePopup = () => {
-        this.setState({
-            showDeletePipelinePopup: true,
-        })
+        if (this.props.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmationDeleteDialog: true })
+        } else {
+            this.setState({
+                showDeletePipelinePopup: true,
+            })
+        }
     }
 
     onClickHideDeletePipelinePopup = () => {
-        this.setState({ showDeletePipelinePopup: false })
+        this.setState({ showDeletePipelinePopup: false, showDeploymentConfirmationDeleteDialog: false })
     }
 
     handleDeleteCDNode = (e: React.MouseEvent) => {
@@ -58,7 +72,11 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             this.onClickShowDeletePipelinePopup()
             return
         }
-        this.setState({ showDeleteDialog: true })
+        if (this.props.isDeploymentBlocked) {
+            this.setState({ showDeploymentConfirmationDeleteDialog: true })
+        } else {
+            this.setState({ showDeleteDialog: true })
+        }
     }
 
     handleDeleteDialogUpdate = (deleteDialog: DeleteDialogType) => {
@@ -114,6 +132,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
+                        this.props.handleDisplayLoader?.()
                         this.props.getWorkflows?.()
                         this.props.reloadEnvironments?.()
                     }
@@ -129,7 +148,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 showError(error)
             })
             .finally(() => {
-                this.setState({ deleteInProgress: false })
+                this.setState({ deleteInProgress: false, showDeploymentConfirmationDeleteDialog: false })
             })
     }
 
@@ -197,6 +216,30 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>
         )
+    }
+
+    renderDeploymentWindowConfirmationModal = () => (
+        <DeploymentWindowConfirmationDialog
+            onClose={this.onClickHideDeletePipelinePopup}
+            value={this.state.deploymentWindowConfimationValue}
+            setValue={this.setDeploymentWindowConfimationValue}
+            isLoading={this.state.deleteInProgress}
+            type={MODAL_TYPE.PIPELINE}
+            onClickActionButton={() => handleDeleteCDNodePipeline(this.deleteCD, this.props.deploymentAppType as DeploymentAppTypes)}
+            appName={this.props.appName}
+            envName={this.props.environmentName}
+            appId={this.props.appId}
+            envId={this.props.environmentId}
+        />
+    )
+
+    renderDeleteConformationDialog = () => {
+        if (this.state.showDeploymentConfirmationDeleteDialog && DeploymentWindowConfirmationDialog) {
+            return this.renderDeploymentWindowConfirmationModal()
+        } else if (this.state.showDeletePipelinePopup) {
+            return this.renderConfirmationModal()
+        }
+        return null
     }
 
     onClickNodeCard = (event) => {
@@ -288,7 +331,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         </div>
                     </div>
                 </Link>
-                {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}
             </>
         )
     }
@@ -323,6 +365,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         showConfirmationBar
                     />
                 )}
+                {this.renderDeleteConformationDialog()}
             </>
         )
     }
