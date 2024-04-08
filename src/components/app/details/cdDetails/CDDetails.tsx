@@ -479,7 +479,9 @@ export const TriggerOutput: React.FC<{
 
     return (
         <>
-            <div className="trigger-details-container">
+            <div
+                className={`trigger-details-container ${triggerDetails.triggerMetadata ? 'with-trigger-metadata' : ''}`}
+            >
                 {!fullScreenView && (
                     <>
                         <TriggerDetails
@@ -495,6 +497,7 @@ export const TriggerOutput: React.FC<{
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
+                            triggerMetadata={triggerDetails.triggerMetadata}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppTypes.HELM && (

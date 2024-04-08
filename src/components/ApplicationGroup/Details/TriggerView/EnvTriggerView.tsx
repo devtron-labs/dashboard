@@ -95,6 +95,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const processDeploymentWindowStateAppGroup = importComponentFromFELibrary('processDeploymentWindowStateAppGroup', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -263,6 +264,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
+            if(processDeploymentWindowStateAppGroup && _workflows.length){
+              await processDeploymentWindowStateAppGroup(_workflows)
+            }
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -1453,7 +1457,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403) {
+                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],

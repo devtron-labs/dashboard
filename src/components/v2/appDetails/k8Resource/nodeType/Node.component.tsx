@@ -24,6 +24,7 @@ const NodeComponent = ({
     monitoringTools,
     isDevtronApp,
     isExternalApp,
+    isDeploymentBlocked,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -450,7 +451,11 @@ const NodeComponent = ({
                             node?.kind !== 'EndpointSlice' &&
                             !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                    <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                                    <NodeDeleteComponent
+                                        nodeDetails={node}
+                                        appDetails={appDetails}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                    />
                                 </div>
                             )}
                     </div>
