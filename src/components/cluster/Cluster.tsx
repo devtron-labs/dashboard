@@ -545,9 +545,7 @@ const Cluster = ({
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
             payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } else {
-            payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue
-        }
+        } 
         payload.remoteConnectionConfig.sshConfig['sshUsername'] = state.sshUsername?.value
         payload.remoteConnectionConfig.sshConfig['sshPassword'] = state.sshPassword?.value
         payload.remoteConnectionConfig.sshConfig['sshAuthKey'] = state.sshAuthKey?.value

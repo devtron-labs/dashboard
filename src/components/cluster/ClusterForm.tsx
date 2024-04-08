@@ -442,7 +442,7 @@ export default function ClusterForm({
                 cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
-            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod),
+            remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod, SSHConnectionType),
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
                 userName:
@@ -475,22 +475,6 @@ export default function ClusterForm({
             }
             payload.remoteConnectionConfig.proxyConfig = {
                 proxyUrl: proxyUrlValue,
-            }
-        }
-        if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
-            payload.remoteConnectionConfig.sshConfig = {
-                sshServerAddress: state.sshServerAddress?.value || '',
-                sshUsername: state.sshUsername?.value || '',
-                sshPassword:
-                    SSHConnectionType === SSHAuthenticationType.Password ||
-                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                        ? state.sshPassword?.value
-                        : '',
-                sshAuthKey:
-                    SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                        ? state.sshAuthKey?.value
-                        : '',
             }
         }
 
