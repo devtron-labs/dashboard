@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
+import { MainContextProvider } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../../config'
 import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
-import { mainContext } from '../../../../../../../common/navigation/NavigationRoutes'
 import { MainContext } from '../../../../../../../common/navigation/types'
 import { TerminalWrapperType, TERMINAL_TEXT } from '../constants'
 import { TerminalSelectionListDataType } from '../terminal.type'
@@ -164,5 +164,5 @@ const userContextMock = {
 } as MainContext
 
 export const terminalContextWrapper = (terminalView) => {
-    return <mainContext.Provider value={userContextMock}>{terminalView}</mainContext.Provider>
+    return <MainContextProvider value={userContextMock}>{terminalView}</MainContextProvider>
 }

@@ -11,18 +11,17 @@ import {
     VariableType,
     VisibleModal,
     PipelineType,
+    ButtonWithLoader,
     MODAL_TYPE,
     ACTION_STATE,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import yamlJsParser from 'yaml'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
-    ButtonWithLoader,
     FloatingVariablesSuggestions,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -1201,7 +1200,6 @@ export default function NewCDPipeline({
                                 {renderSecondaryButton()}
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"
-                                    loaderColor="white"
                                     dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -9,6 +9,8 @@ import {
     noop,
     ClipboardButton,
     ResizableTextarea,
+    useMainContext,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
@@ -20,9 +22,8 @@ import { isTokenExpired } from './apiToken.utils'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../../components/common'
+import { importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
-import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -57,7 +58,7 @@ const EditAPIToken = ({
 
     const history = useHistory()
     const match = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
 
     const [customDate, setCustomDate] = useState<number>(undefined)
@@ -196,7 +197,6 @@ const EditAPIToken = ({
                             disabled={loader}
                             isLoading={false}
                             dataTestId="delete-token"
-                            loaderColor="white"
                         >
                             <Delete className="icon-dim-16 mr-8" />
                             <span>Delete</span>
