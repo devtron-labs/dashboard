@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/tabindex-no-positive */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
@@ -12,6 +12,7 @@ import {
     TippyTheme,
     CustomInput,
     ResizableTextarea,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
@@ -22,7 +23,6 @@ import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -72,7 +72,7 @@ const CreateAPIToken = ({
 }: GenerateTokenType) => {
     const history = useHistory()
     const match = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',
