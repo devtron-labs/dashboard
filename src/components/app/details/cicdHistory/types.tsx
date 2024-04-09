@@ -73,13 +73,6 @@ export interface ArtifactType {
     jobCIClass?: string
 }
 
-// TODO: Have a sync for this: Have;nt seen it used anywhere got merged in conflicts
-export interface CopyTippyWithTextType {
-    copyText: string
-    copied: boolean
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
-}
-
 export interface CIListItemType extends Pick<GitChangesType, 'promotionApprovalMetadata' | 'selectedEnvironmentName'> {
     type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
