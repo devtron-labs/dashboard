@@ -102,6 +102,8 @@ $margins: (
     pl: padding-left,
     pr: padding-right,
     p: padding,
+    px: padding-inline,
+    py: padding-block,
 );
 
 @each $margin, $style in $margins {
