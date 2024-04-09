@@ -8,6 +8,7 @@ import {
     MountPath,
     ScriptType,
     CustomInput,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { components } from 'react-select'
@@ -23,7 +24,6 @@ import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
 import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
@@ -240,11 +240,9 @@ export const TaskTypeDetailComponent = () => {
                             onKeyDown={handleKeyDown}
                         />
                         {selectedContainerImage?.label && (
-                            <CopyToClipboardTextWithTippy
-                                text={selectedContainerImage.label}
-                                rootClassName="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20"
-                                placement="bottom"
-                            />
+                            <div className="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20">
+                                <ClipboardButton content={selectedContainerImage.label} />
+                            </div>
                         )}
                         {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">

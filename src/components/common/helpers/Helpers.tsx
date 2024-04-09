@@ -7,6 +7,7 @@ import {
     getLoginInfo,
     APIOptions,
     useWindowSize,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -563,7 +564,7 @@ export function useJsonYaml(value, tabSize = 4, language = 'json', shouldRun = f
         }
         if (obj && typeof obj === 'object') {
             setJson(JSON.stringify(obj, null, tabSize))
-            setYaml(YAML.stringify(obj, { indent: 2 }))
+            setYaml(YAMLStringify(obj))
             setNativeObject(obj)
             setError('')
         } else {

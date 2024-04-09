@@ -1,13 +1,12 @@
 import React, { FunctionComponent, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal2, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { NoGitOpsRepoConfiguredWarningType, ReloadNoGitOpsRepoConfiguredModalType } from './types'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as RetryIcon } from '../../assets/icons/ic-arrow-clockwise.svg'
-import { ButtonWithLoader } from '../common'
 import { getGitOpsRepoConfig } from '../../services/service'
 
 export const ReloadNoGitOpsRepoConfiguredModal: FunctionComponent<ReloadNoGitOpsRepoConfiguredModalType> = ({
@@ -99,7 +98,6 @@ const NoGitOpsRepoConfiguredWarning: FunctionComponent<NoGitOpsRepoConfiguredWar
                                 rootClassName="cta sso__warn-button btn-confirm flex dc__gap-8"
                                 onClick={checkGitOpsRepoConflict}
                                 isLoading={gitopsConflictLoading}
-                                loaderColor="white"
                             >
                                 <span> Configure</span>
                                 <ArrowRight className="icon-dim-16" />

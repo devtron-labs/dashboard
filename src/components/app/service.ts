@@ -31,10 +31,7 @@ export function getCITriggerInfo(params: { envId: number | string; ciArtifactId:
     return get(URL)
 }
 
-export function getCITriggerInfoModal(
-    params: { envId: number | string; ciArtifactId: number | string },
-    commit: string,
-) {
+export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
         materials = materials.map((mat) => {
@@ -58,10 +55,6 @@ export function getCITriggerInfoModal(
                         webhookData: hist.WebhookData,
                     }
                 }),
-                isSelected:
-                    mat.history.find((h) =>
-                        mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
-                    ) || false,
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
@@ -390,8 +383,8 @@ export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSign
     })
 }
 
-export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string) {
-    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`)
+export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string, abortSignal?: AbortSignal) {
+    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
 }
 
 export const getCDTriggerStatus = (appId) => {
