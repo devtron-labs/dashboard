@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.75",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.75-beta-8",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -80,6 +80,8 @@
     "devDependencies": {
         "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
+        "marked": "4.3.0",
+        "dompurify": "^3.0.2",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",
         "@types/jest": "^27.4.1",

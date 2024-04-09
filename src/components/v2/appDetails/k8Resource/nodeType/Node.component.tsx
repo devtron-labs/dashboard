@@ -19,6 +19,7 @@ import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 const NodeComponent = ({
     handleFocusTabs,
@@ -38,7 +39,7 @@ const NodeComponent = ({
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ nodeType: NodeType; resourceName: string }>()
+    const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
     const podMetaData = IndexStore.getPodMetaData()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
@@ -421,7 +422,7 @@ const NodeComponent = ({
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
-                                {PodRestartIcon && (
+                                {Number(getPodRestartCount(node)) > 0 && PodRestartIcon && (
                                     <PodRestartIcon clusterId={clusterId} name={node.name} namespace={node.namespace} />
                                 )}
                             </div>
@@ -523,6 +524,13 @@ const NodeComponent = ({
                         </div>
                     )}
                 </div>
+            )}
+            {PodRestart && (
+                <PodRestart
+                    clusterId={clusterId}
+                    name={params.name ?? 'demo2-vishu-env-5ddcb8f64b-lgrqk'}
+                    namespace={params.namespace ?? 'non-prod'}
+                />
             )}
         </>
     )

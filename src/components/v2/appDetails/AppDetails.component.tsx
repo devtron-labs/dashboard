@@ -157,6 +157,7 @@ const AppDetailsComponent = ({
                 externalLinks={externalLinks}
                 monitoringTools={monitoringTools}
                 isExternalApp={isExternalApp}
+                clusterId={appDetails.clusterId}
             />
         )
     }

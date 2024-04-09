@@ -3,7 +3,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { highlightSearchedText } from '../../common/helpers/Helpers'
+import { highlightSearchedText, importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
@@ -21,6 +21,9 @@ import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
 import { URLS } from '../../../config'
+
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 export const K8SResourceList = ({
     selectedResource,
@@ -48,12 +51,13 @@ export const K8SResourceList = ({
 }: K8SResourceListType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const { clusterId, namespace, nodeType, node, group } = useParams<{
+    const { clusterId, namespace, nodeType, node, group, name } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
         group: string
+        name: string
     }>()
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -224,6 +228,15 @@ export const K8SResourceList = ({
                                         __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
                                     }}
                                 />
+                                <span>
+                                    {columnName === 'restarts' && PodRestartIcon && (
+                                        <PodRestartIcon
+                                            clusterId={clusterId}
+                                            name={resourceData.name}
+                                            namespace={resourceData.namespace}
+                                        />
+                                    )}
+                                </span>
                             </ConditionalWrap>
                         </div>
                     ),
@@ -355,6 +368,9 @@ export const K8SResourceList = ({
                 renderCallBackSync={renderCallBackSync}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
+            {PodRestart && (
+                <PodRestart clusterId={clusterId} name={name ?? 'demo2-vishu-env-5ddcb8f64b-lgrqk'} namespace={namespace ?? 'non-prod'} />
+            )}
         </div>
     )
 }
