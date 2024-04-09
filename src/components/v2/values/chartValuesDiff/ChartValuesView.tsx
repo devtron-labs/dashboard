@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
+import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -12,10 +13,12 @@ import {
     GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
+    StyledRadioGroup as RadioGroup,
+    useMainContext,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
-import { getDeploymentAppType, importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -56,6 +59,7 @@ import {
     AppNameInput,
     ValueNameInput,
     DeploymentAppSelector,
+    GitOpsDrawer,
 } from './ChartValuesView.component'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import {
@@ -77,7 +81,6 @@ import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -114,6 +117,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
+import { AUTO_GENERATE_GITOPS_REPO } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -138,7 +142,7 @@ const ChartValuesView = ({
         presetValueId: string
         envId: string
     }>()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -149,6 +153,10 @@ const ChartValuesView = ({
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
+    const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
+    const [staleData, setStaleData] = useState<boolean>(false)
+    const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
+    const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -170,6 +178,11 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+    
+    const handleDrawerState = (state: boolean) => {
+        setIsDrawerOpen(state)
+    }
+
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -179,6 +192,7 @@ const ChartValuesView = ({
                     payload: true,
                 })
             }
+            setAllowedCustomBool(result.allowCustomRepository === true)
         } catch (error) {}
     }
 
@@ -242,7 +256,7 @@ const ChartValuesView = ({
                         }
                         setChartValuesList([_chartValues])
 
-                        const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
+                        const _valuesYaml = YAMLStringify(JSON.parse(_releaseInfo.mergedValues))
                         getAndUpdateSchemaValue(
                             _valuesYaml,
                             convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
@@ -397,7 +411,7 @@ const ChartValuesView = ({
                     type: ChartValuesViewActionTypes.multipleOptions,
                     payload: {
                         fetchingValuesYaml: false,
-                        modifiedValuesYaml: YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues)),
+                        modifiedValuesYaml: YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues)),
                     },
                 })
             }
@@ -503,8 +517,8 @@ const ChartValuesView = ({
                 chartName: _installedAppInfo.appStoreChartName,
                 version: _releaseInfo.deployedAppDetail.chartVersion,
                 deprecated: result?.deprecated,
+                gitRepoURL: result.gitRepoURL,
             }
-
             getChartValuesList(_repoChartValue.chartId, setChartValuesList)
             fetchChartVersionsData(_repoChartValue.chartId, dispatch, _releaseInfo.deployedAppDetail.chartVersion)
             getAndUpdateSchemaValue(
@@ -890,6 +904,7 @@ const ChartValuesView = ({
                     deploymentAppType: isVirtualEnvironmentOnSelector
                         ? DeploymentAppTypes.MANIFEST_DOWNLOAD
                         : commonState.deploymentAppType,
+                    gitRepoURL: commonState.gitRepoURL,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
@@ -951,7 +966,21 @@ const ChartValuesView = ({
                 toast.error(SOME_ERROR_MSG)
             }
         } catch (err) {
-            showError(err)
+            if (err['code'] === 409) {
+                handleDrawerState(true)
+                toast.error('Some global configurations for GitOps has changed')
+                setStaleData(true)
+                dispatch({
+                    type: ChartValuesViewActionTypes.setGitRepoURL,
+                    payload: AUTO_GENERATE_GITOPS_REPO,
+                })
+                handleDrawerState(true)
+            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
+                setAllowedCustomBool(true)
+                handleDrawerState(true)
+            } else {
+                showError(err)
+            }
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
@@ -1215,7 +1244,6 @@ const ChartValuesView = ({
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedProject, payload: selected })
-
         if (commonState.invalidProject) {
             dispatch({
                 type: ChartValuesViewActionTypes.invalidProject,
@@ -1225,6 +1253,7 @@ const ChartValuesView = ({
     }
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
+        setShowRepoSelector(true)
         if (selected.allowedDeploymentTypes.indexOf(commonState.deploymentAppType) >= 0) {
             dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
         } else {
@@ -1361,7 +1390,7 @@ const ChartValuesView = ({
                         valuesText={commonState.modifiedValuesYaml}
                         defaultValuesText={
                             isExternalApp
-                                ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
+                                ? YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues))
                                 : commonState.installedConfig?.valuesOverrideYaml
                         }
                         onChange={onEditorValueChange}
@@ -1472,6 +1501,13 @@ const ChartValuesView = ({
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         const wrapperClassName = getDynamicWrapperClassName()
+        const showDeploymentTools =
+            !isExternalApp &&
+            !isCreateValueView &&
+            !isVirtualEnvironmentOnSelector &&
+            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
+            !appDetails?.isVirtualEnvironment &&
+            !commonState.installedConfig?.isOCICompliantChart
         return (
             <div
                 className={`chart-values-view__container bcn-0 ${
@@ -1561,22 +1597,30 @@ const ChartValuesView = ({
                                 isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                            !isExternalApp &&
-                            !isCreateValueView &&
-                            !isVirtualEnvironmentOnSelector &&
-                            (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-                            !appDetails?.isVirtualEnvironment &&
-                            !commonState.installedConfig?.isOCICompliantChart && (
-                                <DeploymentAppSelector
-                                    commonState={commonState}
-                                    isUpdate={isUpdate}
-                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                    isDeployChartView={isDeployChartView}
-                                    allowedDeploymentTypes={allowedDeploymentTypes}
-                                />
-                            )}
-                        <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
+                            <DeploymentAppSelector
+                                commonState={commonState}
+                                isUpdate={isUpdate}
+                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                isDeployChartView={isDeployChartView}
+                                allowedDeploymentTypes={allowedDeploymentTypes}
+                                gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                            />
+                        )}
+                        {allowedCustomBool && showDeploymentTools && (
+                            <GitOpsDrawer
+                                commonState={commonState}
+                                deploymentAppType={commonState.deploymentAppType}
+                                allowedDeploymentTypes={allowedDeploymentTypes}
+                                staleData={staleData}
+                                setStaleData={setStaleData}
+                                dispatch={dispatch}
+                                isDrawerOpen={isDrawerOpen}
+                                handleDrawerState={handleDrawerState}
+                                showRepoSelector={showRepoSelector}
+                                allowedCustomBool={allowedCustomBool}
+                            />
+                        )}
                         {/**
                          * ChartRepoSelector will be displayed only when,
                          * - It's not a deploy chart view
@@ -1598,6 +1642,7 @@ const ChartValuesView = ({
                                     hideConnectToChartTippy={hideConnectToChartTippy}
                                 />
                             )}
+
                         {!isDeployChartView &&
                             isExternalApp &&
                             !commonState.installedAppInfo &&

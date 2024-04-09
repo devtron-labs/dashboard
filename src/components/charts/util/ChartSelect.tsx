@@ -1,14 +1,13 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import Tippy from '@tippyjs/react'
-import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import { LazyImage, ConditionalWrap } from '../../common'
+import { LazyImage } from '../../common'
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { SERVER_MODE } from '../../../config'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
+import { noop, ConditionalWrap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AllChartSelectProps {
     chart: Chart
@@ -47,7 +46,7 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
     showDescription,
     datatestid,
 }) => {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
 
     function handleImageError(e): void {
         const target = e.target as HTMLImageElement

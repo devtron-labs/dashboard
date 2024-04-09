@@ -10,6 +10,7 @@ import {
     ErrorScreenManager,
     Reload,
     DevtronProgressing,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import {
@@ -19,7 +20,6 @@ import {
     processK8SObjects,
     sortObjectArrayAlphabetically,
 } from '../../common'
-import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
     ClusterOptionType,

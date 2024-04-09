@@ -20,8 +20,10 @@ import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
+import LoadingCard from './LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -43,6 +45,7 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
+    filteredEnvIds
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -87,7 +90,8 @@ export const SourceInfo = ({
         }
     }, [appDetails?.ciArtifactId, appDetails?.appId])
 
-    const onClickShowCommitInfo = (): void => {
+    const onClickShowCommitInfo = (e): void => {
+        e.stopPropagation()
         showCommitInfo(true)
     }
 
@@ -97,6 +101,15 @@ export const SourceInfo = ({
 
     const onClickShowHibernateModal = (): void => {
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
+    }
+
+    const shimmerLoaderBlocks = () => {
+        const loadingCards = []
+        for (let i = 0; i < 4; i++) {
+            loadingCards.push(<LoadingCard key={i} />)
+        }
+
+        return <div className="flex left mb-16">{loadingCards}</div>
     }
 
     const conditionalScalePodsButton = (children) => {
@@ -114,7 +127,7 @@ export const SourceInfo = ({
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
-            <div className="flex left w-100 mb-16">
+            <div className="flex left w-100">
                 <EnvSelector
                     environments={environments}
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
@@ -214,66 +227,77 @@ export const SourceInfo = ({
     }
 
     return (
-        <div className="flex left w-100 column source-info-container">
+        <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
-            {!isdeploymentAppDeleting && environment && (
-                <div className="flex left w-100">
-                    {!isVirtualEnvironment && (
-                        <AppStatusCard
-                            appDetails={appDetails}
-                            status={status}
-                            cardLoading={cardLoading}
-                            setDetailed={setDetailed}
-                            message={message}
-                        />
-                    )}
-                    {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                    {!loadingResourceTree && (
-                        <IssuesCard
-                            cardLoading={cardLoading}
-                            toggleIssuesModal={toggleIssuesModal}
-                            setErrorsList={setErrorsList}
-                            setDetailed={setDetailed}
-                        />
-                    )}
-                    <DeploymentStatusCard
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        cardLoading={cardLoading}
-                        hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                        refetchDeploymentStatus={refetchDeploymentStatus}
-                    />
-                    {appDetails?.dataSource !== 'EXTERNAL' && (
-                        <DeployedCommitCard
-                            cardLoading={cardLoading}
-                            showCommitInfoDrawer={onClickShowCommitInfo}
-                            envId={envId}
-                            ciArtifactId={ciArtifactId}
-                        />
-                    )}
-                    {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
-                        <SecurityVulnerabilityCard
-                            cardLoading={cardLoading}
-                            severityCount={severityCount}
-                            showVulnerabilitiesModal={showVulnerabilitiesModal}
-                        />
-                    )}
-                    <div className="flex right ml-auto">
-                        {appDetails?.appStoreChartId && (
-                            <>
-                                <span className="mr-8 fs-12 cn-7">Chart:</span>
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                >
-                                    {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
-                                    {appDetails.appStoreAppVersion})
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
+            {loadingDetails
+                ? shimmerLoaderBlocks()
+                : !isdeploymentAppDeleting &&
+                  environment && (
+                      <div className="flex left w-100">
+                          {!isVirtualEnvironment && (
+                              <AppStatusCard
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
+                          )}
+                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          {!loadingResourceTree && (
+                              <IssuesCard
+                                  cardLoading={cardLoading}
+                                  toggleIssuesModal={toggleIssuesModal}
+                                  setErrorsList={setErrorsList}
+                                  setDetailed={setDetailed}
+                              />
+                          )}
+                          <DeploymentStatusCard
+                              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                              cardLoading={cardLoading}
+                              hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                              isVirtualEnvironment={isVirtualEnvironment}
+                              refetchDeploymentStatus={refetchDeploymentStatus}
+                          />
+                          {appDetails?.dataSource !== 'EXTERNAL' && (
+                              <DeployedCommitCard
+                                  cardLoading={cardLoading}
+                                  showCommitInfoDrawer={onClickShowCommitInfo}
+                                  envId={envId}
+                                  ciArtifactId={ciArtifactId}
+                              />
+                          )}
+                          {DeploymentWindowStatusCard && (
+                              <DeploymentWindowStatusCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  filteredEnvIds={filteredEnvIds}
+                              />
+                          )}
+                          {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
+                              <SecurityVulnerabilityCard
+                                  cardLoading={cardLoading}
+                                  severityCount={severityCount}
+                                  showVulnerabilitiesModal={showVulnerabilitiesModal}
+                              />
+                          )}
+                          <div className="flex right ml-auto">
+                              {appDetails?.appStoreChartId && (
+                                  <>
+                                      <span className="mr-8 fs-12 cn-7">Chart:</span>
+                                      <Link
+                                          className="cb-5 fw-6"
+                                          to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                                      >
+                                          {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
+                                          {appDetails.appStoreAppVersion})
+                                      </Link>
+                                  </>
+                              )}
+                          </div>
+                      </div>
+                  )}
         </div>
     )
 }

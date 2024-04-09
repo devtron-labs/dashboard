@@ -13,11 +13,11 @@ import {
     MandatoryPluginDataType,
     MandatoryPluginDetailType,
     PluginDetailType,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
-    ButtonWithLoader,
     FloatingVariablesSuggestions,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -559,7 +559,7 @@ export default function CIPipeline({
         validateStage(BuildStageVariable.Build, formData)
         validateStage(BuildStageVariable.PostBuild, formData)
         const scanValidation =
-            !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
+            isJobCard || !isSecurityModuleInstalled || formData.scanEnabled || !window._env_.FORCE_SECURITY_SCANNING
         if (!scanValidation) {
             setApiInProgress(false)
             toast.error('Scanning is mandatory, please enable scanning')
@@ -612,7 +612,7 @@ export default function CIPipeline({
             {
                 ...formData,
                 materials: _materials,
-                scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
+                scanEnabled: !isJobCard && isSecurityModuleInstalled ? formData.scanEnabled : false,
             },
             _ciPipeline,
             _materials,
@@ -826,7 +826,6 @@ export default function CIPipeline({
                         {formData.ciPipelineEditable && (
                             <ButtonWithLoader
                                 rootClassName="cta cta--workflow"
-                                loaderColor="white"
                                 dataTestId="build-pipeline-button"
                                 onClick={savePipeline}
                                 disabled={

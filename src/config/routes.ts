@@ -36,6 +36,7 @@ export const URLS = {
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
+    APP_GITOPS_CONFIG: 'gitops-config',
     APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
@@ -55,6 +56,7 @@ export const URLS = {
     LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
+    GIT_OPS_CONFIG: '/gitops/config',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',
@@ -81,6 +83,7 @@ export const URLS = {
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
+    LINKED_CI_DETAILS: 'linked-ci-details',
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',

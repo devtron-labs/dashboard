@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { TippyCustomized, TippyTheme, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
@@ -22,10 +21,16 @@ import {
     NodeLevelSelectStyles,
     onImageLoadError,
 } from './ExternalLinks.utils'
-import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types'
-import { ConditionalWrap } from '../common'
+import {
+    TippyCustomized,
+    TippyTheme,
+    InfoColourBar,
+    GenericEmptyState,
+    ConditionalWrap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
+import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
@@ -197,7 +202,7 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
+            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 dc__border-bottom-n1 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />

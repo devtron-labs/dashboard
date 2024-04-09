@@ -1,8 +1,5 @@
 import React, { useContext } from 'react'
-import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { RadioGroup } from '../../common'
 import { BASIC_VIEW_TIPPY_CONTENT } from '../constants'
 import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
 import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
@@ -10,6 +7,13 @@ import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
 import { DeploymentConfigContext } from '../DeploymentConfig'
+import {
+    ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
+    StyledRadioGroup as RadioGroup,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
@@ -57,11 +61,11 @@ export default function DeploymentTemplateOptionsTab({
         if (isEnvOverride) {
             const overriddenValues = state.latestDraft
                 ? state.draftValues
-                : YAML.stringify(state.duplicate, { indent: 2 })
+                : YAMLStringify(state.duplicate)
             const _envValues =
                 state.data.IsOverride || state.duplicate
                     ? overriddenValues
-                    : YAML.stringify(state.data.globalConfig, { indent: 2 })
+                    : YAMLStringify(state.data.globalConfig)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -70,7 +74,8 @@ export default function DeploymentTemplateOptionsTab({
         } else {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
-                payload: state.latestDraft ? state.draftValues : YAML.stringify(state.template, { indent: 2 }),
+                // Explicitly setting getTrimmedManifestData(parsedManifest) as object to avoid type error from YAMLStringify.
+                payload: state.latestDraft ? state.draftValues : YAMLStringify(state.template),
             })
         }
     }

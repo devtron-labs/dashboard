@@ -5,57 +5,8 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
+import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
-interface customEnv {
-    SENTRY_ENV?: string
-    SENTRY_ERROR_ENABLED?: boolean
-    SENTRY_PERFORMANCE_ENABLED?: boolean
-    SENTRY_DSN?: string
-    SENTRY_TRACES_SAMPLE_RATE?: number
-    HOTJAR_ENABLED?: boolean
-    CLUSTER_NAME?: boolean
-    APPLICATION_METRICS_ENABLED?: boolean
-    GA_ENABLED?: boolean
-    GA_TRACKING_ID?: string
-    GTM_ENABLED?: boolean
-    GTM_ID?: string
-    RECOMMEND_SECURITY_SCANNING?: boolean
-    FORCE_SECURITY_SCANNING?: boolean
-    ENABLE_CI_JOB?: boolean
-    HIDE_DISCORD?: boolean
-    POSTHOG_ENABLED?: boolean
-    POSTHOG_TOKEN?: string
-    DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
-    HELM_APP_DETAILS_POLLING_INTERVAL?: number
-    EA_APP_DETAILS_POLLING_INTERVAL?: number
-    CENTRAL_API_ENDPOINT?: string
-    HIDE_DEPLOYMENT_GROUPS?: boolean
-    HIDE_GITOPS_OR_HELM_OPTION?: boolean
-    CONFIGURABLE_TIMEOUT?: string
-    HIDE_APPLICATION_GROUPS?: boolean
-    K8S_CLIENT?: boolean
-    CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
-    CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
-    ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
-    HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
-    ENABLE_BUILD_CONTEXT?: boolean
-    CLAIR_TOOL_VERSION?: string
-    ENABLE_RESTART_WORKLOAD?: boolean
-    ENABLE_SCOPED_VARIABLES?: boolean
-    DEFAULT_CI_TRIGGER_TYPE_MANUAL: boolean
-    ANNOUNCEMENT_BANNER_MSG?: string
-    LOGIN_PAGE_IMAGE?: string
-    LOGIN_PAGE_IMAGE_BG?: string
-    HIDE_DEFAULT_CLUSTER?: boolean
-    GLOBAL_API_TIMEOUT?: number
-    TRIGGER_API_TIMEOUT?: number
-    NODE_REACT_APP_GIT_SHA?: string
-    REACT_APP_GIT_SHA?: string
-    NODE_ENV?: string
-    LOGIN_DT_LOGO?: string
-    SIDEBAR_DT_LOGO?: string
-    ENABLE_EXTERNAL_ARGO_CD: boolean
-}
 declare global {
     interface Window {
         _env_: customEnv
@@ -171,6 +122,8 @@ if (!window || !window._env_) {
         LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
         ENABLE_EXTERNAL_ARGO_CD: false,
+        API_BATCH_SIZE: 20,
+        SERVICE_WORKER_TIMEOUT: '1',
     }
 }
 

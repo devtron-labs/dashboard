@@ -62,6 +62,7 @@ export interface ResourceListPayloadType {
             name?: string
         }
         patch?: string
+        forceDelete?: boolean
     }
 }
 
@@ -215,4 +216,8 @@ export interface K8sObjectOptionType extends OptionType {
         grouped: string
     }
     groupName: string
+}
+
+export interface K8Abbreviates {
+    [key: string]: string
 }

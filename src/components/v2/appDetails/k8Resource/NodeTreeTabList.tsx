@@ -1,6 +1,5 @@
 import React from 'react'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { useSharedState } from '../../utils/useSharedState'
 import AppDetailsStore, { AppDetailsTabs } from '../appDetails.store'
@@ -8,7 +7,8 @@ import { ApplicationObject, NodeTreeTabListProps, NodeType } from '../appDetails
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../../assets/icons/ic-logs.svg'
 import { ReactComponent as Cross } from '../../../../assets/icons/ic-close.svg'
-import { ConditionalWrap } from '../../../common'
+import Tippy from '@tippyjs/react'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import './NodeTreeTabList.scss'
 
 export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tabRef }: NodeTreeTabListProps) {
