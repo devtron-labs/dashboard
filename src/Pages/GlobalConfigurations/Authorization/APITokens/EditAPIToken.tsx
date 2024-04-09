@@ -1,30 +1,29 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
     InfoColourBar,
-    copyToClipboard,
     CustomInput,
     noop,
+    ClipboardButton,
     ResizableTextarea,
+    useMainContext,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import moment from 'moment'
 import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'
-import { ReactComponent as Clipboard } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { MomentDateFormat } from '../../../../config'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../../components/common'
+import { importComponentFromFELibrary } from '../../../../components/common'
 import { updateGeneratedAPIToken } from './service'
-import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -45,8 +44,6 @@ const EditAPIToken = ({
     setShowRegeneratedModal,
     showRegeneratedModal,
     handleRegenerateActionButton,
-    copied,
-    setCopied,
     reload,
     editData,
     setEditData,
@@ -61,7 +58,7 @@ const EditAPIToken = ({
 
     const history = useHistory()
     const match = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
 
     const [customDate, setCustomDate] = useState<number>(undefined)
@@ -180,11 +177,6 @@ const EditAPIToken = ({
         return <Progressing pageLoader />
     }
 
-    const handleCopyToClipboard = (e) => {
-        e.stopPropagation()
-        copyToClipboard(editData.token, () => setCopied(true))
-    }
-
     return (
         <div className="fs-13 fw-4 w-100 flexbox-col flex-grow-1 dc__content-space pb-16">
             <div className="pl-20 pr-20 pb-20">
@@ -205,7 +197,6 @@ const EditAPIToken = ({
                             disabled={loader}
                             isLoading={false}
                             dataTestId="delete-token"
-                            loaderColor="white"
                         >
                             <Delete className="icon-dim-16 mr-8" />
                             <span>Delete</span>
@@ -248,24 +239,9 @@ const EditAPIToken = ({
                             <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
                                 {editData.token}
                             </span>
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="bottom"
-                                content={copied ? 'Copied!' : 'Copy'}
-                                trigger="mouseenter click"
-                                onShow={(_tippy) => {
-                                    setTimeout(() => {
-                                        _tippy.hide()
-                                        setCopied(false)
-                                    }, 5000)
-                                }}
-                                interactive
-                            >
-                                <div className="icon-dim-16 ml-8">
-                                    <Clipboard onClick={handleCopyToClipboard} className="icon-dim-16 cursor" />
-                                </div>
-                            </Tippy>
+                            <div className="icon-dim-16 ml-8">
+                                <ClipboardButton content={editData.token} />
+                            </div>
                         </div>
                     </label>
                     <label className="form__row">

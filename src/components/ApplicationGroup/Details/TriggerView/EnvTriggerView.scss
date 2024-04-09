@@ -59,6 +59,11 @@
             }
         }
     }
+    .tippy-over {
+        .tippy-box {
+            top: 47px;
+        }
+    }
     .response-list-container {
         max-height: calc(100vh - 120px);
         .response-row {

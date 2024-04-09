@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { DevtronProgressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useState, useEffect } from 'react'
+import { DevtronProgressing, useAsync, useMainContext, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import './EnvironmentsList.scss'
-import PageHeader from '../../common/header/PageHeader'
 import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { AppGroupAdminType } from '../AppGroup.types'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     const match = useRouteMatch()
-    const { setPageOverflowEnabled } = useContext(mainContext)
+    const { setPageOverflowEnabled } = useMainContext()
     const location = useLocation()
     const history = useHistory()
     const [searchText, setSearchText] = useState('')
