@@ -26,7 +26,9 @@
         width: 36px;
         height: 36px;
         border-radius: 4px;
-        box-shadow: 0 0 4px 0 rgba(0, 10, 20, 0.5), 0 0 4px 0 rgba(0, 10, 20, 0.5);
+        box-shadow:
+            0 0 4px 0 rgba(0, 10, 20, 0.5),
+            0 0 4px 0 rgba(0, 10, 20, 0.5);
         background-color: #2c3354;
         opacity: 0.8;
 
@@ -68,6 +70,17 @@
 
                     .inprogress-status-color {
                         color: var(--inprogress-orange);
+                    }
+                }
+            }
+            &.with-trigger-metadata {
+                height: 198px;
+                transition: height 0.3s;
+
+                .trigger-details {
+                    height: 168px;
+                    .trigger-details__summary {
+                        grid-template-rows: 1fr 70px;
                     }
                 }
             }

@@ -254,6 +254,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
     appId: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface TriggerCDNodeState {
@@ -285,6 +286,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     index?: number
     isGitOpsRepoNotConfigured?: boolean
     deploymentAppType: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
 }
 export interface TriggerPrePostCDNodeState {
     showGitOpsRepoConfiguredWarning: boolean
@@ -610,6 +612,7 @@ export interface CdPipeline {
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
     isGitOpsRepoNotConfigured?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
 import {
@@ -7,6 +7,7 @@ import {
     BreadCrumb,
     useBreadcrumb,
     useEffectAfterMount,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -23,9 +24,7 @@ import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
 import { ChartSelector } from '../../AppSelector'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './DiscoverChartDetails.scss'
-import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ChartValuesType } from '../charts.types'
@@ -49,7 +48,6 @@ function mapById(arr) {
 }
 
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
-    const { serverMode } = useContext(mainContext)
 
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState([])
@@ -292,7 +290,6 @@ const Deployment: React.FC<DeploymentProps> = ({
     } = useDiscoverDetailsContext()
     const match = useRouteMatch()
     const { push } = useHistory()
-    const { serverMode } = useContext(mainContext)
     const [showChartVersionSelectorModal, setShowChartVersionSelectorModal] = useState(false)
     const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
     const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])

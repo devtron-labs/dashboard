@@ -35,6 +35,7 @@ export interface History {
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
     promotionApprovalMetadata?: PromotionApprovalMetadataType
+    triggerMetadata?: string
 }
 
 export interface CiMaterial {
@@ -72,6 +73,7 @@ export interface ArtifactType {
     jobCIClass?: string
 }
 
+// TODO: Have a sync for this: Have;nt seen it used anywhere got merged in conflicts
 export interface CopyTippyWithTextType {
     copyText: string
     copied: boolean
@@ -192,10 +194,12 @@ export interface TriggerDetailsType {
     environmentName?: string
     isJobView?: boolean
     workerPodName?: string
+    triggerMetadata?: string
 }
 
 export interface TriggerDetailsStatusIconType {
     status: string
+    isDeploymentWindowInfo?: boolean
 }
 
 export interface FinishedType {
@@ -243,6 +247,7 @@ export interface StartDetailsType {
     type: HistoryComponentType
     environmentName?: string
     isJobView?: boolean
+    triggerMetadata?: string
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {

@@ -13,6 +13,7 @@ import {
     ConfirmationDialog,
     GenericEmptyState,
     IMAGE_SCAN_TOOL,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -60,7 +61,6 @@ import {
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
-import PageHeader from '../../common/header/PageHeader'
 import trivy from '../../../assets/icons/ic-clair-to-trivy.svg'
 import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
 import warn from '../../../assets/icons/ic-error-medium.svg'

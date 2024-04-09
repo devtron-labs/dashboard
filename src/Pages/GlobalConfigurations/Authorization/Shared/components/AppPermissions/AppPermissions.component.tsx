@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
@@ -7,11 +7,11 @@ import {
     ReactSelectInputAction,
     showError,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EntityTypes, ActionTypes } from '../../../constants'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import { importComponentFromFELibrary, mapByKey } from '../../../../../../components/common'
-import { mainContext, useMainContext } from '../../../../../../components/common/navigation/NavigationRoutes'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
 import {
@@ -51,7 +51,7 @@ import { JobList } from '../../../../../../components/Jobs/Types'
 const handleApprovalPermissionChange = importComponentFromFELibrary('handleApprovalPermissionChange', null, 'function')
 
 const AppPermissions = () => {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const {
         directPermission,
         setDirectPermission,

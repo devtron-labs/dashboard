@@ -79,6 +79,13 @@ export const TRIGGER_VIEW_GA_EVENTS = {
     },
 }
 
+export const CD_MATERIAL_GA_EVENT = {
+    FetchMoreImagesClicked: {
+        category: 'CD Material',
+        action: 'Fetch More Images Clicked',
+    },
+}
+
 export const NO_VULNERABILITY_TEXT = {
     Secured: 'You’re secure!',
     NoVulnerabilityFound: 'No security vulnerability found for this image.',
@@ -90,3 +97,5 @@ export const EMPTY_STATE = {
     title: 'No matching results',
     subtitle: 'We couldn’t find any matching images',
 }
+
+export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'

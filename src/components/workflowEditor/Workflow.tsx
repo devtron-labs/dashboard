@@ -79,6 +79,7 @@ export interface WorkflowProps
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
+    handleDisplayLoader?: () => void
 }
 
 interface WorkflowState {
@@ -461,6 +462,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
                 deploymentAppCreated={node.deploymentAppCreated}
+                isDeploymentBlocked={node.isDeploymentBlocked}
+                handleDisplayLoader={this.props.handleDisplayLoader}
             />
         )
     }

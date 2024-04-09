@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Switch, Route } from 'react-router-dom'
 import {
@@ -8,6 +8,8 @@ import {
     stopPropagation,
     ServerErrors,
     useAsync,
+    useMainContext,
+    HeaderWithCreateButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
@@ -21,7 +23,6 @@ import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
@@ -29,10 +30,8 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
-import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import ExternalArgoList from './ExternalArgoList'
 import {
     buildArgoAppListUrl,
     buildDevtronAppListUrl,
@@ -45,7 +44,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
-    const { serverMode, setPageOverflowEnabled } = useContext(mainContext)
+    const { serverMode, setPageOverflowEnabled } = useMainContext()
     const { setCurrentAppName } = useAppContext()
 
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
@@ -1000,7 +999,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 </div>
             ) : (
                 <>
-                    <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
+                    <HeaderWithCreateButton headerName="Applications" />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}

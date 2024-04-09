@@ -1,4 +1,5 @@
 import {
+    ACTION_STATE,
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
@@ -439,6 +440,7 @@ export interface HibernateStatusRowType {
     index: number
     isHibernateOperation: boolean
     isVirtualEnv?: boolean
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
 }
 
 export interface HibernateResponseRowType {
@@ -458,12 +460,21 @@ export interface BaseModalProps {
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
 }
 
+export interface HibernateInfoMapProps  {
+    type: string
+    excludedUserEmails: string[]
+    userActionState: ACTION_STATE
+}
 export interface HibernateModalProps extends BaseModalProps {
     setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
 }
 
 export interface UnhibernateModalProps extends BaseModalProps {
     setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
 }
 
 export interface StatusDrawer {

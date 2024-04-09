@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
-import { Progressing, showError, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, SortingOrder, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -192,7 +192,7 @@ const DeploymentTemplateEditorView = ({
                         if (isValues) {
                             const _fetchedValues = {
                                 ...state.fetchedValues,
-                                [state.selectedCompareOption.id]: YAML.stringify(
+                                [state.selectedCompareOption.id]: YAMLStringify(
                                     processFetchedValues(result, isChartVersionOption, isEnvOverride || isEnvOption),
                                 ),
                             }
