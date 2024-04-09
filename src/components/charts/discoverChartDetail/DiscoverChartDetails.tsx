@@ -412,6 +412,11 @@ function isReadmeInputCheckbox(text: string) {
     }
     return false
 }
+
+/**
+ * 
+ * deprecated function is used in common component
+ */
 export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
