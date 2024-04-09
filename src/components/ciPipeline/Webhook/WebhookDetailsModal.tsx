@@ -8,13 +8,13 @@ import {
     copyToClipboard,
     CustomInput,
     ClipboardButton,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader } from '../../common'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -828,7 +828,6 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     rootClassName="cta h-28 flex mr-8"
                     onClick={executeWebhook}
                     isLoading={webhookExecutionLoader}
-                    loaderColor="white"
                 >
                     <PlayButton className="icon-dim-18 mr-8" />
                     Execute

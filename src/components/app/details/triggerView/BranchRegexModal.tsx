@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
@@ -11,7 +11,6 @@ import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { ButtonWithLoader } from '../../../common'
 
 export default function BranchRegexModal({
     material,
@@ -82,7 +81,6 @@ export default function BranchRegexModal({
                     onClick={onClickNextButton}
                     disabled={_isDisabled || savingRegexValue}
                     isLoading={savingRegexValue}
-                    loaderColor="white"
                 >
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (

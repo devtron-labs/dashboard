@@ -1,5 +1,5 @@
 import React from 'react'
-import { ButtonWithLoader } from '../../../../components/common'
+import { ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { GenerateActionButtonType } from './apiToken.type'
 
 const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerateButton }: GenerateActionButtonType) => {
@@ -15,7 +15,6 @@ const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerate
                 disabled={loader}
                 dataTestId="cancel-token"
                 isLoading={false}
-                loaderColor="white"
             >
                 Cancel
             </ButtonWithLoader>
@@ -24,7 +23,6 @@ const GenerateActionButton = ({ loader, onCancel, onSave, buttonText, regenerate
                 onClick={onSave}
                 disabled={loader}
                 isLoading={loader}
-                loaderColor="white"
                 dataTestId={buttonText.toLowerCase().replace(' ', '-')}
             >
                 {buttonText}
