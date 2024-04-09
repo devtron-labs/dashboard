@@ -1177,9 +1177,9 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     return _options
 }
 
-export const getShowResourceScanModal = (selectedResourceKind: NodeType): boolean => {
+export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN && fromWorkloadOrRollout
+    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
 }

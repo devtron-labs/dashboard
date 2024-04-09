@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { PopupMenu, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, Nodes, useMainContext, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
 import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
@@ -22,6 +22,8 @@ export default function ResourceBrowserActionMenu({
     handleResourceClick,
     removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
+    const { installedModuleMap } = useMainContext()
+    
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
@@ -37,7 +39,7 @@ export default function ResourceBrowserActionMenu({
         setShowVulnerabilityModal(false)
     }
 
-    const showResourceScanModal = getShowResourceScanModal(selectedResource?.gvk?.Kind as any)
+    const showResourceScanModal = getShowResourceScanModal(selectedResource?.gvk?.Kind as any, installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY])
     return (
         <>
             <PopupMenu autoClose>

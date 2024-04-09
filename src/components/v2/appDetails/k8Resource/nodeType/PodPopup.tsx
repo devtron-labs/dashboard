@@ -1,4 +1,5 @@
 import React from 'react'
+import { ModuleNameMap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { NodeDetailTabs } from '../../../../app/types'
 import { PodPopupProps } from './types'
@@ -15,7 +16,11 @@ const PodPopup = ({
     toggleShowDeleteConfirmation,
     handleShowVulnerabilityModal,
 }: PodPopupProps) => {
-    const showResourceScanModal = getShowResourceScanModal(kind)
+    const { installedModuleMap } = useMainContext()
+    const showResourceScanModal = getShowResourceScanModal(
+        kind,
+        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+    )
 
     const handleDescribeEvents = () => {
         describeNode(NodeDetailTabs.EVENTS)
