@@ -61,6 +61,7 @@ const NodeTreeDetailTab = ({
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
                                         isDeploymentBlocked={isDeploymentBlocked}
+                                        clusterId={appDetails.clusterId}
                                     />
                                 )
                             }}
@@ -88,6 +89,7 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        clusterId={appDetails.clusterId}
                                         isDeploymentBlocked={isDeploymentBlocked}
                                     />
                                 )
@@ -105,6 +107,7 @@ const NodeTreeDetailTab = ({
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
                                         isDeploymentBlocked={isDeploymentBlocked}
+                                        clusterId={appDetails.clusterId}
                                     />
                                 )
                             }}

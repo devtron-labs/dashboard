@@ -188,7 +188,7 @@ export interface AppDetails {
     projectName?: string
     appType?: AppType
     helmReleaseStatus?: HelmReleaseStatus
-    clusterId?: number
+    clusterId: number
     notes?: string
     deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
@@ -529,6 +529,7 @@ export interface K8ResourceComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
+    clusterId?: number
     isDeploymentBlocked?: boolean
 }
 
@@ -537,6 +538,7 @@ export interface NodeComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
+    clusterId?: number
     isDeploymentBlocked?: boolean
 }
 export interface AppDetailsComponentType {
