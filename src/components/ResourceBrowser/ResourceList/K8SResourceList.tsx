@@ -229,7 +229,7 @@ export const K8SResourceList = ({
                                     }}
                                 />
                                 <span>
-                                    {columnName === 'restarts' && PodRestartIcon && (
+                                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
                                         <PodRestartIcon
                                             clusterId={clusterId}
                                             name={resourceData.name}
