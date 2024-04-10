@@ -989,7 +989,7 @@ export default function CDMaterial({
 
     const loadOlderImages = () => {
         ReactGA.event(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
-        
+
         if (!state.loadingMore) {
             setState((prevState) => ({
                 ...prevState,
@@ -2065,7 +2065,7 @@ export default function CDMaterial({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
+            if (deploymentWindowMetadata.userActionState && deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
                 setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
