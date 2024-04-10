@@ -17,7 +17,6 @@ const NodeTreeDetailTab = ({
     monitoringTools,
     isDevtronApp = false,
     isExternalApp,
-    clusterId,
     isDeploymentBlocked,
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
@@ -91,7 +90,7 @@ const NodeTreeDetailTab = ({
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
                                         isExternalApp={isExternalApp}
-                                        clusterId={clusterId}
+                                        clusterId={appDetails.clusterId}
                                         isDeploymentBlocked={isDeploymentBlocked}
                                     />
                                 )

@@ -514,7 +514,6 @@ export interface NodeTreeDetailTabProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
-    clusterId?: number
     isDeploymentBlocked?: boolean
 }
 
