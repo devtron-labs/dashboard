@@ -333,7 +333,7 @@ const NodeComponent = ({
                                                 }`}
                                             >
                                                 <div className="pl-8 pr-8">
-                                                    <ClipboardButton content={nodeName.split(' ').join('')} />
+                                                    <ClipboardButton content={node.name} />
                                                 </div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}

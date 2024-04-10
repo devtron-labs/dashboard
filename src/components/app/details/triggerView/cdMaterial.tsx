@@ -88,7 +88,13 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP, TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT } from './Constants'
+import {
+    ARTIFACT_STATUS,
+    NO_VULNERABILITY_TEXT,
+    EXCLUDED_IMAGE_TOOLTIP,
+    TRIGGER_VIEW_GA_EVENTS,
+    CD_MATERIAL_GA_EVENT,
+} from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
@@ -990,7 +996,7 @@ export default function CDMaterial({
 
     const loadOlderImages = () => {
         ReactGA.event(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
-        
+
         if (!state.loadingMore) {
             setState((prevState) => ({
                 ...prevState,
@@ -2065,7 +2071,10 @@ export default function CDMaterial({
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
-            if (deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED) {
+            if (
+                deploymentWindowMetadata.userActionState &&
+                deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
+            ) {
                 setShowDeploymentWindowConfirmation(true)
             } else {
                 deployTrigger(e)
