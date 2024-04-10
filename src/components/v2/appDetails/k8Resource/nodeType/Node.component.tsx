@@ -525,10 +525,7 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
-            {PodRestart && (
-                <PodRestart
-                />
-            )}
+            {PodRestart && <PodRestart />}
         </>
     )
 }
