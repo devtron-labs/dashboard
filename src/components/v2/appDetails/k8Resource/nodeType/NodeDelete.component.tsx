@@ -19,7 +19,7 @@ import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.typ
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
-import { createBody } from '../nodeDetail/nodeDetail.api'
+import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
 const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
@@ -36,10 +36,10 @@ const NodeDeleteComponent = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
-    const [manifestPayload, setManifestPayload] = useState(null)
+    const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
 
     const handleShowVulnerabilityModal = () => {
-        setManifestPayload(createBody(appDetails, nodeDetails.name, params.nodeType))
+        setManifestPayload(getAppDetailsForManifest(appDetails))
     }
 
     const handleCloseVulnerabilityModal = () => {
@@ -155,9 +155,9 @@ const NodeDeleteComponent = ({
                 <ScanResourceModal
                     name={nodeDetails?.name}
                     namespace={nodeDetails?.namespace}
-                    group={manifestPayload.k8sRequest.resourceIdentifier.groupVersionKind.Group}
-                    kind={manifestPayload.k8sRequest.resourceIdentifier.groupVersionKind.Kind}
-                    version={manifestPayload.k8sRequest.resourceIdentifier.groupVersionKind.Version}
+                    group={nodeDetails?.group}
+                    kind={nodeDetails?.kind}
+                    version={nodeDetails?.version}
                     clusterId={manifestPayload.clusterId}
                     appId={manifestPayload.appId}
                     appType={manifestPayload.appType}
