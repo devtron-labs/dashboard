@@ -2068,6 +2068,11 @@ button.anchor {
     align-items: baseline !important;
 }
 
+// Blend Mode
+.dc__blend-luminosity {
+    mix-blend-mode: luminosity;
+}
+
 // Border
 .dc__border {
     border: 1px solid var(--N200);
@@ -2470,6 +2475,10 @@ button.anchor {
 
 .dc__border-radius-50-per {
     border-radius: 50%;
+}
+
+.dc__border-radius-50-per-imp {
+    border-radius: 50% !important;
 }
 
 .dc__border-radius-8-imp {
