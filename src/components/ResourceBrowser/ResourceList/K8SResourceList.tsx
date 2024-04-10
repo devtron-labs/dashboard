@@ -51,7 +51,7 @@ export const K8SResourceList = ({
 }: K8SResourceListType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const { clusterId, namespace, nodeType, node, group, name } = useParams<{
+    const { clusterId, namespace, nodeType, node } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
@@ -369,7 +369,7 @@ export const K8SResourceList = ({
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
             {PodRestart && (
-                <PodRestart clusterId={clusterId} name={name ?? 'demo2-vishu-env-5ddcb8f64b-lgrqk'} namespace={namespace ?? 'non-prod'} />
+                <PodRestart />
             )}
         </div>
     )

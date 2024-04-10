@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
@@ -527,9 +527,6 @@ const NodeComponent = ({
             )}
             {PodRestart && (
                 <PodRestart
-                    clusterId={clusterId}
-                    name={params.name ?? 'demo2-vishu-env-5ddcb8f64b-lgrqk'}
-                    namespace={params.namespace ?? 'non-prod'}
                 />
             )}
         </>

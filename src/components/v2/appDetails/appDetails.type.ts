@@ -183,7 +183,7 @@ export interface AppDetails {
     projectName?: string
     appType?: AppType
     helmReleaseStatus?: HelmReleaseStatus
-    clusterId?: number
+    clusterId: number
     notes?: string
     deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean

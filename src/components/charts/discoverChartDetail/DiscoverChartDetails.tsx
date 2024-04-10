@@ -412,7 +412,7 @@ function isReadmeInputCheckbox(text: string) {
 
 /**
  * 
- * deprecated function is used in common component
+ * @deprecated function is used in common component
  */
 export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {
     const { hash } = useLocation()
