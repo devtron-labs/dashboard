@@ -788,7 +788,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                     </div>
                     <hr />
-                    <div>
+                    {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE && <div>
                         <div className="form__row flex left">
                             <div className="fw-6 cn-9 fs-14 mb-16">Directory Managment in Git</div>
                             <RadioGroup
@@ -817,7 +817,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             </RadioGroup>
                         </div>
                         <hr />
-                    </div>
+                    </div>}
                     <div className="form__buttons flex left">
                         <button
                             type="submit"
