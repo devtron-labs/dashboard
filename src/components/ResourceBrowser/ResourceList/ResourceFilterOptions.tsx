@@ -13,14 +13,19 @@ import {
     NAMESPACE_NOT_APPLICABLE_OPTION
 } from '../Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { importComponentFromFELibrary } from '../../common'
+
+const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
 const ResourceFilterOptions = ({
     selectedResource,
     resourceList,
     namespaceOptions,
     selectedNamespace,
+    selectedCluster,
     setSelectedNamespace,
     hideSearchInput,
     searchText,
@@ -33,6 +38,7 @@ const ResourceFilterOptions = ({
     isSearchInputDisabled,
     shortcut,
     isCreateModalOpen,
+    updateTabUrl,
     renderCallBackSync,
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { push } = useHistory()
@@ -41,21 +47,41 @@ const ResourceFilterOptions = ({
         namespace: string
     }>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
+    const [showFilterModal, setShowFilterModal] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
-    useEffect(() => {
-        if (!isCreateModalOpen) {
-            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
-        }
-
-        return (): void => {
-            shortcut.unregisterShortcut(['r'])
-        }
-    }, [isCreateModalOpen])
 
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
         setShowShortcutKey(false)
     }
+
+    const updateK8sResourceTabUrl = (url: string, dynamicTitle: string, retainSearchParams: boolean) => {
+        updateTabUrl(
+            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+            url,
+            dynamicTitle,
+            retainSearchParams,
+        )
+    }
+
+    const handleShowFilterModal = () => {
+        setShowFilterModal(true)
+    }
+
+    useEffect(() => {
+        shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+        shortcut.registerShortcut(
+            handleShowFilterModal,
+            ['f'],
+            'ResourceFilterDrawer',
+            'Open resource filter drawer',
+        )
+
+        return (): void => {
+            shortcut.unregisterShortcut(['f'])
+            shortcut.unregisterShortcut(['r'])
+        }
+    }, [])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
         const _key = e.key
@@ -80,6 +106,7 @@ const ResourceFilterOptions = ({
         setSelectedNamespace(selected)
         push({
             pathname: location.pathname.replace(`/${namespace}/`, `/${selected.value}/`),
+            search: location.search,
         })
     }
 
@@ -135,6 +162,12 @@ const ResourceFilterOptions = ({
                         )}
                     </div>
                 )}
+                <div className="flex-grow-1" />
+                {FilterButton && <FilterButton
+                    clusterName={selectedCluster?.label || ''}
+                    updateTabUrl={updateK8sResourceTabUrl}
+                    showModal={showFilterModal}
+                />}
                 <div className="resource-filter-options-wrapper flex">
                     <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
                         <ReactSelect

@@ -45,6 +45,7 @@ export const K8SResourceList = ({
     clearSearch,
     isCreateModalOpen,
     addTab,
+    updateTabUrl,
     renderCallBackSync,
     syncError,
     k8SObjectMapRaw,
@@ -363,6 +364,7 @@ export const K8SResourceList = ({
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                updateTabUrl={updateTabUrl}
                 isSearchInputDisabled={resourceListLoader}
                 isCreateModalOpen={isCreateModalOpen}
                 renderCallBackSync={renderCallBackSync}

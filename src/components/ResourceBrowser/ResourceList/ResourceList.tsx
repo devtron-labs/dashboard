@@ -19,6 +19,7 @@ import {
     filterImageList,
     processK8SObjects,
     sortObjectArrayAlphabetically,
+    importComponentFromFELibrary,
 } from '../../common'
 import {
     ApiResourceGroupType,
@@ -75,6 +76,8 @@ import { createTaintsList } from '../../cluster/cluster.util'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+
+const getFilterOptionsFromSearchParams = importComponentFromFELibrary('getFilterOptionsFromSearchParams', null, 'function')
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -263,6 +266,7 @@ export default function ResourceList() {
                         selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
                     }`,
                     dynamicTitle: selectedResource.gvk.Kind,
+                    retainSearchParams: true,
                 },
                 {
                     id: `${AppDetailsTabsIdPrefix.cluster_overview}-${AppDetailsTabs.cluster_overview}`,
@@ -271,7 +275,7 @@ export default function ResourceList() {
                     }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
                 },
             ]
-            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
+            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle, data.retainSearchParams))
         }
         return (): void => {
             resourceListAbortController.abort()
@@ -328,6 +332,12 @@ export default function ResourceList() {
             getResourceListData(true)
         }
     }, [selectedNamespace])
+
+    useEffect(() => {
+        if (!loader && !isOverview && !isNodes && !isTerminal && selectedResource) {
+            getResourceListData(false)
+        }
+    }, [location.search])
 
     // Triggers the cluster terminal when the cluster tab is opened for the first time
     const triggerTerminal = () => {
@@ -646,6 +656,7 @@ export default function ResourceList() {
                         groupVersionKind: selectedResource.gvk,
                     },
                 },
+                ...getFilterOptionsFromSearchParams?.(location.search),
             }
             if (selectedResource.namespaced) {
                 resourceListPayload.k8sRequest.resourceIdentifier.namespace =
@@ -820,6 +831,17 @@ export default function ResourceList() {
             setSearchApplied(false)
         }
         setSearchText('')
+        push({ search: '' })
+        updateTabUrl(
+            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+            `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                selectedNamespace.value
+            }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            }`,
+            null,
+            false,
+        )
     }
 
     const handleRetry = () => {
@@ -871,6 +893,7 @@ export default function ResourceList() {
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                updateTabUrl={updateTabUrl}
                 isCreateModalOpen={showCreateResourceModal}
                 addTab={addTab}
                 renderCallBackSync={renderRefreshBar}
