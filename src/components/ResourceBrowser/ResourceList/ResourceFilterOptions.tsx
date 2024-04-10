@@ -69,19 +69,21 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
-        shortcut.registerShortcut(
-            handleShowFilterModal,
-            ['f'],
-            'ResourceFilterDrawer',
-            'Open resource filter drawer',
-        )
-
+        /* TODO: handle nicely */
+        if (!showFilterModal && !isCreateModalOpen) {
+            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+            shortcut.registerShortcut(
+                handleShowFilterModal,
+                ['f'],
+                'ResourceFilterDrawer',
+                'Open resource filter drawer',
+            )
+        }
         return (): void => {
             shortcut.unregisterShortcut(['f'])
             shortcut.unregisterShortcut(['r'])
         }
-    }, [])
+    }, [showFilterModal, isCreateModalOpen])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
         const _key = e.key
@@ -163,11 +165,14 @@ const ResourceFilterOptions = ({
                     </div>
                 )}
                 <div className="flex-grow-1" />
-                {FilterButton && <FilterButton
-                    clusterName={selectedCluster?.label || ''}
-                    updateTabUrl={updateK8sResourceTabUrl}
-                    showModal={showFilterModal}
-                />}
+                {FilterButton && (
+                    <FilterButton
+                        clusterName={selectedCluster?.label || ''}
+                        updateTabUrl={updateK8sResourceTabUrl}
+                        showModal={showFilterModal}
+                        setShowModal={setShowFilterModal}
+                    />
+                )}
                 <div className="resource-filter-options-wrapper flex">
                     <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
                         <ReactSelect

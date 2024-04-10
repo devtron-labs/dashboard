@@ -335,7 +335,7 @@ export default function ResourceList() {
 
     useEffect(() => {
         if (!loader && !isOverview && !isNodes && !isTerminal && selectedResource) {
-            getResourceListData(false)
+            getResourceListData(true)
         }
     }, [location.search])
 
