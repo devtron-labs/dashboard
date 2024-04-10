@@ -334,7 +334,15 @@ export default function ResourceList() {
     }, [selectedNamespace])
 
     useEffect(() => {
-        if (!loader && !isOverview && !isNodes && !isTerminal && selectedResource) {
+        if (
+            !loader &&
+            !isOverview &&
+            !isNodes &&
+            !isTerminal &&
+            selectedResource &&
+            !node &&
+            !location.search?.includes('podRestartModalParams')
+        ) {
             getResourceListData(!!searchText)
         }
     }, [location.search])
