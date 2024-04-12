@@ -4,7 +4,12 @@ import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import DOMPurify from 'dompurify'
-import { useAsync, highlightSearchText, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    highlightSearchText,
+    ReactSelectInputAction,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -28,8 +33,8 @@ const Sidebar = ({
     setSelectedResource,
     updateResourceSelectionData,
     shortcut,
-    isCreateModalOpen,
 }: SidebarType & IWithShortcut) => {
+    const { registerShortcut } = useRegisterShortcut()
     const { push } = useHistory()
     const location = useLocation()
     const { clusterId, namespace, nodeType, group } = useParams<{
@@ -60,14 +65,14 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (!isCreateModalOpen) {
+        if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
         return (): void => {
             shortcut.unregisterShortcut(['k'])
         }
-    }, [isCreateModalOpen])
+    }, [registerShortcut])
 
     useEffect(() => {
         if (k8SObjectMap?.size) {

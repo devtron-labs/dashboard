@@ -12,7 +12,7 @@ import {
     FILTER_SELECT_COMMON_STYLES,
     NAMESPACE_NOT_APPLICABLE_OPTION
 } from '../Constants'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import { OptionType } from '../../app/types'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
@@ -37,10 +37,10 @@ const ResourceFilterOptions = ({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
-    isCreateModalOpen,
     updateTabUrl,
     renderCallBackSync,
 }: ResourceFilterOptionsProps & IWithShortcut) => {
+    const { registerShortcut } = useRegisterShortcut()
     const { push } = useHistory()
     const location = useLocation()
     const { namespace } = useParams<{
@@ -70,7 +70,8 @@ const ResourceFilterOptions = ({
 
     useEffect(() => {
         /* TODO: handle nicely */
-        if (!showFilterModal && !isCreateModalOpen) {
+        console.log(registerShortcut)
+        if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
             shortcut.registerShortcut(
                 handleShowFilterModal,
@@ -83,7 +84,7 @@ const ResourceFilterOptions = ({
             shortcut.unregisterShortcut(['f'])
             shortcut.unregisterShortcut(['r'])
         }
-    }, [showFilterModal, isCreateModalOpen])
+    }, [registerShortcut])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
         const _key = e.key
