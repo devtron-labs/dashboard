@@ -304,6 +304,9 @@ export function shallowEqual(objA, objB) {
     return true
 }
 
+/**
+ * @deprecated Use compareObjLength from common lib instead
+ */
 export function compareObjectLength(objA: any, objB: any): boolean {
     if (objA === objB) {
         return true
@@ -322,6 +325,9 @@ export function compareObjectLength(objA: any, objB: any): boolean {
     return objA.length === objB.length
 }
 
+/**
+ * @deprecated Use deepEqual from common lib instead
+ */
 export function deepEqual(configA: any, configB: any): boolean {
     try {
         if (configA === configB) {

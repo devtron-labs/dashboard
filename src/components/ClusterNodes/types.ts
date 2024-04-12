@@ -1,6 +1,6 @@
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ClusterNoteType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
@@ -76,12 +76,6 @@ export interface ClusterDescriptionType {
     clusterCreatedOn: string
     clusterNote?: ClusterNoteType
 }
-export interface ClusterNoteType {
-    id: number
-    description: string
-    updatedBy: string
-    updatedOn: string
-}
 
 export interface NodeRowDetail {
     name: string
@@ -102,10 +96,6 @@ export interface ClusterListResponse extends ResponseType {
 
 export interface ClusterDescriptionResponse extends ResponseType {
     result?: ClusterDescriptionType
-}
-
-export interface ClusterNoteResponse extends ResponseType {
-    result?: ClusterNoteType
 }
 
 export interface ClusterCapacityResponse extends ResponseType {
@@ -290,12 +280,6 @@ export interface NodeCordonRequest extends NodeActionRequest {
     nodeCordonOptions: NodeCordonOptions
 }
 
-export interface ClusteNotePatchRequest {
-    id: number // this is mandatory to send in the request
-    identifier: number // equals clusterId for cluster description and appId for app/job description
-    description: string
-}
-
 export interface ClusterShortDescriptionPatchRequest {
     id: number
     description: string
@@ -373,7 +357,6 @@ export interface ManifestPopuptype {
     namespace: string
     forceDeletePod: (deletePod: boolean) => void
 }
-export type MDEditorSelectedTabType = 'write' | 'preview'
 
 export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS
 

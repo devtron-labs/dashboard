@@ -28,8 +28,6 @@ export const Routes = {
     VALIDATE: 'cluster/validate',
     SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
-    CLUSTER_NOTE: 'cluster/note',
-    APPLICATION_NOTE: 'app/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     V2_CD_CONFIG: 'app/v2/cd-pipeline',

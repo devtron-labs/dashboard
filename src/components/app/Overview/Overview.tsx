@@ -14,6 +14,7 @@ import {
     noop,
     StyledRadioGroup as RadioGroup,
     EditableTextArea,
+    GenericDescription,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -31,7 +32,6 @@ import TagChipsContainer from './TagChipsContainer'
 import './Overview.scss'
 import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
-import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
 import { getAppConfig, getGitProviderIcon } from './utils'
 import { EnvironmentList } from './EnvironmentList'

@@ -11,23 +11,13 @@ import {
     UpdateNodeRequestBody,
     EditTaintsRequest,
     TerminalDataType,
-    ClusteNotePatchRequest,
     ClusterDescriptionResponse,
-    ClusterNoteResponse,
     ClusterEditManifestType,
     ClusterShortDescriptionPatchRequest,
 } from './types'
 
 export const getClusterDetails = (clusterId: string, signal?): Promise<ClusterDescriptionResponse> => {
     return get(`${Routes.CLUSTER_DESCRIPTION}?id=${clusterId}`, { signal })
-}
-
-export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
-    return put(Routes.CLUSTER_NOTE, requestPayload)
-}
-
-export const patchApplicationNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
-    return put(Routes.APPLICATION_NOTE, requestPayload)
 }
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
