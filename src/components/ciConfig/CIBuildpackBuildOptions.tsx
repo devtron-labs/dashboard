@@ -111,7 +111,7 @@ const BuildContextLabel = () => {
             <InfoIconTippy
                 heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
                 infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
-                className="icon-dim-16 fcn-6 ml-4"
+                iconClassName="icon-dim-16 fcn-6 ml-4"
             />
         </label>
     )
@@ -138,7 +138,7 @@ const BuilderTippy = () => {
             additionalContent={additionalBuilderTippyContent()}
             documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
             documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
-            className="icon-dim-16 fcn-6 ml-4"
+            iconClassName="icon-dim-16 fcn-6 ml-4"
         />
     )
 }

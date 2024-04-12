@@ -7,6 +7,7 @@ import {
     getRandomColor,
     ServerErrors,
     InfoIconTippy,
+    EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -19,7 +20,6 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
-import { EditableTextArea } from '../common/EditableTextArea/EditableTextArea'
 import { importComponentFromFELibrary } from '../common'
 
 const Catalog = importComponentFromFELibrary('Catalog')
@@ -309,7 +309,7 @@ function ClusterOverview({
                     additionalContent={metricsApiTippyContent()}
                     documentationLinkText="View metrics-server helm chart"
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
-                    className="icon-dim-20 ml-8 fcn-5"
+                    iconClassName="icon-dim-20 ml-8 fcn-5"
                 />
             </>
         )

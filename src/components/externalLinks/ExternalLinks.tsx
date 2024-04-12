@@ -1,5 +1,5 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { showError, Progressing, ErrorScreenManager, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import React, { Fragment, useEffect, useState } from 'react'
+import { showError, Progressing, ErrorScreenManager, InfoIconTippy, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
@@ -21,7 +21,6 @@ import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import './externalLinks.scss'
 
 const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
@@ -43,7 +42,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const isFullMode = serverMode === SERVER_MODE.FULL
 
     useEffect(() => {
@@ -408,7 +407,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                             infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                             documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            className="icon-dim-20 fcn-6 ml-8"
+                            iconClassName="icon-dim-20 fcn-6 ml-8"
                         />
                     </h3>
                     <div className="cta-search-filter-container flex">

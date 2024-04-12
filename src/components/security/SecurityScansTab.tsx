@@ -498,7 +498,8 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                                 <tr
                                     key={scan.name}
                                     className="table__row"
-                                    onClick={() => {
+                                    onClick={(event) => {
+                                        event.stopPropagation()
                                         this.setState({
                                             name: scan.name,
                                             uniqueId: {

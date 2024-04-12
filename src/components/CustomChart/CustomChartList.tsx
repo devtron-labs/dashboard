@@ -196,7 +196,7 @@ export default function CustomChartList() {
                 additionalContent={additionalRegistryTitleTippyContent()}
                 documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
                 documentationLink={DOCUMENTATION.CUSTOM_CHART}
-                className="icon-dim-16 fcn-6 ml-4"
+                iconClassName="icon-dim-16 fcn-6 ml-4"
             />
         )
     }

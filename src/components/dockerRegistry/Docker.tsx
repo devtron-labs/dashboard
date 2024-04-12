@@ -166,7 +166,7 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    className="icon-dim-16 ml-4"
+                    iconClassName="icon-dim-16 ml-4"
                 />
             </div>
             {dockerRegistryList.map((docker) => (
@@ -1053,7 +1053,7 @@ const DockerForm = ({
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                                className="icon-dim-16 fcn-6"
+                                iconClassName="icon-dim-16 fcn-6"
                             />
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>

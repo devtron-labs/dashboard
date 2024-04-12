@@ -334,7 +334,7 @@ const ManageRegistry = ({
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                        className="icon-dim-16 fcn-6 ml-4"
+                        iconClassName="icon-dim-16 fcn-6 ml-4"
                     />
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />

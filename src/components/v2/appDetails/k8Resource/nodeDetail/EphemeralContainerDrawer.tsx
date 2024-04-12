@@ -1,4 +1,12 @@
-import { CustomInput, Drawer, OptionType, showError, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CustomInput,
+    Drawer,
+    OptionType,
+    showError,
+    ButtonWithLoader,
+    YAMLStringify,
+    InfoIconTippy
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
@@ -15,7 +23,6 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
-    ButtonWithLoader,
     convertToOptionsList,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -61,7 +68,7 @@ const EphemeralContainerDrawer = ({
     })
     const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
         advancedData: {
-            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 }),
+            manifest: YAMLStringify(sampleConfig?.sampleManifest),
         },
     })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
@@ -86,7 +93,7 @@ const EphemeralContainerDrawer = ({
                     setEphemeralFormAdvanced({
                         ...ephemeralFormAdvanced,
                         advancedData: {
-                            manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
+                            manifest: YAMLStringify(jsonManifest),
                         },
                     })
                 } else {
@@ -156,7 +163,7 @@ const EphemeralContainerDrawer = ({
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        className="icon-dim-16 fcn-6 ml-8"
+                        iconClassName="icon-dim-16 fcn-6 ml-8"
                     />
                 </h2>
                 <button
@@ -360,7 +367,7 @@ const EphemeralContainerDrawer = ({
         const codeEditorBody =
             switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
-                : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
+                : YAMLStringify(sampleConfig?.sampleManifest)
         return (
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
@@ -474,7 +481,6 @@ const EphemeralContainerDrawer = ({
                         disabled={loader}
                         dataTestId="cancel-token"
                         isLoading={false}
-                        loaderColor="white"
                     >
                         Cancel
                     </ButtonWithLoader>
@@ -487,7 +493,6 @@ const EphemeralContainerDrawer = ({
                                 : !ephemeralFormAdvanced.advancedData.manifest
                         }
                         isLoading={loader}
-                        loaderColor="white"
                     >
                         Launch container
                     </ButtonWithLoader>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     ServerErrors,
     showError,
@@ -10,6 +10,7 @@ import {
     ResponseType,
     DeploymentAppTypes,
     CustomInput,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { useHistory, useParams } from 'react-router'
@@ -37,7 +38,6 @@ import { styles, menuList, DropdownIndicator } from '../charts.util'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import './DeployChart.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
@@ -80,7 +80,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
     chartValuesFromParent = { id: 0, name: '', chartVersion: '', kind: null, environmentName: '' },
     ...rest
 }) => {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [environments, setEnvironments] = useState([])
     const [projects, setProjects] = useState([])
     const [loading, setLoading] = useState(false)

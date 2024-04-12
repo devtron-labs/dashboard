@@ -33,7 +33,7 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                             heading={DEFAULT_TITLE}
                             infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
                             additionalContent={additonalTippyContent?.()}
-                            className="icon-dim-20"
+                            iconClassName="icon-dim-20"
                         />
                     </div>
 

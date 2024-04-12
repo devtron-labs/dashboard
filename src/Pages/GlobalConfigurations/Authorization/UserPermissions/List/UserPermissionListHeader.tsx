@@ -1,12 +1,11 @@
 import React from 'react'
-import { SearchBar, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { SearchBar, InfoIconTippy, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
 
 import { UserPermissionListHeaderProps } from './types'
-import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 
@@ -44,7 +43,7 @@ const UserPermissionListHeader = ({
                             </a>
                         </div>
                     }
-                    className="mw-20 icon-dim-20 fcn-6"
+                    iconClassName="mw-20 icon-dim-20 fcn-6"
                 />
             </div>
             <div className="flex dc__gap-8">

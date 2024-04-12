@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/tabindex-no-positive */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
@@ -11,6 +11,7 @@ import {
     CustomInput,
     ResizableTextarea,
     InfoIconTippy,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
@@ -19,7 +20,6 @@ import { getDateInMilliseconds } from './apiToken.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -42,7 +42,7 @@ export const renderQuestionwithTippy = () => {
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
-            className="icon-dim-20 fcn-9 ml-4"
+            iconClassName="icon-dim-20 fcn-9 ml-4"
         />
     )
 }
@@ -59,7 +59,7 @@ const CreateAPIToken = ({
 }: GenerateTokenType) => {
     const history = useHistory()
     const match = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
     const [formData, setFormData] = useState<FormType>({
         name: '',

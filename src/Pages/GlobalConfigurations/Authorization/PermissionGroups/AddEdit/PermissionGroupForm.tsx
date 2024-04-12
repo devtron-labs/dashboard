@@ -5,6 +5,7 @@ import {
     DeleteDialog,
     ResizableTextarea,
     CustomInput,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Link, useHistory } from 'react-router-dom'
@@ -12,7 +13,6 @@ import { deepEqual } from '../../../../../components/common'
 
 import { URLS } from '../../../../../config'
 import { ReactComponent as Warning } from '../../../../../assets/icons/ic-warning.svg'
-import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'

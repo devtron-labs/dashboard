@@ -7,6 +7,7 @@ import {
     RadioGroupItem,
     TippyCustomized,
     TippyTheme,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -330,7 +331,7 @@ export default function BuildCD({
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[selection.deploymentTemplate], {
+        selection['yamlStr'] =YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
             indent: 2,
         })
         selection['isCollapsed'] = true
@@ -527,7 +528,7 @@ export default function BuildCD({
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
-                yamlStr = yamlJsParser.stringify(json, { indent: 2 })
+                yamlStr = YAMLStringify(json)
             } catch (error) {}
         } else {
             yamlStr = value
