@@ -199,7 +199,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL}>
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
