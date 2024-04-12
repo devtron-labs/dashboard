@@ -407,3 +407,8 @@ export const defaultManifestErrorText =
     "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"
 
 export const manifestCommentsRegex = /^(.*?apiVersion:)/s
+
+export const defaultClusterNote = `## Describe this cluster
+Describe your Kubernetes cluster in a few words. This will help others understand the purpose and configuration of your cluster. For example, you might mention the number of worker nodes, the types of applications running on the cluster, or any relevant security considerations. Keep it concise and informative!
+`
+export const defaultClusterShortDescription = 'Write a short description for this cluster'

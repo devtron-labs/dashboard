@@ -9,8 +9,6 @@ import {
     getRandomColor,
     ServerErrors,
     EditableTextArea,
-    defaultClusterNote,
-    defaultClusterShortDescription,
     GenericDescription,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
@@ -25,6 +23,7 @@ import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluste
 import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
+import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 
 const Catalog = importComponentFromFELibrary('Catalog')
 
@@ -38,6 +37,10 @@ function ClusterOverview({
     setSelectedCluster,
     sideDataAbortController,
 }: ClusterOverviewProps) {
+
+    console.log(defaultClusterNote)
+    console.log(defaultClusterShortDescription)
+
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
