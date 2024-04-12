@@ -91,7 +91,7 @@ export interface DeploymentAppSelectorType {
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
     gitRepoURL: string
-    allowedCustomBool?: boolean
+    allowedCustomBool: boolean
 }
 
 export interface DeploymentAppRadioGroupType {
