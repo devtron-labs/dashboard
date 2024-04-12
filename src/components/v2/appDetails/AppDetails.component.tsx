@@ -208,7 +208,11 @@ const AppDetailsComponent = ({
                     isLoading={isInitialTimelineDataLoading}
                 />
             )}
-            <ClusterMetaDataBar clusterName={appDetails.clusterName} namespace={appDetails.namespace} clusterId={appDetails.clusterId?.toString()} />
+            <ClusterMetaDataBar
+                clusterName={appDetails.clusterName}
+                namespace={appDetails.namespace}
+                clusterId={appDetails.clusterId?.toString()}
+            />
         </div>
     )
 }
