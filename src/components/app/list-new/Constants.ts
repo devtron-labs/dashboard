@@ -8,6 +8,16 @@ export const APP_LIST_HEADERS = {
     LastDeployedAt: 'Last deployed at',
     SearchAppStatus: 'Search app status',
 }
+export const appListLoading = Array.from(Array(3).keys()).map((index) => ({
+    id: index,
+    appName: '',
+    appStatus: '',
+    environment: '',
+    cluster: '',
+    namespace: '',
+    lastDeployedAt: '',
+}))
+
 export const ENVIRONMENT_HEADER_TIPPY_CONTENT = 'Environment is a unique combination of cluster and namespace'
 export const EXTERNAL_HELM_SSE_CONNECTION_ERROR = 'Some network error occured while fetching external apps.'
 export const EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR = 'Error in getting external helm apps from cluster'
@@ -35,6 +45,7 @@ export const DefaultJobNote = `## Describe this job\n\nDescribe this job in a fe
 
 export const StatusConstants = {
     NOT_DEPLOYED: {
+        titleCase: 'Not Deployed',
         noSpaceLower: 'notdeployed',
         normalCase: 'Not deployed',
         lowerCase: 'not-deployed',
@@ -62,4 +73,4 @@ export const StatusConstants = {
     NOT_AVILABLE: {
         normalCase: 'Not available',
     },
-}
+} as const

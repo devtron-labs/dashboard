@@ -1,7 +1,6 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
+import { showError, DetailsProgressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
@@ -255,7 +254,7 @@ export default function ChartValuesEditor({
                             const _manifestsForDiff = valuesForDiffState.manifestsForDiff
                             let _selectedValues: string
                             try {
-                                _selectedValues = YAML.stringify(JSON.parse(res.result.valuesYaml))
+                                _selectedValues = YAMLStringify(JSON.parse(res.result.valuesYaml))
                             } catch (error) {
                                 _selectedValues = res.result.valuesYaml
                             }

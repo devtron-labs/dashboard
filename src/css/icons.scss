@@ -98,6 +98,10 @@
     height: 8px;
 }
 
+.icon-dim-8-imp {
+    width: 8px !important;
+    height: 8px !important;
+}
 .icon-dim-10 {
     width: 10px;
     height: 10px;
@@ -251,6 +255,12 @@
 .icon-fill-n6 {
     .fill-color {
         fill: var(--N600);
+    }
+}
+
+.icon-use-fill-n6 {
+    use {
+        fill: var(--N600)
     }
 }
 

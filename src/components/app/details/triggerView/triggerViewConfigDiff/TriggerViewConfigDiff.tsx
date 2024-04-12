@@ -1,7 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'
@@ -10,11 +8,13 @@ import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../Tri
 import ReactSelect, { components } from 'react-select'
 import { DropdownIndicator, Option } from '../../../../v2/common/ReactSelect.utils'
 import { getCommonConfigSelectStyles } from '../config'
-import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
+import { Toggle, ConditionalWrap,useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
+
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -25,9 +25,13 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
+    canReviewConfig
 }: TriggerViewConfigDiffProps) {
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
     const [activeSideNavOption, setActiveSideNavOption] = useState(
-        DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
+        searchParams.config,
     )
     const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
     const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
@@ -39,11 +43,11 @@ export default function TriggerViewConfigDiff({
         displayName: baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue?.displayName,
         value:
             (baseTemplateConfiguration?.[activeSideNavOption]?.codeEditorValue.value &&
-                YAML.stringify(JSON.parse(baseTemplateConfiguration[activeSideNavOption].codeEditorValue.value))) ||
+                YAMLStringify(JSON.parse(baseTemplateConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
         defaultValue:
             (currentConfiguration?.[activeSideNavOption]?.codeEditorValue?.value &&
-                YAML.stringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
+                YAMLStringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
     })
     const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
@@ -51,8 +55,22 @@ export default function TriggerViewConfigDiff({
     const [currentData, setCurrentData] = useState<any>({}) // store codeEditorValue of current(lhs) and base(rhs) config
 
     useEffect(() => {
+        if (canReviewConfig && searchParams.config) {
+            const newSearchParams = {
+                ...searchParams,
+                config: searchParams.config,
+            }
+            history.push({
+                search: new URLSearchParams(newSearchParams).toString(),
+            })
+            //handling the case when the user directly lands on the deployment history page
+            handleNavOptionSelection(null, newSearchParams.config)
+        }
+    }, [canReviewConfig, searchParams.config])
+
+    useEffect(() => {
         handleConfigToDeploySelection()
-    }, [selectedConfigToDeploy])
+    }, [selectedConfigToDeploy, searchParams.deploy])
 
     useEffect(() => {
         if (Object.keys(currentData).length === 0) {
@@ -63,8 +81,8 @@ export default function TriggerViewConfigDiff({
         const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value
         setEditorValues({
             displayName: editorValues.displayName,
-            value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
-            defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
+            value: editorValuesRHS ? YAMLStringify(JSON.parse(editorValuesRHS)) : '',
+            defaultValue: editorValuesLHS ? YAMLStringify(JSON.parse(editorValuesLHS)) : '',
         })
     }, [convertVariables])
 
@@ -74,8 +92,8 @@ export default function TriggerViewConfigDiff({
 
             if (!getNavOptions(navParentChildKeys[0]).includes(navParentChildKeys[1])) {
                 setConvertVariables(false)
-                setActiveSideNavOption(DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
-                handleNavOptionSelection(null, DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key)
+                setActiveSideNavOption(searchParams.config)
+                handleNavOptionSelection(null, searchParams.config)
                 return
             }
         }
@@ -139,8 +157,20 @@ export default function TriggerViewConfigDiff({
     /*
         set the current(lhs) and base(rhs) config value in code editor for the selected nav option, runs every on nav option selection
     */
+
+    const setParamsValue = ( configVal: string) => {
+        const newParams = {
+            ...searchParams,
+            config: configVal,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
     const handleNavOptionSelection = (e, navConfigKey?: string) => {
         const dataValue = navConfigKey || e?.target?.dataset?.value
+        setParamsValue(dataValue)
         if (dataValue) {
             setConvertVariables(false)
             setActiveSideNavOption(dataValue)
@@ -160,8 +190,8 @@ export default function TriggerViewConfigDiff({
             const editorValuesLHS = convertVariables ? lhsData?.resolvedValue : lhsData?.value
             setEditorValues({
                 displayName: rhsData?.displayName || lhsData?.displayName,
-                value: editorValuesRHS ? YAML.stringify(JSON.parse(editorValuesRHS)) : '',
-                defaultValue: editorValuesLHS ? YAML.stringify(JSON.parse(editorValuesLHS)) : '',
+                value: editorValuesRHS ? YAMLStringify(JSON.parse(editorValuesRHS)) : '',
+                defaultValue: editorValuesLHS ? YAMLStringify(JSON.parse(editorValuesLHS)) : '',
             })
         }
     }

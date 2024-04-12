@@ -5,6 +5,7 @@ import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
+import './appDetails.scss'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
@@ -72,7 +73,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 </div>
                 <div className="flex br-4">
                     <figure
-                        className={`${status.toLowerCase()} h-24 w-24`}
+                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase()} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
                     />
                 </div>

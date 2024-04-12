@@ -1,6 +1,6 @@
-import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
-import { showError, Progressing, ErrorScreenManager, DevtronProgressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, DevtronProgressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
@@ -23,7 +23,6 @@ import {
     ServerInfo,
     StackDetailsType,
 } from './DevtronStackManager.type'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 import './devtronStackManager.scss'
 import { isGitopsConfigured } from '../../../services/service'
 import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
@@ -39,7 +38,7 @@ export default function DevtronStackManager({
     isSuperAdmin: boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
-        useContext(mainContext)
+        useMainContext()
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({
@@ -72,6 +71,10 @@ export default function DevtronStackManager({
         getModuleDetails()
         getCurrentServerInfo()
     }, [])
+
+    useEffect(() => {
+        buildResourceStatusModalData(selectedModule?.moduleResourcesStatus)
+    }, [selectedModule])
 
     /**
      * Activate polling for latest server info, module details & logPodName
@@ -555,9 +558,6 @@ export default function DevtronStackManager({
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusDetailModal
                                         close={closeCheckResourceStatusModal}
-                                        appStreamData={buildResourceStatusModalData(
-                                            selectedModule.moduleResourcesStatus,
-                                        )}
                                         showAppStatusMessage
                                         title="Integration installation status"
                                         appStatusText={selectedModule.installationStatus}

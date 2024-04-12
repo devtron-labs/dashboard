@@ -14,6 +14,10 @@ import {
     FilterConditionsListType,
     CDMaterialResponseType,
     PipelineType,
+    KeyValueListType,
+    CIMaterialSidebarType,
+    HandleKeyValueChangeType,
+    RuntimeParamsTriggerPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -190,6 +194,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
+    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    runtimeParams: KeyValueListType[]
 }
 
 export interface RegexValueType {
@@ -202,10 +208,12 @@ export interface CIMaterialState {
     savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
+    currentSidebarTab: CIMaterialSidebarType
 }
 
 export interface NodeAttr extends CommonNodeAttr {
     cipipelineId?: number
+    isDeploymentBlocked?: boolean
 }
 
 export interface DownStreams {
@@ -245,6 +253,17 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     description: string
     index?: number
     isVirtualEnvironment?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+    appId: number
+    isDeploymentBlocked?: boolean
+}
+
+export interface TriggerCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
+    gitopsConflictLoading: boolean
+    reloadNoGitOpsRepoConfiguredModal: boolean
+    gitOpsRepoWarningCondition: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -255,6 +274,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     status: string
     id: string
     environmentId: string
+    environmentName: string
     title: string
     triggerType: string
     colourCode: string
@@ -266,6 +286,12 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
+}
+export interface TriggerPrePostCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
 }
 
 export interface TriggerEdgeType {
@@ -281,7 +307,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
-    appId?: number
+    appId: number
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number) => void
@@ -305,6 +331,7 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
+    reloadTriggerView: () => void
 }
 
 export enum BulkSelectionEvents {
@@ -394,6 +421,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
+    runtimeParams?: KeyValueListType[]
 }
 
 // -- begining of response type objects for trigger view
@@ -454,6 +482,7 @@ export interface Workflow {
 export interface WorkflowResult {
     appId: number
     appName: string
+    isGitOpsRepoNotConfigured: boolean
     workflows: Workflow[]
 }
 // End Workflow Response
@@ -609,6 +638,8 @@ export interface CdPipeline {
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
+    isGitOpsRepoNotConfigured?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {
@@ -667,6 +698,7 @@ export interface TriggerViewConfigDiffProps {
     diffOptions: Record<string, boolean>
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
+    canReviewConfig: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -724,4 +756,10 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     dimensions: WorkflowDimensions
     startX: number
     startY: number
+}
+
+export interface RuntimeParamsValidatorReturnType {
+    isValid: boolean
+    message?: string
+    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }

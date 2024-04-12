@@ -43,7 +43,7 @@
 
                     .kind-search-select__menu-list {
                         .kind-search-select__option {
-                            mark {
+                            &--highlight {
                                 padding: 0;
                                 background-color: var(--Y200);
                             }

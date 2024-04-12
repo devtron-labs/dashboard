@@ -1,6 +1,6 @@
 import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
-
-export const DEFAULT_STATUS = 'Checking Status...'
+export const DEFAULT_STATUS = 'checking'
+export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -82,6 +82,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
+    LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
@@ -93,7 +94,9 @@ export const Routes = {
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
+    GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
@@ -300,6 +303,11 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
+} as const
+
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
 }
 
 export const SourceTypeMap = {
@@ -697,7 +705,6 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
-export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',
@@ -750,7 +757,8 @@ export const DEPLOYMENT_STATUS = {
     SUPERSEDED: 'superseded',
     QUEUED: 'queued',
     UNKNOWN: 'unknown',
-}
+    CHECKING: 'checking',
+} as const
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
@@ -915,3 +923,10 @@ export const API_STATUS_CODES = {
 }
 
 export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
+
+export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
+
+/**
+ * Value for select all identifier
+ */
+export const SELECT_ALL_VALUE = '*'

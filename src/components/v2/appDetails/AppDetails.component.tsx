@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
 import { DeploymentAppTypes, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetailsComponentType, AppStreamData, AppType } from './appDetails.type'
+import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
@@ -11,7 +11,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { getSaveTelemetry } from './appDetails.api'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
+import { DEFAULT_STATUS, DEFAULT_STATUS_TEXT, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -39,7 +39,6 @@ const AppDetailsComponent = ({
     loadingResourceTree,
 }: AppDetailsComponentType) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const [streamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
@@ -56,7 +55,7 @@ const AppDetailsComponent = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS,
+            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
 
     useEffect(() => {
@@ -174,7 +173,6 @@ const AppDetailsComponent = ({
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
-                        appStreamData={streamData}
                         loadingDetails={loadingDetails || !appDetails?.appType}
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
@@ -204,7 +202,6 @@ const AppDetailsComponent = ({
                 <DeploymentStatusDetailModal
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
-                    streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnv.current}
                     isLoading={isInitialTimelineDataLoading}

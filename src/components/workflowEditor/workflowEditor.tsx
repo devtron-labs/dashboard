@@ -50,6 +50,7 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
 import { WorkflowCreate } from '../app/details/triggerView/config'
+import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -79,11 +80,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             showNoGitOpsWarningPopup: false,
             cdLink: '',
             noGitOpsConfiguration: false,
+            noGitOpsModuleInstalledAndConfigured: false,
             showOpenCIPipelineBanner:
                 typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1',
             envToShowWebhookTippy: -1,
             filteredCIPipelines: [],
             envIds: [],
+            isGitOpsRepoNotConfigured: false,
             showWorkflowOptionsModal: false,
             cachedCDConfigResponse: {
                 pipelines: [],
@@ -163,6 +166,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     envToShowWebhookTippy: -1,
                     filteredCIPipelines: result.filteredCIPipelines,
                     envIds: _envIds,
+                    isGitOpsRepoNotConfigured: result.isGitOpsRepoNotConfigured,
                     cachedCDConfigResponse: result.cachedCDConfigResponse ?? {
                         pipelines: [],
                         appId: 0,
@@ -192,6 +196,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             if (result.isInstalled && !result.isConfigured) {
                 this.setState({ noGitOpsConfiguration: true })
             }
+            if (!result.isInstalled || !result.isConfigured) {
+                this.setState({ noGitOpsModuleInstalledAndConfigured: true })
+            }
         } catch (error) {}
     }
 
@@ -217,6 +224,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ showWorkflowOptionsModal: false })
     }
 
+    handleDisplayLoader = () => {
+        this.setState({ view: ViewType.LOADING })
+    }
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
@@ -229,6 +240,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                 if (response.status.toLowerCase() === 'ok') {
                     this.setState({ showDeleteDialog: false })
+                    this.handleDisplayLoader()
                     toast.success('Workflow Deleted')
                     this.getWorkflows()
                     this.props.getWorkflows()
@@ -536,7 +548,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
                                     envIds={this.state.envIds}
+                                    noGitOpsModuleInstalledAndConfigured={
+                                        this.state.noGitOpsModuleInstalledAndConfigured
+                                    }
+                                    isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                     changeCIPayload={this.state.changeCIPayload}
+                                    reloadAppConfig={this.props.reloadAppConfig}
+                                    handleDisplayLoader={this.handleDisplayLoader}
                                 />
                             )
                         }}
@@ -769,42 +787,52 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        return this.state.workflows.map((wf) => {
-            return (
-                <Workflow
-                    id={wf.id}
-                    key={wf.id}
-                    name={wf.name}
-                    startX={wf.startX}
-                    startY={wf.startY}
-                    width={wf.width}
-                    height={wf.height}
-                    nodes={wf.nodes}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    handleCDSelect={this.handleCDSelect}
-                    handleCISelect={this.handleCISelect}
-                    openEditWorkflow={this.openEditWorkflow}
-                    showDeleteDialog={this.showDeleteDialog}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={wf.showTippy}
-                    hideWebhookTippy={this.hideWebhookTippy}
-                    isJobView={this.props.isJobView}
-                    envList={this.props.envList}
-                    filteredCIPipelines={this.state.filteredCIPipelines}
-                    addNewPipelineBlocked={!!this.props.filteredEnvIds}
-                    handleChangeCI={this.handleChangeCI}
-                    selectedNode={this.state.selectedNode}
-                    handleSelectedNodeChange={this.handleSelectedNodeChange}
-                    appName={this.state.appName}
-                    getWorkflows={this.getWorkflows}
-                    reloadEnvironments={this.props.reloadEnvironments}
-                    workflowPositionState={this.state.workflowPositionState}
-                />
-            )
-        })
+        const handleModalClose = () => {
+            this.props.history.push(this.props.match.url)
+        }
+
+        return (
+            <>
+                {this.state.workflows.map((wf) => {
+                    return (
+                        <Workflow
+                            id={wf.id}
+                            key={wf.id}
+                            name={wf.name}
+                            startX={wf.startX}
+                            startY={wf.startY}
+                            width={wf.width}
+                            height={wf.height}
+                            nodes={wf.nodes}
+                            history={this.props.history}
+                            location={this.props.location}
+                            match={this.props.match}
+                            handleCDSelect={this.handleCDSelect}
+                            handleCISelect={this.handleCISelect}
+                            openEditWorkflow={this.openEditWorkflow}
+                            showDeleteDialog={this.showDeleteDialog}
+                            addCIPipeline={this.addCIPipeline}
+                            addWebhookCD={this.addWebhookCD}
+                            showWebhookTippy={wf.showTippy}
+                            hideWebhookTippy={this.hideWebhookTippy}
+                            isJobView={this.props.isJobView}
+                            envList={this.props.envList}
+                            filteredCIPipelines={this.state.filteredCIPipelines}
+                            addNewPipelineBlocked={!!this.props.filteredEnvIds}
+                            handleChangeCI={this.handleChangeCI}
+                            selectedNode={this.state.selectedNode}
+                            handleSelectedNodeChange={this.handleSelectedNodeChange}
+                            appName={this.state.appName}
+                            getWorkflows={this.getWorkflows}
+                            reloadEnvironments={this.props.reloadEnvironments}
+                            workflowPositionState={this.state.workflowPositionState}
+                            handleDisplayLoader={this.handleDisplayLoader}
+                        />
+                    )
+                })}
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={handleModalClose} />
+            </>
+        )
     }
 
     renderOpenCIPipelineBanner = () => {

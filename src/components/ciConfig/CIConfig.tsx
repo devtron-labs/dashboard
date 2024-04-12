@@ -19,7 +19,6 @@ export default function CIConfig({
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems,
     loadingStateFromParent,
     setLoadingStateFromParent,
 }: CIConfigProps) {
@@ -89,14 +88,14 @@ export default function CIConfig({
         }
     }
 
-    async function reload(skipPageReload?: boolean) {
+    async function reload(skipPageReload?: boolean, redirection: boolean = false) {
         try {
             updateLoadingState(true, skipPageReload)
             const { result } = await getCIConfig(+appId)
             setCIConfig(result)
 
             if (!skipPageReload) {
-                respondOnSuccess()
+                respondOnSuccess(redirection)
             }
         } catch (err) {
             showError(err)
@@ -133,7 +132,6 @@ export default function CIConfig({
             updateDockerConfigOverride={updateDockerConfigOverride}
             isCDPipeline={isCDPipeline}
             isCiPipeline={isCiPipeline}
-            navItems={navItems}
             parentState={parentState}
             setParentState={setParentState}
             loadingStateFromParent={loadingStateFromParent}

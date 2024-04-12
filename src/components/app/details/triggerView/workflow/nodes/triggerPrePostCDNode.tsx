@@ -1,19 +1,30 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerPrePostCDNodeProps } from '../../types'
+import { DeploymentAppTypes, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
 import { TriggerStatus } from '../../../../config'
-import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
+import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
+import { DO_NOT_DEPLOY } from '../../Constants'
 
-export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
+export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
+    gitOpsRepoWarningCondition =
+        this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured
+
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
+        this.state = {
+            showGitOpsRepoConfiguredWarning: false,
+        }
     }
 
     getCDDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${this.props.id}?type=${this.props.type}`
+        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
+            this.props.id
+        }?type=${this.props.type}`
     }
 
     redirectToCDDetails(e) {
@@ -49,50 +60,74 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
         )
     }
 
+    handleShowGitOpsRepoConfiguredWarning = (): void => {
+        this.gitOpsRepoWarningCondition &&
+            this.setState((prevState) => ({
+                showGitOpsRepoConfiguredWarning: !prevState.showGitOpsRepoConfiguredWarning,
+            }))
+    }
+
+    handleImageSelection = (event, context): void => {
+        event.stopPropagation()
+        !this.gitOpsRepoWarningCondition && context.onClickCDMaterial(this.props.id, this.props.type)
+        this.handleShowGitOpsRepoConfiguredWarning()
+    }
+
     renderCardContent() {
         const status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
         const stage = this.props.type === 'PRECD' ? 'Pre-deployment' : 'Post-deployment'
         const isClickable = !(
             status === DEFAULT_STATUS.toLowerCase() ||
-            status === 'not triggered' ||
-            status === 'not deployed'
+            status === BUILD_STATUS.NOT_TRIGGERED ||
+            status === BUILD_STATUS.NOT_DEPLOYED
         )
         return (
             <TriggerViewContext.Consumer>
                 {(context) => {
                     return (
-                        <div
-                            className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
-                            onClick={(e) => {
-                                if (isClickable) {
-                                    this.redirectToCDDetails(e)
-                                }
-                            }}
-                        >
-                            <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">
-                                {this.props.triggerType}
-                            </div>
-                            <div className="workflow-node__title flex">
-                                <div className="workflow-node__full-width-minus-Icon">
-                                    <span className="workflow-node__text-light">Stage</span>
-                                    <span className="">{stage}</span>
-                                </div>
-                                <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
-                            </div>
-                            {this.renderStatus(isClickable, status)}
-                            <div className="workflow-node__btn-grp">
-                                <button
-                                    className="workflow-node__deploy-btn"
-                                    data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
-                                    onClick={(event) => {
-                                        event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, this.props.type)
-                                    }}
+                        <>
+                            <div
+                                className={isClickable ? 'workflow-node cursor' : 'workflow-node'}
+                                onClick={(e) => {
+                                    if (isClickable) {
+                                        this.redirectToCDDetails(e)
+                                    }
+                                }}
+                            >
+                                <div
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
                                 >
-                                    Select Image
-                                </button>
+                                    {this.props.isDeploymentBlocked ? DO_NOT_DEPLOY : this.props.triggerType}
+                                </div>
+                                <div className="workflow-node__title flex">
+                                    <div className="workflow-node__full-width-minus-Icon">
+                                        <span className="workflow-node__text-light">Stage</span>
+                                        <span className="">{stage}</span>
+                                    </div>
+                                    <div className="workflow-node__icon-common ml-8 workflow-node__CD-pre-post-icon" />
+                                </div>
+                                {this.renderStatus(isClickable, status)}
+                                <div className="workflow-node__btn-grp">
+                                    <button
+                                        className="workflow-node__deploy-btn"
+                                        data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
+                                        onClick={(event) => {
+                                            this.handleImageSelection(event, context)
+                                        }}
+                                    >
+                                        Select Image
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                            {this.state.showGitOpsRepoConfiguredWarning && (
+                                <NoGitOpsRepoConfiguredWarning
+                                    closePopup={this.handleShowGitOpsRepoConfiguredWarning}
+                                    appId={+this.props.match.params.appId}
+                                    text={gitOpsRepoNotConfiguredWithEnforcedEnv(this.props.environmentName)}
+                                    reload={context.reloadTriggerView}
+                                />
+                            )}
+                        </>
                     )
                 }}
             </TriggerViewContext.Consumer>

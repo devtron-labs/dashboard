@@ -5,6 +5,9 @@ import {
     showError,
     DeleteDialog,
     ConditionalWrap,
+    Checkbox,
+    CHECKBOX_VALUE,
+    BulkSelectionEvents,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -21,6 +24,7 @@ import { deleteUser } from '../../authorization.service'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
+import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 
@@ -33,11 +37,17 @@ const UserPermissionRow = ({
     index,
     showStatus,
     refetchUserPermissionList,
+    isChecked = false,
+    toggleChecked,
+    showCheckbox,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [isModalLoading, setIsModalLoading] = useState(false)
+    const { handleBulkSelection, isBulkSelectionApplied } = useAuthorizationBulkSelection()
+
+    const _showCheckbox = showCheckbox || isChecked
 
     const toggleDeleteModal = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen)
@@ -50,6 +60,13 @@ const UserPermissionRow = ({
             toast.success('User deleted')
             refetchUserPermissionList()
             setIsDeleteModalOpen(false)
+
+            // Clearing the selection on single delete since the selected one might be removed
+            if (!isBulkSelectionApplied) {
+                handleBulkSelection({
+                    action: BulkSelectionEvents.CLEAR_ALL_SELECTIONS,
+                })
+            }
         } catch (err) {
             showError(err)
         } finally {
@@ -57,22 +74,42 @@ const UserPermissionRow = ({
         }
     }
 
+    const handleChecked = () => {
+        toggleChecked(id)
+    }
+
     return (
         <>
             <div
                 className={`user-permission__row ${
                     showStatus ? 'user-permission__row--with-status' : ''
-                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 dc__hover-n50`}
+                } dc__visible-hover dc__visible-hover--parent pl-20 pr-20 ${
+                    isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
+                } dc__hover-n50`}
             >
                 {/* Note (v2): no checkbox for admin/system */}
-                <span
-                    className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                    style={{
-                        backgroundColor: getRandomColor(emailId),
-                    }}
-                >
-                    {emailId[0]}
-                </span>
+                <div className="flex dc__content-start">
+                    {(!_showCheckbox || isAdminOrSystemUser) && (
+                        <span
+                            className={`icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4 ${
+                                isAdminOrSystemUser ? '' : 'dc__visible-hover--hide-child'
+                            }`}
+                            style={{
+                                backgroundColor: getRandomColor(emailId),
+                            }}
+                        >
+                            {emailId[0]}
+                        </span>
+                    )}
+                    {!isAdminOrSystemUser && (
+                        <Checkbox
+                            isChecked={isChecked}
+                            onChange={handleChecked}
+                            rootClassName={`mb-0 ${_showCheckbox ? '' : 'dc__visible-hover--child'}`}
+                            value={CHECKBOX_VALUE.CHECKED}
+                        />
+                    )}
+                </div>
                 {isAdminOrSystemUser ? (
                     <span className="flexbox">
                         <Tippy
@@ -96,6 +133,7 @@ const UserPermissionRow = ({
                 )}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     wrap={(child) => (
                         <Tippy
                             content={moment(lastLoginTime).format(Moment12HourFormat)}
@@ -115,7 +153,7 @@ const UserPermissionRow = ({
                 </ConditionalWrap>
                 {showStatus && (
                     <StatusCell
-                        status={userStatus}
+                        userStatus={userStatus}
                         timeToLive={timeToLive}
                         userEmail={emailId}
                         userId={id}
@@ -127,10 +165,10 @@ const UserPermissionRow = ({
                 {isAdminOrSystemUser ? (
                     <span />
                 ) : (
-                    <div className="flex dc__gap-12">
+                    <div className="flex dc__gap-4">
                         <Link
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent p-4 flex"
                             data-testid={`user-permission__edit-button-${index}`}
                             aria-label="Edit user"
                             to={`${path}/${id}`}
@@ -139,12 +177,12 @@ const UserPermissionRow = ({
                         </Link>
                         <button
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
                             data-testid={`user-permission__delete-button-${index}`}
                             onClick={toggleDeleteModal}
                             aria-label="Delete user"
                         >
-                            <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                            <Trash className="scn-6 icon-dim-16 mw-16" />
                         </button>
                     </div>
                 )}

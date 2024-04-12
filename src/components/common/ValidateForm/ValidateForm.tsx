@@ -4,7 +4,6 @@ import Help from '../../../assets/icons/ic-help-green.svg'
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import './validateForm.css'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 
 export enum VALIDATION_STATUS {
     SUCCESS = 'SUCCESS',
@@ -86,6 +85,7 @@ const ValidateFailure = ({
     validatedTime = '',
     isChartRepo = false,
     warning,
+    showValidate,
 }) => {
     return (
         <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
@@ -101,7 +101,7 @@ const ValidateFailure = ({
                         VALIDATE
                     </a>
                 )}
-                {!isChartRepo && formId && renderOnClickValidate(onClickValidate)}
+                {!isChartRepo && formId && showValidate && renderOnClickValidate(onClickValidate)}
             </div>
             <div className="flex left config_failure-actions en-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1">
                 <div className="fs-13">
@@ -142,6 +142,7 @@ export const ValidateForm = ({
     validationStatus = '',
     configName,
     warning = '',
+    showValidate = true,
 }) => {
     return (
         <div className="mt-16">
@@ -159,6 +160,7 @@ export const ValidateForm = ({
                     formId={id}
                     isChartRepo={isChartRepo}
                     warning={warning}
+                    showValidate={showValidate}
                 />
             )}
             {validationStatus === VALIDATION_STATUS.SUCCESS && (

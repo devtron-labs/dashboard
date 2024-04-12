@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export const tokenList = [
     {
         expireAtInMs: 1647519,

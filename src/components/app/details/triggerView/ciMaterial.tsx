@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -30,11 +30,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
             }
         })
+
         this.state = {
             regexValue,
             savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
+            currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
         }
     }
 
@@ -54,6 +56,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 this.setState({ isBlobStorageConfigured: true })
             }
         } catch (error) {}
+    }
+
+
+    handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            currentSidebarTab: e.target.value as CIMaterialSidebarType,
+        })
     }
 
     onClickStopPropagation = (e): void => {
@@ -162,7 +171,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <ButtonWithLoader
                         rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                         dataTestId="ci-trigger-start-build-button"
-                        loaderColor="#ffffff"
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
                         onClick={noop}
@@ -178,7 +186,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <ButtonWithLoader
                 rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
                 dataTestId="ci-trigger-start-build-button"
-                loaderColor="#ffffff"
                 disabled={!canTrigger}
                 isLoading={this.props.isLoading}
                 onClick={this.handleStartBuildAction}
@@ -242,6 +249,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
                         ciBlockState={this.props.ciBlockState}
                         isJobCI={this.props.isJobCI}
+                        currentSidebarTab={this.state.currentSidebarTab}
+                        handleSidebarTabChange={this.handleSidebarTabChange}
+                        runtimeParams={this.props.runtimeParams}
+                        handleRuntimeParametersChange={this.props.handleRuntimeParametersChange}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null

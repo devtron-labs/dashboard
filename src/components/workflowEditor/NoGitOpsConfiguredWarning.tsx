@@ -1,6 +1,6 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
@@ -14,7 +14,7 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
         closePopup(false)
     }
     return (
-        <VisibleModal2 className="confirmation-dialog">
+        <VisibleModal className="confirmation-dialog">
             <div className="confirmation-dialog__body ">
                 <div className="flexbox dc__content-space mb-20">
                     <WarningIcon className="h-48 mw-48" />
@@ -44,6 +44,6 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                     </NavLink>
                 </div>
             </div>
-        </VisibleModal2>
+        </VisibleModal>
     )
 }

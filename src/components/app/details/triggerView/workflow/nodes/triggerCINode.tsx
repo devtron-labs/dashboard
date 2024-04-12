@@ -5,9 +5,10 @@ import Tippy from '@tippyjs/react'
 import { TriggerStatus } from '../../../../config'
 import { CIMaterialType } from '../../MaterialHistory'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
-import link from '../../../../../../assets/icons/ic-link.svg'
+import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
 import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
+import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
 export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -65,6 +66,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             status === BUILD_STATUS.NOT_DEPLOYED ||
             status === ''
         )
+    }
+
+    handleLinkedCIWorkflowChipClick = (e) => {
+        // stopPropagation to stop redirection to ci-details
+        e.stopPropagation()
+        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
 
     renderStatus() {
@@ -125,15 +132,20 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 }}
             >
                 {this.props.linkedCount ? (
-                    <Tippy className="default-tt" arrow placement="bottom" content={this.props.linkedCount}>
-                        <span className="link-count">
-                            <img src={link} className="icon-dim-12 mr-5" alt="" />
-                            {this.props.linkedCount}
-                        </span>
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content={getLinkedCITippyContent(this.props.linkedCount)}
+                    >
+                        <button type="button" className="link-count cursor dc__hover-border-n300 flex dc__gap-4" onClick={this.handleLinkedCIWorkflowChipClick}>
+                            <IcLink  className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                            <span>{this.props.linkedCount}</span>
+                        </button>
                     </Tippy>
                 ) : null}
                 <div
-                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci ${
+                    className={`workflow-node__trigger-type workflow-node__trigger-type--ci fw-6 ${
                         this.props.isCITriggerBlocked ? 'flex bcr-1 er-2 bw-1 cr-5' : ''
                     }`}
                     style={{
@@ -146,7 +158,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
                         {!this.props.isJobView && (
-                            <span className="workflow-node__text-light"> {this.props.isJobCI ? 'Job' : 'Build'} </span>
+                            <span className="workflow-node__text-light">{this.props.isJobCI ? 'Job' : 'Build'}</span>
                         )}
                         <Tippy className="default-tt" arrow placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>

@@ -9,7 +9,6 @@
 | HOTJAR_ENABLED                     | "false"   | Hotjar integration status                      |
 | POSTHOG_ENABLED                    | "true"    | PostHog integration status                     |
 | POSTHOG_TOKEN                      | XXXXXXXX  | PostHog API token                        |
-| SENTRY_ENABLED                     | "false"   | Sentry integration status                      |
 | SENTRY_ENV                         | stage     | Sentry environment                              |
 | SENTRY_ERROR_ENABLED               | false     |  To send uncaught errors to sentry             |
 | SENTRY_PERFORMANCE_ENABLED         | false     |  To send persormance sentry      |
@@ -31,4 +30,5 @@
 | TRIGGER_API_TIMEOUT                 |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
 | LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
 | SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
+| SERVICE_WORKER_TIMEOUT                    | "1"         | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle       |
 # DASHBOARD CONFIG SECRET

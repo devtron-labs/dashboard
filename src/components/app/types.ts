@@ -520,7 +520,6 @@ export interface TagChipsContainerType {
 }
 export interface SourceInfoType {
     appDetails: AppDetails
-    appStreamData?: AppStreamData
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
     environments: AppEnvironment[]
@@ -538,11 +537,12 @@ export interface SourceInfoType {
         moderate: number
         low: number
     }
-    showVulnerabilitiesModal?: () => void
+    showVulnerabilitiesModal?: (e) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+    filteredEnvIds?: string
 }
 
 export interface EnvironmentListMinType {

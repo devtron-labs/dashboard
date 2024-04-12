@@ -20,6 +20,8 @@ import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import {
+    ApiQueuingWithBatchResponseItem,
+    ApiQueuingBatchStatusType,
     AppGroupList,
     CIConfigListType,
     CheckPermissionResponse,
@@ -31,6 +33,7 @@ import {
     EnvGroupListResponse,
     EnvGroupResponse,
     WorkflowsResponseType,
+    batchConfigType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -178,12 +181,17 @@ export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigA
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getEnvAppList = (params?: {
-    envName?: string
-    clusterIds?: string
-    offset?: string
-    size?: string
-}): Promise<EnvAppType> => {
+export const getEnvAppList = (
+    params?: {
+        envName?: string
+        clusterIds?: string
+        offset?: string
+        size?: string
+    },
+    signal?: AbortSignal,
+): Promise<EnvAppType> => {
+    const options = signal ? { signal } : null
+
     if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
             if (!value) {
@@ -191,9 +199,9 @@ export const getEnvAppList = (params?: {
             }
             return `${key}=${value}`
         })
-        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, options)
     }
-    return get(Routes.ENVIRONMENT_APPS)
+    return get(Routes.ENVIRONMENT_APPS, options)
 }
 
 export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {
@@ -241,4 +249,66 @@ export const deleteEnvGroup = (
 
 export const editDescription = (payload): Promise<EditDescRequestResponse> => {
     return put(Routes.ENVIRONMENT, payload)
+}
+
+const eachCall = (batchConfig, functionCalls, resolve, reject, shouldRejectOnError) => {
+    const callIndex = batchConfig.lastIndex
+    Promise.resolve(functionCalls[callIndex]())
+        .then((result) => {
+            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.FULFILLED, value: result }
+        })
+        .catch((error) => {
+            batchConfig.results[callIndex] = { status: ApiQueuingBatchStatusType.REJECTED, reason: error }
+        })
+        .finally(() => {
+            if (shouldRejectOnError && batchConfig.results[callIndex].status === ApiQueuingBatchStatusType.REJECTED) {
+                reject(batchConfig.results[callIndex].reason)
+                return
+            }
+
+            batchConfig.completedCalls++
+            if (batchConfig.lastIndex < functionCalls.length) {
+                eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
+                batchConfig.lastIndex++
+            } else if (batchConfig.completedCalls === functionCalls.length) {
+                resolve(batchConfig.results)
+            }
+        })
+}
+
+/**
+ * Executes a batch of function calls concurrently with queuing.
+ * @param functionCalls The array of function calls returning promise to be executed.
+ * @param batchSize The maximum number of function calls to be executed concurrently. Defaults to the value of `window._env_.API_BATCH_SIZE`.
+ * @param shouldRejectOnError If set to true, the promise will reject if any of the function calls rejects, i.e, acts like Promise.all else Promise.allSettled . Defaults to false.
+ * @returns A promise that resolves to a array of objects containing the status and value of the batch execution.
+ */
+export const ApiQueuingWithBatch = (
+    functionCalls,
+    httpProtocol: string,
+    shouldRejectOnError: boolean = false,
+    batchSize: number = window._env_.API_BATCH_SIZE,
+): Promise<ApiQueuingWithBatchResponseItem[]> => {
+    if (!batchSize || batchSize <= 0) {
+        batchSize = ['http/0.9', 'http/1.0', 'http/1.1'].indexOf(httpProtocol) !== -1 ? 5 : 30
+    }
+
+    return new Promise((resolve, reject) => {
+        if (functionCalls.length === 0) {
+            resolve([])
+        }
+        const batchConfig: batchConfigType = {
+            lastIndex: 0,
+            concurrentCount: batchSize,
+            results: functionCalls.map(() => null),
+            completedCalls: 0,
+        }
+        for (
+            let index = 0;
+            index < batchConfig.concurrentCount && index < functionCalls.length;
+            index++, batchConfig.lastIndex++
+        ) {
+            eachCall(batchConfig, functionCalls, resolve, reject, shouldRejectOnError)
+        }
+    })
 }

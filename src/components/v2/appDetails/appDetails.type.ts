@@ -223,6 +223,8 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
+    resourcesSyncResult?: Record<string,string>
+
 }
 
 export interface PodMetaData {
@@ -467,7 +469,6 @@ export interface LogState {
 
 export interface AppStatusDetailType {
     close: () => void
-    appStreamData: any
     showAppStatusMessage?: boolean
     title?: string
     appStatus?: string
@@ -481,7 +482,6 @@ export interface StatusFilterButtonType {
 }
 
 export interface SyncErrorType {
-    appStreamData: AppStreamData
     showApplicationDetailedModal?: () => void
 }
 
@@ -514,6 +514,7 @@ export interface NodeTreeDetailTabProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface K8ResourceComponentProps {
@@ -524,6 +525,7 @@ export interface K8ResourceComponentProps {
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp?: boolean
     isDevtronApp?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface NodeComponentProps {
@@ -532,6 +534,7 @@ export interface NodeComponentProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
+    isDeploymentBlocked?: boolean
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
@@ -540,4 +543,10 @@ export interface AppDetailsComponentType {
     _init?: () => void
     loadingDetails: boolean
     loadingResourceTree: boolean
+}
+
+export interface NodeDeleteComponentType {
+    nodeDetails: Node
+    appDetails: AppDetails
+    isDeploymentBlocked: boolean
 }

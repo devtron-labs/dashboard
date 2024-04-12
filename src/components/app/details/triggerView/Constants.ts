@@ -79,6 +79,13 @@ export const TRIGGER_VIEW_GA_EVENTS = {
     },
 }
 
+export const CD_MATERIAL_GA_EVENT = {
+    FetchMoreImagesClicked: {
+        category: 'CD Material',
+        action: 'Fetch More Images Clicked',
+    },
+}
+
 export const ARTIFACT_STATUS = {
     Progressing: 'Progressing',
     Degraded: 'Degraded',
@@ -103,3 +110,5 @@ export const EMPTY_STATE = {
 
 export const EXCLUDED_IMAGE_TOOLTIP =
     'This image is excluded for new deployment as it does not match the filter conditions configured for this environment.'
+
+export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'

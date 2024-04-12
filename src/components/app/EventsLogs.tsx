@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError, Progressing, get, Host, useSearchString, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, get, Host, useSearchString, useAsync, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import YamljsParser from 'yaml'
 import { useParams } from 'react-router'
@@ -9,7 +9,6 @@ import MonacoEditor from 'react-monaco-editor'
 import { editor } from 'monaco-editor'
 import { AutoSizer } from 'react-virtualized'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
-// import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
 import { getNodeStatus } from './service'
@@ -235,7 +234,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
                 >
                     <MonacoEditor
                         language="yaml"
-                        value={YamljsParser.stringify(manifest, { indent: 2 })}
+                        value={YAMLStringify(manifest)}
                         theme="vs-dark--dt"
                         options={{
                             selectOnLineNumbers: true,
@@ -310,8 +309,6 @@ export const EventsView: React.FC<{ nodeName: string; appDetails: AppDetails; no
                 <div className="flex" style={{ height: '100%', width: '100%' }}>
                     {loading && (
                         <div style={{ width: '100%', textAlign: 'center' }}>
-                            {/* @TODO: Uncomment this once the Spinner import is fixed */}
-                            {/* <Spinner loading></Spinner> */}
                             <div style={{ marginTop: '20px', color: 'rgb(156, 148, 148)' }}>fetching events</div>
                         </div>
                     )}
