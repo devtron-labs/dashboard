@@ -1605,6 +1605,7 @@ const ChartValuesView = ({
                                 isDeployChartView={isDeployChartView}
                                 allowedDeploymentTypes={allowedDeploymentTypes}
                                 gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                allowedCustomBool={allowedCustomBool}
                             />
                         )}
                         {allowedCustomBool && showDeploymentTools && (

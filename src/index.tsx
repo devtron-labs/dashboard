@@ -125,6 +125,7 @@ if (!window || !window._env_) {
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
         ENABLE_RESOURCE_SCAN: false,
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE:true
     }
 }
 
