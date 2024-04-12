@@ -43,6 +43,7 @@ export const K8SResourceList = ({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
+    clearFilters,
     isCreateModalOpen,
     addTab,
     updateTabUrl,
@@ -246,6 +247,11 @@ export const K8SResourceList = ({
         )
     }
 
+    const emptyPageActionHandler = () => {
+        clearSearch()
+        clearFilters()
+    }
+
     const renderEmptyPage = (): JSX.Element => {
         if (noResults) {
             return (
@@ -262,7 +268,7 @@ export const K8SResourceList = ({
             <ResourceListEmptyState
                 title={RESOURCE_LIST_EMPTY_STATE.title}
                 subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                actionHandler={clearSearch}
+                actionHandler={emptyPageActionHandler}
             />
         )
     }

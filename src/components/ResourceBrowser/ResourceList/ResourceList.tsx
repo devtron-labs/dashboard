@@ -635,6 +635,20 @@ export default function ResourceList() {
         }
     }
 
+    const clearFilters = () => {
+        push({ search: '' })
+        updateTabUrl(
+            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
+            `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
+                selectedNamespace.value
+            }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+            }`,
+            null,
+            false,
+        )
+    }
+
     const renderRefreshBar = () => {
         if (hideSyncWarning) {
             return null
@@ -839,17 +853,6 @@ export default function ResourceList() {
             setSearchApplied(false)
         }
         setSearchText('')
-        push({ search: '' })
-        updateTabUrl(
-            `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-            `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                selectedNamespace.value
-            }/${selectedResource.gvk.Kind.toLowerCase()}/${
-                selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-            }`,
-            null,
-            false,
-        )
     }
 
     const handleRetry = () => {
@@ -901,6 +904,7 @@ export default function ResourceList() {
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                clearFilters={clearFilters}
                 updateTabUrl={updateTabUrl}
                 isCreateModalOpen={showCreateResourceModal}
                 addTab={addTab}

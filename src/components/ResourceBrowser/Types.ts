@@ -146,6 +146,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
     isCreateModalOpen: boolean
+    clearFilters: () => void
     addTab: (
         idPrefix: string,
         kind: string,
