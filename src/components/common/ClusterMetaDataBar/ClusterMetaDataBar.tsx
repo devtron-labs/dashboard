@@ -1,5 +1,6 @@
 import React from 'react'
 import { useHistory } from 'react-router'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterMetaDataBarProps } from './types'
 import { URLS } from '../../../config'
 import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
@@ -9,6 +10,7 @@ import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-res
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 
 export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: ClusterMetaDataBarProps) => {
+    const { isSuperAdmin } = useMainContext()
     const history = useHistory()
 
     const renderNavigationToAllResources = () => {
@@ -33,6 +35,10 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
                 Cluster Terminal
             </div>
         )
+    }
+
+    if (!isSuperAdmin) {
+        return null
     }
     return (
         <div className="flex left dc__position-fixed dc__bottom-0 pl-16 w-100 fs-12 dc__border-top bcn-0 dc__gap-6 pt-4 pb-4 lh-20">

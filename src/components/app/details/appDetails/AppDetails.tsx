@@ -177,8 +177,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
                 if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                     setShowDeploymentWindowConfirmation(true)
-                }
-                else {
+                } else {
                     setShowDeploymentWindowConfirmation(false)
                 }
             })
@@ -821,7 +820,13 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
-            <ClusterMetaDataBar clusterName={appDetails?.clusterName} namespace={appDetails?.namespace} clusterId={appDetails?.clusterId} />
+            {
+                <ClusterMetaDataBar
+                    clusterName={appDetails?.clusterName}
+                    namespace={appDetails?.namespace}
+                    clusterId={appDetails?.clusterId}
+                />
+            }
         </>
     )
 }
