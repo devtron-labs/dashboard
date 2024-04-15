@@ -369,7 +369,7 @@ export default function NodeDetailsList({
                 onClick={() => {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
-                data-testid={`${column.label}`}
+                data-testid={column.label}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
