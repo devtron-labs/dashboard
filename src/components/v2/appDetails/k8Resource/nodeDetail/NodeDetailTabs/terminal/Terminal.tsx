@@ -239,7 +239,7 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className={`${ isSuperAdmin ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
+        <div className={`${isSuperAdmin ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
                 ref={myDivRef}
