@@ -205,7 +205,6 @@ export const DeploymentAppSelector = ({
                             </Tippy>
                         </div>
                     </div>
-                    <hr />
                 </div>
             )}
         </div>
