@@ -24,6 +24,7 @@ import LoadingCard from './LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
+const SecurityCard = importComponentFromFELibrary('SecurityCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -282,6 +283,7 @@ export const SourceInfo = ({
                                   showVulnerabilitiesModal={showVulnerabilitiesModal}
                               />
                           )}
+                          {SecurityCard && <SecurityCard />}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>
