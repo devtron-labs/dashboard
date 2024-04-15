@@ -9,16 +9,17 @@ import { ReactComponent as ArrowLeft } from '../../../assets/icons/ic-arrow-left
 import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-resource.svg'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import './ClusterMetaData.scss'
+import { NodeDetailTabs } from '../../app/types'
 
 export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: ClusterMetaDataBarProps) => {
     const { isSuperAdmin } = useMainContext()
     const history = useHistory()
     const darkTheme =
-        history.location.pathname.includes('manifest') ||
-        history.location.pathname.includes('events') ||
-        history.location.pathname.includes('terminal') ||
-        history.location.pathname.includes('logs') ||
-        history.location.pathname.includes('log-analyzer')
+        history.location.pathname.includes(NodeDetailTabs.MANIFEST.toLowerCase()) ||
+        history.location.pathname.includes(NodeDetailTabs.EVENTS.toLowerCase()) ||
+        history.location.pathname.includes(NodeDetailTabs.TERMINAL.toLowerCase()) ||
+        history.location.pathname.includes(NodeDetailTabs.LOGS.toLowerCase()) ||
+        history.location.pathname.includes(URLS.APP_DETAILS_LOG)
 
     const renderNavigationToAllResources = () => {
         const navigateToAllResources = () => {
