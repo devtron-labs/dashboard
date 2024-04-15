@@ -342,7 +342,7 @@ export default function JobsList() {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" />
+                    <HeaderWithCreateButton headerName="Jobs" buttonContent='Create Job' buttonType='job' />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
