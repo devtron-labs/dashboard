@@ -8,6 +8,7 @@ import {
     GenericEmptyState,
     DetailsProgressing,
     DeploymentAppTypes,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -390,7 +391,7 @@ const ChartDeploymentHistory = ({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAML.stringify(parsedJson, { indent: 2 })
+                return YAMLStringify(parsedJson)
             } catch (e) {
                 return value
             }

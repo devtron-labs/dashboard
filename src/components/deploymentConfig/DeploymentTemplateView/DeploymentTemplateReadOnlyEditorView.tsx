@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Progressing, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, YAMLStringify, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
@@ -25,9 +25,9 @@ export default function DeploymentTemplateReadOnlyEditorView({
         if (hideLockedKeys) {
             const filteredValue = getUnlockedJSON(YAML.parse(value), lockedConfigKeysWithLockType.config ?? [], false)
             removedPatches.current = filteredValue.removedPatches
-            value = YAML.stringify(filteredValue.newDocument)
+            value = YAMLStringify(filteredValue.newDocument)
         } else {
-            value = YAML.stringify(applyPatches(YAML.parse(value), removedPatches.current))
+            value = YAMLStringify(applyPatches(YAML.parse(value), removedPatches.current))
         }
     }
 

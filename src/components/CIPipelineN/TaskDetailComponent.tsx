@@ -9,11 +9,11 @@ import {
     PluginType,
     ScriptType,
     StyledRadioGroup as RadioGroup,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
@@ -77,14 +77,14 @@ export const TaskDetailComponent = () => {
         if (ev.target.value === ConfigurationType.YAML) {
             if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
                 setEditorValue(
-                    YAML.stringify({
+                    YAMLStringify({
                         outputDirectoryPath: formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath,
                         inlineStepDetail: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail,
                     }),
                 )
             } else {
                 setEditorValue(
-                    YAML.stringify({
+                    YAMLStringify({
                         pluginRefStepDetail: formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
                     }),
                 )

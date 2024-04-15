@@ -7,6 +7,7 @@ import {
     useBreadcrumb,
     ConditionalWrap,
     useEffectAfterMount,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -15,11 +16,8 @@ import useChartGroup from './useChartGroup'
 import { Select, mapByKey } from '../common'
 import AdvancedConfig from './AdvancedConfig'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
-import { deployChartGroup, getChartGroups } from './charts.service'
-import { ReactComponent as LeftArrow } from '../../assets/icons/ic-arrow-left.svg'
+import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
-import { ChartSelector } from '../AppSelector'
-import PageHeader from '../common/header/PageHeader'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()

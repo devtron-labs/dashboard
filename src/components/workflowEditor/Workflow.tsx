@@ -79,6 +79,7 @@ export interface WorkflowProps
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     workflowPositionState?: WorkflowPositionState
+    handleDisplayLoader?: () => void
 }
 
 interface WorkflowState {
@@ -384,6 +385,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
+                history={this.props.history}
+                location={this.props.location}
+                match={this.props.match}
             />
         )
     }
@@ -458,6 +462,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
                 deploymentAppCreated={node.deploymentAppCreated}
+                isDeploymentBlocked={node.isDeploymentBlocked}
+                handleDisplayLoader={this.props.handleDisplayLoader}
             />
         )
     }

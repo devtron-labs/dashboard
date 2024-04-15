@@ -7,6 +7,7 @@ import {
     useBreadcrumb,
     ConditionalWrap,
     useAsync,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -27,7 +28,6 @@ import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
-import PageHeader from '../common/header/PageHeader'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 
 export default function ChartGroupDetails() {
