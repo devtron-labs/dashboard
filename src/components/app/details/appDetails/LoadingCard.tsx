@@ -1,6 +1,9 @@
 import React from 'react'
 import { LoadingCardType } from './appDetails.type'
 
+/**
+ * @deprecated use from common-lib
+ */
 const LoadingCard = ({ wider }: LoadingCardType) => {
     return (
         <div className={`app-details-info-card pointer flex left bcn-0 br-8 mr-12 lh-20 ${wider ? 'w-250' : 'w-200'}`}>

@@ -1,6 +1,9 @@
 import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 
+/**
+ * @deprecated use from common-lib
+ */ 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
     let timestamp = ''
     try {
