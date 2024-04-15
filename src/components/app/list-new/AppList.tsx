@@ -997,7 +997,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 </div>
             ) : (
                 <>
-                    <HeaderWithCreateButton headerName="Applications" buttonContent="Create App" buttonType='app' />
+                    <HeaderWithCreateButton headerName="Applications" buttonContent="Create App" buttonType='app' hideRelease={window._env_.HIDE_RELEASES} />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
