@@ -1,4 +1,5 @@
 import {
+    ACTION_STATE,
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
@@ -220,6 +221,8 @@ export interface AppInfoListType {
     appId: number
     envId: number
     pipelineId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppListDataType {
@@ -342,6 +345,8 @@ export interface ApplistEnvType {
     lastDeployedTime: string
     lastDeployedBy?: string
     lastDeployedImage?: string
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppGroupListType {
@@ -426,6 +431,7 @@ export interface HibernateStatusRowType {
     index: number
     isHibernateOperation: boolean
     isVirtualEnv?: boolean
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
 }
 
 export interface HibernateResponseRowType {
@@ -445,12 +451,21 @@ export interface BaseModalProps {
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
 }
 
+export interface HibernateInfoMapProps  {
+    type: string
+    excludedUserEmails: string[]
+    userActionState: ACTION_STATE
+}
 export interface HibernateModalProps extends BaseModalProps {
     setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
 }
 
 export interface UnhibernateModalProps extends BaseModalProps {
     setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
 }
 
 export interface StatusDrawer {
@@ -467,7 +482,7 @@ export interface ManageAppsResponse {
     authError?: boolean
 }
 
-export interface batchConfigType{
+export interface batchConfigType {
     lastIndex: number
     results: any[]
     concurrentCount: number

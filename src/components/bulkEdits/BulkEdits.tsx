@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import yamlJsParser from 'yaml'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
@@ -25,7 +25,6 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import PageHeader from '../common/header/PageHeader'
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',

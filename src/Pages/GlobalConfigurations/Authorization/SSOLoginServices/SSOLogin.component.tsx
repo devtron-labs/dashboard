@@ -14,6 +14,8 @@ import {
     ConfirmationDialog,
     CustomInput,
     noop,
+    ButtonWithLoader,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
@@ -22,7 +24,6 @@ import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType 
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
 import { ViewType, DOCUMENTATION, URLS, DEFAULT_SECRET_PLACEHOLDER } from '../../../../config'
 import {
-    ButtonWithLoader,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
@@ -53,6 +54,7 @@ import {
     autoAssignPermissionsFlowActiveProviders,
     ssoDocumentationMap,
     ssoProviderToDisplayNameMap,
+    SsoSecretsToHide,
 } from './constants'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
@@ -195,14 +197,25 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             })
     }
 
-    setConfig(response, newsso): void {
+    setSecretPlaceHolderInResponse(response): void {
         const config = response.result?.config?.config
-        if (config?.hasOwnProperty('clientID') && config?.clientID === '') {
+        if (config?.hasOwnProperty(SsoSecretsToHide.clientID) && config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (config?.hasOwnProperty('clientSecret') && config?.clientSecret === '') {
+        if (config?.hasOwnProperty(SsoSecretsToHide.clientSecret) && config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
+        if (config?.hasOwnProperty(SsoSecretsToHide.bindPW) && config?.bindPW === '') {
+            response.result.config.config.bindPW = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (config?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && config?.usernamePrompt === '') {
+            response.result.config.config.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
+    setConfig(response, newsso): void {
+        this.setSecretPlaceHolderInResponse(response)
+
         let newConfig: SSOConfigType
         if (response.result) {
             newConfig = this.parseResponse(response.result)
@@ -241,7 +254,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 name: ssoConfig.config.name,
                 type: ssoConfig.config.type,
                 id: ssoConfig.config.id,
-                config: yamlJsParser.stringify(ssoConfig.config.config, { indent: 2 }),
+                config: YAMLStringify(ssoConfig.config.config),
             },
             active: ssoConfig.active,
         }
@@ -249,16 +262,28 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     checkConfigJson(ssoConfig) {
         if (
-            ssoConfig?.hasOwnProperty('clientID') &&
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientID) &&
             (ssoConfig?.clientID === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientID)
         ) {
             ssoConfig.clientID = ''
         }
         if (
-            ssoConfig?.hasOwnProperty('clientID') &&
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.clientSecret) &&
             (ssoConfig?.clientSecret === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.clientSecret)
         ) {
             ssoConfig.clientSecret = ''
+        }
+        if (
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.bindPW) &&
+            (ssoConfig?.bindPW === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.bindPW)
+        ) {
+            ssoConfig.bindPW = ''
+        }
+        if (
+            ssoConfig?.hasOwnProperty(SsoSecretsToHide.usernamePrompt) &&
+            (ssoConfig?.usernamePrompt === DEFAULT_SECRET_PLACEHOLDER || !ssoConfig.usernamePrompt)
+        ) {
+            ssoConfig.usernamePrompt = ''
         }
         return ssoConfig
     }
@@ -314,13 +339,24 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return { isValid: true, configJSON }
     }
 
-    saveSSO(response): void {
-        if (response.result.config.config.hasOwnProperty('clientID')) {
+    sanitiseSecretDataFromResponse(response): void {
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientID)) {
             response.result.config.config.clientID = ''
         }
-        if (response.result.config.config.hasOwnProperty('clientSecret')) {
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.clientSecret)) {
             response.result.config.config.clientSecret = ''
         }
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.bindPW)) {
+            response.result.config.config.bindPW = ''
+        }
+        if (response.result.config.config.hasOwnProperty(SsoSecretsToHide.usernamePrompt)) {
+            response.result.config.config.usernamePrompt = ''
+        }
+    }
+
+    saveSSO(response): void {
+        this.sanitiseSecretDataFromResponse(response)
+
         this.setConfig(response, this.state.sso.toLowerCase())
         const ssoConfig = response.result
         const shouldAutoAssignPermissions =
@@ -503,7 +539,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             })
             let configValue = ''
             if (config?.config) {
-                configValue = yamlJsParser.stringify(config.config)
+                configValue = YAMLStringify(config.config)
             }
             this.setState({
                 ssoConfig: {
@@ -542,6 +578,21 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
+    setDefaultSecretPlaceHolder(newConfig): void {
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientID) && !newConfig.clientID) {
+            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.clientSecret) && !newConfig.clientSecret) {
+            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.bindPW) && !newConfig.bindPW) {
+            newConfig.bindPW = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (newConfig.hasOwnProperty(SsoSecretsToHide.usernamePrompt) && !newConfig.usernamePrompt) {
+            newConfig.usernamePrompt = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) {
             return
@@ -555,16 +606,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             return
         }
         if (newConfig) {
-            // eslint-disable-next-line no-prototype-builtins
-            if (newConfig.hasOwnProperty('clientID') && !newConfig.clientID) {
-                newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
-            }
-            // eslint-disable-next-line no-prototype-builtins
-            if (newConfig.hasOwnProperty('clientSecret') && !newConfig.clientSecret) {
-                newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
-            }
+            this.setDefaultSecretPlaceHolder(newConfig)
         }
-        const value = yamlJsParser.stringify(newConfig)
+        const value = YAMLStringify(newConfig)
 
         this.setState({
             ssoConfig: {
@@ -578,22 +622,20 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
+        let ssoConfig = this.state.ssoConfig.config.config || YAMLStringify({})
         if (this.state.sso === OIDCType) {
             const config = {
                 name: this.state.ssoConfig.config.name,
                 id: this.state.ssoConfig.config.id,
                 config: yamlJsParser.parse(this.state.ssoConfig.config.config),
             }
-            const stringifyConfig = yamlJsParser.stringify(config, { indent: 1 })
+            const stringifyConfig = YAMLStringify(config, { indent: 1 })
 
             ssoConfig = stringifyConfig.replaceAll('null', '')
         }
 
         const codeEditorBody =
-            this.state.configMap === SwitchItemValues.Configuration
-                ? ssoConfig
-                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
+            this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
             <div
@@ -831,7 +873,6 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 dataTestId="confirm-sso-button"
                                 disabled={this.state.saveLoading}
                                 isLoading={this.state.saveLoading}
-                                loaderColor=""
                                 onClick={this.saveNewSSO}
                             >
                                 Confirm

@@ -30,4 +30,5 @@
 | TRIGGER_API_TIMEOUT                 |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
 | LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
 | SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
+| SERVICE_WORKER_TIMEOUT                    | "1"         | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle       |
 # DASHBOARD CONFIG SECRET

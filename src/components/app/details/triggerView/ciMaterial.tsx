@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -171,7 +171,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <ButtonWithLoader
                         rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                         dataTestId="ci-trigger-start-build-button"
-                        loaderColor="#ffffff"
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
                         onClick={noop}
@@ -187,7 +186,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <ButtonWithLoader
                 rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
                 dataTestId="ci-trigger-start-build-button"
-                loaderColor="#ffffff"
                 disabled={!canTrigger}
                 isLoading={this.props.isLoading}
                 onClick={this.handleStartBuildAction}

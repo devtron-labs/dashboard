@@ -57,7 +57,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                 <div className="pt-16 pl-20">
                     <div>
                         <div className="fw-4 fs-13 fcn-9">
-                            Application Deployemnt states are saved as manifest in a Git repository. ArgoCD uses these
+                            Application Deployment states are saved as manifest in a Git repository. ArgoCD uses these
                             manifests to sync with your live Kubernetes cluster.
                         </div>
                         <div className="fs-13 fw-4 flexbox-col mt-16 mb-16">
