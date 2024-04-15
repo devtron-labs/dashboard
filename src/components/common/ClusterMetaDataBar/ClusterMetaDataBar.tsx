@@ -14,42 +14,39 @@ import { NodeDetailTabs } from '../../app/types'
 export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: ClusterMetaDataBarProps) => {
     const { isSuperAdmin } = useMainContext()
     const history = useHistory()
+    const { pathname } = history.location
     const darkTheme =
-        history.location.pathname.includes(NodeDetailTabs.MANIFEST.toLowerCase()) ||
-        history.location.pathname.includes(NodeDetailTabs.EVENTS.toLowerCase()) ||
-        history.location.pathname.includes(NodeDetailTabs.TERMINAL.toLowerCase()) ||
-        history.location.pathname.includes(NodeDetailTabs.LOGS.toLowerCase()) ||
-        history.location.pathname.includes(URLS.APP_DETAILS_LOG)
+        pathname.includes(NodeDetailTabs.MANIFEST.toLowerCase()) ||
+        pathname.includes(NodeDetailTabs.EVENTS.toLowerCase()) ||
+        pathname.includes(NodeDetailTabs.TERMINAL.toLowerCase()) ||
+        pathname.includes(NodeDetailTabs.LOGS.toLowerCase()) ||
+        pathname.includes(URLS.APP_DETAILS_LOG)
 
     const renderNavigationToAllResources = () => {
-        const navigateToAllResources = () => {
-            history.push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`)
-        }
         return (
-            <div
-                className={` ${darkTheme ? 'scn-0' : 'scn-9'} fw-6 flex left dc__gap-6 cursor`}
-                onClick={navigateToAllResources}
+            <a
+                className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+                target="_blank"
+                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
+                rel="noreferrer"
             >
                 <AllResourcesIcon />
-                All resources in cluster
-            </div>
+                All resources
+            </a>
         )
     }
 
     const renderNavigationToAClusterTerminal = () => {
-        const navigateToAClusterTerminal = () => {
-            history.push(
-                `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            )
-        }
         return (
-            <div
-                className={` ${darkTheme ? 'fcn-0' : 'fcn-9'} w-6 flex left dc__gap-6 cursor`}
-                onClick={navigateToAClusterTerminal}
+            <a
+                className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+                target="_blank"
+                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
+                rel="noreferrer"
             >
-                <TerminalIcon className="icon-dim-16" />
+                <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
                 Cluster terminal
-            </div>
+            </a>
         )
     }
 
@@ -58,17 +55,17 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
     }
     return (
         <div
-            className={`cluster-meta-data-wrapper ${darkTheme ? 'dark-theme cn-0' : 'cn-9 bcn-0'} flex left dc__position-fixed dc__bottom-0 pl-16 w-100 fs-12 dc__border-top dc__gap-6 pt-4 pb-4 lh-20 cn-9`}
+            className={`cluster-meta-data-wrapper ${darkTheme ? 'dark-theme cn-0' : 'cn-9 bcn-0 resource-link__white-theme'} flex left dc__position-fixed dc__bottom-0 pl-16 w-100 fs-12 dc__border-top dc__gap-6 pt-4 pb-4 lh-20 cn-9`}
         >
             <span className="dc__opacity-0_8"> Cluster: {clusterName}</span>
-            <div className="dc__border-left h-12 dc__opacity-0_2" />
+            <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
             <span className="pl-6 dc__opacity-0_8">Namespace: {namespace}</span>
             <ArrowLeft
                 className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
                 style={{ ['--rotateBy' as string]: '180deg' }}
             />
             {renderNavigationToAllResources()}
-            <div className="dc__border-left h-12 dc__opacity-0_2" />
+            <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
             {renderNavigationToAClusterTerminal()}
         </div>
     )

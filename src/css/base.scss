@@ -352,6 +352,10 @@ a:focus {
     bottom: 12px;
 }
 
+.dc__bottom-30-imp {
+    bottom: 30px !important;
+}
+
 .dc__right-0 {
     right: 0;
 }
@@ -2135,6 +2139,14 @@ button.anchor {
 
 .dc__border-left {
     border-left: solid 1px var(--N200);
+}
+
+.dc__border-left-n0 {
+    border-left: solid 1px var(--N000);
+}
+
+.dc__border-left-n9 {
+    border-left: solid 1px var(--N900);
 }
 
 .dc__border-left-b4 {
