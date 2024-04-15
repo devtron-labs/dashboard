@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
-import { ButtonWithLoader } from '../common'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import folder from '../../assets/icons/ic-folder.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteProject } from './service'
 import './project.scss'
 import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ProjectProps {
     id: number
@@ -129,7 +127,6 @@ export class Project extends Component<ProjectProps, ProjectState> {
                         <ButtonWithLoader
                             type="submit"
                             rootClassName="cta"
-                            loaderColor="#ffffff"
                             isLoading={this.props.loadingData}
                             dataTestId="project-save-button"
                         >

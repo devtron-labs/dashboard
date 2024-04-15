@@ -6,7 +6,7 @@ import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import PageHeader from '../common/header/PageHeader'
+import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
