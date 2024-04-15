@@ -806,7 +806,7 @@ const LogsComponent = ({
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            } ${isSuperAdmin ? 'dc__bottom-30-imp' : ''}`}
+                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
                         >
                             {readyState === 0 && (
                                 <div

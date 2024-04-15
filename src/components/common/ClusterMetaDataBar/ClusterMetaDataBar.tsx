@@ -44,7 +44,7 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
                 href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
                 rel="noreferrer"
             >
-                <TerminalIcon className="icon-dim-16 fcn-0" />
+                <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
                 Cluster terminal
             </a>
         )

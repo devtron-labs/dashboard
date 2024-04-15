@@ -26,6 +26,7 @@ export default function TerminalView({
     terminalMessageData,
     clearTerminal,
     dataTestId,
+    isResourceBrowserView,
 }: TerminalViewType) {
     const socket = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
@@ -239,7 +240,7 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className={`${isSuperAdmin ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
+        <div className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
                 ref={myDivRef}
