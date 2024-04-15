@@ -26,7 +26,7 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
         }
         return (
             <div
-                className={` ${darkTheme ? 'fcn-0' : ''} fw-6 flex left dc__gap-6 cursor`}
+                className={` ${darkTheme ? 'scn-0' : 'scn-9'} fw-6 flex left dc__gap-6 cursor`}
                 onClick={navigateToAllResources}
             >
                 <AllResourcesIcon />
