@@ -788,36 +788,38 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                     </div>
                     <hr />
-                    {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE && <div>
-                        <div className="form__row flex left">
-                            <div className="fw-6 cn-9 fs-14 mb-16">Directory Managment in Git</div>
-                            <RadioGroup
-                                className="radio-group-no-border"
-                                name="trigger-type"
-                                value={this.state.selectedRepoType}
-                                onChange={this.repoTypeChange}
-                            >
-                                <div>
-                                    <RadioGroupItem value={repoType.DEFAULT}>
-                                        Use default git repository structure
-                                    </RadioGroupItem>
-                                    <div className="ml-26 cn-7">
-                                        Repository will be created automatically with application name. Users can't
-                                        change default repository
+                    {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE && (
+                        <div>
+                            <div className="form__row flex left">
+                                <div className="fw-6 cn-9 fs-14 mb-16">Directory Managment in Git</div>
+                                <RadioGroup
+                                    className="radio-group-no-border"
+                                    name="trigger-type"
+                                    value={this.state.selectedRepoType}
+                                    onChange={this.repoTypeChange}
+                                >
+                                    <div>
+                                        <RadioGroupItem value={repoType.DEFAULT}>
+                                            Use default git repository structure
+                                        </RadioGroupItem>
+                                        <div className="ml-26 cn-7">
+                                            Repository will be created automatically with application name. Users can't
+                                            change default repository
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="mt-10">
-                                    <RadioGroupItem value={repoType.CONFIGURE}>
-                                        Allow changing git repository for application
-                                    </RadioGroupItem>
-                                    <div className="ml-26 cn-7">
-                                        Application admins can provide desired git repository
+                                    <div className="mt-10">
+                                        <RadioGroupItem value={repoType.CONFIGURE}>
+                                            Allow changing git repository for application
+                                        </RadioGroupItem>
+                                        <div className="ml-26 cn-7">
+                                            Application admins can provide desired git repository
+                                        </div>
                                     </div>
-                                </div>
-                            </RadioGroup>
+                                </RadioGroup>
+                            </div>
+                            <hr />
                         </div>
-                        <hr />
-                    </div>}
+                    )}
                     <div className="form__buttons flex left">
                         <button
                             type="submit"
