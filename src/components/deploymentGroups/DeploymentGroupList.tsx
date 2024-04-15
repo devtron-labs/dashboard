@@ -8,6 +8,7 @@ import {
     DeleteDialog,
     DeploymentNodeType,
     CDMaterialType,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -21,7 +22,6 @@ import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dot
 import CDMaterial from '../app/details/triggerView/cdMaterial'
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import PageHeader from '../common/header/PageHeader'
 
 export interface BulkActionListProps extends RouteComponentProps<{}> {}
 

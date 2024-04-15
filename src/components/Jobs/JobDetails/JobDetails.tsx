@@ -11,7 +11,7 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
-import { BreadCrumb, Progressing, showError, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
 import Overview from '../../app/Overview/Overview'
@@ -20,7 +20,6 @@ import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
 import { ErrorBoundary, trackByGAEvent } from '../../common'
-import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { AppSelector } from '../../AppSelector'
 import '../../app/details/appDetails/appDetails.scss'

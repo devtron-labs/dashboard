@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
@@ -14,6 +14,7 @@ import {
     ResponseType,
     DeploymentAppTypes,
     StyledRadioGroup as RadioGroup,
+    useMainContext,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -80,7 +81,6 @@ import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -142,7 +142,7 @@ const ChartValuesView = ({
         presetValueId: string
         envId: string
     }>()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
