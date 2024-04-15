@@ -4,8 +4,8 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
-import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
+import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -125,7 +125,7 @@ if (!window || !window._env_) {
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
         ENABLE_RESOURCE_SCAN: false,
-        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE:true
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
     }
 }
 
