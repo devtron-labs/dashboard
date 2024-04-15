@@ -1,6 +1,30 @@
-.dark-theme{
+.dark-theme {
         border-top: 1px solid #2C3354;
         background: #0C0F21;
         color: #fff;
         z-index: 1000;
+
+        .resource-link__dark-theme:hover {
+                color: #fff;
+                text-decoration: none;
+        }
+
+        .resource-link__dark-theme:focus {
+                text-decoration: none;
+                color: #fff;
+        }
+}
+
+.cluster-meta-data-wrapper {
+
+
+        .resource-link__white-theme:hover {
+                color: var(--N900) !important;
+                text-decoration: none;
+        }
+
+        .resource-link__white-theme:focus {
+                color: var(--N900);
+                text-decoration: none !important;
+        }
 }
