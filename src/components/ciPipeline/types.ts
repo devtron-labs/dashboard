@@ -404,4 +404,5 @@ export enum CIPipelineBuildType {
     CI_BUILD = 'CI_BUILD',
     CI_LINKED = 'LINKED',
     LINKED_CD = 'LINKED_CD',
+    NORMAL_JOB='NORMAL_JOB',
 }
