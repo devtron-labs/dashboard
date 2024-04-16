@@ -18,7 +18,6 @@ import {
     StatusTypes,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
-    ResourceScanResult,
 } from './appDetails.type'
 import { DEPLOYMENT_STATUS, TIMELINE_STATUS } from '../../../../config'
 import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
@@ -905,16 +904,5 @@ export class ParamsAndEnvContext extends EnvironmentSelection {
             return +params.envId
         }
         return _envList[0].environmentId
-    }
-}
-
-export const getSecurityScanSeveritiesCount = (data: ResourceScanResult) => {
-    const imageScanSeverities = data.imageScan.vulnerability?.summary.severities
-    const codeScanSeverties = data.codeScan.vulnerability?.summary.severities
-    return {
-        critical: (imageScanSeverities.CRITICAL || 0) + (codeScanSeverties.CRITICAL || 0),
-        high: (imageScanSeverities.HIGH || 0) + (codeScanSeverties.HIGH || 0),
-        moderate: (imageScanSeverities.MEDIUM || 0) + (codeScanSeverties.MEDIUM || 0),
-        low: (imageScanSeverities.LOW || 0) + (codeScanSeverties.LOW || 0)
     }
 }

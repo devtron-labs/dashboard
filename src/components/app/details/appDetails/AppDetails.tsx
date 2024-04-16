@@ -33,13 +33,7 @@ import {
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
-import {
-    getAppConfigStatus,
-    getAppOtherEnvironmentMin,
-    stopStartApp,
-    getLastExecutionMinByAppAndEnv,
-    getSecurityScan,
-} from '../../../../services/service'
+import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
@@ -64,7 +58,6 @@ import {
     NoParamsWithEnvContext,
     ParamsNoEnvContext,
     ParamsAndEnvContext,
-    getSecurityScanSeveritiesCount,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -103,7 +96,6 @@ import IssuesListingModal from './IssuesListingModal'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
@@ -263,11 +255,6 @@ export const Details: React.FC<DetailsType> = ({
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const [lastExecutionDetail, setLastExecutionDetail] = useState({
-        imageScanDeployInfoId: 0,
-        severityCount: { critical: 0, high: 0, moderate: 0, low: 0 },
-        isError: false,
-    })
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
@@ -504,31 +491,6 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    async function callLastExecutionMinAPI(appId, envId) {
-        if (!appId || !envId) {
-            return
-        }
-
-        const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
-
-        try {
-            const { result } = await (isSecurityScanV2Enabled
-                ? getSecurityScan(appId, envId)
-                : getLastExecutionMinByAppAndEnv(appId, envId))
-            setLastExecutionDetail({
-                imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: isSecurityScanV2Enabled ? getSecurityScanSeveritiesCount(result) : result.severityCount,
-                isError: false,
-            })
-        } catch (error) {
-            setLastExecutionDetail({
-                imageScanDeployInfoId: 0,
-                severityCount: { critical: 0, high: 0, moderate: 0, low: 0 },
-                isError: true,
-            })
-        }
-    }
-
     function clearPollingInterval() {
         if (appDetailsIntervalID) {
             clearInterval(appDetailsIntervalID)
@@ -539,10 +501,6 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         if (appDetails && setAppDetailResultInParent) {
             setAppDetailResultInParent(appDetails)
-        }
-
-        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
-            callLastExecutionMinAPI(appDetails?.appId, appDetails?.environmentId)
         }
     }, [appDetails])
 
@@ -584,14 +542,6 @@ export const Details: React.FC<DetailsType> = ({
     const showApplicationDetailedModal = (): void => {
         toggleDetailedStatus(true)
     }
-
-    const showVulnerabilitiesModal = useCallback(
-        (e) => {
-            e.stopPropagation()
-            toggleScanDetailsModal(true)
-        },
-        [toggleScanDetailsModal],
-    )
 
     if (
         !loadingResourceTree &&
@@ -753,8 +703,6 @@ export const Details: React.FC<DetailsType> = ({
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
-                    severityCount={lastExecutionDetail.severityCount}
-                    showVulnerabilitiesModal={showVulnerabilitiesModal}
                     toggleIssuesModal={toggleIssuesModal}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
@@ -802,22 +750,6 @@ export const Details: React.FC<DetailsType> = ({
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
                 <DeploymentWindowStatusModal envId={params.envId} appId={params.appId} />
             )}
-            {showScanDetailsModal &&
-                (window._env_.ENABLE_RESOURCE_SCAN_V2 ? (
-                    SecurityModal && (
-                        <SecurityModal appId={params.appId} envId={params.envId} handleModalClose={handleModalClose} />
-                    )
-                ) : (
-                    <ScanDetailsModal
-                        showAppInfo={false}
-                        uniqueId={{
-                            imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                            appId: params.appId,
-                            envId: params.envId,
-                        }}
-                        close={handleModalClose}
-                    />
-                ))}
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}

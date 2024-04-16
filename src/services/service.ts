@@ -360,11 +360,6 @@ export function getLastExecutionMinByAppAndEnv(
     })
 }
 
-export const getSecurityScan = (appId: number | string, envId: number | string) => {
-    const URL = `${Routes.SCAN_RESOURCE}?appId=${appId}&envId=${envId}`
-    return get(URL)
-}
-
 export function getChartRepoList(): Promise<ResponseType> {
     const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH}`
     return get(URL)

@@ -220,14 +220,10 @@ export interface IssuesCardType {
 }
 
 export interface SecurityVulnerabilityCardType {
-    severityCount?: {
-        critical: number
-        high: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: () => void
     cardLoading?: boolean
+    appId?: string
+    envId?: string
+    installedAppId?: number
 }
 
 export interface DeployedCommitCardType {
@@ -255,16 +251,4 @@ export interface LastUpdatedCardType {
     deploymentTriggerTime: string
     triggeredBy: string
     cardLoading: boolean
-}
-
-export type ResourceScanResult = {
-    [key in 'imageScan' | 'codeScan']: {
-        vulnerability: {
-            summary: {
-                severities: {
-                    [key in 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW']: number
-                }
-            }
-        }
-    }
 }

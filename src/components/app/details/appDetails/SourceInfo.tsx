@@ -39,8 +39,6 @@ export const SourceInfo = ({
     isVirtualEnvironment,
     setRotateModal = null,
     refetchDeploymentStatus,
-    severityCount,
-    showVulnerabilitiesModal,
     toggleIssuesModal,
     envId,
     ciArtifactId,
@@ -279,8 +277,8 @@ export const SourceInfo = ({
                               (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
                                   <SecurityVulnerabilityCard
                                       cardLoading={cardLoading}
-                                      severityCount={severityCount}
-                                      showVulnerabilitiesModal={showVulnerabilitiesModal}
+                                      appId={params.appId}
+                                      envId={params.envId}
                                   />
                               )}
                           <div className="flex right ml-auto">
