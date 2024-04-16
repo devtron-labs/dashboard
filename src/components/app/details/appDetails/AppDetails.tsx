@@ -265,7 +265,7 @@ export const Details: React.FC<DetailsType> = ({
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
         imageScanDeployInfoId: 0,
-        severityCount: { critical: 0, moderate: 0, low: 0 },
+        severityCount: { critical: 0, high: 0, moderate: 0, low: 0 },
         isError: false,
     })
     const [appDetailsError, setAppDetailsError] = useState(undefined)
@@ -523,7 +523,7 @@ export const Details: React.FC<DetailsType> = ({
         } catch (error) {
             setLastExecutionDetail({
                 imageScanDeployInfoId: 0,
-                severityCount: { critical: 0, moderate: 0, low: 0 },
+                severityCount: { critical: 0, high: 0, moderate: 0, low: 0 },
                 isError: true,
             })
         }

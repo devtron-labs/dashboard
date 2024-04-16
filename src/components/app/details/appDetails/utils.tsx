@@ -909,12 +909,12 @@ export class ParamsAndEnvContext extends EnvironmentSelection {
 }
 
 export const getSecurityScanSeveritiesCount = (data: ResourceScanResult) => {
-    const keys = ['critical', 'moderate', 'low']
     const imageScanSeverities = data.imageScan.vulnerability?.summary.severities
     const codeScanSeverties = data.codeScan.vulnerability?.summary.severities
     return {
-        ...keys
-            .map((key) => ({ [key]: (imageScanSeverities?.[key] || 0) + (codeScanSeverties?.[key] || 0) }))
-            .reduce((aggregate, severity) => ({ ...aggregate, ...severity }), {}),
+        critical: (imageScanSeverities.CRITICAL || 0) + (codeScanSeverties.CRITICAL || 0),
+        high: (imageScanSeverities.HIGH || 0) + (codeScanSeverties.HIGH || 0),
+        moderate: (imageScanSeverities.MEDIUM || 0) + (codeScanSeverties.MEDIUM || 0),
+        low: (imageScanSeverities.LOW || 0) + (codeScanSeverties.LOW || 0)
     }
 }

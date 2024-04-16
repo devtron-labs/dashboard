@@ -222,6 +222,7 @@ export interface IssuesCardType {
 export interface SecurityVulnerabilityCardType {
     severityCount?: {
         critical: number
+        high: number
         moderate: number
         low: number
     }
@@ -261,7 +262,7 @@ export type ResourceScanResult = {
         vulnerability: {
             summary: {
                 severities: {
-                    [key in 'critical' | 'moderate' | 'low']: number
+                    [key in 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW']: number
                 }
             }
         }
