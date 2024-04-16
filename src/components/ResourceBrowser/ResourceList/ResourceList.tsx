@@ -11,6 +11,7 @@ import {
     Reload,
     DevtronProgressing,
     PageHeader,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import {
@@ -906,7 +907,6 @@ export default function ResourceList() {
                 clearSearch={clearSearch}
                 clearFilters={clearFilters}
                 updateTabUrl={updateTabUrl}
-                isCreateModalOpen={showCreateResourceModal}
                 addTab={addTab}
                 renderCallBackSync={renderRefreshBar}
                 syncError={!hideSyncWarning}
@@ -1017,7 +1017,6 @@ export default function ResourceList() {
                     selectedResource={selectedResource}
                     setSelectedResource={setSelectedResource}
                     updateResourceSelectionData={updateResourceSelectionData}
-                    isCreateModalOpen={showCreateResourceModal}
                     isClusterError={!!clusterErrorTitle}
                 />
                 {renderListBar()}
@@ -1126,17 +1125,19 @@ export default function ResourceList() {
         )
     }
     return (
-        <ShortcutProvider>
-            <div className="resource-browser-container h-100 bcn-0">
-                <PageHeader
-                    isBreadcrumbs={!!clusterId}
-                    breadCrumbs={renderBreadcrumbs}
-                    headerName={!clusterId ? 'Kubernetes Resource Browser' : ''}
-                    renderActionButtons={addClusterButton}
-                />
-                {renderResourceListBody()}
-                {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-            </div>
-        </ShortcutProvider>
+        <UseRegisterShortcutProvider>
+            <ShortcutProvider>
+                <div className="resource-browser-container h-100 bcn-0">
+                    <PageHeader
+                        isBreadcrumbs={!!clusterId}
+                        breadCrumbs={renderBreadcrumbs}
+                        headerName={!clusterId ? 'Kubernetes Resource Browser' : ''}
+                        renderActionButtons={addClusterButton}
+                    />
+                    {renderResourceListBody()}
+                    {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+                </div>
+            </ShortcutProvider>
+        </UseRegisterShortcutProvider>
     )
 }

@@ -44,7 +44,6 @@ export const K8SResourceList = ({
     handleFilterChanges,
     clearSearch,
     clearFilters,
-    isCreateModalOpen,
     addTab,
     updateTabUrl,
     renderCallBackSync,
@@ -372,7 +371,6 @@ export const K8SResourceList = ({
                 clearSearch={clearSearch}
                 updateTabUrl={updateTabUrl}
                 isSearchInputDisabled={resourceListLoader}
-                isCreateModalOpen={isCreateModalOpen}
                 renderCallBackSync={renderCallBackSync}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
