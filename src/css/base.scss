@@ -4303,3 +4303,11 @@ textarea::placeholder {
         margin-bottom: 90px;
     }
 }
+
+.last-child {
+    &__no-border {
+        &:last-child {
+            border: none;
+        }
+    }
+}
