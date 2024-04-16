@@ -38,6 +38,7 @@ import {
     getAppOtherEnvironmentMin,
     stopStartApp,
     getLastExecutionMinByAppAndEnv,
+    getSecurityScan,
 } from '../../../../services/service'
 // @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
@@ -63,6 +64,7 @@ import {
     NoParamsWithEnvContext,
     ParamsNoEnvContext,
     ParamsAndEnvContext,
+    getSecurityScanSeveritiesCount,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -101,6 +103,7 @@ import IssuesListingModal from './IssuesListingModal'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
@@ -176,8 +179,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
                 if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                     setShowDeploymentWindowConfirmation(true)
-                }
-                else {
+                } else {
                     setShowDeploymentWindowConfirmation(false)
                 }
             })
@@ -507,11 +509,15 @@ export const Details: React.FC<DetailsType> = ({
             return
         }
 
+        const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
+
         try {
-            const { result } = await getLastExecutionMinByAppAndEnv(appId, envId)
+            const { result } = await (isSecurityScanV2Enabled
+                ? getSecurityScan(appId, envId)
+                : getLastExecutionMinByAppAndEnv(appId, envId))
             setLastExecutionDetail({
                 imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: result.severityCount,
+                severityCount: isSecurityScanV2Enabled ? getSecurityScanSeveritiesCount(result) : result.severityCount,
                 isError: false,
             })
         } catch (error) {
@@ -651,6 +657,8 @@ export const Details: React.FC<DetailsType> = ({
         }
         return 'Restore App'
     }
+
+    const handleModalClose = () => toggleScanDetailsModal(false)
 
     const handleHibernateConfirmationModalClose = (e) => {
         e.stopPropagation()
@@ -794,19 +802,22 @@ export const Details: React.FC<DetailsType> = ({
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
                 <DeploymentWindowStatusModal envId={params.envId} appId={params.appId} />
             )}
-            {showScanDetailsModal && (
-                <ScanDetailsModal
-                    showAppInfo={false}
-                    uniqueId={{
-                        imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                        appId: params.appId,
-                        envId: params.envId,
-                    }}
-                    close={() => {
-                        toggleScanDetailsModal(false)
-                    }}
-                />
-            )}
+            {showScanDetailsModal &&
+                (window._env_.ENABLE_RESOURCE_SCAN_V2 ? (
+                    SecurityModal && (
+                        <SecurityModal appId={params.appId} envId={params.envId} handleModalClose={handleModalClose} />
+                    )
+                ) : (
+                    <ScanDetailsModal
+                        showAppInfo={false}
+                        uniqueId={{
+                            imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
+                            appId: params.appId,
+                            envId: params.envId,
+                        }}
+                        close={handleModalClose}
+                    />
+                ))}
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}

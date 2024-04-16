@@ -253,6 +253,8 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+
+    SCAN_RESOURCE: 'scan-result',
 }
 
 export const ViewType = {

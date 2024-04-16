@@ -24,7 +24,6 @@ import LoadingCard from './LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
-const SecurityCard = importComponentFromFELibrary('SecurityCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -46,7 +45,7 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
-    filteredEnvIds
+    filteredEnvIds,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -276,15 +275,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
-                              <SecurityVulnerabilityCard
-                                  cardLoading={cardLoading}
-                                  severityCount={severityCount}
-                                  showVulnerabilitiesModal={showVulnerabilitiesModal}
-                              />
-                          )}
-                          {/* TODO: conditionally render this */}
-                          {SecurityCard && <SecurityCard appId={Number(params.appId)} envId={Number(params.envId)} />}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      severityCount={severityCount}
+                                      showVulnerabilitiesModal={showVulnerabilitiesModal}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

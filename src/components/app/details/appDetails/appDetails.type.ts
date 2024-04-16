@@ -255,3 +255,15 @@ export interface LastUpdatedCardType {
     triggeredBy: string
     cardLoading: boolean
 }
+
+export type ResourceScanResult = {
+    [key in 'imageScan' | 'codeScan']: {
+        vulnerability: {
+            summary: {
+                severities: {
+                    [key in 'critical' | 'moderate' | 'low']: number
+                }
+            }
+        }
+    }
+}
