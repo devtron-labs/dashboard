@@ -2051,6 +2051,10 @@ button.anchor {
     align-self: stretch;
 }
 
+.dc__align-self-start {
+    align-self: flex-start;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -4277,4 +4281,14 @@ textarea::placeholder {
     &:last-child {
         margin-bottom: 90px;
     }
+}
+
+.dc__unset-button-styles {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
 }

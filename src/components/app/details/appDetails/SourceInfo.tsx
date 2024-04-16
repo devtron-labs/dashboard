@@ -283,7 +283,8 @@ export const SourceInfo = ({
                                   showVulnerabilitiesModal={showVulnerabilitiesModal}
                               />
                           )}
-                          {SecurityCard && <SecurityCard />}
+                          {/* TODO: conditionally render this */}
+                          {SecurityCard && <SecurityCard appId={Number(params.appId)} envId={Number(params.envId)} />}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>
