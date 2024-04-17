@@ -1049,6 +1049,28 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             )}
                         </>
                     )}
+                    {params.appType === AppListConstants.AppType.ARGO_APPS && (
+                        <>
+                            <ExternalArgoList
+                                serverMode={serverMode}
+                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                sortApplicationList={sortApplicationList}
+                                clearAllFilters={removeAllFilters}
+                                fetchingExternalApps={fetchingExternalApps}
+                                setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                updateDataSyncing={updateDataSyncing}
+                                setShowPulsatingDotState={setShowPulsatingDotState}
+                                masterFilters={masterFilters}
+                                syncListData={syncListData}
+                                isArgoInstalled={isArgoInstalled}
+                            />
+                            {fetchingExternalApps && (
+                                <div className="mt-16">
+                                    <Progressing size={32} />
+                                </div>
+                            )}
+                        </>
+                    )}
                 </>
             )}
         </div>

@@ -80,12 +80,12 @@ export default function ExternalArgoList({
     }, [argoAppsList])
 
     useEffect(() => {
+        // fetch external apps list
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
         getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
             .then((argoAppsListResponse) => {
                 setArgoAppsList(argoAppsListResponse.result)
-                setDataStateType(AppListViewType.LIST)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -95,6 +95,7 @@ export default function ExternalArgoList({
             .finally(() => {
                 updateDataSyncing(false)
                 setFetchingExternalAppsState(false)
+                setDataStateType(AppListViewType.LIST)
             })
     }, [clusterIdsCsv])
 
@@ -103,17 +104,17 @@ export default function ExternalArgoList({
         setDataStateType(AppListViewType.LOADING)
         setArgoAppsList([])
         setFilteredArgoAppsList([])
-        setClusterIdsCsv(_getClusterIdsFromRequestUrl())
-        setAppStatus(_getAppStatusFromRequestUrl())
+        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
+        setAppStatus(_getAppStatusFromRequestUrl() ?? '')
         setFetchingExternalAppsState(false)
     }
 
     function _getClusterIdsFromRequestUrl() {
-        return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',')
+        return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces?.join(',')).keys()].join(',')
     }
 
     function _getAppStatusFromRequestUrl() {
-        return payloadParsedFromUrl.appStatuses.join(',')
+        return payloadParsedFromUrl.appStatuses?.join(',')
     }
 
     function handleFilteration() {
@@ -129,7 +130,7 @@ export default function ExternalArgoList({
             )
         }
 
-        // handle sorting by asending/descending order
+        // handle sorting by ascending/descending order
         if (_sortOrder == OrderBy.ASC) {
             _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
         } else {
