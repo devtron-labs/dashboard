@@ -531,6 +531,7 @@ export interface K8ResourceComponentProps {
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
+    isExternalApp: boolean
 }
 
 export interface NodeComponentProps {
@@ -540,6 +541,7 @@ export interface NodeComponentProps {
     isDevtronApp?: boolean
     clusterId?: number
     isDeploymentBlocked?: boolean
+    isExternalApp: boolean
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]

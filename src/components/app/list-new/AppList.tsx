@@ -39,6 +39,7 @@ import {
     getChangeAppTabURL,
     getCurrentTabName,
 } from './list.utils'
+import ExternalArgoList from './ExternalArgoList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -1029,6 +1030,28 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     {params.appType === AppListConstants.AppType.HELM_APPS && (
                         <>
                             <HelmAppList
+                                serverMode={serverMode}
+                                payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                sortApplicationList={sortApplicationList}
+                                clearAllFilters={removeAllFilters}
+                                fetchingExternalApps={fetchingExternalApps}
+                                setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                updateDataSyncing={updateDataSyncing}
+                                setShowPulsatingDotState={setShowPulsatingDotState}
+                                masterFilters={masterFilters}
+                                syncListData={syncListData}
+                                isArgoInstalled={isArgoInstalled}
+                            />
+                            {fetchingExternalApps && (
+                                <div className="mt-16">
+                                    <Progressing size={32} />
+                                </div>
+                            )}
+                        </>
+                    )}
+                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS && (
+                        <>
+                            <ExternalArgoList
                                 serverMode={serverMode}
                                 payloadParsedFromUrl={parsedPayloadOnUrlChange}
                                 sortApplicationList={sortApplicationList}
