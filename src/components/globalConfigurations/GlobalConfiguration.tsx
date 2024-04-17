@@ -31,6 +31,7 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
+import DeploymentWindow from '../../Pages/GlobalConfigurations/DeploymentWindow/DeploymentWindow'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -644,6 +645,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
+            (
+            <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+            </Route>
+            , ),
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
