@@ -33,12 +33,7 @@ import {
 } from '../../../../config'
 import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
-import {
-    getAppConfigStatus,
-    getAppOtherEnvironmentMin,
-    stopStartApp,
-    getLastExecutionMinByAppAndEnv,
-} from '../../../../services/service'
+import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
 import AppNotDeployedIcon from '../../../../assets/img/app-not-deployed.png'
 import AppNotConfiguredIcon from '../../../../assets/img/app-not-configured.png'
@@ -176,8 +171,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
             getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
                 if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                     setShowDeploymentWindowConfirmation(true)
-                }
-                else {
+                } else {
                     setShowDeploymentWindowConfirmation(false)
                 }
             })
@@ -261,11 +255,6 @@ export const Details: React.FC<DetailsType> = ({
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const [lastExecutionDetail, setLastExecutionDetail] = useState({
-        imageScanDeployInfoId: 0,
-        severityCount: { critical: 0, moderate: 0, low: 0 },
-        isError: false,
-    })
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
@@ -502,27 +491,6 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    async function callLastExecutionMinAPI(appId, envId) {
-        if (!appId || !envId) {
-            return
-        }
-
-        try {
-            const { result } = await getLastExecutionMinByAppAndEnv(appId, envId)
-            setLastExecutionDetail({
-                imageScanDeployInfoId: result.imageScanDeployInfoId,
-                severityCount: result.severityCount,
-                isError: false,
-            })
-        } catch (error) {
-            setLastExecutionDetail({
-                imageScanDeployInfoId: 0,
-                severityCount: { critical: 0, moderate: 0, low: 0 },
-                isError: true,
-            })
-        }
-    }
-
     function clearPollingInterval() {
         if (appDetailsIntervalID) {
             clearInterval(appDetailsIntervalID)
@@ -533,10 +501,6 @@ export const Details: React.FC<DetailsType> = ({
     useEffect(() => {
         if (appDetails && setAppDetailResultInParent) {
             setAppDetailResultInParent(appDetails)
-        }
-
-        if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
-            callLastExecutionMinAPI(appDetails?.appId, appDetails?.environmentId)
         }
     }, [appDetails])
 
@@ -578,14 +542,6 @@ export const Details: React.FC<DetailsType> = ({
     const showApplicationDetailedModal = (): void => {
         toggleDetailedStatus(true)
     }
-
-    const showVulnerabilitiesModal = useCallback(
-        (e) => {
-            e.stopPropagation()
-            toggleScanDetailsModal(true)
-        },
-        [toggleScanDetailsModal],
-    )
 
     if (
         !loadingResourceTree &&
@@ -651,6 +607,8 @@ export const Details: React.FC<DetailsType> = ({
         }
         return 'Restore App'
     }
+
+    const handleModalClose = () => toggleScanDetailsModal(false)
 
     const handleHibernateConfirmationModalClose = (e) => {
         e.stopPropagation()
@@ -745,8 +703,6 @@ export const Details: React.FC<DetailsType> = ({
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
                     refetchDeploymentStatus={getDeploymentDetailStepsData}
-                    severityCount={lastExecutionDetail.severityCount}
-                    showVulnerabilitiesModal={showVulnerabilitiesModal}
                     toggleIssuesModal={toggleIssuesModal}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
@@ -793,19 +749,6 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
                 <DeploymentWindowStatusModal envId={params.envId} appId={params.appId} />
-            )}
-            {showScanDetailsModal && (
-                <ScanDetailsModal
-                    showAppInfo={false}
-                    uniqueId={{
-                        imageScanDeployInfoId: lastExecutionDetail.imageScanDeployInfoId,
-                        appId: params.appId,
-                        envId: params.envId,
-                    }}
-                    close={() => {
-                        toggleScanDetailsModal(false)
-                    }}
-                />
             )}
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />

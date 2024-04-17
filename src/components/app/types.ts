@@ -538,12 +538,6 @@ export interface SourceInfoType {
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
     refetchDeploymentStatus: (showTimeline?: boolean) => void
-    severityCount?: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: (e) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number

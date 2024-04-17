@@ -126,6 +126,7 @@ if (!window || !window._env_) {
         SERVICE_WORKER_TIMEOUT: '1',
         ENABLE_RESOURCE_SCAN: false,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
+        ENABLE_RESOURCE_SCAN_V2: true,
     }
 }
 
