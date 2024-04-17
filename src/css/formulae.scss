@@ -131,7 +131,7 @@ $margins: (
 }
 
 //color from B,N,G,Y,R and 100 to 900
-$colors: B, N, G, Y, R, V;
+$colors: B, N, G, Y, R, V, O;
 $color-suffix: 00;
 
 @each $color in $colors {
