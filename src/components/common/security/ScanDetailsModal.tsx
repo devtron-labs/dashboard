@@ -7,6 +7,7 @@ import {
     VulnerabilityType,
     Drawer,
     ScannedObjectBar,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -88,6 +89,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
         document.removeEventListener('click', this.outsideClickHandler)
     }
     outsideClickHandler = (evt): void => {
+        evt.stopPropagation()
         if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
             this.props.close()
         }
@@ -208,7 +210,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     render() {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div className="modal-body--scan-details" ref={this.scanDetailsRef}>
+                <div className="modal-body--scan-details" ref={this.scanDetailsRef} onClick={stopPropagation}>
                     {this.renderHeader()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (
