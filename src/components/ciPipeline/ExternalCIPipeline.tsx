@@ -6,6 +6,7 @@ import {
     ConditionalWrap,
     VisibleModal,
     DeleteDialog,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -18,7 +19,7 @@ import {
 } from './ciPipeline.service'
 import { SourceTypeMap, TriggerType, ViewType, URLS } from '../../config'
 import { CIPipelineProps, ExternalCIPipelineState } from './types'
-import { CopyButton, ButtonWithLoader } from '../common'
+import { CopyButton } from '../common'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -444,7 +445,6 @@ export default class ExternalCIPipeline extends Component<CIPipelineProps, Exter
                         {this.renderDeleteCIButton()}
                         <ButtonWithLoader
                             rootClassName="cta cta--workflow flex flex-1"
-                            loaderColor="white"
                             onClick={this.savePipeline}
                             // disabled={!!this.props.match.params.ciPipelineId}
                             isLoading={this.state.loadingData}

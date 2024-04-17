@@ -5,6 +5,7 @@ import {
     showError,
     TippyCustomized,
     TippyTheme,
+    ButtonWithLoader,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
@@ -23,7 +24,6 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
-    ButtonWithLoader,
     convertToOptionsList,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -495,7 +495,6 @@ const EphemeralContainerDrawer = ({
                         disabled={loader}
                         dataTestId="cancel-token"
                         isLoading={false}
-                        loaderColor="white"
                     >
                         Cancel
                     </ButtonWithLoader>
@@ -508,7 +507,6 @@ const EphemeralContainerDrawer = ({
                                 : !ephemeralFormAdvanced.advancedData.manifest
                         }
                         isLoading={loader}
-                        loaderColor="white"
                     >
                         Launch container
                     </ButtonWithLoader>

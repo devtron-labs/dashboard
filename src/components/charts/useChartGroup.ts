@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { getTeamListMin, showError } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useState, useEffect } from 'react'
+import { getTeamListMin, showError, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ChartGroupExports, ChartGroupState, ChartGroupEntry, Chart, ChartGroup } from './charts.types'
 import {
@@ -13,7 +13,6 @@ import {
 } from './charts.service'
 import { getAvailableCharts, getChartRepoListMin } from '../../services/service'
 import { mapByKey, sortOptionsByLabel } from '../common'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import { SERVER_MODE } from '../../config'
 import { PaginationParams } from './charts.util'
 import { APP_NAME_TAKEN, DUPLICATE_NAME, EMPTY_ENV, NAME_REGEX_PATTERN } from './constants'
@@ -27,7 +26,7 @@ function getSelectedInstances(charts) {
 }
 
 export default function useChartGroup(chartGroupId = null): ChartGroupExports {
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
 
     const initialState = {
         chartGroups: [],

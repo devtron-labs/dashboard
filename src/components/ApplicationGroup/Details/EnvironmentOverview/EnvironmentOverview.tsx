@@ -9,6 +9,7 @@ import {
     SortableTableHeaderCell,
     SortingOrder,
     useUrlFilters,
+    EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -18,7 +19,7 @@ import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
 import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
-import { EditableTextArea, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,

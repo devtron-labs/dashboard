@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progressing, BreadCrumb, useBreadcrumb, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation, Switch } from 'react-router'
 import { Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
@@ -9,7 +9,6 @@ import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'
 import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import PageHeader from '../../common/header/PageHeader'
 
 const ChartGroupList = () => {
     const [loading, result, error, reload] = useAsync(getChartGroups, [])

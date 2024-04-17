@@ -108,8 +108,13 @@ export enum NodeType {
 
 // export type NodeType = keyof typeof NodeType;
 
+/**
+ * 
+ * @param nodeType 
+ * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
+ */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-    switch (nodeType.toLowerCase()) {
+    switch (nodeType?.toLowerCase()) {
         case NodeType.DaemonSet.toLowerCase():
         case NodeType.Deployment.toLowerCase():
         case NodeType.Pod.toLowerCase():
@@ -183,7 +188,7 @@ export interface AppDetails {
     projectName?: string
     appType?: AppType
     helmReleaseStatus?: HelmReleaseStatus
-    clusterId?: number
+    clusterId: number
     notes?: string
     deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
@@ -523,8 +528,8 @@ export interface K8ResourceComponentProps {
     handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isExternalApp?: boolean
     isDevtronApp?: boolean
+    clusterId?: number
     isDeploymentBlocked?: boolean
 }
 
@@ -533,7 +538,7 @@ export interface NodeComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
-    isExternalApp?: boolean
+    clusterId?: number
     isDeploymentBlocked?: boolean
 }
 export interface AppDetailsComponentType {

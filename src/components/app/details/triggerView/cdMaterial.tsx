@@ -31,6 +31,8 @@ import {
     ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
+    AnnouncementBanner,
+    ButtonWithLoader,
     ACTION_STATE,
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
@@ -64,7 +66,7 @@ import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -92,7 +94,6 @@ import { ModuleNameMap } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
-import AnnouncementBanner from '../../../common/AnnouncementBanner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1114,7 +1115,6 @@ export default function CDMaterial({
             onClick={loadOlderImages}
             disabled={state.loadingMore}
             isLoading={state.loadingMore}
-            loaderColor="blue"
         >
             Fetch More Images
         </ButtonWithLoader>
@@ -1415,7 +1415,7 @@ export default function CDMaterial({
                                     isEditing={false}
                                     tagId={0}
                                     softDeleteTags={[]}
-                                    isSuperAdmin={[]}
+                                    isSuperAdmin
                                 />
                             </div>
                         )}

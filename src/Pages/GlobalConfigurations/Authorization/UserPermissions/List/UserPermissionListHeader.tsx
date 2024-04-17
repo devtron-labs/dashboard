@@ -1,5 +1,11 @@
 import React from 'react'
-import { SearchBar, TippyCustomized, TippyTheme, TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    SearchBar,
+    TippyCustomized,
+    TippyTheme,
+    TippyCustomizedProps,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
@@ -8,7 +14,6 @@ import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
 
 import { UserPermissionListHeaderProps } from './types'
-import { useMainContext } from '../../../../../components/common/navigation/NavigationRoutes'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 

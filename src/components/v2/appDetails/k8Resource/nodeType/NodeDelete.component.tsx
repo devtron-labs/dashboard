@@ -9,18 +9,19 @@ import {
     useSearchString,
     MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import PodPopup from './PodPopup'
+import AppDetailsStore from '../../appDetails.store'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
-import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
 import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '../../../../common'
+import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
+const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
 const NodeDeleteComponent = ({
@@ -35,6 +36,16 @@ const NodeDeleteComponent = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
+    const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
+
+    const handleShowVulnerabilityModal = () => {
+        setManifestPayload(getAppDetailsForManifest(appDetails))
+    }
+
+    const handleCloseVulnerabilityModal = () => {
+        setManifestPayload(null)
+    }
+
     const { queryParams } = useSearchString()
     const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
@@ -91,48 +102,6 @@ const NodeDeleteComponent = ({
         )
     }
 
-    const PodPopup: React.FC<{
-        kind: NodeType
-        describeNode: (tab?: NodeDetailTabsType) => void
-    }> = ({ kind, describeNode }) => {
-        return (
-            <div className="pod-info__popup-container">
-                {kind === NodeType.Pod ? (
-                    <span
-                        data-testid="view-events-button"
-                        className="flex pod-info__popup-row"
-                        onClickCapture={(e) => describeNode(NodeDetailTabs.EVENTS)}
-                    >
-                        View Events
-                    </span>
-                ) : (
-                    ''
-                )}
-                {kind === NodeType.Pod ? (
-                    <span
-                        data-testid="view-logs-button"
-                        className="flex pod-info__popup-row"
-                        onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
-                    >
-                        View Container Logs
-                    </span>
-                ) : (
-                    ''
-                )}
-                {!isExternalArgoApp && (
-                    <span
-                        data-testid="delete-resource-button"
-                        className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                        onClick={toggleShowDeleteConfirmation}
-                    >
-                        <span>Delete</span>
-                        <Trash className="icon-dim-20 scr-5" />
-                    </span>
-                )}
-            </div>
-        )
-    }
-
     async function asyncDeletePod(nodeDetails) {
         try {
             setApiCallInProgress(true)
@@ -140,7 +109,6 @@ const NodeDeleteComponent = ({
             setShowDeleteConfirmation(false)
             setForceDelete(false)
             toast.success('Deletion initiated successfully.')
-            // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
             const _tabs = AppDetailsStore.getAppDetailsTabs()
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
 
@@ -173,9 +141,32 @@ const NodeDeleteComponent = ({
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
-                    <PodPopup kind={nodeDetails?.kind} describeNode={describeNodeWrapper} />
+                    <PodPopup
+                        kind={nodeDetails?.kind}
+                        describeNode={describeNodeWrapper}
+                        toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
+                        isExternalArgoApp={isExternalArgoApp}
+                        handleShowVulnerabilityModal={handleShowVulnerabilityModal}
+                    />
                 </PopupMenu.Body>
             </PopupMenu>
+            
+            {!!manifestPayload && ScanResourceModal && (
+                <ScanResourceModal
+                    name={nodeDetails?.name}
+                    namespace={nodeDetails?.namespace}
+                    group={nodeDetails?.group}
+                    kind={nodeDetails?.kind}
+                    version={nodeDetails?.version}
+                    clusterId={manifestPayload.clusterId}
+                    appId={manifestPayload.appId}
+                    appType={manifestPayload.appType}
+                    deploymentType={manifestPayload.deploymentType}
+                    handleCloseVulnerabilityModal={handleCloseVulnerabilityModal}
+                    isAppDetailView
+                />
+            )}
+
             {renderDeleteResourcePopup()}
         </div>
     )

@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, useContext, Reducer, useRef } from 'react'
+import React, { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
-import { showError, Progressing, useAsync, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, useAsync, useMainContext, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
@@ -22,7 +22,6 @@ import {
     updateTemplateFromBasicValue,
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
@@ -38,7 +37,7 @@ export default function DeploymentTemplateOverride({
     isProtected,
     reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
-    const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useMainContext()
     const { appId, envId } = useParams<{ appId; envId }>()
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
