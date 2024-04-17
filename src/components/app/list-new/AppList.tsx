@@ -1049,7 +1049,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             )}
                         </>
                     )}
-                    {params.appType === AppListConstants.AppType.ARGO_APPS && (
+                    {window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS && (
                         <>
                             <ExternalArgoList
                                 serverMode={serverMode}
