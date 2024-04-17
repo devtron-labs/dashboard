@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { Checkbox, CHECKBOX_VALUE, Host, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -91,7 +91,7 @@ const LogsComponent = ({
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
     const [downloadInProgress, setDownloadInProgress] = useState(false)
-
+    const {isSuperAdmin} = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -806,7 +806,7 @@ const LogsComponent = ({
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            }`}
+                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
                         >
                             {readyState === 0 && (
                                 <div
