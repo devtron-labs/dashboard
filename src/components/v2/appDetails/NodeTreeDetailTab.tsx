@@ -62,6 +62,7 @@ const NodeTreeDetailTab = ({
                                         isDevtronApp={isDevtronApp}
                                         isDeploymentBlocked={isDeploymentBlocked}
                                         clusterId={appDetails.clusterId}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -91,6 +92,7 @@ const NodeTreeDetailTab = ({
                                         isDevtronApp={isDevtronApp}
                                         clusterId={appDetails.clusterId}
                                         isDeploymentBlocked={isDeploymentBlocked}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
@@ -108,6 +110,7 @@ const NodeTreeDetailTab = ({
                                         isDevtronApp={isDevtronApp}
                                         isDeploymentBlocked={isDeploymentBlocked}
                                         clusterId={appDetails.clusterId}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}
