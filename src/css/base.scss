@@ -356,6 +356,10 @@ a:focus {
     bottom: 12px;
 }
 
+.dc__bottom-30-imp {
+    bottom: 30px !important;
+}
+
 .dc__right-0 {
     right: 0;
 }
@@ -2145,6 +2149,14 @@ button.anchor {
     border-left: solid 1px var(--N200);
 }
 
+.dc__border-left-n0 {
+    border-left: solid 1px var(--N000);
+}
+
+.dc__border-left-n9 {
+    border-left: solid 1px var(--N900);
+}
+
 .dc__border-left-b4 {
     border-left: solid 1px var(--B400);
 }
@@ -3839,12 +3851,21 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0_2 {
+    opacity: 0.2;
+}
+
 .dc__opacity-0_4 {
     opacity: 0.4;
 }
 
 .dc__opacity-0_5 {
     opacity: 0.5;
+}
+
+.dc__opacity-0_8 {
+    opacity: 0.8;
 }
 
 .dc__opacity-1 {

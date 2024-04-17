@@ -92,6 +92,7 @@ import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMess
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import IssuesListingModal from './IssuesListingModal'
+import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
@@ -763,6 +764,13 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
+            {
+                <ClusterMetaDataBar
+                    clusterName={appDetails?.clusterName}
+                    namespace={appDetails?.namespace}
+                    clusterId={appDetails?.clusterId}
+                />
+            }
         </>
     )
 }

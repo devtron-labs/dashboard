@@ -1023,6 +1023,7 @@ export default function ClusterTerminal({
                 className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
                     isNodeDetailsPage ? '' : 'dc__border-top'
                 }`}
+                isResourceBrowserView
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu
