@@ -39,6 +39,7 @@ import {
     getChangeAppTabURL,
     getCurrentTabName,
 } from './list.utils'
+import ExternalArgoList from './ExternalArgoList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
