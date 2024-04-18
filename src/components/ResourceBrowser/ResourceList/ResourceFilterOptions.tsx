@@ -70,7 +70,6 @@ const ResourceFilterOptions = ({
 
     useEffect(() => {
         /* TODO: handle nicely */
-        console.log(registerShortcut)
         if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
             shortcut.registerShortcut(
