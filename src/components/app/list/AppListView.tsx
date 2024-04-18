@@ -329,21 +329,21 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     render() {
-        // if (this.props.view === AppListViewType.EMPTY) {
-        //     return this.renderGuidedCards()
-        // }
-        // if (this.props.view === AppListViewType.NO_RESULT) {
-        //     return (
-        //         <Empty
-        //             view={this.props.view}
-        //             title={APPLIST_EMPTY_STATE_MESSAGING.noAppsFound}
-        //             message={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-        //             buttonLabel={ClearFiltersLabel}
-        //             clickHandler={this.props.clearAll}
-        //         />
-        //     )
-        // }
-        if (1) {
+        if (this.props.view === AppListViewType.EMPTY) {
+            return this.renderGuidedCards()
+        }
+        if (this.props.view === AppListViewType.NO_RESULT) {
+            return (
+                <Empty
+                    view={this.props.view}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.noAppsFound}
+                    message={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
+                    buttonLabel={ClearFiltersLabel}
+                    clickHandler={this.props.clearAll}
+                />
+            )
+        }
+        if (this.props.view === AppListViewType.ERROR) {
             return <ErrorScreenManager heightToDeduct={172} code={this.props.code} />
         }
         return (
