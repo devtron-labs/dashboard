@@ -360,8 +360,7 @@ export default function ExternalArgoList({
         params.set('pageSize', size.toString())
         params.set('offset', '0')
         params.set('hOffset', '0')
-
-        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}?${params.toString()}`)
     }
 
     function changePage(pageNo: number): void {
