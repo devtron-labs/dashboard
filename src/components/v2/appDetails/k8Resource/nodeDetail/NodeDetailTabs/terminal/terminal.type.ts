@@ -52,6 +52,7 @@ export interface TerminalWrapperProps {
     setSocketConnection: (type: SocketConnectionType) => void
     className?: string
     dataTestId?: string
+    isResourceBrowserView?: boolean
 }
 
 export interface TerminalViewType {
@@ -65,6 +66,7 @@ export interface TerminalViewType {
     terminalMessageData?: any
     clearTerminal: boolean
     dataTestId?: string
+    isResourceBrowserView?: boolean
 }
 
 export interface ConnectionStripMessageType {

@@ -11,6 +11,7 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 let clusterTimeOut
 
@@ -25,12 +26,14 @@ export default function TerminalView({
     terminalMessageData,
     clearTerminal,
     dataTestId,
+    isResourceBrowserView,
 }: TerminalViewType) {
     const socket = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const fitAddon = useRef(null)
+    const { isSuperAdmin } = useMainContext()
 
     function resizeSocket() {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
@@ -237,7 +240,7 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className="terminal-wrapper" data-testid={dataTestId}>
+        <div className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
                 ref={myDivRef}

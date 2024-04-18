@@ -330,7 +330,7 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8"><ClipboardButton content={nodeName.split(' ').join('')} /></div>
+                                                <div className="pl-8 pr-8"><ClipboardButton content={node.name} /></div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${

@@ -43,7 +43,7 @@ export const HibernateStatusRow = ({
     }
 
     const getMessage = () => {
-        if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
+        if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
             return (
                 <div>
                     {hibernateInfoMap[rowData.id].userActionState === ACTION_STATE.BLOCKED && <div>
