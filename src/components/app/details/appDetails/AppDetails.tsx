@@ -609,8 +609,6 @@ export const Details: React.FC<DetailsType> = ({
         return 'Restore App'
     }
 
-    const handleModalClose = () => toggleScanDetailsModal(false)
-
     const handleHibernateConfirmationModalClose = (e) => {
         e.stopPropagation()
         setHibernateConfirmationModal('')
