@@ -3,9 +3,7 @@ import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router
 import moment from 'moment'
 import {
     ErrorScreenManager,
-    showError,
     getRandomColor,
-    ServerErrors,
     InfoIconTippy,
     EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -18,7 +16,7 @@ import { Moment12HourFormat, URLS } from '../../config'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
-import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
+import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
 
