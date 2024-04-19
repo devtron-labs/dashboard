@@ -292,12 +292,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     if (errorStatusCode) {
-        return (
-            <ErrorScreenManager
-                code={errorStatusCode}
-                subtitle="You do not have access to view information on this page."
-            />
-        )
+        return <ErrorScreenManager code={errorStatusCode} />
     }
 
     if (appListLoading) {
