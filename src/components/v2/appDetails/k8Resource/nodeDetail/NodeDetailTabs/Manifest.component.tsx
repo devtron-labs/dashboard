@@ -134,7 +134,7 @@ const ManifestComponent = ({
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
         if (isDeleted) {
-            /* NOTE:(linting) useEffect callback should have uniform return values; see cleanup at line 223 */
+            /* NOTE:(linting) useEffect callback should have uniform return values */
             return () => {}
         }
         const abortController = new AbortController()
