@@ -537,7 +537,7 @@ function ClusterOverview({
             return (
                 <ErrorScreenManager
                     code={errorStatusCode || errorCode}
-                    subtitle={(errorCode==403?'unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())':'')}
+                    subtitle={(errorCode==403?unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()):'')}
                 />
             )
         }
