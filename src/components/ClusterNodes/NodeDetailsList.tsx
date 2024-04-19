@@ -547,7 +547,7 @@ export default function NodeDetailsList({
             <div className="dc__border-left flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
                 />
             </div>
         )

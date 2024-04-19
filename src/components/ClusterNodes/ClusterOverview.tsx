@@ -127,11 +127,9 @@ function ClusterOverview({
                     : _clusterNote.updatedOn
             }
             setDescriptionData(data)
-        } else if (clusterNoteResponse.reason['code'] === 403) {
-            setErrorCode(clusterNoteResponse.reason['code'])
         } else {
-            showError(clusterNoteResponse.reason)
-        }
+            setErrorCode(clusterNoteResponse.reason['code'])
+        } 
     }
 
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
@@ -185,15 +183,8 @@ function ClusterOverview({
                     setClusterErrorList(_errorList)
                 }
             }
-        } else if (clusterCapacityResponse.reason['code'] === 403) {
-            setErrorCode(clusterCapacityResponse.reason['code'])
         } else {
-            const error = clusterCapacityResponse.reason
-            setErrorMsg(
-                (error instanceof ServerErrors && Array.isArray(error.errors)
-                    ? error.errors[0]?.userMessage
-                    : error['message']) ?? SOME_ERROR_MSG,
-            )
+            setErrorCode(clusterCapacityResponse.reason['code'])
         }
     }
     const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
