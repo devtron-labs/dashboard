@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import DeploymentGroupList from './DeploymentGroupList'
@@ -7,11 +7,11 @@ import BulkActionDetails from './BulkActionDetails'
 import './BulkActions.scss'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { mainContext } from '../common/navigation/NavigationRoutes'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function BulkActions({ ...props }) {
     const { path } = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
 
     const renderEmptyStateForEAOnlyMode = () => {
         return (

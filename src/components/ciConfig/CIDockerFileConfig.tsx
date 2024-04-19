@@ -1,11 +1,10 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { CIBuildType, ConditionalWrap, showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildType, ConditionalWrap, showError, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import BuildContext from './BuildContext'
 import CISelfDockerBuildOption from './CISelfDockerBuildOption'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import CIBuildpackBuildOptions from './CIBuildpackBuildOptions'
 import { CI_BUILDTYPE_ALIAS } from './CIConfig.utils'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
@@ -57,7 +56,7 @@ export default function CIDockerFileConfig({
         failed: false,
     })
 
-    const { isAirgapped } = useContext(mainContext)
+    const { isAirgapped } = useMainContext()
 
     const isBuildpackType = ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE
     const isDefaultBuildContext = (): boolean => {

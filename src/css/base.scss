@@ -348,6 +348,14 @@ a:focus {
     bottom: 0;
 }
 
+.dc__bottom-12 {
+    bottom: 12px;
+}
+
+.dc__bottom-30-imp {
+    bottom: 30px !important;
+}
+
 .dc__right-0 {
     right: 0;
 }
@@ -2133,6 +2141,14 @@ button.anchor {
     border-left: solid 1px var(--N200);
 }
 
+.dc__border-left-n0 {
+    border-left: solid 1px var(--N000);
+}
+
+.dc__border-left-n9 {
+    border-left: solid 1px var(--N900);
+}
+
 .dc__border-left-b4 {
     border-left: solid 1px var(--B400);
 }
@@ -3295,6 +3311,14 @@ textarea,
     min-height: 92px;
 }
 
+.mh-95 {
+    min-height: 95px;
+}
+
+.mh-98 {
+    min-height: 98px;
+}
+
 .mh-150 {
     min-height: 150px !important;
 }
@@ -3303,8 +3327,20 @@ textarea,
     min-height: 200px;
 }
 
+.mh-250 {
+    min-height: 250px;
+}
+
 .mh-300 {
     min-height: 300px;
+}
+
+.mh-320 {
+    min-height: 320px;
+}
+
+.mh-350 {
+    min-height: 350px;
 }
 
 .mh-400 {
@@ -3340,7 +3376,7 @@ textarea,
 }
 
 .mxh-250 {
-    max-height: 210px;
+    max-height: 250px;
 }
 
 .mxh-300 {
@@ -3349,6 +3385,10 @@ textarea,
 
 .mxh-300-imp {
     max-height: 300px !important;
+}
+
+.mxh-350 {
+    max-height: 350px;
 }
 
 .mxh-504 {
@@ -3601,7 +3641,7 @@ textarea,
 }
 
 .ml-36-imp {
-    margin-left: 36px !important 
+    margin-left: 36px !important
 }
 
 .ml-54 {
@@ -3791,12 +3831,25 @@ textarea::placeholder {
 }
 
 // opacity
+
+.dc__opacity-0_2 {
+    opacity: 0.2;
+}
+
 .dc__opacity-0_4 {
     opacity: 0.4;
 }
 
 .dc__opacity-0_5 {
     opacity: 0.5;
+}
+
+.dc__opacity-0_8 {
+    opacity: 0.8;
+}
+
+.dc__opacity-1 {
+  opacity: 1;
 }
 
 // blur
@@ -3839,6 +3892,12 @@ textarea::placeholder {
 
 .dc__user-select-none {
     user-select: none;
+}
+
+.dc__stroke-width-2 {
+    path {
+        stroke-width: 2px;
+    }
 }
 
 .dc__stroke-width-4 {
@@ -3964,6 +4023,10 @@ textarea::placeholder {
 
 .dc__zi-5 {
     z-index: 5;
+}
+
+.dc__zi-10 {
+    z-index: 10;
 }
 
 .dc__zi-20 {
@@ -4164,6 +4227,10 @@ textarea::placeholder {
     font-size: 11px !important;
 }
 
+.fs-12-imp {
+    font-size: 12px !important;
+}
+
 .fs-13-imp {
     font-size: 13px !important;
 }
@@ -4179,7 +4246,7 @@ textarea::placeholder {
             top: 0;
             text-align: center;
         }
-    
+
         &.cd-trigger-announcement {
             .info-bar-container {
                 .announcement-bar {
@@ -4190,7 +4257,7 @@ textarea::placeholder {
             }
         }
     }
-    
+
     .announcement-bar {
         background-color: var(--Y500);
         border: 1px solid var(--Y700);

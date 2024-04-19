@@ -66,7 +66,7 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
                     _responseKeys.forEach((_key) => {
                         _headers.push({ key: _key, value: response.result.header[_key] })
                     })
-                    const _responsePayload = response.result?.payload ? JSON.stringify(response.result.payload) : ''
+                    const _responsePayload = response.result?.payload ?? '';
                     state.form = {
                         ...response.result,
                         header: _headers,
@@ -118,7 +118,6 @@ export class WebhookConfigModal extends Component<WebhookConfigModalProps, Webhh
             try {
                 isValid[key] = event.target.value.length !== 0
                 if (isValid[key]) {
-                    JSON.parse(this.state.form.payload)
                     isValid[key] = true
                 }
             } catch (err) {

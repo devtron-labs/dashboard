@@ -6,6 +6,7 @@ import {
     Progressing,
     multiSelectStyles,
     CustomInput,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import AsyncSelect from 'react-select/async'
@@ -14,7 +15,6 @@ import { ViewType } from '../../config'
 import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { ValidationRules } from './validationRules'
-import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader'
 import { Info } from '../common/icons/Icons'
 import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -362,7 +362,6 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             <ButtonWithLoader
                                 dataTestId="create-linked-ci-button"
                                 rootClassName="cta cta--workflow flex-1"
-                                loaderColor="white"
                                 onClick={this.savePipeline}
                                 isLoading={this.state.loadingData}
                             >

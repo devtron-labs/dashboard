@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
@@ -14,6 +14,8 @@ import {
     ResponseType,
     DeploymentAppTypes,
     StyledRadioGroup as RadioGroup,
+    useMainContext,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -79,7 +81,6 @@ import {
     ChartDeploymentHistoryResponse,
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -141,7 +142,7 @@ const ChartValuesView = ({
         presetValueId: string
         envId: string
     }>()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -196,8 +197,10 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (isDeployChartView || isCreateValueView) {
+        if(!isExternalApp){
             checkGitOpsConfiguration()
+        }
+        if (isDeployChartView || isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
@@ -255,7 +258,7 @@ const ChartValuesView = ({
                         }
                         setChartValuesList([_chartValues])
 
-                        const _valuesYaml = YAML.stringify(JSON.parse(_releaseInfo.mergedValues))
+                        const _valuesYaml = YAMLStringify(JSON.parse(_releaseInfo.mergedValues))
                         getAndUpdateSchemaValue(
                             _valuesYaml,
                             convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
@@ -410,7 +413,7 @@ const ChartValuesView = ({
                     type: ChartValuesViewActionTypes.multipleOptions,
                     payload: {
                         fetchingValuesYaml: false,
-                        modifiedValuesYaml: YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues)),
+                        modifiedValuesYaml: YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues)),
                     },
                 })
             }
@@ -1389,7 +1392,7 @@ const ChartValuesView = ({
                         valuesText={commonState.modifiedValuesYaml}
                         defaultValuesText={
                             isExternalApp
-                                ? YAML.stringify(JSON.parse(commonState.releaseInfo.mergedValues))
+                                ? YAMLStringify(JSON.parse(commonState.releaseInfo.mergedValues))
                                 : commonState.installedConfig?.valuesOverrideYaml
                         }
                         onChange={onEditorValueChange}
@@ -1604,6 +1607,7 @@ const ChartValuesView = ({
                                 isDeployChartView={isDeployChartView}
                                 allowedDeploymentTypes={allowedDeploymentTypes}
                                 gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                allowedCustomBool={allowedCustomBool}
                             />
                         )}
                         {allowedCustomBool && showDeploymentTools && (

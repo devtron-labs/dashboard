@@ -11,6 +11,7 @@ import {
     ToastBody,
     useEffectAfterMount,
     ServerErrors,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -64,7 +65,6 @@ const ManifestComponent = ({
     }>()
     const id = getComponentKey()
     const [error, setError] = useState(false)
-    const [secretViewAccess, setSecretViewAccess] = useState(false)
     const [desiredManifest, setDesiredManifest] = useState('')
     const [manifest, setManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -80,6 +80,9 @@ const ManifestComponent = ({
     const [isResourceMissing, setIsResourceMissing] = useState(false)
     const [showInfoText, setShowInfoText] = useState(false)
     const [showDecodedData, setShowDecodedData] = useState(false)
+
+    const [secretViewAccess, setSecretViewAccess] = useState(false)
+    const { isSuperAdmin } = useMainContext() // to show the cluster meta data at the bottom
 
     const handleDeriveStatesFromManifestRef = () => {
         setError(manifestViewRef.current.data.error)
@@ -457,7 +460,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="manifest-container"
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28'  : ' '} manifest-container `}
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
         >

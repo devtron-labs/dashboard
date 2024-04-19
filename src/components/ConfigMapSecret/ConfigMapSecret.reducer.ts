@@ -1,4 +1,4 @@
-import YAML from 'yaml'
+import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { getSecretInitState } from './Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
@@ -9,7 +9,7 @@ const secureValues = (data, isExternalType) => {
     return Object.keys(decodedData).map((k) => {
         return {
             k,
-            v: typeof decodedData[k] === 'object' ? YAML.stringify(decodedData[k], { indent: 2 }) : decodedData[k],
+            v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
             keyError: '',
             valueError: '',
         }
@@ -50,7 +50,7 @@ export const initState = (
                   k,
                   v:
                       typeof configMapSecretData.data[k] === 'object'
-                          ? YAML.stringify(configMapSecretData.data[k], { indent: 2 })
+                          ? YAMLStringify(configMapSecretData.data[k])
                           : configMapSecretData.data[k],
                   keyError: '',
                   valueError: '',

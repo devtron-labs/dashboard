@@ -13,9 +13,10 @@ import {
     getRandomColor,
     noop,
     StyledRadioGroup as RadioGroup,
+    EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { EditableTextArea, handleUTCTime, importComponentFromFELibrary } from '../../common'
+import { handleUTCTime, importComponentFromFELibrary } from '../../common'
 import { AppOverviewProps, EditAppRequest, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
@@ -41,6 +42,7 @@ import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog')
 const DependencyList = importComponentFromFELibrary('DependencyList')
+const DeploymentWindowOverview = importComponentFromFELibrary('DeploymentWindowOverview')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
@@ -440,6 +442,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <div>
                 {Catalog && <Catalog resourceId={appId} resourceType={appType} />}
+                {DeploymentWindowOverview && (
+                    <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
+                )}
                 <GenericDescription
                     isClusterTerminal={false}
                     isSuperAdmin
