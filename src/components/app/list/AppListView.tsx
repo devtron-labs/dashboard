@@ -343,11 +343,7 @@ export class AppListView extends Component<AppListViewProps> {
             )
         }
         if (this.props.view === AppListViewType.ERROR) {
-            return (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={this.props.code} />
-                </div>
-            )
+            return <ErrorScreenManager heightToDeduct={172} code={this.props.code} />
         }
         return (
             <>
