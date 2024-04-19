@@ -77,7 +77,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                 })
             })
             .catch((error) => {
-                this.setState({ view: ViewType.ERROR })
+                this.setState({ view: ViewType.ERROR, code: error.code })
                 showError(error)
             })
     }

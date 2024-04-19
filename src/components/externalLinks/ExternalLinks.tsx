@@ -480,7 +480,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 <div className="error-screen-wrapper flex column h-100">
                     <ErrorScreenManager
                         code={errorStatusCode}
-                        subtitle="Information on this page is available only to superadmin users."
                     />
                 </div>
             )

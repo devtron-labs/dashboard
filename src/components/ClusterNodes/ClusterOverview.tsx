@@ -92,11 +92,7 @@ function ClusterOverview({
                 })
             }
         } catch (error) {
-            if (error['code'] === 403) {
-                setErrorCode(error['code'])
-            } else {
-                showError(error)
-            }
+            setErrorCode(error['code'])
             throw error
         }
     }
@@ -550,7 +546,7 @@ function ClusterOverview({
             return (
                 <ErrorScreenManager
                     code={errorStatusCode || errorCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())}
+                    subtitle={(errorCode==403?'unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())':'')}
                 />
             )
         }
