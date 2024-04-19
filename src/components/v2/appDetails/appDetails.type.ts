@@ -4,6 +4,7 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
+import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -223,8 +224,7 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
-    resourcesSyncResult?: Record<string,string>
-
+    resourcesSyncResult?: Record<string, string>
 }
 
 export interface PodMetaData {
@@ -512,9 +512,9 @@ export interface ManifestViewRefType {
         activeManifestEditorData: string
         modifiedManifest: string
         isEditmode: boolean
-        activeTab: string
-    },
-    id: string,
+        activeTab: (typeof ManifestTabJSON)[number]['name']
+    }
+    id: string
 }
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {

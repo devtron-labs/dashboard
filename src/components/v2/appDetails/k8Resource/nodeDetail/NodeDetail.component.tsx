@@ -87,7 +87,7 @@ const NodeDetailComponent = ({
             activeManifestEditorData: '',
             modifiedManifest: '',
             isEditmode: false,
-            activeTab: '',
+            activeTab: 'Live manifest', // NOTE: default activeTab
         },
         id: '',
     })
