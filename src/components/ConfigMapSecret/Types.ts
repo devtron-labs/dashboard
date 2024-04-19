@@ -1,4 +1,3 @@
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CM_SECRET_STATE } from './Constants'
 import { ExtendedOptionType } from '../app/types'
@@ -232,10 +231,4 @@ export enum ConfigMapActionTypes {
 export interface ConfigMapAction {
     type: ConfigMapActionTypes
     payload?: any
-}
-
-export interface InfoIconWithTippyType {
-    titleText: string
-    infoText: string
-    documentationLink: string
 }

@@ -31,7 +31,7 @@ import {
 import { Option } from '../../../v2/common/ReactSelect.utils'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg'
@@ -717,7 +717,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                             content="How often this app is deployed to production?"
                         >
                             <span>
-                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                                <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                             </span>
                         </Tippy>
                         <span className="cursor" onClick={this.props.setFrequencyMetric}>
@@ -750,7 +750,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
                                 Change Failure Rate
                                 <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
                                     <span>
-                                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                                        <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                                     </span>
                                 </Tippy>
                                 <span className="cursor" onClick={this.props.setFailureMetric}>
@@ -797,7 +797,7 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                         {this.props.label}
                         <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
                             <span>
-                                <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                                <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                             </span>
                         </Tippy>
                     </p>
@@ -815,7 +815,7 @@ export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndL
                     {this.props.label}
                     <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
                         <span>
-                            <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                         </span>
                     </Tippy>
                     <span className="cursor" onClick={this.props.setMetric}>

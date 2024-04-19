@@ -11,7 +11,7 @@ import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import ContentCard from '../../common/ContentCard/ContentCard'
@@ -25,7 +25,6 @@ import {
     appListLoading,
 } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -135,7 +134,7 @@ export class AppListView extends Component<AppListViewProps> {
                             content="Environment is a unique combination of cluster and namespace"
                         >
                             <div className="flex">
-                                <HelpOutlineIcon className="icon-dim-16" />
+                                <ICHelpOutline className="icon-dim-16" />
                             </div>
                         </Tippy>
                     </div>
@@ -203,7 +202,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             )}
                                         </div>
                                         <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value" data-testid="app-list-for-sort">
+                                            <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
                                                 {app.name}
                                             </p>
                                         </div>
