@@ -164,7 +164,9 @@ const ManifestComponent = ({
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
             (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
-            markActiveTab(manifestViewRef.current.data.activeTab || 'Live manifest')
+            markActiveTab(
+                (manifestViewRef.current.id === id && manifestViewRef.current.data.activeTab) || 'Live manifest',
+            )
         }
 
         /* NOTE: id helps discern data between manifests of different resources */
@@ -460,7 +462,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28'  : ' '} manifest-container `}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container `}
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
         >
