@@ -19,8 +19,17 @@
 }
 
 body {
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
-        'Helvetica Neue', sans-serif;
+    font-family:
+        'Open Sans',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen-Sans,
+        Ubuntu,
+        Cantarell,
+        'Helvetica Neue',
+        sans-serif;
     background: var(--window-bg);
 
     a {
@@ -659,11 +668,16 @@ button.anchor {
     }
 
     50% {
-        text-shadow: 6px 0, 12px 0;
+        text-shadow:
+            6px 0,
+            12px 0;
     }
 
     75% {
-        text-shadow: 6px 0, 12px 0, 18px 0;
+        text-shadow:
+            6px 0,
+            12px 0,
+            18px 0;
     }
 }
 
@@ -1084,7 +1098,9 @@ button.anchor {
     height: 80px;
     border-radius: 50px;
     opacity: 0.8;
-    box-shadow: 0 0 4px 0 rgba(0, 10, 20, 0.5), 0 0 4px 0 rgba(0, 10, 20, 0.5);
+    box-shadow:
+        0 0 4px 0 rgba(0, 10, 20, 0.5),
+        0 0 4px 0 rgba(0, 10, 20, 0.5);
     border: unset;
     overflow: hidden;
 
@@ -2671,7 +2687,8 @@ textarea,
 }
 
 .icon-stroke-b5 {
-    path, rect {
+    path,
+    rect {
         stroke: var(--B500);
     }
 }
@@ -3420,7 +3437,7 @@ textarea,
 }
 
 .min-h-100 {
-    min-height: 100%
+    min-height: 100%;
 }
 
 // Height in percentage
@@ -3442,6 +3459,10 @@ textarea,
 
 .dc__height-reduce-172 {
     height: calc(100vh - 172px);
+}
+
+.dc__height-reduce-48 {
+    height: calc(100% - 48px);
 }
 
 // Line height
@@ -3514,7 +3535,7 @@ textarea,
     padding-left: 28px !important;
 }
 
-.pt-5-imp{
+.pt-5-imp {
     padding-top: 5px !important;
 }
 
@@ -3560,7 +3581,7 @@ textarea,
     padding-top: 4px !important;
 }
 
-.pb-5-imp{
+.pb-5-imp {
     padding-bottom: 5px !important;
 }
 
@@ -3593,7 +3614,7 @@ textarea,
     margin-bottom: -1px;
 }
 
-.mb-neg-2{
+.mb-neg-2 {
     margin-bottom: -2px;
 }
 
@@ -3661,11 +3682,11 @@ textarea,
 }
 
 .ml-36-imp {
-    margin-left: 36px !important
+    margin-left: 36px !important;
 }
 
 .ml-54 {
-    margin-left: 54px
+    margin-left: 54px;
 }
 
 .ml-60 {
@@ -3869,7 +3890,7 @@ textarea::placeholder {
 }
 
 .dc__opacity-1 {
-  opacity: 1;
+    opacity: 1;
 }
 
 // blur
@@ -4243,7 +4264,7 @@ textarea::placeholder {
     height: 100% !important;
 }
 
-.fs-11-imp{
+.fs-11-imp {
     font-size: 11px !important;
 }
 
@@ -4292,7 +4313,7 @@ textarea::placeholder {
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: rgba(240, 247, 255, 0.72);
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(4px);
 }
 

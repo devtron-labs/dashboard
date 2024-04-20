@@ -498,7 +498,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="global-configuration__component flex dc__align-reload-center">
+                <div className="global-configuration__component flex dc__align-reload-center h-100 w-100">
                     <ErrorScreenManager code={this.state.statusCode} reloadClass="dc__align-reload-center" />
                 </div>
             )

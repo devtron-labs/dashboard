@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
-/* QUERY: why not use import icons from fe-common-lib? */
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-// import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { DeployedCommitCardType } from './appDetails.type'
 import { getCITriggerInfoModal } from '../../service'
@@ -62,9 +60,10 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                             arrow={false}
                             placement="top"
                             content="Last deployment was triggered with this commit"
+                            maxWidth={250}
                         >
                             <div className="flex">
-                                <Question className="icon-dim-16 mt-2" />
+                                <ICHelpOutline className="icon-dim-16 mt-2" />
                             </div>
                         </Tippy>
                     </div>
