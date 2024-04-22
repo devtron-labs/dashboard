@@ -20,6 +20,7 @@ import {
     ServerErrors,
     useAsync,
     CustomInput,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -50,7 +51,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -60,7 +61,6 @@ import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import { CredentialType, CustomCredential } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
@@ -148,13 +148,7 @@ export default function Docker({ ...props }) {
                 {props.isHyperionMode
                     ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
                     : REGISTRY_TITLE_DESCRIPTION_CONTENT.heading}
-
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300"
-                    placement="top"
-                    Icon={HelpIcon}
-                    iconClass="fcv-5"
+                <InfoIconTippy
                     heading={
                         props.isHyperionMode
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.heading
@@ -172,14 +166,8 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    showCloseButton
-                    trigger="click"
-                    interactive
-                >
-                    <div className="flex">
-                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </div>
-                </TippyCustomized>
+                    iconClassName="icon-dim-16 ml-4"
+                />
             </div>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
@@ -1059,25 +1047,14 @@ const DockerForm = ({
                     <div className="flex dc__content-space">
                         <div className="cn-7 flex left ">
                             Registry credential access is auto injected to
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-332"
-                                placement="top"
-                                Icon={HelpIcon}
-                                iconClass="fcv-5"
+                            <InfoIconTippy
                                 heading="Manage access of registry credentials"
                                 infoText="Clusters need permission to pull container image from private repository in
-                                    the registry. You can control which clusters have access to the pull image
-                                    from private repositories.
-                                "
-                                showCloseButton
-                                trigger="click"
-                                interactive
-                            >
-                                <div className="flex">
-                                    <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                                </div>
-                            </TippyCustomized>
+                                            the registry. You can control which clusters have access to the pull image
+                                            from private repositories.
+                                        "
+                                iconClassName="icon-dim-16 fcn-6"
+                            />
                         </div>
                         <div className="cb-5 cursor" onClick={onClickShowManageModal}>
                             Manage
@@ -1329,7 +1306,7 @@ const DockerForm = ({
                         }
                     >
                         <div className="flex">
-                            <Question className="icon-dim-20 ml-8" />
+                            <ICHelpOutline className="icon-dim-20 ml-8" />
                         </div>
                     </Tippy>
                 </div>
@@ -1738,7 +1715,7 @@ const DockerForm = ({
                                             content={<span className="dc__block w-160">{tippy}</span>}
                                         >
                                             <div className="flex">
-                                                <Question className="icon-dim-16 ml-4" />
+                                                <ICHelpOutline className="icon-dim-16 ml-4" />
                                             </div>
                                         </Tippy>
                                     )}
