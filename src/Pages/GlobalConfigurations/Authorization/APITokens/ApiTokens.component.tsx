@@ -197,10 +197,7 @@ const ApiTokens = () => {
     if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
-                />
+                <ErrorScreenManager code={errorStatusCode} />
             </div>
         )
     }

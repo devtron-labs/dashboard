@@ -29,7 +29,7 @@ import {
 } from './Constants'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
-import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
 
 export default function ExternalArgoList({
@@ -198,7 +198,7 @@ export default function ExternalArgoList({
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
                         <span>
-                            <HelpOutlineIcon className="icon-dim-20" />
+                            <ICHelpOutline className="icon-dim-20" />
                         </span>
                     </Tippy>
                 </div>

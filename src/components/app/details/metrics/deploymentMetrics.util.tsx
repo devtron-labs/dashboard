@@ -4,7 +4,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as ArrowDown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Smiley } from '../../../../assets/icons/ic-smiley-party.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { createTimestamp } from './deploymentMetrics.service'
 
 export const styles = {
@@ -169,7 +169,7 @@ export const FailureLegendEmptyState = (props) => {
                 Change Failure Rate
                 <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
                     <span>
-                        <Help className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                        <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                     </span>
                 </Tippy>
             </p>

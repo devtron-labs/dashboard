@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { Checkbox, CHECKBOX_VALUE, Host, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -21,7 +21,7 @@ import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
@@ -91,7 +91,7 @@ const LogsComponent = ({
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
     const [downloadInProgress, setDownloadInProgress] = useState(false)
-
+    const {isSuperAdmin} = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -744,7 +744,7 @@ const LogsComponent = ({
                             }
                         >
                             <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
-                                <Question className="icon-dim-18 cursor ml-8 mr-8" />
+                                <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
                             </div>
                         </Tippy>
                     </form>
@@ -806,7 +806,7 @@ const LogsComponent = ({
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            }`}
+                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
                         >
                             {readyState === 0 && (
                                 <div

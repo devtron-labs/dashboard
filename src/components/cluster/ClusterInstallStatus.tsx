@@ -1,29 +1,6 @@
 import React, { Component } from 'react'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterInstallStatusProps } from './cluster.type'
 import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-
-const handleQuestion = () => {
-    return (
-        <TippyCustomized
-            theme={TippyTheme.white}
-            className="w-300"
-            placement="bottom"
-            Icon={QuestionFilled}
-            heading="Devtron Agents"
-            infoText="Devtron agent enables components of Devtron to communicate to your Kubernetes cluster."
-            showCloseButton
-            trigger="click"
-            interactive
-        >
-            <div className="icon-dim-16 fcn-9 mt-23 ml-5 cursor">
-                <Question />
-            </div>
-        </TippyCustomized>
-    )
-}
 
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}> {
     render() {

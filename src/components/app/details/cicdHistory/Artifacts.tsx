@@ -10,7 +10,7 @@ import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
@@ -95,7 +95,7 @@ export default function Artifacts({
                     image={noartifact}
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
-                    <Question className="icon-dim-20 fcv-5" />
+                    <ICHelpOutline className="icon-dim-20 fcv-5" />
                     <span className="fs-13 fw-4 mr-8 ml-8">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
                     </span>
