@@ -431,6 +431,15 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Deployment window</div>
+                        </NavLink>
+                    )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -646,7 +655,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 </Route>
             )}
             (
-            <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+            <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                 <DeploymentWindow isSuperAdmin={isSuperAdmin} />
             </Route>
             , ),

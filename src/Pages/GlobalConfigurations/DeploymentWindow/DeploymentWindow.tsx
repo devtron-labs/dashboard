@@ -2,15 +2,17 @@ import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import React, { FunctionComponent } from 'react'
 import { DeploymentWindowType } from './types'
 import ProfileForm from '../BuildInfra/ProfileForm'
-import DeploymentWindowRouter from './DeploymentWindowRouter'
+import { importComponentFromFELibrary } from '../../../components/common'
+
+const DeploymentWindowRouterComponent = importComponentFromFELibrary('DeploymentWindowRouterComponent')
 
 const DeploymentWindow: FunctionComponent<DeploymentWindowType> = ({ isSuperAdmin }) => {
     if (!isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
     }
 
-    if (DeploymentWindowRouter) {
-        return <DeploymentWindowRouter />
+    if (DeploymentWindowRouterComponent) {
+        return <DeploymentWindowRouterComponent />
     }
 
     return <ProfileForm />
