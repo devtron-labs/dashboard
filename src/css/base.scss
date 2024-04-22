@@ -2084,6 +2084,10 @@ button.anchor {
     &--n3 {
         border: 1px dashed var(--N300);
     }
+
+    &--n3-right {
+        border-right: 1px dashed var(--N300);
+    }
 }
 
 .dc__border-n1 {
@@ -3848,6 +3852,10 @@ textarea::placeholder {
 }
 
 // opacity
+.dc__opacity-0_2 {
+    opacity: 0.2;
+}
+
 .dc__opacity-0_4 {
     opacity: 0.4;
 }
