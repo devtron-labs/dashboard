@@ -609,7 +609,7 @@ export default function CIPipeline({
             _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
         }
         if (isJobView){
-            _ciPipeline.pipelineType= CIPipelineBuildType.NORMAL_JOB
+            _ciPipeline.pipelineType= CIPipelineBuildType.CI_BUILD
         }
         saveCIPipeline(
             {
