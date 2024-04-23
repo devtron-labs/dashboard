@@ -13,6 +13,7 @@ import { MultiValue } from 'react-select'
 import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
 import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
+import { GVKType } from '../ResourceBrowser/Types'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -451,7 +452,7 @@ export interface BaseModalProps {
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
 }
 
-export interface HibernateInfoMapProps  {
+export interface HibernateInfoMapProps {
     type: string
     excludedUserEmails: string[]
     userActionState: ACTION_STATE
@@ -499,4 +500,31 @@ export interface ApiQueuingWithBatchResponseItem {
     status: ApiQueuingBatchStatusType
     value?: any
     reason?: ServerErrors
+}
+
+export interface RestartWorkloadModalProps {
+    closeModal: (e) => void
+    selectedAppIds: number[]
+    envName: string
+    workloadLoader: boolean
+    workloadList: WorkloadListResult
+}
+export interface ResourceIdentifiers {
+    name: string
+    namespace: string
+    groupVersionKind: GVKType
+}
+
+export interface ResourceIdentifierMap {
+    [appId: string]: { resourceIdentifiers: ResourceIdentifiers[]; appName: string; environmentId: number, isCollapsed?: boolean }
+}
+
+export interface WorkloadListResult {
+    environmentId: number | number[]
+    resourceIdentifiers?: ResourceIdentifiers[]
+    userId: number
+    resourceIdentifierMap: ResourceIdentifierMap
+}
+export interface AppGroupRotatePodsDTO extends ResponseType {
+    result: WorkloadListResult
 }

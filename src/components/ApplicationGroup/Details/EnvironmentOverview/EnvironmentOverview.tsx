@@ -28,6 +28,7 @@ import {
     AppListDataType,
     ManageAppsResponse,
     StatusDrawer,
+    WorkloadListResult,
 } from '../../AppGroup.types'
 import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
@@ -39,6 +40,7 @@ import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
@@ -49,6 +51,8 @@ import './envOverview.scss'
 import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { UnhibernateModal } from './UnhibernateModal'
+import { RestartWorkloadModal } from './RestartWorkloadModal'
+import { getMockRestartWorkloadRotatePods } from './service'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -70,6 +74,7 @@ export default function EnvironmentOverview({
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
     const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
+    const [openRestartWorkloadModal, setOpenRestartWorkloadModal] = useState<boolean>(false)
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
@@ -82,6 +87,8 @@ export default function EnvironmentOverview({
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
     >({})
+    const [workloadList, setWorkloadList] = useState<WorkloadListResult | null>(null)
+    const [restartLoader, setRestartLoader] = useState<boolean>(false)
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -95,6 +102,18 @@ export default function EnvironmentOverview({
         }
     }, [])
 
+    useEffect(() => {
+        setRestartLoader(true)
+        try {
+            getMockRestartWorkloadRotatePods(selectedAppIds, envId).then((response) => {
+                setWorkloadList(response.result)
+            })
+        } catch (e) {
+            console.error(e)
+        } finally {
+            setRestartLoader(false)
+        }
+    }, [])
     async function getDeploymentWindowEnvOverrideMetaData() {
         const appEnvTuples = selectedAppIds.map((appId) => {
             return {
@@ -245,6 +264,14 @@ export default function EnvironmentOverview({
 
     const openUnhiberateModalPopup = () => {
         setOpenUnhiberateModal(true)
+    }
+
+    const openRestartWorkloadModalPopup = () => {
+        setOpenRestartWorkloadModal(true)
+    }
+
+    const closeRestartWorkloadModalPopup = () => {
+        setOpenRestartWorkloadModal(false)
     }
 
     const closeCommitInfoModal = () => {
@@ -456,6 +483,13 @@ export default function EnvironmentOverview({
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
                                     Unhibernate
                                 </button>
+                                <button
+                                    onClick={openRestartWorkloadModalPopup}
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                >
+                                     <RotateIcon className="icon-dim-12 mr-4 scn-9" />
+                                    Restart Workload
+                                </button>
                             </div>
                         )}
                     </div>
@@ -538,6 +572,15 @@ export default function EnvironmentOverview({
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                     isDeploymentLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
+                />
+            )}
+            {openRestartWorkloadModal && (
+                <RestartWorkloadModal
+                    closeModal={closeRestartWorkloadModalPopup}
+                    selectedAppIds={selectedAppIds}
+                    envName={appListData.environment}
+                    workloadLoader={restartLoader}
+                    workloadList={workloadList}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (
