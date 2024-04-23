@@ -1,5 +1,4 @@
-import { BaseFilterQueryParams, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
-import { WorkflowType } from '../../../components/app/details/triggerView/types'
+import { BaseFilterQueryParams, UseUrlFiltersReturnType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { DEPLOYMENT_STATUS, TriggerType } from '../../../config'
 import { SortableKeys } from './constants'
