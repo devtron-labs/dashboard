@@ -757,6 +757,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 ? 'workflow__header'
                                 : 'flexbox dc__align-items-center dc__align-self_center dc__gap-8'
                         }
+                        data-testid="workflow-header"
                     >
                         <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
                         {!configDiffView && (
