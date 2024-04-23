@@ -456,9 +456,11 @@ export default function NavigationRoutes() {
 export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentAppName, setCurrentAppName] = useState<string>('')
+
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
@@ -498,34 +500,29 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
 
 export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                <Switch>
-                    <Route
-                        path={`${path}/:appType`}
-                        render={() => (
-                            <NewAppList
-                                isSuperAdmin={isSuperAdmin}
-                                isArgoInstalled={isArgoInstalled}
-                                appListCount={appListCount}
-                            />
-                        )}
-                    />
-                    <Route exact path="">
-                        <RedirectToAppList />
-                    </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+            <Switch>
+                <Route
+                    path={`${path}/:appType`}
+                    render={() => (
+                        <NewAppList
+                            isSuperAdmin={isSuperAdmin}
+                            isArgoInstalled={isArgoInstalled}
+                            appListCount={appListCount}
                         />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
+                    )}
+                />
+                <Route exact path="">
+                    <RedirectToAppList />
+                </Route>
+                <Route>
+                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                </Route>
+            </Switch>
         </ErrorBoundary>
     )
 }

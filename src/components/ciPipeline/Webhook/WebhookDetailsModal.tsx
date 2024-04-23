@@ -16,7 +16,7 @@ import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
@@ -45,7 +45,10 @@ import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessagin
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
 import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
-import { getDefaultStatusAndTimeout, getDefaultUserStatusAndTimeout } from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
+import {
+    getDefaultStatusAndTimeout,
+    getDefaultUserStatusAndTimeout,
+} from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -362,7 +365,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     }
                 >
                     <div className="flex">
-                        <Question className="icon-dim-16 ml-6" />
+                        <ICHelpOutline className="icon-dim-16 ml-6" />
                     </div>
                 </Tippy>
             </div>
@@ -390,7 +393,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp">
+                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp" data-testid="generated-api-token">
                     {token}
                     <div className="flex pl-4">
                         <ClipboardButton content={token} />
@@ -405,6 +408,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <>
                 <div className="w-400 h-32 mt-16">
                     <ReactSelect
+                        classNamePrefix='selectToken'
                         value={selectedToken}
                         tabIndex={1}
                         onChange={setSelectedToken}
@@ -768,7 +772,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(

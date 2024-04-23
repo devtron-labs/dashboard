@@ -15,7 +15,7 @@ import { DeploymentStatusDetailRowType } from './appDetails.type'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Disconnect } from '../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
@@ -27,7 +27,7 @@ import { statusIcon } from '../../config'
 export const DeploymentStatusDetailRow = ({
     type,
     hideVerticalConnector,
-    deploymentDetailedData
+    deploymentDetailedData,
 }: DeploymentStatusDetailRowType) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
@@ -143,10 +143,7 @@ export const DeploymentStatusDetailRow = ({
                         </div>
                     )}
                     <div>
-                        <AppStatusDetailsChart
-                            filterRemoveHealth
-                            showFooter={false}
-                        />
+                        <AppStatusDetailsChart filterRemoveHealth showFooter={false} />
                     </div>
                 </div>
             )
@@ -160,7 +157,7 @@ export const DeploymentStatusDetailRow = ({
             case 'failed':
                 return <Error className="icon-dim-20" />
             case 'unknown':
-                return <Question className="icon-dim-20" />
+                return <ICHelpOutline className="icon-dim-20" />
             case 'inprogress':
                 return (
                     <div className="icon-dim-20">

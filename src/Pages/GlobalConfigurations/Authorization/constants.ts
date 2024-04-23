@@ -83,3 +83,4 @@ export const authorizationSelectStyles = {
 
 export const IMAGE_APPROVER_ACTION = importComponentFromFELibrary('IMAGE_APPROVER_ACTION', {}, 'function')
 export const CONFIG_APPROVER_ACTION = importComponentFromFELibrary('CONFIG_APPROVER_ACTION', {}, 'function')
+export const ARTIFACT_PROMOTER_ACTION = importComponentFromFELibrary('ARTIFACT_PROMOTER_ACTION', {}, 'function')

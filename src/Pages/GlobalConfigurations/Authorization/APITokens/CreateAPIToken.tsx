@@ -8,10 +8,9 @@ import { toast } from 'react-toastify'
 import {
     ServerErrors,
     showError,
-    TippyCustomized,
-    TippyTheme,
     CustomInput,
     ResizableTextarea,
+    InfoIconTippy,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { FormType, GenerateTokenType } from './apiToken.type'
@@ -21,8 +20,6 @@ import { getDateInMilliseconds } from './apiToken.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import ExpirationDate from './ExpirationDate'
 import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -40,23 +37,13 @@ const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'fun
 
 export const renderQuestionwithTippy = () => {
     return (
-        <TippyCustomized
-            theme={TippyTheme.white}
-            className="w-300 h-100 fcv-5"
-            placement="right"
-            Icon={QuestionFilled}
+        <InfoIconTippy
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            showCloseButton
-            trigger="click"
-            interactive
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
-        >
-            <div className="icon-dim-20 fcn-9 ml-8 cursor">
-                <Question />
-            </div>
-        </TippyCustomized>
+            iconClassName="icon-dim-20 fcn-9 ml-4"
+        />
     )
 }
 

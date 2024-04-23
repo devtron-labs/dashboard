@@ -7,6 +7,7 @@ import {
     TaskErrorObj,
     VariableType,
     SelectedNode,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -14,8 +15,6 @@ import {
     CIPipelineNodeType,
     CdPipelineResult,
     CiPipeline,
-    NodeAttr,
-    WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
@@ -47,8 +46,8 @@ export interface WorkflowEditState {
     view: string
     code: number
     workflows: any[]
-    allCINodeMap: Map<string, NodeAttr>
-    allDeploymentNodeMap: Map<string, NodeAttr>
+    allCINodeMap: Map<string, CommonNodeAttr>
+    allDeploymentNodeMap: Map<string, CommonNodeAttr>
     workflowId: number
     appName: string
     showDeleteDialog: boolean

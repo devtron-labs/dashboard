@@ -12,6 +12,7 @@ export default function TerminalWrapper({
     setSocketConnection,
     className,
     dataTestId,
+    isResourceBrowserView
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
@@ -50,6 +51,7 @@ export default function TerminalWrapper({
                 registerLinkMatcher={terminalData.registerLinkMatcher}
                 terminalMessageData={terminalData.terminalMessageData}
                 clearTerminal={terminalData.clearTerminal}
+                isResourceBrowserView={isResourceBrowserView}
             />
         )
     }

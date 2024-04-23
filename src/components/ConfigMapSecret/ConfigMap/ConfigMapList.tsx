@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
-import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
@@ -160,10 +159,12 @@ export default function ConfigMapList({
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
-                    <InfoIconWithTippy
-                        titleText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
+                    <InfoIconTippy
+                        heading={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].learnMoreLink}
+                        iconClassName="icon-dim-16 ml-4"
+                        placement="right"
                     />
                 </h1>
                 <div className="mt-20">

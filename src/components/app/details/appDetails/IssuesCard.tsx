@@ -9,7 +9,7 @@ import {
     ForceDeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
 import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './appDetails.service'
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
@@ -198,7 +198,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
                             content="Issues or errors detected in the current deployment"
                         >
                             <div className="flex">
-                                <Question className="icon-dim-16 mt-2" />
+                                <ICHelpOutline className="icon-dim-16 mt-2" />
                             </div>
                         </Tippy>
                     </div>

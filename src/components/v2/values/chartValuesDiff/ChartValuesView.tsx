@@ -197,8 +197,10 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if (isDeployChartView || isCreateValueView) {
+        if(!isExternalApp){
             checkGitOpsConfiguration()
+        }
+        if (isDeployChartView || isCreateValueView) {
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
                 commonState.installedConfig.rawValues,
@@ -1605,6 +1607,7 @@ const ChartValuesView = ({
                                 isDeployChartView={isDeployChartView}
                                 allowedDeploymentTypes={allowedDeploymentTypes}
                                 gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                allowedCustomBool={allowedCustomBool}
                             />
                         )}
                         {allowedCustomBool && showDeploymentTools && (
@@ -1792,7 +1795,7 @@ const ChartValuesView = ({
     }
     if (commonState.errorResponseCode) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="dc__height-reduce-48">
                 <ErrorScreenManager code={commonState.errorResponseCode} />
             </div>
         )

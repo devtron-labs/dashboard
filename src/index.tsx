@@ -125,6 +125,7 @@ if (!window || !window._env_) {
         ENABLE_EXTERNAL_ARGO_CD: false,
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
     }
 }
 
