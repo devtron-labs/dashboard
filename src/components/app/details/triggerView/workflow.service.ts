@@ -4,11 +4,10 @@ import {
     WorkflowNodeType,
     PipelineType,
     DownstreamNodesEnvironmentsType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
-    WorkflowType,
-    NodeAttr,
     CdPipeline,
     CdPipelineResult,
     CiPipeline,
@@ -199,7 +198,7 @@ export function processWorkflow(
     const ciMap = new Map(
         filteredCIPipelines
             .map(ciPipelineToNodeWithDimension)
-            .map((ciPipeline) => [ciPipeline.id, ciPipeline] as [string, NodeAttr]),
+            .map((ciPipeline) => [ciPipeline.id, ciPipeline] as [string, CommonNodeAttr]),
     )
     const webhookMap = new Map(
         (externalCIResponse ?? []).map((externalCI) => [externalCI.id, externalCI] as [number, WebhookDetailsType]),
@@ -334,7 +333,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             })
         }
 
-        const finalWorkflow = new Array<NodeAttr>()
+        const finalWorkflow = new Array<CommonNodeAttr>()
         workflow.nodes.forEach((node) => {
             if (node.type == WorkflowNodeType.CI && !node.isLinkedCD) {
                 node.sourceNodes && finalWorkflow.push(...node.sourceNodes)
@@ -390,7 +389,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
 
 function addDownstreams(workflows: WorkflowType[]) {
     workflows.forEach((wf) => {
-        const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, NodeAttr]))
+        const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, CommonNodeAttr]))
         wf.nodes.forEach((node) => {
             if (!node.parentPipelineId) {
                 return node
@@ -483,7 +482,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         id: `${workflow.id}`,
         appId: workflow.appId,
         name: workflow.name,
-        nodes: new Array<NodeAttr>(),
+        nodes: new Array<CommonNodeAttr>(),
         gitMaterials: ciResponse?.materials ?? [],
         ciConfiguredGitMaterialId: ciResponse?.ciGitConfiguredId,
         startX: 0,
@@ -492,6 +491,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         width: 0,
         dag: [],
         approvalConfiguredIdsMap: {},
+        artifactPromotionMetadata: workflow.artifactPromotionMetadata,
     } as WorkflowType
 }
 
@@ -506,7 +506,7 @@ function ciPipelineToNode(
     ciPipeline: CiPipeline,
     dimensions: WorkflowDimensions,
     cdPipelineMap: Map<number, CdPipeline>,
-): NodeAttr {
+): CommonNodeAttr {
     const sourceNodes = (ciPipeline?.ciMaterial ?? []).map((ciMaterial, index) => {
         const materialName = ciMaterial.gitMaterialName || ''
         return {
@@ -532,7 +532,7 @@ function ciPipelineToNode(
             primaryBranchAfterRegex: ciMaterial?.source?.value,
             cipipelineId: ciMaterial?.id,
             isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
-        } as NodeAttr
+        } as CommonNodeAttr
     })
     const trigger = ciPipeline.isManual ? TriggerType.Manual.toLocaleLowerCase() : TriggerType.Auto.toLocaleLowerCase()
 
@@ -568,16 +568,16 @@ function ciPipelineToNode(
         isJobCI: ciPipeline?.pipelineType === CIPipelineBuildType.CI_JOB,
         linkedCount: ciPipeline.linkedCount || 0,
         sourceNodes,
-        downstreamNodes: new Array<NodeAttr>(),
+        downstreamNodes: new Array<CommonNodeAttr>(),
         showPluginWarning: ciPipeline.isOffendingMandatoryPlugin,
         isCITriggerBlocked: ciPipeline.isCITriggerBlocked,
         ciBlockState: ciPipeline.ciBlockState,
-    } as NodeAttr
+    } as CommonNodeAttr
 
     return ciNode
 }
 
-function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowDimensions): NodeAttr {
+function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowDimensions): CommonNodeAttr {
     return {
         isSource: true,
         isGitSource: false,
@@ -597,8 +597,8 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         isLinkedCI: false,
         linkedCount: 0,
         sourceNodes: [],
-        downstreamNodes: new Array<NodeAttr>(),
-    } as NodeAttr
+        downstreamNodes: new Array<CommonNodeAttr>(),
+    } as CommonNodeAttr
 }
 
 function cdPipelineToNode(
@@ -606,10 +606,10 @@ function cdPipelineToNode(
     dimensions: WorkflowDimensions,
     parentId: number,
     isLast: boolean,
-): NodeAttr {
+): CommonNodeAttr {
     const trigger = cdPipeline.triggerType?.toLowerCase() ?? ''
-    let preCD: NodeAttr | undefined
-    let postCD: NodeAttr | undefined
+    let preCD: CommonNodeAttr | undefined
+    let postCD: CommonNodeAttr | undefined
     let stageIndex = 1
     if (!isEmpty(cdPipeline?.preDeployStage?.steps || cdPipeline?.preStage?.config)) {
         const trigger =
@@ -648,7 +648,7 @@ function cdPipelineToNode(
             helmPackageName: cdPipeline?.helmPackageName || '',
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-        } as NodeAttr
+        } as CommonNodeAttr
         stageIndex++
     }
     let cdDownstreams = []
@@ -687,7 +687,7 @@ function cdPipelineToNode(
         isRoot: false,
         preNode: undefined,
         postNode: undefined,
-        downstreamNodes: new Array<NodeAttr>(),
+        downstreamNodes: new Array<CommonNodeAttr>(),
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
@@ -699,7 +699,7 @@ function cdPipelineToNode(
         isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
         deploymentAppCreated: cdPipeline?.deploymentAppCreated,
         isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-    } as NodeAttr
+    } as CommonNodeAttr
     stageIndex++
 
     if (!isEmpty(cdPipeline?.postDeployStage?.steps || cdPipeline?.postStage?.config)) {
@@ -739,7 +739,7 @@ function cdPipelineToNode(
             helmPackageName: cdPipeline?.helmPackageName || '',
             isGitOpsRepoNotConfigured: cdPipeline.isGitOpsRepoNotConfigured,
             isDeploymentBlocked: cdPipeline.isDeploymentBlocked,
-        } as NodeAttr
+        } as CommonNodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {
         CD.preNode = preCD

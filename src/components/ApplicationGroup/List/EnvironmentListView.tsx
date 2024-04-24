@@ -4,10 +4,36 @@ import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-do
 import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
-import { Pagination } from '../../common'
+import { Pagination, useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
-import { EnvironmentsListViewType, EnvAppList } from '../AppGroup.types'
+import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps } from '../AppGroup.types'
+
+const EnvironmentLink = ({
+    namespace,
+    environmentId,
+    appCount,
+    handleClusterClick,
+    environmentName,
+}: EnvironmentLinkProps) => {
+    const { setCurrentEnvironmentName } = useAppContext()
+
+    const handleOnLinkRedirection = (e: any): void => {
+        setCurrentEnvironmentName(environmentName)
+        handleClusterClick(e)
+    }
+
+    return (
+        <NavLink
+            data-testid={`${namespace}-click-on-env`}
+            to={`/application-group/${environmentId}`}
+            data-noapp={!appCount}
+            onClick={handleOnLinkRedirection}
+        >
+            {environmentName}
+        </NavLink>
+    )
+}
 
 export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()
@@ -130,14 +156,13 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                             <EnvIcon className="icon-dim-16 scb-4" />
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
-                            <NavLink
-                                data-testid={`${envData.namespace}-click-on-env`}
-                                to={`/application-group/${envData.id}`}
-                                data-noapp={!envData.appCount}
-                                onClick={handleClusterClick}
-                            >
-                                {envData.environment_name}
-                            </NavLink>
+                            <EnvironmentLink
+                                namespace={envData.namespace}
+                                environmentId={envData.id}
+                                appCount={envData.appCount}
+                                handleClusterClick={handleClusterClick}
+                                environmentName={envData.environment_name}
+                            />
                         </div>
                         <div className="dc__truncate-text" data-testid={`${envData.namespace}-namespace`}>
                             {envData.namespace}

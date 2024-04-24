@@ -5,6 +5,7 @@ import {
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,
+    ScannedByToolModal,
     Drawer,
     ScannedObjectBar,
     stopPropagation,
@@ -13,7 +14,6 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ViewType, URLS } from '../../../config'
 import { getLastExecutionByImageScanDeploy } from '../../../services/service'
-import { ScannedByToolModal } from './ScannedByToolModal'
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
 interface ScanDetailsModalProps {
@@ -33,8 +33,8 @@ interface ScanDetailsModalState {
     view: string
     lastExecution: string
     scanExecutionId?: number
-    scanEnabled: boolean
-    scanned: boolean
+    scanEnabled?: boolean
+    scanned?: boolean
     appId?: number
     appName?: string
     envId?: number
@@ -42,7 +42,7 @@ interface ScanDetailsModalState {
     pod?: string
     replicaSet?: string
     image?: string
-    objectType: 'app' | 'chart'
+    objectType?: 'app' | 'chart'
     severityCount: {
         critical: number
         moderate: number
