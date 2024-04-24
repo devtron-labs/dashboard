@@ -1,9 +1,7 @@
 import React, { FunctionComponent } from 'react'
-import { TippyCustomized, TippyTheme, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 
 const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
     arg,
@@ -88,12 +86,7 @@ const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgs
         <div>
             <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
                 {heading}
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300"
-                    placement="top"
-                    Icon={HelpIcon}
-                    iconClass="fcv-5"
+                <InfoIconTippy
                     heading={heading}
                     infoText={`Key/value pair will be appended as
                             ${
@@ -101,14 +94,8 @@ const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgs
                                     ? ' buildpack env arguments (--env).'
                                     : ' docker build arguments (--build-args).'
                             }`}
-                    showCloseButton
-                    trigger="click"
-                    interactive
-                >
-                    <div className="flex">
-                        <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </div>
-                </TippyCustomized>
+                    iconClassName="icon-dim-16 fcn-6 ml-4"
+                />
             </h3>
 
             {!fromBuildPack && (

@@ -3,17 +3,12 @@ import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router
 import moment from 'moment'
 import {
     ErrorScreenManager,
-    TippyCustomized,
-    TippyTheme,
-    showError,
     getRandomColor,
-    ServerErrors,
+    InfoIconTippy,
     EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
@@ -21,7 +16,7 @@ import { Moment12HourFormat, URLS } from '../../config'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
-import { MAX_LENGTH_350, SOME_ERROR_MSG } from '../../config/constantMessaging'
+import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
 
@@ -92,11 +87,7 @@ function ClusterOverview({
                 })
             }
         } catch (error) {
-            if (error['code'] === 403) {
-                setErrorCode(error['code'])
-            } else {
-                showError(error)
-            }
+            setErrorCode(error['code'])
             throw error
         }
     }
@@ -131,11 +122,9 @@ function ClusterOverview({
                     : _clusterNote.updatedOn
             }
             setDescriptionData(data)
-        } else if (clusterNoteResponse.reason['code'] === 403) {
-            setErrorCode(clusterNoteResponse.reason['code'])
         } else {
-            showError(clusterNoteResponse.reason)
-        }
+            setErrorCode(clusterNoteResponse.reason['code'])
+        } 
     }
 
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
@@ -189,15 +178,8 @@ function ClusterOverview({
                     setClusterErrorList(_errorList)
                 }
             }
-        } else if (clusterCapacityResponse.reason['code'] === 403) {
-            setErrorCode(clusterCapacityResponse.reason['code'])
         } else {
-            const error = clusterCapacityResponse.reason
-            setErrorMsg(
-                (error instanceof ServerErrors && Array.isArray(error.errors)
-                    ? error.errors[0]?.userMessage
-                    : error['message']) ?? SOME_ERROR_MSG,
-            )
+            setErrorCode(clusterCapacityResponse.reason['code'])
         }
     }
     const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
@@ -307,23 +289,13 @@ function ClusterOverview({
         return (
             <>
                 <span>NA</span>
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300 h-100 fcv-5 dc__align-left"
-                    placement="bottom"
-                    Icon={QuestionFilled}
+                <InfoIconTippy
                     heading="Metrics API is not available"
-                    showCloseButton
-                    trigger="click"
                     additionalContent={metricsApiTippyContent()}
-                    interactive
                     documentationLinkText="View metrics-server helm chart"
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
-                >
-                    <div className="flex">
-                        <TippyIcon className="icon-dim-20 ml-8 cursor fcn-5" />
-                    </div>
-                </TippyCustomized>
+                    iconClassName="icon-dim-20 ml-8 fcn-5"
+                />
             </>
         )
     }
@@ -550,7 +522,7 @@ function ClusterOverview({
             return (
                 <ErrorScreenManager
                     code={errorStatusCode || errorCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase())}
+                    subtitle={(errorCode==403?unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()):'')}
                 />
             )
         }

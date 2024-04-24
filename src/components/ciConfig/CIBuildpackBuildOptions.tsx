@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import {
-    stopPropagation,
-    CIBuildType,
-    TippyCustomized,
-    TippyTheme,
-    CustomInput,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -20,8 +14,6 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { getAbsoluteProjectPath } from './CIConfig.utils'
 import { OptionType } from '../app/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -116,22 +108,11 @@ const BuildContextLabel = () => {
     return (
         <label htmlFor="" className="form__label flexbox-imp flex-align-center">
             {CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.label}
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300"
-                placement="top"
-                Icon={HelpIcon}
-                iconClass="fcv-5"
+            <InfoIconTippy
                 heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
                 infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
-                showCloseButton
-                trigger="click"
-                interactive
-            >
-                <div className="flex">
-                    <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                </div>
-            </TippyCustomized>
+                iconClassName="icon-dim-16 fcn-6 ml-4"
+            />
         </label>
     )
 }
@@ -151,25 +132,14 @@ function additionalBuilderTippyContent() {
 
 const BuilderTippy = () => {
     return (
-        <TippyCustomized
-            theme={TippyTheme.white}
-            className="w-300"
-            placement="top"
-            Icon={HelpIcon}
-            iconClass="fcv-5"
+        <InfoIconTippy
             heading={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
             infoText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.infoText}
             additionalContent={additionalBuilderTippyContent()}
             documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
             documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
-            showCloseButton
-            trigger="click"
-            interactive
-        >
-            <div>
-                <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-            </div>
-        </TippyCustomized>
+            iconClassName="icon-dim-16 fcn-6 ml-4"
+        />
     )
 }
 

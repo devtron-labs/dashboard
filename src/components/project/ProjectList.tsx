@@ -47,8 +47,8 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             .catch((errors) => {
                 if (Array.isArray(errors.error)) {
                     errors.error.map((err) => toast.error(err.userMessage))
-                    this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
                 }
+                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
             })
     }
 

@@ -8,9 +8,10 @@ import {
     ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
+import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
@@ -245,6 +246,14 @@ export interface ApplicationRouteType {
 export interface EnvironmentsListViewType {
     removeAllFilters: () => void
     isSuperAdmin: boolean
+}
+
+export interface EnvironmentLinkProps {
+    namespace: string
+    environmentId: number
+    appCount: number
+    handleClusterClick: (e) => void
+    environmentName: string
 }
 
 export interface AppOverridesType {
