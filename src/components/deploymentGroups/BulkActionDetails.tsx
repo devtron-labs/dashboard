@@ -35,9 +35,6 @@ export default function BulkActionDetails() {
     const [isLoading, setIsLoading] = useState(false)
     const [materials, saveMaterials] = useState([])
     const [pausing, setPausing] = useState(false)
-    const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch()
     const [loading, result, error, reload] = useAsync(
         () => getDeploymentGroupDetail(Number(deploymentGroupId)),
         [deploymentGroupId],

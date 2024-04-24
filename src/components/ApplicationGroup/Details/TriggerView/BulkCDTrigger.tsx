@@ -90,7 +90,6 @@ export default function BulkCDTrigger({
 
     const location = useLocation()
     const history = useHistory()
-    const match = useRouteMatch()
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
 

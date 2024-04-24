@@ -474,7 +474,6 @@ const CDMaterial = ({
         if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
                 state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-                
             setState((prevState) => ({
                 ...prevState,
                 selectedMaterial,

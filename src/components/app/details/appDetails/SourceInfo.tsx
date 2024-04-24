@@ -1,7 +1,7 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
 import { useHistory, useLocation, useRouteMatch, Link } from 'react-router-dom'
-import { useParams } from 'react-router'
+import { useParams, Route, Switch } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, URLS } from '../../../../config'
@@ -58,8 +58,7 @@ export const SourceInfo = ({
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     const history = useHistory()
-    const location = useLocation()
-    const match = useRouteMatch<CIMaterialRouterProps>()
+    const { path } = useRouteMatch()
     const { searchParams } = useSearchString()
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -272,8 +271,6 @@ export const SourceInfo = ({
                         triggerType={TriggerType.Manual}
                         isVirtualEnvironment={appDetails.isVirtualEnvironment}
                         ciPipelineId={appDetails.ciPipelineId}
-                        location={location}
-                        match={match}
                         deploymentAppType={appDetails.deploymentAppType}
                         parentEnvironmentName={appDetails.parentEnvironmentName}
                         isLoading={loadingDetails}
@@ -352,9 +349,11 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
-                          {
-                            (location.search.includes('CD') || location.search.includes('review-config') || location.search.includes('list')) && renderCDModal()
-                          }
+                          <Switch>
+                              <Route path={`${path}/:mode`}>
+                                      {renderCDModal()}
+                              </Route>
+                          </Switch>
                       </div>
                   )}
         </div>
