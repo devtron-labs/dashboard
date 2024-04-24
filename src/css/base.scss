@@ -4378,3 +4378,9 @@ textarea::placeholder {
         }
     }
 }
+
+.dc__transition {
+    &--transform {
+        transition: transform 0.3s;
+    }
+}
