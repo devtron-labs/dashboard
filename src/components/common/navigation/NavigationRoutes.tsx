@@ -55,6 +55,7 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const EventWatcherRouter = importComponentFromFELibrary('EventWatcherRouter')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -406,6 +407,9 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
+                                        <Route key={URLS.EVENT_WATCHER} path={URLS.EVENT_WATCHER}>
+                                            {EventWatcherRouter ? <EventWatcherRouter /> : null}
+                                        </Route>,
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

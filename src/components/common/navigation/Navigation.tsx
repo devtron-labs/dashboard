@@ -26,6 +26,7 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ReactComponent as EventWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 
 const NavigationList = [
     {
@@ -97,6 +98,15 @@ const NavigationList = [
         icon: SecurityIcon,
         moduleName: ModuleNameMap.SECURITY_CLAIR,
         moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
+    },
+    {
+        title: 'Event Watcher',
+        dataTestId: 'click-on-event-watcher',
+        type: 'link',
+        href: URLS.EVENT_WATCHER,
+        iconClass: 'nav-event-watcher',
+        icon: EventWatcherIcon,
+        isAvailableInEA: true,
     },
     {
         title: 'Bulk Edit',
