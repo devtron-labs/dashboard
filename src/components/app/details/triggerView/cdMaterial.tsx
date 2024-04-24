@@ -736,7 +736,7 @@ const CDMaterial = ({
         !state.recentDeploymentConfig
 
     const onClickSetInitialParams = (modeParamValue: string) => {
-        if (canReviewConfig) {
+        if (canReviewConfig()) {
             const newParams = {
                 ...searchParams,
                 mode: modeParamValue,
@@ -1854,6 +1854,7 @@ const CDMaterial = ({
     const renderCDModal = (isApprovalConfigured: boolean) => (
         <>
             <div className="trigger-modal__header">
+                {console.log("showConfigDiffView ",showConfigDiffView)}
                 {showConfigDiffView ? (
                     <div className="flex left">
                         <button
@@ -1866,6 +1867,8 @@ const CDMaterial = ({
                         <div className="flex column left ml-16">
                             <h1 className="modal__title mb-8">{renderCDModalHeader()}</h1>
                             {state.selectedMaterial && (
+                                <>
+                                {console.log("showConfigDiffView Inside ",showConfigDiffView)}
                                 <div className="flex left dc__column-gap-24">
                                     <ArtifactInfo
                                         {...getArtifactInfoProps(
@@ -1876,6 +1879,7 @@ const CDMaterial = ({
                                         )}
                                     />
                                 </div>
+                                </>
                             )}
                         </div>
                     </div>
@@ -2002,6 +2006,9 @@ const CDMaterial = ({
     }
 
     if (material.length > 0) {
+        {console.log("pipelineId, stageType, materialType, searchImageTag ",pipelineId, stageType, materialType, searchImageTag)}
+        {console.log("MaterialsResult ", materialsResult)}
+        {console.log("loadingMaterials ", loadingMaterials)}
         return isFromBulkCD ? (
             <>
                 {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (

@@ -1,15 +1,17 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../../config'
+import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerType, URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { Nodes, SourceInfoType } from '../../types'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
@@ -21,6 +23,8 @@ import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
+import CDMaterial from '../triggerView/cdMaterial'
+import { MATERIAL_TYPE } from '../triggerView/types'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -55,6 +59,10 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+    const history = useHistory()
+    const location = useLocation()
+    const match = useRouteMatch<CIMaterialRouterProps>()
+    const { searchParams } = useSearchString()
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -103,6 +111,11 @@ export const SourceInfo = ({
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
     }
 
+    const closeCDModal = (e: React.MouseEvent): void => {
+        e.stopPropagation()
+        history.push({ search: '' })
+    }
+
     const shimmerLoaderBlocks = () => {
         const loadingCards = []
         for (let i = 0; i < 4; i++) {
@@ -126,6 +139,18 @@ export const SourceInfo = ({
     }
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
+        const onClickCDSelectImage = (event) => {
+            event.stopPropagation()
+            const newParams = {
+                ...searchParams,
+                mode: 'CD',
+            }
+
+            history.push({
+                search: new URLSearchParams(newParams).toString(),
+            })
+        }
+
         return (
             <div className="flex left w-100">
                 <EnvSelector
@@ -157,6 +182,16 @@ export const SourceInfo = ({
                     <>
                         {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
+                                
+                                <button
+                                    data-testid={`CD-trigger-select-image`}
+                                    className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
+                                    onClick={(event) => {
+                                        onClickCDSelectImage(event)
+                                    }}
+                                >
+                                    Select Image
+                                </button>
                                 {!isVirtualEnvironment && showUrlInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -225,7 +260,46 @@ export const SourceInfo = ({
             return <AppDetailsDownloadCard params={paramsId} />
         }
     }
-
+    
+    const RenderCDModal = (): JSX.Element | null => {
+        return (
+            <VisibleModal className="" parentClassName="dc__overflow-hidden">
+                <div className="modal-body--cd-material h-100 contains-diff-view">
+                    {loadingDetails ? (
+                        <>
+                            <div className="trigger-modal__header flex right">
+                                <button type="button" className="dc__transparent" onClick={closeCDModal}>
+                                    <CloseIcon />
+                                </button>
+                            </div>
+                            <div style={{ height: 'calc(100% - 55px)' }}>
+                                <Progressing pageLoader size={32} />
+                            </div>
+                        </>
+                    ) : (
+                        <CDMaterial
+                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            appId={appDetails.appId}
+                            envId={appDetails.environmentId}
+                            pipelineId={appDetails.cdPipelineId} // What will pe pipelineId
+                            stageType={DeploymentNodeType.CD}
+                            envName={appDetails.environmentName}
+                            closeCDModal={closeCDModal}
+                            triggerType={TriggerType.Manual}
+                            history={history}
+                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                            isLoading={loadingDetails}
+                            ciPipelineId={appDetails.ciPipelineId} // What will be ciPipelineId
+                            location={location}
+                            match={match}
+                            deploymentAppType={appDetails.deploymentAppType}
+                            parentEnvironmentName={appDetails.parentEnvironmentName}
+                        />
+                    )}
+                </div>
+            </VisibleModal>
+        )
+    }
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
@@ -296,6 +370,9 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
+                          {
+                            (location.search.includes('CD') || location.search.includes('review-config')) && (<RenderCDModal/>)
+                          }
                       </div>
                   )}
         </div>

@@ -59,6 +59,23 @@ export interface AddNewAppState {
 
 export interface AppDetails {
     appId: number
+    cdPipelineId?: number
+    triggerType?: string
+    parentEnvironmentName?: string
+    deprecated?: boolean
+    k8sVersion?: number
+    ciArtifactId?: number
+    parentArtifactId?: number
+    ciPipelineId?: number
+    externalCi?: boolean
+    clusterName?: string
+    dockerRegistryId?: string
+    ipsAccessProvided?: boolean
+    description?: string
+    userApprovalConfig?: string
+    isVirtualEnvironment?: boolean
+    image?: string
+    helmPackageName?: string
     appName: string
     environmentId: number
     environmentName: string
