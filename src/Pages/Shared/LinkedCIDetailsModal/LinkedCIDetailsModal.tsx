@@ -14,6 +14,7 @@ import {
     Pagination,
     DEFAULT_BASE_PAGE_SIZE,
     WorkflowNodeType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
@@ -25,7 +26,6 @@ import './linkedCIAppList.scss'
 import { getAppList, getLinkedCIPipelineEnvironmentList } from './service'
 import { getLinkedCITippyContent, parseSearchParams } from './utils'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
-import { NodeAttr } from '../../../components/app/details/triggerView/types'
 import { ALL_ENVIRONMENT_OPTION, SortableKeys, environmentFilterDropdownStyles } from './constants'
 import { preventBodyScroll } from '../../../components/common'
 
@@ -35,7 +35,7 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
     const selectedNode =
         workflows
             ?.flatMap((workflow) => workflow.nodes)
-            .find((node) => node.type === WorkflowNodeType.CI && node.id === ciPipelineId) ?? ({} as NodeAttr)
+            .find((node) => node.type === WorkflowNodeType.CI && node.id === ciPipelineId) ?? ({} as CommonNodeAttr)
 
     const { title: ciPipelineName, linkedCount: linkedWorkflowCount = 0 } = selectedNode
 

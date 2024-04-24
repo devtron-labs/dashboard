@@ -357,6 +357,10 @@ a:focus {
     bottom: 0;
 }
 
+.dc__bottom-16 {
+    bottom: 16px;
+}
+
 .dc__bottom-12 {
     bottom: 12px;
 }
@@ -2264,6 +2268,10 @@ button.anchor {
     max-width: 160px;
 }
 
+.dc__mxw-178 {
+    max-width: 178px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2664,6 +2672,12 @@ textarea,
     }
 }
 
+.circle-fill-b5 {
+    circle {
+        fill: var(--B500);
+    }
+}
+
 .icon-fill-n4 {
     rect {
         fill: var(--N400);
@@ -3028,6 +3042,10 @@ textarea,
 
 .w-885 {
     width: 885px !important;
+}
+
+.w-1024 {
+    width: 1024px;
 }
 
 // Width in percentage
@@ -4036,6 +4054,10 @@ textarea::placeholder {
 
 .dc__zi-1 {
     z-index: 1;
+}
+
+.dc__zi-2 {
+    z-index: 2;
 }
 
 .dc__zi-4 {

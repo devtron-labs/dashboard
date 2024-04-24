@@ -7,6 +7,7 @@ import {
     getLoginInfo,
     APIOptions,
     useWindowSize,
+    APPROVAL_MODAL_TYPE,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -785,6 +786,9 @@ export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
 
+/**
+ * @deprecated
+ */
 export const preventBodyScroll = (lock: boolean): void => {
     if (lock) {
         document.body.style.overflowY = 'hidden'
@@ -1170,4 +1174,16 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     }
 
     return _options
+}
+
+export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
+    if (url.includes(APPROVAL_MODAL_TYPE.DEPLOYMENT.toLocaleLowerCase())) {
+        return APPROVAL_MODAL_TYPE.DEPLOYMENT
+    }
+
+    if (url.includes(APPROVAL_MODAL_TYPE.IMAGE_PROMOTION.toLocaleLowerCase())) {
+        return APPROVAL_MODAL_TYPE.IMAGE_PROMOTION
+    }
+
+    return APPROVAL_MODAL_TYPE.CONFIG
 }

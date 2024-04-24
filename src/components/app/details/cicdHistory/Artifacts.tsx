@@ -225,12 +225,15 @@ export const CIListItem = ({
     appliedFilters,
     appliedFiltersTimestamp,
     isSuperAdmin,
+    promotionApprovalMetadata,
+    selectedEnvironmentName,
 }: CIListItemType) => {
     if (!CIListHeader) {
         CIListHeader = importComponentFromFELibrary('CIListHeader')
     }
 
-    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length
+    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length || !!promotionApprovalMetadata?.promotedFromType
+
     return (
         <>
             {type === 'deployed-artifact' && (
@@ -248,6 +251,8 @@ export const CIListItem = ({
                     triggeredBy={triggeredBy}
                     appliedFilters={appliedFilters ?? []}
                     appliedFiltersTimestamp={appliedFiltersTimestamp ?? ''}
+                    promotionApprovalMetadata={promotionApprovalMetadata}
+                    selectedEnvironmentName={selectedEnvironmentName}
                 />
             )}
 
