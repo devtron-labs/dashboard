@@ -1,7 +1,7 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useHistory, useLocation, useRouteMatch, Link } from 'react-router-dom'
-import { useParams, Route, Switch } from 'react-router'
+import { useLocation, useHistory } from 'react-router-dom'
+import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, URLS } from '../../../../config'
@@ -57,9 +57,11 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
-    const history = useHistory()
-    const { path } = useRouteMatch()
     const { searchParams } = useSearchString()
+    const history = useHistory()
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const mode = queryParams.get('mode');
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -255,7 +257,7 @@ export const SourceInfo = ({
             return <AppDetailsDownloadCard params={paramsId} />
         }
     }
-    
+
     const renderCDModal = (): JSX.Element => {
         return (
             <VisibleModal className="" parentClassName="dc__overflow-hidden">
@@ -282,6 +284,7 @@ export const SourceInfo = ({
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
+            {console.log(mode)}
             {loadingDetails
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
@@ -349,11 +352,7 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
-                          <Switch>
-                              <Route path={`${path}/:mode`}>
-                                      {renderCDModal()}
-                              </Route>
-                          </Switch>
+                          {(mode == 'CD' || mode == 'review-config' || mode == 'list') && renderCDModal()}
                       </div>
                   )}
         </div>
