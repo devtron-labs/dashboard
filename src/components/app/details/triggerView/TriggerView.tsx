@@ -1275,14 +1275,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 envId={node?.environmentId}
                                 closeCDModal={this.closeCDModal}
                                 triggerType={node.triggerType}
-                                history={this.props.history}
                                 isVirtualEnvironment={node.isVirtualEnvironment}
                                 parentEnvironmentName={node.parentEnvironmentName}
                                 isLoading={this.state.isLoading}
                                 ciPipelineId={node.connectingCiPipelineId}
                                 isSaveLoading={this.state.isSaveLoading}
-                                location={this.props.location}
-                                match={this.props.match}
                                 deploymentAppType={node?.deploymentAppType}
                             />
                         )}

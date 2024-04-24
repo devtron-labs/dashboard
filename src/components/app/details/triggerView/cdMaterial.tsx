@@ -92,6 +92,7 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
+import { useHistory } from 'react-router-dom'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -120,7 +121,6 @@ const CDMaterial = ({
     envName,
     closeCDModal,
     triggerType,
-    history,
     isVirtualEnvironment,
     parentEnvironmentName,
     isLoading,
@@ -138,6 +138,7 @@ const CDMaterial = ({
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
+    const history = useHistory()
     const { searchParams } = useSearchString()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
@@ -473,7 +474,7 @@ const CDMaterial = ({
         if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
                 state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-
+                
             setState((prevState) => ({
                 ...prevState,
                 selectedMaterial,
@@ -1854,7 +1855,6 @@ const CDMaterial = ({
     const renderCDModal = (isApprovalConfigured: boolean) => (
         <>
             <div className="trigger-modal__header">
-                {console.log("showConfigDiffView ",showConfigDiffView)}
                 {showConfigDiffView ? (
                     <div className="flex left">
                         <button
@@ -1867,8 +1867,6 @@ const CDMaterial = ({
                         <div className="flex column left ml-16">
                             <h1 className="modal__title mb-8">{renderCDModalHeader()}</h1>
                             {state.selectedMaterial && (
-                                <>
-                                {console.log("showConfigDiffView Inside ",showConfigDiffView)}
                                 <div className="flex left dc__column-gap-24">
                                     <ArtifactInfo
                                         {...getArtifactInfoProps(
@@ -1879,7 +1877,6 @@ const CDMaterial = ({
                                         )}
                                     />
                                 </div>
-                                </>
                             )}
                         </div>
                     </div>
@@ -2006,9 +2003,6 @@ const CDMaterial = ({
     }
 
     if (material.length > 0) {
-        {console.log("pipelineId, stageType, materialType, searchImageTag ",pipelineId, stageType, materialType, searchImageTag)}
-        {console.log("MaterialsResult ", materialsResult)}
-        {console.log("loadingMaterials ", loadingMaterials)}
         return isFromBulkCD ? (
             <>
                 {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (

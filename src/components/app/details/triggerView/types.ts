@@ -28,7 +28,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps extends RouteComponentProps<{}> {
+export interface CDMaterialProps {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string

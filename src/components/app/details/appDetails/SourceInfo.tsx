@@ -1,7 +1,6 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch, Link } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
@@ -11,7 +10,6 @@ import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessagi
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { Nodes, SourceInfoType } from '../../types'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
@@ -138,19 +136,19 @@ export const SourceInfo = ({
         )
     }
 
-    const renderDevtronAppsEnvironmentSelector = (environment) => {
-        const onClickCDSelectImage = (event) => {
-            event.stopPropagation()
-            const newParams = {
-                ...searchParams,
-                mode: 'CD',
-            }
-
-            history.push({
-                search: new URLSearchParams(newParams).toString(),
-            })
+    const onClickCDSelectImage = (event) => {
+        event.stopPropagation()
+        const newParams = {
+            ...searchParams,
+            mode: 'CD',
         }
 
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
+    const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100">
                 <EnvSelector
@@ -184,11 +182,9 @@ export const SourceInfo = ({
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                                 
                                 <button
-                                    data-testid={`CD-trigger-select-image`}
+                                    data-testid="CD-trigger-select-image"
                                     className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                    onClick={(event) => {
-                                        onClickCDSelectImage(event)
-                                    }}
+                                    onClick={onClickCDSelectImage}
                                 >
                                     Select Image
                                 </button>
@@ -261,41 +257,27 @@ export const SourceInfo = ({
         }
     }
     
-    const RenderCDModal = (): JSX.Element | null => {
+    const renderCDModal = (): JSX.Element => {
         return (
             <VisibleModal className="" parentClassName="dc__overflow-hidden">
                 <div className="modal-body--cd-material h-100 contains-diff-view">
-                    {loadingDetails ? (
-                        <>
-                            <div className="trigger-modal__header flex right">
-                                <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                                    <CloseIcon />
-                                </button>
-                            </div>
-                            <div style={{ height: 'calc(100% - 55px)' }}>
-                                <Progressing pageLoader size={32} />
-                            </div>
-                        </>
-                    ) : (
-                        <CDMaterial
-                            materialType={MATERIAL_TYPE.inputMaterialList}
-                            appId={appDetails.appId}
-                            envId={appDetails.environmentId}
-                            pipelineId={appDetails.cdPipelineId} // What will pe pipelineId
-                            stageType={DeploymentNodeType.CD}
-                            envName={appDetails.environmentName}
-                            closeCDModal={closeCDModal}
-                            triggerType={TriggerType.Manual}
-                            history={history}
-                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                            isLoading={loadingDetails}
-                            ciPipelineId={appDetails.ciPipelineId} // What will be ciPipelineId
-                            location={location}
-                            match={match}
-                            deploymentAppType={appDetails.deploymentAppType}
-                            parentEnvironmentName={appDetails.parentEnvironmentName}
-                        />
-                    )}
+                    <CDMaterial
+                        materialType={MATERIAL_TYPE.inputMaterialList}
+                        appId={appDetails.appId}
+                        envId={appDetails.environmentId}
+                        pipelineId={appDetails.cdPipelineId}
+                        stageType={DeploymentNodeType.CD}
+                        envName={appDetails.environmentName}
+                        closeCDModal={closeCDModal}
+                        triggerType={TriggerType.Manual}
+                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                        ciPipelineId={appDetails.ciPipelineId}
+                        location={location}
+                        match={match}
+                        deploymentAppType={appDetails.deploymentAppType}
+                        parentEnvironmentName={appDetails.parentEnvironmentName}
+                        isLoading={loadingDetails}
+                    />
                 </div>
             </VisibleModal>
         )
@@ -371,7 +353,7 @@ export const SourceInfo = ({
                               )}
                           </div>
                           {
-                            (location.search.includes('CD') || location.search.includes('review-config')) && (<RenderCDModal/>)
+                            (location.search.includes('CD') || location.search.includes('review-config') || location.search.includes('list')) && renderCDModal()
                           }
                       </div>
                   )}

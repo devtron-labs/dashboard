@@ -2071,15 +2071,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 envName={node?.environmentName}
                                 closeCDModal={closeCDModal}
                                 triggerType={node?.triggerType}
-                                history={history}
                                 isVirtualEnvironment={isVirtualEnv}
                                 parentEnvironmentName={node?.parentEnvironmentName}
                                 // Wont need it and it might be isCDLoading
                                 isLoading={isCILoading}
                                 ciPipelineId={node?.connectingCiPipelineId}
-                                // Not Even using the below props
-                                location={location}
-                                match={match}
                                 deploymentAppType={node?.deploymentAppType}
                             />
                         )}

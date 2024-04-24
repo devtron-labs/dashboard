@@ -276,9 +276,6 @@ export default function BulkActionDetails() {
                     closeCDModal={() => {
                         toggleShowCDModal(false)
                     }}
-                    history={history}
-                    location={location}
-                    match={match}
                 />
             )}
         </>
