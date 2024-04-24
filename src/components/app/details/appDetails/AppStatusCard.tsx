@@ -2,7 +2,7 @@ import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
 import './appDetails.scss'
@@ -61,7 +61,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                             content="The health status of your app"
                         >
                             <div className="flex">
-                                <Question className="icon-dim-16 mt-2" />
+                                <ICHelpOutline className="icon-dim-16 mt-2" />
                             </div>
                         </Tippy>
                     </div>

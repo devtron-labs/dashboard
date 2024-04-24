@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
@@ -29,7 +29,7 @@ const DeploymentStatusCard = ({
         DEPLOYMENT_STATUS.PROGRESSING,
         DEPLOYMENT_STATUS.STARTING,
         DEPLOYMENT_STATUS.INITIATING,
-        DEPLOYMENT_STATUS.CHECKING
+        DEPLOYMENT_STATUS.CHECKING,
     ]
     const renderDeploymentStatus = () => {
         const { triggeredBy, deploymentStatus, deploymentTriggerTime, deploymentStatusText } =
@@ -45,9 +45,10 @@ const DeploymentStatusCard = ({
                                 arrow={false}
                                 placement="top"
                                 content="Status of last triggered deployment"
+                                maxWidth={250}
                             >
                                 <div className="flex">
-                                    <Question className="icon-dim-16 mt-2" />
+                                    <ICHelpOutline className="icon-dim-16 mt-2" />
                                 </div>
                             </Tippy>
                         </div>

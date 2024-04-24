@@ -210,7 +210,7 @@ export default function JobListView(props: JobListViewProps) {
     }
     if (props.view === JobListViewType.ERROR) {
         return (
-            <div className="dc__loading-wrapper">
+            <div className="dc__height-reduce-48">
                 <ErrorScreenManager code={props.code} />
             </div>
         )

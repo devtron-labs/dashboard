@@ -92,6 +92,8 @@ export const GitChanges = ({
     hideImageTaggingHardDelete,
     appliedFilters,
     appliedFiltersTimestamp,
+    promotionApprovalMetadata,
+    selectedEnvironmentName,
 }: GitChangesType) => {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
@@ -166,6 +168,8 @@ export const GitChanges = ({
                         appliedFilters={appliedFilters}
                         appliedFiltersTimestamp={appliedFiltersTimestamp}
                         isSuperAdmin={isSuperAdmin}
+                        promotionApprovalMetadata={promotionApprovalMetadata}
+                        selectedEnvironmentName={selectedEnvironmentName}
                     >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">

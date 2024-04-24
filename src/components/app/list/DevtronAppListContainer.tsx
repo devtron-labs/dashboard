@@ -183,6 +183,8 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState> {
     }
 
     redirectToAppDetails = (app, envId: number): string => {
+        this.props.setCurrentAppName(app.name)
+
         if (envId) {
             return `/app/${app.id}/details/${envId}`
         }
