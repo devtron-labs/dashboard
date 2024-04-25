@@ -111,7 +111,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
 
     const handleWorkloadSelection = (
         appId: number,
-        kindName: string,
+        _kindName: string,
         key: APP_DETAILS_TEXT.APP_NAME | APP_DETAILS_TEXT.KIND_NAME,
     ) => {
         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
@@ -127,10 +127,11 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                     : null
             })
         }
-        if (key === APP_DETAILS_TEXT.KIND_NAME && _bulkRotatePodsMap[appId].resources[kindName]) {
-            _bulkRotatePodsMap[appId].resources[kindName].isChecked =
-                !_bulkRotatePodsMap[appId].resources[kindName].isChecked
-            _bulkRotatePodsMap[appId].resources[kindName].value = _bulkRotatePodsMap[appId].resources[kindName]
+        if (key === APP_DETAILS_TEXT.KIND_NAME && _bulkRotatePodsMap[appId].resources[_kindName]) {
+            // handling resource level value for checkbox
+            _bulkRotatePodsMap[appId].resources[_kindName].isChecked =
+                !_bulkRotatePodsMap[appId].resources[_kindName].isChecked
+            _bulkRotatePodsMap[appId].resources[_kindName].value = _bulkRotatePodsMap[appId].resources[_kindName]
                 .isChecked
                 ? CHECKBOX_VALUE.CHECKED
                 : null

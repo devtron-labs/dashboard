@@ -537,7 +537,7 @@ export interface RestartPodMapDTO {
 }
 
 export interface WorkloadListResultDTO {
-    environmentId: number | number[]
+    environmentId: number
     namespace: string
     restartPodMap: RestartPodMapDTO
 }

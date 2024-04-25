@@ -28,7 +28,6 @@ import {
     AppListDataType,
     ManageAppsResponse,
     StatusDrawer,
-    WorkloadListResultDTO,
 } from '../../AppGroup.types'
 import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
