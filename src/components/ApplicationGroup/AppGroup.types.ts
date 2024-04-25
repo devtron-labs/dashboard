@@ -12,7 +12,7 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
+import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { GVKType } from '../ResourceBrowser/Types'
