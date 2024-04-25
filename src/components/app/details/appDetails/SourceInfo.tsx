@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, stopPropagation, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -141,7 +141,7 @@ export const SourceInfo = ({
         event.stopPropagation()
         const newParams = {
             ...searchParams,
-            mode: 'CD',
+            mode: 'list',
         }
 
         history.push({
@@ -260,8 +260,8 @@ export const SourceInfo = ({
 
     const renderCDModal = (): JSX.Element => {
         return (
-            <VisibleModal className="" parentClassName="dc__overflow-hidden">
-                <div className="modal-body--cd-material h-100 contains-diff-view">
+            <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
                     <CDMaterial
                         materialType={MATERIAL_TYPE.inputMaterialList}
                         appId={appDetails.appId}
@@ -284,7 +284,6 @@ export const SourceInfo = ({
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
-            {console.log(mode)}
             {loadingDetails
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
@@ -352,7 +351,7 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
-                          {(mode == 'CD' || mode == 'review-config' || mode == 'list') && renderCDModal()}
+                          {(mode == 'review-config' || mode == 'list') && renderCDModal()}
                       </div>
                   )}
         </div>
