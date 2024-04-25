@@ -560,6 +560,7 @@ export interface SourceInfoType {
     ciArtifactId?: number
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
+    deploymentUserActionState?: string
 }
 
 export interface EnvironmentListMinType {

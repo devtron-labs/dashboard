@@ -9,6 +9,7 @@ import {
     useWindowSize,
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
+    ACTION_STATE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -1186,4 +1187,16 @@ export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE =>
     }
 
     return APPROVAL_MODAL_TYPE.CONFIG
+}
+
+export const getCTAClass = (userActionState: string, disableDeployButton?: boolean): string => {
+    let className = 'cta flex ml-auto'
+    if (disableDeployButton) {
+        className += ' disabled-opacity'
+    } else if (userActionState === ACTION_STATE.BLOCKED) {
+        className += ' danger'
+    } else if (userActionState === ACTION_STATE.PARTIAL) {
+        className += ' warning'
+    }
+    return className
 }

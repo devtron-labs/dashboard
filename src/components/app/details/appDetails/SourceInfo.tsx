@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, stopPropagation, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, stopPropagation, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -11,8 +11,10 @@ import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-d
 import { Nodes, SourceInfoType } from '../../types'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
+import { getCTAClass, importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import DeployedCommitCard from './DeployedCommitCard'
@@ -23,6 +25,7 @@ import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
+import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -47,7 +50,8 @@ export const SourceInfo = ({
     envId,
     ciArtifactId,
     setErrorsList,
-    filteredEnvIds
+    filteredEnvIds,
+    deploymentUserActionState
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -111,7 +115,7 @@ export const SourceInfo = ({
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+        stopPropagation(e)
         history.push({ search: '' })
     }
 
@@ -137,8 +141,8 @@ export const SourceInfo = ({
         )
     }
 
-    const onClickCDSelectImage = (event) => {
-        event.stopPropagation()
+    const onClickDeployButton = (event) => {
+        stopPropagation(event)
         const newParams = {
             ...searchParams,
             mode: 'list',
@@ -181,14 +185,6 @@ export const SourceInfo = ({
                     <>
                         {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                
-                                <button
-                                    data-testid="CD-trigger-select-image"
-                                    className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                    onClick={onClickCDSelectImage}
-                                >
-                                    Select Image
-                                </button>
                                 {!isVirtualEnvironment && showUrlInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
@@ -206,7 +202,7 @@ export const SourceInfo = ({
                                     >
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
@@ -227,7 +223,7 @@ export const SourceInfo = ({
                                     >
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
@@ -236,6 +232,22 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
+                                <button
+                                    className={`${getCTAClass(deploymentUserActionState)} h-32`}
+                                    data-testid="deploy-button"
+                                    onClick={onClickDeployButton}
+                                >
+                                    <>
+                                        {deploymentUserActionState == ACTION_STATE.BLOCKED ? (
+                                            <InfoOutline className="icon-dim-16 mr-6" />
+                                        ) : (
+                                            <DeployIcon
+                                                className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
+                                            />
+                                        )}
+                                        {BUTTON_TITLE[DeploymentNodeType.CD]}
+                                    </>
+                                </button>
                             </div>
                         )}
                     </>
@@ -259,27 +271,30 @@ export const SourceInfo = ({
     }
 
     const renderCDModal = (): JSX.Element => {
-        return (
-            <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
-                    <CDMaterial
-                        materialType={MATERIAL_TYPE.inputMaterialList}
-                        appId={appDetails.appId}
-                        envId={appDetails.environmentId}
-                        pipelineId={appDetails.cdPipelineId}
-                        stageType={DeploymentNodeType.CD}
-                        envName={appDetails.environmentName}
-                        closeCDModal={closeCDModal}
-                        triggerType={TriggerType.Manual}
-                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                        ciPipelineId={appDetails.ciPipelineId}
-                        deploymentAppType={appDetails.deploymentAppType}
-                        parentEnvironmentName={appDetails.parentEnvironmentName}
-                        isLoading={loadingDetails}
-                    />
-                </div>
-            </VisibleModal>
-        )
+        if (mode == 'list' || mode == 'review-config') {
+            return (
+                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                    <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
+                        <CDMaterial
+                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            appId={appDetails.appId}
+                            envId={appDetails.environmentId}
+                            pipelineId={appDetails.cdPipelineId}
+                            stageType={DeploymentNodeType.CD}
+                            envName={appDetails.environmentName}
+                            closeCDModal={closeCDModal}
+                            triggerType={TriggerType.Manual}
+                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                            ciPipelineId={appDetails.ciPipelineId}
+                            deploymentAppType={appDetails.deploymentAppType}
+                            parentEnvironmentName={appDetails.parentEnvironmentName}
+                            isLoading={loadingDetails}
+                        />
+                    </div>
+                </VisibleModal>
+            )
+        }
+        return null
     }
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
@@ -351,7 +366,7 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
-                          {(mode == 'review-config' || mode == 'list') && renderCDModal()}
+                          {renderCDModal()}
                       </div>
                   )}
         </div>

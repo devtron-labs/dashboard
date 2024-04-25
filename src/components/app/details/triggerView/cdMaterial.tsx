@@ -67,8 +67,9 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
+
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { importComponentFromFELibrary } from '../../../common'
+import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -1676,18 +1677,6 @@ const CDMaterial = ({
         )
     }
 
-    const getCTAClass = (disableDeployButton: boolean): string => {
-        let className = 'cta flex ml-auto h-36'
-        if (disableDeployButton) {
-            className += ' disabled-opacity'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
-            className += ' danger'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
-            className += ' warning'
-        }
-        return className
-    }
-
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
@@ -1791,7 +1780,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={getCTAClass(disableDeployButton)}
+                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-32`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
                     >

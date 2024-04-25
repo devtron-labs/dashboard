@@ -188,6 +188,7 @@ export interface DetailsType {
     isVirtualEnvRef?: React.MutableRefObject<boolean>
     isDeploymentBlocked?: boolean
     filteredEnvIds?: string
+    deploymentUserActionState?: string
     onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 
