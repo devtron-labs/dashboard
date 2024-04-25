@@ -24,11 +24,17 @@ import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
 import { getMockRestartWorkloadRotatePods } from './service'
 import { APP_DETAILS_TEXT } from './constants'
+import './envOverview.scss'
 
 export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envId }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    const [selectAllApps, setSelectAllApps] = useState({
+        isChecked: false,
+        value: null,
+        collapseAll: true,
+    })
 
     const getPodsToRotate = async () => {
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
@@ -99,20 +105,17 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
         )
     }
 
-    const renderWorkloadTableHeader = () => (
-        <div className="flex dc__content-space pl-16 pr-16 pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1">
-            <div className="dc__uppercase">{APP_DETAILS_TEXT.APPLICATIONS}</div>
-            <div className="flex dc__gap-4">
-                {APP_DETAILS_TEXT.EXPAND_ALL}
-                <DropdownIcon className="icon-dim-16 rotate dc__flip-270" />
-            </div>
-        </div>
-    )
+    const toggleAllWorkloads = () => {
+        setSelectAllApps({
+            ...selectAllApps,
+            collapseAll: !selectAllApps.collapseAll,
+        })
+    }
 
     const handleWorkloadSelection = (
         appId: number,
         _kindName: string,
-        key: APP_DETAILS_TEXT.APP_NAME | APP_DETAILS_TEXT.KIND_NAME,
+        key: APP_DETAILS_TEXT.APP_NAME | APP_DETAILS_TEXT.KIND_NAME | APP_DETAILS_TEXT.ALL,
     ) => {
         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
         if (key === APP_DETAILS_TEXT.APP_NAME && _bulkRotatePodsMap[appId].appName) {
@@ -151,61 +154,104 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
         setBulkRotatePodsMap(_bulkRotatePodsMap)
     }
 
-    const renderWorkloadDetails = (appId: number, appName: string, resources: ResourcesMetaDataMap) =>
-        expandedAppIds.includes(appId) &&
-        appName === bulkRotatePodsMap[appId].appName && (
-            <div className="dc__gap-4 pt-8 pb-8">
-                {Object.keys(resources).map((kindName) => (
-                    <div
-                        key={kindName}
-                        data-testid="workload-details"
-                        className="flex left p-8 dc__border-left cursor"
-                        onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
-                    >
-                        <Checkbox
-                            rootClassName="mt-3 mb-3"
-                            dataTestId="enforce-policy"
-                            isChecked={bulkRotatePodsMap[appId].resources[kindName].isChecked}
-                            value={bulkRotatePodsMap[appId].resources[kindName].value}
-                            onChange={noop}
-                            onClick={stopPropagation}
-                            name={APP_DETAILS_TEXT.KIND_NAME}
-                        />
-                        <span className="fw-6">{kindName}</span>
+    const renderWorkloadTableHeader = () => (
+        <div className="flex dc__content-space pl-16 pr-16">
+            <Checkbox
+                rootClassName="mt-3 mb-3"
+                dataTestId="enforce-policy"
+                isChecked={selectAllApps.isChecked}
+                value={selectAllApps.value}
+                onChange={toggleAllWorkloads}
+                onClick={stopPropagation}
+                name={APP_DETAILS_TEXT.KIND_NAME}
+            />
+            <div
+                className="flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100"
+                onClick={toggleAllWorkloads}
+            >
+                <div className="dc__uppercase">{APP_DETAILS_TEXT.APPLICATIONS}</div>
+                <div className="flex dc__gap-4">
+                    {APP_DETAILS_TEXT.EXPAND_ALL}
+                    <DropdownIcon className="icon-dim-16 rotate dc__flip-270" />
+                </div>
+            </div>
+        </div>
+    )
+
+    const renderWorkloadDetails = (appId: number, appName: string, resources: ResourcesMetaDataMap) => {
+        if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
+            return null
+        }
+        if (Object.keys(resources).length === 0) {
+            return (
+                <div className="dc__border-left cn-7 p-8 ml-8">
+                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                        <div className="w-300 flex dc__align-center">
+                            No workloads found. ‘{appName}’ is not deployed on ‘{envName}’
+                        </div>
                     </div>
-                ))}
+                </div>
+            )
+        }
+
+        return (
+            <div className="dc__gap-4 pl-8">
+                {Object.keys(resources).map((kindName) => {
+                    const { isChecked } = resources[kindName]
+                    return (
+                        <div
+                            key={kindName}
+                            data-testid="workload-details"
+                            className="flex left dc__border-left cursor"
+                            onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
+                        >
+                            <div
+                                className={`app-group-kind-name-row p-8 flex left w-100 ml-8 ${isChecked ? 'bc-b50' : 'bcn-0'}`}
+                            >
+                                <Checkbox
+                                    rootClassName="mt-3 mb-3"
+                                    dataTestId="enforce-policy"
+                                    isChecked={bulkRotatePodsMap[appId].resources[kindName].isChecked}
+                                    value={bulkRotatePodsMap[appId].resources[kindName].value}
+                                    onChange={noop}
+                                    onClick={stopPropagation}
+                                    name={APP_DETAILS_TEXT.KIND_NAME}
+                                />
+                                {kindName}
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
         )
+    }
 
     const renderRestartWorkloadModalListItems = () =>
         Object.keys(bulkRotatePodsMap).map((appId) => {
             return (
                 <div className="pl-16 pr-16">
                     <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor">
-                        <div
-                            className="flex left cursor"
-                            onClick={() =>
+                        <Checkbox
+                            rootClassName="mt-3 mb-3"
+                            dataTestId="enforce-policy"
+                            isChecked={bulkRotatePodsMap[appId].isChecked}
+                            value={bulkRotatePodsMap[appId].value}
+                            onClick={stopPropagation}
+                            name={APP_DETAILS_TEXT.APP_NAME}
+                            onChange={() =>
                                 handleWorkloadSelection(
                                     +appId,
                                     bulkRotatePodsMap[appId].appName,
                                     APP_DETAILS_TEXT.APP_NAME,
                                 )
                             }
-                        >
-                            <Checkbox
-                                rootClassName="mt-3 mb-3"
-                                dataTestId="enforce-policy"
-                                isChecked={bulkRotatePodsMap[appId].isChecked}
-                                value={bulkRotatePodsMap[appId].value}
-                                onClick={stopPropagation}
-                                name={APP_DETAILS_TEXT.APP_NAME}
-                                onChange={noop}
-                            />
-                            {bulkRotatePodsMap[appId].appName}
-                        </div>
-                        <div className="flex dc__gap-4" onClick={() => toggleWorkloadCollapse(+appId)}>
-                            {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
-                            <DropdownIcon className="icon-dim-16 rotate dc__flip-270 rotate" />
+                        />
+                        <div className="flex dc__content-space w-100" onClick={() => toggleWorkloadCollapse(+appId)}>
+                            <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
+                            <div className="flex dc__gap-4">
+                                {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
+                                <DropdownIcon className="icon-dim-16 rotate dc__flip-270 rotate" />
+                            </div>
                         </div>
                     </div>
                     {renderWorkloadDetails(
@@ -249,7 +295,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
 
     return (
         <Drawer onEscape={closeModal} position="right" width="800" parentClassName="h-100">
-            <div onClick={stopPropagation} className="bcn-0 h-100">
+            <div onClick={stopPropagation} className="bcn-0 h-100 cn-9">
                 {restartLoader ? (
                     <GenericEmptyState
                         title={`Fetching workload for ${selectedAppIds.length} Applications`}
