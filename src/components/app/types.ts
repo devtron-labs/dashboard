@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -560,7 +560,12 @@ export interface SourceInfoType {
     ciArtifactId?: number
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
-    deploymentUserActionState?: string
+    deploymentUserActionState?: ACTION_STATE
+}
+
+export interface AppDetailsCDModalType extends Pick<SourceInfoType, 'appDetails'>{
+    deploymentUserActionState: ACTION_STATE,
+    loadingDetails?: boolean
 }
 
 export interface EnvironmentListMinType {

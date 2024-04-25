@@ -1,0 +1,89 @@
+import React from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
+import {
+    ACTION_STATE,
+    DeploymentNodeType,
+    VisibleModal,
+    stopPropagation,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getCTAClass } from '../../../common'
+import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
+import CDMaterial from '../triggerView/cdMaterial'
+import { MATERIAL_TYPE } from '../triggerView/types'
+import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
+import { TriggerType } from '../../../../config'
+import { AppDetailsCDModalType } from '../../types'
+import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
+
+const AppDetailsCDModal = ({
+    deploymentUserActionState,
+    appDetails,
+    loadingDetails,
+}: AppDetailsCDModalType): JSX.Element => {
+    const history = useHistory()
+    const { searchParams } = useSearchString()
+    const location = useLocation()
+    const queryParams = new URLSearchParams(location.search)
+    const mode = queryParams.get('mode')
+
+    const onClickDeployButton = (event) => {
+        stopPropagation(event)
+        const newParams = {
+            ...searchParams,
+            mode: URL_PARAM_MODE_TYPE.LIST,
+        }
+
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
+    const closeCDModal = (e: React.MouseEvent): void => {
+        stopPropagation(e)
+        history.push({ search: '' })
+    }
+
+    return (
+        <>
+            <button
+                className={`${getCTAClass(deploymentUserActionState)} h-32`}
+                data-testid="deploy-button"
+                onClick={onClickDeployButton}
+                type="button"
+            >
+                {deploymentUserActionState === ACTION_STATE.BLOCKED ? (
+                    <InfoOutline className="icon-dim-16 mr-6" />
+                ) : (
+                    <DeployIcon
+                        className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
+                    />
+                )}
+                {BUTTON_TITLE[DeploymentNodeType.CD]}
+            </button>
+            {(mode === URL_PARAM_MODE_TYPE.LIST || mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
+                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                    <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
+                        <CDMaterial
+                            materialType={MATERIAL_TYPE.inputMaterialList}
+                            appId={appDetails.appId}
+                            envId={appDetails.environmentId}
+                            pipelineId={appDetails.cdPipelineId}
+                            stageType={DeploymentNodeType.CD}
+                            envName={appDetails.environmentName}
+                            closeCDModal={closeCDModal}
+                            triggerType={TriggerType.Manual}
+                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                            ciPipelineId={appDetails.ciPipelineId}
+                            deploymentAppType={appDetails.deploymentAppType}
+                            parentEnvironmentName={appDetails.parentEnvironmentName}
+                            isLoading={loadingDetails}
+                        />
+                    </div>
+                </VisibleModal>
+            )}
+        </>
+    )
+}
+export default AppDetailsCDModal

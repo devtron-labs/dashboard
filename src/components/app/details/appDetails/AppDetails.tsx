@@ -124,7 +124,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
-    const [deploymentUserActionState, setDeploymentUserActionState] = useState<string>(ACTION_STATE.ALLOWED)
+    const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 

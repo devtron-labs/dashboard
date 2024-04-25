@@ -1,32 +1,26 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useLocation, useHistory } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ACTION_STATE, ConditionalWrap, DeploymentAppTypes, DeploymentNodeType, VisibleModal, showError, stopPropagation, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerType, URLS } from '../../../../config'
+import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
-import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { Nodes, SourceInfoType } from '../../types'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { getCTAClass, importComponentFromFELibrary } from '../../../common/helpers/Helpers'
+import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
-import CDMaterial from '../triggerView/cdMaterial'
-import { MATERIAL_TYPE } from '../triggerView/types'
-import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
-import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
+import AppDetailsCDModal from './AppDetailsCDModal'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -62,11 +56,7 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
-    const { searchParams } = useSearchString()
-    const history = useHistory()
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const mode = queryParams.get('mode');
+
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -115,11 +105,6 @@ export const SourceInfo = ({
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
     }
 
-    const closeCDModal = (e: React.MouseEvent): void => {
-        stopPropagation(e)
-        history.push({ search: '' })
-    }
-
     const shimmerLoaderBlocks = () => {
         const loadingCards = []
         for (let i = 0; i < 4; i++) {
@@ -140,18 +125,6 @@ export const SourceInfo = ({
                 <div>{children}</div>
             </Tippy>
         )
-    }
-
-    const onClickDeployButton = (event) => {
-        stopPropagation(event)
-        const newParams = {
-            ...searchParams,
-            mode: URL_PARAM_MODE_TYPE.LIST,
-        }
-
-        history.push({
-            search: new URLSearchParams(newParams).toString(),
-        })
     }
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
@@ -233,7 +206,13 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {renderCDModal()}
+                                {
+                                    <AppDetailsCDModal
+                                        deploymentUserActionState={deploymentUserActionState}
+                                        appDetails={appDetails}
+                                        loadingDetails={loadingDetails}
+                                    />
+                                }
                             </div>
                         )}
                     </>
@@ -256,47 +235,6 @@ export const SourceInfo = ({
         }
     }
 
-    const renderCDModal = (): JSX.Element => {
-        return (
-            <>
-                <button
-                    className={`${getCTAClass(deploymentUserActionState)} h-32`}
-                    data-testid="deploy-button"
-                    onClick={onClickDeployButton}
-                >
-                    {deploymentUserActionState == ACTION_STATE.BLOCKED ? (
-                        <InfoOutline className="icon-dim-16 mr-6" />
-                    ) : (
-                        <DeployIcon
-                            className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
-                        />
-                    )}
-                    {BUTTON_TITLE[DeploymentNodeType.CD]}
-                </button>
-                {(mode == URL_PARAM_MODE_TYPE.LIST || mode == URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
-                    <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                        <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
-                            <CDMaterial
-                                materialType={MATERIAL_TYPE.inputMaterialList}
-                                appId={appDetails.appId}
-                                envId={appDetails.environmentId}
-                                pipelineId={appDetails.cdPipelineId}
-                                stageType={DeploymentNodeType.CD}
-                                envName={appDetails.environmentName}
-                                closeCDModal={closeCDModal}
-                                triggerType={TriggerType.Manual}
-                                isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                                ciPipelineId={appDetails.ciPipelineId}
-                                deploymentAppType={appDetails.deploymentAppType}
-                                parentEnvironmentName={appDetails.parentEnvironmentName}
-                                isLoading={loadingDetails}
-                            />
-                        </div>
-                    </VisibleModal>
-                )}
-            </>
-        )
-    }
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
