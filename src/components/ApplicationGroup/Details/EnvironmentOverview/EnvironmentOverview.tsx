@@ -28,7 +28,7 @@ import {
     AppListDataType,
     ManageAppsResponse,
     StatusDrawer,
-    WorkloadListResult,
+    WorkloadListResultDTO,
 } from '../../AppGroup.types'
 import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
@@ -87,8 +87,6 @@ export default function EnvironmentOverview({
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
     >({})
-    const [workloadList, setWorkloadList] = useState<WorkloadListResult | null>(null)
-    const [restartLoader, setRestartLoader] = useState<boolean>(false)
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -102,18 +100,6 @@ export default function EnvironmentOverview({
         }
     }, [])
 
-    useEffect(() => {
-        setRestartLoader(true)
-        try {
-            getMockRestartWorkloadRotatePods(selectedAppIds, envId).then((response) => {
-                setWorkloadList(response.result)
-            })
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setRestartLoader(false)
-        }
-    }, [])
     async function getDeploymentWindowEnvOverrideMetaData() {
         const appEnvTuples = selectedAppIds.map((appId) => {
             return {
@@ -579,8 +565,7 @@ export default function EnvironmentOverview({
                     closeModal={closeRestartWorkloadModalPopup}
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}
-                    workloadLoader={restartLoader}
-                    workloadList={workloadList}
+                    envId={envId}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (

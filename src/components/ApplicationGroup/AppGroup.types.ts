@@ -1,6 +1,7 @@
 import {
     ACTION_STATE,
     CDModalTabType,
+    CHECKBOX_VALUE,
     DeploymentNodeType,
     FilterConditionsListType,
     KeyValueListType,
@@ -11,10 +12,11 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads } from '../app/details/triggerView/types'
-import { EditDescRequest, OptionType } from '../app/types'
+import { WebhookPayloads, WorkflowType } from '../app/details/triggerView/types'
+import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { GVKType } from '../ResourceBrowser/Types'
+import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -515,25 +517,60 @@ export interface RestartWorkloadModalProps {
     closeModal: (e) => void
     selectedAppIds: number[]
     envName: string
-    workloadLoader: boolean
-    workloadList: WorkloadListResult
+    envId: string
 }
-export interface ResourceIdentifiers {
+
+// ----------------------------Restart Workload DTO--------------------------------------------
+
+export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
     name: string
-    namespace: string
     groupVersionKind: GVKType
 }
 
-export interface ResourceIdentifierMap {
-    [appId: string]: { resourceIdentifiers: ResourceIdentifiers[]; appName: string; environmentId: number, isCollapsed?: boolean }
+export interface AppInfoMetaDataDTO {
+    resourceIdentifiers: ResourceIdentifierDTO[]
+    appName: string
 }
 
-export interface WorkloadListResult {
+export interface RestartPodMapDTO {
+    [appId: number]: AppInfoMetaDataDTO
+}
+
+export interface WorkloadListResultDTO {
     environmentId: number | number[]
-    resourceIdentifiers?: ResourceIdentifiers[]
-    userId: number
-    resourceIdentifierMap: ResourceIdentifierMap
+    namespace: string
+    restartPodMap: RestartPodMapDTO
 }
 export interface AppGroupRotatePodsDTO extends ResponseType {
-    result: WorkloadListResult
+    result: WorkloadListResultDTO
+}
+
+// ----------------------------Bulk Restart Data Manipulation-----------------------------------
+
+export interface ResourceErrorMetaData {
+    containsError?: boolean
+    errorMessage?: string
+}
+
+export interface AppStatusMetaData {
+    failedCount?: number
+    successCount?: number
+}
+
+export interface ResourceMetaData extends WorkloadCheckType, ResourceErrorMetaData {
+    group: string
+    kind: Nodes | NodeType
+    version: string
+    name: string
+}
+export interface ResourcesMetaDataMap {
+    [kindName: string]: ResourceMetaData
+}
+export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMetaData {
+    appName: string
+    resources?: ResourcesMetaDataMap
+}
+
+export interface BulkRotatePodsMap {
+    [appId: number]: BulkRotatePodsMetaData
 }
