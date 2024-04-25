@@ -1780,7 +1780,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-32`}
+                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
                     >

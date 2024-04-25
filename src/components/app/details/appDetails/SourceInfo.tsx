@@ -26,6 +26,7 @@ import LoadingCard from './LoadingCard'
 import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
+import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -145,7 +146,7 @@ export const SourceInfo = ({
         stopPropagation(event)
         const newParams = {
             ...searchParams,
-            mode: 'list',
+            mode: URL_PARAM_MODE_TYPE.LIST,
         }
 
         history.push({
@@ -232,22 +233,7 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                <button
-                                    className={`${getCTAClass(deploymentUserActionState)} h-32`}
-                                    data-testid="deploy-button"
-                                    onClick={onClickDeployButton}
-                                >
-                                    <>
-                                        {deploymentUserActionState == ACTION_STATE.BLOCKED ? (
-                                            <InfoOutline className="icon-dim-16 mr-6" />
-                                        ) : (
-                                            <DeployIcon
-                                                className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
-                                            />
-                                        )}
-                                        {BUTTON_TITLE[DeploymentNodeType.CD]}
-                                    </>
-                                </button>
+                                {renderCDModal()}
                             </div>
                         )}
                     </>
@@ -271,30 +257,45 @@ export const SourceInfo = ({
     }
 
     const renderCDModal = (): JSX.Element => {
-        if (mode == 'list' || mode == 'review-config') {
-            return (
-                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                    <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
-                        <CDMaterial
-                            materialType={MATERIAL_TYPE.inputMaterialList}
-                            appId={appDetails.appId}
-                            envId={appDetails.environmentId}
-                            pipelineId={appDetails.cdPipelineId}
-                            stageType={DeploymentNodeType.CD}
-                            envName={appDetails.environmentName}
-                            closeCDModal={closeCDModal}
-                            triggerType={TriggerType.Manual}
-                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                            ciPipelineId={appDetails.ciPipelineId}
-                            deploymentAppType={appDetails.deploymentAppType}
-                            parentEnvironmentName={appDetails.parentEnvironmentName}
-                            isLoading={loadingDetails}
+        return (
+            <>
+                <button
+                    className={`${getCTAClass(deploymentUserActionState)} h-32`}
+                    data-testid="deploy-button"
+                    onClick={onClickDeployButton}
+                >
+                    {deploymentUserActionState == ACTION_STATE.BLOCKED ? (
+                        <InfoOutline className="icon-dim-16 mr-6" />
+                    ) : (
+                        <DeployIcon
+                            className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
                         />
-                    </div>
-                </VisibleModal>
-            )
-        }
-        return null
+                    )}
+                    {BUTTON_TITLE[DeploymentNodeType.CD]}
+                </button>
+                {(mode == URL_PARAM_MODE_TYPE.LIST || mode == URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
+                    <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                        <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
+                            <CDMaterial
+                                materialType={MATERIAL_TYPE.inputMaterialList}
+                                appId={appDetails.appId}
+                                envId={appDetails.environmentId}
+                                pipelineId={appDetails.cdPipelineId}
+                                stageType={DeploymentNodeType.CD}
+                                envName={appDetails.environmentName}
+                                closeCDModal={closeCDModal}
+                                triggerType={TriggerType.Manual}
+                                isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                ciPipelineId={appDetails.ciPipelineId}
+                                deploymentAppType={appDetails.deploymentAppType}
+                                parentEnvironmentName={appDetails.parentEnvironmentName}
+                                isLoading={loadingDetails}
+                            />
+                        </div>
+                    </VisibleModal>
+                )}
+            </>
+        )
     }
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
@@ -366,7 +367,6 @@ export const SourceInfo = ({
                                   </>
                               )}
                           </div>
-                          {renderCDModal()}
                       </div>
                   )}
         </div>
