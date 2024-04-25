@@ -14,15 +14,6 @@ export const manageApps = async (
     action: 'hibernate' | 'unhibernate',
 ) => post(`batch/v1beta1/${action}`, { appIdIncludes: appIds, envId, envName })
 
-export function getRestartWorkloadRotatePods(
-    selectedAppIds: number[],
-    envId: StringifyOptions,
-): Promise<AppGroupRotatePodsDTO> {
-    return get(
-        getUrlWithSearchParams(Routes.ROTATE_PODS, { appIdIncludes: selectedAppIds, envId }),
-    ) as Promise<AppGroupRotatePodsDTO>
-}
-
 // Mock function to generate data
 export function getMockRestartWorkloadRotatePods(
     selectedAppIds: number[],
