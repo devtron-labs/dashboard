@@ -1,10 +1,9 @@
-import { get, getUrlWithSearchParams, post } from '@devtron-labs/devtron-fe-common-lib'
+import { post } from '@devtron-labs/devtron-fe-common-lib'
 import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
 import { Routes } from '../../../../config'
 import {
     AppGroupRotatePodsDTO,
 } from '../../AppGroup.types'
-import { StringifyOptions } from 'node:querystring'
 import { mockDTO } from './constants'
 
 export const manageApps = async (
