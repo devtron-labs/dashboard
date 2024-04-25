@@ -563,10 +563,19 @@ export interface SourceInfoType {
     deploymentUserActionState?: ACTION_STATE
 }
 
-export interface AppDetailsCDModalType extends Pick<SourceInfoType, 'appDetails'>{
-    deploymentUserActionState: ACTION_STATE,
-    loadingDetails?: boolean
-}
+export interface AppDetailsCDModalType
+    extends Pick<
+            AppDetails,
+            | 'appId'
+            | 'environmentId'
+            | 'cdPipelineId'
+            | 'isVirtualEnvironment'
+            | 'ciPipelineId'
+            | 'deploymentAppType'
+            | 'parentEnvironmentName'
+            | 'environmentName'
+        >,
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {}
 
 export interface EnvironmentListMinType {
     active?: boolean

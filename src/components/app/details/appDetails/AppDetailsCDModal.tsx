@@ -18,9 +18,16 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 
 const AppDetailsCDModal = ({
+    appId,
+    environmentId,
+    cdPipelineId,
+    isVirtualEnvironment,
+    ciPipelineId,
+    deploymentAppType,
+    parentEnvironmentName,
     deploymentUserActionState,
-    appDetails,
     loadingDetails,
+    environmentName,
 }: AppDetailsCDModalType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -67,17 +74,17 @@ const AppDetailsCDModal = ({
                     <div className="modal-body--cd-material h-100 contains-diff-view" onClick={stopPropagation}>
                         <CDMaterial
                             materialType={MATERIAL_TYPE.inputMaterialList}
-                            appId={appDetails.appId}
-                            envId={appDetails.environmentId}
-                            pipelineId={appDetails.cdPipelineId}
+                            appId={appId}
+                            envId={environmentId}
+                            pipelineId={cdPipelineId}
                             stageType={DeploymentNodeType.CD}
-                            envName={appDetails.environmentName}
+                            envName={environmentName}
                             closeCDModal={closeCDModal}
                             triggerType={TriggerType.Manual}
-                            isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                            ciPipelineId={appDetails.ciPipelineId}
-                            deploymentAppType={appDetails.deploymentAppType}
-                            parentEnvironmentName={appDetails.parentEnvironmentName}
+                            isVirtualEnvironment={isVirtualEnvironment}
+                            ciPipelineId={ciPipelineId}
+                            deploymentAppType={deploymentAppType}
+                            parentEnvironmentName={parentEnvironmentName}
                             isLoading={loadingDetails}
                         />
                     </div>

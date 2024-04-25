@@ -208,9 +208,16 @@ export const SourceInfo = ({
                                 )}
                                 {
                                     <AppDetailsCDModal
+                                        appId={appDetails.appId}
+                                        environmentId={appDetails.environmentId}
+                                        cdPipelineId={appDetails.cdPipelineId}
+                                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                        ciPipelineId={appDetails.ciPipelineId}
+                                        deploymentAppType={appDetails.deploymentAppType}
+                                        parentEnvironmentName={appDetails.parentEnvironmentName}
                                         deploymentUserActionState={deploymentUserActionState}
-                                        appDetails={appDetails}
                                         loadingDetails={loadingDetails}
+                                        environmentName={appDetails.environmentName}
                                     />
                                 }
                             </div>
