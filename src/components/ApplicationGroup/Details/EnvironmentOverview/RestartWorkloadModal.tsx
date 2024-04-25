@@ -136,7 +136,6 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                 ? CHECKBOX_VALUE.CHECKED
                 : null
             // handling app level value for checkbox
-            // _bulkRotatePodsMap[appId].value = getCheckboxValue(Object.values(_bulkRotatePodsMap[appId].resources))
             // eslint-disable-next-line no-nested-ternary
             _bulkRotatePodsMap[appId].value = Object.values(_bulkRotatePodsMap[appId].resources).every(
                 (_resource) => _resource.isChecked,
