@@ -114,6 +114,19 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
         _kindName: string,
         key: APP_DETAILS_TEXT.APP_NAME | APP_DETAILS_TEXT.KIND_NAME,
     ) => {
+        const getCheckboxValue = (arr): CHECKBOX_VALUE.INTERMEDIATE | CHECKBOX_VALUE.CHECKED | null => {
+            if (arr.length === 0 || Array) {
+                return null
+            }
+            if (arr.every((item) => item.isChecked)) {
+                return CHECKBOX_VALUE.CHECKED
+            }
+            if (arr.some((item) => item.isChecked)) {
+                return CHECKBOX_VALUE.INTERMEDIATE
+            }
+            return null
+        }
+
         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
         if (key === APP_DETAILS_TEXT.APP_NAME && _bulkRotatePodsMap[appId].appName) {
             _bulkRotatePodsMap[appId].isChecked = _bulkRotatePodsMap[appId].value !== CHECKBOX_VALUE.CHECKED
@@ -138,13 +151,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
             // handling app level value for checkbox
             // TODO remove nesting
             // eslint-disable-next-line no-nested-ternary
-            _bulkRotatePodsMap[appId].value = Object.values(_bulkRotatePodsMap[appId].resources).every(
-                (_resource) => _resource.isChecked,
-            )
-                ? CHECKBOX_VALUE.CHECKED
-                : Object.values(_bulkRotatePodsMap[appId].resources).some((_resource) => _resource.isChecked)
-                  ? CHECKBOX_VALUE.INTERMEDIATE
-                  : null
+            _bulkRotatePodsMap[appId].value = getCheckboxValue(Object.values(_bulkRotatePodsMap[appId].resources))
             _bulkRotatePodsMap[appId].isChecked =
                 _bulkRotatePodsMap[appId].value === CHECKBOX_VALUE.CHECKED ||
                 _bulkRotatePodsMap[appId].value === CHECKBOX_VALUE.INTERMEDIATE
