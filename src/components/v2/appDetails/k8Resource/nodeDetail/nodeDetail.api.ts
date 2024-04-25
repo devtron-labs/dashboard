@@ -24,6 +24,7 @@ export const getManifestResource = (
     nodeType: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
+    signal?: AbortSignal,
 ) => {
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
@@ -33,10 +34,15 @@ export const getManifestResource = (
         (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
             ? `?externalArgoApplicationName=${ad.appName}`
             : '')
-    return post(url, requestData)
+    return post(url, requestData, { signal })
 }
 
-export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
+export const getDesiredManifestResource = (
+    appDetails: AppDetails,
+    podName: string,
+    nodeType: string,
+    signal?: AbortSignal,
+) => {
     const selectedResource = appDetails.resourceTree?.nodes.filter(
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
@@ -50,7 +56,7 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
             name: selectedResource.name,
         },
     }
-    return post(Routes.DESIRED_MANIFEST, requestData)
+    return post(Routes.DESIRED_MANIFEST, requestData, { signal })
 }
 
 export const getEvent = (
