@@ -3298,6 +3298,10 @@ textarea,
     height: 80px !important;
 }
 
+.h-96 {
+    height: 96px !important;
+}
+
 .h-100px-imp {
     height: 100px !important;
 }
@@ -4383,4 +4387,8 @@ textarea::placeholder {
     &--transform {
         transition: transform 0.3s;
     }
+}
+
+.dc__backdrop-filter {
+    backdrop-filter: blur(2px);
 }
