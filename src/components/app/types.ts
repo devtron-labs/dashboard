@@ -563,7 +563,7 @@ export interface SourceInfoType {
     deploymentUserActionState?: ACTION_STATE
 }
 
-export interface AppDetailsCDModalType
+export interface AppDetailsCDButtonType
     extends Pick<
             AppDetails,
             | 'appId'

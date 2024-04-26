@@ -13,11 +13,11 @@ import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { TriggerType } from '../../../../config'
-import { AppDetailsCDModalType } from '../../types'
+import { AppDetailsCDButtonType } from '../../types'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 
-const AppDetailsCDModal = ({
+const AppDetailsCDButton = ({
     appId,
     environmentId,
     cdPipelineId,
@@ -28,7 +28,7 @@ const AppDetailsCDModal = ({
     deploymentUserActionState,
     loadingDetails,
     environmentName,
-}: AppDetailsCDModalType): JSX.Element => {
+}: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
     const location = useLocation()
@@ -105,4 +105,4 @@ const AppDetailsCDModal = ({
         </>
     )
 }
-export default AppDetailsCDModal
+export default AppDetailsCDButton

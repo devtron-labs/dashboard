@@ -16,7 +16,7 @@ import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
-import AppDetailsCDModal from './AppDetailsCDModal'
+import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
@@ -206,20 +206,18 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
-                                {
-                                    <AppDetailsCDModal
-                                        appId={appDetails.appId}
-                                        environmentId={appDetails.environmentId}
-                                        cdPipelineId={appDetails.cdPipelineId}
-                                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                                        ciPipelineId={appDetails.ciPipelineId}
-                                        deploymentAppType={appDetails.deploymentAppType}
-                                        parentEnvironmentName={appDetails.parentEnvironmentName}
-                                        deploymentUserActionState={deploymentUserActionState}
-                                        loadingDetails={loadingDetails}
-                                        environmentName={appDetails.environmentName}
-                                    />
-                                }
+                                <AppDetailsCDButton
+                                    appId={appDetails.appId}
+                                    environmentId={appDetails.environmentId}
+                                    cdPipelineId={appDetails.cdPipelineId}
+                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                    ciPipelineId={appDetails.ciPipelineId}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    parentEnvironmentName={appDetails.parentEnvironmentName}
+                                    deploymentUserActionState={deploymentUserActionState}
+                                    loadingDetails={loadingDetails}
+                                    environmentName={appDetails.environmentName}
+                                />
                             </div>
                         )}
                     </>
