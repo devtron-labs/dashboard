@@ -10,7 +10,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
-import { Switch, Route, useLocation } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import moment from 'moment'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
