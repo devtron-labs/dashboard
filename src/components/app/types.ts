@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, UserApprovalConfigType } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
