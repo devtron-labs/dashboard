@@ -574,6 +574,7 @@ export interface AppDetailsCDButtonType
             | 'deploymentAppType'
             | 'parentEnvironmentName'
             | 'environmentName'
+            | 'triggerType'
         >,
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {}
 

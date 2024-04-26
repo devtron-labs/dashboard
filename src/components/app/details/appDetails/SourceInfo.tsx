@@ -217,6 +217,7 @@ export const SourceInfo = ({
                                     deploymentUserActionState={deploymentUserActionState}
                                     loadingDetails={loadingDetails}
                                     environmentName={appDetails.environmentName}
+                                    triggerType={appDetails.triggerType}
                                 />
                             </div>
                         )}

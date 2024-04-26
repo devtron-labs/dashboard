@@ -12,7 +12,6 @@ import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
-import { TriggerType } from '../../../../config'
 import { AppDetailsCDButtonType } from '../../types'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
@@ -28,6 +27,7 @@ const AppDetailsCDButton = ({
     deploymentUserActionState,
     loadingDetails,
     environmentName,
+    triggerType,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -85,7 +85,7 @@ const AppDetailsCDButton = ({
                             stageType={DeploymentNodeType.CD}
                             envName={environmentName}
                             closeCDModal={closeCDModal}
-                            triggerType={TriggerType.Manual}
+                            triggerType={triggerType}
                             isVirtualEnvironment={isVirtualEnvironment}
                             ciPipelineId={ciPipelineId}
                             deploymentAppType={deploymentAppType}
