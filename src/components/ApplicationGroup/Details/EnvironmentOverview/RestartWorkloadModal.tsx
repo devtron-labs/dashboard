@@ -9,7 +9,9 @@ import {
     noop,
     showError,
     stopPropagation,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 import {
     AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
@@ -25,8 +27,9 @@ import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arro
 import { getMockRestartWorkloadRotatePods } from './service'
 import { APP_DETAILS_TEXT } from './constants'
 import './envOverview.scss'
+import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 
-export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envId }: RestartWorkloadModalProps) => {
+export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
@@ -35,6 +38,21 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
         value: null,
         collapseAll: true,
     })
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+    const [showStatusModal, setShowStatusModal] = useState(false)
+
+    const toggleStatusModal = () => {
+        setShowStatusModal((prev) => !prev)
+    }
+
+    const closeDrawer = () => {
+        const newParams = {
+            ...searchParams,
+            modal: '',
+        }
+        history.replace({ search: new URLSearchParams(newParams).toString() })
+    }
 
     const getPodsToRotate = async () => {
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
@@ -100,7 +118,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                 <div className="fs-16 fw-6">
                     {` Restart workloads '${selectedAppIds.length} applications' on '${envName}'`}
                 </div>
-                <Close className="icon-dim-24 cursor" onClick={closeModal} />
+                <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
             </div>
         )
     }
@@ -169,7 +187,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                 className="flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100"
                 onClick={toggleAllWorkloads}
             >
-                <div className="dc__uppercase">{APP_DETAILS_TEXT.APPLICATIONS}</div>
+                <div>{APP_DETAILS_TEXT.APPLICATIONS}</div>
                 <div className="flex dc__gap-4">
                     {APP_DETAILS_TEXT.EXPAND_ALL}
                     <DropdownIcon className="icon-dim-16 rotate dc__flip-270" />
@@ -264,6 +282,10 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
         })
 
     const renderRestartWorkloadModalList = () => {
+        if (showStatusModal) {
+            return <RestartStatusListDrawer bulkRotatePodsMap={bulkRotatePodsMap} />
+        }
+
         return (
             <div className="flexbox-col dc__gap-12">
                 {renderWorkloadTableHeader()}
@@ -277,7 +299,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                 <div className="flex dc__content-end w-100 dc__align-end dc__gap-12 ">
                     <button
                         type="button"
-                        onClick={closeModal}
+                        onClick={closeDrawer}
                         className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                     >
                         Cancel
@@ -285,6 +307,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                     <ButtonWithLoader
                         rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp"
                         isLoading={restartLoader}
+                        onClick={toggleStatusModal}
                     >
                         {APP_DETAILS_TEXT.RESTART_WORKLOAD}
                     </ButtonWithLoader>
@@ -294,7 +317,7 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
     }
 
     return (
-        <Drawer onEscape={closeModal} position="right" width="800" parentClassName="h-100">
+        <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
             <div onClick={stopPropagation} className="bcn-0 h-100 cn-9">
                 {restartLoader ? (
                     <GenericEmptyState
@@ -305,11 +328,13 @@ export const RestartWorkloadModal = ({ closeModal, selectedAppIds, envName, envI
                 ) : (
                     <>
                         {renderHeaderSection()}
-                        <InfoColourBar
-                            message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
-                            classname="info_bar dc__no-border-radius dc__no-top-border"
-                            Icon={InfoIcon}
-                        />
+                        {!showStatusModal && (
+                            <InfoColourBar
+                                message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
+                                classname="info_bar dc__no-border-radius dc__no-top-border"
+                                Icon={InfoIcon}
+                            />
+                        )}
                         {renderRestartWorkloadModalList()}
                         {renderFooterSection()}
                     </>

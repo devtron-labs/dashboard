@@ -4,14 +4,16 @@ export const BIO_MAX_LENGTH = 40
 export const BIO_MAX_LENGTH_ERROR = `Max ${BIO_MAX_LENGTH} characters allowed`
 
 export enum APP_DETAILS_TEXT {
-    RESTART_WORKLOAD = 'Restart workloads',
+    ALL = 'All',
+    APP_NAME = 'app-name',
     APP_GROUP_RESTART_WORKLOAD_SUBTITLE = 'It might take some time depending upon the number of applications',
     APP_GROUP_INFO_TEXT = 'Pods for selected workloads will be restarted. Configured deployment strategies will be used to restart workloads.',
-    APPLICATIONS = 'Applications',
+    APPLICATIONS = 'APPLICATIONS',
     EXPAND_ALL = 'Expand all',
-    APP_NAME = 'app-name',
     KIND_NAME = 'kind-name',
-    ALL = 'All',
+    MESSAGE = 'MESSAGE',
+    RESTART_STATUS = 'RESTART STATUS',
+    RESTART_WORKLOAD = 'Restart workloads',
 }
 
 export const DATA_TEST_IDS = {
@@ -109,4 +111,8 @@ export const mockDTO: AppGroupRotatePodsDTO = {
     result: mockResult,
     code: 200,
     status: 'OK',
+}
+
+export const URL_SEARCH_PARAMS = {
+    BULK_RESTART_WORKLOAD: 'bulk-restart-workload',
 }

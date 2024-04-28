@@ -10,11 +10,12 @@ import {
     SortingOrder,
     useUrlFilters,
     EditableTextArea,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
@@ -30,7 +31,7 @@ import {
     StatusDrawer,
 } from '../../AppGroup.types'
 import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
-import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR } from './constants'
+import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
 import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
 import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
 import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
@@ -51,7 +52,6 @@ import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { UnhibernateModal } from './UnhibernateModal'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
-import { getMockRestartWorkloadRotatePods } from './service'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -73,7 +73,6 @@ export default function EnvironmentOverview({
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
     const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
     const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
-    const [openRestartWorkloadModal, setOpenRestartWorkloadModal] = useState<boolean>(false)
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
@@ -90,6 +89,9 @@ export default function EnvironmentOverview({
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
     })
+
+    const { searchParams } = useSearchString()
+    const history = useHistory()
 
     useEffect(() => {
         return () => {
@@ -251,12 +253,12 @@ export default function EnvironmentOverview({
         setOpenUnhiberateModal(true)
     }
 
-    const openRestartWorkloadModalPopup = () => {
-        setOpenRestartWorkloadModal(true)
-    }
-
-    const closeRestartWorkloadModalPopup = () => {
-        setOpenRestartWorkloadModal(false)
+    const onClickShowBulkRestartModal = () => {
+        const newParams = {
+            ...searchParams,
+            modal: 'bulk-restart-workload',
+        }
+        history.push({ search: new URLSearchParams(newParams).toString() })
     }
 
     const closeCommitInfoModal = () => {
@@ -469,7 +471,7 @@ export default function EnvironmentOverview({
                                     Unhibernate
                                 </button>
                                 <button
-                                    onClick={openRestartWorkloadModalPopup}
+                                    onClick={onClickShowBulkRestartModal}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                      <RotateIcon className="icon-dim-12 mr-4 scn-9" />
@@ -559,9 +561,8 @@ export default function EnvironmentOverview({
                     showDefaultDrawer={showDefaultDrawer}
                 />
             )}
-            {openRestartWorkloadModal && (
+            {location.search && location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
                 <RestartWorkloadModal
-                    closeModal={closeRestartWorkloadModalPopup}
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}
                     envId={envId}

@@ -514,10 +514,13 @@ export interface ApiQueuingWithBatchResponseItem {
 }
 
 export interface RestartWorkloadModalProps {
-    closeModal: (e) => void
     selectedAppIds: number[]
     envName: string
     envId: string
+}
+
+export interface RestartStatusListDrawerProps {
+    bulkRotatePodsMap: BulkRotatePodsMap
 }
 
 // ----------------------------Restart Workload DTO--------------------------------------------
