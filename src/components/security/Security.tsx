@@ -51,10 +51,11 @@ export class Security extends Component<SecurityProps> {
         return (
             <PageHeader
                 headerName="Security"
-                isTippyShown
-                tippyRedirectLink={DOCUMENTATION.SECURITY}
-                tippyMessage="Learn more"
-                TippyIcon={ICHelpOutline}
+                tippyProps={{
+                    tippyRedirectLink: DOCUMENTATION.SECURITY,
+                    tippyMessage: 'Learn more',
+                    TippyIcon: ICHelpOutline,
+                }}
                 showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
             />
