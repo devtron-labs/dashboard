@@ -39,7 +39,10 @@ const NodeDeleteComponent = ({
     const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
 
     const handleShowVulnerabilityModal = () => {
-        setManifestPayload(getAppDetailsForManifest(appDetails))
+        /* TODO: need to set to prevent outsideClick propagation */
+        setTimeout(() => {
+            setManifestPayload(getAppDetailsForManifest(appDetails))
+        }, 100)
     }
 
     const handleCloseVulnerabilityModal = () => {
@@ -154,14 +157,9 @@ const NodeDeleteComponent = ({
             {!!manifestPayload && SecurityModal && (
                 <SecurityModal
                     resourceScanPayload={{
-                        name: nodeDetails?.name,
-                        namespace: nodeDetails?.namespace,
-                        group: nodeDetails?.group,
-                        kind: nodeDetails?.kind,
-                        version: nodeDetails?.version,
-                        clusterId: manifestPayload.clusterId,
-                        appType: manifestPayload.appType,
-                        deploymentType: manifestPayload.deploymentType,
+                        ...nodeDetails,
+                        ...manifestPayload,
+                        isAppDetailView: true
                     }}
                     handleModalClose={handleCloseVulnerabilityModal}
                 />

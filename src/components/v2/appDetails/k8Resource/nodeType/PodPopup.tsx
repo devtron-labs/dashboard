@@ -6,7 +6,7 @@ import { PodPopupProps } from './types'
 import { NodeType } from '../../appDetails.type'
 import { ReactComponent as ICDeleteInteractive } from '../../../../../assets/icons/ic-delete-interactive.svg'
 
-const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
 
 // TODO: Need to make it common and use this in ResourceTree component as well
 const PodPopup = ({
@@ -31,7 +31,7 @@ const PodPopup = ({
     }
 
     return (
-        <div className="pod-info__popup-container">
+        <div className="pod-info__popup-container flexbox-col">
             {kind === NodeType.Pod && (
                 <span
                     data-testid="view-events-button"
@@ -46,8 +46,8 @@ const PodPopup = ({
                     View Container Logs
                 </span>
             )}
-            {showResourceScanModal && OpenVulnerabilityModalButton && (
-                <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
+            {showResourceScanModal && OpenSecurityModalButton && (
+                <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
             )}
             {!isExternalArgoApp && (
                 <span

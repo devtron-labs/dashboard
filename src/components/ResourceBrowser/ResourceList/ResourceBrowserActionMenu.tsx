@@ -11,7 +11,7 @@ import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-m
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 
-const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
 const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 export default function ResourceBrowserActionMenu({
@@ -49,8 +49,8 @@ export default function ResourceBrowserActionMenu({
                 <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
-                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">
-                    <div className="fs-13 fw-4 lh-20">
+                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
+                    <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.manifest}
@@ -99,8 +99,8 @@ export default function ResourceBrowserActionMenu({
                                 </span>
                             </>
                         )}
-                        {showResourceScanModal && OpenVulnerabilityModalButton && (
-                            <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
+                        {showResourceScanModal && OpenSecurityModalButton && (
+                            <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
                         )}
                         <span
                             className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
