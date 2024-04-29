@@ -13,4 +13,4 @@ export interface iLink {
     uid?: string
 }
 
-export interface iLinks extends Array<iLink> {}
+export interface iLinks extends Readonly<Array<iLink>> {}
