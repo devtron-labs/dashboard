@@ -34,3 +34,6 @@ env-config.js
 /playwright/.cache/
 playwright/.auth/
 .npmrc
+
+yarn.lock
+package-lock.json
