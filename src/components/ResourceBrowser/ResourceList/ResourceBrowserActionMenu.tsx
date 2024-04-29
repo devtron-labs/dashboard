@@ -12,7 +12,7 @@ import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 
 const OpenVulnerabilityModalButton = importComponentFromFELibrary('OpenVulnerabilityModalButton', null, 'function')
-const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
+const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 export default function ResourceBrowserActionMenu({
     clusterId,
@@ -23,7 +23,7 @@ export default function ResourceBrowserActionMenu({
     removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
     const { installedModuleMap } = useMainContext()
-    
+
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
@@ -31,8 +31,11 @@ export default function ResourceBrowserActionMenu({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
-    const handleShowVulnerabilityModal = () => {
-        setShowVulnerabilityModal(true)
+    const handleShowVulnerabilityModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+        /* TODO: stop propagation otherwise it conflicts with useOutsideClick of SecurityModal */
+        setTimeout(() => {
+            setShowVulnerabilityModal(true)
+        }, 100)
     }
 
     const handleCloseVulnerabilityModal = () => {
@@ -97,9 +100,7 @@ export default function ResourceBrowserActionMenu({
                             </>
                         )}
                         {showResourceScanModal && OpenVulnerabilityModalButton && (
-                            <OpenVulnerabilityModalButton
-                                handleShowVulnerabilityModal={handleShowVulnerabilityModal}
-                            />
+                            <OpenVulnerabilityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
                         )}
                         <span
                             className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
@@ -123,15 +124,17 @@ export default function ResourceBrowserActionMenu({
                 />
             )}
 
-            {showVulnerabilityModal && ScanResourceModal && (
-                <ScanResourceModal
-                    name={resourceData.name}
-                    namespace={resourceData.namespace}
-                    group={selectedResource?.gvk?.Group}
-                    kind={selectedResource?.gvk?.Kind}
-                    version={selectedResource?.gvk?.Version}
-                    clusterId={clusterId}
-                    handleCloseVulnerabilityModal={handleCloseVulnerabilityModal}
+            {showVulnerabilityModal && SecurityModal && (
+                <SecurityModal
+                    resourceScanPayload={{
+                        name: resourceData.name,
+                        namespace: resourceData.namespace,
+                        group: selectedResource?.gvk?.Group,
+                        kind: selectedResource?.gvk?.Kind,
+                        version: selectedResource?.gvk?.Version,
+                        clusterId,
+                    }}
+                    handleModalClose={handleCloseVulnerabilityModal}
                 />
             )}
         </>
