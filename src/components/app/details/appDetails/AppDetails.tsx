@@ -31,7 +31,7 @@ import {
     RESOURCES_NOT_FOUND,
     DEFAULT_STATUS_TEXT,
 } from '../../../../config'
-import { NavigationArrow, useAppContext, FragmentHOC, ScanDetailsModal } from '../../../common'
+import { NavigationArrow, useAppContext, FragmentHOC } from '../../../common'
 import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from '../../../v2/common/ReactSelect.utils'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 // @ts-check
@@ -254,7 +254,6 @@ export const Details: React.FC<DetailsType> = ({
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
-    const [showScanDetailsModal, toggleScanDetailsModal] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)

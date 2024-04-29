@@ -21,7 +21,7 @@ import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const ScanResourceModal = importComponentFromFELibrary('ScanResourceModal', null, 'function')
+const SecurityModal = importComponentFromFELibrary('SecurityModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
 const NodeDeleteComponent = ({
@@ -150,20 +150,20 @@ const NodeDeleteComponent = ({
                     />
                 </PopupMenu.Body>
             </PopupMenu>
-            
-            {!!manifestPayload && ScanResourceModal && (
-                <ScanResourceModal
-                    name={nodeDetails?.name}
-                    namespace={nodeDetails?.namespace}
-                    group={nodeDetails?.group}
-                    kind={nodeDetails?.kind}
-                    version={nodeDetails?.version}
-                    clusterId={manifestPayload.clusterId}
-                    appId={manifestPayload.appId}
-                    appType={manifestPayload.appType}
-                    deploymentType={manifestPayload.deploymentType}
-                    handleCloseVulnerabilityModal={handleCloseVulnerabilityModal}
-                    isAppDetailView
+
+            {!!manifestPayload && SecurityModal && (
+                <SecurityModal
+                    resourceScanPayload={{
+                        name: nodeDetails?.name,
+                        namespace: nodeDetails?.namespace,
+                        group: nodeDetails?.group,
+                        kind: nodeDetails?.kind,
+                        version: nodeDetails?.version,
+                        clusterId: manifestPayload.clusterId,
+                        appType: manifestPayload.appType,
+                        deploymentType: manifestPayload.deploymentType,
+                    }}
+                    handleModalClose={handleCloseVulnerabilityModal}
                 />
             )}
 

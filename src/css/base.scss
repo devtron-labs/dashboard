@@ -4364,3 +4364,14 @@ textarea::placeholder {
     cursor: pointer;
     outline: inherit;
 }
+
+/* NOTE: if the border width is smaller than border-radius curve;
+ * the border around the curved edges will get clipped;
+ * Eg: dc__border & dc__border-radius-4-imp */
+.dc__outline {
+    outline: 1px solid var(--N200);
+}
+
+.dc__outline-n1 {
+    outline: 1px solid var(--N100);
+}
