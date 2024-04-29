@@ -957,6 +957,9 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
+/**
+ * @deprecated Use getEnvironmentListMinPublic form common lib instead
+ */
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,

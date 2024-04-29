@@ -145,6 +145,9 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
+/**
+ * @deprecated Use getEnvironmentListMinPublic form common lib instead
+ */
 export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
     return get(
         `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,

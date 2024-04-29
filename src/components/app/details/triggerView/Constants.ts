@@ -91,6 +91,9 @@ export const NO_VULNERABILITY_TEXT = {
     NoVulnerabilityFound: 'No security vulnerability found for this image.',
 }
 
+/**
+ * @deprecated Use DEFAULT_ENV form common lib instead
+ */
 export const DEFAULT_ENV = 'devtron-ci'
 
 export const EMPTY_STATE = {
