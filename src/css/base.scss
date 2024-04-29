@@ -2301,6 +2301,10 @@ button.anchor {
     max-width: 200px !important;
 }
 
+.dc__mxw-234 {
+    max-width: 234px;
+}
+
 .dc__mxw-250 {
     max-width: 250px;
 }
@@ -3081,6 +3085,10 @@ textarea,
     width: 1024px;
 }
 
+.w-1200 {
+    width: 1200px;
+}
+
 // Width in percentage
 .mw-100p {
     min-width: 100%;
@@ -3104,6 +3112,10 @@ textarea,
 
 .w-70 {
     width: 70% !important;
+}
+
+.w-75 {
+    width: 75%;
 }
 
 .w-80 {
@@ -4289,6 +4301,10 @@ textarea::placeholder {
     border: 1px solid var(--N300);
 }
 
+.dc__hover-border-b5:hover {
+    border: 1px solid var(--B500) !important;
+}
+
 .placeholder-cn5::placeholder {
     color: var(--N500);
 }
@@ -4375,6 +4391,12 @@ textarea::placeholder {
     &__no-border {
         &:last-child {
             border: none;
+        }
+    }
+
+    &__border-bottom-n1 {
+        &:last-child {
+            border-bottom: 1px solid var(--N100);
         }
     }
 }

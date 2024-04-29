@@ -9,6 +9,7 @@ import {
     DevtronProgressing,
     useMainContext,
     MainContextProvider,
+    ImageSelectionUtilityProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -17,6 +18,7 @@ import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -412,7 +414,14 @@ export default function NavigationRoutes() {
                                             ? []
                                             : [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
-                                                      {Releases ? <Releases /> : <h1>Releases</h1>}
+                                                      {Releases ? (
+                                                        <ImageSelectionUtilityProvider value={{
+                                                            gitCommitInfoGeneric: GitCommitInfoGeneric,
+                                                            getModuleInfo,
+                                                        }} >
+                                                            <Releases />
+                                                        </ImageSelectionUtilityProvider>
+                                                      ) : <h1>Releases</h1>}
                                                   </Route>,
                                               ]),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
