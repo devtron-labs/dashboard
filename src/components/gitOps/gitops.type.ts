@@ -16,7 +16,7 @@ export type GitOpsOrganisationIdType =
     | 'azureProjectName'
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
-export type GitProviderType = 'GITHUB' | 'GITLAB' | 'AZURE_DEVOPS' | 'BITBUCKET_CLOUD'
+export type GitProviderType = 'GITHUB' | 'GITLAB' | 'AZURE_DEVOPS' | 'BITBUCKET_CLOUD' | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
     username: {
