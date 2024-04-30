@@ -912,10 +912,6 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
     return nodeImageObj?.description || ''
 }
 
-/**
- * @deprecated Use processK8SObjects form common lib instead
- */
-
 export const processK8SObjects = (
     k8sObjects: ApiResourceGroupType[],
     selectedResourceKind?: string,

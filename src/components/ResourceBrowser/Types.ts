@@ -59,10 +59,6 @@ export interface K8SObjectBaseType {
     isExpanded: boolean
 }
 
-
-/**
- * @deprecated Use this type form common lib instead
- */
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
 }
