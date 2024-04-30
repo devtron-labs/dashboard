@@ -3985,6 +3985,13 @@ textarea::placeholder {
     user-select: none;
 }
 
+.dc__select-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
 .dc__stroke-width-2 {
     path {
         stroke-width: 2px;
