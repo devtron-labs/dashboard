@@ -3,7 +3,7 @@ import { useRouteMatch, useParams, useHistory } from 'react-router'
 import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import { getElapsedTime } from '../../../../common'
+import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -18,13 +18,17 @@ import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
+
 const NodeComponent = ({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
-    isExternalApp,
+    clusterId,
     isDeploymentBlocked,
+    isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -35,7 +39,7 @@ const NodeComponent = ({
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ nodeType: NodeType; resourceName: string }>()
+    const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
     const podMetaData = IndexStore.getPodMetaData()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
@@ -219,9 +223,7 @@ const NodeComponent = ({
                 return (
                     <>
                         <div>
-                            <span>
-                                {text}
-                            </span>
+                            <span>{text}</span>
                         </div>
                         <span className="pl-4">
                             <ClipboardButton content={text} />
@@ -402,7 +404,9 @@ const NodeComponent = ({
                                 <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
                                     <div className="pl-8">
-                                        {node.port > 1 ? <ClipboardButton content={nodeName.split(' ').join('')} /> : null}
+                                        {node.port > 1 ? (
+                                            <ClipboardButton content={nodeName.split(' ').join('')} />
+                                        ) : null}
                                     </div>
                                 </div>
                             )}
@@ -416,6 +420,9 @@ const NodeComponent = ({
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
+                                {Number(getPodRestartCount(node)) > 0 && PodRestartIcon && (
+                                    <PodRestartIcon clusterId={clusterId} name={node.name} namespace={node.namespace} />
+                                )}
                             </div>
                         )}
 
@@ -448,8 +455,7 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' &&
-                            !isExternalApp && (
+                            node?.kind !== 'EndpointSlice' && !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}
@@ -516,6 +522,7 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
+            {PodRestart && <PodRestart />}
         </>
     )
 }

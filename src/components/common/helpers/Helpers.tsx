@@ -16,6 +16,11 @@ import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
+import {
+    getAggregator as getAppDetailsAggregator,
+    AggregationKeys,
+    NodeType,
+} from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
@@ -907,6 +912,10 @@ export const clusterImageDescription = (nodeImageList: ImageList[], selectedImag
     return nodeImageObj?.description || ''
 }
 
+/**
+ * @deprecated Use processK8SObjects form common lib instead
+ */
+
 export const processK8SObjects = (
     k8sObjects: ApiResourceGroupType[],
     selectedResourceKind?: string,
@@ -957,9 +966,6 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-/**
- * @deprecated Use getEnvironmentListMinPublic form common lib instead
- */
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,
@@ -1177,6 +1183,13 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     }
 
     return _options
+}
+
+export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
+    const fromWorkloadOrRollout =
+        getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
+        selectedResourceKind === NodeType.Rollout
+    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
 }
 
 export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {

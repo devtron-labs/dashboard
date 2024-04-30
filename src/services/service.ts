@@ -154,6 +154,9 @@ export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: bool
     )
 }
 
+/**
+ * @deprecated Use getClusterListMin form common lib instead
+ */
 export function getClusterListMin() {
     const URL = `${Routes.CLUSTER}/autocomplete`
     return get(URL)

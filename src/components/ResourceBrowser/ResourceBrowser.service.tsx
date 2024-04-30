@@ -34,6 +34,9 @@ export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): P
     })
 }
 
+/**
+ * @deprecated Use getResourceGroupListRaw form common lib instead
+ */
 export const getResourceGroupListRaw = (clusterId: string): Promise<APIResourceResponse> => {
     return get(`${Routes.API_RESOURCE}/${Routes.GVK}/${clusterId}`)
 }
