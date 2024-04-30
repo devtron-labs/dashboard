@@ -200,7 +200,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     saveLoading: false,
                     view: ViewType.FORM,
                     lastActiveGitOp: form,
-                    providerTab: form.provider,
+                    providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
                     form: {
                         ...form,
                         token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
