@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
 import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-play-filled.svg'
-import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
+import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
+
 import './envOverview.scss'
 
 export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading }: RestartStatusListDrawerProps) => {
@@ -105,7 +106,7 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
     )
 
     return (
-        <div className="bulk-restart-workload-wrapper" data-testId={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
+        <div className="bulk-restart-workload-wrapper" data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
             {renderWorkloadStatusTableHeader()}
             {renderWorkloadStatusItems()}
         </div>

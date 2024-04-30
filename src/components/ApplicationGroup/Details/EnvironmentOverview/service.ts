@@ -12,8 +12,9 @@ export const manageApps = async (
 export function getRestartWorkloadRotatePods(
     appIds: string,
     envId: string,
+    signal: AbortSignal,
 ) {
-     return get(getUrlWithSearchParams(Routes.BULK_ROTATE_POD, {appIds, envId}))
+     return get(getUrlWithSearchParams(Routes.BULK_ROTATE_POD, {appIds, envId}), { signal })
 }
 export const postRestartWorkloadRotatePods = async (request: RotatePodsRequest) =>
     post(Routes.ROTATE_PODS, { ...request })

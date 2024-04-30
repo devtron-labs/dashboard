@@ -24,6 +24,9 @@ import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mech
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
 import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
 import './envOverview.scss'
@@ -45,7 +48,7 @@ export const RestartWorkloadModal = ({
         collapseAll: true,
     })
     const [statusModalLoading, setStatusModalLoading] = useState(false)
-
+    const abortControllerRef = useRef<AbortController>(new AbortController())
     const { searchParams } = useSearchString()
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
@@ -69,15 +72,17 @@ export const RestartWorkloadModal = ({
         }
     }, [])
 
-    const toggleStatusModal = () => {
-        setShowStatusModal((prev) => !prev)
+    const openStatusModal = () => {
+        setShowStatusModal(true)
     }
 
-    const closeDrawer = () => {
+    const closeDrawer = (e) => {
+        stopPropagation(e)
         const newParams = {
             ...searchParams,
             modal: '',
         }
+        abortControllerRef.current.abort()
         history.replace({ search: new URLSearchParams(newParams).toString() })
     }
 
@@ -85,7 +90,7 @@ export const RestartWorkloadModal = ({
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getRestartWorkloadRotatePods(selectedAppIds.join(','), envId)
+        getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
                 const _restartPodMap = response.result.restartPodMap
                 // Iterate over the restartPodMap and create a bulkRotatePodsMap
@@ -128,12 +133,12 @@ export const RestartWorkloadModal = ({
     }
 
     useEffect(() => {
-        if (!location) {
+        if (!location.search || !location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getPodsToRotate()
-    }, [location && location.pathname.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)])
+    }, [location])
 
     const toggleWorkloadCollapse = (appId?: number) => {
         if (expandedAppIds.includes(appId)) {
@@ -249,12 +254,10 @@ export const RestartWorkloadModal = ({
                         <div
                             key={kindName}
                             data-testid="workload-details"
-                            className="flex left dc__border-left cursor"
+                            className="app-group-kind-name-row flex left dc__border-left cursor"
                             onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
                         >
-                            <div
-                                className={`app-group-kind-name-row p-8 flex left w-100 ml-8 ${isChecked ? 'bc-b50' : 'bcn-0'}`}
-                            >
+                            <div className={`p-8 flex left w-100 ml-8 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
                                 <Checkbox
                                     rootClassName="mt-3 mb-3"
                                     dataTestId="enforce-policy"
@@ -275,13 +278,34 @@ export const RestartWorkloadModal = ({
 
     const renderRestartWorkloadModalListItems = () => {
         if (restartLoader) {
-            console.log('heelooxs')
             return (
-                <GenericEmptyState
-                    title={`Fetching workload for ${selectedAppIds.length} Applications`}
-                    subTitle="Restarting workloads"
-                    SvgImage={MechanicalIcon}
-                />
+                <div className="dc__align-reload-center">
+                    <GenericEmptyState
+                        title={`Fetching workload for ${selectedAppIds.length} Applications`}
+                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                        SvgImage={MechanicalIcon}
+                    />
+                </div>
+            )
+        }
+
+        if (showStatusModal) {
+            return (
+                <div className="dc__align-reload-center">
+                    <GenericEmptyState
+                        title={`Restarting selected workload on ${envName}`}
+                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                        SvgImage={MechanicalIcon}
+                    >
+                        <InfoColourBar
+                            message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
+                            classname="warn cn-9 lh-2 w-100"
+                            Icon={Warn}
+                            iconClass="warning-icon"
+                            iconSize={24}
+                        />
+                    </GenericEmptyState>
+                </div>
             )
         }
         return Object.keys(bulkRotatePodsMap).map((appId) => {
@@ -381,8 +405,8 @@ export const RestartWorkloadModal = ({
                 if (!response.result) {
                     return null
                 }
+                openStatusModal()
                 // showing the status modal in case batch promise resolved
-                toggleStatusModal()
                 return updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
             })
             .catch((err) => {
@@ -415,11 +439,12 @@ export const RestartWorkloadModal = ({
                 environmentId: +envId,
                 resources: _resources,
             }
-            return postRestartPodBatchFunction(payload)
+            return () => postRestartPodBatchFunction(payload)
         })
 
         await ApiQueuingWithBatch(functionCalls, httpProtocol.current)
             .then((responses) => {
+                // TODO remove console after development
                 console.log(responses, 'ApiQueuingWithBatch')
             })
             .catch((error) => {
@@ -438,10 +463,15 @@ export const RestartWorkloadModal = ({
                         Cancel
                     </button>
                     <ButtonWithLoader
-                        rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp"
+                        rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8"
                         isLoading={restartLoader}
                         onClick={onSave}
                     >
+                        {showStatusModal ? (
+                            <Retry className="icon-dim-16 icon-dim-16 scn-0 dc__no-svg-fill" />
+                        ) : (
+                            <RotateIcon className="dc__no-svg-fill icon-dim-16 scn-0" />
+                        )}
                         {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
                     </ButtonWithLoader>
                 </div>
