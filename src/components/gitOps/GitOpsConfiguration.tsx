@@ -17,12 +17,13 @@ import {
     GitOpsFieldKeyType,
     GitOpsOrganisationIdType,
     GitProvider,
+    BitbucketCloudAndServerToggleSectionPropsType,
 } from './gitops.type'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
 import { handleOnFocus, parsePassword } from '../common'
-import Check from '../../assets/icons/ic-outline-check.svg'
+import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
 import {
@@ -75,12 +76,12 @@ const GitProviderTab: React.FC<{
                     <GitProviderTabIcons gitops={gitops} />
                 </aside>
                 <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
-                    {gitops}
+                    {gitops === 'Bitbucket Cloud' ? 'Bitbucket' : gitops}
                 </aside>
                 {lastActiveGitOp?.provider === provider && (
                     <div>
-                        <aside className="login__check-icon">
-                            <img src={Check} />
+                        <aside className="dc__position-abs dc__right-0 dc__top-0">
+                            <img src={Check} className="h-32" />
                         </aside>
                     </div>
                 )}
@@ -118,6 +119,30 @@ const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; 
     )
 }
 
+const BitbucketCloudAndServerToggleSection: React.FC<BitbucketCloudAndServerToggleSectionPropsType> = ({
+    isBitbucketCloud,
+    setIsBitbucketCloud,
+}) => {
+    const handleRadioToggle = () => {
+        setIsBitbucketCloud(!isBitbucketCloud)
+    }
+
+    return (
+        <div className="bitbucket-radio-group mb-16">
+            <label className="form__label form__label--sentence dc__bold">Select your Bitbucket host</label>
+            <RadioGroup
+                className="form__radio-group chartrepo-type__radio-group bitbucket-radio-group"
+                name="bitbucket-cloud-server-toggle"
+                value={`${isBitbucketCloud}`}
+                onChange={handleRadioToggle}
+            >
+                <RadioGroupItem value={'true'}>Bitbucket Cloud</RadioGroupItem>
+                <RadioGroupItem value={'false'}>Bitbucket Server</RadioGroupItem>
+            </RadioGroup>
+        </div>
+    )
+}
+
 class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     constructor(props) {
         super(props)
@@ -131,6 +156,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             allowCustomGitRepo: false,
             providerTab: GitProvider.GITHUB,
             lastActiveGitOp: undefined,
+            isBitbucketCloud: true,
             form: {
                 ...DefaultGitOpsConfig,
                 ...DefaultShortGitOps,
@@ -179,6 +205,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         ...form,
                         token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
                     },
+                    isBitbucketCloud: form.provider === GitProvider.BITBUCKET_CLOUD,
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
                     allowCustomGitRepo: form.allowCustomRepository,
@@ -213,6 +240,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: DefaultShortGitOps,
             isFormEdited: false,
+            isBitbucketCloud: form.provider === GitProvider.BITBUCKET_CLOUD,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
             isUrlValidationError: false,
         })
@@ -325,14 +353,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     getPayload = () => {
         const payload = {
             id: this.state.form.id,
-            provider: this.state.form.provider,
+            provider: this.state.isBitbucketCloud ? 'BITBUCKET_DC' : this.state.form.provider,
             username: this.state.form.username.replace(/\s/g, ''),
             host: this.state.form.host.replace(/\s/g, ''),
             token: parsePassword(this.state.form.token.replace(/\s/g, '')),
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
             gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
-            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
+            bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.state.form.bitBucketWorkspaceId.replace(/\s/g, '') : '',
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
@@ -468,6 +496,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return 'gitHubOrgId'
     }
 
+    setIsBitbucketCloud = (value: boolean) => this.setState({ ...this.state, isBitbucketCloud: value })
+
     updateGitopsUrl(value: string): void {
         this.setState((prevState) => {
             return {
@@ -515,9 +545,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
 
             return (
-                <div className="form__label fw-5 fs-13 mb-4 flex">
+                <span>
                     <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
-                </div>
+                </span>
             )
         }
 
@@ -590,36 +620,44 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             datatestid="gitops-bitbucket-button"
                         />
                     </div>
-                    <GitInfoTab
-                        tab={this.state.providerTab}
-                        gitLink={
-                            this.state.providerTab === GitProvider.GITLAB
-                                ? GitLink.GITLAB
-                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                  ? GitLink.AZURE_DEVOPS
-                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? GitLink.BITBUCKET_WORKSPACE
-                                    : GitLink.GITHUB
-                        }
-                        gitProvider={
-                            this.state.providerTab === GitProvider.GITLAB
-                                ? 'GitLab'
-                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                  ? 'Azure'
-                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? 'BitBucket'
-                                    : 'GitHub'
-                        }
-                        gitProviderGroupAlias={
-                            this.state.providerTab === GitProvider.GITLAB
-                                ? 'group'
-                                : this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                  ? 'project'
-                                  : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                    ? 'workspace'
-                                    : 'organization'
-                        }
-                    />
+                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                        <BitbucketCloudAndServerToggleSection
+                            isBitbucketCloud={this.state.isBitbucketCloud}
+                            setIsBitbucketCloud={this.setIsBitbucketCloud}
+                        />
+                    )}
+                    {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD || this.state.isBitbucketCloud) && (
+                        <GitInfoTab
+                            tab={this.state.providerTab}
+                            gitLink={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? GitLink.GITLAB
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? GitLink.AZURE_DEVOPS
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? GitLink.BITBUCKET_WORKSPACE
+                                        : GitLink.GITHUB
+                            }
+                            gitProvider={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? 'GitLab'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? 'Azure'
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'BitBucket'
+                                        : 'GitHub'
+                            }
+                            gitProviderGroupAlias={
+                                this.state.providerTab === GitProvider.GITLAB
+                                    ? 'group'
+                                    : this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                      ? 'project'
+                                      : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'workspace'
+                                        : 'organization'
+                            }
+                        />
+                    )}
 
                     <ValidateForm
                         id={this.state.form.id}
@@ -668,7 +706,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         <></>
                     )}
                     <div className="mt-16 ">
-                        {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                        {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && this.state.isBitbucketCloud && (
                             <CustomInput
                                 name="workspaceID"
                                 label={renderInputLabels(

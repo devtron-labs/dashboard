@@ -60,6 +60,7 @@ export interface GitOpsState {
     lastActiveGitOp: undefined | GitOpsConfig
     saveLoading: boolean
     validateLoading: boolean
+    isBitbucketCloud: boolean
     isError: {
         host: string
         username: string
@@ -95,4 +96,9 @@ export interface UserGitRepoProps {
     repoURL: string
     selectedRepoType: string
     staleData?: boolean
+}
+
+export interface BitbucketCloudAndServerToggleSectionPropsType {
+    isBitbucketCloud: boolean
+    setIsBitbucketCloud: (value: boolean) => void
 }
