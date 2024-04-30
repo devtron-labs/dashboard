@@ -44,12 +44,12 @@ import {
     ACTION_STATE,
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
+    DeploymentWithConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
     CDMaterialProps,
     CDMaterialState,
-    DeploymentWithConfigType,
     FilterConditionViews,
     MATERIAL_TYPE,
     TriggerViewContextType,
