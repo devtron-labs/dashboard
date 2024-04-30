@@ -62,3 +62,11 @@
 .app-group-kind-name-row:hover {
     background-color: var(--N50);
 }
+
+.bulk-restart-workload-wrapper{
+    .bulk-workload-status-details__row{
+        display: grid;
+        grid-template-columns: 20px 300px 200px auto;
+    }
+}
+

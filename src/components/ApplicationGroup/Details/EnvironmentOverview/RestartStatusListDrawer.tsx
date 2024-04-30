@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
-import { ReactComponent as ArrowRight } from '../../../../assets/icons/misc/arrow-solid-right.svg'
-import { APP_DETAILS_TEXT } from './constants'
+import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-play-filled.svg'
+import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
+import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
+import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
+import './envOverview.scss'
 
-export const RestartStatusListDrawer = ({ bulkRotatePodsMap }: RestartStatusListDrawerProps) => {
+export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading }: RestartStatusListDrawerProps) => {
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
 
     const toggleWorkloadCollapse = (appId?: number) => {
@@ -14,21 +18,39 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap }: RestartStatusList
         }
     }
 
+    const getStatusIcon = (errorResponse: string) => {
+        if (errorResponse) {
+            return <Failed className="icon-dim-16" />
+        }
+        return <Success className="icon-dim-16" />
+    }
+
     const renderWorkloadStatusDetails = (appId: number, appName: string, resources: ResourcesMetaDataMap) => {
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
         return (
-            <div className="dc__gap-4 pl-8">
+            <div>
                 {Object.keys(resources).map((kindName) => {
                     return (
                         <div
                             key={kindName}
-                            data-testid="workload-details"
-                            className="flex left dc__border-left cursor"
-                            onClick={() => toggleWorkloadCollapse(appId)}
+                            data-testid="bulk-workload-status-details__row"
+                            className="bulk-workload-status-details__row cursor dc__gap-16"
                         >
-                            <div className="app-group-kind-name-row p-8 flex left w-100 ml-8">{kindName}</div>
+                            <div />
+                            <div className="app-group-kind-name-row pt-8 pb-8">
+                                <span className="fw-6">{kindName.split('/')[0]}&nbsp;/&nbsp;</span>
+                                {kindName.split('/')[1]}
+                            </div>
+                            <div className="dc__gap-6 flex left">
+                                {getStatusIcon(resources[kindName].errorResponse)}
+                                Restart
+                                {resources[kindName].errorResponse
+                                    ? ` ${RESTART_STATUS_TEXT.FAILED}`
+                                    : ` ${RESTART_STATUS_TEXT.INITIATED}`}
+                            </div>
+                            <div>{resources[kindName].errorResponse}</div>
                         </div>
                     )
                 })}
@@ -36,35 +58,33 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap }: RestartStatusList
         )
     }
 
-    const renderWorkloadStatusRow = (resources, _appId) => {
-        return Object.keys(resources).map((kindName) => {
-            return (
-                <div className="dc__gap-4 pl-8">
-                    <div
-                        key={kindName}
-                        data-testid="workload-details"
-                        className="flex left dc__border-left cursor"
-                        onClick={() => toggleWorkloadCollapse(+_appId)}
-                    >
-                        <div className="app-group-kind-name-row p-8 flex left w-100 ml-8">{kindName}</div>
-                    </div>
-                </div>
-            )
-        })
-    }
-
     const renderWorkloadStatusItems = () => {
+        if (statusModalLoading) {
+            return <Progressing />
+        }
         return Object.keys(bulkRotatePodsMap as BulkRotatePodsMap).map((_appId) => {
             return (
-                <div className="pl-16 pr-16">
-                    <ArrowRight className="icon-dim-16 rotate dc__flip-270 rotate" />
-                    <div key={_appId} className="flex dc__content-space pt-12 pb-12 cursor">
-                        <div className="flex dc__content-space w-100" onClick={() => toggleWorkloadCollapse(+_appId)}>
-                            <span className="fw-6">{bulkRotatePodsMap[_appId].appName}</span>
-                            <div className="flex dc__gap-4">
-                                {renderWorkloadStatusRow(bulkRotatePodsMap[_appId].resources, _appId)}
-                            </div>
+                <div key={_appId} className="dc__border-bottom-n1">
+                    <div
+                        className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 cn-7 pl-16 pr-16 cursor flex left"
+                        onClick={() => toggleWorkloadCollapse(+_appId)}
+                    >
+                        <ArrowRight
+                            className="icon-dim-12 rotate rotate fcn-9 flex"
+                            style={{
+                                ['--rotateBy' as string]: `${(expandedAppIds.includes(+_appId) ? 1 : 0) * 90}deg`,
+                            }}
+                        />
+                        <div className="fw-6">{bulkRotatePodsMap[_appId].appName}</div>
+                        <div className="flex left dc__gap-6">
+                            <Failed className="icon-dim-16" />
+                            {bulkRotatePodsMap[_appId].successCount}
+                            <span className="dc__capitalize">{RESTART_STATUS_TEXT.FAILED}</span> &nbsp;•&nbsp;
+                            <Success className="icon-dim-16" />
+                            {bulkRotatePodsMap[_appId].successCount}
+                            <span className="dc__capitalize">{RESTART_STATUS_TEXT.INITIATED}</span>
                         </div>
+                        <div />
                     </div>
                     {renderWorkloadStatusDetails(
                         +_appId,
@@ -76,17 +96,18 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap }: RestartStatusList
         })
     }
     const renderWorkloadStatusTableHeader = () => (
-        <div className="dc__zi-1 flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100 pl-16 pr-16 pt-8 p-8">
+        <div className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100 pl-16 pr-16 pt-8 p-8">
+            <div />
             <div>{APP_DETAILS_TEXT.APPLICATIONS}</div>
             <div>{APP_DETAILS_TEXT.RESTART_STATUS}</div>
-            <div>{APP_DETAILS_TEXT.MESSAGE}</div>
+            <div />
         </div>
     )
 
     return (
-        <>
+        <div className="bulk-restart-workload-wrapper" data-testId={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
             {renderWorkloadStatusTableHeader()}
             {renderWorkloadStatusItems()}
-        </>
+        </div>
     )
 }

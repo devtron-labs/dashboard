@@ -517,22 +517,26 @@ export interface RestartWorkloadModalProps {
     selectedAppIds: number[]
     envName: string
     envId: string
+    restartLoader: boolean
+    setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface RestartStatusListDrawerProps {
     bulkRotatePodsMap: BulkRotatePodsMap
+    statusModalLoading: boolean
 }
 
 // ----------------------------Restart Workload DTO--------------------------------------------
 
 export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
     name: string
+    namespace?: string // This is only in the post response structure and not in get api
     groupVersionKind: GVKType
 }
 
 export interface AppInfoMetaDataDTO {
-    resourceIdentifiers: ResourceIdentifierDTO[]
-    appName: string
+    resourceMetaData: ResourceIdentifierDTO[]
+    appName: string,
 }
 
 export interface RestartPodMapDTO {
@@ -552,7 +556,7 @@ export interface AppGroupRotatePodsDTO extends ResponseType {
 
 export interface ResourceErrorMetaData {
     containsError?: boolean
-    errorMessage?: string
+    errorResponse?: string
 }
 
 export interface AppStatusMetaData {
@@ -572,6 +576,7 @@ export interface ResourcesMetaDataMap {
 export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMetaData {
     appName: string
     resources?: ResourcesMetaDataMap
+    namespace: string
 }
 
 export interface BulkRotatePodsMap {

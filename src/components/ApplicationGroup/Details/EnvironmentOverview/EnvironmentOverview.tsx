@@ -85,6 +85,7 @@ export default function EnvironmentOverview({
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
     >({})
+    const [restartLoader, setRestartLoader] = useState<boolean>(false)
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -566,6 +567,8 @@ export default function EnvironmentOverview({
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}
                     envId={envId}
+                    setRestartLoader={setRestartLoader}
+                    restartLoader={restartLoader}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (

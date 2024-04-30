@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CHECKBOX_VALUE,
@@ -11,7 +11,7 @@ import {
     stopPropagation,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import {
     AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
@@ -24,23 +24,50 @@ import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mech
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
-import { getMockRestartWorkloadRotatePods } from './service'
-import { APP_DETAILS_TEXT } from './constants'
+import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
+import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
 import './envOverview.scss'
 import { RestartStatusListDrawer } from './RestartStatusListDrawer'
+import { ApiQueuingWithBatch } from '../../AppGroup.service'
 
-export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: RestartWorkloadModalProps) => {
+export const RestartWorkloadModal = ({
+    restartLoader,
+    setRestartLoader,
+    selectedAppIds,
+    envName,
+    envId,
+}: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
-    const [restartLoader, setRestartLoader] = useState<boolean>(false)
     const [selectAllApps, setSelectAllApps] = useState({
         isChecked: false,
         value: null,
         collapseAll: true,
     })
+    const [statusModalLoading, setStatusModalLoading] = useState(false)
+
     const { searchParams } = useSearchString()
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
+    const location = useLocation()
+    const httpProtocol = useRef('')
+
+    useEffect(() => {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                const protocol = entry.nextHopProtocol
+                if (protocol && entry.initiatorType === 'fetch') {
+                    httpProtocol.current = protocol
+                    observer.disconnect()
+                }
+            })
+        })
+
+        observer.observe({ type: 'resource', buffered: true })
+        return () => {
+            observer.disconnect()
+        }
+    }, [])
 
     const toggleStatusModal = () => {
         setShowStatusModal((prev) => !prev)
@@ -55,54 +82,58 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
     }
 
     const getPodsToRotate = async () => {
+        setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        getMockRestartWorkloadRotatePods(selectedAppIds, envId).then((response) => {
-            const _restartPodMap = response.result.restartPodMap
-            // Iterate over the restartPodMap and create a bulkRotatePodsMap
-            Object.keys(_restartPodMap).forEach((appId) => {
-                const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
+        getRestartWorkloadRotatePods(selectedAppIds.join(','), envId)
+            .then((response) => {
+                const _restartPodMap = response.result.restartPodMap
+                // Iterate over the restartPodMap and create a bulkRotatePodsMap
+                Object.keys(_restartPodMap).forEach((appId) => {
+                    const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
+                    const appInfoObject: AppInfoMetaDataDTO = _restartPodMap[appId]
+                    appInfoObject.resourceMetaData.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
+                        const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
+                        const _resourceMetaData: ResourceMetaData = {
+                            group: resourceIdentifier.groupVersionKind.Group,
+                            kind: resourceIdentifier.groupVersionKind.Kind,
+                            version: resourceIdentifier.groupVersionKind.Version,
+                            name: resourceIdentifier.name,
+                            containsError: resourceIdentifier.containsError,
+                            errorResponse: resourceIdentifier.errorResponse,
+                            isChecked: !!selectedAppIds.includes(+appId),
+                            value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                        }
 
-                const appInfoObject: AppInfoMetaDataDTO = _restartPodMap[appId]
-                appInfoObject.resourceIdentifiers.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
-                    const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
-                    const _resourceMetaData: ResourceMetaData = {
-                        group: resourceIdentifier.groupVersionKind.Group,
-                        kind: resourceIdentifier.groupVersionKind.Kind,
-                        version: resourceIdentifier.groupVersionKind.Version,
-                        name: resourceIdentifier.name,
-                        containsError: resourceIdentifier.containsError,
-                        errorMessage: resourceIdentifier.errorMessage,
-                        isChecked: false,
-                        value: null,
+                        // inserting in the resourceMetaDataMap
+                        _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+                    })
+                    const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
+                        resources: _resourcesMetaDataMap,
+                        appName: appInfoObject.appName,
+                        isChecked: !!selectedAppIds.includes(+appId),
+                        value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                        namespace: response.result.namespace,
                     }
-
-                    // inserting in the resourceMetaDataMap
-                    _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+                    _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
                 })
-                const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
-                    resources: _resourcesMetaDataMap,
-                    appName: appInfoObject.appName,
-                    isChecked: false,
-                    value: null,
-                }
-                _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
+                setBulkRotatePodsMap(_bulkRotatePodsMap)
             })
-            setBulkRotatePodsMap(_bulkRotatePodsMap)
-        })
+            .catch((err) => {
+                showError(err)
+            })
+            .finally(() => {
+                setRestartLoader(false)
+            })
     }
 
     useEffect(() => {
-        setRestartLoader(true)
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getPodsToRotate()
-        } catch (err) {
-            showError(err)
-        } finally {
-            setRestartLoader(false)
+        if (!location) {
+            return
         }
-    }, [])
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        getPodsToRotate()
+    }, [location && location.pathname.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)])
 
     const toggleWorkloadCollapse = (appId?: number) => {
         if (expandedAppIds.includes(appId)) {
@@ -115,9 +146,7 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex dc__content-space dc__border-bottom pt-16 pr-20 pb-16 pl-20">
-                <div className="fs-16 fw-6">
-                    {` Restart workloads '${selectedAppIds.length} applications' on '${envName}'`}
-                </div>
+                <div className="fs-16 fw-6">{` Restart workloads on '${envName}'`}</div>
                 <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
             </div>
         )
@@ -244,10 +273,20 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
         )
     }
 
-    const renderRestartWorkloadModalListItems = () =>
-        Object.keys(bulkRotatePodsMap).map((appId) => {
+    const renderRestartWorkloadModalListItems = () => {
+        if (restartLoader) {
+            console.log('heelooxs')
             return (
-                <div className="pl-16 pr-16">
+                <GenericEmptyState
+                    title={`Fetching workload for ${selectedAppIds.length} Applications`}
+                    subTitle="Restarting workloads"
+                    SvgImage={MechanicalIcon}
+                />
+            )
+        }
+        return Object.keys(bulkRotatePodsMap).map((appId) => {
+            return (
+                <div className="pl-16 pr-16" key={appId}>
                     <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor">
                         <Checkbox
                             rootClassName="mt-3 mb-3"
@@ -280,10 +319,16 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
                 </div>
             )
         })
+    }
 
     const renderRestartWorkloadModalList = () => {
         if (showStatusModal) {
-            return <RestartStatusListDrawer bulkRotatePodsMap={bulkRotatePodsMap} />
+            return (
+                <RestartStatusListDrawer
+                    bulkRotatePodsMap={bulkRotatePodsMap}
+                    statusModalLoading={statusModalLoading}
+                />
+            )
         }
 
         return (
@@ -292,6 +337,94 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
                 {renderRestartWorkloadModalListItems()}
             </div>
         )
+    }
+
+    const updateBulkRotatePodsMapWithStatusCounts = (postResponse, appId) => {
+        const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
+        const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
+        let failedCount = 0
+        postResponse.result.responses?.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
+            const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
+            failedCount =
+                resourceIdentifier.errorResponse && resourceIdentifier.errorResponse.length > 0
+                    ? failedCount + 1
+                    : failedCount
+            const _resourceMetaData: ResourceMetaData = {
+                group: resourceIdentifier.groupVersionKind.Group,
+                kind: resourceIdentifier.groupVersionKind.Kind,
+                version: resourceIdentifier.groupVersionKind.Version,
+                name: resourceIdentifier.name,
+                containsError: postResponse.containsError,
+                errorResponse: resourceIdentifier.errorResponse,
+                isChecked: true,
+                value: CHECKBOX_VALUE.CHECKED,
+            }
+            _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+        })
+
+        let _bulkRotatePodsMetaData: BulkRotatePodsMetaData = bulkRotatePodsMap[appId]
+        // updating _bulkRotatePodsMetaData with the new values
+        _bulkRotatePodsMetaData = {
+            ..._bulkRotatePodsMetaData,
+            resources: _resourcesMetaDataMap,
+            successCount: postResponse.result.responses && postResponse.result.responses.length - failedCount,
+            failedCount,
+        }
+
+        _bulkRotatePodsMap[appId] = _bulkRotatePodsMetaData
+        setBulkRotatePodsMap(_bulkRotatePodsMap)
+    }
+
+    const postRestartPodBatchFunction = (payload) => {
+        return postRestartWorkloadRotatePods(payload)
+            .then((response) => {
+                if (!response.result) {
+                    return null
+                }
+                // showing the status modal in case batch promise resolved
+                toggleStatusModal()
+                return updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
+            })
+            .catch((err) => {
+                showError(err)
+                // TODO remove console after development
+                console.log(err)
+            })
+            .finally(() => {
+                setStatusModalLoading(false)
+            })
+    }
+
+    const onSave = async () => {
+        setStatusModalLoading(true)
+        const functionCalls = Object.keys(bulkRotatePodsMap).map((appId) => {
+            const bulkRotatePodsMetaData: BulkRotatePodsMetaData = bulkRotatePodsMap[appId]
+            const _resources = Object.keys(bulkRotatePodsMetaData.resources).map((kindName) => {
+                return {
+                    name: bulkRotatePodsMetaData.resources[kindName].name,
+                    namespace: bulkRotatePodsMetaData.namespace,
+                    groupVersionKind: {
+                        Group: bulkRotatePodsMetaData.resources[kindName].group,
+                        Version: bulkRotatePodsMetaData.resources[kindName].version,
+                        Kind: bulkRotatePodsMetaData.resources[kindName].kind,
+                    },
+                }
+            })
+            const payload = {
+                appId: +appId,
+                environmentId: +envId,
+                resources: _resources,
+            }
+            return postRestartPodBatchFunction(payload)
+        })
+
+        await ApiQueuingWithBatch(functionCalls, httpProtocol.current)
+            .then((responses) => {
+                console.log(responses, 'ApiQueuingWithBatch')
+            })
+            .catch((error) => {
+                showError(error)
+            })
     }
     const renderFooterSection = () => {
         return (
@@ -307,9 +440,9 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
                     <ButtonWithLoader
                         rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp"
                         isLoading={restartLoader}
-                        onClick={toggleStatusModal}
+                        onClick={onSave}
                     >
-                        {APP_DETAILS_TEXT.RESTART_WORKLOAD}
+                        {showStatusModal ? APP_DETAILS_TEXT.RETRY_FAILED : APP_DETAILS_TEXT.RESTART_WORKLOAD}
                     </ButtonWithLoader>
                 </div>
             </div>
@@ -318,27 +451,17 @@ export const RestartWorkloadModal = ({ selectedAppIds, envName, envId }: Restart
 
     return (
         <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
-            <div onClick={stopPropagation} className="bcn-0 h-100 cn-9">
-                {restartLoader ? (
-                    <GenericEmptyState
-                        title={`Fetching workload for ${selectedAppIds.length} Applications`}
-                        subTitle="Restarting workloads"
-                        SvgImage={MechanicalIcon}
+            <div onClick={stopPropagation} className="bcn-0 h-100 cn-9 w-800">
+                {renderHeaderSection()}
+                {!showStatusModal && (
+                    <InfoColourBar
+                        message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
+                        classname="info_bar dc__no-border-radius dc__no-top-border"
+                        Icon={InfoIcon}
                     />
-                ) : (
-                    <>
-                        {renderHeaderSection()}
-                        {!showStatusModal && (
-                            <InfoColourBar
-                                message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
-                                classname="info_bar dc__no-border-radius dc__no-top-border"
-                                Icon={InfoIcon}
-                            />
-                        )}
-                        {renderRestartWorkloadModalList()}
-                        {renderFooterSection()}
-                    </>
                 )}
+                {renderRestartWorkloadModalList()}
+                {renderFooterSection()}
             </div>
         </Drawer>
     )

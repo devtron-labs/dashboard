@@ -1,10 +1,6 @@
-import { post } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, post } from '@devtron-labs/devtron-fe-common-lib'
 import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
 import { Routes } from '../../../../config'
-import {
-    AppGroupRotatePodsDTO,
-} from '../../AppGroup.types'
-import { mockDTO } from './constants'
 
 export const manageApps = async (
     appIds: number[],
@@ -13,14 +9,11 @@ export const manageApps = async (
     action: 'hibernate' | 'unhibernate',
 ) => post(`batch/v1beta1/${action}`, { appIdIncludes: appIds, envId, envName })
 
-// Mock function to generate data
-export function getMockRestartWorkloadRotatePods(
-    selectedAppIds: number[],
+export function getRestartWorkloadRotatePods(
+    appIds: string,
     envId: string,
-): Promise<AppGroupRotatePodsDTO> {
-    // Resolve Promise with the mock data
-    //  return get(getUrlWithSearchParams(Routes.ROTATE_PODS, {selectedAppIds, envId}))
-    return Promise.resolve(mockDTO)
+) {
+     return get(getUrlWithSearchParams(Routes.BULK_ROTATE_POD, {appIds, envId}))
 }
 export const postRestartWorkloadRotatePods = async (request: RotatePodsRequest) =>
     post(Routes.ROTATE_PODS, { ...request })
