@@ -7,7 +7,6 @@ import {
     ErrorScreenManager,
     GenericEmptyState,
     InfoColourBar,
-    noop,
     showError,
     stopPropagation,
     useSearchString,
@@ -76,6 +75,26 @@ export const RestartWorkloadModal = ({
         setShowStatusModal(true)
     }
 
+    const setAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
+        const _selectAllApps = { ...selectAllApps }
+        if (Object.keys(_bulkRotatePodsMap).length > 0) {
+            const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.isChecked)
+            const someChecked = Object.values(bulkRotatePodsMap).some((app) => app.isChecked)
+
+            if (allChecked) {
+                _selectAllApps.isChecked = true
+                _selectAllApps.value = CHECKBOX_VALUE.CHECKED
+            } else if (someChecked) {
+                _selectAllApps.isChecked = true
+                _selectAllApps.value = CHECKBOX_VALUE.INTERMEDIATE
+            } else {
+                _selectAllApps.isChecked = false
+                _selectAllApps.value = ''
+            }
+        }
+        setSelectAllApps(_selectAllApps)
+    }
+
     const closeDrawer = (e) => {
         stopPropagation(e)
         const newParams = {
@@ -125,22 +144,9 @@ export const RestartWorkloadModal = ({
 
                     _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
                 })
-
                 setBulkRotatePodsMap(_bulkRotatePodsMap)
+                setAllAppsCheckboxValue(_bulkRotatePodsMap)
 
-                // Setting the all application checkbox value on mounting
-                if (Object.keys(_bulkRotatePodsMap).length > 0) {
-                    const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.isChecked)
-                    const someChecked = Object.values(bulkRotatePodsMap).some((app) => app.isChecked)
-
-                    if (allChecked) {
-                        setSelectAllApps({ isChecked: true, value: CHECKBOX_VALUE.CHECKED })
-                    } else if (someChecked) {
-                        setSelectAllApps({ isChecked: false, value: '' })
-                    } else {
-                        setSelectAllApps({ isChecked: false, value: CHECKBOX_VALUE.INTERMEDIATE })
-                    }
-                }
                 return null
             })
             .catch((err) => {
@@ -226,6 +232,7 @@ export const RestartWorkloadModal = ({
                 _bulkRotatePodsMap[appId].value === CHECKBOX_VALUE.INTERMEDIATE
         }
         setBulkRotatePodsMap(_bulkRotatePodsMap)
+        setAllAppsCheckboxValue(_bulkRotatePodsMap)
     }
 
     const handleAllWorkloadSelection = () => {
@@ -300,8 +307,9 @@ export const RestartWorkloadModal = ({
                                     dataTestId="enforce-policy"
                                     isChecked={bulkRotatePodsMap[appId].resources[kindName].isChecked}
                                     value={bulkRotatePodsMap[appId].resources[kindName].value}
-                                    onChange={noop}
-                                    onClick={stopPropagation}
+                                    onChange={() =>
+                                        handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)
+                                    }
                                     name={APP_DETAILS_TEXT.KIND_NAME}
                                 />
                                 {kindName}
