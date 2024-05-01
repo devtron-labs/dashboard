@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
 import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-play-filled.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { APP_DETAILS_TEXT, DATA_TEST_IDS, RESTART_STATUS_TEXT } from './constants'
+import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 import './envOverview.scss'
 
@@ -60,9 +62,6 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
     }
 
     const renderWorkloadStatusItems = () => {
-        if (statusModalLoading) {
-            return <Progressing />
-        }
         return Object.keys(bulkRotatePodsMap as BulkRotatePodsMap).map((_appId) => {
             return (
                 <div key={_appId} className="dc__border-bottom-n1">
@@ -79,7 +78,7 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
                         <div className="fw-6">{bulkRotatePodsMap[_appId].appName}</div>
                         <div className="flex left dc__gap-6">
                             <Failed className="icon-dim-16" />
-                            {bulkRotatePodsMap[_appId].successCount}
+                            {bulkRotatePodsMap[_appId].failedCount}
                             <span className="dc__capitalize">{RESTART_STATUS_TEXT.FAILED}</span> &nbsp;•&nbsp;
                             <Success className="icon-dim-16" />
                             {bulkRotatePodsMap[_appId].successCount}
@@ -104,6 +103,26 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
             <div />
         </div>
     )
+
+    if (statusModalLoading) {
+        return (
+            <div className="dc__align-reload-center">
+                <GenericEmptyState
+                    title={`Restarting selected workload on `}
+                    subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                    SvgImage={MechanicalIcon}
+                >
+                    <InfoColourBar
+                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
+                        classname="warn cn-9 lh-2 w-100"
+                        Icon={Warn}
+                        iconClass="warning-icon"
+                        iconSize={24}
+                    />
+                </GenericEmptyState>
+            </div>
+        )
+    }
 
     return (
         <div className="bulk-restart-workload-wrapper" data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
