@@ -10,7 +10,11 @@ import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 import './envOverview.scss'
 
-export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading }: RestartStatusListDrawerProps) => {
+export const RestartStatusListDrawer = ({
+    bulkRotatePodsMap,
+    statusModalLoading,
+    envName,
+}: RestartStatusListDrawerProps) => {
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
 
     const toggleWorkloadCollapse = (appId?: number) => {
@@ -108,7 +112,7 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
         return (
             <div className="dc__align-reload-center">
                 <GenericEmptyState
-                    title={`Restarting selected workload on `}
+                    title={`Restarting selected workload on ${envName}`}
                     subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                     SvgImage={MechanicalIcon}
                 >
@@ -125,7 +129,10 @@ export const RestartStatusListDrawer = ({ bulkRotatePodsMap, statusModalLoading 
     }
 
     return (
-        <div className="bulk-restart-workload-wrapper" data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}>
+        <div
+            className="bulk-restart-workload-wrapper h-100 pb-140 dc__overflow-auto"
+            data-testid={DATA_TEST_IDS.WORKLOAD_RESTART_MODAL}
+        >
             {renderWorkloadStatusTableHeader()}
             {renderWorkloadStatusItems()}
         </div>

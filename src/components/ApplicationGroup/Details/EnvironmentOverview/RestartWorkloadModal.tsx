@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
+    ACTION_STATE,
     ButtonWithLoader,
     CHECKBOX_VALUE,
     Checkbox,
+    DEPLOYMENT_WINDOW_TYPE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
     InfoColourBar,
+    MODAL_TYPE,
     showError,
     stopPropagation,
     useSearchString,
@@ -31,6 +34,7 @@ import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
 import './envOverview.scss'
 import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
+import { importComponentFromFELibrary } from '../../../common'
 
 export const RestartWorkloadModal = ({
     restartLoader,
@@ -48,11 +52,48 @@ export const RestartWorkloadModal = ({
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [statusModalLoading, setStatusModalLoading] = useState(false)
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const [showResistanceBox, setShowResistanceBox] = useState(false)
+
     const { searchParams } = useSearchString()
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
     const httpProtocol = useRef('')
+
+    const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
+    const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
+    const processDeploymentWindowMetadata = importComponentFromFELibrary(
+        'processDeploymentWindowMetadata',
+        null,
+        'function',
+    )
+    const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+        'getDeploymentWindowStateAppGroup',
+        null,
+        'function',
+    )
+
+    const getDeploymentWindowData = async () => {
+        const appEnvMap = Object.keys(bulkRotatePodsMap).map((appId) => {
+            return { appId: +appId, envId: +envId }
+        })
+        let _isPartialActionAllowed = false
+
+        const { result } = await getDeploymentWindowStateAppGroup(appEnvMap)
+        const _appDeploymentWindowMap = {}
+        result?.appData?.forEach((data) => {
+            _appDeploymentWindowMap[data.appId] = processDeploymentWindowMetadata(data.deploymentProfileList, envId)
+            if (!_isPartialActionAllowed) {
+                _isPartialActionAllowed =
+                    _appDeploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
+                    !_appDeploymentWindowMap[data.appId].isActive
+                        ? _appDeploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
+                        : false
+            }
+
+            setIsPartialActionAllowed(_isPartialActionAllowed)
+        })
+    }
 
     useEffect(() => {
         const observer = new PerformanceObserver((list) => {
@@ -150,7 +191,6 @@ export const RestartWorkloadModal = ({
                 return null
             })
             .catch((err) => {
-                showError(err)
                 setErrorStatusCode(err.code)
             })
             .finally(() => {
@@ -184,8 +224,8 @@ export const RestartWorkloadModal = ({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex dc__content-space dc__border-bottom pt-16 pr-20 pb-16 pl-20">
-                <div className="fs-16 fw-6">{` Restart workloads on '${envName}'`}</div>
+            <div className="flex dc__content-space dc__border-bottom pt-12 pr-20 pb-12 pl-20">
+                <div className="fs-16 fw-6 lh-1-5">{` Restart workloads on '${envName}'`}</div>
                 <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
             </div>
         )
@@ -254,7 +294,7 @@ export const RestartWorkloadModal = ({
     }
 
     const renderWorkloadTableHeader = () => (
-        <div className="flex dc__content-space pl-16 pr-16">
+        <div className="flex dc__content-space dc__border-bottom-n1 pl-16 pr-16">
             <Checkbox
                 rootClassName="mt-3 mb-3"
                 dataTestId="enforce-policy"
@@ -264,7 +304,7 @@ export const RestartWorkloadModal = ({
                 onClick={stopPropagation}
                 name={APP_DETAILS_TEXT.KIND_NAME}
             />
-            <div className="flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100">
+            <div className="flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 w-100">
                 <div>{APP_DETAILS_TEXT.APPLICATIONS}</div>
                 <div className="flex dc__gap-4" onClick={handleAllExpand}>
                     {APP_DETAILS_TEXT.EXPAND_ALL}
@@ -322,42 +362,49 @@ export const RestartWorkloadModal = ({
     }
 
     const renderRestartWorkloadModalListItems = () => {
-        return Object.keys(bulkRotatePodsMap).map((appId) => {
-            return (
-                <div className="pl-16 pr-16" key={appId}>
-                    <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor">
-                        <Checkbox
-                            rootClassName="mt-3 mb-3"
-                            dataTestId="enforce-policy"
-                            isChecked={bulkRotatePodsMap[appId].isChecked}
-                            value={bulkRotatePodsMap[appId].value}
-                            onClick={stopPropagation}
-                            name={APP_DETAILS_TEXT.APP_NAME}
-                            disabled={Object.keys(bulkRotatePodsMap[appId].resources).length === 0}
-                            onChange={() =>
-                                handleWorkloadSelection(
-                                    +appId,
-                                    bulkRotatePodsMap[appId].appName,
-                                    APP_DETAILS_TEXT.APP_NAME,
-                                )
-                            }
-                        />
-                        <div className="flex dc__content-space w-100" onClick={() => toggleWorkloadCollapse(+appId)}>
-                            <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
-                            <div className="flex dc__gap-4">
-                                {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
-                                <DropdownIcon className="icon-dim-16 rotate dc__flip-270 rotate" />
+        return (
+            <div className="h-100 dc__overflow-auto bcn-0">
+                {Object.keys(bulkRotatePodsMap).map((appId) => {
+                    return (
+                        <div className="pl-16 pr-16" key={appId}>
+                            <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor">
+                                <Checkbox
+                                    rootClassName="mt-3 mb-3"
+                                    dataTestId="enforce-policy"
+                                    isChecked={bulkRotatePodsMap[appId].isChecked}
+                                    value={bulkRotatePodsMap[appId].value}
+                                    onClick={stopPropagation}
+                                    name={APP_DETAILS_TEXT.APP_NAME}
+                                    disabled={Object.keys(bulkRotatePodsMap[appId].resources).length === 0}
+                                    onChange={() =>
+                                        handleWorkloadSelection(
+                                            +appId,
+                                            bulkRotatePodsMap[appId].appName,
+                                            APP_DETAILS_TEXT.APP_NAME,
+                                        )
+                                    }
+                                />
+                                <div
+                                    className="flex dc__content-space w-100"
+                                    onClick={() => toggleWorkloadCollapse(+appId)}
+                                >
+                                    <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
+                                    <div className="flex dc__gap-4">
+                                        {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
+                                        <DropdownIcon className="icon-dim-16 rotate dc__flip-270 rotate" />
+                                    </div>
+                                </div>
                             </div>
+                            {renderWorkloadDetails(
+                                +appId,
+                                bulkRotatePodsMap[appId].appName,
+                                bulkRotatePodsMap[appId].resources,
+                            )}
                         </div>
-                    </div>
-                    {renderWorkloadDetails(
-                        +appId,
-                        bulkRotatePodsMap[appId].appName,
-                        bulkRotatePodsMap[appId].resources,
-                    )}
-                </div>
-            )
-        })
+                    )
+                })}
+            </div>
+        )
     }
 
     const renderRestartWorkloadModalList = () => {
@@ -366,6 +413,7 @@ export const RestartWorkloadModal = ({
                 <RestartStatusListDrawer
                     bulkRotatePodsMap={bulkRotatePodsMap}
                     statusModalLoading={statusModalLoading}
+                    envName={envName}
                 />
             )
         }
@@ -383,7 +431,7 @@ export const RestartWorkloadModal = ({
         }
 
         return (
-            <div className="flexbox-col dc__gap-12">
+            <div className="flexbox-col pb-160 h-100">
                 {renderWorkloadTableHeader()}
                 {renderRestartWorkloadModalListItems()}
             </div>
@@ -486,12 +534,34 @@ export const RestartWorkloadModal = ({
             })
     }
 
+    const isDisabled = (): boolean => {
+        if (showStatusModal) {
+            return statusModalLoading
+        }
+        return (
+            restartLoader ||
+            Object.values(bulkRotatePodsMap)
+                .map((app) => app.isChecked)
+                .every((isChecked) => !isChecked)
+        )
+    }
+
     const onSave = async () => {
-        setStatusModalLoading(true)
+        if (isDisabled()) {
+            return null
+        }
+        if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
+            setShowResistanceBox(true)
+        }
 
         const functionCalls = createFunctionCallsFromRestartPodMap()
+        setStatusModalLoading(true)
+
         ApiQueuingWithBatch(functionCalls, httpProtocol.current)
-            .then(() => {
+            .then(async () => {
+                if (getDeploymentWindowStateAppGroup) {
+                    await getDeploymentWindowData()
+                }
                 // Setting all the batch calls to success
                 setBulkRotatePodsMap({ ...bulkRotatePodsMap })
             })
@@ -501,20 +571,25 @@ export const RestartWorkloadModal = ({
             .finally(() => {
                 setStatusModalLoading(false)
             })
+
+        return null
     }
+
     const renderFooterSection = () => {
         return (
-            <div className="dc__position-abs dc__bottom-12 w-100 pl-20 pr-20 pt-16 pr-16 dc__border-top">
-                <div className="flex dc__content-end w-100 dc__align-end dc__gap-12 ">
-                    <button
-                        type="button"
-                        onClick={closeDrawer}
-                        className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
-                    >
-                        Cancel
-                    </button>
+            <div className="dc__position-abs dc__bottom-0 w-100 pl-20 pr-20 pt-16 pb-16 dc__border-top bcn-0">
+                <div className={`flex ${showStatusModal ? 'dc__content-space' : 'right'} w-100 dc__gap-12 `}>
+                    {showStatusModal && (
+                        <button
+                            type="button"
+                            onClick={closeDrawer}
+                            className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                        >
+                            Cancel
+                        </button>
+                    )}
                     <ButtonWithLoader
-                        rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8"
+                        rootClassName={`cta flex h-36 pl-16 pr-16 pt-8 pb-8 dc__border-radius-4-imp dc__gap-8 ${isDisabled() ? 'dc__disabled' : ''}`}
                         isLoading={restartLoader}
                         onClick={onSave}
                     >
@@ -549,12 +624,23 @@ export const RestartWorkloadModal = ({
             </>
         )
     }
+
+    const hideResistanceBox = (): void => {
+        setShowResistanceBox(false)
+    }
     return (
         <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
             <div onClick={stopPropagation} className="bcn-0 h-100 cn-9 w-800">
                 {renderHeaderSection()}
                 {renderBodySection()}
             </div>
+            {showResistanceBox && (
+                <BulkDeployResistanceTippy
+                    actionHandler={onSave}
+                    handleOnClose={hideResistanceBox}
+                    modalType={MODAL_TYPE.OVERVIEW}
+                />
+            )}
         </Drawer>
     )
 }

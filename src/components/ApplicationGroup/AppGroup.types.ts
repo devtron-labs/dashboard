@@ -524,6 +524,7 @@ export interface RestartWorkloadModalProps {
 export interface RestartStatusListDrawerProps {
     bulkRotatePodsMap: BulkRotatePodsMap
     statusModalLoading: boolean
+    envName: string
 }
 
 // ----------------------------Restart Workload DTO--------------------------------------------
