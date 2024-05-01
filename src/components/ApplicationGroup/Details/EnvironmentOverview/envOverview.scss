@@ -59,6 +59,14 @@
     z-index: 3;
 }
 
-.app-group-kind-name-row:hover {
-    background-color: var(--N50);
+.bulk-restart-workload-wrapper{
+    .app-group-kind-name-row:hover {
+        background-color: var(--N50);
+    }
+
+    .bulk-workload-status-details__row{
+        display: grid;
+        grid-template-columns: 20px 300px 200px auto;
+    }
 }
+

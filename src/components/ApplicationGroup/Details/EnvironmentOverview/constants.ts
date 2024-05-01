@@ -1,17 +1,19 @@
-import { ResourceIdentifierDTO, WorkloadListResultDTO, AppGroupRotatePodsDTO } from '../../AppGroup.types'
-
 export const BIO_MAX_LENGTH = 40
 export const BIO_MAX_LENGTH_ERROR = `Max ${BIO_MAX_LENGTH} characters allowed`
 
 export enum APP_DETAILS_TEXT {
-    RESTART_WORKLOAD = 'Restart workloads',
-    APP_GROUP_RESTART_WORKLOAD_SUBTITLE = 'It might take some time depending upon the number of applications',
-    APP_GROUP_INFO_TEXT = 'Pods for selected workloads will be restarted. Configured deployment strategies will be used to restart workloads.',
-    APPLICATIONS = 'Applications',
-    EXPAND_ALL = 'Expand all',
-    APP_NAME = 'app-name',
-    KIND_NAME = 'kind-name',
     ALL = 'All',
+    APP_NAME = 'app-name',
+    APP_GROUP_RESTART_WORKLOAD_SUBTITLE = 'It might take some time depending upon the number of applications',
+    APP_GROUP_EMPTY_WORKLOAD_INFO_BAR = "Please don't wander off! Reloading or going back might disrupt the ongoing operation.",
+    APP_GROUP_INFO_TEXT = 'Pods for selected workloads will be restarted. Configured deployment strategies will be used to restart workloads.',
+    APPLICATIONS = 'APPLICATIONS',
+    EXPAND_ALL = 'Expand all',
+    KIND_NAME = 'kind-name',
+    MESSAGE = 'MESSAGE',
+    RESTART_STATUS = 'RESTART STATUS',
+    RESTART_WORKLOAD = 'Restart workloads',
+    RETRY_FAILED = 'Retry failed',
 }
 
 export const DATA_TEST_IDS = {
@@ -26,87 +28,11 @@ export const DATA_TEST_IDS = {
     APP_GROUP_WORKLOAD_RESTART_RESTART_DROPDOWN: 'app-group-workload-restart-restart-dropdown',
 }
 
-// TODO - Remove mock data
-// ------------------------MOCK DATA------------------------
-
-const mockResourceIdentifiers: ResourceIdentifierDTO[] = [
-    {
-        name: 'exampleName',
-        groupVersionKind: {
-            Group: 'exampleGroup',
-            Version: 'exampleVersion',
-            Kind: 'Deployment',
-        },
-        errorMessage: 'Error message1',
-        containsError: true,
-    },
-    {
-        name: 'aspdotnetapp-qa-devtroncd',
-        groupVersionKind: {
-            Group: 'exampleGroup2',
-            Version: 'exampleVersion2',
-            Kind: 'StatefulSet',
-        },
-        containsError: false,
-        errorMessage: '',
-    },
-    {
-        name: 'aspdotnetapp-qa-devtroncd-7d8fbd4586',
-        groupVersionKind: {
-            Group: 'exampleGroup2',
-            Version: 'exampleVersion2',
-            Kind: 'ReplicaSet',
-        },
-        containsError: true,
-        errorMessage: 'Error message2',
-    },
-    {
-        name: 'exampleName',
-        groupVersionKind: {
-            Group: 'exampleGroup2',
-            Version: 'exampleVersion2',
-            Kind: 'ReplicaSet',
-        },
-        containsError: true,
-        errorMessage: 'Error message3',
-    },
-]
-const mockResourceIdentifiers2: ResourceIdentifierDTO[] = [
-    {
-        name: 'exampleName',
-        groupVersionKind: {
-            Group: 'exampleGroup',
-            Version: 'exampleVersion',
-            Kind: 'Deployment',
-        },
-        errorMessage: 'Error message1',
-        containsError: true,
-    },
-]
-
-const mockResourceIdentifiers3: ResourceIdentifierDTO[] = []
-
-const mockResult: WorkloadListResultDTO = {
-    environmentId: 1,
-    namespace: 'devtron-demo',
-    restartPodMap: {
-        1: {
-            resourceIdentifiers: mockResourceIdentifiers,
-            appName: 'argoexec-build',
-        },
-        2: {
-            resourceIdentifiers: mockResourceIdentifiers2,
-            appName: 'argo-rollout',
-        },
-        3: {
-            resourceIdentifiers: mockResourceIdentifiers3,
-            appName: 'devtron-demo',
-        },
-    },
+export enum RESTART_STATUS_TEXT {
+    FAILED = 'failed',
+    INITIATED = 'initiated',
 }
 
-export const mockDTO: AppGroupRotatePodsDTO = {
-    result: mockResult,
-    code: 200,
-    status: 'OK',
+export const URL_SEARCH_PARAMS = {
+    BULK_RESTART_WORKLOAD: 'bulk-restart-workload',
 }
