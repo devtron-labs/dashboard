@@ -230,14 +230,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const newGitOps = event.target.value
-        const form = this.state.gitList.find((item) => item.provider === newGitOps) ?? {
+        const bitbucketGitops = this.state.isBitbucketCloud ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC'
+        const gitListKey = event.target.value !== 'BITBUCKET_CLOUD' ? event.target.value : bitbucketGitops
+        const form = this.state.gitList.find((item) => item.provider === gitListKey) ?? {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
             host: GitHost[newGitOps],
             provider: newGitOps,
         }
         this.setState({
-            providerTab: form.provider,
+            providerTab: form.provider === 'BITBUCKET_DC' ? 'BITBUCKET_CLOUD' : form.provider,
             form: {
                 ...form,
                 token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
