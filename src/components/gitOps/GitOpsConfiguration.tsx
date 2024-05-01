@@ -49,6 +49,7 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
         case 'Azure':
             return <Azure />
         case 'Bitbucket Cloud':
+        case 'Bitbucket':
             return <Bitbucket />
     }
 }
@@ -76,7 +77,7 @@ const GitProviderTab: React.FC<{
                     <GitProviderTabIcons gitops={gitops} />
                 </aside>
                 <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
-                    {gitops === 'Bitbucket Cloud' ? 'Bitbucket' : gitops}
+                    {gitops}
                 </aside>
                 {lastActiveGitOp?.provider === provider && (
                     <div>
@@ -615,17 +616,18 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             handleGitopsTab={this.handleGitopsTab}
                             lastActiveGitOp={this.state.lastActiveGitOp}
                             provider={GitProvider.BITBUCKET_CLOUD}
-                            gitops="Bitbucket Cloud"
+                            gitops={window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE ? 'Bitbucket' : 'Bitbucket Cloud'}
                             saveLoading={this.state.saveLoading}
                             datatestid="gitops-bitbucket-button"
                         />
                     </div>
-                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                        <BitbucketCloudAndServerToggleSection
-                            isBitbucketCloud={this.state.isBitbucketCloud}
-                            setIsBitbucketCloud={this.setIsBitbucketCloud}
-                        />
-                    )}
+                    {window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE &&
+                        this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                            <BitbucketCloudAndServerToggleSection
+                                isBitbucketCloud={this.state.isBitbucketCloud}
+                                setIsBitbucketCloud={this.setIsBitbucketCloud}
+                            />
+                        )}
                     {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD || this.state.isBitbucketCloud) && (
                         <GitInfoTab
                             tab={this.state.providerTab}
