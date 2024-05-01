@@ -63,6 +63,9 @@ const GitProviderTab: React.FC<{
     saveLoading: boolean
     datatestid: string
 }> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading, datatestid }) => {
+    const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === 'BITBUCKET_CLOUD'
+    const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
+
     return (
         <label className="dc__tertiary-tab__radio">
             <input
@@ -79,7 +82,7 @@ const GitProviderTab: React.FC<{
                 <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
                     {gitops}
                 </aside>
-                {lastActiveGitOp?.provider === provider && (
+                {showCheck && (
                     <div>
                         <aside className="dc__position-abs dc__right-0 dc__top-0">
                             <img src={Check} className="h-32" />
@@ -138,7 +141,7 @@ const BitbucketCloudAndServerToggleSection: React.FC<BitbucketCloudAndServerTogg
                 onChange={handleRadioToggle}
             >
                 <RadioGroupItem value={'true'}>Bitbucket Cloud</RadioGroupItem>
-                <RadioGroupItem value={'false'}>Bitbucket Server</RadioGroupItem>
+                <RadioGroupItem value={'false'}>Bitbucket Data Center</RadioGroupItem>
             </RadioGroup>
         </div>
     )
@@ -241,7 +244,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: DefaultShortGitOps,
             isFormEdited: false,
-            isBitbucketCloud: form.provider === GitProvider.BITBUCKET_CLOUD,
+            isBitbucketCloud: this.state.form.provider === GitProvider.BITBUCKET_CLOUD,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
             isUrlValidationError: false,
         })
@@ -289,7 +292,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
-            bitBucketWorkspaceId: this.requiredFieldCheck(form.bitBucketWorkspaceId),
+            bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.requiredFieldCheck(form.bitBucketWorkspaceId) : '',
             bitBucketProjectKey: '',
         }
     }
@@ -361,7 +364,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
             gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
-            bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.state.form.bitBucketWorkspaceId.replace(/\s/g, '') : '',
+            ...(this.state.isBitbucketCloud
+                ? { bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, '') }
+                : {}),
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
