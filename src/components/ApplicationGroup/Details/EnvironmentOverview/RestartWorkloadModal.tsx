@@ -119,14 +119,13 @@ export const RestartWorkloadModal = ({
 
     const setAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
-        if (Object.keys(_bulkRotatePodsMap).length > 0) {
-            const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.isChecked)
+        const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.isChecked)
+        if (allChecked) {
+            _selectAllApps.isChecked = true
+            _selectAllApps.value = CHECKBOX_VALUE.CHECKED
+        } else if (Object.keys(_bulkRotatePodsMap).length > 0) {
             const someChecked = Object.values(bulkRotatePodsMap).some((app) => app.isChecked)
-
-            if (allChecked) {
-                _selectAllApps.isChecked = true
-                _selectAllApps.value = CHECKBOX_VALUE.CHECKED
-            } else if (someChecked) {
+            if (someChecked) {
                 _selectAllApps.isChecked = true
                 _selectAllApps.value = CHECKBOX_VALUE.INTERMEDIATE
             } else {
@@ -139,12 +138,11 @@ export const RestartWorkloadModal = ({
 
     const closeDrawer = (e) => {
         stopPropagation(e)
-        const newParams = {
-            ...searchParams,
-            modal: '',
-        }
+        const newParams = { ...searchParams }
+        delete newParams.modal
+
         abortControllerRef.current.abort()
-        history.replace({ search: new URLSearchParams(newParams).toString() })
+        history.push({ search: new URLSearchParams(newParams).toString() })
     }
     const getPodsToRotate = async () => {
         setRestartLoader(true)
