@@ -15,7 +15,10 @@ export function getRestartWorkloadRotatePods(
     envId: string,
     signal: AbortSignal,
 ): Promise<ResponseType<WorkloadListResultDTO>> {
-     return get(getUrlWithSearchParams(Routes.BULK_ROTATE_POD, {appIds, envId}), { signal }) as Promise<ResponseType<WorkloadListResultDTO>>
+    return get(getUrlWithSearchParams(Routes.BULK_ROTATE_POD, { appIds, envId }), {
+        signal,
+        timeout: 2 * 60 * 1000,
+    }) as Promise<ResponseType<WorkloadListResultDTO>>
 }
 export const postRestartWorkloadRotatePods = async (request: RotatePodsRequest) =>
     post(Routes.ROTATE_PODS, { ...request })
