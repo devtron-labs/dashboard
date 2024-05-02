@@ -240,7 +240,7 @@ export const RestartWorkloadModal = ({
 
         if (key === APP_DETAILS_TEXT.APP_NAME && _bulkRotatePodsMap[appId].appName) {
             _bulkRotatePodsMap[appId].isChecked = _bulkRotatePodsMap[appId].value !== CHECKBOX_VALUE.CHECKED
-            _bulkRotatePodsMap[appId].value = _bulkRotatePodsMap[appId].isChecked && CHECKBOX_VALUE.CHECKED
+            _bulkRotatePodsMap[appId].value = _bulkRotatePodsMap[appId].isChecked ? CHECKBOX_VALUE.CHECKED : null
 
             // handling app level value for checkbox
             Object.keys(_bulkRotatePodsMap[appId].resources).forEach((kindName) => {
@@ -505,8 +505,8 @@ export const RestartWorkloadModal = ({
 
                 let predicateFnResources = (kindName) => bulkRotatePodsMetaData.resources[kindName].isChecked
                 // Logic for retrying failed resources
-                // during retry logic resource selection is done as follows
                 if (showStatusModal) {
+                    // predicateFnResources filters out the resources which are checked and errored
                     predicateFnResources = (kindName) =>
                         bulkRotatePodsMetaData.resources[kindName].isChecked &&
                         bulkRotatePodsMetaData.resources[kindName].errorResponse.length > 0
@@ -620,7 +620,6 @@ export const RestartWorkloadModal = ({
                     />
                 )}
                 {renderRestartWorkloadModalList()}
-                {renderFooterSection()}
             </>
         )
     }
@@ -633,6 +632,7 @@ export const RestartWorkloadModal = ({
             <div onClick={stopPropagation} className="bcn-0 h-100 cn-9 w-800">
                 {renderHeaderSection()}
                 {renderBodySection()}
+                {renderFooterSection()}
             </div>
             {showResistanceBox && (
                 <BulkDeployResistanceTippy

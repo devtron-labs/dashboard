@@ -257,7 +257,7 @@ export default function EnvironmentOverview({
     const onClickShowBulkRestartModal = () => {
         const newParams = {
             ...searchParams,
-            modal: 'bulk-restart-workload',
+            modal: URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD,
         }
         history.push({ search: new URLSearchParams(newParams).toString() })
     }

@@ -66,40 +66,59 @@ export const RestartStatusListDrawer = ({
     }
 
     const renderWorkloadStatusItems = () => {
+        const renderCount = (statusCount: number, status: RESTART_STATUS_TEXT) => {
+            if (statusCount > 0) {
+                return (
+                    <div className="flex dc__gap-6">
+                        {status === RESTART_STATUS_TEXT.FAILED ? (
+                            <Failed className="icon-dim-16" />
+                        ) : (
+                            <Success className="icon-dim-16" />
+                        )}
+                        {statusCount}
+                        <span className="dc__capitalize">{status}</span>
+                        {status === RESTART_STATUS_TEXT.FAILED ? ` • ` : null}
+                    </div>
+                )
+            }
+            return null
+        }
+
         return (
-            <div className="pb-140 dc__overflow-auto">
-                {Object.keys(bulkRotatePodsMap as BulkRotatePodsMap).map((_appId) => {
-                    return (
-                        <div key={_appId} className="dc__border-bottom-n1">
-                            <div
-                                className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 cn-7 pl-16 pr-16 cursor flex left"
-                                onClick={() => toggleWorkloadCollapse(+_appId)}
-                            >
-                                <ArrowRight
-                                    className="icon-dim-12 rotate rotate fcn-9 flex"
-                                    style={{
-                                        ['--rotateBy' as string]: `${(expandedAppIds.includes(+_appId) ? 1 : 0) * 90}deg`,
-                                    }}
-                                />
-                                <div className="fw-6">{bulkRotatePodsMap[_appId].appName}</div>
-                                <div className="flex left dc__gap-6">
-                                    <Failed className="icon-dim-16" />
-                                    {bulkRotatePodsMap[_appId].failedCount}
-                                    <span className="dc__capitalize">{RESTART_STATUS_TEXT.FAILED}</span> &nbsp;•&nbsp;
-                                    <Success className="icon-dim-16" />
-                                    {bulkRotatePodsMap[_appId].successCount}
-                                    <span className="dc__capitalize">{RESTART_STATUS_TEXT.INITIATED}</span>
+            <div className="pb-160 dc__overflow-auto h-100 pb-120">
+                {Object.keys(bulkRotatePodsMap as BulkRotatePodsMap)
+                    .filter((_appId) => bulkRotatePodsMap[_appId].isChecked)
+                    .map((_appId) => {
+                        return (
+                            <div key={_appId} className="dc__border-bottom-n1">
+                                <div
+                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 cn-7 pl-16 pr-16 cursor flex left"
+                                    onClick={() => toggleWorkloadCollapse(+_appId)}
+                                >
+                                    <ArrowRight
+                                        className="icon-dim-12 rotate rotate fcn-9 flex"
+                                        style={{
+                                            ['--rotateBy' as string]: `${(expandedAppIds.includes(+_appId) ? 1 : 0) * 90}deg`,
+                                        }}
+                                    />
+                                    <div className="fw-6">{bulkRotatePodsMap[_appId].appName}</div>
+                                    <div className="flex left dc__gap-6">
+                                        {renderCount(bulkRotatePodsMap[_appId].failedCount, RESTART_STATUS_TEXT.FAILED)}
+                                        {renderCount(
+                                            bulkRotatePodsMap[_appId].successCount,
+                                            RESTART_STATUS_TEXT.INITIATED,
+                                        )}
+                                    </div>
+                                    <div />
                                 </div>
-                                <div />
+                                {renderWorkloadStatusDetails(
+                                    +_appId,
+                                    bulkRotatePodsMap[_appId].appName,
+                                    bulkRotatePodsMap[_appId].resources,
+                                )}
                             </div>
-                            {renderWorkloadStatusDetails(
-                                +_appId,
-                                bulkRotatePodsMap[_appId].appName,
-                                bulkRotatePodsMap[_appId].resources,
-                            )}
-                        </div>
-                    )
-                })}
+                        )
+                    })}
             </div>
         )
     }
