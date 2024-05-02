@@ -36,6 +36,7 @@ import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
+import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 const processDeploymentWindowMetadata = importComponentFromFELibrary(
@@ -365,7 +366,7 @@ export const RestartWorkloadModal = ({
                 {Object.keys(bulkRotatePodsMap).map((appId) => {
                     return (
                         <div className="pl-16 pr-16" key={appId}>
-                            <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor dc__hover-n50">
+                            <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
                                 <Checkbox
                                     rootClassName="mt-3 mb-3"
                                     dataTestId="enforce-policy"
@@ -383,7 +384,7 @@ export const RestartWorkloadModal = ({
                                     }
                                 />
                                 <div
-                                    className="flex dc__content-space w-100"
+                                    className="flex dc__content-space w-100 pt-12 pb-12"
                                     onClick={() => toggleWorkloadCollapse(+appId)}
                                 >
                                     <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
@@ -417,7 +418,6 @@ export const RestartWorkloadModal = ({
                 />
             )
         }
-
         if (restartLoader) {
             return (
                 <div className="drawer-section__empty flex">
@@ -426,6 +426,26 @@ export const RestartWorkloadModal = ({
                         subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                         SvgImage={MechanicalIcon}
                     />
+                </div>
+            )
+        }
+
+        if (statusModalLoading) {
+            return (
+                <div className="drawer-section__empty flex">
+                    <GenericEmptyState
+                        title={`Restarting selected workload on ${envName}`}
+                        subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
+                        SvgImage={MechanicalIcon}
+                    >
+                        <InfoColourBar
+                            message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
+                            classname="warn cn-9 lh-2 w-100"
+                            Icon={Warn}
+                            iconClass="warning-icon h-100-imp"
+                            iconSize={20}
+                        />
+                    </GenericEmptyState>
                 </div>
             )
         }
@@ -545,6 +565,7 @@ export const RestartWorkloadModal = ({
         }
         return (
             restartLoader ||
+            statusModalLoading ||
             Object.values(bulkRotatePodsMap)
                 .map((app) => app.isChecked)
                 .every((isChecked) => !isChecked)
@@ -626,7 +647,7 @@ export const RestartWorkloadModal = ({
     }
     return (
         <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
-            <div onClick={stopPropagation} className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100">
+            <div onClick={stopPropagation} className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100 fs-13 lh-20">
                 {renderHeaderSection()}
                 {renderBodySection()}
             </div>

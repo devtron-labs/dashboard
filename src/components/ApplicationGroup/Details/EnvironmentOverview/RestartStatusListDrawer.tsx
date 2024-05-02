@@ -45,10 +45,10 @@ export const RestartStatusListDrawer = ({
                         <div
                             key={kindName}
                             data-testid="bulk-workload-status-details__row"
-                            className="bulk-workload-status-details__row cursor dc__gap-16 dc__hover-n50"
+                            className="pl-16 pr-16 pt-8 pb-8 bulk-workload-status-details__row cursor dc__gap-8 dc__hover-n50 dc__align-start"
                         >
                             <div />
-                            <div className="dc__hover-n50 pt-8 pb-8">
+                            <div className="dc__hover-n50">
                                 <span className="fw-6">{kindName.split('/')[0]}&nbsp;/&nbsp;</span>
                                 {kindName.split('/')[1]}
                             </div>
@@ -99,7 +99,7 @@ export const RestartStatusListDrawer = ({
                         return (
                             <div key={_appId} className="dc__border-bottom-n1">
                                 <div
-                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 cn-7 pl-16 pr-16 cursor dc__hover-n50 dc__gap-8"
+                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 cursor dc__hover-n50 dc__gap-8"
                                     onClick={() => toggleWorkloadCollapse(+_appId)}
                                 >
                                     <ArrowRight
@@ -108,7 +108,7 @@ export const RestartStatusListDrawer = ({
                                             ['--rotateBy' as string]: `${(expandedAppIds.includes(+_appId) ? 1 : 0) * 90}deg`,
                                         }}
                                     />
-                                    <div className="fw-6">{bulkRotatePodsMap[_appId].appName}</div>
+                                    <div>{bulkRotatePodsMap[_appId].appName}</div>
                                     <div className="flex left dc__gap-6">
                                         {renderCount(
                                             bulkRotatePodsMap[_appId].failedCount,
