@@ -164,7 +164,7 @@ export const RestartStatusListDrawer = ({
                         message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
                         classname="warn cn-9 lh-2 w-100"
                         Icon={Warn}
-                        iconClass="warning-icon"
+                        iconClass="warning-icon h-100-imp"
                         iconSize={24}
                     />
                 </GenericEmptyState>
