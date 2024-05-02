@@ -59,14 +59,22 @@
     z-index: 3;
 }
 
-.bulk-restart-workload-wrapper{
-    .app-group-kind-name-row:hover {
-        background-color: var(--N50);
+.bulk-restart-workload-wrapper {
+    .drawer-section__empty{
+        height: calc(100vh - 118px);
     }
 
-    .bulk-workload-status-details__row{
+    .bulk-workload-status-details__row {
         display: grid;
         grid-template-columns: 20px 300px 200px auto;
     }
-}
 
+    .drawer-body-section__status-drawer {
+        height: calc(100vh - 154px);
+    }
+
+    .drawer-body-section__list-drawer {
+        height: calc(100vh - 190px);
+    }
+
+}

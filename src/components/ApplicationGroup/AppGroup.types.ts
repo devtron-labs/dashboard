@@ -549,9 +549,6 @@ export interface WorkloadListResultDTO {
     namespace: string
     restartPodMap: RestartPodMapDTO
 }
-export interface AppGroupRotatePodsDTO extends ResponseType {
-    result: WorkloadListResultDTO
-}
 
 // ----------------------------Bulk Restart Data Manipulation-----------------------------------
 

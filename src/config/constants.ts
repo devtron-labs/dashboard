@@ -245,7 +245,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
-    BULK_ROTATE_POD: 'app/template/rotate-pod',
+    BULK_ROTATE_POD: 'app/template/workloads',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',

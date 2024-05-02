@@ -36,6 +36,17 @@ import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { importComponentFromFELibrary } from '../../../common'
 
+const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
+const processDeploymentWindowMetadata = importComponentFromFELibrary(
+    'processDeploymentWindowMetadata',
+    null,
+    'function',
+)
+const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'getDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
 export const RestartWorkloadModal = ({
     restartLoader,
     setRestartLoader,
@@ -61,17 +72,6 @@ export const RestartWorkloadModal = ({
     const httpProtocol = useRef('')
 
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
-    const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
-    const processDeploymentWindowMetadata = importComponentFromFELibrary(
-        'processDeploymentWindowMetadata',
-        null,
-        'function',
-    )
-    const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
-        'getDeploymentWindowStateAppGroup',
-        null,
-        'function',
-    )
 
     const getDeploymentWindowData = async () => {
         const appEnvMap = Object.keys(bulkRotatePodsMap).map((appId) => {
@@ -150,41 +150,40 @@ export const RestartWorkloadModal = ({
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
         return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
-                if (!response.result) {
-                    return null
-                }
-                const _restartPodMap = response.result.restartPodMap
-                // Iterate over the restartPodMap and create a bulkRotatePodsMap
-                Object.keys(_restartPodMap).forEach((appId) => {
-                    const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
-                    const appInfoObject: AppInfoMetaDataDTO = _restartPodMap[appId]
+                if (response.result) {
+                    const _restartPodMap = response.result.restartPodMap
+                    // Iterate over the restartPodMap and create a bulkRotatePodsMap
+                    Object.keys(_restartPodMap).forEach((appId) => {
+                        const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
+                        const appInfoObject: AppInfoMetaDataDTO = _restartPodMap[appId]
 
-                    appInfoObject.resourceMetaData.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
-                        const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
-                        const _resourceMetaData: ResourceMetaData = {
-                            group: resourceIdentifier.groupVersionKind.Group,
-                            kind: resourceIdentifier.groupVersionKind.Kind,
-                            version: resourceIdentifier.groupVersionKind.Version,
-                            name: resourceIdentifier.name,
-                            containsError: resourceIdentifier.containsError,
-                            errorResponse: resourceIdentifier.errorResponse,
+                        appInfoObject.resourceMetaData.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
+                            const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
+                            const _resourceMetaData: ResourceMetaData = {
+                                group: resourceIdentifier.groupVersionKind.Group,
+                                kind: resourceIdentifier.groupVersionKind.Kind,
+                                version: resourceIdentifier.groupVersionKind.Version,
+                                name: resourceIdentifier.name,
+                                containsError: resourceIdentifier.containsError,
+                                errorResponse: resourceIdentifier.errorResponse,
+                                isChecked: !!selectedAppIds.includes(+appId),
+                                value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                            }
+                            // inserting in the resourceMetaDataMap
+                            _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+                        })
+
+                        const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
+                            resources: _resourcesMetaDataMap,
+                            appName: appInfoObject.appName,
                             isChecked: !!selectedAppIds.includes(+appId),
                             value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                            namespace: response.result.namespace,
                         }
-                        // inserting in the resourceMetaDataMap
-                        _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+
+                        _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
                     })
-
-                    const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
-                        resources: _resourcesMetaDataMap,
-                        appName: appInfoObject.appName,
-                        isChecked: !!selectedAppIds.includes(+appId),
-                        value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
-                        namespace: response.result.namespace,
-                    }
-
-                    _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
-                })
+                }
                 setBulkRotatePodsMap(_bulkRotatePodsMap)
                 setAllAppsCheckboxValue(_bulkRotatePodsMap)
 
@@ -199,14 +198,14 @@ export const RestartWorkloadModal = ({
     }
 
     useEffect(() => {
-        if (!location.search || !location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
+        if (!location.search || !location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getPodsToRotate()
     }, [location])
 
-    const toggleWorkloadCollapse = (appId?: number) => {
+    const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
             setExpandedAppIds(expandedAppIds.filter((id) => id !== appId))
         } else {
@@ -338,10 +337,10 @@ export const RestartWorkloadModal = ({
                         <div
                             key={kindName}
                             data-testid="workload-details"
-                            className="app-group-kind-name-row flex left dc__border-left cursor"
+                            className="flex left dc__border-left cursor"
                             onClick={() => handleWorkloadSelection(appId, kindName, APP_DETAILS_TEXT.KIND_NAME)}
                         >
-                            <div className={`p-8 flex left w-100 ml-8 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
+                            <div className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
                                 <Checkbox
                                     rootClassName="mt-3 mb-3"
                                     dataTestId="enforce-policy"
@@ -363,11 +362,11 @@ export const RestartWorkloadModal = ({
 
     const renderRestartWorkloadModalListItems = () => {
         return (
-            <div className="h-100 dc__overflow-auto bcn-0">
+            <div className="drawer-body-section__list-drawer dc__overflow-auto bcn-0">
                 {Object.keys(bulkRotatePodsMap).map((appId) => {
                     return (
                         <div className="pl-16 pr-16" key={appId}>
-                            <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor">
+                            <div key={appId} className="flex dc__content-space pt-12 pb-12 cursor dc__hover-n50">
                                 <Checkbox
                                     rootClassName="mt-3 mb-3"
                                     dataTestId="enforce-policy"
@@ -420,7 +419,7 @@ export const RestartWorkloadModal = ({
 
         if (restartLoader) {
             return (
-                <div className="dc__align-reload-center">
+                <div className="drawer-section__empty flex">
                     <GenericEmptyState
                         title={`Fetching workload for ${selectedAppIds.length} Applications`}
                         subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
@@ -431,7 +430,12 @@ export const RestartWorkloadModal = ({
         }
 
         return (
-            <div className="flexbox-col pb-160 h-100">
+            <div className="flexbox-col">
+                <InfoColourBar
+                    message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
+                    classname="info_bar dc__no-border-radius dc__no-top-border"
+                    Icon={InfoIcon}
+                />
                 {renderWorkloadTableHeader()}
                 {renderRestartWorkloadModalListItems()}
             </div>
@@ -469,18 +473,18 @@ export const RestartWorkloadModal = ({
             failedCount,
         }
 
-        bulkRotatePodsMap[appId] = _bulkRotatePodsMetaData
+        // setting the updated _bulkRotatePodsMetaData in the bulkRotatePodsMap with status counts
+        setBulkRotatePodsMap((prev) => ({ ...prev, [appId]: _bulkRotatePodsMetaData }))
     }
 
     const postRestartPodBatchFunction = (payload) => () => {
         return postRestartWorkloadRotatePods(payload)
             .then((response) => {
-                if (!response.result) {
-                    return null
+                if (response.result) {
+                    openStatusModal()
+                    // showing the status modal in case batch promise resolved
+                    updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
                 }
-                openStatusModal()
-                // showing the status modal in case batch promise resolved
-                return updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
             })
             .catch((err) => {
                 showError(err)
@@ -562,8 +566,6 @@ export const RestartWorkloadModal = ({
                 if (getDeploymentWindowStateAppGroup) {
                     await getDeploymentWindowData()
                 }
-                // Setting all the batch calls to success
-                setBulkRotatePodsMap({ ...bulkRotatePodsMap })
             })
             .catch((error) => {
                 showError(error)
@@ -577,7 +579,7 @@ export const RestartWorkloadModal = ({
 
     const renderFooterSection = () => {
         return (
-            <div className="dc__position-abs dc__bottom-0 w-100 pl-20 pr-20 pt-16 pb-16 dc__border-top bcn-0">
+            <div className="pl-20 pr-20 pt-16 pb-16 dc__border-top">
                 <div className={`flex ${showStatusModal ? 'dc__content-space' : 'right'} w-100 dc__gap-12 `}>
                     {showStatusModal && (
                         <button
@@ -612,14 +614,8 @@ export const RestartWorkloadModal = ({
 
         return (
             <>
-                {!showStatusModal && (
-                    <InfoColourBar
-                        message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
-                        classname="info_bar dc__no-border-radius dc__no-top-border"
-                        Icon={InfoIcon}
-                    />
-                )}
                 {renderRestartWorkloadModalList()}
+                {renderFooterSection()}
             </>
         )
     }
@@ -629,10 +625,9 @@ export const RestartWorkloadModal = ({
     }
     return (
         <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
-            <div onClick={stopPropagation} className="bcn-0 h-100 cn-9 w-800">
+            <div onClick={stopPropagation} className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100">
                 {renderHeaderSection()}
                 {renderBodySection()}
-                {renderFooterSection()}
             </div>
             {showResistanceBox && (
                 <BulkDeployResistanceTippy
