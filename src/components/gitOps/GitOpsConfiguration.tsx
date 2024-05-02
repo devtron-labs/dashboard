@@ -140,8 +140,8 @@ const BitbucketCloudAndServerToggleSection: React.FC<BitbucketCloudAndServerTogg
                 value={`${isBitbucketCloud}`}
                 onChange={handleRadioToggle}
             >
-                <RadioGroupItem value={'true'}>Bitbucket Cloud</RadioGroupItem>
-                <RadioGroupItem value={'false'}>Bitbucket Data Center</RadioGroupItem>
+                <RadioGroupItem value="true">Bitbucket Cloud</RadioGroupItem>
+                <RadioGroupItem value="false">Bitbucket Data Center</RadioGroupItem>
             </RadioGroup>
         </div>
     )
