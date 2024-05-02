@@ -833,9 +833,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 label={renderInputLabels(
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'Azure DevOps Access Token '
-                                        : 'Personal Access Token ',
+                                        : this.state.form.provider === 'BITBUCKET_DC' ? 'Password ' : 'Personal Access Token ',
                                     DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
-                                    '(Check permissions required for PAT)',
+                                    this.state.form.provider !== 'BITBUCKET_DC' ? '(Check permissions required for PAT)' : '',
                                 )}
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
