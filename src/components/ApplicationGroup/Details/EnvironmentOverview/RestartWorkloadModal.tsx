@@ -287,7 +287,7 @@ export const RestartWorkloadModal = ({
     const renderWorkloadTableHeader = () => (
         <div className="flex dc__content-space dc__border-bottom-n1 pl-16 pr-16">
             <Checkbox
-                rootClassName="mt-3 mb-3"
+                rootClassName="mt-3 mb-3 w-28"
                 dataTestId="enforce-policy"
                 isChecked={selectAllApps.isChecked}
                 value={selectAllApps.value}
@@ -342,7 +342,7 @@ export const RestartWorkloadModal = ({
                         >
                             <div className={`p-8 flex left w-100 ml-8 dc__hover-n50 ${isChecked ? 'bc-b50' : 'bcn-0'}`}>
                                 <Checkbox
-                                    rootClassName="mt-3 mb-3"
+                                    rootClassName="mt-3 mb-3 w-28"
                                     dataTestId="enforce-policy"
                                     isChecked={bulkRotatePodsMap[appId].resources[kindName].isChecked}
                                     value={bulkRotatePodsMap[appId].resources[kindName].value}
@@ -368,7 +368,7 @@ export const RestartWorkloadModal = ({
                         <div className="pl-16 pr-16" key={appId}>
                             <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
                                 <Checkbox
-                                    rootClassName="mt-3 mb-3"
+                                    rootClassName="mt-3 mb-3 w-28"
                                     dataTestId="enforce-policy"
                                     isChecked={bulkRotatePodsMap[appId].isChecked}
                                     value={bulkRotatePodsMap[appId].value}
