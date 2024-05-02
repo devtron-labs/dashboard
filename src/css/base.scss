@@ -2655,6 +2655,20 @@ textarea,
     }
 }
 
+.ic-in-progress-orange {
+    g {
+        path {
+            &:nth-child(1) {
+                fill: var(--O500);
+            }
+
+            &:nth-child(2) {
+                fill: var(--O200);
+            }
+        }
+    }
+}
+
 .alert-icon-r5-imp {
     path {
         &:nth-child(1) {
@@ -2883,6 +2897,10 @@ textarea,
 
 .w-8 {
     width: 8px;
+}
+
+.w-10 {
+    width: 10px;   
 }
 
 .w-16 {
@@ -4432,4 +4450,8 @@ textarea::placeholder {
 
 .dc__backdrop-filter {
     backdrop-filter: blur(2px);
+}
+
+.dc__visibility-hidden {
+    visibility: hidden;
 }
