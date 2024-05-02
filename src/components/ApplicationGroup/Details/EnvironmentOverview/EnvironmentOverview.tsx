@@ -446,7 +446,7 @@ export default function EnvironmentOverview({
         )
     }
 
-    return appListData ? (
+    return appListData?.appInfoList?.length > 0 ? (
         <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
             <div>{renderSideInfoColumn()}</div>
             <div className="dc__h-fit-content">
