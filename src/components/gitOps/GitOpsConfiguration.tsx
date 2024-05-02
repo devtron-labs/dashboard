@@ -359,7 +359,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     getPayload = () => {
         const payload = {
             id: this.state.form.id,
-            provider: this.state.isBitbucketCloud ? 'BITBUCKET_DC' : this.state.form.provider,
+            provider: this.state.form.provider,
             username: this.state.form.username.replace(/\s/g, ''),
             host: this.state.form.host.replace(/\s/g, ''),
             token: parsePassword(this.state.form.token.replace(/\s/g, '')),
@@ -504,7 +504,30 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return 'gitHubOrgId'
     }
 
-    setIsBitbucketCloud = (value: boolean) => this.setState({ ...this.state, isBitbucketCloud: value })
+    setIsBitbucketCloud = (value: boolean) => {
+        if (this.state.saveLoading) {
+            return
+        }
+
+        const bitbucketGitops = value ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC'
+        const form = this.state.gitList.find((item) => item.provider === bitbucketGitops) ?? {
+            ...DefaultGitOpsConfig,
+            ...DefaultShortGitOps,
+            host: GitHost[GitProvider.BITBUCKET_CLOUD],
+            provider: value ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC',
+        }
+        this.setState({
+            form: {
+                ...form,
+                token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
+            },
+            isError: DefaultShortGitOps,
+            isFormEdited: false,
+            isBitbucketCloud: value,
+            validationStatus: VALIDATION_STATUS.DRY_RUN,
+            isUrlValidationError: false,
+        })
+    }
 
     updateGitopsUrl(value: string): void {
         this.setState((prevState) => {
