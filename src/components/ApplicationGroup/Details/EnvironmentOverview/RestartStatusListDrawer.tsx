@@ -9,6 +9,7 @@ import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mech
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 import './envOverview.scss'
+import { AllExpandableDropdown } from './AllExpandableDropdown'
 
 export const RestartStatusListDrawer = ({
     bulkRotatePodsMap,
@@ -16,6 +17,7 @@ export const RestartStatusListDrawer = ({
     envName,
 }: RestartStatusListDrawerProps) => {
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
+    const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
 
     const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
@@ -133,22 +135,16 @@ export const RestartStatusListDrawer = ({
         )
     }
 
-    const handleAllExpand = () => {
-        if (expandedAppIds.length === Object.keys(bulkRotatePodsMap).length) {
-            setExpandedAppIds([])
-        } else {
-            setExpandedAppIds(Object.keys(bulkRotatePodsMap).map((appId) => +appId))
-        }
-    }
-
     const renderWorkloadStatusTableHeader = () => (
         <div className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 fs-12 fw-6 cn-7 dc__border-bottom-n1 w-100 pl-16 pr-16 pt-8 p-8 dc__gap-8 lh-18">
-            <ArrowRight
-                className="icon-dim-20 rotate fcn-9 flex"
-                onClick={handleAllExpand}
-                // style={{
-                //     ['--rotateBy' as string]: `${true ? 1 : 0) * 90}deg`,
-                // }}
+            <AllExpandableDropdown
+                expandedAppIds={expandedAppIds}
+                setExpandedAppIds={setExpandedAppIds}
+                bulkRotatePodsMap={bulkRotatePodsMap}
+                SvgImage={ArrowRight}
+                iconClassName={`icon-dim-20 ${isExpandableButtonClicked ? 'dc__flip-90' : ''}`}
+                isExpandableButtonClicked={isExpandableButtonClicked}
+                setExpandableButtonClicked={setExpandableButtonClicked}
             />
             <div>{APP_DETAILS_TEXT.APPLICATIONS}</div>
             <div>{APP_DETAILS_TEXT.RESTART_STATUS}</div>

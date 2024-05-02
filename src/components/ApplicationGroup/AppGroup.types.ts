@@ -580,3 +580,14 @@ export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMeta
 export interface BulkRotatePodsMap {
     [appId: number]: BulkRotatePodsMetaData
 }
+export interface AllExpandableDropdownTypes {
+    expandedAppIds: number[]
+    setExpandedAppIds: React.Dispatch<React.SetStateAction<number[]>>
+    bulkRotatePodsMap: BulkRotatePodsMap
+    SvgImage: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    iconClassName?: string
+    dropdownLabel?: string
+    isExpandableButtonClicked: boolean
+    setExpandableButtonClicked: React.Dispatch<React.SetStateAction<boolean>>
+}
+

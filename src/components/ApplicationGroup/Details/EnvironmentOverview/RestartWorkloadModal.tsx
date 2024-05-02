@@ -35,6 +35,7 @@ import './envOverview.scss'
 import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { importComponentFromFELibrary } from '../../../common'
+import { AllExpandableDropdown } from './AllExpandableDropdown'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 const processDeploymentWindowMetadata = importComponentFromFELibrary(
@@ -64,7 +65,7 @@ export const RestartWorkloadModal = ({
     const [statusModalLoading, setStatusModalLoading] = useState(false)
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const [showResistanceBox, setShowResistanceBox] = useState(false)
-
+    const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
     const { searchParams } = useSearchString()
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
@@ -213,14 +214,6 @@ export const RestartWorkloadModal = ({
         }
     }
 
-    const handleAllExpand = () => {
-        if (expandedAppIds.length === Object.keys(bulkRotatePodsMap).length) {
-            setExpandedAppIds([])
-        } else {
-            setExpandedAppIds(Object.keys(bulkRotatePodsMap).map((appId) => +appId))
-        }
-    }
-
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex dc__content-space dc__border-bottom pt-12 pr-20 pb-12 pl-20">
@@ -305,10 +298,18 @@ export const RestartWorkloadModal = ({
             />
             <div className="flex dc__content-space pt-8 pb-8 fs-12 fw-6 cn-7 w-100">
                 <div>{APP_DETAILS_TEXT.APPLICATIONS}</div>
-                <div className="flex dc__gap-4" onClick={handleAllExpand}>
-                    {APP_DETAILS_TEXT.EXPAND_ALL}
-                    <DropdownIcon className="icon-dim-16 rotate dc__flip-270" />
-                </div>
+                <AllExpandableDropdown
+                    expandedAppIds={expandedAppIds}
+                    setExpandedAppIds={setExpandedAppIds}
+                    bulkRotatePodsMap={bulkRotatePodsMap}
+                    SvgImage={DropdownIcon}
+                    iconClassName={`icon-dim-16 ${isExpandableButtonClicked ? 'dc__flip-90' : 'dc__flip-270'}`}
+                    dropdownLabel={
+                        isExpandableButtonClicked ? APP_DETAILS_TEXT.COLLAPSED_ALL : APP_DETAILS_TEXT.EXPAND_ALL
+                    }
+                    isExpandableButtonClicked={isExpandableButtonClicked}
+                    setExpandableButtonClicked={setExpandableButtonClicked}
+                />
             </div>
         </div>
     )
@@ -390,7 +391,9 @@ export const RestartWorkloadModal = ({
                                     <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
                                     <div className="flex dc__gap-4">
                                         {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
-                                        <DropdownIcon className="icon-dim-16 rotate dc__flip-270 rotate" />
+                                        <DropdownIcon
+                                            className={`icon-dim-16 rotate ${expandedAppIds.includes(+appId) ? 'dc__flip-90' : 'dc__flip-270'}`}
+                                        />
                                     </div>
                                 </div>
                             </div>

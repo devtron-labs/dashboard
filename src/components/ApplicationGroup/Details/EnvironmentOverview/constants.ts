@@ -9,6 +9,7 @@ export enum APP_DETAILS_TEXT {
     APP_GROUP_INFO_TEXT = 'Pods for selected workloads will be restarted. Configured deployment strategies will be used to restart workloads.',
     APPLICATIONS = 'APPLICATIONS',
     EXPAND_ALL = 'Expand all',
+    COLLAPSED_ALL = 'Collapsed all',
     KIND_NAME = 'kind-name',
     MESSAGE = 'MESSAGE',
     RESTART_STATUS = 'RESTART STATUS',
