@@ -113,11 +113,7 @@ export const RestartStatusListDrawer = ({
                                 )}
                             </div>
 
-                            <div>
-                                {getDeploymentMessage(appId)
-                                    ? getDeploymentMessage(appId)
-                                    : resources[kindName].errorResponse}
-                            </div>
+                            <div>{getDeploymentMessage(appId) || resources[kindName].errorResponse}</div>
                         </div>
                     )
                 })}
