@@ -569,7 +569,7 @@ export const RestartWorkloadModal = ({
         if (isDisabled()) {
             return null
         }
-        if (!showStatusModal && Object.keys(hibernateInfoMap).length > 0) {
+        if (!showStatusModal && !showResistanceBox && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
         } else {
             const functionCalls = createFunctionCallsFromRestartPodMap()
