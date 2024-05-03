@@ -492,17 +492,12 @@ export const RestartWorkloadModal = ({
     }
 
     const postRestartPodBatchFunction = (payload) => () => {
-        return postRestartWorkloadRotatePods(payload)
-            .then((response) => {
-                if (response.result) {
-                    // showing the status modal in case batch promise resolved
-                    updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
-                }
-            })
-            .catch(() => {
-                // In case of error, setting the status modal to true
-                setShowStatusModal(true)
-            })
+        return postRestartWorkloadRotatePods(payload).then((response) => {
+            if (response.result) {
+                // showing the status modal in case batch promise resolved
+                updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
+            }
+        })
     }
 
     const createFunctionCallsFromRestartPodMap = () => {

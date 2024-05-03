@@ -101,7 +101,7 @@ export const RestartStatusListDrawer = ({
                             </div>
                             <div className="dc__gap-6 flex left">
                                 {getStatusIcon(resources[kindName].errorResponse, appId)}
-                                {_userIsBlocked ? (
+                                {_userIsBlocked(appId) ? (
                                     `Restart ${RESTART_STATUS_TEXT.FAILED}`
                                 ) : (
                                     <>
@@ -151,7 +151,7 @@ export const RestartStatusListDrawer = ({
             <div className="drawer-body-section__status-drawer dc__overflow-auto">
                 {Object.keys(bulkRotatePodsMap as BulkRotatePodsMap)
                     .filter((_appId) => bulkRotatePodsMap[_appId].isChecked)
-                    .map((_appId) => {
+                    .map((_appId: string) => {
                         return (
                             <div key={_appId} className="dc__border-bottom-n1">
                                 <div
