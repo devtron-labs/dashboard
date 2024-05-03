@@ -1,16 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
-    ACTION_STATE,
     ButtonWithLoader,
     CHECKBOX_VALUE,
     Checkbox,
-    DEPLOYMENT_WINDOW_TYPE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
     InfoColourBar,
     MODAL_TYPE,
-    showError,
     stopPropagation,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -39,22 +36,14 @@ import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
-const processDeploymentWindowMetadata = importComponentFromFELibrary(
-    'processDeploymentWindowMetadata',
-    null,
-    'function',
-)
-const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
-    'getDeploymentWindowStateAppGroup',
-    null,
-    'function',
-)
+
 export const RestartWorkloadModal = ({
     restartLoader,
     setRestartLoader,
     selectedAppIds,
     envName,
     envId,
+    hibernateInfoMap,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -73,30 +62,6 @@ export const RestartWorkloadModal = ({
     const location = useLocation()
     const httpProtocol = useRef('')
 
-    const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
-
-    const getDeploymentWindowData = async () => {
-        const appEnvMap = Object.keys(bulkRotatePodsMap).map((appId) => {
-            return { appId: +appId, envId: +envId }
-        })
-        let _isPartialActionAllowed = false
-
-        const { result } = await getDeploymentWindowStateAppGroup(appEnvMap)
-        const _appDeploymentWindowMap = {}
-        result?.appData?.forEach((data) => {
-            _appDeploymentWindowMap[data.appId] = processDeploymentWindowMetadata(data.deploymentProfileList, envId)
-            if (!_isPartialActionAllowed) {
-                _isPartialActionAllowed =
-                    _appDeploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
-                    !_appDeploymentWindowMap[data.appId].isActive
-                        ? _appDeploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
-                        : false
-            }
-
-            setIsPartialActionAllowed(_isPartialActionAllowed)
-        })
-    }
-
     useEffect(() => {
         const observer = new PerformanceObserver((list) => {
             list.getEntries().forEach((entry) => {
@@ -114,13 +79,10 @@ export const RestartWorkloadModal = ({
         }
     }, [])
 
-    const openStatusModal = () => {
-        setShowStatusModal(true)
-    }
-
     const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
-        const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.value === CHECKBOX_VALUE.CHECKED)
+        const allChecked =
+            bulkRotatePodsMap && Object.values(bulkRotatePodsMap).every((app) => app.value === CHECKBOX_VALUE.CHECKED)
         if (allChecked) {
             _selectAllApps.isChecked = true
             _selectAllApps.value = CHECKBOX_VALUE.CHECKED
@@ -181,6 +143,7 @@ export const RestartWorkloadModal = ({
                                 !!selectedAppIds.includes(+appId) && Object.keys(_resourcesMetaDataMap).length > 0,
                             value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
                             namespace: response.result.namespace,
+                            errorResponse: appInfoObject?.errorResponse ?? '',
                         }
 
                         _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
@@ -200,7 +163,7 @@ export const RestartWorkloadModal = ({
     }
 
     useEffect(() => {
-        if (!location.search || !location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
+        if (!location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -274,7 +237,8 @@ export const RestartWorkloadModal = ({
         _selectAllApps.isChecked = _selectAllAppsValue === CHECKBOX_VALUE.CHECKED
         _selectAllApps.value = _selectAllAppsValue
         Object.keys(_bulkRotatePodsMap).forEach((appId) => {
-            _bulkRotatePodsMap[appId].isChecked = _selectAllApps.isChecked
+            _bulkRotatePodsMap[appId].isChecked =
+                _selectAllApps.isChecked && Object.keys(_bulkRotatePodsMap[appId].resources).length > 0
             _bulkRotatePodsMap[appId].value = _selectAllApps.value
             Object.keys(_bulkRotatePodsMap[appId].resources).forEach((kindName) => {
                 _bulkRotatePodsMap[appId].resources[kindName].isChecked = _selectAllApps.isChecked
@@ -314,18 +278,40 @@ export const RestartWorkloadModal = ({
         </div>
     )
 
-    const renderWorkloadDetails = (appId: number, appName: string, resources: ResourcesMetaDataMap) => {
+    const renderWorkloadDetails = (
+        appId: number,
+        appName: string,
+        resources: ResourcesMetaDataMap,
+        errorResponse: string,
+    ) => {
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
 
+        if (errorResponse?.length > 0) {
+            return (
+                <div className="dc__border-left cn-7 p-8 ml-8">
+                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                        <div className="w-300 dc__align-center">
+                            <div className="fw-6">Restarting workloads is not allowed</div>
+                            <div>
+                                Image deployment approval is required for ‘{appName}’ on ‘{envName}’
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
         const resourceKeys = Object.keys(resources)
         if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
                     <div className="dc__border-dashed p-20 flex center bc-n50">
-                        <div className="w-300 flex dc__align-center">
-                            No workloads found. ‘{appName}’ is not deployed on ‘{envName}’
+                        <div className="w-300 dc__align-center">
+                            <div className="fw-6"> No workloads found.</div>
+                            <div>
+                                ‘{appName}’ is not deployed on ‘{envName}’
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -392,7 +378,9 @@ export const RestartWorkloadModal = ({
                                 >
                                     <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
                                     <div className="flex dc__gap-4">
-                                        {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
+                                        {bulkRotatePodsMap[appId]?.errorResponse?.length > 0
+                                            ? APP_DETAILS_TEXT.RESTART_NOT_ALLOWED
+                                            : `${Object.keys(bulkRotatePodsMap[appId].resources).length} workload`}
                                         <DropdownIcon
                                             className={`icon-dim-16 rotate ${expandedAppIds.includes(+appId) ? 'dc__flip-90' : 'dc__flip-270'}`}
                                         />
@@ -403,6 +391,7 @@ export const RestartWorkloadModal = ({
                                 +appId,
                                 bulkRotatePodsMap[appId].appName,
                                 bulkRotatePodsMap[appId].resources,
+                                bulkRotatePodsMap[appId].errorResponse,
                             )}
                         </div>
                     )
@@ -418,6 +407,7 @@ export const RestartWorkloadModal = ({
                     bulkRotatePodsMap={bulkRotatePodsMap}
                     statusModalLoading={statusModalLoading}
                     envName={envName}
+                    hibernateInfoMap={hibernateInfoMap}
                 />
             )
         }
@@ -466,7 +456,7 @@ export const RestartWorkloadModal = ({
         )
     }
 
-    const updateBulkRotatePodsMapWithStatusCounts = (postResponse, appId) => {
+    const updateBulkRotatePodsMapWithStatusCounts = (postResponse, appId: string) => {
         const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
         let failedCount = 0
         postResponse.result.responses?.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
@@ -502,17 +492,12 @@ export const RestartWorkloadModal = ({
     }
 
     const postRestartPodBatchFunction = (payload) => () => {
-        return postRestartWorkloadRotatePods(payload)
-            .then((response) => {
-                if (response.result) {
-                    openStatusModal()
-                    // showing the status modal in case batch promise resolved
-                    updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
-                }
-            })
-            .catch((err) => {
-                showError(err)
-            })
+        return postRestartWorkloadRotatePods(payload).then((response) => {
+            if (response.result) {
+                // showing the status modal in case batch promise resolved
+                updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
+            }
+        })
     }
 
     const createFunctionCallsFromRestartPodMap = () => {
@@ -579,25 +564,20 @@ export const RestartWorkloadModal = ({
         if (isDisabled()) {
             return null
         }
-        if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
+        if (!showStatusModal && !showResistanceBox && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
+        } else {
+            const functionCalls = createFunctionCallsFromRestartPodMap()
+            setStatusModalLoading(true)
+            ApiQueuingWithBatch(functionCalls, httpProtocol.current)
+                .then(async () => {})
+                .catch(() => {})
+                .finally(() => {
+                    setShowStatusModal(true)
+                    setShowResistanceBox(false)
+                    setStatusModalLoading(false)
+                })
         }
-
-        const functionCalls = createFunctionCallsFromRestartPodMap()
-        setStatusModalLoading(true)
-
-        ApiQueuingWithBatch(functionCalls, httpProtocol.current)
-            .then(async () => {
-                if (getDeploymentWindowStateAppGroup) {
-                    await getDeploymentWindowData()
-                }
-            })
-            .catch((error) => {
-                showError(error)
-            })
-            .finally(() => {
-                setStatusModalLoading(false)
-            })
 
         return null
     }
@@ -612,7 +592,7 @@ export const RestartWorkloadModal = ({
                             onClick={closeDrawer}
                             className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                         >
-                            Cancel
+                            Close
                         </button>
                     )}
                     <ButtonWithLoader
@@ -654,11 +634,11 @@ export const RestartWorkloadModal = ({
                 {renderHeaderSection()}
                 {renderBodySection()}
             </div>
-            {showResistanceBox && (
+            {showResistanceBox && BulkDeployResistanceTippy && (
                 <BulkDeployResistanceTippy
                     actionHandler={onSave}
                     handleOnClose={hideResistanceBox}
-                    modalType={MODAL_TYPE.OVERVIEW}
+                    modalType={MODAL_TYPE.RESTART}
                 />
             )}
         </Drawer>
