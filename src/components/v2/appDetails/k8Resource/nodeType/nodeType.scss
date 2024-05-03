@@ -73,6 +73,9 @@
                 fill: var(--B500);
             }
         }
+        .restart-icon path {
+            stroke: var(--B500);
+        }
     }
       .node__tabs{
         transition: width 0.3s;
