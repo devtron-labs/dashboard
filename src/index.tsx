@@ -125,6 +125,7 @@ if (!window || !window._env_) {
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
+        ENABLE_GITOPS_BITBUCKET_SOURCE: false,
     }
 }
 

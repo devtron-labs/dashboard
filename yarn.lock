@@ -982,10 +982,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.78":
-  version "0.0.78"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.78.tgz#0daf44cee815957ac64bdbd796300a0819bc6905"
-  integrity sha512-MdIeHGHm/oHyQ867p3/YWMhQyQH9qVc8xZGRqRzJKIXiu1Px1bItNd9rJ9uH/ShpgJGo52rNeovDaHyCDvAPcw==
+"@devtron-labs/devtron-fe-common-lib@0.0.80":
+  version "0.0.80"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.80.tgz#342b39435423f49088bae1b4ff47f28654a72f0f"
+  integrity sha512-CdkHXm9zgbIkOptlqN8jgZGH5Z77ML9oIz6E9YRQ9xkFgZxxHSsnx1++1j0fVrgsYpu4TV7qkfOh1lZgEY+xAw==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
@@ -1103,7 +1103,7 @@
 
 "@esbuild/darwin-arm64@0.18.20":
   version "0.18.20"
-  resolved "https://registry.yarnpkg.com/@esbuild/darwin-arm64/-/darwin-arm64-0.18.20.tgz#08172cbeccf95fbc383399a7f39cfbddaeb0d7c1"
+  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.18.20.tgz"
   integrity sha512-bxRHW5kHU38zS2lPTPOyuyTm+S+eobPUnTNkdJEfAddYgEcll4xkT8DB9d2008DtTbl7uJag2HuE5NZAZgnNEA==
 
 "@esbuild/darwin-x64@0.18.20":
@@ -1163,7 +1163,7 @@
 
 "@esbuild/linux-x64@0.18.20":
   version "0.18.20"
-  resolved "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.18.20.tgz"
+  resolved "https://registry.yarnpkg.com/@esbuild/linux-x64/-/linux-x64-0.18.20.tgz#c7690b3417af318a9b6f96df3031a8865176d338"
   integrity sha512-UYqiqemphJcNsFEskc73jQ7B9jgwjWrSayxawS6UVFZGWrAAtkzjxSqnoclCXxWtfwLdzU+vTpcNYhpn43uP1w==
 
 "@esbuild/netbsd-x64@0.18.20":
@@ -1499,7 +1499,7 @@
 
 "@sentry/cli-darwin@2.28.5":
   version "2.28.5"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-darwin/-/cli-darwin-2.28.5.tgz#d9ab340acaa8179fbfc0bafbf784e66b52ad5f89"
+  resolved "https://registry.npmjs.org/@sentry/cli-darwin/-/cli-darwin-2.28.5.tgz"
   integrity sha512-+18cWhVcAGB8rGEDQxMn+eZIwXdm7nMp0JJFhZ+QJLA9hYr6m2rLKkQqh9g7TgDPZo+NAsE1KSe/LcFy9gW9gw==
 
 "@sentry/cli-linux-arm64@2.28.5":
@@ -1519,7 +1519,7 @@
 
 "@sentry/cli-linux-x64@2.28.5":
   version "2.28.5"
-  resolved "https://registry.npmjs.org/@sentry/cli-linux-x64/-/cli-linux-x64-2.28.5.tgz"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-x64/-/cli-linux-x64-2.28.5.tgz#a06b84ba3308e0cdeaf068b999bd026404ca24bf"
   integrity sha512-XZj35T0WfS9erKelUXZRibCcB7n1tTz/f/xuQRYdHtyIp0gF0RoOXM7rJfqPbMW6r/0mI8lB5f9OHXvttEW4qg==
 
 "@sentry/cli-win32-i686@2.28.5":
@@ -3938,12 +3938,12 @@ fs.realpath@^1.0.0:
 
 fsevents@2.3.2:
   version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 fsevents@~2.3.2:
   version "2.3.3"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
