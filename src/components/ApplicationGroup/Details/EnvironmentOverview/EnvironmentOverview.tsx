@@ -116,10 +116,10 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus)) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)])
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
 
     useEffect(() => {
         setLoading(true)
@@ -476,7 +476,7 @@ export default function EnvironmentOverview({
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                      <RotateIcon className="icon-dim-12 mr-4 scn-9" />
-                                    Restart Workloads
+                                    Restart Workload
                                 </button>
                             </div>
                         )}
@@ -562,7 +562,7 @@ export default function EnvironmentOverview({
                     showDefaultDrawer={showDefaultDrawer}
                 />
             )}
-            {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
+            {location.search && location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
                 <RestartWorkloadModal
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}

@@ -27,6 +27,11 @@ export const RestartStatusListDrawer = ({
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
 
+    const hasPartialDeploymentWindowAccess = (appId) =>
+        hibernateInfoMap[appId] &&
+        hibernateInfoMap[appId].userActionState &&
+        hibernateInfoMap[appId].userActionState === ACTION_STATE.PARTIAL
+
     const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
             setExpandedAppIds(expandedAppIds.filter((id) => id !== appId))
@@ -62,7 +67,7 @@ export const RestartStatusListDrawer = ({
     }
 
     const getStatusIcon = (errorResponse: string, appId: number) => {
-        if (errorResponse || getDeploymentMessage(appId)) {
+        if (errorResponse || (getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(appId))) {
             return <Failed className="icon-dim-16" />
         }
         return <Success className="icon-dim-16" />
@@ -89,7 +94,7 @@ export const RestartStatusListDrawer = ({
                             </div>
                             <div className="dc__gap-6 flex left">
                                 {getStatusIcon(resources[kindName].errorResponse, appId)}
-                                {getDeploymentMessage(appId) ? (
+                                {getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(appId) ? (
                                     `Restart ${RESTART_STATUS_TEXT.FAILED}`
                                 ) : (
                                     <>
@@ -102,7 +107,7 @@ export const RestartStatusListDrawer = ({
                             </div>
 
                             <div>
-                                {getDeploymentMessage(appId)
+                                {getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(+appId)
                                     ? getDeploymentMessage(appId)
                                     : resources[kindName].errorResponse}
                             </div>
@@ -154,7 +159,7 @@ export const RestartStatusListDrawer = ({
                                     />
                                     <div>{bulkRotatePodsMap[_appId].appName}</div>
                                     <div className="flex left dc__gap-6">
-                                        {getDeploymentMessage(+_appId) ? (
+                                        {getDeploymentMessage(+_appId) && !hasPartialDeploymentWindowAccess(+_appId) ? (
                                             <>
                                                 <Failed className="icon-dim-16" />{' '}
                                                 {Object.keys(bulkRotatePodsMap[_appId].resources).length} Failed
