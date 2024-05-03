@@ -58,7 +58,7 @@ export const RestartStatusListDrawer = ({
                     )}
                     <ExcludedUsersDescription
                         excludedUserEmails={hibernateInfoMap[appId].excludedUserEmails}
-                        rootClassName="dc__ellipsis-right"
+                        rootClassName="dc__ellipsis-right pr-16"
                     />
                 </div>
             )
@@ -114,7 +114,7 @@ export const RestartStatusListDrawer = ({
                             </div>
 
                             <div>
-                                {_userIsBlocked(appId)
+                                {getDeploymentMessage(appId)
                                     ? getDeploymentMessage(appId)
                                     : resources[kindName].errorResponse}
                             </div>
