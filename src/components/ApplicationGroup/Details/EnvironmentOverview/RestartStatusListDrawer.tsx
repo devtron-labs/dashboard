@@ -82,9 +82,7 @@ export const RestartStatusListDrawer = ({
                         {renderStatusIcon(status)}
                         {statusCount}
                         <span className="dc__capitalize">{status}</span>
-                        {status === RESTART_STATUS_TEXT.FAILED && bulkRotatePodsMap[_appId].successCount > 0
-                            ? ` • `
-                            : null}
+                        {status === RESTART_STATUS_TEXT.FAILED && bulkRotatePodsMap[_appId].successCount > 0 && ` • `}
                     </div>
                 )
             }

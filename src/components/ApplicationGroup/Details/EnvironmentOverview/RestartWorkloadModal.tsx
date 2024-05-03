@@ -16,11 +16,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import {
-    AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
     ResourceIdentifierDTO,
     ResourceMetaData,
     ResourcesMetaDataMap,
+    RestartPodMapDTO,
     RestartWorkloadModalProps,
 } from '../../AppGroup.types'
 import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
@@ -118,9 +118,9 @@ export const RestartWorkloadModal = ({
         setShowStatusModal(true)
     }
 
-    const setAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
+    const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
-        const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.isChecked)
+        const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.value === CHECKBOX_VALUE.CHECKED)
         if (allChecked) {
             _selectAllApps.isChecked = true
             _selectAllApps.value = CHECKBOX_VALUE.CHECKED
@@ -145,56 +145,63 @@ export const RestartWorkloadModal = ({
         abortControllerRef.current.abort()
         history.push({ search: new URLSearchParams(newParams).toString() })
     }
+
+    const parseResourcesForApp = (_restartPodMap: RestartPodMapDTO, namespace: string) => {
+        const updatedBulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
+
+        Object.entries(_restartPodMap).forEach(([appId, appInfoObject]) => {
+            const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
+
+            appInfoObject.resourceMetaData.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
+                const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
+                const _resourceMetaData: ResourceMetaData = {
+                    group: resourceIdentifier.groupVersionKind.Group,
+                    kind: resourceIdentifier.groupVersionKind.Kind,
+                    version: resourceIdentifier.groupVersionKind.Version,
+                    name: resourceIdentifier.name,
+                    containsError: resourceIdentifier.containsError,
+                    errorResponse: resourceIdentifier.errorResponse,
+                    isChecked: selectedAppIds.includes(+appId),
+                    value: selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                }
+                _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
+            })
+
+            const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
+                resources: _resourcesMetaDataMap,
+                appName: appInfoObject.appName,
+                isChecked: selectedAppIds.includes(+appId),
+                value: selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
+                namespace,
+            }
+
+            updatedBulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
+        })
+
+        return updatedBulkRotatePodsMap
+    }
+
     const getPodsToRotate = async () => {
         setRestartLoader(true)
-        const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
-        return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
-            .then((response) => {
-                if (response.result) {
-                    const _restartPodMap = response.result.restartPodMap
-                    // Iterate over the restartPodMap and create a bulkRotatePodsMap
-                    Object.keys(_restartPodMap).forEach((appId) => {
-                        const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
-                        const appInfoObject: AppInfoMetaDataDTO = _restartPodMap[appId]
-
-                        appInfoObject.resourceMetaData.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
-                            const kindNameKey: string = `${resourceIdentifier.groupVersionKind.Kind}/${resourceIdentifier.name}`
-                            const _resourceMetaData: ResourceMetaData = {
-                                group: resourceIdentifier.groupVersionKind.Group,
-                                kind: resourceIdentifier.groupVersionKind.Kind,
-                                version: resourceIdentifier.groupVersionKind.Version,
-                                name: resourceIdentifier.name,
-                                containsError: resourceIdentifier.containsError,
-                                errorResponse: resourceIdentifier.errorResponse,
-                                isChecked: !!selectedAppIds.includes(+appId),
-                                value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
-                            }
-                            // inserting in the resourceMetaDataMap
-                            _resourcesMetaDataMap[kindNameKey] = _resourceMetaData
-                        })
-
-                        const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
-                            resources: _resourcesMetaDataMap,
-                            appName: appInfoObject.appName,
-                            isChecked: !!selectedAppIds.includes(+appId),
-                            value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
-                            namespace: response.result.namespace,
-                        }
-
-                        _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
-                    })
-                }
-                setBulkRotatePodsMap(_bulkRotatePodsMap)
-                setAllAppsCheckboxValue(_bulkRotatePodsMap)
-
-                return null
-            })
-            .catch((err) => {
-                setErrorStatusCode(err.code)
-            })
-            .finally(() => {
-                setRestartLoader(false)
-            })
+        try {
+            const response = await getRestartWorkloadRotatePods(
+                selectedAppIds.join(','),
+                envId,
+                abortControllerRef.current.signal,
+            )
+            if (response.result) {
+                const updatedBulkRotatePodsMap = parseResourcesForApp(
+                    response.result.restartPodMap,
+                    response.result.namespace,
+                )
+                setBulkRotatePodsMap(updatedBulkRotatePodsMap)
+                handleAllAppsCheckboxValue(updatedBulkRotatePodsMap)
+            }
+        } catch (err) {
+            setErrorStatusCode(err.code)
+        } finally {
+            setRestartLoader(false)
+        }
     }
 
     useEffect(() => {
@@ -240,8 +247,7 @@ export const RestartWorkloadModal = ({
                     ? CHECKBOX_VALUE.CHECKED
                     : null
             })
-        }
-        if (key === APP_DETAILS_TEXT.KIND_NAME && _bulkRotatePodsMap[appId].resources[_kindName]) {
+        } else if (key === APP_DETAILS_TEXT.KIND_NAME && _bulkRotatePodsMap[appId].resources[_kindName]) {
             // handling resource level value for checkbox
             _bulkRotatePodsMap[appId].resources[_kindName].isChecked =
                 !_bulkRotatePodsMap[appId].resources[_kindName].isChecked
@@ -263,7 +269,7 @@ export const RestartWorkloadModal = ({
                 _bulkRotatePodsMap[appId].value === CHECKBOX_VALUE.INTERMEDIATE
         }
         setBulkRotatePodsMap(_bulkRotatePodsMap)
-        setAllAppsCheckboxValue(_bulkRotatePodsMap)
+        handleAllAppsCheckboxValue(_bulkRotatePodsMap)
     }
 
     const handleAllWorkloadSelection = () => {
@@ -317,7 +323,9 @@ export const RestartWorkloadModal = ({
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
-        if (Object.keys(resources).length === 0) {
+
+        const resourceKeys = Object.keys(resources)
+        if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
                     <div className="dc__border-dashed p-20 flex center bc-n50">
@@ -331,7 +339,7 @@ export const RestartWorkloadModal = ({
 
         return (
             <div className="dc__gap-4 pl-8">
-                {Object.keys(resources).map((kindName) => {
+                {resourceKeys.map((kindName) => {
                     const { isChecked } = resources[kindName]
                     return (
                         <div

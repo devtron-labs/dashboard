@@ -562,7 +562,7 @@ export default function EnvironmentOverview({
                     showDefaultDrawer={showDefaultDrawer}
                 />
             )}
-            {location.search && location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
+            {location.search && location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
                 <RestartWorkloadModal
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}
