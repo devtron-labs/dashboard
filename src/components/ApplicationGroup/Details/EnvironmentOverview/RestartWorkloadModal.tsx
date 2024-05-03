@@ -272,8 +272,7 @@ export const RestartWorkloadModal = ({
     const handleAllWorkloadSelection = () => {
         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
         const _selectAllApps = { ...selectAllApps }
-        const _selectAllAppsValue =
-            _selectAllApps.value === CHECKBOX_VALUE.CHECKED ? Object.keys : CHECKBOX_VALUE.CHECKED
+        const _selectAllAppsValue = _selectAllApps.value === CHECKBOX_VALUE.CHECKED ? null : CHECKBOX_VALUE.CHECKED
         _selectAllApps.isChecked = _selectAllAppsValue === CHECKBOX_VALUE.CHECKED
         _selectAllApps.value = _selectAllAppsValue
         Object.keys(_bulkRotatePodsMap).forEach((appId) => {
