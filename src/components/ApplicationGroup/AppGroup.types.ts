@@ -519,12 +519,14 @@ export interface RestartWorkloadModalProps {
     envId: string
     restartLoader: boolean
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
 }
 
 export interface RestartStatusListDrawerProps {
     bulkRotatePodsMap: BulkRotatePodsMap
     statusModalLoading: boolean
     envName: string
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
 }
 
 // ----------------------------Restart Workload DTO--------------------------------------------

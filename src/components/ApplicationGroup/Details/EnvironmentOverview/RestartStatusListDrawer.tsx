@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
-import { GenericEmptyState, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    DEPLOYMENT_WINDOW_TYPE,
+    GenericEmptyState,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
 import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-expand.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
@@ -10,11 +15,14 @@ import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 import './envOverview.scss'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
+import { importComponentFromFELibrary } from '../../../common'
 
+const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
 export const RestartStatusListDrawer = ({
     bulkRotatePodsMap,
     statusModalLoading,
     envName,
+    hibernateInfoMap,
 }: RestartStatusListDrawerProps) => {
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
     const [isExpandableButtonClicked, setExpandableButtonClicked] = useState(false)
@@ -27,8 +35,31 @@ export const RestartStatusListDrawer = ({
         }
     }
 
-    const getStatusIcon = (errorResponse: string) => {
-        if (errorResponse) {
+    const getDeploymentMessage = (appId) => {
+        if (
+            hibernateInfoMap[appId] &&
+            hibernateInfoMap[appId].userActionState &&
+            hibernateInfoMap[appId].userActionState !== ACTION_STATE.ALLOWED
+        ) {
+            return (
+                <div>
+                    {hibernateInfoMap[appId].userActionState === ACTION_STATE.BLOCKED && (
+                        <div>
+                            You are not authorised to deploy&nbsp;
+                            {hibernateInfoMap[appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ? 'during' : 'outside'}
+                            &nbsp;
+                            {hibernateInfoMap[appId].type.toLowerCase()} window
+                        </div>
+                    )}
+                    <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[appId].excludedUserEmails} />
+                </div>
+            )
+        }
+        return null
+    }
+
+    const getStatusIcon = (errorResponse: string, appId: number) => {
+        if (errorResponse || getDeploymentMessage(appId)) {
             return <Failed className="icon-dim-16" />
         }
         return <Success className="icon-dim-16" />
@@ -38,6 +69,7 @@ export const RestartStatusListDrawer = ({
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
+
         return (
             <div>
                 {Object.keys(resources).map((kindName) => {
@@ -53,13 +85,24 @@ export const RestartStatusListDrawer = ({
                                 {kindName.split('/')[1]}
                             </div>
                             <div className="dc__gap-6 flex left">
-                                {getStatusIcon(resources[kindName].errorResponse)}
-                                Restart&nbsp;
-                                {resources[kindName].errorResponse
-                                    ? RESTART_STATUS_TEXT.FAILED
-                                    : RESTART_STATUS_TEXT.INITIATED}
+                                {getStatusIcon(resources[kindName].errorResponse, appId)}
+                                {getDeploymentMessage(appId) ? (
+                                    `Restart ${RESTART_STATUS_TEXT.FAILED}`
+                                ) : (
+                                    <>
+                                        Restart&nbsp;
+                                        {resources[kindName].errorResponse
+                                            ? RESTART_STATUS_TEXT.FAILED
+                                            : RESTART_STATUS_TEXT.INITIATED}
+                                    </>
+                                )}
                             </div>
-                            <div>{resources[kindName].errorResponse}</div>
+
+                            <div>
+                                {getDeploymentMessage(appId)
+                                    ? getDeploymentMessage(appId)
+                                    : resources[kindName].errorResponse}
+                            </div>
                         </div>
                     )
                 })}
@@ -108,15 +151,24 @@ export const RestartStatusListDrawer = ({
                                     />
                                     <div>{bulkRotatePodsMap[_appId].appName}</div>
                                     <div className="flex left dc__gap-6">
-                                        {renderCount(
-                                            bulkRotatePodsMap[_appId].failedCount,
-                                            RESTART_STATUS_TEXT.FAILED,
-                                            _appId,
-                                        )}
-                                        {renderCount(
-                                            bulkRotatePodsMap[_appId].successCount,
-                                            RESTART_STATUS_TEXT.INITIATED,
-                                            _appId,
+                                        {getDeploymentMessage(+_appId) ? (
+                                            <>
+                                                <Failed className="icon-dim-16" />{' '}
+                                                {Object.keys(bulkRotatePodsMap[_appId].resources).length} Failed
+                                            </>
+                                        ) : (
+                                            <>
+                                                {renderCount(
+                                                    bulkRotatePodsMap[_appId].failedCount,
+                                                    RESTART_STATUS_TEXT.FAILED,
+                                                    _appId,
+                                                )}
+                                                {renderCount(
+                                                    bulkRotatePodsMap[_appId].successCount,
+                                                    RESTART_STATUS_TEXT.INITIATED,
+                                                    _appId,
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                     <div />

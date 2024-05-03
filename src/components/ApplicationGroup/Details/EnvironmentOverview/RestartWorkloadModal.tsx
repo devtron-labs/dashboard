@@ -55,6 +55,7 @@ export const RestartWorkloadModal = ({
     selectedAppIds,
     envName,
     envId,
+    hibernateInfoMap,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -72,7 +73,6 @@ export const RestartWorkloadModal = ({
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
     const httpProtocol = useRef('')
-
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
 
     const getDeploymentWindowData = async () => {
@@ -421,6 +421,7 @@ export const RestartWorkloadModal = ({
                     bulkRotatePodsMap={bulkRotatePodsMap}
                     statusModalLoading={statusModalLoading}
                     envName={envName}
+                    hibernateInfoMap={hibernateInfoMap}
                 />
             )
         }
@@ -469,7 +470,7 @@ export const RestartWorkloadModal = ({
         )
     }
 
-    const updateBulkRotatePodsMapWithStatusCounts = (postResponse, appId) => {
+    const updateBulkRotatePodsMapWithStatusCounts = (postResponse, appId: string) => {
         const _resourcesMetaDataMap: ResourcesMetaDataMap = {}
         let failedCount = 0
         postResponse.result.responses?.forEach((resourceIdentifier: ResourceIdentifierDTO) => {
@@ -513,9 +514,7 @@ export const RestartWorkloadModal = ({
                     updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
                 }
             })
-            .catch((err) => {
-                showError(err)
-            })
+            .catch(() => {})
     }
 
     const createFunctionCallsFromRestartPodMap = () => {

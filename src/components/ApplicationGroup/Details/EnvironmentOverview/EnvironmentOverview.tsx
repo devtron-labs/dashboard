@@ -116,10 +116,10 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus)) {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus])
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)])
 
     useEffect(() => {
         setLoading(true)
@@ -562,13 +562,14 @@ export default function EnvironmentOverview({
                     showDefaultDrawer={showDefaultDrawer}
                 />
             )}
-            {location.search && location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
+            {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
                 <RestartWorkloadModal
                     selectedAppIds={selectedAppIds}
                     envName={appListData.environment}
                     envId={envId}
                     setRestartLoader={setRestartLoader}
                     restartLoader={restartLoader}
+                    hibernateInfoMap={hibernateInfoMap}
                 />
             )}
             {showHibernateStatusDrawer.showStatus && (
