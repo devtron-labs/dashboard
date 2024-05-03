@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
-    ACTION_STATE,
     ButtonWithLoader,
     CHECKBOX_VALUE,
     Checkbox,
-    DEPLOYMENT_WINDOW_TYPE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
@@ -39,16 +37,7 @@ import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
-const processDeploymentWindowMetadata = importComponentFromFELibrary(
-    'processDeploymentWindowMetadata',
-    null,
-    'function',
-)
-const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
-    'getDeploymentWindowStateAppGroup',
-    null,
-    'function',
-)
+
 export const RestartWorkloadModal = ({
     restartLoader,
     setRestartLoader,
@@ -73,29 +62,6 @@ export const RestartWorkloadModal = ({
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
     const httpProtocol = useRef('')
-    const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
-
-    const getDeploymentWindowData = async () => {
-        const appEnvMap = Object.keys(bulkRotatePodsMap).map((appId) => {
-            return { appId: +appId, envId: +envId }
-        })
-        let _isPartialActionAllowed = false
-
-        const { result } = await getDeploymentWindowStateAppGroup(appEnvMap)
-        const _appDeploymentWindowMap = {}
-        result?.appData?.forEach((data) => {
-            _appDeploymentWindowMap[data.appId] = processDeploymentWindowMetadata(data.deploymentProfileList, envId)
-            if (!_isPartialActionAllowed) {
-                _isPartialActionAllowed =
-                    _appDeploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
-                    !_appDeploymentWindowMap[data.appId].isActive
-                        ? _appDeploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
-                        : false
-            }
-
-            setIsPartialActionAllowed(_isPartialActionAllowed)
-        })
-    }
 
     useEffect(() => {
         const observer = new PerformanceObserver((list) => {
@@ -209,6 +175,7 @@ export const RestartWorkloadModal = ({
         getPodsToRotate()
     }, [location])
 
+    console.log(hibernateInfoMap)
     const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
             setExpandedAppIds(expandedAppIds.filter((id) => id !== appId))
@@ -609,25 +576,28 @@ export const RestartWorkloadModal = ({
         if (isDisabled()) {
             return null
         }
-        if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
+        if (
+            BulkDeployResistanceTippy &&
+            !showStatusModal &&
+            !showResistanceBox &&
+            Object.keys(hibernateInfoMap).length > 0
+        ) {
             setShowResistanceBox(true)
+        } else {
+            const functionCalls = createFunctionCallsFromRestartPodMap()
+            setStatusModalLoading(true)
+            ApiQueuingWithBatch(functionCalls, httpProtocol.current)
+                .then(async () => {})
+                .catch((error) => {
+                    setShowStatusModal(false)
+                    showError(error)
+                })
+                .finally(() => {
+                    setShowStatusModal(true)
+                    setShowResistanceBox(false)
+                    setStatusModalLoading(false)
+                })
         }
-
-        const functionCalls = createFunctionCallsFromRestartPodMap()
-        setStatusModalLoading(true)
-
-        ApiQueuingWithBatch(functionCalls, httpProtocol.current)
-            .then(async () => {
-                if (getDeploymentWindowStateAppGroup) {
-                    await getDeploymentWindowData()
-                }
-            })
-            .catch((error) => {
-                showError(error)
-            })
-            .finally(() => {
-                setStatusModalLoading(false)
-            })
 
         return null
     }
@@ -688,7 +658,7 @@ export const RestartWorkloadModal = ({
                 <BulkDeployResistanceTippy
                     actionHandler={onSave}
                     handleOnClose={hideResistanceBox}
-                    modalType={MODAL_TYPE.OVERVIEW}
+                    modalType={MODAL_TYPE.RESTART}
                 />
             )}
         </Drawer>
