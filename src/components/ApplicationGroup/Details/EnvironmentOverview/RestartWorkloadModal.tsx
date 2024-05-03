@@ -177,7 +177,8 @@ export const RestartWorkloadModal = ({
                         const _bulkRotatePodsMetaData: BulkRotatePodsMetaData = {
                             resources: _resourcesMetaDataMap ?? null,
                             appName: appInfoObject.appName,
-                            isChecked: !!selectedAppIds.includes(+appId),
+                            isChecked:
+                                !!selectedAppIds.includes(+appId) && Object.keys(_resourcesMetaDataMap).length > 0,
                             value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
                             namespace: response.result.namespace,
                         }
@@ -370,7 +371,7 @@ export const RestartWorkloadModal = ({
                         <div className="pl-16 pr-16" key={appId}>
                             <div key={appId} className="flex dc__content-space cursor dc__hover-n50">
                                 <Checkbox
-                                    rootClassName="mt-3 mb-3 w-28"
+                                    rootClassName={`mt-3 mb-3 w-28 ${Object.keys(bulkRotatePodsMap[appId].resources).length === 0 ? 'dc__disabled' : ''}`}
                                     dataTestId="enforce-policy"
                                     isChecked={bulkRotatePodsMap[appId].isChecked}
                                     value={bulkRotatePodsMap[appId].value}
