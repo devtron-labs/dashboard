@@ -165,7 +165,7 @@ export const DeploymentAppSelector = ({
     isDeployChartView,
     allowedDeploymentTypes,
     gitRepoURL,
-    allowedCustomBool
+    allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -199,7 +199,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target='_blank'>
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
