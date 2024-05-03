@@ -540,6 +540,7 @@ export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
 export interface AppInfoMetaDataDTO {
     resourceMetaData: ResourceIdentifierDTO[]
     appName: string,
+    errorResponse?: string
 }
 
 export interface RestartPodMapDTO {
@@ -577,6 +578,7 @@ export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMeta
     appName: string
     resources?: ResourcesMetaDataMap
     namespace: string
+    errorResponse?: string
 }
 
 export interface BulkRotatePodsMap {

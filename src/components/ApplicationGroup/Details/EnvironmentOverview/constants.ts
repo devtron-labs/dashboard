@@ -15,6 +15,7 @@ export enum APP_DETAILS_TEXT {
     RESTART_STATUS = 'RESTART STATUS',
     RESTART_WORKLOAD = 'Restart workloads',
     RETRY_FAILED = 'Retry failed',
+    RESTART_NOT_ALLOWED = 'Restart not allowed',
 }
 
 export const DATA_TEST_IDS = {

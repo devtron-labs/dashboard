@@ -182,6 +182,7 @@ export const RestartWorkloadModal = ({
                                 !!selectedAppIds.includes(+appId) && Object.keys(_resourcesMetaDataMap).length > 0,
                             value: !!selectedAppIds.includes(+appId) && CHECKBOX_VALUE.CHECKED,
                             namespace: response.result.namespace,
+                            errorResponse: appInfoObject?.errorResponse ?? '',
                         }
 
                         _bulkRotatePodsMap[+appId] = _bulkRotatePodsMetaData
@@ -317,18 +318,40 @@ export const RestartWorkloadModal = ({
         </div>
     )
 
-    const renderWorkloadDetails = (appId: number, appName: string, resources: ResourcesMetaDataMap) => {
+    const renderWorkloadDetails = (
+        appId: number,
+        appName: string,
+        resources: ResourcesMetaDataMap,
+        errorResponse: string,
+    ) => {
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
-
         const resourceKeys = Object.keys(resources)
+
+        if (errorResponse?.length > 0) {
+            return (
+                <div className="dc__border-left cn-7 p-8 ml-8">
+                    <div className="dc__border-dashed p-20 flex center bc-n50">
+                        <div className="w-300 dc__align-center">
+                            <div className="fw-6">Restarting workloads is not allowed</div>
+                            <div>
+                                Image deployment approval is required for ‘{appName}’ on ‘{envName}’
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
         if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
                     <div className="dc__border-dashed p-20 flex center bc-n50">
-                        <div className="w-300 flex dc__align-center">
-                            No workloads found. ‘{appName}’ is not deployed on ‘{envName}’
+                        <div className="w-300 dc__align-center">
+                            <div className="fw-6"> No workloads found.</div>
+                            <div>
+                                ‘{appName}’ is not deployed on ‘{envName}’
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -395,7 +418,9 @@ export const RestartWorkloadModal = ({
                                 >
                                     <span className="fw-6">{bulkRotatePodsMap[appId].appName}</span>
                                     <div className="flex dc__gap-4">
-                                        {Object.keys(bulkRotatePodsMap[appId].resources).length} workload
+                                        {bulkRotatePodsMap[appId]?.errorResponse?.length > 0
+                                            ? APP_DETAILS_TEXT.RESTART_NOT_ALLOWED
+                                            : `${Object.keys(bulkRotatePodsMap[appId].resources).length} workload`}
                                         <DropdownIcon
                                             className={`icon-dim-16 rotate ${expandedAppIds.includes(+appId) ? 'dc__flip-90' : 'dc__flip-270'}`}
                                         />
@@ -406,6 +431,7 @@ export const RestartWorkloadModal = ({
                                 +appId,
                                 bulkRotatePodsMap[appId].appName,
                                 bulkRotatePodsMap[appId].resources,
+                                bulkRotatePodsMap[appId].errorResponse,
                             )}
                         </div>
                     )

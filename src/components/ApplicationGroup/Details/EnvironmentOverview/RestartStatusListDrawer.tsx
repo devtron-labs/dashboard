@@ -45,7 +45,7 @@ export const RestartStatusListDrawer = ({
                 <div>
                     {hibernateInfoMap[appId].userActionState === ACTION_STATE.BLOCKED && (
                         <div>
-                            You are not authorised to deploy&nbsp;
+                            You are not authorised to restart workload&nbsp;
                             {hibernateInfoMap[appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ? 'during' : 'outside'}
                             &nbsp;
                             {hibernateInfoMap[appId].type.toLowerCase()} window
