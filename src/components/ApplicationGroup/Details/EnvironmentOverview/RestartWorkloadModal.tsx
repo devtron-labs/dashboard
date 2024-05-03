@@ -8,7 +8,6 @@ import {
     GenericEmptyState,
     InfoColourBar,
     MODAL_TYPE,
-    showError,
     stopPropagation,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -79,10 +78,6 @@ export const RestartWorkloadModal = ({
             observer.disconnect()
         }
     }, [])
-
-    const openStatusModal = () => {
-        setShowStatusModal(true)
-    }
 
     const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
@@ -175,7 +170,6 @@ export const RestartWorkloadModal = ({
         getPodsToRotate()
     }, [location])
 
-    console.log(hibernateInfoMap)
     const toggleWorkloadCollapse = (appId: number) => {
         if (expandedAppIds.includes(appId)) {
             setExpandedAppIds(expandedAppIds.filter((id) => id !== appId))
@@ -293,7 +287,6 @@ export const RestartWorkloadModal = ({
         if (!expandedAppIds.includes(appId) || appName !== bulkRotatePodsMap[appId].appName) {
             return null
         }
-        const resourceKeys = Object.keys(resources)
 
         if (errorResponse?.length > 0) {
             return (
@@ -309,6 +302,7 @@ export const RestartWorkloadModal = ({
                 </div>
             )
         }
+        const resourceKeys = Object.keys(resources)
         if (resourceKeys.length === 0) {
             return (
                 <div className="dc__border-left cn-7 p-8 ml-8">
@@ -501,7 +495,6 @@ export const RestartWorkloadModal = ({
         return postRestartWorkloadRotatePods(payload)
             .then((response) => {
                 if (response.result) {
-                    openStatusModal()
                     // showing the status modal in case batch promise resolved
                     updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
                 }
@@ -576,22 +569,14 @@ export const RestartWorkloadModal = ({
         if (isDisabled()) {
             return null
         }
-        if (
-            BulkDeployResistanceTippy &&
-            !showStatusModal &&
-            !showResistanceBox &&
-            Object.keys(hibernateInfoMap).length > 0
-        ) {
+        if (!showStatusModal && Object.keys(hibernateInfoMap).length > 0) {
             setShowResistanceBox(true)
         } else {
             const functionCalls = createFunctionCallsFromRestartPodMap()
             setStatusModalLoading(true)
             ApiQueuingWithBatch(functionCalls, httpProtocol.current)
                 .then(async () => {})
-                .catch((error) => {
-                    setShowStatusModal(false)
-                    showError(error)
-                })
+                .catch(() => {})
                 .finally(() => {
                     setShowStatusModal(true)
                     setShowResistanceBox(false)
@@ -654,7 +639,7 @@ export const RestartWorkloadModal = ({
                 {renderHeaderSection()}
                 {renderBodySection()}
             </div>
-            {showResistanceBox && (
+            {showResistanceBox && BulkDeployResistanceTippy && (
                 <BulkDeployResistanceTippy
                     actionHandler={onSave}
                     handleOnClose={hideResistanceBox}

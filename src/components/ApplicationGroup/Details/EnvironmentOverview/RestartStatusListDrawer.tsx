@@ -66,8 +66,15 @@ export const RestartStatusListDrawer = ({
         return null
     }
 
+    const _userIsBlocked = (appId): boolean => {
+        if (getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(appId)) {
+            return true
+        }
+        return false
+    }
+
     const getStatusIcon = (errorResponse: string, appId: number) => {
-        if (errorResponse || (getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(appId))) {
+        if (errorResponse || _userIsBlocked(appId)) {
             return <Failed className="icon-dim-16" />
         }
         return <Success className="icon-dim-16" />
@@ -94,7 +101,7 @@ export const RestartStatusListDrawer = ({
                             </div>
                             <div className="dc__gap-6 flex left">
                                 {getStatusIcon(resources[kindName].errorResponse, appId)}
-                                {getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(appId) ? (
+                                {_userIsBlocked ? (
                                     `Restart ${RESTART_STATUS_TEXT.FAILED}`
                                 ) : (
                                     <>
@@ -107,7 +114,7 @@ export const RestartStatusListDrawer = ({
                             </div>
 
                             <div>
-                                {getDeploymentMessage(appId) && !hasPartialDeploymentWindowAccess(+appId)
+                                {_userIsBlocked(appId)
                                     ? getDeploymentMessage(appId)
                                     : resources[kindName].errorResponse}
                             </div>
@@ -161,7 +168,7 @@ export const RestartStatusListDrawer = ({
                                     <div className="flex left dc__gap-6">
                                         {getDeploymentMessage(+_appId) && !hasPartialDeploymentWindowAccess(+_appId) ? (
                                             <>
-                                                <Failed className="icon-dim-16" />{' '}
+                                                <Failed className="icon-dim-16" />
                                                 {Object.keys(bulkRotatePodsMap[_appId].resources).length} Failed
                                             </>
                                         ) : (
