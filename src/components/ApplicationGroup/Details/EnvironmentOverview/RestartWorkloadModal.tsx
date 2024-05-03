@@ -539,7 +539,10 @@ export const RestartWorkloadModal = ({
                     updateBulkRotatePodsMapWithStatusCounts(response, payload.appId)
                 }
             })
-            .catch(() => {})
+            .catch(() => {
+                // In case of error, setting the status modal to true
+                setShowStatusModal(true)
+            })
     }
 
     const createFunctionCallsFromRestartPodMap = () => {

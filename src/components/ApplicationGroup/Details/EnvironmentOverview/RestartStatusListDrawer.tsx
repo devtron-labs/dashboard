@@ -51,7 +51,10 @@ export const RestartStatusListDrawer = ({
                             {hibernateInfoMap[appId].type.toLowerCase()} window
                         </div>
                     )}
-                    <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[appId].excludedUserEmails} />
+                    <ExcludedUsersDescription
+                        excludedUserEmails={hibernateInfoMap[appId].excludedUserEmails}
+                        rootClassName="dc__ellipsis-right"
+                    />
                 </div>
             )
         }
@@ -77,7 +80,7 @@ export const RestartStatusListDrawer = ({
                         <div
                             key={kindName}
                             data-testid="bulk-workload-status-details__row"
-                            className="pl-16 pr-16 pt-8 pb-8 bulk-workload-status-details__row cursor dc__gap-8 dc__hover-n50 dc__align-start"
+                            className="pl-16 pr-16 pt-8 pb-8 bulk-workload-status-details__row dc__gap-8 dc__hover-n50 dc__align-start"
                         >
                             <div />
                             <div className="dc__hover-n50">
@@ -140,7 +143,7 @@ export const RestartStatusListDrawer = ({
                         return (
                             <div key={_appId} className="dc__border-bottom-n1">
                                 <div
-                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 dc__hover-n50 dc__gap-8"
+                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 dc__hover-n50 dc__gap-8 cursor"
                                     onClick={() => toggleWorkloadCollapse(+_appId)}
                                 >
                                     <ArrowRight
