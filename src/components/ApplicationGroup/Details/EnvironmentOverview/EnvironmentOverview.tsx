@@ -116,10 +116,10 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search)) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)])
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
     useEffect(() => {
         setLoading(true)
         fetchDeployments()
