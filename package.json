@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.79",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.81",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -19,10 +19,8 @@
         "ansi_up": "^5.2.1",
         "command-line-parser": "^0.2.10",
         "compute-histogram": "^0.9.11",
-        "dompurify": "^3.0.2",
         "fast-json-patch": "^3.1.1",
         "flexsearch": "^0.6.32",
-        "marked": "4.3.0",
         "moment": "^2.29.4",
         "monaco-editor": "0.45.0",
         "monaco-yaml": "5.1.1",
@@ -53,7 +51,9 @@
         "xterm-addon-fit": "^0.5.0",
         "xterm-addon-search": "^0.9.0",
         "xterm-webfont": "^2.0.0",
-        "yaml": "^2.4.1"
+        "yaml": "^2.4.1",
+        "marked": "4.3.0",
+        "dompurify": "^3.0.2"
     },
     "scripts": {
         "prepare": "husky install",

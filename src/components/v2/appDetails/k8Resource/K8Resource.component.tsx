@@ -18,8 +18,9 @@ export default function K8ResourceComponent({
     externalLinks,
     monitoringTools,
     isDevtronApp,
-    isExternalApp,
+    clusterId,
     isDeploymentBlocked,
+    isExternalApp,
 }: K8ResourceComponentProps) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     const { isSuperAdmin } = useMainContext()
@@ -53,8 +54,9 @@ export default function K8ResourceComponent({
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
-                            isExternalApp={isExternalApp}
+                            clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
+                            isExternalApp={isExternalApp}
                         />
                     </div>
                 </div>

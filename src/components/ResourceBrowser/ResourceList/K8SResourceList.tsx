@@ -3,7 +3,7 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { highlightSearchedText } from '../../common/helpers/Helpers'
+import { highlightSearchedText, importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
@@ -21,6 +21,9 @@ import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
 import { URLS } from '../../../config'
+
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 export const K8SResourceList = ({
     selectedResource,
@@ -40,20 +43,22 @@ export const K8SResourceList = ({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
-    isCreateModalOpen,
+    clearFilters,
     addTab,
+    updateTabUrl,
     renderCallBackSync,
     syncError,
     k8SObjectMapRaw,
 }: K8SResourceListType) => {
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const { clusterId, namespace, nodeType, node, group } = useParams<{
+    const { clusterId, namespace, nodeType, node } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
         group: string
+        name: string
     }>()
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -200,7 +205,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 flex left${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
@@ -224,12 +229,26 @@ export const K8SResourceList = ({
                                         __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
                                     }}
                                 />
+                                <span>
+                                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                                        <PodRestartIcon
+                                            clusterId={clusterId}
+                                            name={resourceData.name}
+                                            namespace={resourceData.namespace}
+                                        />
+                                    )}
+                                </span>
                             </ConditionalWrap>
                         </div>
                     ),
                 )}
             </div>
         )
+    }
+
+    const emptyPageActionHandler = () => {
+        clearSearch()
+        clearFilters()
     }
 
     const renderEmptyPage = (): JSX.Element => {
@@ -248,7 +267,7 @@ export const K8SResourceList = ({
             <ResourceListEmptyState
                 title={RESOURCE_LIST_EMPTY_STATE.title}
                 subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                actionHandler={clearSearch}
+                actionHandler={emptyPageActionHandler}
             />
         )
     }
@@ -350,11 +369,14 @@ export const K8SResourceList = ({
                 setSearchApplied={setSearchApplied}
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
+                updateTabUrl={updateTabUrl}
                 isSearchInputDisabled={resourceListLoader}
-                isCreateModalOpen={isCreateModalOpen}
                 renderCallBackSync={renderCallBackSync}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
+            {PodRestart && (
+                <PodRestart />
+            )}
         </div>
     )
 }
