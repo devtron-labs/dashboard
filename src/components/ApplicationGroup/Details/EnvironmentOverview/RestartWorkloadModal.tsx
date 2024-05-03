@@ -120,7 +120,8 @@ export const RestartWorkloadModal = ({
 
     const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
-        const allChecked = Object.values(bulkRotatePodsMap).every((app) => app.value === CHECKBOX_VALUE.CHECKED)
+        const allChecked =
+            bulkRotatePodsMap && Object.values(bulkRotatePodsMap).every((app) => app.value === CHECKBOX_VALUE.CHECKED)
         if (allChecked) {
             _selectAllApps.isChecked = true
             _selectAllApps.value = CHECKBOX_VALUE.CHECKED
@@ -200,7 +201,7 @@ export const RestartWorkloadModal = ({
     }
 
     useEffect(() => {
-        if (!location.search || !location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
+        if (!location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -270,11 +271,13 @@ export const RestartWorkloadModal = ({
     const handleAllWorkloadSelection = () => {
         const _bulkRotatePodsMap = { ...bulkRotatePodsMap }
         const _selectAllApps = { ...selectAllApps }
-        const _selectAllAppsValue = _selectAllApps.value === CHECKBOX_VALUE.CHECKED ? null : CHECKBOX_VALUE.CHECKED
+        const _selectAllAppsValue =
+            _selectAllApps.value === CHECKBOX_VALUE.CHECKED ? Object.keys : CHECKBOX_VALUE.CHECKED
         _selectAllApps.isChecked = _selectAllAppsValue === CHECKBOX_VALUE.CHECKED
         _selectAllApps.value = _selectAllAppsValue
         Object.keys(_bulkRotatePodsMap).forEach((appId) => {
-            _bulkRotatePodsMap[appId].isChecked = _selectAllApps.isChecked
+            _bulkRotatePodsMap[appId].isChecked =
+                _selectAllApps.isChecked && Object.keys(_bulkRotatePodsMap[appId].resources).length > 0
             _bulkRotatePodsMap[appId].value = _selectAllApps.value
             Object.keys(_bulkRotatePodsMap[appId].resources).forEach((kindName) => {
                 _bulkRotatePodsMap[appId].resources[kindName].isChecked = _selectAllApps.isChecked
@@ -612,7 +615,7 @@ export const RestartWorkloadModal = ({
                             onClick={closeDrawer}
                             className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
                         >
-                            Cancel
+                            Close
                         </button>
                     )}
                     <ButtonWithLoader

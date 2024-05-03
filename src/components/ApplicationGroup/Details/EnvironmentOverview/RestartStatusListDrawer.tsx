@@ -97,7 +97,7 @@ export const RestartStatusListDrawer = ({
                         return (
                             <div key={_appId} className="dc__border-bottom-n1">
                                 <div
-                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 cursor dc__hover-n50 dc__gap-8"
+                                    className="dc__zi-1 bulk-workload-status-details__row pt-8 pb-8 pl-16 pr-16 dc__hover-n50 dc__gap-8"
                                     onClick={() => toggleWorkloadCollapse(+_appId)}
                                 >
                                     <ArrowRight

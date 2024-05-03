@@ -476,7 +476,7 @@ export default function EnvironmentOverview({
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                      <RotateIcon className="icon-dim-12 mr-4 scn-9" />
-                                    Restart Workload
+                                    Restart Workloads
                                 </button>
                             </div>
                         )}
