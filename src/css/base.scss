@@ -737,6 +737,7 @@ button.anchor {
     &.f-completed,
     &.f-bound,
     &.f-active,
+    &.f-created,
     &.f-scalingreplicasetdown {
         color: var(--G500);
     }
@@ -762,6 +763,7 @@ button.anchor {
     &.f-terminating,
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
+    &.f-deleted,
     &.f-evicted {
         color: var(--R500);
     }
@@ -771,6 +773,10 @@ button.anchor {
     &.f-unknown,
     &.initiated {
         color: var(--yellow);
+    }
+
+    &.f-updated {
+        color: var(--Y700);
     }
 }
 
