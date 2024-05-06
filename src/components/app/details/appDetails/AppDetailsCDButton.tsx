@@ -7,7 +7,7 @@ import {
     stopPropagation,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getCTAClass } from '../../../common'
+import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { MATERIAL_TYPE } from '../triggerView/types'
@@ -15,20 +15,21 @@ import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { AppDetailsCDButtonType } from '../../types'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
+import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+
+const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
 const AppDetailsCDButton = ({
     appId,
     environmentId,
-    cdPipelineId,
-    isVirtualEnvironment,
-    ciPipelineId,
+    cdModal,
     deploymentAppType,
-    parentEnvironmentName,
+    isVirtualEnvironment,
     deploymentUserActionState,
     loadingDetails,
     environmentName,
-    triggerType,
-    isRedirectedFromAppDetails,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -73,6 +74,33 @@ const AppDetailsCDButton = ({
         )
     }
 
+    const node = {
+        environmentName,
+        parentEnvironmentName: cdModal.parentEnvironmentName,
+        isVirtualEnvironment,
+    }
+
+    const renderApprovalMaterial = () => {
+        return (
+            ApprovalMaterialModal &&
+            location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) && (
+                <ApprovalMaterialModal
+                    isLoading={false}
+                    node={node}
+                    materialType={MATERIAL_TYPE.inputMaterialList}
+                    stageType={DeploymentNodeType.CD}
+                    closeApprovalModal={closeCDModal}
+                    appId={appId}
+                    pipelineId={cdModal.cdPipelineId}
+                    getModuleInfo={getModuleInfo}
+                    GitCommitInfoGeneric={GitCommitInfoGeneric}
+                    ciPipelineId={cdModal.ciPipelineId}
+                    history={history}
+                />
+            )
+        )
+    }
+
     const renderCDModal = () => {
         return (
             (mode === URL_PARAM_MODE_TYPE.LIST || mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
@@ -82,17 +110,17 @@ const AppDetailsCDButton = ({
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             appId={appId}
                             envId={environmentId}
-                            pipelineId={cdPipelineId}
+                            pipelineId={cdModal.cdPipelineId}
                             stageType={DeploymentNodeType.CD}
                             envName={environmentName}
                             closeCDModal={closeCDModal}
-                            triggerType={triggerType}
+                            triggerType={cdModal.triggerType}
                             isVirtualEnvironment={isVirtualEnvironment}
-                            ciPipelineId={ciPipelineId}
+                            ciPipelineId={cdModal.ciPipelineId}
                             deploymentAppType={deploymentAppType}
-                            parentEnvironmentName={parentEnvironmentName}
+                            parentEnvironmentName={cdModal.parentEnvironmentName}
                             isLoading={loadingDetails}
-                            isRedirectedFromAppDetails={isRedirectedFromAppDetails}
+                            isRedirectedFromAppDetails={cdModal.isRedirectedFromAppDetails}
                         />
                     </div>
                 </VisibleModal>
@@ -104,6 +132,7 @@ const AppDetailsCDButton = ({
         <>
             {renderDeployButton()}
             {renderCDModal()}
+            {renderApprovalMaterial()}
         </>
     )
 }

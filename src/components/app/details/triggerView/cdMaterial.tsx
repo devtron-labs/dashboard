@@ -569,7 +569,7 @@ const CDMaterial = ({
         if (isRedirectedFromAppDetails) {
             // redirecting to image approval
             window.open(
-                `${location.origin}${window.__BASE_URL__}app/${appId}/trigger?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
+                `${location.pathname}?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
                 '_blank',
             )
         } else {
