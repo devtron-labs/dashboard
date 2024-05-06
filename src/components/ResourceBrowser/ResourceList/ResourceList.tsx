@@ -1,723 +1,141 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import {
-    showError,
-    Progressing,
-    ServerErrors,
     getUserRole,
     BreadCrumb,
     useBreadcrumb,
     ErrorScreenManager,
-    Reload,
     DevtronProgressing,
+    useAsync,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
-import {
-    convertToOptionsList,
-    createGroupSelectList,
-    filterImageList,
-    processK8SObjects,
-    sortObjectArrayAlphabetically,
-} from '../../common'
 import PageHeader from '../../common/header/PageHeader'
-import {
-    ApiResourceGroupType,
-    ClusterOptionType,
-    K8SObjectMapType,
-    K8SObjectType,
-    ResourceDetailType,
-    ResourceListPayloadType,
-} from '../Types'
-import {
-    getResourceGroupList,
-    getResourceGroupListRaw,
-    getResourceList,
-    namespaceListByClusterId,
-} from '../ResourceBrowser.service'
-import { Nodes, OptionType } from '../../app/types'
-import { ALL_NAMESPACE_OPTION, EVENT_LIST, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from '../Constants'
+import { ClusterOptionType, URLParams } from '../Types'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
-import Sidebar from './Sidebar'
-import { K8SResourceList } from './K8SResourceList'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
-import K8ResourceIcon from '../../../assets/icons/ic-object.svg'
-import ClusterIcon from '../../../assets/icons/ic-world-black.svg'
+import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
 import { CreateResource } from './CreateResource'
-import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
-import ConnectingToClusterState from './ConnectingToClusterState'
-import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
-import searchWorker from '../../../config/searchWorker'
-import WebWorker from '../../app/WebWorker'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import {
-    getEventObjectTypeGVK,
-    getGroupedK8sObjectMap,
-    getK8SObjectMapAfterGroupHeadingClick,
-    getParentAndChildNodes,
-    getUpdatedNodeSelectionData,
-    getUpdatedResourceSelectionData,
-    removeDefaultForStorageClass,
-    sortEventListData,
-} from '../Utils'
-import '../ResourceBrowser.scss'
-import { ClusterCapacityType, ClusterDetail, ClusterImageList } from '../../ClusterNodes/types'
-import { getHostURLConfiguration } from '../../../services/service'
-import { clusterNamespaceList, getClusterList, getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
-import ClusterSelectionList from '../../ClusterNodes/ClusterSelectionList'
+import { getTabsBasedOnRole } from '../Utils'
+import { getResourceGroupListRaw } from '../ResourceBrowser.service'
+import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
-import TerminalIcon from '../../../assets/icons/ic-terminal-fill.svg'
-import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
-import { createTaintsList } from '../../cluster/cluster.util'
-import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+import K8SResourceTabComponent from './K8SResourceTabComponent'
+import AdminTerminal from './AdminTerminal'
+import { renderCreateResourceButton } from '../PageHeader.buttons'
+import { renderRefreshBar } from './ResourceList.component'
+import '../ResourceBrowser.scss'
 
-export default function ResourceList() {
-    const { clusterId, namespace, nodeType, node, group } = useParams<{
-        clusterId: string
-        namespace: string
-        nodeType: string
-        node: string
-        group: string
-    }>()
-    const { replace, push } = useHistory()
-    const location = useLocation()
+const ResourceList = () => {
+    const { clusterId, namespace, nodeType, node } = useParams<URLParams>()
+    const { replace } = useHistory()
     const {
         tabs,
         initTabs,
         addTab,
         markTabActiveByIdentifier,
+        markTabActiveById,
         removeTabByIdentifier,
         updateTabUrl,
+        updateTabComponentKey,
+        updateTabLastSyncMoment,
         stopTabByIdentifier,
     } = useTabs(URLS.RESOURCE_BROWSER)
-    const [loader, setLoader] = useState(false)
-    const [rawGVKLoader, setRawGVKLoader] = useState(false)
-    const [clusterLoader, setClusterLoader] = useState(false)
-    const [showErrorState, setShowErrorState] = useState(false)
-    const [resourceListLoader, setResourceListLoader] = useState(true)
-    const [noResults, setNoResults] = useState(false)
-    const [k8SObjectMap, setK8SObjectMap] = useState<Map<string, K8SObjectMapType>>()
-    const [k8SObjectMapRaw, setK8SObjectMapRaw] = useState<Map<string, K8SObjectMapType>>()
-    const [resourceList, setResourceList] = useState<ResourceDetailType>()
-    const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
-    const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
-    const [clusterOptions, setClusterOptions] = useState<ClusterOptionType[]>([])
-    const [namespaceOptions, setNamespaceOptions] = useState<OptionType[]>([])
-    const [selectedCluster, setSelectedCluster] = useState<ClusterOptionType>(null)
-    const [selectedNamespace, setSelectedNamespace] = useState<OptionType>(null)
-    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
     const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
-    const [resourceSelectionData, setResourceSelectionData] = useState<Record<string, ApiResourceGroupType>>()
-    const [nodeSelectionData, setNodeSelectionData] = useState<Record<string, Record<string, any>>>()
-    const [accessDeniedCode, setAccessDeniedCode] = useState(0)
-    const [errorMsg, setErrorMsg] = useState('')
-    const [imageList, setImageList] = useState<ClusterImageList[]>(null)
-    const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
-    const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
-    const [selectedTerminal, setSelectedTerminal] = useState<ClusterDetail>()
-    const [clusterErrorTitle, setClusterErrorTitle] = useState('')
-    const [terminalLoader, setTerminalLoader] = useState(false)
-    const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
-    const [toggleSync, setToggle] = useState(false)
-    const [startTerminal, setStartTerminal] = useState<boolean>(false)
-    const isStaleDataRef = useRef<boolean>(false)
-    const superAdminRef = useRef<boolean>(!!window._env_.K8S_CLIENT)
-    const resourceListAbortController = new AbortController()
-    const sideDataAbortController = useRef<{
-        prev: AbortController
-        new: AbortController
-    }>({
-        prev: null,
-        new: new AbortController(),
-    })
-    const isOverview = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
-    const isTerminal = nodeType === AppDetailsTabs.terminal
-    const isNodes = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-    const searchWorkerRef = useRef(null)
-    const hideSyncWarning: boolean =
-        loader ||
-        rawGVKLoader ||
-        showErrorState ||
-        !isStaleDataRef.current ||
-        !(!node && lastDataSyncTimeString && !resourceListLoader)
+    const [isDataStale, setIsDataStale] = useState(false)
+
+    /* TODO: Find use for this error */
+    const [rawGVKLoader, k8SObjectMapRaw /*rawGVKError*/] = useAsync(
+        () => getResourceGroupListRaw(clusterId),
+        [clusterId],
+    )
+
+    const [loading, data, error] = useAsync(() =>
+        Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
+    )
+
+    const [clusterListData = null, userRole = null] = data || []
+
+    const clusterList = clusterListData?.result || null
+
+    const clusterOptions: ClusterOptionType[] = useMemo(
+        () =>
+            clusterList &&
+            (convertToOptionsList(
+                sortObjectArrayAlphabetically(clusterList, 'name'),
+                'name',
+                'id',
+                'nodeErrors',
+            ) as ClusterOptionType[]),
+        [clusterList],
+    )
+
+    /* NOTE: this is being used as dependency in useEffect down the tree */
+    const selectedCluster = useMemo(
+        () =>
+            clusterOptions?.find((cluster) => String(cluster.value) === clusterId) || {
+                label: '',
+                value: clusterId,
+                errorInConnecting: '',
+            },
+        [clusterId, clusterOptions],
+    )
+
+    const isSuperAdmin = userRole?.result.superAdmin || false
+
+    /* FIXME: could use constants for the tab indices */
+    const dynamicActiveTab = tabs.find((tab, index) => index > (isSuperAdmin ? 2 : 1) && tab.isSelected)
+
+    const initTabsBasedOnRole = (reInit: boolean) => {
+        const _tabs = getTabsBasedOnRole(selectedCluster, namespace, isSuperAdmin)
+
+        initTabs(_tabs, reInit)
+    }
+
+    useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
+    useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
             window['crate'].hide()
         }
 
-        // Get cluster data &  Initialize tabs on mount
-        getClusterData()
-
-        // Retain selection data
-        try {
-            const persistedTabsData = localStorage.getItem('persisted-tabs-data')
-            if (persistedTabsData) {
-                const parsedTabsData = JSON.parse(persistedTabsData)
-                setResourceSelectionData(parsedTabsData.resourceSelectionData)
-                setNodeSelectionData(parsedTabsData.nodeSelectionData)
-            }
-        } catch (err) {}
-
         // Clean up on unmount
         return (): void => {
+            /* TODO: figure this out */
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
-            stopSearchWorker()
-            resourceListAbortController.abort()
-            abortReqAndUpdateSideDataController()
         }
     }, [])
 
-    useEffect(() => {
-        getDetailsClusterList()
-    }, [toggleSync])
-
-    useEffect(() => {
-        if (clusterId && clusterList && clusterList.length > 0) {
-            const _selectedCluster = clusterList.find((list) => list.id == +clusterId)
-            if (_selectedCluster?.nodeCount) {
-                setSelectedTerminal(_selectedCluster)
-            }
-        }
-    }, [clusterId, clusterList])
-
-    // Mark tab active on path change
-    useEffect(() => {
-        if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
-            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
-        } else if (nodeType == AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
-            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.cluster_overview, AppDetailsTabs.cluster_overview)
-        } else if (selectedResource && !node) {
-            if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-                getSidebarData(clusterId)
-            }
-            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
-        }
-
-        if (location.pathname === URLS.RESOURCE_BROWSER) {
-            abortReqAndUpdateSideDataController()
-            setSelectedCluster(null)
-            setLoader(false)
-        } else if (clusterOptions.length > 0 && clusterId != selectedCluster?.value) {
-            const _clusterOption = clusterOptions.find((_option) => _option.value == clusterId)
-            if (_clusterOption) {
-                onChangeCluster(
-                    clusterOptions.find((_option) => _option.value == clusterId),
-                    false,
-                    true,
-                )
-            }
-        }
-
-        if (!superAdminRef.current && !k8SObjectMapRaw) {
-            getGVKData(clusterId)
-        }
-    }, [location.pathname])
-
-    const getGVKData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) {
-            return
-        }
-        try {
-            setRawGVKLoader(true)
-            setK8SObjectMapRaw(null)
-            const { result } = await getResourceGroupListRaw(_clusterId)
-            if (result) {
-                const processedData = processK8SObjects(result.apiResources, nodeType)
-                const _k8SObjectMap = processedData.k8SObjectMap
-                const _k8SObjectList: K8SObjectType[] = []
-                for (const element of ORDERED_AGGREGATORS) {
-                    if (_k8SObjectMap.get(element)) {
-                        _k8SObjectList.push(_k8SObjectMap.get(element))
-                    }
-                }
-                setK8SObjectMapRaw(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
-            }
-            setRawGVKLoader(false)
-        } catch (err) {
-            setRawGVKLoader(false)
-        }
-    }
-
-    // Update K8sResources tab url on cluster/namespace/kind changes
-
-    useEffect(() => {
-        if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
-            const updateData = [
-                {
-                    id: `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
-                    url: `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                        selectedNamespace.value
-                    }/${selectedResource.gvk.Kind.toLowerCase()}/${
-                        selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                    }`,
-                    dynamicTitle: selectedResource.gvk.Kind,
-                },
-                {
-                    id: `${AppDetailsTabsIdPrefix.cluster_overview}-${AppDetailsTabs.cluster_overview}`,
-                    url: `${
-                        URLS.RESOURCE_BROWSER
-                    }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-                },
-            ]
-            updateData.forEach((data) => updateTabUrl(data.id, data.url, data.dynamicTitle))
-        }
-        return (): void => {
-            resourceListAbortController.abort()
-        }
-    }, [selectedCluster, selectedNamespace, selectedResource])
-
-    useEffect(() => {
-        if (!superAdminRef.current) {
-            return
-        }
-        if (selectedCluster?.value && nodeType) {
-            const _searchParam = tabs[2]?.url.split('?')[1] ? `?${tabs[2].url.split('?')[1]}` : ''
-            updateTabUrl(
-                `${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`,
-                `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
-                    selectedNamespace?.value ? selectedNamespace.value : ALL_NAMESPACE_OPTION.value
-                }/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${
-                    nodeType === AppDetailsTabs.terminal ? location.search : _searchParam
-                }`,
-                `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
-            )
-        }
-        if (tabs.length > 0 && nodeType === AppDetailsTabs.terminal) {
-            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal)
-        }
-    }, [selectedCluster, superAdminRef.current, location.search])
-
-    // Scrolls the view to top on the path change in the url
-    // Starts the cluster terminal when the cluster tab is opened for the first time
-    useEffect(() => {
-        triggerTerminal()
-    }, [location.search, nodeType])
-
-    useEffect(() => {
-        if (
-            clusterId &&
-            selectedResource &&
-            selectedResource.gvk.Kind !== SIDEBAR_KEYS.overviewGVK.Kind &&
-            !isOverview &&
-            !isTerminal &&
-            !isNodes
-        ) {
-            selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind && getResourceListData()
-            setSearchText('')
-            setSearchApplied(false)
-        } else if (isNodes) {
-            setResourceListLoader(false)
-            setLastDataSync(!lastDataSync)
-        }
-    }, [selectedResource])
-
-    useEffect(() => {
-        if (!loader && clusterId && selectedResource?.namespaced && !isOverview && !isNodes) {
-            getResourceListData(true)
-        }
-    }, [selectedNamespace])
-
-    // Triggers the cluster terminal when the cluster tab is opened for the first time
-    const triggerTerminal = () => {
-        if (nodeType === AppDetailsTabs.terminal) {
-            setStartTerminal(true)
-        }
-    }
-
-    const getDetailsClusterList = async () => {
-        setTerminalLoader(true)
-        getClusterList()
-            .then((response) => {
-                if (response.result) {
-                    response.result.sort((a, b) => a['name'].localeCompare(b['name']))
-                    setClusterList(response.result)
-                }
-                setTerminalLoader(false)
-            })
-            .catch((err) => {
-                setTerminalLoader(false)
-                if (err['code'] !== 403) {
-                    showError(err)
-                }
-            })
-    }
-
-    const getClusterData = async () => {
-        try {
-            setClusterLoader(true)
-            setAccessDeniedCode(0)
-            const [clusterListData, hostUrlConfig, userRole, namespaceList] = await Promise.all([
-                getClusterListMin(),
-                getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
-                window._env_.K8S_CLIENT ? null : getUserRole(),
-                clusterNamespaceList(),
-            ])
-            if (clusterListData.result) {
-                const _clusterList = clusterListData.result
-                const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(_clusterList, 'name'),
-                    'name',
-                    'id',
-                    'nodeErrors',
-                )
-                setClusterOptions(_clusterOptions as ClusterOptionType[])
-                // Race condition: Update this clusterList data with this raw data, only if the clusterList is empty
-                // Otherwise  keep the previous data as it will be the detail data updated by getDetailsClusterList
-                setClusterList((prev) => {
-                    if (prev && prev.length === 0) {
-                        return _clusterList
-                    }
-                    return prev
-                })
-
-                const _selectedCluster = _clusterOptions.find((cluster) => cluster.value == clusterId)
-                if (_selectedCluster) {
-                    onChangeCluster(_selectedCluster, false, true)
-                }
-                if (nodeType !== SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
-                    getSidebarData(clusterId)
-                }
-            }
-
-            if (hostUrlConfig.result) {
-                const imageValue: string = hostUrlConfig.result.value
-                setImageList(JSON.parse(imageValue))
-            }
-            if (userRole?.result) {
-                superAdminRef.current = userRole.result.superAdmin
-                initTabsBasedOnRole(false, userRole.result.superAdmin)
-            }
-            if (namespaceList.result) {
-                setNameSpaceList(namespaceList.result)
-            }
-        } catch (err) {
-            if (err['code'] === 403) {
-                setAccessDeniedCode(err['code'])
-            } else {
-                showError(err)
-            }
-            initTabsBasedOnRole(false)
-        } finally {
-            setClusterLoader(false)
-        }
-    }
-
-    const initTabsBasedOnRole = (reInit: boolean, _isSuperAdmin?: boolean) => {
-        const _tabs = [
-            {
-                idPrefix: AppDetailsTabsIdPrefix.cluster_overview,
-                name: AppDetailsTabs.cluster_overview,
-                url: `${
-                    URLS.RESOURCE_BROWSER
-                }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-                isSelected: false,
-                positionFixed: true,
-                iconPath: ClusterIcon,
-                showNameOnSelect: false,
-            },
-            {
-                idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
-                name: AppDetailsTabs.k8s_Resources,
-                url: `${
-                    URLS.RESOURCE_BROWSER
-                }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-                isSelected: true,
-                positionFixed: true,
-                iconPath: K8ResourceIcon,
-                showNameOnSelect: false,
-            },
-        ]
-        if (superAdminRef.current) {
-            _tabs.push({
-                idPrefix: AppDetailsTabsIdPrefix.terminal,
-                name: AppDetailsTabs.terminal,
-                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}${location.search}`,
-                isSelected: false,
-                positionFixed: true,
-                iconPath: TerminalIcon,
-                showNameOnSelect: true,
-            })
-        }
-
-        if (reInit) {
-            initTabs(_tabs, true)
-        } else {
-            initTabs(
-                _tabs,
-                false,
-                !superAdminRef.current ? [`${AppDetailsTabsIdPrefix.terminal}-${AppDetailsTabs.terminal}`] : null,
-            )
-        }
-        setSelectedResource({
-            namespaced: false,
-            gvk: SIDEBAR_KEYS.nodeGVK,
-        })
-    }
-
-    const getNamespaceList = async (_clusterId: string) => {
-        try {
-            const { result } = await namespaceListByClusterId(_clusterId)
-            if (Array.isArray(result)) {
-                const _namespaceOptions = [ALL_NAMESPACE_OPTION, ...convertToOptionsList(result.sort())]
-                setNamespaceOptions(_namespaceOptions)
-
-                const _selectedNamespace = _namespaceOptions.find((_namespace) => _namespace.value === namespace)
-                setSelectedNamespace(_selectedNamespace ?? _namespaceOptions[0])
-            }
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    const getSidebarData = async (_clusterId): Promise<void> => {
-        if (!_clusterId) {
-            return
-        }
-        try {
-            setK8SObjectMap(null)
-            setLoader(true)
-            sideDataAbortController.current.new = new AbortController()
-            const { result } = await getResourceGroupList(_clusterId, sideDataAbortController.current.new.signal)
-            if (result) {
-                const processedData = processK8SObjects(result.apiResources, nodeType)
-                const _k8SObjectMap = processedData.k8SObjectMap
-                const _k8SObjectList: K8SObjectType[] = []
-                const currentNodeType =
-                    clusterId == _clusterId
-                        ? nodeType || SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
-                        : SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
-
-                for (const element of ORDERED_AGGREGATORS) {
-                    if (_k8SObjectMap.get(element)) {
-                        _k8SObjectList.push(_k8SObjectMap.get(element))
-                    }
-                }
-
-                const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
-                    _k8SObjectList,
-                    currentNodeType,
-                    group,
-                )
-
-                if (!isResourceGroupPresent && !node) {
-                    parentNode.isExpanded = true
-                    const searchParam = location.search ? `/${location.search}` : ''
-                    replace({
-                        pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
-                            namespace || ALL_NAMESPACE_OPTION.value
-                        }/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
-                    })
-                }
-
-                const defaultSelected = groupedChild ??
-                    processedData.selectedResource ?? {
-                        namespaced: false,
-                        gvk: SIDEBAR_KEYS.nodeGVK,
-                    }
-
-                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
-                setSelectedResource(defaultSelected)
-                updateResourceSelectionData(defaultSelected, true)
-                setShowErrorState(false)
-                setErrorMsg('')
-            }
-            setLoader(false)
-        } catch (err) {
-            if (err['code'] > 0) {
-                if (err['code'] === 404) {
-                    setSelectedCluster(null)
-                    replace({
-                        pathname: URLS.RESOURCE_BROWSER,
-                    })
-                } else if (err['code'] === 403) {
-                    if (!node) {
-                        const searchParam = location.search ? `/${location.search}` : ''
-                        replace({
-                            pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
-                                namespace || ALL_NAMESPACE_OPTION.value
-                            }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}${searchParam}`,
-                        })
-                    }
-                    setSelectedResource({
-                        namespaced: false,
-                        gvk: SIDEBAR_KEYS.nodeGVK,
-                    })
-                } else {
-                    setErrorMsg(
-                        (err instanceof ServerErrors && Array.isArray(err.errors)
-                            ? err.errors[0]?.userMessage
-                            : err['message']) ?? SOME_ERROR_MSG,
-                    )
-                }
-                setLoader(false)
-            } else if (sideDataAbortController.current.prev?.signal.aborted) {
-                sideDataAbortController.current.prev = null
-            }
-        }
-    }
-
-    const stopSearchWorker = () => {
-        if (searchWorkerRef.current) {
-            searchWorkerRef.current.postMessage({ type: 'stop' })
-            searchWorkerRef.current = null
-        }
-    }
-
-    const handleFilterChanges = (
-        _searchText: string,
-        _resourceList: ResourceDetailType,
-        hideLoader?: boolean,
-    ): void => {
-        if (!searchWorkerRef.current) {
-            searchWorkerRef.current = new WebWorker(searchWorker)
-            searchWorkerRef.current.onmessage = (e) => {
-                setFilteredResourceList(e.data)
-
-                // Hide loader after search retention
-                if (hideLoader) {
-                    setResourceListLoader(false)
-                }
-            }
-        }
-
-        if (resourceList) {
-            searchWorkerRef.current.postMessage({
-                type: 'start',
-                payload: {
-                    searchText: _searchText,
-                    list: _resourceList.data,
-                    searchInKeys: [
-                        'name',
-                        'namespace',
-                        'status',
-                        'message',
-                        EVENT_LIST.dataKeys.involvedObject,
-                        'source',
-                        'reason',
-                        'type',
-                        'age',
-                        'node',
-                        'ip',
-                    ],
-                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
-                },
-            })
-        }
-    }
-
-    const renderRefreshBar = () => {
-        if (hideSyncWarning) {
-            return null
-        }
-        return (
-            <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
-                <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
-                    <Warning className="icon-dim-20 mr-8" />
-                    <span>Last synced {lastDataSyncTimeString}. The data might be stale. </span>
-                    <span className="cb-5 ml-4 fw-6 cursor" onClick={refreshData}>
-                        Sync now
-                    </span>
-                </div>
-            </div>
-        )
-    }
-
-    const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
-        try {
-            setResourceListLoader(true)
-            setResourceList(null)
-            setFilteredResourceList([])
-            const resourceListPayload: ResourceListPayloadType = {
-                clusterId: Number(clusterId),
-                k8sRequest: {
-                    resourceIdentifier: {
-                        groupVersionKind: selectedResource.gvk,
-                    },
-                },
-            }
-            if (selectedResource.namespaced) {
-                resourceListPayload.k8sRequest.resourceIdentifier.namespace =
-                    namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace
-            }
-            const { result } = await getResourceList(resourceListPayload, resourceListAbortController.signal)
-            if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && result.data.length) {
-                result.data = sortEventListData(result.data)
-            }
-            if (selectedResource?.gvk.Kind === Nodes.StorageClass) {
-                result.data = removeDefaultForStorageClass(result.data)
-            }
-            setResourceList(result)
-
-            if (retainSearched) {
-                handleFilterChanges(searchText, result, true)
-            } else {
-                setFilteredResourceList(result.data)
-                setResourceListLoader(false)
-            }
-            setNoResults(result.data.length === 0)
-            setShowErrorState(false)
-            setLastDataSync(!lastDataSync)
-        } catch (err) {
-            if (!resourceListAbortController.signal.aborted) {
-                showError(err)
-                setResourceListLoader(false)
-                setShowErrorState(true)
-            }
-        }
-    }
-
-    const handleGroupHeadingClick = (e: any, preventCollapse?: boolean): void => {
-        setK8SObjectMap(getK8SObjectMapAfterGroupHeadingClick(e, k8SObjectMap, preventCollapse))
-    }
-
-    const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
+    const onClusterChange = (selected) => {
         if (selected.value === selectedCluster?.value) {
             return
         }
-        if (sideDataAbortController.current.prev?.signal.aborted) {
-            sideDataAbortController.current.prev = null
-        }
-        abortReqAndUpdateSideDataController()
-        setSelectedCluster(selected)
-        getNamespaceList(selected.value)
 
+        /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
             })
             return
         }
-        if (!skipRedirection) {
-            const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${
-                ALL_NAMESPACE_OPTION.value
-            }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-            if (fromClusterSelect) {
-                initTabsBasedOnRole(true)
-                replace({
-                    pathname: path,
-                })
-            } else {
-                push({
-                    pathname: path,
-                })
-            }
-        }
-    }
 
-    const onClusterChange = (value) => {
-        onChangeCluster(value, true, false)
+        const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${
+            ALL_NAMESPACE_OPTION.value
+        }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+        replace({
+            pathname: path,
+        })
     }
 
     const { breadcrumbs } = useBreadcrumb(
@@ -727,52 +145,24 @@ export default function ResourceList() {
                     component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
                     linked: true,
                 },
-                ':clusterId?': {
+                ':clusterId': {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}
-                            clusterList={clusterOptions}
+                            clusterList={clusterOptions || []}
                             clusterId={clusterId}
                         />
                     ),
                     linked: false,
                 },
-                ':namespace?': null,
-                ':nodeType?': null,
-                ':group?': null,
+                ':namespace': null,
+                ':nodeType': null,
+                ':group': null,
                 ':node?': null,
             },
         },
         [clusterId, clusterOptions],
     )
-
-    const refreshData = (): void => {
-        setSelectedResource(null)
-        getSidebarData(selectedCluster.value)
-    }
-
-    const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
-        if (_selected) {
-            stopSearchWorker()
-            setResourceSelectionData((prevData) =>
-                getUpdatedResourceSelectionData(prevData, _selected, initSelection, group),
-            )
-        }
-    }
-
-    const updateNodeSelectionData = (_selected: Record<string, any>, _group?: string) => {
-        if (_selected) {
-            const _nodeType = _selected.isFromEvent || _selected.isFromNodeDetails ? '' : `${nodeType}_`
-            setNodeSelectionData((prevData) =>
-                getUpdatedNodeSelectionData(
-                    prevData,
-                    _selected,
-                    `${_nodeType}${_selected.name}_${_selected.namespace ?? namespace}_${_group ?? group}`,
-                    _selected.isFromEvent || _selected.isFromNodeDetails ? _selected.name.split('_')[1] : null,
-                ),
-            )
-        }
-    }
 
     const showResourceModal = (): void => {
         setShowCreateResourceModal(true)
@@ -785,283 +175,110 @@ export default function ResourceList() {
         setShowCreateResourceModal(false)
     }
 
-    const getSelectedResourceData = () => {
-        if (resourceListLoader || rawGVKLoader || loader) {
-            return null
-        }
-
-        const selectedNode =
-            nodeSelectionData?.[`${nodeType}_${node}_${namespace}_${group}`] ??
-            resourceList?.data?.find(
-                (_resource) => _resource.name === node && (!_resource.namespace || _resource.namespace === namespace),
-            )
-        const _selectedResource =
-            selectedNode?.isFromEvent || selectedNode?.isFromNodeDetails
-                ? getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
-                : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ??
-                  getEventObjectTypeGVK(k8SObjectMapRaw ?? k8SObjectMap, nodeType)
-        if (!nodeSelectionData?.[`${nodeType}_${node}_${namespace}_${group}`]) {
-            updateNodeSelectionData(selectedNode)
-        }
-        return {
-            clusterId: Number(clusterId),
-            group: _selectedResource?.Group || '',
-            version: _selectedResource?.Version || '',
-            kind: _selectedResource?.Kind || '',
-            namespace: selectedNode?.namespace || '',
-            name: selectedNode?.name || '',
-            containers: selectedNode?.containers || [],
-        } as SelectedResourceType
-    }
-
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('', resourceList)
-            setSearchApplied(false)
-        }
-        setSearchText('')
-    }
-
-    const handleRetry = () => {
-        abortReqAndUpdateSideDataController(true)
-        getSidebarData(clusterId)
-    }
-
-    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
-        if (emptyPrev) {
-            sideDataAbortController.current.prev = null
-        } else {
-            sideDataAbortController.current.new.abort()
-            sideDataAbortController.current.prev = sideDataAbortController.current.new
-        }
-        setErrorMsg('')
-    }
-
-    const renderListBar = () => {
-        if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-            return (
-                <NodeDetailsList
-                    clusterId={clusterId}
-                    isSuperAdmin={superAdminRef.current}
-                    nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
-                    renderCallBackSync={renderRefreshBar}
-                    addTab={addTab}
-                    syncError={!hideSyncWarning}
-                    lastDataSync={lastDataSync}
-                    setLastDataSync={setLastDataSync}
-                />
-            )
-        }
-        return (
-            <K8SResourceList
-                selectedResource={selectedResource}
-                resourceList={resourceList}
-                filteredResourceList={filteredResourceList}
-                noResults={noResults}
-                selectedCluster={selectedCluster}
-                namespaceOptions={namespaceOptions}
-                selectedNamespace={selectedNamespace}
-                setSelectedNamespace={setSelectedNamespace}
-                resourceListLoader={resourceListLoader}
-                getResourceListData={getResourceListData}
-                updateNodeSelectionData={updateNodeSelectionData}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                searchApplied={searchApplied}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                isCreateModalOpen={showCreateResourceModal}
-                addTab={addTab}
-                renderCallBackSync={renderRefreshBar}
-                syncError={!hideSyncWarning}
-                k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
-            />
-        )
-    }
-
-    const renderTerminalLoader = () => {
-        if (terminalLoader) {
-            return (
-                <div className="h-100 node-data-container bcn-0">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-        if (!selectedTerminal || !namespaceDefaultList?.[selectedTerminal.name]) {
-            return (
-                <div className="bcn-0 node-data-container flex">
-                    {superAdminRef.current ? <Reload /> : <ErrorScreenManager code={403} />}
-                </div>
-            )
-        }
-        return null
-    }
-
-    const renderClusterTerminal = (): JSX.Element => {
-        if (!startTerminal && nodeType !== AppDetailsTabs.terminal) {
-            return null
-        }
-        const _imageList = selectedTerminal ? filterImageList(imageList, selectedTerminal.serverVersion) : []
-        const _showTerminal =
-            nodeType === AppDetailsTabs.terminal && selectedTerminal && namespaceDefaultList?.[selectedTerminal.name]
-
-        return (
-            selectedTerminal && (
-                <ClusterTerminal
-                    showTerminal={_showTerminal}
-                    clusterId={+clusterId}
-                    nodeGroups={createGroupSelectList(selectedTerminal.nodeDetails, 'nodeName')}
-                    taints={createTaintsList(selectedTerminal.nodeDetails, 'nodeName')}
-                    clusterImageList={_imageList}
-                    namespaceList={namespaceDefaultList[selectedTerminal.name]}
-                    isNodeDetailsPage
-                />
-            )
-        )
-    }
-
-    const renderResourceBrowser = (): JSX.Element => {
-        if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() && node) {
-            return (
-                <NodeDetails
-                    isSuperAdmin={superAdminRef.current}
-                    markTabActiveByIdentifier={markTabActiveByIdentifier}
-                    addTab={addTab}
-                    updateNodeSelectionData={updateNodeSelectionData}
-                    k8SObjectMapRaw={k8SObjectMapRaw ?? k8SObjectMap}
-                    lastDataSync={lastDataSync}
-                />
-            )
-        }
-        if (node) {
-            return (
-                <div className="resource-details-container">
-                    <NodeDetailComponent
-                        loadingResources={resourceListLoader || rawGVKLoader || loader}
-                        isResourceBrowserView
-                        selectedResource={getSelectedResourceData()}
-                        markTabActiveByIdentifier={markTabActiveByIdentifier}
-                        addTab={addTab}
-                        logSearchTerms={logSearchTerms}
-                        setLogSearchTerms={setLogSearchTerms}
-                        removeTabByIdentifier={removeTabByIdentifier}
-                    />
-                </div>
-            )
-        }
-        if (nodeType === AppDetailsTabs.cluster_overview.toLocaleLowerCase()) {
-            return (
-                <ClusterOverview
-                    isSuperAdmin={superAdminRef.current}
-                    clusterCapacityData={clusterCapacityData}
-                    setClusterErrorTitle={setClusterErrorTitle}
-                    setSelectedResource={setSelectedResource}
-                    setClusterCapacityData={setClusterCapacityData}
-                    selectedCluster={selectedCluster}
-                    setSelectedCluster={setSelectedCluster}
-                    sideDataAbortController={sideDataAbortController.current}
-                />
-            )
-        }
-        return loader || rawGVKLoader || errorMsg ? (
-            <ConnectingToClusterState
-                loader={loader}
-                errorMsg={errorMsg}
-                setErrorMsg={setErrorMsg}
-                selectedCluster={selectedCluster}
-                setSelectedCluster={setSelectedCluster}
-                handleRetry={handleRetry}
-                sideDataAbortController={sideDataAbortController.current}
-            />
-        ) : (
-            <div className="resource-browser bcn-0">
-                <Sidebar
-                    k8SObjectMap={k8SObjectMap}
-                    handleGroupHeadingClick={handleGroupHeadingClick}
-                    selectedResource={selectedResource}
-                    setSelectedResource={setSelectedResource}
-                    updateResourceSelectionData={updateResourceSelectionData}
-                    isCreateModalOpen={showCreateResourceModal}
-                    isClusterError={!!clusterErrorTitle}
-                />
-                {renderListBar()}
-            </div>
-        )
-    }
-
-    const addClusterButton = () => {
-        if (clusterId) {
-            return (
-                !loader &&
-                !showErrorState &&
-                k8SObjectMap && (
-                    <>
-                        <div
-                            className="cursor flex cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"
-                            data-testid="create-resource"
-                            onClick={showResourceModal}
-                        >
-                            <Add className="icon-dim-16 fcb-5 mr-5" /> Create resource
-                        </div>
-                        <span className="dc__divider" />
-                    </>
-                )
-            )
-        }
-
-        return (
-            <>
-                <NavLink
-                    className="flex dc__no-decor cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"
-                    to={URLS.GLOBAL_CONFIG_CLUSTER}
-                >
-                    <Add
-                        data-testid="add_cluster_button"
-                        className="icon-dim-16 mr-4 fcb-5 dc__vertical-align-middle"
-                    />
-                    Add cluster
-                </NavLink>
-                <span className="dc__divider" />
-            </>
-        )
-    }
-
     const renderBreadcrumbs = () => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const refreshSync = () => {
-        setToggle(!toggleSync)
+    const updateTerminalTabUrl = useCallback(
+        (queryParams: string) => {
+            const terminalTab = tabs[2]
+            if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
+                return
+            }
+            updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
+            if (!terminalTab.isSelected) {
+                return
+            }
+            replace({ search: queryParams })
+        },
+        [tabs],
+    )
+
+    const updateK8sResourceTab = (url: string, dynamicTitle = '') => {
+        updateTabUrl(tabs[1].id, url, dynamicTitle)
     }
 
-    const renderResourceListBody = () => {
-        if (accessDeniedCode) {
+    const refreshData = (): void => {
+        const activeTab = tabs.find((tab) => tab.isSelected)
+        updateTabComponentKey(activeTab.id)
+        updateTabLastSyncMoment(activeTab.id)
+        setIsDataStale(false)
+    }
+
+    const renderDynamicTabComponent = (): JSX.Element => {
+        if (!node) {
+            return null
+        }
+
+        return nodeType.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() ? (
+            <NodeDetails
+                isSuperAdmin={isSuperAdmin}
+                markTabActiveByIdentifier={markTabActiveByIdentifier}
+                addTab={addTab}
+                k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+            />
+        ) : (
+            <div className="resource-details-container">
+                <NodeDetailComponent
+                    loadingResources={rawGVKLoader}
+                    isResourceBrowserView
+                    k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                    markTabActiveByIdentifier={markTabActiveByIdentifier}
+                    addTab={addTab}
+                    logSearchTerms={logSearchTerms}
+                    setLogSearchTerms={setLogSearchTerms}
+                    removeTabByIdentifier={removeTabByIdentifier}
+                />
+            </div>
+        )
+    }
+
+    const updateK8sResourceTabLastSyncMoment = () => {
+        updateTabLastSyncMoment(tabs[1].id)
+    }
+
+    const fixedTabComponents = [
+        <ClusterOverview isSuperAdmin={isSuperAdmin} selectedCluster={selectedCluster} />,
+        <K8SResourceTabComponent
+            selectedCluster={selectedCluster}
+            addTab={addTab}
+            renderRefreshBar={renderRefreshBar(isDataStale, tabs?.[1]?.lastSyncMoment?.toString(), refreshData)}
+            isSuperAdmin={isSuperAdmin}
+            showStaleDataWarning={isDataStale}
+            updateK8sResourceTab={updateK8sResourceTab}
+            updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            enableShortcut={!showCreateResourceModal}
+        />,
+        ...(isSuperAdmin && tabs[2]?.name === AppDetailsTabs.terminal && tabs[2].isAlive
+            ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
+            : []),
+    ]
+
+    const renderInvisible = (component: React.ReactNode, hide: boolean) => {
+        return <div className={hide ? `hidden` : ''}>{component}</div>
+    }
+
+    const renderKeyedTabComponent = (component: React.ReactNode, key: string) => {
+        return <div key={key}>{component}</div>
+    }
+
+    const renderMainBody = () => {
+        if (error) {
             return (
                 <div className="flex" style={{ height: 'calc(100vh - 48px)' }}>
-                    <ErrorScreenManager code={accessDeniedCode} />
+                    <ErrorScreenManager code={error['code']} />
                 </div>
             )
         }
-        if ((loader && !selectedCluster?.value) || clusterLoader) {
+
+        if (loading) {
             return (
                 <div style={{ height: 'calc(100vh - 48px)' }}>
                     <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
                 </div>
             )
         }
-        if (!selectedCluster?.value) {
-            return (
-                <ClusterSelectionList
-                    clusterOptions={clusterList}
-                    onChangeCluster={onChangeCluster}
-                    isSuperAdmin={superAdminRef.current}
-                    clusterListLoader={terminalLoader}
-                    refreshData={refreshSync}
-                    initTabsBasedOnRole={initTabsBasedOnRole}
-                />
-            )
-        }
+
         return (
             <>
                 <div
@@ -1074,34 +291,45 @@ export default function ResourceList() {
                         <DynamicTabs
                             tabs={tabs}
                             removeTabByIdentifier={removeTabByIdentifier}
+                            markTabActiveById={markTabActiveById}
                             stopTabByIdentifier={stopTabByIdentifier}
                             enableShortCut={!showCreateResourceModal}
                             refreshData={refreshData}
-                            lastDataSync={lastDataSync}
-                            loader={loader || rawGVKLoader || clusterLoader || resourceListLoader}
-                            isOverview={isOverview}
-                            isStaleDataRef={isStaleDataRef}
-                            setLastDataSyncTimeString={setLastDataSyncTimeString}
+                            isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
+                            setIsDataStale={setIsDataStale}
                         />
                     </div>
                 </div>
-                {nodeType === AppDetailsTabs.terminal ? renderTerminalLoader() : renderResourceBrowser()}
-                {renderClusterTerminal()}
+                {tabs.length > 0 &&
+                    fixedTabComponents.map((component, index) =>
+                        renderInvisible(
+                            renderKeyedTabComponent(component, tabs[index].componentKey),
+                            !tabs[index].isSelected,
+                        ),
+                    )}
+                {/* NOTE: to allow for shareable urls if node is available in url but no associated
+                 * dynamicTab we allow for this to pass into renderDynamicTabComponent as that will
+                 * create the missing tab */}
+                {(dynamicActiveTab || node) &&
+                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey || node)}
             </>
         )
     }
+
     return (
         <ShortcutProvider>
             <div className="resource-browser-container h-100 bcn-0">
                 <PageHeader
-                    isBreadcrumbs={!!clusterId}
+                    isBreadcrumbs
                     breadCrumbs={renderBreadcrumbs}
-                    headerName={!clusterId ? 'Kubernetes Resource Browser' : ''}
-                    renderActionButtons={addClusterButton}
+                    headerName=""
+                    renderActionButtons={renderCreateResourceButton(showResourceModal)}
                 />
-                {renderResourceListBody()}
+                {renderMainBody()}
                 {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
             </div>
         </ShortcutProvider>
     )
 }
+
+export default ResourceList

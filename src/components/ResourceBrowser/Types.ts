@@ -3,6 +3,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
+import { useTabs } from '../common/DynamicTabs'
 
 export interface ResourceDetailType {
     headers: string[]
@@ -66,6 +67,14 @@ export interface ResourceListPayloadType {
     }
 }
 
+export interface URLParams {
+    clusterId: string
+    namespace: string
+    nodeType: string
+    group?: string
+    node?: string
+}
+
 export interface CreateResourcePayload {
     clusterId: number
     manifest: string
@@ -94,11 +103,9 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
-    onChangeCluster: (selectedCluster: any, fromClusterSelect?: boolean) => void
     isSuperAdmin: boolean
     clusterListLoader: boolean
     refreshData: () => void
-    initTabsBasedOnRole: (reInit: boolean, _isSuperAdmin?: boolean) => void
 }
 
 export interface CreateResourceType {
@@ -107,70 +114,58 @@ export interface CreateResourceType {
 }
 
 export interface SidebarType {
-    k8SObjectMap: Map<string, K8SObjectMapType>
-    handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
+    apiResources: ApiResourceGroupType[]
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
-    isCreateModalOpen: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTabLastSyncMoment: () => void
+    enableShortcut: boolean
     isClusterError?: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
 }
 
 export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
-    resourceList: ResourceDetailType
-    selectedCluster?: OptionType
-    namespaceOptions: OptionType[]
-    selectedNamespace: OptionType
-    setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
+    resourceList?: ResourceDetailType
+    selectedCluster?: ClusterOptionType
+    selectedNamespace?: OptionType
+    setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
     hideSearchInput?: boolean
-    searchText: string
-    setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchApplied: boolean
-    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+    searchText?: string
+    setSearchText?: React.Dispatch<React.SetStateAction<string>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
-    clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
-    isCreateModalOpen?: boolean
-    renderCallBackSync?: () => JSX.Element
-    syncError?: boolean
+    enableShortcut?: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
+    renderRefreshBar?: () => JSX.Element
 }
 
-export interface K8SResourceListType extends ResourceFilterOptionsProps {
-    filteredResourceList: Record<string, any>[]
-    noResults: boolean
-    resourceListLoader: boolean
-    getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    isCreateModalOpen: boolean
-    addTab: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
-    k8SObjectMapRaw: Map<string, K8SObjectMapType>
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'handleFilterChanges'> {
+    enableShortcut: boolean
+    addTab: ReturnType<typeof useTabs>['addTab']
+    showStaleDataWarning: boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
-    removeTabByIdentifier?: (id: string) => string
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface DeleteResourcePopupType {
     clusterId: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
     toggleDeleteDialog: () => void
-    removeTabByIdentifier?: (id: string) => string
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    getResourceListData?: () => void | Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
@@ -190,21 +185,12 @@ export interface EventListType {
     searchText: string
 }
 
-export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
-}
-
 export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
-    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
-    handleRetry: (e) => void
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
+    handleRetry: React.MouseEventHandler<HTMLButtonElement>
+    requestAbortController: AbortController
 }
 
 export interface K8sObjectOptionType extends OptionType {
@@ -220,4 +206,31 @@ export interface K8sObjectOptionType extends OptionType {
 
 export interface K8Abbreviates {
     [key: string]: string
+}
+
+export interface K8SResourceTabComponentProps {
+    selectedCluster: ClusterOptionType
+    isSuperAdmin: boolean
+    renderRefreshBar: () => JSX.Element
+    addTab: ReturnType<typeof useTabs>['addTab']
+    showStaleDataWarning: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTabLastSyncMoment: () => void
+    enableShortcut: boolean
+}
+
+export interface AdminTerminalProps {
+    isSuperAdmin: boolean
+    updateTerminalTabUrl: (queryParams: string) => void
+}
+
+export interface SidebarChildButtonPropsType {
+    parentRef: React.Ref<HTMLButtonElement>
+    group: string
+    version: string
+    kind: string
+    text: string
+    namespaced: boolean
+    isSelected: boolean
+    onClick: React.MouseEventHandler<HTMLButtonElement>
 }

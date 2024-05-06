@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -15,6 +15,7 @@ import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
+import { getResourceFromK8SObjectMap } from '../../../../ResourceBrowser/Utils'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../../../../ResourceBrowser/Constants'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
@@ -29,8 +30,8 @@ const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     markTabActiveByIdentifier,
+    k8SObjectMapRaw,
     addTab,
-    selectedResource,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
@@ -60,6 +61,7 @@ const NodeDetailComponent = ({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
             setManagedFields(true)
@@ -67,6 +69,22 @@ const NodeDetailComponent = ({
             setManagedFields(false)
         }
     }
+
+    const _selectedResource = useMemo(
+        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
+        [k8SObjectMapRaw, params.nodeType],
+    )
+
+    const selectedResource = {
+        clusterId: +params.clusterId,
+        kind: _selectedResource?.gvk.Kind as string,
+        version: _selectedResource?.gvk.Version,
+        group: _selectedResource?.gvk.Group,
+        namespace: params.namespace,
+        name: params.node,
+        containers: [],
+    }
+
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
@@ -190,10 +208,12 @@ const NodeDetailComponent = ({
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        setSelectedTabName(_tabName)
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
+                /* NOTE: shouldn't this be _url instead of url */
+                let _urlToCreate = _url
 
                 const query = new URLSearchParams(window.location.search)
 
@@ -206,10 +226,7 @@ const NodeDetailComponent = ({
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
-                setSelectedTabName(_tabName)
             }, 500)
-        } else if (selectedTabName !== _tabName) {
-            setSelectedTabName(_tabName)
         }
     }
 

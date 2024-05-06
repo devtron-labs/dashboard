@@ -6,9 +6,11 @@ import { ReactComponent as NamespaceIcon } from '../../../assets/icons/ic-env.sv
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { CLUSTER_NOT_REACHABLE, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { SidebarChildButtonPropsType } from '../Types'
 
 export const clusterUnreachableTippyContent = (errorMsg: string) => {
     return (
@@ -120,5 +122,55 @@ export const KindSearchClearIndicator = (props) => {
                 {!props.isFocused && <ShortcutKeyBadge shortcutKey="k" rootClassName="kind-search-shortcut-key" />}
             </div>
         </components.ClearIndicator>
+    )
+}
+
+export const renderRefreshBar = (show: boolean, lastSyncTime: string, callback: () => void): (() => JSX.Element) => {
+    return () =>
+        !show ? null : (
+            <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
+                <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
+                    <Warning className="icon-dim-20 mr-8" />
+                    <span>Last synced {lastSyncTime}. The data might be stale. </span>
+                    <button className="cb-5 ml-4 fw-6 dc__unset-button-styles cursor" onClick={callback}>
+                        Sync now
+                    </button>
+                </div>
+            </div>
+        )
+}
+
+export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
+    parentRef,
+    group,
+    version,
+    text,
+    kind,
+    namespaced,
+    isSelected,
+    onClick,
+}) => {
+    return (
+        <button
+            type="button"
+            className="dc__unset-button-styles"
+            key={kind}
+            ref={parentRef}
+            data-group={group}
+            data-version={version}
+            data-kind={kind}
+            data-namespaced={namespaced}
+            data-selected={isSelected}
+            onClick={onClick}
+            aria-label={`Select ${text}`}
+        >
+            <div
+                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                    isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
+                }`}
+            >
+                {text}
+            </div>
+        </button>
     )
 }

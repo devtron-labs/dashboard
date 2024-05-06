@@ -4,7 +4,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ApiResourceGroupType, ClusterOptionType, K8SObjectMapType } from '../ResourceBrowser/Types'
+import { ApiResourceGroupType, ClusterOptionType } from '../ResourceBrowser/Types'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -183,9 +183,7 @@ export interface ClusterListType {
         positionFixed?: boolean,
         iconPath?: string,
     ) => boolean
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSync: boolean
+    k8SObjectMapRaw: ApiResourceGroupType[]
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -225,6 +223,7 @@ export interface ClusterTerminalType {
     nodeGroups?: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
     showTerminal: boolean
+    updateTerminalTabUrl?: (queryParams: string) => void
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -399,14 +398,5 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
-    clusterCapacityData: ClusterCapacityType
-    setClusterErrorTitle: React.Dispatch<React.SetStateAction<string>>
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    setClusterCapacityData: React.Dispatch<React.SetStateAction<ClusterCapacityType>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
 }
