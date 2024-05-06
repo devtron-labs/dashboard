@@ -78,15 +78,16 @@ export const K8SResourceList = ({
         if (!resourceList) {
             return
         }
-        /* NOTE: don't modify param data */
-        let data = [...resourceList.data]
-        if (selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind && data.length) {
-            data = sortEventListData(data)
+        switch (selectedResource?.gvk.Kind) {
+            case SIDEBAR_KEYS.nodeGVK.Kind:
+                setFilteredResourceList(sortEventListData(resourceList.data))
+                break
+            case Nodes.StorageClass:
+                setFilteredResourceList(removeDefaultForStorageClass(resourceList.data))
+                break
+            default:
+                setFilteredResourceList(resourceList.data)
         }
-        if (selectedResource?.gvk.Kind === Nodes.StorageClass) {
-            data = removeDefaultForStorageClass(data)
-        }
-        setFilteredResourceList(data)
     }, [resourceList])
 
     useEffect(() => {
@@ -161,10 +162,10 @@ export const K8SResourceList = ({
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam
-        let kind
-        let resourceName
-        let _group
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+        let _group: string
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
@@ -339,7 +340,11 @@ export const K8SResourceList = ({
         return (
             <div
                 ref={resourceListRef}
-                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, showStaleDataWarning)}
+                className={getScrollableResourceClass(
+                    'scrollable-resource-list',
+                    showPaginatedView,
+                    showStaleDataWarning,
+                )}
             >
                 <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList?.headers.map((columnName) => (
@@ -419,7 +424,7 @@ export const K8SResourceList = ({
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
             />
-            {resourceListLoader ? <Progressing pageLoader /> : renderList()}
+            {resourceListLoader || !resourceList ? <Progressing size={32} pageLoader /> : renderList()}
         </div>
     )
 }

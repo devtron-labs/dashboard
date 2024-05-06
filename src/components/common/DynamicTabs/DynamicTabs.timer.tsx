@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { TimerType } from './Types'
 import { getTimeElapsed } from '../helpers/time'
 
@@ -11,7 +11,7 @@ const Timer: React.FC<TimerType> = ({ start, callback, transition, transpose, fo
         setLoading(true)
         const interval = setInterval(() => {
             setLoading(false)
-            const _now = moment()
+            const _now = dayjs()
             setNow(format(start, _now))
             callback?.(_now)
         }, 1000)

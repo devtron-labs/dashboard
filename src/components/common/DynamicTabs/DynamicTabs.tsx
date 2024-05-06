@@ -1,21 +1,21 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
-import moment from 'moment'
-import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { Dayjs } from 'dayjs'
+import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import Select from 'react-select/dist/declarations/src/Select'
-import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import Timer from './DynamicTabs.timer'
+import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
+import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
 import './DynamicTabs.scss'
 
 /**
@@ -127,7 +127,7 @@ const DynamicTabs = ({
                     id={tab.name}
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
-                    } unset-button-styles`}
+                    } dc__unset-button-styles`}
                     onClick={markTabActiveOnClickFactory(tab)}
                 >
                     <ConditionalWrap
@@ -262,8 +262,10 @@ const DynamicTabs = ({
         }
     }
 
-    const updateOnStaleData = (now: moment.Moment) => {
+    const updateOnStaleData = (now: Dayjs) => {
         if (!now || !checkIfDataIsStale(selectedTab.lastSyncMoment, now)) {
+            /* NOTE: if new state value is same as old state value setState is a noop */
+            setIsDataStale(false)
             return
         }
         setIsDataStale(true)
@@ -293,12 +295,14 @@ const DynamicTabs = ({
 
     const timerForSync = () => {
         return (
-            selectedTab && <Timer
-                start={selectedTab.lastSyncMoment}
-                callback={updateOnStaleData}
-                transition={timerTransition}
-                transpose={timerTranspose}
-            />
+            selectedTab && (
+                <Timer
+                    start={selectedTab.lastSyncMoment}
+                    callback={updateOnStaleData}
+                    transition={timerTransition}
+                    transpose={timerTranspose}
+                />
+            )
         )
     }
 
@@ -312,7 +316,9 @@ const DynamicTabs = ({
                 </div>
             )}
             {tabsData.dynamicTabs.length > 0 && (
-                <div className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected ? '' : 'dc__border-left'}`}>
+                <div
+                    className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected ? '' : 'dc__border-left'}`}
+                >
                     <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
                         {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                     </ul>

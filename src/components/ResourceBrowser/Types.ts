@@ -68,11 +68,11 @@ export interface ResourceListPayloadType {
 }
 
 export interface URLParams {
-    clusterId: string,
-    namespace: string,
-    nodeType: string,
-    group: string,
-    node: string,
+    clusterId: string
+    namespace: string
+    nodeType: string
+    group?: string
+    node?: string
 }
 
 export interface CreateResourcePayload {
@@ -103,7 +103,6 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
-    onClusterSelection: (selectedCluster: any, fromClusterSelect?: boolean) => void
     isSuperAdmin: boolean
     clusterListLoader: boolean
     refreshData: () => void
@@ -190,8 +189,8 @@ export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
     selectedCluster: ClusterOptionType
-    handleRetry: (e) => void
-    sideDataAbortController: any
+    handleRetry: React.MouseEventHandler<HTMLButtonElement>
+    requestAbortController: AbortController
 }
 
 export interface K8sObjectOptionType extends OptionType {
@@ -221,6 +220,17 @@ export interface K8SResourceTabComponentProps {
 }
 
 export interface AdminTerminalProps {
-    isSuperAdmin: boolean,
+    isSuperAdmin: boolean
     updateTerminalTabUrl: (queryParams: string) => void
+}
+
+export interface SidebarChildButtonPropsType {
+    parentRef: React.Ref<HTMLButtonElement>
+    group: string
+    version: string
+    kind: string
+    text: string
+    namespaced: boolean
+    isSelected: boolean
+    onClick: React.MouseEventHandler<HTMLButtonElement>
 }

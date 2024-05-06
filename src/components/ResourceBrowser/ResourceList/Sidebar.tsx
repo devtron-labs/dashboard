@@ -13,12 +13,11 @@ import {
     K8SObjectMapType,
     K8sObjectOptionType,
     SidebarType,
-    GVKType,
     URLParams,
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
+import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
 import { getK8Abbreviates } from '../ResourceBrowser.service'
 import { swap } from '../../common/helpers/util'
 import {
@@ -37,12 +36,12 @@ const Sidebar = ({
     shortcut,
 }: SidebarType & IWithShortcut) => {
     const { push } = useHistory()
-    const { clusterId, namespace, nodeType, group } = useParams<URLParams>()
+    const { clusterId, namespace, nodeType, group, node } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))
     const [, k8Abbreviates] = useAsync(getK8Abbreviates)
-    const sideBarElementRef = useRef<HTMLDivElement>(null)
+    const selectedChildRef = useRef<HTMLButtonElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
     const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
@@ -71,28 +70,20 @@ const Sidebar = ({
     }, [enableShortcut])
 
     useEffect(() => {
-        if (!list?.size || !sideBarElementRef.current) {
+        if (!list?.size || !selectedChildRef.current) {
             return
         }
-        /* NOTE: on a reload selectedResource will be null
-         * Set it to the correct resource figured from nodeType
-         * Need to  */
-        if (!selectedResource) {
-            setSelectedResource({
-                gvk: {
-                    Kind: sideBarElementRef.current.dataset.kind as GVKType['Kind'],
-                    Group: sideBarElementRef.current.dataset.group,
-                    Version: sideBarElementRef.current.dataset.version,
-                },
-                namespaced: sideBarElementRef.current.dataset.namespaced === 'true',
-                isGrouped: sideBarElementRef.current.dataset.grouped === 'true',
-            })
-            updateK8sResourceTabLastSyncMoment()
+        /**
+         * NOTE: on a reload/paste_url selectedResource will be null
+         * Set it to the correct resource figured from nodeType only if
+         * no node is set (i.e no DynamicTab is open) */
+        if (selectedResource.gvk.Kind !== selectedChildRef.current.dataset.kind && !node) {
+            selectedChildRef.current.click()
         }
         if (!preventScrollRef.current) {
-            sideBarElementRef.current.scrollIntoView({ block: 'center' })
+            selectedChildRef.current.scrollIntoView({ block: 'center' })
         }
-    }, [sideBarElementRef.current])
+    }, [selectedChildRef.current])
 
     const handleGroupHeadingClick = (
         /* TODO: simplify this */
@@ -103,16 +94,12 @@ const Sidebar = ({
     }
 
     const selectNode = (
-        e: React.MouseEvent<HTMLDivElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
+        e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
         preventScroll?: boolean,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
-
-        if (_selectedKind === nodeType && (group === _selectedGroup || group === K8S_EMPTY_GROUP)) {
-            return
-        }
 
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
@@ -152,9 +139,9 @@ const Sidebar = ({
         }
     }
 
-    const updateRef = (_node: HTMLDivElement) => {
+    const updateRef = (_node: HTMLButtonElement) => {
         if (_node?.dataset?.selected === 'true') {
-            sideBarElementRef.current = _node
+            selectedChildRef.current = _node
         }
     }
 
@@ -167,23 +154,16 @@ const Sidebar = ({
                 : nodeType === childData.gvk.Kind.toLowerCase() &&
                   (group === childData.gvk.Group.toLowerCase() || group === K8S_EMPTY_GROUP)
         return (
-            <div
-                key={`${nodeName}-child`}
-                ref={updateRef}
-                className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                    useGroupName ? 'ml-16' : ''
-                } ${isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree-object'}`}
-                data-group={childData.gvk.Group}
-                data-version={childData.gvk.Version}
-                data-kind={childData.gvk.Kind}
-                data-namespaced={childData.namespaced}
-                data-grouped={useGroupName}
-                data-selected={isSelected}
+            <SidebarChildButton
+                parentRef={updateRef}
+                text={nodeName}
+                group={childData.gvk.Group}
+                version={childData.gvk.Version}
+                kind={childData.gvk.Kind}
+                namespaced={childData.namespaced}
+                isSelected={isSelected}
                 onClick={selectNode}
-                data-testid={nodeName}
-            >
-                {nodeName}
-            </div>
+            />
         )
     }
 
@@ -332,61 +312,40 @@ const Sidebar = ({
                 />
             </div>
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
-                <div className="pb-8">
-                    <div
-                        key={SIDEBAR_KEYS.nodeGVK.Kind}
-                        ref={updateRef}
+                <div className="pb-8 flexbox-col">
+                    <SidebarChildButton
+                        parentRef={null}
+                        text={SIDEBAR_KEYS.nodes}
+                        group={SIDEBAR_KEYS.nodeGVK.Group}
+                        version={SIDEBAR_KEYS.nodeGVK.Version}
+                        kind={SIDEBAR_KEYS.nodeGVK.Kind}
+                        namespaced={false}
+                        isSelected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
                         onClick={selectNode}
-                        data-namespaced={false}
-                        data-kind={SIDEBAR_KEYS.nodeGVK.Kind}
-                        data-group={SIDEBAR_KEYS.nodeGVK.Group}
-                        data-version={SIDEBAR_KEYS.nodeGVK.Version}
-                        data-selected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
-                        className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                            nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
-                                ? 'bcb-1 cb-5'
-                                : 'cn-7 resource-tree-object'
-                        }`}
-                    >
-                        {SIDEBAR_KEYS.nodes}
-                    </div>
+                    />
                     {list?.size && list.get(AggregationKeys.Events) && (
-                        <div
-                            key={SIDEBAR_KEYS.eventGVK.Kind}
-                            ref={updateRef}
-                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                                nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                                    ? 'bcb-1 cb-5'
-                                    : 'cn-7 resource-tree-object'
-                            }`}
-                            data-group={SIDEBAR_KEYS.eventGVK.Group}
-                            data-version={SIDEBAR_KEYS.eventGVK.Version}
-                            data-kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            data-namespaced
-                            data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
+                        <SidebarChildButton
+                            parentRef={updateRef}
+                            text={SIDEBAR_KEYS.events}
+                            group={SIDEBAR_KEYS.eventGVK.Group}
+                            version={SIDEBAR_KEYS.eventGVK.Version}
+                            kind={SIDEBAR_KEYS.eventGVK.Kind}
+                            namespaced={false}
+                            isSelected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
-                        >
-                            {SIDEBAR_KEYS.events}
-                        </div>
+                        />
                     )}
                     {list?.size && list.get(AggregationKeys.Namespaces) && (
-                        <div
-                            key={SIDEBAR_KEYS.namespaceGVK.Kind}
-                            ref={updateRef}
-                            className={`fs-13 pointer dc__ellipsis-right fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                                nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                                    ? 'bcb-1 cb-5'
-                                    : 'cn-7 resource-tree-object'
-                            }`}
-                            data-group={SIDEBAR_KEYS.namespaceGVK.Group}
-                            data-version={SIDEBAR_KEYS.namespaceGVK.Version}
-                            data-kind={SIDEBAR_KEYS.namespaceGVK.Kind}
-                            data-namespaced={false}
-                            data-selected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
+                        <SidebarChildButton
+                            parentRef={updateRef}
+                            text={SIDEBAR_KEYS.namespaces}
+                            group={SIDEBAR_KEYS.namespaceGVK.Group}
+                            version={SIDEBAR_KEYS.namespaceGVK.Version}
+                            kind={SIDEBAR_KEYS.namespaceGVK.Kind}
+                            namespaced={false}
+                            isSelected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
                             onClick={selectNode}
-                        >
-                            {SIDEBAR_KEYS.namespaces}
-                        </div>
+                        />
                     )}
                 </div>
                 {list?.size &&
@@ -411,7 +370,7 @@ const Sidebar = ({
                                     </span>
                                 </div>
                                 {k8sObject.isExpanded && (
-                                    <div className="pl-20">
+                                    <div className="pl-20 flexbox-col">
                                         {[...k8sObject.child.entries()].map(([key, value]) =>
                                             renderK8sResourceChildren(key, value, k8sObject),
                                         )}

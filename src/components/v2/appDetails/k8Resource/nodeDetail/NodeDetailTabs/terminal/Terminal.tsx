@@ -38,7 +38,7 @@ export default function TerminalView({
                 return
             }
             if (socket.current?.readyState === WebSocket.OPEN) {
-                socket.current?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+                socket.current.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.current?.fit()
         }

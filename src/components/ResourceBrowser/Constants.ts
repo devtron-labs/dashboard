@@ -198,7 +198,7 @@ export const FIXED_GVK_Keys = {
     namespace: 'namespaceGVK',
 }
 
-export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 15
+export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
 export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
 export const ERROR_SCREEN_SUBTITLE =
     'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'

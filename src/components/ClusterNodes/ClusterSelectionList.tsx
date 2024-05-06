@@ -4,23 +4,18 @@ import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { handleUTCTime } from '../common'
 import { ClusterDetail } from './types'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
 import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
+import { URLS } from '../../config'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 
-export default function ClusterSelectionList({
-    clusterOptions,
-    onClusterSelection,
-    isSuperAdmin,
-    clusterListLoader,
-    refreshData,
-}: ClusterSelectionType) {
+export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clusterListLoader, refreshData }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
     const [minLoader, setMinLoader] = useState(true)
@@ -79,14 +74,6 @@ export default function ClusterSelectionList({
         setSearchText(value.trim())
     }
 
-    const handleOnBlur = (event): void => {
-        event.stopPropagation()
-        let _searchText = event.target.value
-        _searchText = _searchText?.trim()
-        handleFilterChanges(_searchText)
-        setSearchText(_searchText)
-    }
-
     const renderSearch = (): JSX.Element => {
         return (
             <SearchBar
@@ -109,9 +96,10 @@ export default function ClusterSelectionList({
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
     }
 
-    const selectCluster = (e): void => {
-        const data = e.currentTarget.dataset
-        onClusterSelection({ label: data.label, value: +data.value })
+    const selectCluster = (event: React.MouseEvent<HTMLButtonElement>): void => {
+        const { value } = event.currentTarget.dataset
+        const url = `${URLS.RESOURCE_BROWSER}/${value}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+        history.push(url)
     }
 
     const hideDataOnLoad = (value) => {
@@ -134,14 +122,15 @@ export default function ClusterSelectionList({
                     data-testid={`cluster-row-${clusterData.name}`}
                     className="cb-5 dc__ellipsis-right cursor  flex left"
                 >
-                    <div
-                        key={clusterData.name}
+                    <button
                         data-label={clusterData.name}
                         data-value={clusterData.id}
+                        className="dc__unset-button-styles"
                         onClick={selectCluster}
+                        aria-label={`Select cluster ${clusterData.name}`}
                     >
                         {clusterData.name}
-                    </div>
+                    </button>
                     <TerminalIcon
                         data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"

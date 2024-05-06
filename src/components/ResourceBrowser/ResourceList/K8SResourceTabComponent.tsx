@@ -21,7 +21,11 @@ const K8SResourceTabComponent = ({
     enableShortcut,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
-    const [selectedResource, setSelectedResource] = useState(null)
+    const [selectedResource, setSelectedResource] = useState({
+        gvk: SIDEBAR_KEYS.nodeGVK,
+        namespaced: false,
+        isGrouped: false,
+    })
 
     const abortControllerRef = useRef(new AbortController())
 
@@ -43,7 +47,7 @@ const K8SResourceTabComponent = ({
                 errorMsg={errorMessage}
                 selectedCluster={selectedCluster}
                 handleRetry={reload}
-                sideDataAbortController={abortControllerRef.current}
+                requestAbortController={abortControllerRef.current}
             />
         )
     }

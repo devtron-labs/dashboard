@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import moment from 'moment'
 import { DynamicTabType, InitTabType } from './Types'
+import dayjs from 'dayjs'
 
 /* TODO: refactor this file */
 
@@ -203,6 +204,9 @@ export function useTabs(persistanceKey: string) {
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
+        /**
+         * FIXME: this is not accurate since the setState is async and can't be sure unless
+         * using the fix in #removeTabByIdentifier (using Promise.withResolvers) */
         return true
     }
 
@@ -215,7 +219,7 @@ export function useTabs(persistanceKey: string) {
      */
     const removeTabByIdentifier = (id: string): Promise<string> => {
         // @ts-ignore available on all latest browsers
-        const { promise, resolve } = Promise.withResolvers()
+        const { promise, resolve } = Promise.withResolvers<string>()
 
         setTabs((prevTabs) => {
             let selectedRemoved = false
@@ -410,7 +414,7 @@ export function useTabs(persistanceKey: string) {
             const _tabs = prevTabs.map((tab) => {
                 return {
                     ...tab,
-                    lastSyncMoment: moment()
+                    lastSyncMoment: dayjs(),
                 }
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))

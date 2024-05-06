@@ -53,7 +53,7 @@ function ClusterOverview({
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
 
-    const sideDataAbortController = useRef(null)
+    const requestAbortControllerRef = useRef(null)
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -71,7 +71,7 @@ function ClusterOverview({
     )
 
     const handleRetry = async () => {
-        abortReqAndUpdateSideDataController(true)
+        abortRequestAndResetError(true)
         await getClusterNoteAndCapacity(clusterId)
     }
 
@@ -193,18 +193,18 @@ function ClusterOverview({
             )
         }
     }
-    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
-        sideDataAbortController.current.abort()
+    const abortRequestAndResetError = (emptyPrev?: boolean) => {
+        requestAbortControllerRef.current.abort()
         setErrorMsg('')
     }
 
     const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
         setErrorMsg('')
         setIsLoading(true)
-        sideDataAbortController.current = new AbortController()
+        requestAbortControllerRef.current = new AbortController()
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterDetails(clusterId, sideDataAbortController.current.signal),
-            getClusterCapacity(clusterId, sideDataAbortController.current.signal),
+            getClusterDetails(clusterId, requestAbortControllerRef.current.signal),
+            getClusterCapacity(clusterId, requestAbortControllerRef.current.signal),
         ])
         setClusterNoteDetails(clusterNoteResponse)
         setClusterCapacityDetails(clusterCapacityResponse)
@@ -220,7 +220,7 @@ function ClusterOverview({
     }, [selectedCluster])
 
     useEffect(() => {
-        return () => sideDataAbortController.current?.abort()
+        return () => requestAbortControllerRef.current?.abort()
     }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
@@ -549,7 +549,7 @@ function ClusterOverview({
                         errorMsg={errorMsg}
                         selectedCluster={selectedCluster}
                         handleRetry={handleRetry}
-                        sideDataAbortController={sideDataAbortController.current}
+                        requestAbortController={requestAbortControllerRef.current}
                     />
                 </div>
             )

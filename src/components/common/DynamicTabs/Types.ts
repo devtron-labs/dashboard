@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import moment from 'moment'
 import { useTabs } from './useTabs'
+import { Dayjs } from 'dayjs'
 
 interface CommonTabArgsType {
     name: string
@@ -14,7 +15,7 @@ interface CommonTabArgsType {
     dynamicTitle?: string
     showNameOnSelect?: boolean
     isAlive?: boolean
-    lastSyncMoment?: moment.Moment
+    lastSyncMoment?: Dayjs
     componentKey?: string
 }
 
@@ -51,9 +52,9 @@ export interface MoreButtonWrapperProps {
 }
 
 export interface TimerType {
-    start: moment.Moment
-    callback?: (now: moment.Moment) => void
+    start: Dayjs
+    callback?: (now: Dayjs) => void
     transition?: () => JSX.Element
     transpose?: (output: string) => JSX.Element
-    format?: (start: moment.Moment, now: moment.Moment) => string
+    format?: (start: Dayjs, now: Dayjs) => string
 }

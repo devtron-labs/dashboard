@@ -1,18 +1,14 @@
 import React, { useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
 import { showError, getUserRole, DevtronProgressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../common/header/PageHeader'
 import { sortObjectArrayAlphabetically } from '../common'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from './Constants'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { ClusterDetail } from '../ClusterNodes/types'
-import { URLS } from '../../config'
 import { addClusterButton } from './PageHeader.buttons'
 import './ResourceBrowser.scss'
 
-const ResourceBrowser: React.FC<Record<string, never>> = () => {
-    const { push } = useHistory()
+const ResourceBrowser: React.FC = () => {
     const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =
         useAsync(getClusterList)
     const [initialLoading, data, error] = useAsync(() =>
@@ -32,11 +28,6 @@ const ResourceBrowser: React.FC<Record<string, never>> = () => {
 
     const isSuperAdmin = userRoleData?.result.superAdmin || false
 
-    const onClusterSelection = (selected): void => {
-        const url = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-        push(url)
-    }
-
     if (error || detailClusterListError) {
         showError(error || detailClusterListError)
     }
@@ -55,7 +46,6 @@ const ResourceBrowser: React.FC<Record<string, never>> = () => {
             ) : (
                 <ClusterSelectionList
                     clusterOptions={sortedClusterList}
-                    onClusterSelection={onClusterSelection}
                     isSuperAdmin={isSuperAdmin}
                     clusterListLoader={detailClusterListLoading}
                     refreshData={reloadDetailClusterList}

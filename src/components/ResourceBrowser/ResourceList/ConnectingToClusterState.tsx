@@ -11,7 +11,7 @@ export default function ConnectingToClusterState({
     errorMsg,
     selectedCluster,
     handleRetry,
-    sideDataAbortController,
+    requestAbortController,
 }: ConnectingToClusterStateProps) {
     const { replace } = useHistory()
     const { clusterId } = useParams<URLParams>()
@@ -70,17 +70,17 @@ export default function ConnectingToClusterState({
     }
 
     const handleCancelClick = () => {
-        sideDataAbortController?.abort()
+        requestAbortController?.abort()
         resetStates()
         replace({
             pathname: URLS.RESOURCE_BROWSER,
         })
     }
 
-    const handleRetryClick = (e) => {
+    const handleRetryClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         resetStates()
         initProgressTimer()
-        handleRetry(e)
+        handleRetry(event)
     }
 
     const renderSelectionState = () => {

@@ -7,6 +7,7 @@ import {
     ErrorScreenManager,
     DevtronProgressing,
     useAsync,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import PageHeader from '../../common/header/PageHeader'
@@ -25,7 +26,6 @@ import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
-import { useOnComponentUpdate } from '../../common/helpers/Helpers'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
@@ -58,10 +58,7 @@ const ResourceList = () => {
     )
 
     const [loading, data, error] = useAsync(() =>
-        Promise.all([
-            getClusterListMin(),
-            window._env_.K8S_CLIENT ? null : getUserRole(),
-        ]),
+        Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
     )
 
     const [clusterListData = null, userRole = null] = data || []
@@ -70,23 +67,30 @@ const ResourceList = () => {
 
     const clusterOptions: ClusterOptionType[] = useMemo(
         () =>
-            clusterList && convertToOptionsList(
+            clusterList &&
+            (convertToOptionsList(
                 sortObjectArrayAlphabetically(clusterList, 'name'),
                 'name',
                 'id',
                 'nodeErrors',
-            ) as ClusterOptionType[],
+            ) as ClusterOptionType[]),
         [clusterList],
     )
 
     /* NOTE: this is being used as dependency in useEffect down the tree */
-    const selectedCluster = useMemo(() =>
-        clusterOptions?.find((cluster) => String(cluster.value) === clusterId)
-            || { label: '', value: clusterId, errorInConnecting: '' }
-    , [clusterId, clusterOptions])
+    const selectedCluster = useMemo(
+        () =>
+            clusterOptions?.find((cluster) => String(cluster.value) === clusterId) || {
+                label: '',
+                value: clusterId,
+                errorInConnecting: '',
+            },
+        [clusterId, clusterOptions],
+    )
 
     const isSuperAdmin = userRole?.result.superAdmin || false
 
+    /* FIXME: could use constants for the tab indices */
     const dynamicActiveTab = tabs.find((tab, index) => index > (isSuperAdmin ? 2 : 1) && tab.isSelected)
 
     const initTabsBasedOnRole = (reInit: boolean) => {
@@ -96,7 +100,7 @@ const ResourceList = () => {
     }
 
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
-    useOnComponentUpdate(() => initTabsBasedOnRole(true), [clusterId])
+    useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -151,9 +155,9 @@ const ResourceList = () => {
                     ),
                     linked: false,
                 },
-                ':namespace?': null,
-                ':nodeType?': null,
-                ':group?': null,
+                ':namespace': null,
+                ':nodeType': null,
+                ':group': null,
                 ':node?': null,
             },
         },
@@ -175,17 +179,20 @@ const ResourceList = () => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const updateTerminalTabUrl = useCallback((queryParams: string) => {
-        const terminalTab = tabs[2]
-        if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
-            return
-        }
-        updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
-        if (!terminalTab.isSelected) {
-            return
-        }
-        replace({ search: queryParams })
-    }, [tabs])
+    const updateTerminalTabUrl = useCallback(
+        (queryParams: string) => {
+            const terminalTab = tabs[2]
+            if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
+                return
+            }
+            updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
+            if (!terminalTab.isSelected) {
+                return
+            }
+            replace({ search: queryParams })
+        },
+        [tabs],
+    )
 
     const updateK8sResourceTab = (url: string, dynamicTitle = '') => {
         updateTabUrl(tabs[1].id, url, dynamicTitle)
@@ -231,47 +238,28 @@ const ResourceList = () => {
     }
 
     const fixedTabComponents = [
-        (
-            <ClusterOverview
-                isSuperAdmin={isSuperAdmin}
-                selectedCluster={selectedCluster}
-            />
-        ),
-        (
-            <K8SResourceTabComponent
-                selectedCluster={selectedCluster}
-                addTab={addTab}
-                renderRefreshBar={renderRefreshBar(isDataStale, tabs?.[1]?.lastSyncMoment?.toString(), refreshData)}
-                isSuperAdmin={isSuperAdmin}
-                showStaleDataWarning={isDataStale}
-                updateK8sResourceTab={updateK8sResourceTab}
-                updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-                enableShortcut={!showCreateResourceModal}
-            />
-        ),
+        <ClusterOverview isSuperAdmin={isSuperAdmin} selectedCluster={selectedCluster} />,
+        <K8SResourceTabComponent
+            selectedCluster={selectedCluster}
+            addTab={addTab}
+            renderRefreshBar={renderRefreshBar(isDataStale, tabs?.[1]?.lastSyncMoment?.toString(), refreshData)}
+            isSuperAdmin={isSuperAdmin}
+            showStaleDataWarning={isDataStale}
+            updateK8sResourceTab={updateK8sResourceTab}
+            updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+            enableShortcut={!showCreateResourceModal}
+        />,
         ...(isSuperAdmin && tabs[2]?.name === AppDetailsTabs.terminal && tabs[2].isAlive
-            ? [
-                  <AdminTerminal
-                      isSuperAdmin={isSuperAdmin}
-                      updateTerminalTabUrl={updateTerminalTabUrl}
-                  />
-              ]
-            : []
-        ),
+            ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
+            : []),
     ]
 
     const renderInvisible = (component: React.ReactNode, hide: boolean) => {
-        return (
-            <div className={hide ? `hidden` : ''}>{component}</div>
-        )
+        return <div className={hide ? `hidden` : ''}>{component}</div>
     }
 
     const renderKeyedTabComponent = (component: React.ReactNode, key: string) => {
-        return (
-            <div key={key}>
-                {component}
-            </div>
-        )
+        return <div key={key}>{component}</div>
     }
 
     const renderMainBody = () => {
@@ -312,19 +300,18 @@ const ResourceList = () => {
                         />
                     </div>
                 </div>
-                {
-                    tabs.length > 0
-                    && fixedTabComponents.map((component, index) =>
+                {tabs.length > 0 &&
+                    fixedTabComponents.map((component, index) =>
                         renderInvisible(
                             renderKeyedTabComponent(component, tabs[index].componentKey),
                             !tabs[index].isSelected,
-                        )
-                    )
-                }
-                {dynamicActiveTab && renderKeyedTabComponent(
-                    renderDynamicTabComponent(),
-                    dynamicActiveTab.componentKey,
-                )}
+                        ),
+                    )}
+                {/* NOTE: to allow for shareable urls if node is available in url but no associated
+                 * dynamicTab we allow for this to pass into renderDynamicTabComponent as that will
+                 * create the missing tab */}
+                {(dynamicActiveTab || node) &&
+                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey || node)}
             </>
         )
     }
