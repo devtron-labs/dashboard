@@ -39,8 +39,6 @@ export const SourceInfo = ({
     isVirtualEnvironment,
     setRotateModal = null,
     refetchDeploymentStatus,
-    severityCount,
-    showVulnerabilitiesModal,
     toggleIssuesModal,
     envId,
     ciArtifactId,
@@ -290,13 +288,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
-                              <SecurityVulnerabilityCard
-                                  cardLoading={cardLoading}
-                                  severityCount={severityCount}
-                                  showVulnerabilitiesModal={showVulnerabilitiesModal}
-                              />
-                          )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

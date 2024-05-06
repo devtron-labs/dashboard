@@ -221,13 +221,10 @@ export interface IssuesCardType {
 }
 
 export interface SecurityVulnerabilityCardType {
-    severityCount?: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: () => void
     cardLoading?: boolean
+    appId?: string
+    envId?: string
+    installedAppId?: number
 }
 
 export interface DeployedCommitCardType {

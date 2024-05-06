@@ -7,6 +7,8 @@ import {
     VulnerabilityType,
     ScannedByToolModal,
     Drawer,
+    ScannedObjectBar,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
@@ -31,8 +33,8 @@ interface ScanDetailsModalState {
     view: string
     lastExecution: string
     scanExecutionId?: number
-    scanEnabled: boolean
-    scanned: boolean
+    scanEnabled?: boolean
+    scanned?: boolean
     appId?: number
     appName?: string
     envId?: number
@@ -40,7 +42,7 @@ interface ScanDetailsModalState {
     pod?: string
     replicaSet?: string
     image?: string
-    objectType: 'app' | 'chart'
+    objectType?: 'app' | 'chart'
     severityCount: {
         critical: number
         moderate: number
@@ -87,6 +89,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
         document.removeEventListener('click', this.outsideClickHandler)
     }
     outsideClickHandler = (evt): void => {
+        evt.stopPropagation()
         if (this.scanDetailsRef.current && !this.scanDetailsRef.current.contains(evt.target)) {
             this.props.close()
         }
@@ -185,44 +188,14 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         <p className="scanned-object__value">{this.state.lastExecution}</p>
                     </>
                 )}
-                {this.renderCount()}
-            </div>
-        )
-    }
 
-    renderCount() {
-        let total = this.state.severityCount.critical + this.state.severityCount.moderate + this.state.severityCount.low
-        return (
-            <>
-                <div className="scanned-object__bar mb-16">
-                    <div
-                        className="scanned-object__critical-count"
-                        style={{ width: `${(100 * this.state.severityCount.critical) / total}%` }}
-                    ></div>
-                    <div
-                        className="scanned-object__moderate-count"
-                        style={{ width: `${(100 * this.state.severityCount.moderate) / total}%` }}
-                    ></div>
-                    <div
-                        className="scanned-object__low-count"
-                        style={{ width: `${(100 * this.state.severityCount.low) / total}%` }}
-                    ></div>
-                </div>
-                <div className="flexbox">
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__critical-count"></span>Critical
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.critical}</span>
-                    </p>
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__moderate-count"></span>Moderate
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.moderate}</span>
-                    </p>
-                    <p className="scanned-object__counts">
-                        <span className="scanned-object__icon scanned-object__low-count"></span>Low
-                        <span className="fw-6 ml-5 mr-20">{this.state.severityCount.low}</span>
-                    </p>
-                </div>
-            </>
+                <ScannedObjectBar
+                    criticalVulnerabilitiesCount={this.state.severityCount.critical}
+                    moderateVulnerabilitiesCount={this.state.severityCount.moderate}
+                    lowVulnerabilitiesCount={this.state.severityCount.low}
+                    objectBarClassName="mb-16"
+                />
+            </div>
         )
     }
 
@@ -237,7 +210,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     render() {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div className="modal-body--scan-details" ref={this.scanDetailsRef}>
+                <div className="modal-body--scan-details" ref={this.scanDetailsRef} onClick={stopPropagation}>
                     {this.renderHeader()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (

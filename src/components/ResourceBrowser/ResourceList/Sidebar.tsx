@@ -1,10 +1,15 @@
 import React, { Fragment, useEffect, useRef, useState, useMemo, useCallback } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useParams, useLocation } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import DOMPurify from 'dompurify'
-import { useAsync, highlightSearchText, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    highlightSearchText,
+    ReactSelectInputAction,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -28,9 +33,10 @@ const Sidebar = ({
     setSelectedResource,
     updateResourceSelectionData,
     shortcut,
-    isCreateModalOpen,
 }: SidebarType & IWithShortcut) => {
+    const { registerShortcut } = useRegisterShortcut()
     const { push } = useHistory()
+    const location = useLocation()
     const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
         namespace: string
@@ -59,14 +65,14 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (!isCreateModalOpen) {
+        if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
         return (): void => {
             shortcut.unregisterShortcut(['k'])
         }
-    }, [isCreateModalOpen])
+    }, [registerShortcut])
 
     useEffect(() => {
         if (k8SObjectMap?.size) {
@@ -88,7 +94,10 @@ const Sidebar = ({
             return
         }
 
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`)
+        push({
+            pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`,
+            search: location.search,
+        })
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {
