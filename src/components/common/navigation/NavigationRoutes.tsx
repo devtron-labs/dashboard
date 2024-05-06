@@ -409,21 +409,20 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        // TODO (v1): Move to common lib
-                                        ...(window._env_.HIDE_RELEASES
-                                            ? []
-                                            : [
+                                        ...(Releases
+                                            ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
-                                                      {Releases ? (
-                                                        <ImageSelectionUtilityProvider value={{
-                                                            gitCommitInfoGeneric: GitCommitInfoGeneric,
-                                                            getModuleInfo,
-                                                        }} >
-                                                            <Releases />
-                                                        </ImageSelectionUtilityProvider>
-                                                      ) : <h1>Releases</h1>}
+                                                      <ImageSelectionUtilityProvider
+                                                          value={{
+                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
+                                                              getModuleInfo,
+                                                          }}
+                                                      >
+                                                          <Releases />
+                                                      </ImageSelectionUtilityProvider>
                                                   </Route>,
-                                              ]),
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

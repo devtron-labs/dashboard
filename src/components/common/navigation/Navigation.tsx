@@ -71,7 +71,6 @@ const NavigationList = [
                   icon: ReleasesIcon,
                   href: URLS.RELEASES,
                   isAvailableInEA: false,
-                  forceHideEnvKey: 'HIDE_RELEASES',
                   markOnlyForSuperAdmin: true,
               },
           ]
