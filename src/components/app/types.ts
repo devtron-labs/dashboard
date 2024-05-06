@@ -576,7 +576,7 @@ export interface AppDetailsCDButtonType
             | 'environmentName'
             | 'triggerType'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {}
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {isRedirectedFromAppDetails: boolean}
 
 export interface EnvironmentListMinType {
     active?: boolean

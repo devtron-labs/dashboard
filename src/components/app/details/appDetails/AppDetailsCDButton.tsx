@@ -28,6 +28,7 @@ const AppDetailsCDButton = ({
     loadingDetails,
     environmentName,
     triggerType,
+    isRedirectedFromAppDetails,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -91,6 +92,7 @@ const AppDetailsCDButton = ({
                             deploymentAppType={deploymentAppType}
                             parentEnvironmentName={parentEnvironmentName}
                             isLoading={loadingDetails}
+                            isRedirectedFromAppDetails={isRedirectedFromAppDetails}
                         />
                     </div>
                 </VisibleModal>

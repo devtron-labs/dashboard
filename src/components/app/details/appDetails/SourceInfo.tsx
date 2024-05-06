@@ -216,6 +216,7 @@ export const SourceInfo = ({
                                     loadingDetails={loadingDetails}
                                     environmentName={appDetails.environmentName}
                                     triggerType={appDetails.triggerType}
+                                    isRedirectedFromAppDetails
                                 />
                             </div>
                         )}

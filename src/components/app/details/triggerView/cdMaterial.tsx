@@ -90,7 +90,7 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT } from './Constants'
+import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { useHistory } from 'react-router-dom'
@@ -136,6 +136,7 @@ const CDMaterial = ({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
+    isRedirectedFromAppDetails
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
@@ -565,8 +566,13 @@ const CDMaterial = ({
 
     const viewAllImages = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        closeCDModal(e)
-        onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+        if (isRedirectedFromAppDetails) {
+            // redirecting to image approval
+            window.location.href = `${location.origin}/${window.__BASE_URL__}/app/${appId}/trigger?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`
+        } else {
+            closeCDModal(e)
+            onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+        }
     }
 
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>

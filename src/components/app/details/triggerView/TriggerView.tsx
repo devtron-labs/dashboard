@@ -55,7 +55,13 @@ import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.s
 import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
-import { DEFAULT_ENV, HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import {
+    DEFAULT_ENV,
+    HOST_ERROR_MESSAGE,
+    TIME_STAMP_ORDER,
+    TRIGGER_VIEW_PARAMS,
+    TRIGGER_VIEW_GA_EVENTS,
+} from './Constants'
 import {
     APP_DETAILS,
     CI_CONFIGURED_GIT_MATERIAL_ERROR,
@@ -99,7 +105,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             ciPipelineName: '',
             materialType: '',
             showCDModal: false,
-            showApprovalModal: false,
             isLoading: false,
             invalidateCache: false,
             hostURLConfig: undefined,
@@ -223,12 +228,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         this.getConfigs()
 
                         if (ApprovalMaterialModal) {
-                            if (this.props.location.search.includes('approval-node')) {
-                                this.setState({
-                                    showApprovalModal: true,
-                                })
+                            if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
                                 const searchParams = new URLSearchParams(this.props.location.search)
-                                const nodeId = searchParams.get('approval-node')
+                                const nodeId = searchParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)
                                 this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
                             }
                         }
@@ -709,7 +711,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .catch((errors: ServerErrors) => {
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    this.setState({ showCIModal:false })
+                    this.setState({ showCIModal: false })
                 }
             })
             .finally(() => {
@@ -721,7 +723,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     // Till then make sure that they are consistent
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ showCDModal: !isApprovalNode, showApprovalModal: isApprovalNode })
+        this.setState({ showCDModal: !isApprovalNode })
 
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -742,15 +744,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             materialType: 'inputMaterialList',
             cdNodeId,
             nodeType,
-            showApprovalModal: isApprovalNode,
             showCDModal: !isApprovalNode,
         })
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(this.props.location.search)
-        newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
+        newParams.set(
+            isApprovalNode ? TRIGGER_VIEW_PARAMS.APPROVAL_NODE : TRIGGER_VIEW_PARAMS.CD_NODE,
+            cdNodeId.toString(),
+        )
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
+        } else {
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+            newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
+            newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
         }
         this.props.history.push({
             search: newParams.toString(),
@@ -1040,7 +1048,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         preventBodyScroll(false)
-        this.setState({ showApprovalModal: false })
         this.props.history.push({
             search: '',
         })
@@ -1292,7 +1299,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderApprovalMaterial() {
-        if (ApprovalMaterialModal && this.state.showApprovalModal) {
+        if (ApprovalMaterialModal && this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const node: CommonNodeAttr = this.getCDNode()
             return (
                 <ApprovalMaterialModal
