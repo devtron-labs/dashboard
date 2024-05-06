@@ -3,6 +3,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
+import { useTabs } from '../common/DynamicTabs/useTabs'
 
 export interface ResourceDetailType {
     headers: string[]
@@ -112,7 +113,6 @@ export interface SidebarType {
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
-    isCreateModalOpen: boolean
     isClusterError?: boolean
 }
 
@@ -130,9 +130,9 @@ export interface ResourceFilterOptionsProps {
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
     clearSearch: () => void
+    updateTabUrl?: ReturnType<typeof useTabs>['updateTabUrl']
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
-    isCreateModalOpen?: boolean
     renderCallBackSync?: () => JSX.Element
     syncError?: boolean
 }
@@ -143,7 +143,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    isCreateModalOpen: boolean
+    clearFilters: () => void
     addTab: (
         idPrefix: string,
         kind: string,

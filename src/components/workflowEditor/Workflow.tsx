@@ -14,7 +14,7 @@ import {
     getWebhookDetailsURL,
     importComponentFromFELibrary,
 } from '../common'
-import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
+import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { WebhookNode } from './nodes/WebhookNode'
@@ -44,7 +44,7 @@ const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
-    nodes: NodeAttr[]
+    nodes: CommonNodeAttr[]
     id: number
     name: string
     startX: number
@@ -130,7 +130,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
     }
 
-    goToWorkFlowEditor = (node: NodeAttr) => {
+    goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             this.props.history.push(
                 getCIPipelineURL(
@@ -180,7 +180,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const _nodes = _nodesData.nodes
 
         if (linkedCD) {
-            return _nodes.map((node: NodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.isLinkedCD && LinkedCDNode) {
                     return this.renderLinkedCD(node)
                 }
@@ -197,7 +197,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         }
         if (ci) {
-            return _nodes.map((node: NodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.type == WorkflowNodeType.GIT) {
                     return this.renderSourceNode(node, ci)
                 }
@@ -217,7 +217,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             })
         }
         if (webhook) {
-            return _nodes.map((node: NodeAttr) => {
+            return _nodes.map((node) => {
                 if (node.type == WorkflowNodeType.WEBHOOK) {
                     return this.renderWebhookNode(node)
                 }
@@ -312,7 +312,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    openCDPipeline(node: NodeAttr, isWebhookCD: boolean) {
+    openCDPipeline(node: CommonNodeAttr, isWebhookCD: boolean) {
         const { appId } = this.props.match.params
         return `${this.props.match.url}/${getCDPipelineURL(
             appId,
@@ -323,7 +323,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )}`
     }
 
-    openCIPipeline(node: NodeAttr) {
+    openCIPipeline(node: CommonNodeAttr) {
         if (node.isExternalCI && !node.isLinkedCI) {
             return `${this.props.match.url}/deprecated-warning`
         }
@@ -346,7 +346,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return `${this.props.match.url}/${url}`
     }
 
-    openWebhookDetails(node: NodeAttr) {
+    openWebhookDetails(node: CommonNodeAttr) {
         return `${this.props.match.url}/${getWebhookDetailsURL(this.props.id.toString(), node.id)}`
     }
 
@@ -392,7 +392,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    renderLinkedCD(node: NodeAttr) {
+    renderLinkedCD(node: CommonNodeAttr) {
         return (
             <LinkedCDNode
                 key={`linked-cd-${node.id}`}
@@ -421,7 +421,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-    renderCDNodes(node: NodeAttr, ciPipelineId: string | number, isWebhookCD: boolean, cdNamesList?: string[]) {
+    renderCDNodes(node: CommonNodeAttr, ciPipelineId: string | number, isWebhookCD: boolean, cdNamesList?: string[]) {
         if (this.props.cdWorkflowList?.length > 0 && !cdNamesList?.length) {
             return
         }
@@ -481,7 +481,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
-    getAddCDButtonTooltipContent = (node: NodeAttr): string => {
+    getAddCDButtonTooltipContent = (node: CommonNodeAttr): string => {
         const environments = node.downstreamEnvironments?.map((env) => env.environmentName) ?? []
         const environmentsString = environments.slice(0, 3).join('\n')
         const moreEnvCount = environments.length - 3
@@ -757,6 +757,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                 ? 'workflow__header'
                                 : 'flexbox dc__align-items-center dc__align-self_center dc__gap-8'
                         }
+                        data-testid="workflow-header"
                     >
                         <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
                         {!configDiffView && (

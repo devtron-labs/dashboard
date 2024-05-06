@@ -13,7 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
-import { Filter, FilterOption, handleUTCTime } from '../../common'
+import { Filter, FilterOption, handleUTCTime, useAppContext } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
@@ -39,12 +39,15 @@ import {
     getChangeAppTabURL,
     getCurrentTabName,
 } from './list.utils'
+import ExternalArgoList from './ExternalArgoList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
     const { serverMode, setPageOverflowEnabled } = useMainContext()
+    const { setCurrentAppName } = useAppContext()
+
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
@@ -1012,6 +1015,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     setAppCount={setAppCount}
                     updateDataSyncing={updateDataSyncing}
                     isArgoInstalled={isArgoInstalled}
+                    setCurrentAppName={setCurrentAppName}
                 />
             )}
             {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.EA_ONLY && (
@@ -1027,6 +1031,28 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             {params.appType === AppListConstants.AppType.HELM_APPS && (
                 <>
                     <HelmAppList
+                        serverMode={serverMode}
+                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                        sortApplicationList={sortApplicationList}
+                        clearAllFilters={removeAllFilters}
+                        fetchingExternalApps={fetchingExternalApps}
+                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                        updateDataSyncing={updateDataSyncing}
+                        setShowPulsatingDotState={setShowPulsatingDotState}
+                        masterFilters={masterFilters}
+                        syncListData={syncListData}
+                        isArgoInstalled={isArgoInstalled}
+                    />
+                    {fetchingExternalApps && (
+                        <div className="mt-16">
+                            <Progressing size={32} />
+                        </div>
+                    )}
+                </>
+            )}
+            {window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS && (
+                <>
+                    <ExternalArgoList
                         serverMode={serverMode}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}

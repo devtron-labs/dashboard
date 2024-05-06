@@ -345,6 +345,10 @@ a:focus {
     top: 26px;
 }
 
+.dc__top-46 {
+    top: 46px;
+}
+
 .dc__top-47 {
     top: 47px;
 }
@@ -355,6 +359,10 @@ a:focus {
 
 .dc__bottom-0 {
     bottom: 0;
+}
+
+.dc__bottom-16 {
+    bottom: 16px;
 }
 
 .dc__bottom-12 {
@@ -2071,6 +2079,10 @@ button.anchor {
     align-self: stretch;
 }
 
+.dc__align-self-start {
+    align-self: flex-start;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -2217,6 +2229,10 @@ button.anchor {
     border-top: none !important;
 }
 
+.dc__no-border-right-imp {
+    border-top: none !important;
+}
+
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 }
@@ -2264,12 +2280,20 @@ button.anchor {
     max-width: 160px;
 }
 
+.dc__mxw-178 {
+    max-width: 178px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
 
 .dc__mxw-200-imp {
     max-width: 200px !important;
+}
+
+.dc__mxw-240 {
+    max-width: 240px;
 }
 
 .dc__mxw-250 {
@@ -2664,6 +2688,12 @@ textarea,
     }
 }
 
+.circle-fill-b5 {
+    circle {
+        fill: var(--B500);
+    }
+}
+
 .icon-fill-n4 {
     rect {
         fill: var(--N400);
@@ -2906,6 +2936,10 @@ textarea,
     width: 120px;
 }
 
+.w-126 {
+    width: 126px;
+}
+
 .w-150 {
     width: 150px;
 }
@@ -3028,6 +3062,10 @@ textarea,
 
 .w-885 {
     width: 885px !important;
+}
+
+.w-1024 {
+    width: 1024px;
 }
 
 // Width in percentage
@@ -3585,6 +3623,10 @@ textarea,
     padding: 0px 8px !important;
 }
 
+.pb-160 {
+    padding-bottom: 160px;
+}
+
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
@@ -4038,6 +4080,10 @@ textarea::placeholder {
     z-index: 1;
 }
 
+.dc__zi-2 {
+    z-index: 2;
+}
+
 .dc__zi-4 {
     z-index: 4;
 }
@@ -4311,4 +4357,25 @@ textarea::placeholder {
     &:last-child {
         margin-bottom: 90px;
     }
+}
+
+.dc__unset-button-styles {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+/* NOTE: if the border width is smaller than border-radius curve;
+ * the border around the curved edges will get clipped;
+ * Eg: dc__border & dc__border-radius-4-imp */
+.dc__outline {
+    outline: 1px solid var(--N200);
+}
+
+.dc__outline-n1 {
+    outline: 1px solid var(--N100);
 }
