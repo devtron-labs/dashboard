@@ -31,4 +31,6 @@
 | LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
 | SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
 | SERVICE_WORKER_TIMEOUT                    | "1"         | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle       |
+| ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
+| ENABLE_RESOURCE_SCAN_V2            | true      | Enable image scan for resources (v2)          |
 # DASHBOARD CONFIG SECRET

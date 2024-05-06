@@ -37,4 +37,4 @@ export const ManifestTabJSON = [
         isSelected: false,
         isDisabled: false,
     },
-]
+] as const

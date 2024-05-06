@@ -350,6 +350,10 @@ a:focus {
     top: 26px;
 }
 
+.dc__top-46 {
+    top: 46px;
+}
+
 .dc__top-47 {
     top: 47px;
 }
@@ -2084,6 +2088,10 @@ button.anchor {
     align-self: stretch;
 }
 
+.dc__align-self-start {
+    align-self: flex-start;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -2251,6 +2259,10 @@ button.anchor {
     border-top: none !important;
 }
 
+.dc__no-border-right-imp {
+    border-top: none !important;
+}
+
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 
@@ -2324,6 +2336,10 @@ button.anchor {
 
 .dc__mxw-234 {
     max-width: 234px;
+}
+
+.dc__mxw-240 {
+    max-width: 240px;
 }
 
 .dc__mxw-250 {
@@ -2994,6 +3010,10 @@ textarea,
 
 .w-120 {
     width: 120px;
+}
+
+.w-126 {
+    width: 126px;
 }
 
 .w-150 {
@@ -3689,6 +3709,10 @@ textarea,
 
 .p-0-8-imp {
     padding: 0px 8px !important;
+}
+
+.pb-160 {
+    padding-bottom: 160px;
 }
 
 // Margin in pixels
@@ -4471,4 +4495,25 @@ textarea::placeholder {
 
 .dc__visibility-hidden {
     visibility: hidden;
+}
+
+.dc__unset-button-styles {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+/* NOTE: if the border width is smaller than border-radius curve;
+ * the border around the curved edges will get clipped;
+ * Eg: dc__border & dc__border-radius-4-imp */
+.dc__outline {
+    outline: 1px solid var(--N200);
+}
+
+.dc__outline-n1 {
+    outline: 1px solid var(--N100);
 }

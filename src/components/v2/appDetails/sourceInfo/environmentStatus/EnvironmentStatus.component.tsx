@@ -21,6 +21,7 @@ import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
 import { ErrorItem } from '../../../../app/details/appDetails/appDetails.type'
 import IssuesListingModal from '../../../../app/details/appDetails/IssuesListingModal'
+import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -184,6 +185,12 @@ const EnvironmentStatusComponent = ({
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
+                    {window._env_.ENABLE_RESOURCE_SCAN_V2 && (
+                        <SecurityVulnerabilityCard
+                            cardLoading={cardLoading}
+                            installedAppId={appDetails?.installedAppId}
+                        />
+                    )}
                 </div>
             )}
             {showAppStatusDetail && (

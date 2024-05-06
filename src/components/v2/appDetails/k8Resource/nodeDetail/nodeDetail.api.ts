@@ -24,6 +24,7 @@ export const getManifestResource = (
     nodeType: string,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
+    signal?: AbortSignal,
 ) => {
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
@@ -33,10 +34,15 @@ export const getManifestResource = (
         (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
             ? `?externalArgoApplicationName=${ad.appName}`
             : '')
-    return post(url, requestData)
+    return post(url, requestData, { signal })
 }
 
-export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
+export const getDesiredManifestResource = (
+    appDetails: AppDetails,
+    podName: string,
+    nodeType: string,
+    signal?: AbortSignal,
+) => {
     const selectedResource = appDetails.resourceTree?.nodes.filter(
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
@@ -50,7 +56,7 @@ export const getDesiredManifestResource = (appDetails: AppDetails, podName: stri
             name: selectedResource.name,
         },
     }
-    return post(Routes.DESIRED_MANIFEST, requestData)
+    return post(Routes.DESIRED_MANIFEST, requestData, { signal })
 }
 
 export const getEvent = (
@@ -63,6 +69,7 @@ export const getEvent = (
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
+// TODO: This should be moved into common since going to use it in resource-scan
 function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
     const requestBody = {
         appId: '',
@@ -85,10 +92,7 @@ function createResourceRequestBody(selectedResource: SelectedResourceType, updat
     return requestBody
 }
 
-function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
-    const selectedResource = appDetails.resourceTree.nodes.filter(
-        (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
-    )[0]
+export const getAppDetailsForManifest = (appDetails: AppDetails) => {
     const applicationObject =
         appDetails.deploymentAppType === DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
@@ -97,9 +101,23 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
             : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
 
+    return {
+        appId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? appId : '',
+        clusterId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? 0 : appDetails.clusterId,
+        appType: getK8sResourcePayloadAppType(appDetails.appType),
+        deploymentType:
+            appDetails.deploymentAppType === DeploymentAppTypes.HELM
+                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
+    }
+}
+
+export function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
+    const selectedResource = appDetails.resourceTree.nodes.filter(
+        (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
+    )[0]
+
     let requestBody = {
-        appId: '',
-        clusterId: 0,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -111,23 +129,9 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        appType: getK8sResourcePayloadAppType(appDetails.appType),
-        deploymentType:
-            appDetails.deploymentAppType === DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
+        ...getAppDetailsForManifest(appDetails),
     }
-    if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
-        requestBody = {
-            ...requestBody,
-            clusterId: appDetails.clusterId,
-        }
-    } else {
-        requestBody = {
-            ...requestBody,
-            appId,
-        }
-    }
+
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
     }

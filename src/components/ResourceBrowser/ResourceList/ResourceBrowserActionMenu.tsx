@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, Nodes, useMainContext, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
+import DeleteResourcePopup from './DeleteResourcePopup'
+import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
@@ -8,8 +10,9 @@ import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-in
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
-import { Nodes } from '../../app/types'
-import DeleteResourcePopup from './DeleteResourcePopup'
+
+const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
+const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 export default function ResourceBrowserActionMenu({
     clusterId,
@@ -19,20 +22,35 @@ export default function ResourceBrowserActionMenu({
     handleResourceClick,
     removeTabByIdentifier,
 }: ResourceBrowserActionMenuType) {
+    const { installedModuleMap } = useMainContext()
+
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
     const toggleDeleteDialog = () => {
         setShowDeleteDialog((prevState) => !prevState)
     }
 
+    const handleShowVulnerabilityModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+        /* TODO: stop propagation otherwise it conflicts with useOutsideClick of SecurityModal */
+        setTimeout(() => {
+            setShowVulnerabilityModal(true)
+        }, 100)
+    }
+
+    const handleCloseVulnerabilityModal = () => {
+        setShowVulnerabilityModal(false)
+    }
+
+    const showResourceScanModal = getShowResourceScanModal(selectedResource?.gvk?.Kind as any, installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY])
     return (
         <>
             <PopupMenu autoClose>
                 <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
-                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">
-                    <div className="fs-13 fw-4 lh-20">
+                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
+                    <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.manifest}
@@ -81,6 +99,9 @@ export default function ResourceBrowserActionMenu({
                                 </span>
                             </>
                         )}
+                        {showResourceScanModal && OpenSecurityModalButton && (
+                            <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
+                        )}
                         <span
                             className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
                             onClick={toggleDeleteDialog}
@@ -100,6 +121,20 @@ export default function ResourceBrowserActionMenu({
                     getResourceListData={getResourceListData}
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
+                />
+            )}
+
+            {showVulnerabilityModal && SecurityModal && (
+                <SecurityModal
+                    resourceScanPayload={{
+                        name: resourceData.name,
+                        namespace: resourceData.namespace,
+                        group: selectedResource?.gvk?.Group,
+                        kind: selectedResource?.gvk?.Kind,
+                        version: selectedResource?.gvk?.Version,
+                        clusterId,
+                    }}
+                    handleModalClose={handleCloseVulnerabilityModal}
                 />
             )}
         </>
