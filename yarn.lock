@@ -986,10 +986,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.79-beta-16":
-  version "0.0.79-beta-16"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.79-beta-16.tgz#8e586d20c2aa088cf591b537ecc0f61441518266"
-  integrity sha512-2dp13ra3W2hT3sLO+ggU4Vnji4WjV34tn9NyVpRKmh2jO7Cvhi3a/TX7lenwoaiW0RDOKHgdZpfsW7tm+kG6Xg==
+"@devtron-labs/devtron-fe-common-lib@0.0.81-beta-2":
+  version "0.0.81-beta-2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.81-beta-2.tgz#8b993b3b9e652ea5932908f8d0eeaadf01bf7734"
+  integrity sha512-p1Pv6JAXr6bIRUUxKXNolKNvMkGb9pNVXVkmgPVbPU7x8qdFOdob+KFml9NO+YsmOdXcKBvyWUN1VvhiCl5/pQ==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
@@ -1509,10 +1509,10 @@
     "@sentry/utils" "7.50.0"
     tslib "^1.9.3"
 
-"@sentry/cli-darwin@2.31.0":
-  version "2.31.0"
-  resolved "https://registry.npmjs.org/@sentry/cli-darwin/-/cli-darwin-2.31.0.tgz"
-  integrity sha512-VM5liyxMnm4K2g0WsrRPXRCMLhaT09C7gK5Fz/CxKYh9sbMZB7KA4hV/3klkyuyw1+ECF1J66cefhNkFZepUig==
+"@sentry/cli-darwin@2.28.5":
+  version "2.28.5"
+  resolved "https://registry.npmjs.org/@sentry/cli-darwin/-/cli-darwin-2.28.5.tgz"
+  integrity sha512-+18cWhVcAGB8rGEDQxMn+eZIwXdm7nMp0JJFhZ+QJLA9hYr6m2rLKkQqh9g7TgDPZo+NAsE1KSe/LcFy9gW9gw==
 
 "@sentry/cli-linux-arm64@2.31.0":
   version "2.31.0"
@@ -1529,10 +1529,10 @@
   resolved "https://registry.yarnpkg.com/@sentry/cli-linux-i686/-/cli-linux-i686-2.31.0.tgz#d4586a18145f43b37324231e0f19f8f23793fc58"
   integrity sha512-cQUFb3brhLaNSIoNzjU/YASnTM1I3TDJP9XXzH0eLK9sSopCcDcc6OrYEYvdjJXZKzFv5sbc9UNMsIDbh4+rYg==
 
-"@sentry/cli-linux-x64@2.31.0":
-  version "2.31.0"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-x64/-/cli-linux-x64-2.31.0.tgz#f89fd87b47a5eb10c292846f3a1a754cf97105fe"
-  integrity sha512-z1zTNg91nZJRdcGHC/bCU1KwIaifV0MLJteip9KrFDprzhJk1HtMxFOS0+OZ5/UH21CjAFmg9Pj6IAGqm3BYjA==
+"@sentry/cli-linux-x64@2.28.5":
+  version "2.28.5"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-x64/-/cli-linux-x64-2.28.5.tgz#a06b84ba3308e0cdeaf068b999bd026404ca24bf"
+  integrity sha512-XZj35T0WfS9erKelUXZRibCcB7n1tTz/f/xuQRYdHtyIp0gF0RoOXM7rJfqPbMW6r/0mI8lB5f9OHXvttEW4qg==
 
 "@sentry/cli-win32-i686@2.31.0":
   version "2.31.0"
