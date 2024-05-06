@@ -136,7 +136,7 @@ const CDMaterial = ({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
-    isRedirectedFromAppDetails
+    isRedirectedFromAppDetails,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
@@ -568,7 +568,10 @@ const CDMaterial = ({
         e.stopPropagation()
         if (isRedirectedFromAppDetails) {
             // redirecting to image approval
-            window.location.href = `${location.origin}/${window.__BASE_URL__}/app/${appId}/trigger?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`
+            window.open(
+                `${location.origin}${window.__BASE_URL__}app/${appId}/trigger?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
+                '_blank',
+            )
         } else {
             closeCDModal(e)
             onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
