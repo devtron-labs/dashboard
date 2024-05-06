@@ -1,6 +1,7 @@
 import {
     ACTION_STATE,
     CDModalTabType,
+    CHECKBOX_VALUE,
     DeploymentNodeType,
     FilterConditionsListType,
     KeyValueListType,
@@ -12,8 +13,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
-import { EditDescRequest, OptionType } from '../app/types'
+import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
+import { GVKType } from '../ResourceBrowser/Types'
+import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -460,7 +463,7 @@ export interface BaseModalProps {
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
 }
 
-export interface HibernateInfoMapProps  {
+export interface HibernateInfoMapProps {
     type: string
     excludedUserEmails: string[]
     userActionState: ACTION_STATE
@@ -509,3 +512,86 @@ export interface ApiQueuingWithBatchResponseItem {
     value?: any
     reason?: ServerErrors
 }
+
+export interface RestartWorkloadModalProps {
+    selectedAppIds: number[]
+    envName: string
+    envId: string
+    restartLoader: boolean
+    setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
+}
+
+export interface RestartStatusListDrawerProps {
+    bulkRotatePodsMap: BulkRotatePodsMap
+    statusModalLoading: boolean
+    envName: string
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
+}
+
+// ----------------------------Restart Workload DTO--------------------------------------------
+
+export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
+    name: string
+    namespace?: string // This is only in the post response structure and not in get api
+    groupVersionKind: GVKType
+}
+
+export interface AppInfoMetaDataDTO {
+    resourceMetaData: ResourceIdentifierDTO[]
+    appName: string,
+    errorResponse?: string
+}
+
+export interface RestartPodMapDTO {
+    [appId: number]: AppInfoMetaDataDTO
+}
+
+export interface WorkloadListResultDTO {
+    environmentId: number
+    namespace: string
+    restartPodMap: RestartPodMapDTO
+}
+
+// ----------------------------Bulk Restart Data Manipulation-----------------------------------
+
+export interface ResourceErrorMetaData {
+    containsError?: boolean
+    errorResponse?: string
+}
+
+export interface AppStatusMetaData {
+    failedCount?: number
+    successCount?: number
+}
+
+export interface ResourceMetaData extends WorkloadCheckType, ResourceErrorMetaData {
+    group: string
+    kind: Nodes | NodeType
+    version: string
+    name: string
+}
+export interface ResourcesMetaDataMap {
+    [kindName: string]: ResourceMetaData
+}
+export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMetaData {
+    appName: string
+    resources?: ResourcesMetaDataMap
+    namespace: string
+    errorResponse?: string
+}
+
+export interface BulkRotatePodsMap {
+    [appId: number]: BulkRotatePodsMetaData
+}
+export interface AllExpandableDropdownTypes {
+    expandedAppIds: number[]
+    setExpandedAppIds: React.Dispatch<React.SetStateAction<number[]>>
+    bulkRotatePodsMap: BulkRotatePodsMap
+    SvgImage: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    iconClassName?: string
+    dropdownLabel?: string
+    isExpandableButtonClicked: boolean
+    setExpandableButtonClicked: React.Dispatch<React.SetStateAction<boolean>>
+}
+
