@@ -62,12 +62,21 @@ const NodeDetailComponent = ({
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
-    const _selectedResource = useMemo(() =>
-        getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType)
-    , [k8SObjectMapRaw, params.nodeType])
+    const toggleManagedFields = (managedFieldsExist: boolean) => {
+        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
+            setManagedFields(true)
+        } else {
+            setManagedFields(false)
+        }
+    }
+
+    const _selectedResource = useMemo(
+        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
+        [k8SObjectMapRaw, params.nodeType],
+    )
 
     const selectedResource = {
-        clusterId: +(params.clusterId),
+        clusterId: +params.clusterId,
         kind: _selectedResource?.gvk.Kind as string,
         version: _selectedResource?.gvk.Version,
         group: _selectedResource?.gvk.Group,
@@ -86,7 +95,7 @@ const NodeDetailComponent = ({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
-    useEffect(() => setManagedFields(selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
+    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -367,6 +376,7 @@ const NodeDetailComponent = ({
                         <ManifestComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
+                            toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}

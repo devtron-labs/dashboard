@@ -225,8 +225,7 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
-    resourcesSyncResult?: Record<string,string>
-
+    resourcesSyncResult?: Record<string, string>
 }
 
 export interface PodMetaData {
@@ -508,6 +507,7 @@ export interface ResourceInfoActionPropsType {
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
+    toggleManagedFields: (managedFieldsExist: boolean) => void
 }
 
 export interface NodeTreeDetailTabProps {
