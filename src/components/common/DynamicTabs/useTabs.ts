@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import moment from 'moment'
 import { DynamicTabType, InitTabType } from './Types'
 import dayjs from 'dayjs'
 
@@ -14,7 +13,7 @@ export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
     const getNewTabComponentKey = (id) => {
-        return `${id}-${moment().toString()}`
+        return `${id}-${dayjs().toString()}`
     }
 
     const populateTabData = (
@@ -41,7 +40,7 @@ export function useTabs(persistanceKey: string) {
             dynamicTitle,
             showNameOnSelect,
             isAlive,
-            lastSyncMoment: moment(),
+            lastSyncMoment: dayjs(),
             componentKey: getNewTabComponentKey(id),
         } as DynamicTabType
     }
@@ -314,7 +313,7 @@ export function useTabs(persistanceKey: string) {
                     ...tab,
                     isSelected: isMatch,
                     url: (isMatch && url) || tab.url,
-                    ...(isMatch && tab.showNameOnSelect && { isAlive: true } || {}),
+                    ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -336,7 +335,7 @@ export function useTabs(persistanceKey: string) {
                 return {
                     ...tab,
                     isSelected: isMatch,
-                    ...(isMatch && tab.showNameOnSelect && { isAlive: true } || {}),
+                    ...((isMatch && tab.showNameOnSelect && { isAlive: true }) || {}),
                 }
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -401,7 +400,7 @@ export function useTabs(persistanceKey: string) {
             const _tabs = prevTabs.map((tab) => {
                 return {
                     ...tab,
-                    componentKey: getNewTabComponentKey(tab.id)
+                    componentKey: getNewTabComponentKey(tab.id),
                 }
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))

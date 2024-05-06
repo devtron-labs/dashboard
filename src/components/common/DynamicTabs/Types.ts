@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import moment from 'moment'
 import { useTabs } from './useTabs'
 import { Dayjs } from 'dayjs'
 
