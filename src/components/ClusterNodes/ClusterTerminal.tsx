@@ -140,18 +140,7 @@ export default function ClusterTerminal({
     }, [location.search])
 
     useEffect(() => {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('image', selectedImage.value)
-        queryParams.set('namespace', selectedNamespace.value)
-        queryParams.set('shell', selectedTerminalType.value)
-        queryParams.set('node', selectedNodeName.value)
-        updateTerminalTabUrl(queryParams.toString())
-        /* FIXME: what if the tab is active i.e component is mounted but hidden
-         * and then the useEffect goes off while switch to another tab? */
-        /* NOTE: Hoo-ah, my suspicions were right! */
-        // history.replace({
-        //     search: queryParamsString,
-        // })
+        handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
@@ -559,6 +548,18 @@ export default function ClusterTerminal({
                 }
             })
         }
+    }
+
+    function handleUrlChanges() {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('image', selectedImage.value)
+        queryParams.set('namespace', selectedNamespace.value)
+        queryParams.set('shell', selectedTerminalType.value)
+        queryParams.set('node', selectedNodeName.value)
+        updateTerminalTabUrl(queryParams.toString())
+        history.replace({
+            search: queryParams.toString(),
+        })
     }
 
     const reconnectTerminal = (): void => {
