@@ -8,8 +8,9 @@ import {
     ResourceListPayloadType,
     ResourceListResponse,
     K8Abbreviates,
+    ApiResourceGroupType,
 } from './Types'
-import { K8_ABBREVIATES } from './Constants'
+import { K8_ABBREVIATES, ALL_NAMESPACE_OPTION } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_PERMISSION)
@@ -48,4 +49,22 @@ export const deleteResource = (resourceListPayload: ResourceListPayloadType): Pr
 
 export const getK8Abbreviates = (): Promise<K8Abbreviates> => {
     return Promise.resolve(K8_ABBREVIATES)
+}
+
+export const getResourceListPayload = (
+    clusterId: string,
+    namespace: string,
+    selectedResource: ApiResourceGroupType,
+) => {
+    return {
+        clusterId: +clusterId,
+        k8sRequest: {
+            resourceIdentifier: {
+                groupVersionKind: selectedResource.gvk,
+                ...(selectedResource.namespaced && {
+                    namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
+                }),
+            },
+        },
+    }
 }

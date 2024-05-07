@@ -54,7 +54,7 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { getEventObjectTypeGVK } from '../ResourceBrowser/Utils'
+import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { GVKType } from '../ResourceBrowser/Types'
@@ -64,9 +64,7 @@ export default function NodeDetails({
     isSuperAdmin,
     markTabActiveByIdentifier,
     addTab,
-    updateNodeSelectionData,
     k8SObjectMapRaw,
-    lastDataSync,
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -142,7 +140,7 @@ export default function NodeDetails({
         const isTabFound = markTabActiveByIdentifier(K8S_EMPTY_GROUP, node, nodeType, url)
 
         if (!isTabFound) {
-            let _urlToCreate = `${url}?${_tabName.toLowerCase()}`
+            let _urlToCreate = url
 
             const query = new URLSearchParams(window.location.search)
 
@@ -157,7 +155,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node, lastDataSync])
+    }, [node])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -176,7 +174,7 @@ export default function NodeDetails({
         if (!k8SObjectMapRaw) {
             return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
         }
-        return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
+        return getResourceFromK8SObjectMap(k8SObjectMapRaw, 'pod')
     }, [k8SObjectMapRaw])
 
     const changeNodeTab = (e): void => {
@@ -657,7 +655,6 @@ export default function NodeDetails({
         }`
         const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
         if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData, _group)
             push(_url)
         } else {
             toast.error(

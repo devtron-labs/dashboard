@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
-import { ConnectingToClusterStateProps } from '../Types'
+import { ConnectingToClusterStateProps, URLParams } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
@@ -9,14 +9,12 @@ import { URLS } from '../../../config'
 export default function ConnectingToClusterState({
     loader,
     errorMsg,
-    setErrorMsg,
     selectedCluster,
-    setSelectedCluster,
     handleRetry,
-    sideDataAbortController,
+    requestAbortController,
 }: ConnectingToClusterStateProps) {
     const { replace } = useHistory()
-    const { clusterId } = useParams<{ clusterId: string }>()
+    const { clusterId } = useParams<URLParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)
@@ -68,28 +66,26 @@ export default function ConnectingToClusterState({
     const resetStates = () => {
         setInfoText(TRYING_TO_CONNECT)
         setShowCancel(false)
-        setErrorMsg('')
         setResetProgress(!resetProgress)
     }
 
     const handleCancelClick = () => {
-        sideDataAbortController.new.abort()
-        sideDataAbortController.prev = sideDataAbortController.new
+        requestAbortController?.abort()
         resetStates()
-        setSelectedCluster(null)
         replace({
             pathname: URLS.RESOURCE_BROWSER,
         })
     }
 
-    const handleRetryClick = (e) => {
+    const handleRetryClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         resetStates()
         initProgressTimer()
-        handleRetry(e)
+        handleRetry(event)
     }
 
     const renderSelectionState = () => {
-        if (loader && !errorMsg) {
+        /* NOTE: should show loading irrespective of errorMsg */
+        if (loader) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />

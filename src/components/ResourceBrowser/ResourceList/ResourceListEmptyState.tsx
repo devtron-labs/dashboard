@@ -1,7 +1,7 @@
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import emptyCustomChart from '../../../assets/img/empty-noresult@2x.png'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceListEmptyStateType } from '../Types'
+import emptyCustomChart from '../../../assets/img/empty-noresult@2x.png'
 
 export default function ResourceListEmptyState({
     imgSource,

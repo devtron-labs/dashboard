@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 import {
@@ -10,7 +10,7 @@ import {
     ClipboardButton,
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
+import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType, ClusterCapacityType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as TippyIcon } from '../../assets/icons/ic-help-outline.svg'
@@ -30,19 +30,12 @@ const Catalog = importComponentFromFELibrary('Catalog')
 
 function ClusterOverview({
     isSuperAdmin,
-    clusterCapacityData,
-    setClusterErrorTitle,
-    setSelectedResource,
-    setClusterCapacityData,
     selectedCluster,
-    setSelectedCluster,
-    sideDataAbortController,
 }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
     }>()
-    const [triggerCopy, setTriggerCopy] = useState<boolean>(false)
     const [errorMsg, setErrorMsg] = useState('')
 
     const [descriptionData, setDescriptionData] = useState<DescriptionDataType>({
@@ -58,6 +51,9 @@ function ClusterOverview({
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [clusterErrorList, setClusterErrorList] = useState<ClusterErrorType[]>([])
     const [clusterDetails, setClusterDetails] = useState<ClusterDetailsType>({} as ClusterDetailsType)
+    const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
+
+    const requestAbortControllerRef = useRef(null)
 
     const metricsApiTippyContent = () => (
         <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
@@ -75,7 +71,7 @@ function ClusterOverview({
     )
 
     const handleRetry = async () => {
-        abortReqAndUpdateSideDataController(true)
+        abortRequestAndResetError(true)
         await getClusterNoteAndCapacity(clusterId)
     }
 
@@ -142,7 +138,6 @@ function ClusterOverview({
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
         if (clusterCapacityResponse.status === 'fulfilled') {
             setClusterCapacityData(clusterCapacityResponse.value.result)
-            let _errorTitle = ''
             const _errorList = []
             const _nodeErrors = Object.keys(clusterCapacityResponse.value.result.nodeErrors || {})
             const _nodeK8sVersions = clusterCapacityResponse.value.result.nodeK8sVersions || []
@@ -166,7 +161,6 @@ function ClusterOverview({
                     }
                 }
                 if (diffType !== '') {
-                    _errorTitle = 'Version diff'
                     _errorList.push({
                         errorText: `${diffType} version diff identified among nodes. Current versions `,
                         errorType: ERROR_TYPE.VERSION_ERROR,
@@ -176,7 +170,6 @@ function ClusterOverview({
             }
 
             if (_nodeErrors.length > 0) {
-                _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
                 for (const _nodeError of _nodeErrors) {
                     const _errorLength = clusterCapacityResponse.value.result.nodeErrors[_nodeError].length
                     _errorList.push({
@@ -186,7 +179,6 @@ function ClusterOverview({
                         errorType: _nodeError,
                         filterText: clusterCapacityResponse.value.result.nodeErrors[_nodeError],
                     })
-                    setClusterErrorTitle(_errorTitle)
                     setClusterErrorList(_errorList)
                 }
             }
@@ -201,23 +193,18 @@ function ClusterOverview({
             )
         }
     }
-    const abortReqAndUpdateSideDataController = (emptyPrev?: boolean) => {
-        if (emptyPrev) {
-            sideDataAbortController.prev = null
-        } else {
-            sideDataAbortController.new.abort()
-            sideDataAbortController.prev = sideDataAbortController.new
-        }
+    const abortRequestAndResetError = (emptyPrev?: boolean) => {
+        requestAbortControllerRef.current.abort()
         setErrorMsg('')
     }
 
     const getClusterNoteAndCapacity = async (clusterId: string): Promise<void> => {
         setErrorMsg('')
         setIsLoading(true)
-        sideDataAbortController.new = new AbortController()
+        requestAbortControllerRef.current = new AbortController()
         const [clusterNoteResponse, clusterCapacityResponse] = await Promise.allSettled([
-            getClusterDetails(clusterId, sideDataAbortController.new.signal),
-            getClusterCapacity(clusterId, sideDataAbortController.new.signal),
+            getClusterDetails(clusterId, requestAbortControllerRef.current.signal),
+            getClusterCapacity(clusterId, requestAbortControllerRef.current.signal),
         ])
         setClusterNoteDetails(clusterNoteResponse)
         setClusterCapacityDetails(clusterCapacityResponse)
@@ -232,6 +219,10 @@ function ClusterOverview({
         getClusterNoteAndCapacity(clusterId)
     }, [selectedCluster])
 
+    useEffect(() => {
+        return () => requestAbortControllerRef.current?.abort()
+    }, [])
+
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
@@ -242,11 +233,6 @@ function ClusterOverview({
                 group: K8S_EMPTY_GROUP,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
-
-        setSelectedResource({
-            namespaced: false,
-            gvk: SIDEBAR_KEYS.nodeGVK,
-        })
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -561,18 +547,16 @@ function ClusterOverview({
                     <ConnectingToClusterState
                         loader={isLoading}
                         errorMsg={errorMsg}
-                        setErrorMsg={setErrorMsg}
                         selectedCluster={selectedCluster}
-                        setSelectedCluster={setSelectedCluster}
                         handleRetry={handleRetry}
-                        sideDataAbortController={sideDataAbortController}
+                        requestAbortController={requestAbortControllerRef.current}
                     />
                 </div>
             )
         }
         return (
             <div
-                className="pl-20 pt-20 pr-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
+                className="p-20 dc__column-gap-32 h-100 dc__overflow-auto flexbox flex-justify-center"
                 style={{ backgroundImage: 'linear-gradient(249deg, #D4E6F7 0%, var(--N0)50.58%)' }}
             >
                 {renderSideInfoData()}

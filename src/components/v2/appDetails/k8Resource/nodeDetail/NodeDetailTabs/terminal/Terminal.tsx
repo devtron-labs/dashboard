@@ -12,8 +12,6 @@ import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
 
-let clusterTimeOut
-
 export default function TerminalView({
     terminalRef,
     sessionId,
@@ -27,6 +25,7 @@ export default function TerminalView({
     dataTestId,
 }: TerminalViewType) {
     const socket = useRef(null)
+    const termDivRef = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
@@ -35,14 +34,26 @@ export default function TerminalView({
     function resizeSocket() {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
             const dim = fitAddon.current?.proposeDimensions()
-            if (dim && socket.current?.readyState === WebSocket.OPEN) {
-                socket.current?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+            if (!dim || isNaN(dim.cols) || isNaN(dim.rows)) {
+                return
+            }
+            if (socket.current?.readyState === WebSocket.OPEN) {
+                socket.current.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.current?.fit()
         }
     }
 
-    const [myDivRef] = useHeightObserver(resizeSocket)
+    useEffect(() => {
+        /* requestAnimationFrame: will defer the resizeSocket callback to the next repaint;
+         * sparing us from - ResizeObserver loop completed with undelivered notifications */
+        if (!termDivRef.current) {
+            return
+        }
+        const observer = new ResizeObserver(() => window.requestAnimationFrame(resizeSocket))
+        observer.observe(termDivRef.current)
+        return () => observer.disconnect()
+    }, [termDivRef.current])
 
     useEffect(() => {
         if (!terminalRef.current) {
@@ -67,9 +78,6 @@ export default function TerminalView({
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (clusterTimeOut) {
-                clearTimeout(clusterTimeOut)
-            }
             if (socket.current) {
                 socket.current.close()
                 socket.current = undefined
@@ -225,7 +233,6 @@ export default function TerminalView({
             terminalRef.current = undefined
             terminalRef.current = undefined
             fitAddon.current = null
-            clearTimeout(clusterTimeOut)
         }
     }, [])
 
@@ -240,7 +247,7 @@ export default function TerminalView({
         <div className="terminal-wrapper" data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
-                ref={myDivRef}
+                ref={termDivRef}
                 id="terminal-id"
                 data-testid="terminal-editor-container"
                 className="mt-8 mb-4 terminal-component ml-20"
