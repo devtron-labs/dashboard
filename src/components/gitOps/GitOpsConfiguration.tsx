@@ -199,12 +199,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                const isBitbucketCloud = response.result?.reduce((acc, item) => {
-                    if (item.provider !== 'BITBUCKET_CLOUD' && item.provider !== 'BITBUCKET_DC') {
-                        return acc
-                    }
-                    return item.provider === 'BITBUCKET_CLOUD' && item.active
-                }, true)
+                const isBitbucketCloud = !response.result?.some(
+                    (item) => item.provider === 'BITBUCKET_DC' && item.active,
+                    true,
+                )
+
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
@@ -838,9 +837,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 label={renderInputLabels(
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'Azure DevOps Access Token '
-                                        : this.state.form.provider === 'BITBUCKET_DC' ? 'Password ' : 'Personal Access Token ',
+                                        : this.state.form.provider === 'BITBUCKET_DC'
+                                          ? 'Password '
+                                          : 'Personal Access Token ',
                                     DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
-                                    this.state.form.provider !== 'BITBUCKET_DC' ? '(Check permissions required for PAT)' : '',
+                                    this.state.form.provider !== 'BITBUCKET_DC'
+                                        ? '(Check permissions required for PAT)'
+                                        : '',
                                 )}
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
