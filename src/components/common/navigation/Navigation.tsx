@@ -27,6 +27,9 @@ import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as EventWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
+import { importComponentFromFELibrary } from '../helpers/Helpers'
+
+const EventWatcherRouter = importComponentFromFELibrary('EventWatcherRouter')
 
 const NavigationList = [
     {
@@ -107,6 +110,7 @@ const NavigationList = [
         iconClass: 'nav-event-watcher',
         icon: EventWatcherIcon,
         isAvailableInEA: true,
+        hideNav: !EventWatcherRouter,
     },
     {
         title: 'Bulk Edit',
@@ -314,6 +318,9 @@ export default class Navigation extends Component<
         const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
         if (window._env_.K8S_CLIENT) {
             return item.isAvailableInDesktop
+        }
+        if (item.hideNav) {
+            return false
         }
         if (
             allowedUser &&
