@@ -14,7 +14,7 @@ import {
 import { getNodeList, getClusterCapacity  } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
-import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail } from './types'
+import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail, SearchTextType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { OptionType } from '../app/types'
 import NodeListSearchFilter from './NodeListSearchFilter'
@@ -39,9 +39,9 @@ export default function NodeDetailsList({
     const history = useHistory()
     const urlParams = new URLSearchParams(location.search)
     const k8sVersion = urlParams.get('k8sversion') ? decodeURIComponent(urlParams.get('k8sversion')) : ''
-    const name = decodeURIComponent(urlParams.get('name') || '')
-    const label = decodeURIComponent(urlParams.get('label') || '')
-    const group = decodeURIComponent(urlParams.get('group') || '')
+    const name = decodeURIComponent(urlParams.get(NODE_SEARCH_TEXT.NAME) || '')
+    const label = decodeURIComponent(urlParams.get(NODE_SEARCH_TEXT.LABEL) || '')
+    const group = decodeURIComponent(urlParams.get(NODE_SEARCH_TEXT.NODE_GROUP) || '')
     const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [searchText, setSearchText] = useState(name || label || group || '')
@@ -53,7 +53,7 @@ export default function NodeDetailsList({
     )
 
     const initialSeachType = getInitialSearchType(name, label, group)
-    const [selectedSearchTextType, setSelectedSearchTextType] = useState<string>(initialSeachType)
+    const [selectedSearchTextType, setSelectedSearchTextType] = useState<SearchTextType | ''>(initialSeachType)
 
     const [sortByColumn, setSortByColumn] = useState<ColumnMetadataType>(COLUMN_METADATA[0])
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
@@ -70,7 +70,7 @@ export default function NodeDetailsList({
         [clusterId],
     )
 
-    function getInitialSearchType(name: string, label: string, group: string): string {
+    function getInitialSearchType(name: string, label: string, group: string): SearchTextType | '' {
         if (name) {
             return NODE_SEARCH_TEXT.NAME
         }
