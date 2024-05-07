@@ -203,7 +203,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     if (item.provider !== 'BITBUCKET_CLOUD' && item.provider !== 'BITBUCKET_DC') {
                         return acc
                     }
-                    return item.provider === 'BITBUCKET_CLOUD'
+                    return item.provider === 'BITBUCKET_CLOUD' && item.active
                 }, true)
                 this.setState({
                     gitList: response.result || [],
