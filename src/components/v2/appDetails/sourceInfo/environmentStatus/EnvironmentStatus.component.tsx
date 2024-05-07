@@ -185,7 +185,7 @@ const EnvironmentStatusComponent = ({
                     {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
-                    {window._env_.ENABLE_RESOURCE_SCAN_V2 && (
+                    {false && window._env_.ENABLE_RESOURCE_SCAN_V2 && (
                         <SecurityVulnerabilityCard
                             cardLoading={cardLoading}
                             installedAppId={appDetails?.installedAppId}
