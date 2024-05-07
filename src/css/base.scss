@@ -2210,6 +2210,10 @@ button.anchor {
 .dc__border-right {
     border-right: solid 1px var(--N200);
 
+    &--n1 {
+        border-right: solid 1px var(--N100);
+    }
+
     &--b1 {
         border-right: solid 1px var(--B100);
     }
@@ -4014,6 +4018,10 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__hover-n0:hover {
+    background-color: var(--N0);
 }
 
 .dc__hover-b500:hover {
