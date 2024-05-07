@@ -422,7 +422,11 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []),
+                                            : [
+                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                      <h1>Welcome to Devtron Releases!</h1>
+                                                  </Route>,
+                                              ]),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
