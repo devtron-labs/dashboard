@@ -203,7 +203,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     (item) => item.provider === 'BITBUCKET_DC' && item.active,
                     true,
                 )
-
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
