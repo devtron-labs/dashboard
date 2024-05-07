@@ -17,7 +17,6 @@ import {
     WorkflowNodeType,
     CommonNodeAttr,
     WorkflowType,
-    getDefaultConfig,
     KeyValueListType,
     HandleKeyValueChangeType,
     KeyValueListActionType,
@@ -149,9 +148,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const abortControllerRef = useRef(new AbortController())
 
     useEffect(() => {
-        if (ApprovalMaterialModal) {
-            getConfigs()
-        }
         const observer = new PerformanceObserver((list) => {
             list.getEntries().forEach((entry) => {
                 const protocol = entry.nextHopProtocol
@@ -240,15 +236,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }, [filteredWorkflows])
 
-    // TODO: This call should not be here rather inside ApprovalMaterialModal
-    const getConfigs = () => {
-        getDefaultConfig().then((response) => {
-            const isConfigPresent = response.result.isConfigured
-            const _isDefaultConfig = response.result.is_default_configured
-            setDefaultConfig(_isDefaultConfig)
-            setConfigPresent(isConfigPresent)
-        })
-    }
 
     const preserveSelection = (_workflows: WorkflowType[]) => {
         if (!workflows || !_workflows) {
@@ -2118,8 +2105,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    configs={isConfigPresent}
-                    isDefaultConfigPresent={isDefaultConfigPresent}
                     history={history}
                 />
             )

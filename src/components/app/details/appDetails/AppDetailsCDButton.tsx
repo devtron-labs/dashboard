@@ -85,7 +85,7 @@ const AppDetailsCDButton = ({
             ApprovalMaterialModal &&
             location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) && (
                 <ApprovalMaterialModal
-                    isLoading={false}
+                    isLoading={loadingDetails}
                     node={node}
                     materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={DeploymentNodeType.CD}
