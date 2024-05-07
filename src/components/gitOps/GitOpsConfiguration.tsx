@@ -201,7 +201,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 }
                 const isBitbucketCloud = !response.result?.some(
                     (item) => item.provider === 'BITBUCKET_DC' && item.active,
-                    true,
                 )
                 this.setState({
                     gitList: response.result || [],
