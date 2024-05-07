@@ -59,7 +59,7 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
         >
             <span className="dc__opacity-0_8"> Cluster: {clusterName}</span>
             <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
-            <span className="pl-6 dc__opacity-0_8">Namespace: {namespace}</span>
+            <span className="dc__opacity-0_8">Namespace: {namespace}</span>
             <ArrowLeft
                 className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
                 style={{ ['--rotateBy' as string]: '180deg' }}

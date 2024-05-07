@@ -1,12 +1,10 @@
 import React from 'react'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import SearchBar from './DescriptorSearchBar'
 import { validator } from './utils'
 import { DescriptorProps } from './types'
 import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
-import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
 import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from './constants'
@@ -31,26 +29,12 @@ export default function Descriptor({ children, showUploadButton, readFile, onSea
                 <div className="flex dc__gap-8 w-100 dc__content-space">
                     <div className="flex dc__gap-8">
                         <p className="cn-9 fs-16 fw-6 m-0">{DEFAULT_TITLE}</p>
-
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300 h-100 fcv-5"
-                            placement="right"
-                            Icon={QuestionFilled}
+                        <InfoIconTippy
                             heading={DEFAULT_TITLE}
                             infoText={additonalTippyContent ? null : DEFAULT_DESCRIPTION}
-                            showCloseButton
-                            trigger="click"
-                            interactive
                             additionalContent={additonalTippyContent?.()}
-                        >
-                            <button
-                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp"
-                                type="button"
-                            >
-                                <ICHelpOutline className="icon-dim-20" />
-                            </button>
-                        </TippyCustomized>
+                            iconClassName="icon-dim-20"
+                        />
                     </div>
 
                     <div className="flex dc__gap-12">

@@ -14,10 +14,13 @@ import {
     FilterConditionsListType,
     CDMaterialResponseType,
     PipelineType,
+    WorkflowType,
+    Material,
     KeyValueListType,
     CIMaterialSidebarType,
     HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
+    ArtifactPromotionMetadata,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -211,11 +214,6 @@ export interface CIMaterialState {
     currentSidebarTab: CIMaterialSidebarType
 }
 
-export interface NodeAttr extends CommonNodeAttr {
-    cipipelineId?: number
-    isDeploymentBlocked?: boolean
-}
-
 export interface DownStreams {
     id: string
     text: string
@@ -299,15 +297,15 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
+export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
     startY: number
     width: number
     height: number
-    nodes: NodeAttr[]
-    appId: number
+    nodes: CommonNodeAttr[]
+    appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number) => void
@@ -350,27 +348,6 @@ export interface TriggerViewProps
     }> {
     isJobView?: boolean
     filteredEnvIds?: string
-}
-
-export interface WorkflowType {
-    id: string
-    name: string
-    gitMaterials?: Material[]
-    ciConfiguredGitMaterialId?: number
-    startX: number
-    startY: number
-    width: number
-    height: number
-    nodes: NodeAttr[]
-    dag: any
-    showTippy?: boolean
-    appId?: number
-    isSelected?: boolean
-    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
-    imageReleaseTags: string[]
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -477,6 +454,7 @@ export interface Workflow {
     name: string
     appId: number
     tree?: Tree[]
+    artifactPromotionMetadata?: ArtifactPromotionMetadata
 }
 
 export interface WorkflowResult {
@@ -556,11 +534,6 @@ export interface CiPipeline {
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
-}
-
-export interface Material {
-    gitMaterialId: number
-    materialName: string
 }
 
 export interface CiPipelineResult {
@@ -649,7 +622,7 @@ export interface CdPipelineResult {
 
 // End CD response
 
-type PartialNodeAttr = Partial<NodeAttr>
+type PartialNodeAttr = Partial<CommonNodeAttr>
 
 export interface FullNode {
     node: PartialNodeAttr
@@ -660,7 +633,7 @@ export interface FullNode {
 export interface WorkflowDisplay {
     id: number
     name: string
-    nodes: Array<NodeAttr>
+    nodes: Array<CommonNodeAttr>
     type: string
 }
 
@@ -707,15 +680,6 @@ export const MATERIAL_TYPE = {
     none: 'none',
 }
 
-export const STAGE_TYPE = {
-    CD: 'CD',
-    CI: 'CI',
-    GIT: 'GIT',
-    PRECD: 'PRECD',
-    POSTCD: 'POSTCD',
-    ROLLBACK: 'ROLLBACK',
-}
-
 export interface EmptyStateCIMaterialProps {
     isRepoError: boolean
     isBranchError: boolean
@@ -752,10 +716,15 @@ export interface MaterialSourceProps {
 }
 
 export interface AddDimensionsToDownstreamDeploymentsParams {
-    downstreams: NodeAttr[]
+    downstreams: CommonNodeAttr[]
     dimensions: WorkflowDimensions
     startX: number
     startY: number
+}
+
+export interface RenderCTAType {
+    mat: CDMaterialType
+    disableSelection: boolean
 }
 
 export interface RuntimeParamsValidatorReturnType {

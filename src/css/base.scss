@@ -19,8 +19,17 @@
 }
 
 body {
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
-        'Helvetica Neue', sans-serif;
+    font-family:
+        'Open Sans',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen-Sans,
+        Ubuntu,
+        Cantarell,
+        'Helvetica Neue',
+        sans-serif;
     background: var(--window-bg);
 
     a {
@@ -263,9 +272,11 @@ a:focus {
 .dc__white-space-normal {
     white-space: normal;
 }
+
 .dc__white-space-pre {
     white-space: pre;
 }
+
 .dc__white-space-pre-wrap {
     white-space: pre-wrap;
 }
@@ -336,6 +347,10 @@ a:focus {
     top: 26px;
 }
 
+.dc__top-46 {
+    top: 46px;
+}
+
 .dc__top-47 {
     top: 47px;
 }
@@ -346,6 +361,10 @@ a:focus {
 
 .dc__bottom-0 {
     bottom: 0;
+}
+
+.dc__bottom-16 {
+    bottom: 16px;
 }
 
 .dc__bottom-12 {
@@ -655,11 +674,16 @@ button.anchor {
     }
 
     50% {
-        text-shadow: 6px 0, 12px 0;
+        text-shadow:
+            6px 0,
+            12px 0;
     }
 
     75% {
-        text-shadow: 6px 0, 12px 0, 18px 0;
+        text-shadow:
+            6px 0,
+            12px 0,
+            18px 0;
     }
 }
 
@@ -704,6 +728,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -980,6 +1005,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1031,6 +1057,7 @@ button.anchor {
     display: grid;
     grid-template-columns: 24px 1fr 200px;
     grid-column-gap: 10px;
+
     .tag {
         border: 1px solid var(--N200);
         height: 20px;
@@ -1080,7 +1107,9 @@ button.anchor {
     height: 80px;
     border-radius: 50px;
     opacity: 0.8;
-    box-shadow: 0 0 4px 0 rgba(0, 10, 20, 0.5), 0 0 4px 0 rgba(0, 10, 20, 0.5);
+    box-shadow:
+        0 0 4px 0 rgba(0, 10, 20, 0.5),
+        0 0 4px 0 rgba(0, 10, 20, 0.5);
     border: unset;
     overflow: hidden;
 
@@ -1294,12 +1323,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1328,19 +1357,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1359,12 +1388,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             color: var(--N900);
             background-color: var(--N0);
@@ -1394,12 +1423,12 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
@@ -1410,7 +1439,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1439,7 +1468,7 @@ button.anchor {
         &.radio-group {
             height: 30px;
 
-            input + .radio__item-label {
+            input+.radio__item-label {
                 padding-inline: 8px;
             }
         }
@@ -1448,7 +1477,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked + .radio__item-label {
+        input[type='checkbox']:checked+.radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1456,7 +1485,7 @@ button.anchor {
             }
         }
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1467,12 +1496,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input + .radio__item-label {
+            &:first-child input+.radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input + .radio__item-label {
+            &:last-child input+.radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1696,6 +1725,7 @@ button.anchor {
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover {
+
             // If we give this class then the element will be visible on hover
             &--child {
                 display: inherit;
@@ -1783,7 +1813,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1965,9 +1995,11 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
+
     &.dc__link_over {
         color: var(--N600);
     }
+
     &:hover {
         color: var(--B500);
     }
@@ -2053,6 +2085,10 @@ button.anchor {
 
 .dc__align-self-stretch {
     align-self: stretch;
+}
+
+.dc__align-self-start {
+    align-self: flex-start;
 }
 
 .dc__align-center {
@@ -2201,6 +2237,10 @@ button.anchor {
     border-top: none !important;
 }
 
+.dc__no-border-right-imp {
+    border-top: none !important;
+}
+
 .dc__box-shadow {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 }
@@ -2248,12 +2288,20 @@ button.anchor {
     max-width: 160px;
 }
 
+.dc__mxw-178 {
+    max-width: 178px;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
 
 .dc__mxw-200-imp {
     max-width: 200px !important;
+}
+
+.dc__mxw-240 {
+    max-width: 240px;
 }
 
 .dc__mxw-250 {
@@ -2550,7 +2598,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2648,6 +2696,12 @@ textarea,
     }
 }
 
+.circle-fill-b5 {
+    circle {
+        fill: var(--B500);
+    }
+}
+
 .icon-fill-n4 {
     rect {
         fill: var(--N400);
@@ -2655,7 +2709,9 @@ textarea,
 }
 
 .icon-stroke-b5 {
-    path, rect {
+
+    path,
+    rect {
         stroke: var(--B500);
     }
 }
@@ -2704,6 +2760,7 @@ textarea,
 .dc__word-wrap-anywhere {
     word-wrap: anywhere;
 }
+
 .dc__ff-monospace {
     font-family: monospace;
 }
@@ -2889,6 +2946,10 @@ textarea,
     width: 120px;
 }
 
+.w-126 {
+    width: 126px;
+}
+
 .w-150 {
     width: 150px;
 }
@@ -3011,6 +3072,10 @@ textarea,
 
 .w-885 {
     width: 885px !important;
+}
+
+.w-1024 {
+    width: 1024px;
 }
 
 // Width in percentage
@@ -3400,7 +3465,7 @@ textarea,
 }
 
 .min-h-100 {
-    min-height: 100%
+    min-height: 100%;
 }
 
 // Height in percentage
@@ -3422,6 +3487,10 @@ textarea,
 
 .dc__height-reduce-172 {
     height: calc(100vh - 172px);
+}
+
+.dc__height-reduce-48 {
+    height: calc(100% - 48px);
 }
 
 // Line height
@@ -3494,7 +3563,7 @@ textarea,
     padding-left: 28px !important;
 }
 
-.pt-5-imp{
+.pt-5-imp {
     padding-top: 5px !important;
 }
 
@@ -3540,7 +3609,7 @@ textarea,
     padding-top: 4px !important;
 }
 
-.pb-5-imp{
+.pb-5-imp {
     padding-bottom: 5px !important;
 }
 
@@ -3564,6 +3633,10 @@ textarea,
     padding: 0px 8px !important;
 }
 
+.pb-160 {
+    padding-bottom: 160px;
+}
+
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
@@ -3573,7 +3646,7 @@ textarea,
     margin-bottom: -1px;
 }
 
-.mb-neg-2{
+.mb-neg-2 {
     margin-bottom: -2px;
 }
 
@@ -3641,11 +3714,11 @@ textarea,
 }
 
 .ml-36-imp {
-    margin-left: 36px !important
+    margin-left: 36px !important;
 }
 
 .ml-54 {
-    margin-left: 54px
+    margin-left: 54px;
 }
 
 .ml-60 {
@@ -3717,9 +3790,11 @@ textarea,
 .dc__column-gap-24 {
     column-gap: 24px;
 }
+
 .dc__column-gap-32 {
     column-gap: 32px;
 }
+
 .dc__gap-2 {
     gap: 2px;
 }
@@ -3849,7 +3924,7 @@ textarea::placeholder {
 }
 
 .dc__opacity-1 {
-  opacity: 1;
+    opacity: 1;
 }
 
 // blur
@@ -4009,12 +4084,17 @@ textarea::placeholder {
     user-select: none;
     border: solid 1px transparent;
 }
+
 .dc__zi-0 {
     z-index: 0;
 }
 
 .dc__zi-1 {
     z-index: 1;
+}
+
+.dc__zi-2 {
+    z-index: 2;
 }
 
 .dc__zi-4 {
@@ -4148,6 +4228,7 @@ textarea::placeholder {
     .action-icon {
         display: none;
     }
+
     &.icon-hover {
         &:hover {
             .show-icon {
@@ -4190,7 +4271,8 @@ textarea::placeholder {
 }
 
 .dc__grabbable {
-    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: move;
+    /* fallback if grab cursor is unsupported */
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
@@ -4214,7 +4296,7 @@ textarea::placeholder {
     color: var(--N500);
 }
 
-.br-18{
+.br-18 {
     border-radius: 18px;
 }
 
@@ -4227,7 +4309,7 @@ textarea::placeholder {
     height: 100% !important;
 }
 
-.fs-11-imp{
+.fs-11-imp {
     font-size: 11px !important;
 }
 
@@ -4242,33 +4324,33 @@ textarea::placeholder {
 // Start: accouncement banner
 .announcement-banner-container {
     &.page-header-banner {
-            width: fit-content;
-            position: absolute;
-            margin: auto;
-            left: 0;
-            right: 0;
-            top: 0;
-            text-align: center;
-        }
+        width: fit-content;
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        text-align: center;
+    }
 
-        &.cd-trigger-announcement {
-            .info-bar-container {
-                .announcement-bar {
-                    border-radius: 0;
-                    border: none;
-                    border-bottom: 1px solid var(--Y700);
-                }
+    &.cd-trigger-announcement {
+        .info-bar-container {
+            .announcement-bar {
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid var(--Y700);
             }
         }
     }
+}
 
-    .announcement-bar {
-        background-color: var(--Y500);
-        border: 1px solid var(--Y700);
-        border-top: none;
-        padding: 8px 12px !important;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
+.announcement-bar {
+    background-color: var(--Y500);
+    border: 1px solid var(--Y700);
+    border-top: none;
+    padding: 8px 12px !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 // End: accouncement banner
@@ -4276,7 +4358,7 @@ textarea::placeholder {
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: rgba(240, 247, 255, 0.72);
-    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(4px);
 }
 
@@ -4299,4 +4381,25 @@ textarea::placeholder {
 .dc__sidebar-layout-200 {
     display: grid;
     grid-template-columns: 200px auto;
+
+    .dc__unset-button-styles {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+    }
+}
+
+/* NOTE: if the border width is smaller than border-radius curve;
+ * the border around the curved edges will get clipped;
+ * Eg: dc__border & dc__border-radius-4-imp */
+.dc__outline {
+    outline: 1px solid var(--N200);
+}
+
+.dc__outline-n1 {
+    outline: 1px solid var(--N100);
 }

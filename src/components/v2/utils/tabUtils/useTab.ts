@@ -71,7 +71,7 @@ export const useTab = (tabs: iLinks) => {
     const [state, dispatch] = useReducer(reducer, initialState)
 
     useEffect(() => {
-        dispatch({ type: TabActions.Init, tabs })
+        dispatch({ type: TabActions.Init, tabs: [...tabs] })
     }, [])
 
     return [state, dispatch]
