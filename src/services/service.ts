@@ -164,14 +164,6 @@ export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: bool
     )
 }
 
-/**
- * @deprecated Use getClusterListMin form common lib instead
- */
-export function getClusterListMin() {
-    const URL = `${Routes.CLUSTER}/autocomplete`
-    return get(URL)
-}
-
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/configure/status${isStorageActionPush ? '?storageType=CHART&storageAction=PUSH' : ''}`
     return get(URL)
