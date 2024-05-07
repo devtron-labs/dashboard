@@ -200,10 +200,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     provider: GitProvider.GITHUB,
                 }
                 const isBitbucketCloud = response.result?.reduce((acc, item) => {
-                    if (item.provider !== 'BITBUCKET_CLOUD' && item.provider !== 'BITBUCKET_DC') {
+                    /**
+                     * NOTE: since the default acc value is true we want to override this
+                     * only when provider is Bitbucket DC; if no such provider exists
+                     * then we will default to cloud & if it exists then the active state
+                     * will determine the state of the toggle */
+                    if (item.provider !== 'BITBUCKET_DC') {
                         return acc
                     }
-                    return item.provider === 'BITBUCKET_CLOUD' && item.active
+                    return !item.active
                 }, true)
                 this.setState({
                     gitList: response.result || [],
