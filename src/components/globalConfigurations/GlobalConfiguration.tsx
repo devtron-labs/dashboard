@@ -31,7 +31,6 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
-import DeploymentWindow from '../../Pages/GlobalConfigurations/DeploymentWindow/DeploymentWindow'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -52,6 +51,7 @@ const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
