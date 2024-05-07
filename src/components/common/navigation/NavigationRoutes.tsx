@@ -46,9 +46,9 @@ const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
+const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
@@ -263,7 +263,7 @@ export default function NavigationRoutes() {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
                 if (
-                    location.pathname !== parsedTabsData.key &&
+                    location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
                     localStorage.removeItem('persisted-tabs-data')
@@ -364,10 +364,8 @@ export default function NavigationRoutes() {
                         >
                             <ErrorBoundary>
                                 <Switch>
-                                    <Route
-                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
-                                    >
-                                        <ResourceBrowserContainer />
+                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
+                                        <ResourceBrowser />
                                     </Route>
                                     <Route
                                         path={URLS.GLOBAL_CONFIG}

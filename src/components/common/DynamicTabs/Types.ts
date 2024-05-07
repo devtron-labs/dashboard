@@ -1,4 +1,6 @@
 import { ReactNode } from 'react'
+import { useTabs } from './useTabs'
+import { Dayjs } from 'dayjs'
 
 interface CommonTabArgsType {
     name: string
@@ -11,6 +13,9 @@ interface CommonTabArgsType {
     iconPath?: string
     dynamicTitle?: string
     showNameOnSelect?: boolean
+    isAlive?: boolean
+    lastSyncMoment?: Dayjs
+    componentKey?: string
 }
 
 export interface InitTabType extends CommonTabArgsType {
@@ -23,15 +28,13 @@ export interface DynamicTabType extends CommonTabArgsType {
 
 export interface DynamicTabsProps {
     tabs: DynamicTabType[]
-    removeTabByIdentifier: (id: string) => string
-    stopTabByIdentifier: (title: string) => string
+    removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
+    stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     enableShortCut?: boolean
-    loader: boolean
     refreshData: () => void
     isOverview: boolean
-    lastDataSync: boolean
-    setLastDataSyncTimeString: (time: string) => void
-    isStaleDataRef: any
+    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface TabsDataType {
@@ -45,4 +48,12 @@ export interface MoreButtonWrapperProps {
     readonly onClose: () => void
     readonly toggleMenu: () => void
     tabPopupMenuRef: React.MutableRefObject<HTMLButtonElement>
+}
+
+export interface TimerType {
+    start: Dayjs
+    callback?: (now: Dayjs) => void
+    transition?: () => JSX.Element
+    transpose?: (output: string) => JSX.Element
+    format?: (start: Dayjs, now: Dayjs) => string
 }

@@ -35,17 +35,13 @@ export default function DeleteResourcePopup({
 
             await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            getResourceListData(true)
+            getResourceListData()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
-                const pushURL = removeTabByIdentifier(
+                const pushURLPromise = removeTabByIdentifier(
                     `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
                 )
-                setTimeout(() => {
-                    if (pushURL) {
-                        push(pushURL)
-                    }
-                }, 1)
+                pushURLPromise.then((url) => url && push(url))
             }
         } catch (err) {
             showError(err)

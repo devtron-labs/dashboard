@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react'
-import { NavLink, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react'
+import { NavLink, useLocation, useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import * as queryString from 'query-string'
 import { MultiValue } from 'react-select'
-import { getNodeList } from './clusterNodes.service'
+import {
+    useAsync,
+    abortPreviousRequests,
+    showError,
+    Progressing,
+    ConditionalWrap,
+    ErrorScreenManager,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getNodeList, getClusterCapacity  } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { Pagination } from '../common'
-import { showError, Progressing, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail, SearchTextType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { OptionType } from '../app/types'
@@ -17,19 +24,16 @@ import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
 
 export default function NodeDetailsList({
     isSuperAdmin,
-    clusterId,
-    nodeK8sVersions,
-    renderCallBackSync,
+    renderRefreshBar,
     addTab,
-    syncError,
-    lastDataSync,
-    setLastDataSync,
+    showStaleDataWarning,
 }) {
+    const { clusterId, nodeType } = useParams<{ [key: string]: string }>()
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -56,6 +60,15 @@ export default function NodeDetailsList({
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
+    const abortControllerRef = useRef(new AbortController())
+
+    const [, nodeK8sVersions] = useAsync(() =>
+        abortPreviousRequests(async () => {
+            const { result } = await getClusterCapacity(clusterId, abortControllerRef.current?.signal)
+            return result?.nodeK8sVersions || null
+        }, abortControllerRef),
+        [clusterId],
+    )
 
     function getInitialSearchType(name: string, label: string, group: string): SearchTextType | '' {
         if (name) {
@@ -213,7 +226,6 @@ export default function NodeDetailsList({
                     })
                     setFlattenNodeList(_flattenNodeList)
                 }
-                setLastDataSync(!lastDataSync)
                 setClusterDetailsLoader(false)
             })
             .catch((error) => {
@@ -451,6 +463,14 @@ export default function NodeDetailsList({
         return '-'
     }
 
+    const clusterNodeClickEvent = (nodeData, column) => {
+        const url = `${match.url}/${nodeData[column.value]}`
+        return () => {
+            addTab(K8S_EMPTY_GROUP, nodeType, nodeData[column.value], url)
+            history.push(url)
+        }
+    }
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
@@ -477,6 +497,7 @@ export default function NodeDetailsList({
                                         <NavLink
                                             data-testid="cluster-node-link"
                                             to={`${match.url}/${nodeData[column.value]}`}
+                                            onClick={clusterNodeClickEvent(nodeData, column)}
                                         >
                                             {nodeData[column.value]}
                                         </NavLink>
@@ -563,9 +584,9 @@ export default function NodeDetailsList({
 
     return (
         <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
-            {typeof renderCallBackSync === 'function' && renderCallBackSync()}
+            {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
-                className={`bcn-0 pt-16 list-min-height ${syncError ? 'sync-error' : ''} ${
+                className={`bcn-0 pt-16 list-min-height ${showStaleDataWarning ? 'sync-error' : ''} ${
                     noResults ? 'no-result-container' : ''
                 }`}
             >
@@ -591,7 +612,7 @@ export default function NodeDetailsList({
                     <>
                         <div
                             className="mt-16"
-                            style={{ width: '100%', overflow: 'auto', height: 'calc(100vh - 204px)' }}
+                            style={{ width: '100%' }}
                         >
                             <div
                                 className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
