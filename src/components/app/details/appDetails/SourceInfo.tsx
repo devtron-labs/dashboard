@@ -274,7 +274,7 @@ export const SourceInfo = ({
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest &&
-                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                              (showVulnerabilitiesCard || (false && window._env_.ENABLE_RESOURCE_SCAN_V2)) && (
                                   <SecurityVulnerabilityCard
                                       cardLoading={cardLoading}
                                       appId={params.appId}

@@ -1185,7 +1185,7 @@ export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivy
     const fromWorkloadOrRollout =
         getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
         selectedResourceKind === NodeType.Rollout
-    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
+    return false && window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
 }
 
 export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
