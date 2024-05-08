@@ -19,9 +19,9 @@ import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../auth
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
-} from '../../shared-amrit/components/PermissionConfigurationForm'
+} from '../../Shared/components/PermissionConfigurationForm'
 import { getIsSuperAdminPermission, getRoleFilters, isDirectPermissionFormComplete } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../shared-amrit/components/K8sObjectPermissions/utils'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()

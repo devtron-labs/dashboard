@@ -1,6 +1,6 @@
 import { SearchBarProps, ServerError, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
 import { getPermissionGroupList } from '../../authorization.service'
-import { BulkSelectionModalConfig } from '../../shared-amrit/components/BulkSelection'
+import { BulkSelectionModalConfig } from '../../Shared/components/BulkSelection'
 import { PermissionGroup } from '../../types'
 import { SortableKeys } from './constants'
 

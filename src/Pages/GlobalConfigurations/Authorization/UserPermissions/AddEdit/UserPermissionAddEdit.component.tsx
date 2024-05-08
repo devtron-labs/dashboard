@@ -13,7 +13,7 @@ import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getUserById } from '../../authorization.service'
 import UserForm from './UserForm'
 import { getIsAdminOrSystemUser } from '../utils'
-import { PermissionConfigurationFormProvider } from '../../shared-amrit/components/PermissionConfigurationForm'
+import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')

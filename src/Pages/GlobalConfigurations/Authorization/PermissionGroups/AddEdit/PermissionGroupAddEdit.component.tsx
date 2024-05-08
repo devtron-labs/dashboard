@@ -11,7 +11,7 @@ import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getPermissionGroupById } from '../../authorization.service'
-import { PermissionConfigurationFormProvider } from '../../shared-amrit/components/PermissionConfigurationForm'
+import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
 import PermissionGroupForm from './PermissionGroupForm'
 
 const PermissionGroupAddEdit = () => {
