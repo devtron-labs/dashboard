@@ -407,9 +407,13 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        <Route key={URLS.EVENT_WATCHER} path={URLS.EVENT_WATCHER}>
-                                            {EventWatcherRouter ? <EventWatcherRouter /> : null}
-                                        </Route>,
+                                        ...(EventWatcherRouter
+                                            ? [
+                                                  <Route key={URLS.EVENT_WATCHER} path={URLS.EVENT_WATCHER}>
+                                                      <EventWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
