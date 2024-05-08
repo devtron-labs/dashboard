@@ -10,14 +10,14 @@ import {
     GenericEmptyState,
     ToastBody,
     useAsync,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
-import { ErrorBoundary, sortOptionsByLabel } from '../common'
+import { ErrorBoundary, sortOptionsByLabel, useAppContext } from '../common'
 import { URLS } from '../../config'
-import PageHeader from '../common/header/PageHeader'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
 import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
@@ -468,6 +468,8 @@ export const EnvHeader = ({
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+    const { setCurrentEnvironmentName } = useAppContext()
+
     const [isMenuOpen, setMenuOpen] = useState(false)
 
     const contextValue = useMemo(
@@ -501,6 +503,10 @@ export const EnvHeader = ({
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
+
+    useEffect(() => {
+        setCurrentEnvironmentName(envName)
+    }, [envName])
 
     const handleEnvChange = useCallback(
         ({ label, value, appCount }) => {

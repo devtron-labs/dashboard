@@ -1,6 +1,6 @@
 import { BulkSelection, Pagination, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from '../../shared-amrit/components/BulkSelection'
 import { handleToggleCheckForBulkSelection } from '../../utils'
 import { permissionGroupLoading, SortableKeys } from './constants'
 import PermissionGroupRow from './PermissionGroupRow'

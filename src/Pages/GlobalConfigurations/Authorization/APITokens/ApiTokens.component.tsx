@@ -9,7 +9,7 @@ import emptyGeneratToken from '../../../../assets/img/ic-empty-generate-token.pn
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { TokenListType, TokenResponseType } from './authorization.type'
+import { TokenListType, TokenResponseType } from './apiToken.type'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApiTokens = () => {
@@ -25,7 +25,6 @@ const ApiTokens = () => {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [copied, setCopied] = useState(false)
     const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
         label: '30 days',
         value: 30,
@@ -36,7 +35,7 @@ const ApiTokens = () => {
         getGeneratedAPITokenList()
             .then((response) => {
                 if (response.result) {
-                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+                    const sortedResult = response.result.sort((a, b) => a.name.localeCompare(b.name))
                     setTokenlist(sortedResult)
                     setFilteredTokenList(sortedResult)
                 } else {
@@ -53,15 +52,6 @@ const ApiTokens = () => {
     }
 
     useEffect(() => {
-        // TODO: Revisit. Temp check
-        if (
-            pathname.includes('/devtron-apps') ||
-            pathname.includes('/helm-apps') ||
-            pathname.includes('/chart-groups')
-        ) {
-            history.replace(pathname.split('/').slice(0, -1).join('/'))
-        }
-
         getData()
     }, [])
 
@@ -167,8 +157,6 @@ const ApiTokens = () => {
                             setSelectedExpirationDate={setSelectedExpirationDate}
                             selectedExpirationDate={selectedExpirationDate}
                             tokenList={tokenList}
-                            setCopied={setCopied}
-                            copied={copied}
                             reload={getData}
                         />
                     </Route>
@@ -209,10 +197,7 @@ const ApiTokens = () => {
     if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
-                />
+                <ErrorScreenManager code={errorStatusCode} />
             </div>
         )
     }

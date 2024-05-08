@@ -381,6 +381,7 @@ export default function NodeDetailsList({
                 onClick={() => {
                     column.isSortingAllowed && handleSortClick(column)
                 }}
+                data-testid={column.label}
             >
                 <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{column.label}</span>
@@ -568,7 +569,7 @@ export default function NodeDetailsList({
             <div className="dc__border-left flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
                 />
             </div>
         )
@@ -615,6 +616,7 @@ export default function NodeDetailsList({
                             style={{ width: '100%' }}
                         >
                             <div
+                                data-testid="node-status"
                                 className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"
                                 style={{ width: 'max-content', minWidth: '100%', zIndex: 5 }}
                             >

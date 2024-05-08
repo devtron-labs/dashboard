@@ -8,7 +8,6 @@ import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import NodeDetailsList from '../../ClusterNodes/NodeDetailsList'
-import '../ResourceBrowser.scss'
 
 const K8SResourceTabComponent = ({
     selectedCluster,
@@ -18,7 +17,6 @@ const K8SResourceTabComponent = ({
     showStaleDataWarning,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    enableShortcut,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
     const [selectedResource, setSelectedResource] = useState({
@@ -38,7 +36,7 @@ const K8SResourceTabComponent = ({
         [clusterId],
     )
 
-    const errorMessage = error?.errors?.[0]?.userMessage || error?.['message'] || null
+    const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
     if (loading || error) {
         return (
@@ -60,7 +58,6 @@ const K8SResourceTabComponent = ({
                 setSelectedResource={setSelectedResource}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-                enableShortcut={enableShortcut}
             />
             {/* NOTE: if we directly use nodeType for this check
              * component will mount/dismount on every tab change */}
@@ -79,7 +76,6 @@ const K8SResourceTabComponent = ({
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
                     updateK8sResourceTab={updateK8sResourceTab}
-                    enableShortcut={enableShortcut}
                 />
             )}
         </div>

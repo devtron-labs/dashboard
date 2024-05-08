@@ -1,19 +1,19 @@
 import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, noop, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
 import { AppHeaderType } from '../types'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import PageHeader from '../../common/header/PageHeader'
 import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
 import './appDetails/appDetails.scss'
 import './app.scss'
+import { useAppContext } from '../../common'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
@@ -38,6 +38,8 @@ export const AppHeader = ({
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+    const { setCurrentAppName } = useAppContext()
+
     const [isMenuOpen, setMenuOpen] = useState(false)
 
     const contextValue = useMemo(
@@ -83,6 +85,10 @@ export const AppHeader = ({
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
+
+    useEffect(() => {
+        setCurrentAppName(appName)
+    }, [appName])
 
     const handleAppChange = useCallback(
         ({ label, value }) => {

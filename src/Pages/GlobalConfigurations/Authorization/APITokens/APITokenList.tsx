@@ -1,18 +1,16 @@
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { TippyCustomized, TippyTheme, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { APITokenListType, TokenListType } from './authorization.type'
-import { isTokenExpired } from './authorization.utils'
+import { APITokenListType, TokenListType } from './apiToken.type'
+import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
@@ -24,31 +22,20 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
         history.push(id ? `${key}/${id}` : key)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const handleDeleteButton = (tokenList) => {
-        setSelectedToken(tokenList)
+    const handleDeleteButton = (_tokenList) => {
+        setSelectedToken(_tokenList)
         setDeleteConfirmation(true)
     }
 
     const handleQuestion = () => {
         return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={QuestionFilled}
+            <InfoIconTippy
                 heading="API tokens"
                 infoText="Tokens you have generated that can be used to access the Devtron API."
-                showCloseButton
-                trigger="click"
-                interactive
                 documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
                 documentationLinkText="View Documentation"
-            >
-                <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                    <Question />
-                </div>
-            </TippyCustomized>
+                iconClassName="icon-dim-16 fcn-9 ml-4"
+            />
         )
     }
 
@@ -109,8 +96,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                         ? noMatchingResults()
                         : tokenList.map((list, index) => (
                               <div
-                                  // eslint-disable-next-line react/no-array-index-key
-                                  key={`api_${index}`}
+                                  key={`api_${list.id}`}
                                   data-testid="api-list-row"
                                   className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                   style={{ height: '45px' }}
@@ -147,26 +133,26 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
                                           </>
                                       )}
                                   </div>
-                                  <div className="api__row-actions flex right">
+                                  <div className="api__row-actions flex right dc__gap-8">
                                       <button
                                           type="button"
-                                          className="dc__transparent mr-12"
+                                          className="dc__transparent flex p-4"
                                           data-index={index}
                                           data-testid="api-token-edit-button"
                                           onClick={handleEditRowAction}
                                           aria-label="Edit api token"
                                       >
-                                          <Edit className="icon-dim-20" />
+                                          <Edit className="scn-6 icon-dim-16" />
                                       </button>
                                       <button
                                           type="button"
-                                          className="dc__transparent"
+                                          className="dc__transparent flex p-4 icon-delete"
                                           data-index={index}
                                           data-testid="api-token-delete-button"
                                           onClick={handleDelete}
                                           aria-label="Delete api token"
                                       >
-                                          <Trash className="scn-6 icon-dim-20" />
+                                          <Trash className="scn-6 icon-dim-16" />
                                       </button>
                                   </div>
                               </div>

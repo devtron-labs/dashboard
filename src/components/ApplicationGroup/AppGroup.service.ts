@@ -6,13 +6,13 @@ import {
     trash,
     WorkflowNodeType,
     PipelineType,
+    CommonNodeAttr,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
-    WorkflowType,
     CdPipelineResult,
     CiPipelineResult,
     WorkflowResult,
-    NodeAttr,
     CiPipeline,
 } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
@@ -128,7 +128,7 @@ export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfig
 const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowType[]) => WorkflowType[] {
     return (workflows: WorkflowType[]): WorkflowType[] => {
         workflows.forEach((wf) => {
-            const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, NodeAttr]))
+            const nodes = new Map(wf.nodes.map((node) => [`${node.type}-${node.id}`, node] as [string, CommonNodeAttr]))
             let node = wf.nodes.find((node) => node.environmentId === +envID)
             if (!node) {
                 wf.nodes = []
@@ -154,7 +154,7 @@ const filterChildAndSiblingCD = function (envID: string): (workflows: WorkflowTy
     }
 }
 
-function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr | undefined {
+function getParentNode(nodes: Map<string, CommonNodeAttr>, node: CommonNodeAttr): CommonNodeAttr | undefined {
     let parentType = WorkflowNodeType.CD
     if (node.parentPipelineType == PipelineType.CI_PIPELINE) {
         parentType = WorkflowNodeType.CI
@@ -181,12 +181,17 @@ export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigA
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getEnvAppList = (params?: {
-    envName?: string
-    clusterIds?: string
-    offset?: string
-    size?: string
-}): Promise<EnvAppType> => {
+export const getEnvAppList = (
+    params?: {
+        envName?: string
+        clusterIds?: string
+        offset?: string
+        size?: string
+    },
+    signal?: AbortSignal,
+): Promise<EnvAppType> => {
+    const options = signal ? { signal } : null
+
     if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
             if (!value) {
@@ -194,9 +199,9 @@ export const getEnvAppList = (params?: {
             }
             return `${key}=${value}`
         })
-        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`, options)
     }
-    return get(Routes.ENVIRONMENT_APPS)
+    return get(Routes.ENVIRONMENT_APPS, options)
 }
 
 export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {

@@ -7,7 +7,7 @@ import {
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getUserList } from '../../authorization.service'
-import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../shared/components/BulkSelection'
+import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../shared-amrit/components/BulkSelection'
 import { User } from '../../types'
 
 export type UserListFilter = Pick<UserListFilterParams, 'status'>

@@ -22,6 +22,7 @@ import {
     ToastBody3 as UpdateToast,
     ErrorBoundary,
     importComponentFromFELibrary,
+    getApprovalModalTypeFromURL,
 } from './components/common'
 import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
@@ -97,11 +98,7 @@ export default function App() {
 
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
-        if (location.pathname && location.pathname.includes('deployment')) {
-            setApprovalType(APPROVAL_MODAL_TYPE.DEPLOYMENT)
-        } else {
-            setApprovalType(APPROVAL_MODAL_TYPE.CONFIG)
-        }
+        setApprovalType(getApprovalModalTypeFromURL(location.pathname))
 
         const queryString = new URLSearchParams(location.search)
         const token = queryString.get('token')
@@ -164,6 +161,16 @@ export default function App() {
         }
     }, [])
 
+    const serviceWorkerTimeout = (()=> {
+        const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
+
+        if (parsedTimeout) {
+            return parsedTimeout
+        }
+
+        return 1
+    })()
+
     const {
         needRefresh: [needRefresh],
         updateServiceWorker,
@@ -183,7 +190,7 @@ export default function App() {
                     })
 
                     if (resp?.status === 200) await r.update()
-                }, 1000 * 60)
+                }, serviceWorkerTimeout * 1000 * 60)
         },
         onRegisterError(error) {
             console.log('SW registration error', error)
@@ -192,8 +199,6 @@ export default function App() {
 
     function update() {
         updateServiceWorker(true)
-        // Trigger page reload
-        window.location.reload()
     }
 
     useEffect(() => {

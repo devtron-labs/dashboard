@@ -8,14 +8,17 @@ import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
-import { ConditionalWrap, useAsync, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { convertToOptionsList} from '../../common'
+import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
+
+const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
 const ResourceFilterOptions = ({
     selectedResource,
     selectedNamespace,
+    selectedCluster,
     setSelectedNamespace,
     hideSearchInput,
     searchText,
@@ -23,14 +26,14 @@ const ResourceFilterOptions = ({
     isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
-    enableShortcut,
     renderRefreshBar,
     updateK8sResourceTab,
 }: ResourceFilterOptionsProps & IWithShortcut) => {
-    const { replace } = useHistory()
+    const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { clusterId,  namespace } = useParams<URLParams>()
     const [showShortcutKey, setShowShortcutKey] = useState(!searchText)
+    const [showFilterModal, setShowFilterModal] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     /* TODO: Find use for this loading state */
@@ -44,20 +47,31 @@ const ResourceFilterOptions = ({
         [namespaceByClusterIdList],
     )
 
-    useEffect(() => {
-        if (enableShortcut) {
-            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
-        }
-
-        return (): void => {
-            shortcut.unregisterShortcut(['r'])
-        }
-    }, [enableShortcut])
-
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
         setShowShortcutKey(false)
     }
+
+    const handleShowFilterModal = () => {
+        setShowFilterModal(true)
+    }
+
+    useEffect(() => {
+        /* TODO: handle nicely */
+        if (registerShortcut) {
+            shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
+            shortcut.registerShortcut(
+                handleShowFilterModal,
+                ['f'],
+                'ResourceFilterDrawer',
+                'Open resource filter drawer',
+            )
+        }
+        return (): void => {
+            shortcut.unregisterShortcut(['f'])
+            shortcut.unregisterShortcut(['r'])
+        }
+    }, [registerShortcut])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
         (e.key === 'Escape' || e.key === 'Esc') && searchInputRef.current?.blur()
@@ -127,6 +141,15 @@ const ResourceFilterOptions = ({
                             />
                         )}
                     </div>
+                )}
+                <div className="flex-grow-1" />
+                {FilterButton && (
+                    <FilterButton
+                        clusterName={selectedCluster?.label || ''}
+                        updateTabUrl={updateK8sResourceTab}
+                        showModal={showFilterModal}
+                        setShowModal={setShowFilterModal}
+                    />
                 )}
                 <div className="resource-filter-options-wrapper flex">
                     <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>

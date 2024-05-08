@@ -1,7 +1,9 @@
 // @ts-nocheck
 import yaml from 'yaml'
+import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
+import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
 import {
     EMPTY_FILE_STATUS,
     FILE_NOT_SUPPORTED_STATUS,
@@ -10,19 +12,32 @@ import {
     YAML_PARSE_ERROR_STATUS,
 } from './constants'
 
+export const getFileMimeType = (fileDataName: string): MIME_TYPE => {
+    const fileType = fileDataName.split('.').pop()
+    switch (fileType) {
+        case FILE_EXTENSION.YAML:
+        case FILE_EXTENSION.YML:
+            return MIME_TYPE.TEXT_YAML
+        case FILE_EXTENSION.JSON:
+            return MIME_TYPE.APPLICATION_JSON
+        default:
+            return MIME_TYPE.PLAIN_TEXT
+    }
+}
+
 export const validator: ValidatorType = ({ data, type }) => {
     if (!data) {
         return EMPTY_FILE_STATUS
     }
     switch (type) {
-        case 'application/json':
+        case MIME_TYPE.APPLICATION_JSON:
             try {
                 const parsedData = JSON.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
@@ -31,23 +46,26 @@ export const validator: ValidatorType = ({ data, type }) => {
             } catch (e) {
                 return JSON_PARSE_ERROR_STATUS
             }
-        case 'application/x-yaml':
-        case 'application/yaml':
-        case 'text/yaml':
-        case 'text/x-yaml':
+        case MIME_TYPE.APPLICATION_X_YAML:
+        case MIME_TYPE.APPLICATION_YAML:
+        case MIME_TYPE.TEXT_YAML:
+        case MIME_TYPE.TEXT_X_YAML:
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
+                    debugger
+                    const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,
                         message: {
-                            data: yaml.stringify(parsedData, { simpleKeys: true }),
+                            data: YAMLStringify(parsedData, { simpleKeys: true }),
                             description: 'File uploaded successfully',
                         },
                     }
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
+                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
@@ -65,7 +83,7 @@ export const downloadData = (data: string, filename: string, type: string) => {
     window.URL.revokeObjectURL(url)
 }
 
-export const parseIntoYAMLString = (data: any) => yaml.stringify(data, { simpleKeys: true })
+export const parseIntoYAMLString = (data: any) => YAMLStringify(data, { simpleKeys: true })
 
 export const parseYAMLStringToObj = (data: string) => yaml.parse(data)
 

@@ -119,7 +119,6 @@ export interface SidebarType {
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
-    enableShortcut: boolean
     isClusterError?: boolean
 }
 
@@ -139,13 +138,11 @@ export interface ResourceFilterOptionsProps {
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
-    enableShortcut?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'handleFilterChanges'> {
-    enableShortcut: boolean
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
 }
@@ -216,7 +213,6 @@ export interface K8SResourceTabComponentProps {
     showStaleDataWarning: boolean
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
-    enableShortcut: boolean
 }
 
 export interface AdminTerminalProps {

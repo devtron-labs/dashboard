@@ -79,19 +79,16 @@ export const TRIGGER_VIEW_GA_EVENTS = {
     },
 }
 
-export const ARTIFACT_STATUS = {
-    Progressing: 'Progressing',
-    Degraded: 'Degraded',
-    Failed: 'Failed',
+export const CD_MATERIAL_GA_EVENT = {
+    FetchMoreImagesClicked: {
+        category: 'CD Material',
+        action: 'Fetch More Images Clicked',
+    },
 }
 
 export const NO_VULNERABILITY_TEXT = {
     Secured: 'You’re secure!',
     NoVulnerabilityFound: 'No security vulnerability found for this image.',
-}
-export const IMAGE_SCAN_TOOL = {
-    Clair: 'Clair',
-    Trivy: 'Trivy',
 }
 
 export const DEFAULT_ENV = 'devtron-ci'
@@ -101,5 +98,4 @@ export const EMPTY_STATE = {
     subtitle: 'We couldn’t find any matching images',
 }
 
-export const EXCLUDED_IMAGE_TOOLTIP =
-    'This image is excluded for new deployment as it does not match the filter conditions configured for this environment.'
+export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'

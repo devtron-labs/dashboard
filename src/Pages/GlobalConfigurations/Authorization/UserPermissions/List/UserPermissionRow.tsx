@@ -24,7 +24,7 @@ import { deleteUser } from '../../authorization.service'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
-import { useAuthorizationBulkSelection } from '../../shared/components/BulkSelection'
+import { useAuthorizationBulkSelection } from '../../shared-amrit/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 
@@ -133,6 +133,7 @@ const UserPermissionRow = ({
                 )}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
+                    // eslint-disable-next-line react/no-unstable-nested-components
                     wrap={(child) => (
                         <Tippy
                             content={moment(lastLoginTime).format(Moment12HourFormat)}
@@ -152,7 +153,7 @@ const UserPermissionRow = ({
                 </ConditionalWrap>
                 {showStatus && (
                     <StatusCell
-                        status={userStatus}
+                        userStatus={userStatus}
                         timeToLive={timeToLive}
                         userEmail={emailId}
                         userId={id}
@@ -164,10 +165,10 @@ const UserPermissionRow = ({
                 {isAdminOrSystemUser ? (
                     <span />
                 ) : (
-                    <div className="flex dc__gap-12">
+                    <div className="flex dc__gap-4">
                         <Link
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent p-4 flex"
                             data-testid={`user-permission__edit-button-${index}`}
                             aria-label="Edit user"
                             to={`${path}/${id}`}
@@ -176,12 +177,12 @@ const UserPermissionRow = ({
                         </Link>
                         <button
                             type="button"
-                            className="dc__visible-hover--child dc__transparent"
+                            className="dc__visible-hover--child dc__transparent icon-delete p-4 flex"
                             data-testid={`user-permission__delete-button-${index}`}
                             onClick={toggleDeleteModal}
                             aria-label="Delete user"
                         >
-                            <Trash className="scn-6 icon-dim-16 mw-16 icon-delete" />
+                            <Trash className="scn-6 icon-dim-16 mw-16" />
                         </button>
                     </div>
                 )}

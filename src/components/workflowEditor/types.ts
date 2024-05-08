@@ -7,6 +7,7 @@ import {
     TaskErrorObj,
     VariableType,
     SelectedNode,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -14,12 +15,11 @@ import {
     CIPipelineNodeType,
     CdPipelineResult,
     CiPipeline,
-    NodeAttr,
-    WorkflowType,
 } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
+import { WorkflowProps } from './Workflow'
 
 export enum DisableType {
     COMING_SOON = 'COMING SOON',
@@ -46,8 +46,8 @@ export interface WorkflowEditState {
     view: string
     code: number
     workflows: any[]
-    allCINodeMap: Map<string, NodeAttr>
-    allDeploymentNodeMap: Map<string, NodeAttr>
+    allCINodeMap: Map<string, CommonNodeAttr>
+    allDeploymentNodeMap: Map<string, CommonNodeAttr>
     workflowId: number
     appName: string
     showDeleteDialog: boolean
@@ -139,7 +139,7 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     closePopup: () => void
     reload: () => void
 }
-export interface CDNodeProps {
+export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -169,6 +169,7 @@ export interface CDNodeProps {
     getWorkflows?: () => void
     reloadEnvironments?: () => void
     selectedNode?: SelectedNode
+    isDeploymentBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -203,6 +204,8 @@ export interface CDNodeState {
     forceDeleteData: ForceDeleteMessageType
     clusterName: string
     deleteInProgress: boolean
+    showDeploymentConfirmationDeleteDialog: boolean
+    deploymentWindowConfimationValue: string
 }
 
 export interface PipelineBuildStageType {

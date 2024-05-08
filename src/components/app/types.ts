@@ -345,6 +345,9 @@ export enum AppListColumnSort {
     lastDeployedSort = 'lastDeployedAt',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -388,6 +391,9 @@ export enum Nodes {
     Namespace = 'Namespace',
     Overview = 'Overview',
 }
+/**
+ * @deprecated - use from fe-common
+ */
 export type NodeType = keyof typeof Nodes
 
 export enum AggregationKeys {
@@ -532,16 +538,11 @@ export interface SourceInfoType {
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
     refetchDeploymentStatus: (showTimeline?: boolean) => void
-    severityCount?: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: (e) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+    filteredEnvIds?: string
 }
 
 export interface EnvironmentListMinType {

@@ -19,7 +19,8 @@ import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
 } from './appDetails.type'
-import { DEPLOYMENT_STATUS, TIMELINE_STATUS, ZERO_TIME_STRING } from '../../../../config'
+import { DEPLOYMENT_STATUS, TIMELINE_STATUS } from '../../../../config'
+import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {

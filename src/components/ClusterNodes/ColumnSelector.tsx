@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
-import { Option } from '@devtron-labs/devtron-fe-common-lib'
+import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
@@ -124,7 +124,7 @@ export default function ColumnSelector() {
                 setColumnFilterInput('')
             }}
             onInputChange={(value, action) => {
-                if (action.action === 'input-change') {
+                if (action.action === ReactSelectInputAction.inputChange) {
                     setColumnFilterInput(value)
                 }
             }}

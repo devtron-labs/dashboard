@@ -6,6 +6,7 @@ import {
     noop,
     WorkflowNodeType,
     PipelineType,
+    CommonNodeAttr,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
@@ -14,7 +15,7 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, TriggerViewContextType } from '../types'
+import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
@@ -22,11 +23,12 @@ import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
+const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
-    goToWorkFlowEditor = (node: NodeAttr) => {
+    goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
                 this.props.appId?.toString() ?? this.props.match.params.appId,
@@ -68,7 +70,7 @@ export class Workflow extends Component<WorkflowProps> {
         })
     }
 
-    renderSourceNode(node: NodeAttr) {
+    renderSourceNode(node: CommonNodeAttr) {
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -107,7 +109,7 @@ export class Workflow extends Component<WorkflowProps> {
         )
     }
 
-    renderCINodes(node: NodeAttr) {
+    renderCINodes(node: CommonNodeAttr) {
         if (node.isLinkedCD && LinkedCDNode) {
             return (
                 <LinkedCDNode
@@ -245,6 +247,7 @@ export class Workflow extends Component<WorkflowProps> {
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
                 deploymentAppType={node.deploymentAppType}
                 appId={this.props.appId}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }
@@ -276,6 +279,7 @@ export class Workflow extends Component<WorkflowProps> {
                 index={this.props.index}
                 isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
                 deploymentAppType={node.deploymentAppType}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }
@@ -339,7 +343,7 @@ export class Workflow extends Component<WorkflowProps> {
 
         return (
             <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
-                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20">
+                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
                             rootClassName="mb-0 app-group-checkbox"
@@ -351,9 +355,21 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span data-testid="workflow-heading" className="m-0">
-                            {this.props.name}
-                        </span>
+                        <>
+                            <span data-testid="workflow-heading" className="m-0">
+                                {this.props.name}
+                            </span>
+
+                            {ImagePromotionLink && (
+                                <ImagePromotionLink
+                                    isConfigured={this.props.artifactPromotionMetadata?.isConfigured ?? false}
+                                    isApprovalPendingForPromotion={
+                                        this.props.artifactPromotionMetadata?.isApprovalPendingForPromotion ?? false
+                                    }
+                                    workflowId={this.props.id}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}

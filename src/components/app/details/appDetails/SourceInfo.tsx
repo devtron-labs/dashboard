@@ -23,6 +23,7 @@ import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 
 export const SourceInfo = ({
     appDetails,
@@ -38,12 +39,11 @@ export const SourceInfo = ({
     isVirtualEnvironment,
     setRotateModal = null,
     refetchDeploymentStatus,
-    severityCount,
-    showVulnerabilitiesModal,
     toggleIssuesModal,
     envId,
     ciArtifactId,
     setErrorsList,
+    filteredEnvIds,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -265,13 +265,22 @@ export const SourceInfo = ({
                                   ciArtifactId={ciArtifactId}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
-                              <SecurityVulnerabilityCard
+                          {DeploymentWindowStatusCard && (
+                              <DeploymentWindowStatusCard
                                   cardLoading={cardLoading}
-                                  severityCount={severityCount}
-                                  showVulnerabilitiesModal={showVulnerabilitiesModal}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  filteredEnvIds={filteredEnvIds}
                               />
                           )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

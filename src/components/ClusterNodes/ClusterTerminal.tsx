@@ -32,7 +32,6 @@ import {
 } from './constants'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     TERMINAL_STATUS,
     TERMINAL_TEXT,
@@ -40,6 +39,7 @@ import {
     TerminalWrapperType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 let clusterTimeOut
 
@@ -557,9 +557,6 @@ export default function ClusterTerminal({
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
         updateTerminalTabUrl(queryParams.toString())
-        history.replace({
-            search: queryParams.toString(),
-        })
     }
 
     const reconnectTerminal = (): void => {
@@ -1023,6 +1020,7 @@ export default function ClusterTerminal({
                 className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
                     isNodeDetailsPage ? '' : 'dc__border-top'
                 }`}
+                isResourceBrowserView
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

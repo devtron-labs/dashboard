@@ -10,9 +10,11 @@ import {
     highlightSearchText,
     Pagination,
     useSearchString,
+    Nodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
+import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     ALL_NAMESPACE_OPTION,
@@ -36,19 +38,20 @@ import {
     updateQueryString,
 } from '../Utils'
 import { URLS } from '../../../config'
-import { Nodes } from '../../app/types'
+
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 export const K8SResourceList = ({
     selectedResource,
     selectedCluster,
-    enableShortcut,
     addTab,
     renderRefreshBar,
     showStaleDataWarning,
     updateK8sResourceTab,
 }: K8SResourceListType) => {
     const { searchParams } = useSearchString()
-    const { push, replace } = useHistory()
+    const { push } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
     const { clusterId, namespace, nodeType } = useParams<URLParams>()
@@ -74,6 +77,7 @@ export const K8SResourceList = ({
                     clusterId,
                     selectedNamespace.value.toLowerCase(),
                     selectedResource,
+                    location.search,
                 ),
                 abortControllerRef.current.signal,
             ),
@@ -313,6 +317,15 @@ export const K8SResourceList = ({
                                         ),
                                     }}
                                 />
+                                <span>
+                                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                                        <PodRestartIcon
+                                            clusterId={clusterId}
+                                            name={resourceData.name}
+                                            namespace={resourceData.namespace}
+                                        />
+                                    )}
+                                </span>
                             </ConditionalWrap>
                         </div>
                     ),
@@ -448,11 +461,13 @@ export const K8SResourceList = ({
                 setSearchText={setSearchText}
                 handleFilterChanges={handleFilterChanges}
                 isSearchInputDisabled={resourceListLoader}
-                enableShortcut={enableShortcut}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
             />
             {resourceListLoader || !resourceList || !filteredResourceList ? <Progressing size={32} pageLoader /> : renderList()}
+            {PodRestart && (
+                <PodRestart />
+            )}
         </div>
     )
 }

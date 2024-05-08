@@ -32,7 +32,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
@@ -493,7 +493,7 @@ const ChartForm = ({
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (
                     <div className="form-row flex left fs-13">
-                        <Question className="icon-dim-16 mr-8" />
+                        <ICHelpOutline className="icon-dim-16 mr-8" />
                         Looking to add OCI-based registry?
                         <NavLink
                             className="dc__no-decor pl-8 pr-8 flex left cb-5"

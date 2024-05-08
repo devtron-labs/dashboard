@@ -48,3 +48,10 @@ export const ssoProviderToDisplayNameMap: Record<SSOProvider, string> = {
     [SSOProvider.oidc]: 'OIDC',
     [SSOProvider.openshift]: 'OpenShift',
 } as const
+
+export const SsoSecretsToHide = {
+    clientID: 'clientID',
+    clientSecret: 'clientSecret',
+    bindPW: 'bindPW',
+    usernamePrompt: 'usernamePrompt',
+}

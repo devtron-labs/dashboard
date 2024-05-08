@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { AppSelector } from '../../AppSelector'
@@ -9,7 +9,6 @@ import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
-import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 
 const AppHeaderComponent = () => {

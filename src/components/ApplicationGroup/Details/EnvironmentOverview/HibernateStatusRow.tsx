@@ -4,8 +4,18 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-error-excla
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
 import { ReactComponent as Skipped } from '../../../../assets/icons/ic-info-filled.svg'
+import { ACTION_STATE, DEPLOYMENT_WINDOW_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '../../../common'
 
-export const HibernateStatusRow = ({ rowData, index, isVirtualEnv, isHibernateOperation }: HibernateStatusRowType) => {
+const ExcludedUsersDescription = importComponentFromFELibrary('ExcludedUsersDescription')
+
+export const HibernateStatusRow = ({
+    rowData,
+    index,
+    isVirtualEnv,
+    isHibernateOperation,
+    hibernateInfoMap,
+}: HibernateStatusRowType) => {
     const renderStatusIcon = (): JSX.Element => {
         if (rowData.success) {
             return <Success className="mr-8 icon-dim-18" />
@@ -33,6 +43,21 @@ export const HibernateStatusRow = ({ rowData, index, isVirtualEnv, isHibernateOp
     }
 
     const getMessage = () => {
+        if (hibernateInfoMap[rowData.id] && hibernateInfoMap[rowData.id].userActionState && hibernateInfoMap[rowData.id].userActionState !== ACTION_STATE.ALLOWED) {
+            return (
+                <div>
+                    {hibernateInfoMap[rowData.id].userActionState === ACTION_STATE.BLOCKED && <div>
+                        You are not authorised to deploy&nbsp;
+                        {hibernateInfoMap[rowData.id].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT
+                            ? 'during'
+                            : 'outside'}&nbsp;
+                        {hibernateInfoMap[rowData.id].type.toLowerCase()} window
+                    </div>
+        }
+                    <ExcludedUsersDescription excludedUserEmails={hibernateInfoMap[rowData.id].excludedUserEmails} />
+                </div>
+            )
+        }
         if (rowData.authError) {
             return 'You do not have permission to trigger deployment for this application + environment'
         }

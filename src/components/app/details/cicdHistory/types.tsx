@@ -1,13 +1,7 @@
 import React, { CSSProperties } from 'react'
-import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers, PromotionApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-
-export interface WebHookData {
-    Id: number
-    EventActionType: string
-    Data: any
-}
 
 export interface History {
     id: number
@@ -40,6 +34,8 @@ export interface History {
     tagsEditable?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    promotionApprovalMetadata?: PromotionApprovalMetadataType
+    triggerMetadata?: string
 }
 
 export interface CiMaterial {
@@ -56,19 +52,6 @@ export interface CiMaterial {
     isBranchError: boolean
     branchErrorMsg: string
     url: string
-}
-
-export interface GitTriggers {
-    Commit: string
-    Author: string
-    Date: Date | string
-    Message: string
-    Changes: string[]
-    WebhookData: WebHookData
-    GitRepoUrl: string
-    GitRepoName: string
-    CiConfigureSourceType: string
-    CiConfigureSourceValue: string
 }
 
 export interface ArtifactType {
@@ -90,13 +73,7 @@ export interface ArtifactType {
     jobCIClass?: string
 }
 
-export interface CopyTippyWithTextType {
-    copyText: string
-    copied: boolean
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export interface CIListItemType {
+export interface CIListItemType extends Pick<GitChangesType, 'promotionApprovalMetadata' | 'selectedEnvironmentName'> {
     type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
@@ -136,7 +113,7 @@ export interface ScrollerType {
     style: CSSProperties
 }
 
-export interface GitChangesType {
+export interface GitChangesType extends Pick<History, 'promotionApprovalMetadata'> {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
     artifact?: string
@@ -151,6 +128,7 @@ export interface GitChangesType {
     hideImageTaggingHardDelete?: boolean
     appliedFilters?: FilterConditionsListType[]
     appliedFiltersTimestamp?: string
+    selectedEnvironmentName?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
@@ -209,10 +187,12 @@ export interface TriggerDetailsType {
     environmentName?: string
     isJobView?: boolean
     workerPodName?: string
+    triggerMetadata?: string
 }
 
 export interface TriggerDetailsStatusIconType {
     status: string
+    isDeploymentWindowInfo?: boolean
 }
 
 export interface FinishedType {
@@ -260,6 +240,7 @@ export interface StartDetailsType {
     type: HistoryComponentType
     environmentName?: string
     isJobView?: boolean
+    triggerMetadata?: string
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {

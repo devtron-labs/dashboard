@@ -7,6 +7,7 @@ import {
     RadioGroupItem,
     TippyCustomized,
     TippyTheme,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -27,7 +28,7 @@ import {
 } from '../v2/common/ReactSelect.utils'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -330,7 +331,7 @@ export default function BuildCD({
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[selection.deploymentTemplate], {
+        selection['yamlStr'] =YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
             indent: 2,
         })
         selection['isCollapsed'] = true
@@ -527,7 +528,7 @@ export default function BuildCD({
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
-                yamlStr = yamlJsParser.stringify(json, { indent: 2 })
+                yamlStr = YAMLStringify(json)
             } catch (error) {}
         } else {
             yamlStr = value
@@ -663,7 +664,7 @@ export default function BuildCD({
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                        <Question />
+                        <ICHelpOutline />
                     </div>
                 </TippyCustomized>
             )

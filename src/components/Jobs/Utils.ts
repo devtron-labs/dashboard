@@ -1,12 +1,12 @@
 import * as queryString from 'query-string'
 import moment from 'moment'
-import { ZERO_TIME_STRING } from '../../config'
 import { AppListViewType } from '../app/config'
 import { JobCIPipeline, JobListState, JobListStateAction, JobListStateActionTypes } from './Types'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import { JobPipeline } from '../app/types'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
+import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 
 export const getInitialJobListState = (payloadParsedFromUrl): JobListState => {
     return {

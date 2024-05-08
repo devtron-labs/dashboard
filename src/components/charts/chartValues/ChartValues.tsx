@@ -6,9 +6,9 @@ import {
     ErrorScreenManager,
     BreadCrumb,
     useBreadcrumb,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
-import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 
@@ -96,7 +96,6 @@ export default function ChartValues() {
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenManager
                     code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
                 />
             </div>
         )

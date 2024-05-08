@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react'
-import { showError, getUserRole, DevtronProgressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import PageHeader from '../common/header/PageHeader'
+import { showError, getUserRole, DevtronProgressing, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { addClusterButton } from './PageHeader.buttons'
-import './ResourceBrowser.scss'
 
 const ResourceBrowser: React.FC = () => {
     const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =

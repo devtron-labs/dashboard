@@ -8,9 +8,10 @@ import {
     DevtronProgressing,
     useAsync,
     useEffectAfterMount,
+    PageHeader,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
-import PageHeader from '../../common/header/PageHeader'
 import { ClusterOptionType, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
@@ -30,7 +31,6 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import { renderRefreshBar } from './ResourceList.component'
-import '../ResourceBrowser.scss'
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node } = useParams<URLParams>()
@@ -248,7 +248,6 @@ const ResourceList = () => {
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={updateK8sResourceTab}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-            enableShortcut={!showCreateResourceModal}
         />,
         ...(isSuperAdmin && tabs[2]?.name === AppDetailsTabs.terminal && tabs[2].isAlive
             ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
@@ -318,18 +317,20 @@ const ResourceList = () => {
     }
 
     return (
-        <ShortcutProvider>
-            <div className="resource-browser-container h-100 bcn-0">
-                <PageHeader
-                    isBreadcrumbs
-                    breadCrumbs={renderBreadcrumbs}
-                    headerName=""
-                    renderActionButtons={renderCreateResourceButton(showResourceModal)}
-                />
-                {renderMainBody()}
-                {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-            </div>
-        </ShortcutProvider>
+        <UseRegisterShortcutProvider>
+            <ShortcutProvider>
+                <div className="resource-browser-container h-100 bcn-0">
+                    <PageHeader
+                        isBreadcrumbs
+                        breadCrumbs={renderBreadcrumbs}
+                        headerName=""
+                        renderActionButtons={renderCreateResourceButton(showResourceModal)}
+                    />
+                    {renderMainBody()}
+                    {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+                </div>
+            </ShortcutProvider>
+        </UseRegisterShortcutProvider>
     )
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -8,7 +8,7 @@ import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { ManifestViewRefType, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -95,7 +95,22 @@ const NodeDetailComponent = ({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
-    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    // States uplifted from Manifest Component
+    const manifestViewRef = useRef<ManifestViewRefType>({
+        data: {
+            error: false,
+            secretViewAccess: false,
+            desiredManifest: '',
+            manifest: '',
+            activeManifestEditorData: '',
+            modifiedManifest: '',
+            isEditmode: false,
+            activeTab: 'Live manifest', // NOTE: default activeTab
+        },
+        id: '',
+    })
+
+    useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -271,12 +286,17 @@ const NodeDetailComponent = ({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
+    const getComponentKeyFromParams = () => {
+        return Object.values(params).join('/')
+    }
+
     const renderPodTerminal = (): JSX.Element => {
         if (!startTerminal) {
             return null
         }
         return (
             <TerminalComponent
+                key={getComponentKeyFromParams()}
                 showTerminal={location.pathname.endsWith('/terminal')}
                 selectedTab={handleSelectedTab}
                 isDeleted={isDeleted}
@@ -374,16 +394,20 @@ const NodeDetailComponent = ({
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
                         <ManifestComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            manifestViewRef={manifestViewRef}
+                            getComponentKey={getComponentKeyFromParams}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
                         <EventsComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
@@ -398,6 +422,7 @@ const NodeDetailComponent = ({
                             }}
                         >
                             <LogsComponent
+                                key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}
                                 logSearchTerms={logSearchTerms}
