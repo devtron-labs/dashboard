@@ -245,6 +245,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
+    BULK_ROTATE_POD: 'app/template/workloads',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
@@ -374,6 +375,7 @@ export const DOCUMENTATION = {
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
     GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
+    MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -610,11 +612,13 @@ export const EXTERNAL_TYPES = {
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
-export const SCAN_TOOL_ID_TRIVY = 3
 export const TRIVY_TOOL_VERSION = 'V1'
 export const CLAIR_TOOL_VERSION_V4 = 'V4'
 export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
+/**
+ * @deprecated Use from fe-common-lib
+ */
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',

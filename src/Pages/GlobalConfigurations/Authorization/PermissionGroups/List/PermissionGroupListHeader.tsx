@@ -1,10 +1,8 @@
 import React from 'react'
-import { SearchBar, TippyCustomized, TippyTheme, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { useMainContext, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as HelpOutlineIcon } from '../../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
 
 import { PermissionGroupListHeaderProps } from './types'
@@ -23,17 +21,9 @@ const PermissionGroupListHeader = ({
         <div className="flex dc__content-space pl-20 pr-20">
             <div className="flex dc__gap-8">
                 <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">Permission Groups</h2>
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300 h-100 dc__align-left"
-                    placement="right"
-                    Icon={HelpIcon}
-                    iconClass="fcv-5"
+                <InfoIconTippy
                     infoText="Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions."
                     heading="Permission Groups"
-                    showCloseButton
-                    trigger="click"
-                    interactive
                     additionalContent={
                         <div className="pl-12 pb-12">
                             <a
@@ -47,11 +37,8 @@ const PermissionGroupListHeader = ({
                             </a>
                         </div>
                     }
-                >
-                    <div className="flex">
-                        <HelpOutlineIcon className="mw-20 icon-dim-20 fcn-6 cursor" />
-                    </div>
-                </TippyCustomized>
+                    iconClassName="mw-20 icon-dim-20 fcn-6"
+                />
             </div>
             <div className="flex dc__gap-8">
                 <SearchBar

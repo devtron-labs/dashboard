@@ -12,7 +12,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { Select } from '../common'
 import { ViewType } from '../../config/constants'
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service'
-import { ReactComponent as Help } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -208,7 +208,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                         }
                     >
                         <div className="flex">
-                            <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                            <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                         </div>
                     </Tippy>
                 </div>
@@ -271,7 +271,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                                     content="Required to control user Acccess"
                                 >
                                     <div>
-                                        <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
+                                        <ICHelpOutline className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                                     </div>
                                 </Tippy>
                             </label>

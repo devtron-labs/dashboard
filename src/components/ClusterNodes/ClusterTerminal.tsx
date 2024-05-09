@@ -39,6 +39,7 @@ import {
     TerminalWrapperType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 let clusterTimeOut
 
@@ -553,6 +554,9 @@ export default function ClusterTerminal({
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
+        if (!location.pathname.includes(AppDetailsTabs.terminal)) {
+            return
+        }
         history.replace({
             search: queryParams.toString(),
         })
@@ -1019,6 +1023,7 @@ export default function ClusterTerminal({
                 className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
                     isNodeDetailsPage ? '' : 'dc__border-top'
                 }`}
+                isResourceBrowserView
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

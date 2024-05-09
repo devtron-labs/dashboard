@@ -1087,7 +1087,7 @@ export default function NodeDetails({
             <div className="bcn-0 node-data-container flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
                 />
             </div>
         )

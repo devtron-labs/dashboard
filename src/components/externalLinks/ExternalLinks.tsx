@@ -1,12 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    TippyCustomized,
-    TippyTheme,
-    useMainContext,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, InfoIconTippy, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
@@ -22,8 +15,6 @@ import {
 } from './ExternalLinks.type'
 import { getClusterListMin } from '../../services/service'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
@@ -411,23 +402,13 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
                         External Links
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            placement="bottom"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
+                        <InfoIconTippy
                             heading="External Links"
                             infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                             documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            showCloseButton
-                            trigger="click"
-                            interactive
-                        >
-                            <div className="flex">
-                                <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
-                            </div>
-                        </TippyCustomized>
+                            iconClassName="icon-dim-20 fcn-6 ml-8"
+                        />
                     </h3>
                     <div className="cta-search-filter-container flex">
                         {renderSearchFilterWrapper()}
@@ -480,7 +461,6 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                 <div className="error-screen-wrapper flex column h-100">
                     <ErrorScreenManager
                         code={errorStatusCode}
-                        subtitle="Information on this page is available only to superadmin users."
                     />
                 </div>
             )

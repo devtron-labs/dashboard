@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
 import { URLS } from '../../../../../config'
@@ -28,7 +28,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading }: Cha
                             content="Chart used to deploy to this application"
                         >
                             <div className="flex">
-                                <Question className="icon-dim-16 mt-2" />
+                                <QuestionIcon className="icon-dim-16 mt-2" />
                             </div>
                         </Tippy>
                     </div>

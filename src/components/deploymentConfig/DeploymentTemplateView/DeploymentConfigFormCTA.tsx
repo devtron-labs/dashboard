@@ -6,7 +6,7 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
@@ -192,7 +192,7 @@ export default function DeploymentConfigFormCTA({
                                         content={getInfoText()}
                                     >
                                         <span className="icon-dime-16">
-                                            <HelpIcon className="icon-dime-16" />
+                                            <ICHelpOutline className="icon-dime-16" />
                                         </span>
                                     </Tippy>
                                 ) : (

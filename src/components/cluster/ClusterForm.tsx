@@ -46,7 +46,7 @@ import {
     DeleteComponentsName,
     EMPTY_STATE_STATUS,
 } from '../../config/constantMessaging'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -586,7 +586,7 @@ export default function ClusterForm({
             <div className="flex left ">
                 Server URL & Bearer token{isDefaultCluster() ? '' : '*'}
                 <span className="icon-dim-16 fcn-9 mr-4 ml-16">
-                    <Question className="icon-dim-16" />
+                    <ICHelpOutline className="icon-dim-16" />
                 </span>
                 <span>How to find for </span>
                 <ClusterInfoComponent />

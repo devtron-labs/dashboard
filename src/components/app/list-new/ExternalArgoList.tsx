@@ -29,7 +29,7 @@ import {
 } from './Constants'
 import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
 import { ExternalArgoListType } from '../types'
-import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
 
 export default function ExternalArgoList({
@@ -80,12 +80,12 @@ export default function ExternalArgoList({
     }, [argoAppsList])
 
     useEffect(() => {
+        // fetch external apps list
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
         getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
             .then((argoAppsListResponse) => {
                 setArgoAppsList(argoAppsListResponse.result)
-                setDataStateType(AppListViewType.LIST)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -95,6 +95,7 @@ export default function ExternalArgoList({
             .finally(() => {
                 updateDataSyncing(false)
                 setFetchingExternalAppsState(false)
+                setDataStateType(AppListViewType.LIST)
             })
     }, [clusterIdsCsv])
 
@@ -103,17 +104,17 @@ export default function ExternalArgoList({
         setDataStateType(AppListViewType.LOADING)
         setArgoAppsList([])
         setFilteredArgoAppsList([])
-        setClusterIdsCsv(_getClusterIdsFromRequestUrl())
-        setAppStatus(_getAppStatusFromRequestUrl())
+        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
+        setAppStatus(_getAppStatusFromRequestUrl() ?? '')
         setFetchingExternalAppsState(false)
     }
 
     function _getClusterIdsFromRequestUrl() {
-        return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(',')).keys()].join(',')
+        return [...buildClusterVsNamespace(payloadParsedFromUrl.namespaces?.join(',')).keys()].join(',')
     }
 
     function _getAppStatusFromRequestUrl() {
-        return payloadParsedFromUrl.appStatuses.join(',')
+        return payloadParsedFromUrl.appStatuses?.join(',')
     }
 
     function handleFilteration() {
@@ -129,7 +130,7 @@ export default function ExternalArgoList({
             )
         }
 
-        // handle sorting by asending/descending order
+        // handle sorting by ascending/descending order
         if (_sortOrder == OrderBy.ASC) {
             _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
         } else {
@@ -198,7 +199,7 @@ export default function ExternalArgoList({
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
                         <span>
-                            <HelpOutlineIcon className="icon-dim-20" />
+                            <ICHelpOutline className="icon-dim-20" />
                         </span>
                     </Tippy>
                 </div>
@@ -360,8 +361,7 @@ export default function ExternalArgoList({
         params.set('pageSize', size.toString())
         params.set('offset', '0')
         params.set('hOffset', '0')
-
-        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?${params.toString()}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}?${params.toString()}`)
     }
 
     function changePage(pageNo: number): void {

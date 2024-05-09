@@ -21,6 +21,7 @@ import {
     CreateUserPermissionPayloadParams,
     CustomRoleAndMeta,
     CustomRoles,
+    DirectPermissionsRoleFilter,
     MetaPossibleRoles,
     PermissionGroup,
     PermissionGroupDto,
@@ -30,7 +31,14 @@ import {
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
 import { useAuthorizationBulkSelection } from './Shared/components/BulkSelection'
-import { CONFIG_APPROVER_ACTION, ActionTypes, EntityTypes, PermissionType, ViewChartGroupPermission } from './constants'
+import {
+    CONFIG_APPROVER_ACTION,
+    ARTIFACT_PROMOTER_ACTION,
+    ActionTypes,
+    EntityTypes,
+    PermissionType,
+    ViewChartGroupPermission,
+} from './constants'
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
@@ -237,6 +245,19 @@ const getSelectedEnvironments = (permission) => {
     return envList
 }
 
+const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
+    const labels = [permission.action.value]
+
+    if (permission.action.configApprover) {
+        labels.push(CONFIG_APPROVER_ACTION.value)
+    }
+    if (permission.action.artifactPromoter) {
+        labels.push(ARTIFACT_PROMOTER_ACTION.value)
+    }
+
+    return labels.join(',')
+}
+
 export const getRoleFilters = ({
     directPermission,
     k8sPermission,
@@ -253,9 +274,7 @@ export const getRoleFilters = ({
             )
             .map((permission) => ({
                 ...permission,
-                action: permission.action.configApprover
-                    ? `${permission.action.value},configApprover`
-                    : permission.action.value,
+                action: getPermissionActionValue(permission),
                 team: permission.team.value,
                 environment: getSelectedEnvironments(permission),
                 entityName: getSelectedPermissionValues(permission.entityName),
@@ -357,14 +376,16 @@ export const isDirectPermissionFormComplete = (directPermission, setDirectPermis
     return isComplete
 }
 
+const isRoleCustom = (roleValue: string) =>
+    [CONFIG_APPROVER_ACTION.value, ARTIFACT_PROMOTER_ACTION.value].includes(roleValue)
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseData(dataList: any[], entity: string, accessType?: string) {
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                 return dataList.filter(
-                    (role) =>
-                        role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && role.value !== CONFIG_APPROVER_ACTION.value,
+                    (role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && !isRoleCustom(role.value),
                 )
             }
             return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
@@ -386,3 +407,8 @@ export const getWorkflowOptions = (appIdWorkflowNamesMapping: AppIdWorkflowNames
             value: workflow,
         })),
     }))
+
+export const getPrimaryRoleIndex = (multiRole: string[], excludedRoles: string[]): number => {
+    const primaryRoleIndex = multiRole.findIndex((role) => !excludedRoles.includes(role))
+    return primaryRoleIndex === -1 ? 0 : primaryRoleIndex
+}

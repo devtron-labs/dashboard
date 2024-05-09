@@ -79,7 +79,7 @@ import {
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
@@ -1088,7 +1088,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                        <Question />
+                        <ICHelpOutline />
                     </div>
                 </TippyCustomized>
             )

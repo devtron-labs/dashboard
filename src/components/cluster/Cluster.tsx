@@ -744,7 +744,7 @@ const Cluster = ({
                                     environment_name ? (
                                         <div
                                             data-testid={`env-container-${environment_name}`}
-                                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-8 pb-8 fs-13 fw-4 pl-16 pr-16 h-44 dc__visible-hover dc__visible-hover--parent"
                                             key={id}
                                             onClick={() =>
                                                 setEnvironment({
@@ -784,9 +784,9 @@ const Cluster = ({
                                                         arrow={false}
                                                         content="Edit Environment"
                                                     >
-                                                        <div className="">
+                                                        <div className="flex p-4 mr-4">
                                                             <PencilEdit
-                                                                className="icon-dim-20 mr-12"
+                                                                className="icon-dim-16 cursor"
                                                                 onClick={showWindowModal}
                                                             />
                                                         </div>
@@ -799,10 +799,10 @@ const Cluster = ({
                                                             arrow={false}
                                                             content="Delete Environment"
                                                         >
-                                                            <div className="">
+                                                            <div className="flex p-4">
                                                                 <DeleteEnvironment
                                                                     data-testid={`env-delete-button-${environment_name}`}
-                                                                    className="icon-dim-20 cursor"
+                                                                    className="icon-dim-16 cursor"
                                                                     onClick={showToggleConfirmation}
                                                                 />
                                                             </div>

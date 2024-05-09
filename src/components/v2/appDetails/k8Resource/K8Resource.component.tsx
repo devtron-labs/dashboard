@@ -9,6 +9,7 @@ import { K8ResourceComponentProps } from '../appDetails.type'
 import { ReactComponent as K8ResourceIcon } from '../../../../assets/icons/ic-object.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/ic-info-outline.svg'
 import './k8resources.scss'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function K8ResourceComponent({
     clickedNodes,
@@ -17,11 +18,12 @@ export default function K8ResourceComponent({
     externalLinks,
     monitoringTools,
     isDevtronApp,
-    isExternalApp,
+    clusterId,
     isDeploymentBlocked,
+    isExternalApp,
 }: K8ResourceComponentProps) {
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
-
+    const { isSuperAdmin } = useMainContext()
     useEffect(() => {
         AppDetailsStore.markAppDetailsTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
     }, [])
@@ -32,7 +34,10 @@ export default function K8ResourceComponent({
                 <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
-                <div className="resource-node-wrapper flexbox" data-testid="resource-node-wrapper">
+                <div
+                    className={`resource-node-wrapper flexbox ${isSuperAdmin ? 'pb-28' : ''}`}
+                    data-testid="resource-node-wrapper"
+                >
                     <div
                         className="k8-resources-node-tree pt-8 pl-16 dc__border-right"
                         data-testid="k8-resources-node-tree"
@@ -49,8 +54,9 @@ export default function K8ResourceComponent({
                             externalLinks={externalLinks}
                             monitoringTools={monitoringTools}
                             isDevtronApp={isDevtronApp}
-                            isExternalApp={isExternalApp}
+                            clusterId={clusterId}
                             isDeploymentBlocked={isDeploymentBlocked}
+                            isExternalApp={isExternalApp}
                         />
                     </div>
                 </div>

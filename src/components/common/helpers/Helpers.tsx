@@ -7,6 +7,7 @@ import {
     getLoginInfo,
     APIOptions,
     useWindowSize,
+    APPROVAL_MODAL_TYPE,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -15,6 +16,11 @@ import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
+import {
+    getAggregator as getAppDetailsAggregator,
+    AggregationKeys,
+    NodeType,
+} from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
@@ -785,6 +791,9 @@ export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
 
+/**
+ * @deprecated
+ */
 export const preventBodyScroll = (lock: boolean): void => {
     if (lock) {
         document.body.style.overflowY = 'hidden'
@@ -1170,4 +1179,23 @@ export const getAPIOptionsWithTriggerTimeout = (options?: APIOptions): APIOption
     }
 
     return _options
+}
+
+export const getShowResourceScanModal = (selectedResourceKind: NodeType, isTrivyInstalled: boolean): boolean => {
+    const fromWorkloadOrRollout =
+        getAppDetailsAggregator(selectedResourceKind) === AggregationKeys.Workloads ||
+        selectedResourceKind === NodeType.Rollout
+    return window._env_.ENABLE_RESOURCE_SCAN && isTrivyInstalled && fromWorkloadOrRollout
+}
+
+export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE => {
+    if (url.includes(APPROVAL_MODAL_TYPE.DEPLOYMENT.toLocaleLowerCase())) {
+        return APPROVAL_MODAL_TYPE.DEPLOYMENT
+    }
+
+    if (url.includes(APPROVAL_MODAL_TYPE.IMAGE_PROMOTION.toLocaleLowerCase())) {
+        return APPROVAL_MODAL_TYPE.IMAGE_PROMOTION
+    }
+
+    return APPROVAL_MODAL_TYPE.CONFIG
 }

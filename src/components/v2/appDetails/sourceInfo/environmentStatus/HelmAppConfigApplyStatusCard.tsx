@@ -1,6 +1,6 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import { HelmAppConfigApplyStatusCardType } from '../environment.type'
 
@@ -24,7 +24,7 @@ const HelmAppConfigApplyStatusCard = ({ releaseStatus, cardLoading }: HelmAppCon
                             content="Whether or not your last helm install was successful"
                         >
                             <div className="flex">
-                                <Question className="cursor icon-dim-16 ml-4" />
+                                <QuestionIcon className="cursor icon-dim-16 ml-4" />
                             </div>
                         </Tippy>
                     </div>

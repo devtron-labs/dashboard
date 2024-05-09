@@ -20,6 +20,7 @@ import {
     ACTION_STATE,
     DEPLOYMENT_WINDOW_TYPE,
     noop,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -746,7 +747,7 @@ export default function BulkCDTrigger({
                 )}
             </div>
             {showResistanceBox && (
-                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} />
+                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} modalType={MODAL_TYPE.DEPLOY} />
             )}
         </Drawer>
     )

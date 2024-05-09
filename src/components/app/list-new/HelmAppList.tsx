@@ -17,7 +17,7 @@ import { buildClusterVsNamespace, getDevtronInstalledHelmApps } from './AppListS
 import { Pagination, LazyImage, handleUTCTime } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
-import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
@@ -394,7 +394,7 @@ export default function HelmAppList({
                     <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
                     <Tippy className="default-tt" arrow placement="top" content={ENVIRONMENT_HEADER_TIPPY_CONTENT}>
                         <div className="flex">
-                            <HelpOutlineIcon className="icon-dim-20" />
+                            <ICHelpOutline className="icon-dim-20" />
                         </div>
                     </Tippy>
                 </div>
@@ -705,7 +705,13 @@ export default function HelmAppList({
             )
         )
     }
-
+    if (dataStateType == AppListViewType.ERROR) {
+        return (
+            <div className="dc__loading-wrapper">
+                <ErrorScreenManager code={errorResponseCode} />
+            </div>
+        )
+    }
     return (
         <>
             {dataStateType == AppListViewType.LOADING && (
@@ -721,11 +727,6 @@ export default function HelmAppList({
                         ))}
                     </div>
                 </>
-            )}
-            {dataStateType == AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
-                    <ErrorScreenManager code={errorResponseCode} />
-                </div>
             )}
             {dataStateType == AppListViewType.LIST && (
                 <div>

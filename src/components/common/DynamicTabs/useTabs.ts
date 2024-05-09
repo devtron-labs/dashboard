@@ -322,12 +322,16 @@ export function useTabs(persistanceKey: string) {
      * @param {string} url - New URL for the tab
      * @param {string} [dynamicTitle] - Dynamic title for the tab
      */
-    const updateTabUrl = (id: string, url: string, dynamicTitle?: string) => {
+    const updateTabUrl = (id: string, url: string, dynamicTitle?: string, retainSearchParams = false) => {
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
                 if (tab.id === id) {
-                    tab.url = url
-                    tab.dynamicTitle = dynamicTitle || ''
+                    if (retainSearchParams) {
+                        tab.url = `${url}?${tab.url.split('?')[1] || ''}`
+                    } else {
+                        tab.url = url
+                    }
+                    tab.dynamicTitle = dynamicTitle || tab.dynamicTitle
                 }
                 return tab
             })
