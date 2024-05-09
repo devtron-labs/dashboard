@@ -26,10 +26,10 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { ReactComponent as EventWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
+import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
-const EventWatcherRouter = importComponentFromFELibrary('EventWatcherRouter')
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 
 const NavigationList = [
     {
@@ -84,6 +84,16 @@ const NavigationList = [
         isAvailableInDesktop: true,
     },
     {
+        title: 'Resource Watcher',
+        dataTestId: 'click-on-resource-watcher',
+        type: 'link',
+        href: URLS.RESOURCE_WATCHER,
+        iconClass: 'nav-resource-watcher',
+        icon: ResourceWatcherIcon,
+        isAvailableInEA: true,
+        hideNav: !ResourceWatcherRouter,
+    },
+    {
         title: 'Chart Store',
         dataTestId: 'click-on-chart-store',
         type: 'link',
@@ -101,16 +111,6 @@ const NavigationList = [
         icon: SecurityIcon,
         moduleName: ModuleNameMap.SECURITY_CLAIR,
         moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
-    },
-    {
-        title: 'Event Watcher',
-        dataTestId: 'click-on-event-watcher',
-        type: 'link',
-        href: URLS.EVENT_WATCHER,
-        iconClass: 'nav-event-watcher',
-        icon: EventWatcherIcon,
-        isAvailableInEA: true,
-        hideNav: !EventWatcherRouter,
     },
     {
         title: 'Bulk Edit',

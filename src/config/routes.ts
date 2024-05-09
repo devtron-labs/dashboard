@@ -99,7 +99,7 @@ export const URLS = {
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
-    EVENT_WATCHER: '/event-watcher',
+    RESOURCE_WATCHER: '/resource-watcher',
 }
 
 export enum APP_COMPOSE_STAGE {
