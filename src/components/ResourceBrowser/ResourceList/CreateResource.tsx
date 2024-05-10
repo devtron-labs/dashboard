@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -13,6 +13,7 @@ import { createNewResource } from '../ResourceBrowser.service'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) => {
+    const { setRegisterShortcut } = useRegisterShortcut()
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
@@ -43,6 +44,14 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
             document.removeEventListener('click', outsideClickHandler)
         }
     }, [outsideClickHandler])
+
+    useEffect(() => {
+        setRegisterShortcut(false)
+
+        return () => {
+            setRegisterShortcut(true)
+        }
+    }, [])
 
     const onClose = (): void => {
         !loader && closePopup()
@@ -95,7 +104,7 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
         }
         return (
             <div className="dc__border-top flexbox dc__content-space right p-16">
-                <button className="flex cta h-36 lh-36" onClick={showCodeEditor}>
+                <button className="flex cta h-36 lh-36" data-testid="edit-yaml-button" onClick={showCodeEditor}>
                     <Edit className="icon-dim-16 mr-4" />
                     {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
                 </button>
@@ -162,12 +171,14 @@ export const CreateResource = ({ closePopup, clusterId }: CreateResourceType) =>
                             <div className="flexbox">
                                 {resource.error ? (
                                     <>
-                                        <Error className="icon-dim-16 mt-3 mr-8" />
+                                        <Error className="icon-dim-16 mt-3 mr-8" data-testid={`${CreateResourceStatus.failed}-status`}/>
                                         {CreateResourceStatus.failed}
                                     </>
                                 ) : (
                                     <>
-                                        <Success className="icon-dim-16 mt-3 mr-8" />
+                                        <Success className="icon-dim-16 mt-3 mr-8" data-testid={`${resource.isUpdate
+                                            ? CreateResourceStatus.updated
+                                            : CreateResourceStatus.created}-status`}/>
                                         {resource.isUpdate
                                             ? CreateResourceStatus.updated
                                             : CreateResourceStatus.created}

@@ -21,6 +21,8 @@ import {
     PipelineType,
     CustomInput,
     ConditionalWrap,
+    ButtonWithLoader,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
@@ -28,7 +30,6 @@ import Tippy from '@tippyjs/react'
 import { DELETE_ACTION, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
-    ButtonWithLoader,
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -78,7 +79,7 @@ import {
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
@@ -375,8 +376,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: this.allStrategies[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                    yamlStr: yamlJsParser.stringify(pipelineConfigFromRes.strategies[i].config, { indent: 2 }),
-                    selection: yamlJsParser.stringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
+                    yamlStr: YAMLStringify(pipelineConfigFromRes.strategies[i].config),
+                    selection: YAMLStringify(this.allStrategies[pipelineConfigFromRes.strategies[i].config], {
                         indent: 2,
                     }),
                     isCollapsed: true,
@@ -515,7 +516,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         selection['defaultConfig'] = this.allStrategies[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(this.allStrategies[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[selection.deploymentTemplate], { indent: 2 })
+        selection['yamlStr'] = YAMLStringify(this.allStrategies[selection.deploymentTemplate])
         selection['isCollapsed'] = true
 
         state.strategies = strategies
@@ -549,7 +550,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         newSelection['isCollapsed'] = true
         newSelection['default'] = true
         newSelection['jsonStr'] = JSON.stringify(this.allStrategies[value], null, 4)
-        newSelection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[value], { indent: 2 })
+        newSelection['yamlStr'] = YAMLStringify(this.allStrategies[value])
 
         const { pipelineConfig } = { ...this.state }
         pipelineConfig.strategies.push(newSelection)
@@ -696,7 +697,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
-                yamlStr = yamlJsParser.stringify(json, { indent: 2 })
+                yamlStr = YAMLStringify(json)
             } catch (error) {}
         } else {
             yamlStr = value
@@ -1087,7 +1088,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                        <Question />
+                        <ICHelpOutline />
                     </div>
                 </TippyCustomized>
             )
@@ -1197,7 +1198,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const codeEditorBody =
             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                 ? this.state.pipelineConfig[key].config
-                : yamlJsParser.stringify(config[key], { indent: 2 })
+                : YAMLStringify(config[key])
         const runInEnv =
             key === 'preStage'
                 ? this.state.pipelineConfig.runPreStageInEnv
@@ -1872,7 +1873,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             dataTestId="create-update-pipeline-button"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}
-                            loaderColor="white"
                         >
                             {this.props.match.params.cdPipelineId ? 'Update Pipeline' : 'Create Pipeline'}
                         </ButtonWithLoader>

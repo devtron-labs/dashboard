@@ -1,63 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/tabindex-no-positive */
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
 import {
     ServerErrors,
     showError,
-    RadioGroup,
-    RadioGroupItem,
-    TippyCustomized,
-    TippyTheme,
     CustomInput,
-    OptionType,
+    ResizableTextarea,
+    InfoIconTippy,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { FormType, GenerateTokenType } from './authorization.type'
+import { FormType, GenerateTokenType } from './apiToken.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
-import { createUserPermissionPayload, getDateInMilliseconds, isFormComplete } from './authorization.utils'
+import { getDateInMilliseconds } from './apiToken.utils'
 import GenerateActionButton from './GenerateActionButton'
 import { ValidationRules } from './validationRules'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as QuestionFilled } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import {
-    ActionTypes,
-    ChartGroupPermissionsFilter,
-    DirectPermissionsRoleFilter,
-    EntityTypes,
-} from '../shared/components/userGroups/userGroups.types'
-import GroupPermission from './GroupPermission'
-import { mainContext } from '../../../../components/common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
-import { DOCUMENTATION } from '../../../../config'
+import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
-import SuperAdminInfoBar from '../shared/components/SuperAdminInfoBar'
 import { createOrUpdateUser } from '../authorization.service'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../constants'
+import {
+    PermissionConfigurationForm,
+    PermissionConfigurationFormProvider,
+    usePermissionConfiguration,
+} from '../Shared/components/PermissionConfigurationForm'
+import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../utils'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
+import { importComponentFromFELibrary } from '../../../../components/common'
+
+const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
 export const renderQuestionwithTippy = () => {
     return (
-        <TippyCustomized
-            theme={TippyTheme.white}
-            className="w-300 h-100 fcv-5"
-            placement="right"
-            Icon={QuestionFilled}
+        <InfoIconTippy
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            showCloseButton
-            trigger="click"
-            interactive
             documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
             documentationLinkText="View Documentation"
-        >
-            <div className="icon-dim-20 fcn-9 ml-8 cursor">
-                <Question />
-            </div>
-        </TippyCustomized>
+            iconClassName="icon-dim-20 fcn-9 ml-4"
+        />
     )
 }
 
@@ -73,9 +59,8 @@ const CreateAPIToken = ({
 }: GenerateTokenType) => {
     const history = useHistory()
     const match = useRouteMatch()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
-    const [adminPermission, setAdminPermission] = useState<PermissionType>(PermissionType.SUPER_ADMIN)
     const [formData, setFormData] = useState<FormType>({
         name: '',
         description: '',
@@ -83,25 +68,19 @@ const CreateAPIToken = ({
     })
     const [formDataErrorObj, setFormDataErrorObj] = useState<{
         invalidName: boolean
-        invalidaNameMessage: string
+        invalidNameMessage: string
         invalidCustomDate: boolean
         invalidDescription: boolean
         invalidDescriptionMessage: string
     }>({
         invalidName: false,
-        invalidaNameMessage: '',
+        invalidNameMessage: '',
         invalidCustomDate: false,
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const [userGroups, setUserGroups] = useState<OptionType[]>([])
-    const [directPermission, setDirectPermission] = useState<DirectPermissionsRoleFilter[]>([])
-    const [chartPermission, setChartPermission] = useState<ChartGroupPermissionsFilter>({
-        entity: EntityTypes.CHART_GROUP,
-        action: ActionTypes.VIEW,
-        entityName: [],
-    })
-    const [k8sPermission, setK8sPermission] = useState<any[]>([])
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+        usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
 
@@ -126,7 +105,7 @@ const CreateAPIToken = ({
             setFormDataErrorObj({
                 ...formDataErrorObj,
                 invalidName: !nameValidation.isValid,
-                invalidaNameMessage: nameValidation.message,
+                invalidNameMessage: nameValidation.message,
             })
         } else if (event.target.name === 'description') {
             const descriptionValidation = validationRules.description(event.target.value)
@@ -168,8 +147,7 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!isFormComplete(directPermission, setDirectPermission)) {
-            toast.error('Some required fields are missing')
+        if (!isDirectPermissionFormComplete(directPermission, setDirectPermission)) {
             return
         }
 
@@ -179,12 +157,12 @@ const CreateAPIToken = ({
         if (!nameValidation.isValid || noCustomDate || !descriptionValidation.isValid) {
             setFormDataErrorObj({
                 invalidName: !nameValidation.isValid,
-                invalidaNameMessage: nameValidation.message,
+                invalidNameMessage: nameValidation.message,
                 invalidCustomDate: noCustomDate,
                 invalidDescription: !descriptionValidation.isValid,
                 invalidDescriptionMessage: descriptionValidation.message,
             })
-            toast.error('Some required fields are missing')
+            toast.error(REQUIRED_FIELDS_MISSING)
 
             return
         }
@@ -201,16 +179,17 @@ const CreateAPIToken = ({
             const { result } = await createGeneratedAPIToken(payload)
 
             if (result) {
-                const userPermissionPayload = createUserPermissionPayload(
-                    result.userId,
-                    result.userIdentifier,
-                    serverMode,
+                const userPermissionPayload = createUserPermissionPayload({
+                    id: result.userId,
+                    userIdentifier: result.userIdentifier,
                     userGroups,
+                    serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
-                    adminPermission === PermissionType.SUPER_ADMIN,
-                )
+                    permissionType,
+                    ...getDefaultUserStatusAndTimeout(),
+                })
 
                 const { result: userPermissionResponse } = await createOrUpdateUser(userPermissionPayload)
                 if (userPermissionResponse) {
@@ -226,17 +205,13 @@ const CreateAPIToken = ({
                     setFormDataErrorObj({
                         ...formDataErrorObj,
                         invalidName: true,
-                        invalidaNameMessage: _invalidNameErr.userMessage,
+                        invalidNameMessage: _invalidNameErr.userMessage,
                     })
                 }
             }
         } finally {
             setLoader(false)
         }
-    }
-
-    const handlePermissionType = (e) => {
-        setAdminPermission(e.target.value)
     }
 
     return (
@@ -253,7 +228,7 @@ const CreateAPIToken = ({
                         {renderQuestionwithTippy()}
                     </div>
                 </div>
-                <div className="flexbox-col dc__gap-12">
+                <div className="flexbox-col dc__gap-16">
                     <CustomInput
                         tabIndex={1}
                         placeholder="Name"
@@ -261,20 +236,20 @@ const CreateAPIToken = ({
                         name="name"
                         value={formData.name}
                         onChange={onChangeHandler}
-                        error={formDataErrorObj.invalidName && formDataErrorObj.invalidaNameMessage}
+                        error={formDataErrorObj.invalidName && formDataErrorObj.invalidNameMessage}
                         label="Name"
                         isRequiredField
                     />
                     <label className="form__row">
                         <span className="form__label">Description</span>
-                        <textarea
-                            tabIndex={1}
-                            placeholder="Enter a description to remember where you have used this token"
-                            data-testid="api-token-description-textbox"
-                            className="form__textarea"
-                            value={formData.description}
+                        <ResizableTextarea
                             name="description"
+                            maxHeight={300}
+                            className="w-100"
+                            value={formData.description}
                             onChange={onChangeHandler}
+                            data-testid="api-token-description-textbox"
+                            placeholder="Enter a description to remember where you have used this token"
                         />
                         {formDataErrorObj.invalidDescription && (
                             <span className="form__error">
@@ -300,49 +275,8 @@ const CreateAPIToken = ({
                             </span>
                         )}
                     </label>
-                    <div className="dc__border-top-n1" />
-                    <div className="flex left">
-                        <RadioGroup
-                            className="permission-type__radio-group"
-                            value={adminPermission}
-                            name="permission-type"
-                            onChange={handlePermissionType}
-                        >
-                            {Object.entries(PERMISSION_TYPE_LABEL_MAP).map(([value, label]) => (
-                                <RadioGroupItem
-                                    dataTestId={`${
-                                        value === PermissionType.SPECIFIC ? 'specific-user' : 'super-admin'
-                                    }-permission-radio-button`}
-                                    value={value}
-                                    key={value}
-                                >
-                                    <span
-                                        className={`dc__no-text-transform ${
-                                            adminPermission === value ? 'fw-6' : 'fw-4'
-                                        }`}
-                                    >
-                                        {label}
-                                    </span>
-                                </RadioGroupItem>
-                            ))}
-                        </RadioGroup>
-                    </div>
-
-                    {adminPermission === PermissionType.SPECIFIC ? (
-                        <GroupPermission
-                            userData={null}
-                            userGroups={userGroups}
-                            setUserGroups={setUserGroups}
-                            directPermission={directPermission}
-                            setDirectPermission={setDirectPermission}
-                            chartPermission={chartPermission}
-                            setChartPermission={setChartPermission}
-                            setK8sPermission={setK8sPermission}
-                            k8sPermission={k8sPermission}
-                        />
-                    ) : (
-                        <SuperAdminInfoBar />
-                    )}
+                    <div className="dc__border-top" />
+                    <PermissionConfigurationForm showUserPermissionGroupSelector />
                 </div>
             </div>
             <GenerateActionButton
@@ -366,4 +300,10 @@ const CreateAPIToken = ({
     )
 }
 
-export default CreateAPIToken
+const CreateAPITokenContainer = (props: GenerateTokenType) => (
+    <PermissionConfigurationFormProvider data={null} showStatus={showStatus}>
+        <CreateAPIToken {...props} />
+    </PermissionConfigurationFormProvider>
+)
+
+export default CreateAPITokenContainer

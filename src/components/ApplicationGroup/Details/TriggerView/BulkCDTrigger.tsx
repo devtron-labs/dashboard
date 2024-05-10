@@ -15,6 +15,12 @@ import {
     FilterStates,
     useSuperAdmin,
     GenericEmptyState,
+    DeploymentWindowProfileMetaData,
+    ConditionalWrap,
+    ACTION_STATE,
+    DEPLOYMENT_WINDOW_TYPE,
+    noop,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -35,7 +41,20 @@ import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { importComponentFromFELibrary } from '../../../common'
 
+const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
+const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
+const processDeploymentWindowMetadata = importComponentFromFELibrary(
+    'processDeploymentWindowMetadata',
+    null,
+    'function',
+)
+const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'getDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -51,7 +70,7 @@ export default function BulkCDTrigger({
     setLoading,
     isVirtualEnv,
     uniqueReleaseTags,
-    httpProtocol
+    httpProtocol,
 }: BulkCDTriggerType) {
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -64,6 +83,11 @@ export default function BulkCDTrigger({
     const [selectedImages, setSelectedImages] = useState<Record<number, string>>({})
     // This signifies any action that needs to be propagated to the child
     const [selectedImageFromBulk, setSelectedImageFromBulk] = useState<string>(null)
+    const [appDeploymentWindowMap, setAppDeploymentWindowMap] = useState<
+        Record<number, DeploymentWindowProfileMetaData>
+    >({})
+    const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
+    const [showResistanceBox, setShowResistanceBox] = useState(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -95,6 +119,34 @@ export default function BulkCDTrigger({
         label: 'latest',
         value: 'latest',
     })
+
+    const getDeploymentWindowData = async (_cdMaterialResponse) => {
+        const currentEnv = appList[0].envId
+        const appEnvMap = []
+        let _isPartialActionAllowed = false
+        for (const appDetails of appList) {
+            if (_cdMaterialResponse[appDetails.appId]) {
+                appEnvMap.push({ appId: appDetails.appId, envId: appDetails.envId })
+            }
+        }
+        const { result } = await getDeploymentWindowStateAppGroup(appEnvMap)
+        const _appDeploymentWindowMap = {}
+        result?.appData?.forEach((data) => {
+            _appDeploymentWindowMap[data.appId] = processDeploymentWindowMetadata(
+                data.deploymentProfileList,
+                currentEnv,
+            )
+            if (!_isPartialActionAllowed) {
+                _isPartialActionAllowed =
+                    _appDeploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
+                    !_appDeploymentWindowMap[data.appId].isActive
+                        ? _appDeploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
+                        : false
+            }
+        })
+        setIsPartialActionAllowed(_isPartialActionAllowed)
+        setAppDeploymentWindowMap(_appDeploymentWindowMap)
+    }
 
     const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
         if (response.status === 'fulfilled') {
@@ -200,9 +252,12 @@ export default function BulkCDTrigger({
             }
         }
 
-        ApiQueuingWithBatch(_cdMaterialFunctionsList,httpProtocol)
-            .then((responses:any[]) => {
+        ApiQueuingWithBatch(_cdMaterialFunctionsList, httpProtocol)
+            .then(async (responses: any[]) => {
                 responses.forEach(resolveMaterialData(_cdMaterialResponse, _unauthorizedAppList))
+                if (getDeploymentWindowStateAppGroup) {
+                    await getDeploymentWindowData(_cdMaterialResponse)
+                }
                 updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
@@ -539,22 +594,28 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            {(app.warningMessage || tagNotFoundWarningsMap.has(app.appId)) && (
-                                <span
-                                    className={`flex left top fw-4 m-0 fs-12 ${
-                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
-                                    }`}
-                                >
-                                    <Error
-                                        className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
-                                            tagNotFoundWarningsMap.has(app.appId)
-                                                ? 'alert-icon-r5-imp'
-                                                : 'warning-icon-y7'
+                            {app.warningMessage ||
+                                tagNotFoundWarningsMap.has(app.appId) ||
+                                (appDeploymentWindowMap[app.appId]?.warningMessage && (
+                                    <span
+                                        className={`flex left top fw-4 m-0 fs-12 ${
+                                            tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
                                         }`}
-                                    />
-                                    <p className="m-0">{app.warningMessage || tagNotFoundWarningsMap.get(app.appId)}</p>
-                                </span>
-                            )}
+                                    >
+                                        <Error
+                                            className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
+                                                tagNotFoundWarningsMap.has(app.appId)
+                                                    ? 'alert-icon-r5-imp'
+                                                    : 'warning-icon-y7'
+                                            }`}
+                                        />
+                                        <p className="m-0">
+                                            {app.warningMessage ||
+                                                appDeploymentWindowMap[app.appId].warningMessage ||
+                                                tagNotFoundWarningsMap.get(app.appId)}
+                                        </p>
+                                    </span>
+                                ))}
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
@@ -569,42 +630,64 @@ export default function BulkCDTrigger({
                         renderEmptyView()
                     ) : (
                         // TODO: Handle isSuperAdmin prop
-                        <CDMaterial
-                            // TODO: Handle this
-                            triggerDeploy={onClickStartDeploy}
-                            key={selectedApp.appId}
-                            materialType={MATERIAL_TYPE.inputMaterialList}
-                            location={location}
-                            match={match}
-                            appId={selectedApp.appId}
-                            envId={selectedApp.envId}
-                            pipelineId={+selectedApp.cdPipelineId}
-                            stageType={selectedApp.stageType}
-                            isFromBulkCD
-                            envName={selectedApp.envName}
-                            closeCDModal={closeBulkCDModal}
-                            triggerType={selectedApp.triggerType}
-                            history={history}
-                            isLoading={isLoading}
-                            parentPipelineId={selectedApp.parentPipelineId}
-                            parentPipelineType={selectedApp.parentPipelineType}
-                            parentEnvironmentName={selectedApp.parentEnvironmentName}
-                            ciPipelineId={_currentApp.ciPipelineId}
-                            updateCurrentAppMaterial={updateCurrentAppMaterial}
-                            updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
-                            selectedImageFromBulk={selectedImageFromBulk}
-                            isSuperAdmin={isSuperAdmin}
-                        />
+
+                        <>
+                            {DeploymentWindowInfoBar &&
+                                appDeploymentWindowMap[selectedApp.appId] &&
+                                appDeploymentWindowMap[selectedApp.appId].warningMessage && (
+                                    <DeploymentWindowInfoBar
+                                        excludedUserEmails={
+                                            appDeploymentWindowMap[selectedApp.appId].excludedUserEmails
+                                        }
+                                        userActionState={appDeploymentWindowMap[selectedApp.appId].userActionState}
+                                        warningMessage={appDeploymentWindowMap[selectedApp.appId].warningMessage}
+                                    />
+                                )}
+                            <CDMaterial
+                                // TODO: Handle this
+                                triggerDeploy={onClickStartDeploy}
+                                key={selectedApp.appId}
+                                materialType={MATERIAL_TYPE.inputMaterialList}
+                                location={location}
+                                match={match}
+                                appId={selectedApp.appId}
+                                envId={selectedApp.envId}
+                                pipelineId={+selectedApp.cdPipelineId}
+                                stageType={selectedApp.stageType}
+                                isFromBulkCD
+                                envName={selectedApp.envName}
+                                closeCDModal={closeBulkCDModal}
+                                triggerType={selectedApp.triggerType}
+                                history={history}
+                                isLoading={isLoading}
+                                parentPipelineId={selectedApp.parentPipelineId}
+                                parentPipelineType={selectedApp.parentPipelineType}
+                                parentEnvironmentName={selectedApp.parentEnvironmentName}
+                                ciPipelineId={_currentApp.ciPipelineId}
+                                updateCurrentAppMaterial={updateCurrentAppMaterial}
+                                updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
+                                selectedImageFromBulk={selectedImageFromBulk}
+                                isSuperAdmin={isSuperAdmin}
+                            />
+                        </>
                     )}
                 </div>
             </div>
         )
     }
+    const hideResistanceBox = (e?): void => {
+        setShowResistanceBox(false)
+    }
 
     const onClickStartDeploy = (e): void => {
-        isBulkDeploymentTriggered.current = true
-        stopPropagation(e)
-        onClickTriggerBulkCD()
+        if (isPartialActionAllowed && BulkDeployResistanceTippy && !showResistanceBox) {
+            setShowResistanceBox(true)
+        } else {
+            isBulkDeploymentTriggered.current = true
+            stopPropagation(e)
+            onClickTriggerBulkCD()
+            setShowResistanceBox(false)
+        }
     }
 
     const isDeployDisabled = (): boolean => {
@@ -616,26 +699,28 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button
-                    className="cta flex h-36"
-                    data-testid="deploy-button"
-                    onClick={onClickStartDeploy}
-                    disabled={isDeployDisabled()}
-                    type="button"
-                >
-                    {isLoading ? (
-                        <Progressing />
-                    ) : (
-                        <>
-                            {stage === DeploymentNodeType.CD ? (
-                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                            ) : (
-                                <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
-                            )}
-                            {BUTTON_TITLE[stage]}
-                        </>
-                    )}
-                </button>
+                <div className="dc__position-rel tippy-over">
+                    <button
+                        className="cta flex h-36"
+                        data-testid="deploy-button"
+                        onClick={onClickStartDeploy}
+                        disabled={isDeployDisabled()}
+                        type="button"
+                    >
+                        {isLoading ? (
+                            <Progressing />
+                        ) : (
+                            <>
+                                {stage === DeploymentNodeType.CD ? (
+                                    <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+                                ) : (
+                                    <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                                )}
+                                {BUTTON_TITLE[stage]}
+                            </>
+                        )}
+                    </button>
+                </div>
             </div>
         )
     }
@@ -661,6 +746,9 @@ export default function BulkCDTrigger({
                     </>
                 )}
             </div>
+            {showResistanceBox && (
+                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} modalType={MODAL_TYPE.DEPLOY} />
+            )}
         </Drawer>
     )
 }

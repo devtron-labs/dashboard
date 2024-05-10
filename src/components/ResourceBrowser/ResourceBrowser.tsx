@@ -1,61 +1,33 @@
 import React, { useMemo } from 'react'
-import { NavLink, useHistory } from 'react-router-dom'
-import { showError, getUserRole, DevtronProgressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import PageHeader from '../common/header/PageHeader'
+import { showError, getUserRole, DevtronProgressing, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '../common'
-import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from './Constants'
-import { URLS } from '../../config'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
-import { getClusterList } from '../ClusterNodes/clusterNodes.service'
+import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { ClusterDetail } from '../ClusterNodes/types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import './ResourceBrowser.scss'
+import { addClusterButton } from './PageHeader.buttons'
 
-const addClusterButton = (): JSX.Element => {
-    /* funcs returning JSX should be memoized if declared inside react func body
-     * thus declaring it outside to avoid using useCallback */
-    return (
-        <>
-            <NavLink
-                className="flex dc__no-decor cta small h-28 pl-8 pr-10 pt-5 pb-5 lh-n fcb-5 mr-16"
-                to={URLS.GLOBAL_CONFIG_CLUSTER}
-            >
-                <Add data-testid="add_cluster_button" className="icon-dim-16 mr-4 fcb-5 dc__vertical-align-middle" />
-                Add cluster
-            </NavLink>
-            <span className="dc__divider" />
-        </>
-    )
-}
-
-const ResourceBrowser: React.FC<Record<string, never>> = () => {
-    const { push } = useHistory()
-
-    /* this list is to be used by ClusterSelectionList to refresh on demand;
-     * thus not immediately fetching results, it will only run when reloadClusterList is called */
-    const [clusterListLoading, clusterList, clusterListError, reloadClusterList] = useAsync(getClusterList, [], false)
+const ResourceBrowser: React.FC = () => {
+    const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =
+        useAsync(getClusterList)
     const [initialLoading, data, error] = useAsync(() =>
-        Promise.all([getClusterList(), window._env_.K8S_CLIENT ? null : getUserRole()]),
+        Promise.all([getClusterListMin(), window._env_?.K8S_CLIENT ? null : getUserRole()]),
     )
     /* transpose the data */
-    const [clusterListData, userRoleData] = data || []
+    const [clusterListMinData = null, userRoleData = null] = data || []
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
             sortObjectArrayAlphabetically(
-                clusterList?.result || clusterListData?.result || [],
+                detailClusterList?.result || clusterListMinData?.result || [],
                 'name',
             ) as ClusterDetail[],
-        [clusterListLoading, initialLoading],
+        [detailClusterList, clusterListMinData],
     )
 
-    const onChangeCluster = (selected): void => {
-        const url = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-        push(url)
-    }
+    const isSuperAdmin = userRoleData?.result.superAdmin || false
 
-    if (error || clusterListError) {
-        showError(error || clusterListError)
+    if (error || detailClusterListError) {
+        showError(error || detailClusterListError)
     }
 
     return (
@@ -72,10 +44,9 @@ const ResourceBrowser: React.FC<Record<string, never>> = () => {
             ) : (
                 <ClusterSelectionList
                     clusterOptions={sortedClusterList}
-                    onChangeCluster={onChangeCluster}
-                    isSuperAdmin={userRoleData?.result.superAdmin || false}
-                    clusterListLoader={clusterListLoading}
-                    refreshData={reloadClusterList}
+                    isSuperAdmin={isSuperAdmin}
+                    clusterListLoader={detailClusterListLoading}
+                    refreshData={reloadDetailClusterList}
                 />
             )}
         </div>

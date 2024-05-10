@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { showError, GenericEmptyState, ImageTagsContainer, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    GenericEmptyState,
+    ImageTagsContainer,
+    ClipboardButton,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
-import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
-import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
+import { ArtifactType, CIListItemType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -92,7 +95,7 @@ export default function Artifacts({
                     image={noartifact}
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
-                    <Question className="icon-dim-20 fcv-5" />
+                    <ICHelpOutline className="icon-dim-20 fcv-5" />
                     <span className="fs-13 fw-4 mr-8 ml-8">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
                     </span>
@@ -160,14 +163,16 @@ export default function Artifacts({
                 >
                     <div className="flex column left hover-trigger">
                         <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
-                            <CopyTippyWithText
-                                copyText={extractImage(artifact)}
-                                copied={copied}
-                                setCopied={setCopied}
-                            />
+                            {extractImage(artifact)}
+                            <div className="pl-4">
+                                <ClipboardButton content={extractImage(artifact)} />
+                            </div>
                         </div>
                         <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
-                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            {artifact}
+                            <div className="pl-4">
+                                <ClipboardButton content={artifact} />
+                            </div>
                         </div>
                     </div>
                 </CIListItem>
@@ -192,33 +197,6 @@ export default function Artifacts({
                 </CIListItem>
             )}
         </div>
-    )
-}
-
-export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
-    const onClickCopyToClipboard = (e): void => {
-        copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
-    }
-    return (
-        <>
-            {copyText}
-            <Tippy
-                className="default-tt"
-                arrow={false}
-                placement="bottom"
-                content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                trigger="mouseenter click"
-                interactive
-            >
-                <div className="flex">
-                    <CopyIcon
-                        data-copy-text={copyText}
-                        className="pointer ml-6 icon-dim-16"
-                        onClick={onClickCopyToClipboard}
-                    />
-                </div>
-            </Tippy>
-        </>
     )
 }
 
@@ -247,12 +225,15 @@ export const CIListItem = ({
     appliedFilters,
     appliedFiltersTimestamp,
     isSuperAdmin,
+    promotionApprovalMetadata,
+    selectedEnvironmentName,
 }: CIListItemType) => {
     if (!CIListHeader) {
         CIListHeader = importComponentFromFELibrary('CIListHeader')
     }
 
-    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length
+    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length || !!promotionApprovalMetadata?.promotedFromType
+
     return (
         <>
             {type === 'deployed-artifact' && (
@@ -270,6 +251,8 @@ export const CIListItem = ({
                     triggeredBy={triggeredBy}
                     appliedFilters={appliedFilters ?? []}
                     appliedFiltersTimestamp={appliedFiltersTimestamp ?? ''}
+                    promotionApprovalMetadata={promotionApprovalMetadata}
+                    selectedEnvironmentName={selectedEnvironmentName}
                 />
             )}
 

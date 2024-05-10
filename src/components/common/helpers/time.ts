@@ -1,5 +1,5 @@
+import { DATE_TIME_FORMAT_STRING, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { ZERO_TIME_STRING } from '../../../config'
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
     let timestamp = ''
@@ -12,7 +12,7 @@ export function ISTTimeModal(ts: string, isRelativeTime = false) {
                     timestamp = date.fromNow()
                 }
             } else {
-                timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
+                timestamp = date.format(DATE_TIME_FORMAT_STRING)
             }
         }
     } catch (error) {
@@ -29,7 +29,7 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
             if (isRelativeTime) {
                 timestamp = date.fromNow()
             } else {
-                timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
+                timestamp = date.format(DATE_TIME_FORMAT_STRING)
             }
         }
     } catch (error) {

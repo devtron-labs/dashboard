@@ -4,6 +4,9 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
+import { useTabs } from '../../common/DynamicTabs/useTabs'
+import { ApiResourceGroupType } from '../../ResourceBrowser/Types'
+import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -108,8 +111,13 @@ export enum NodeType {
 
 // export type NodeType = keyof typeof NodeType;
 
+/**
+ * 
+ * @param nodeType 
+ * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
+ */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
-    switch (nodeType.toLowerCase()) {
+    switch (nodeType?.toLowerCase()) {
         case NodeType.DaemonSet.toLowerCase():
         case NodeType.Deployment.toLowerCase():
         case NodeType.Pod.toLowerCase():
@@ -183,7 +191,7 @@ export interface AppDetails {
     projectName?: string
     appType?: AppType
     helmReleaseStatus?: HelmReleaseStatus
-    clusterId?: number
+    clusterId: number
     notes?: string
     deploymentAppType?: DeploymentAppTypes
     ipsAccessProvided?: boolean
@@ -223,8 +231,7 @@ export interface ResourceTree {
     nodes: Array<Node>
     podMetadata: Array<PodMetaData>
     status: string
-    resourcesSyncResult?: Record<string,string>
-
+    resourcesSyncResult?: Record<string, string>
 }
 
 export interface PodMetaData {
@@ -410,7 +417,8 @@ export interface NodeDetailPropsType extends LogSearchTermType {
         iconPath?: string,
     ) => boolean
     selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: (id: string) => string
+    k8SObjectMapRaw?: ApiResourceGroupType[]
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
     isExternalApp?: boolean
 }
 
@@ -503,9 +511,25 @@ export interface ResourceInfoActionPropsType {
     selectedResource?: SelectedResourceType
 }
 
+export interface ManifestViewRefType {
+    data: {
+        error: boolean
+        secretViewAccess: boolean
+        desiredManifest: string
+        manifest: string
+        activeManifestEditorData: string
+        modifiedManifest: string
+        isEditmode: boolean
+        activeTab: (typeof ManifestTabJSON)[number]['name']
+    }
+    id: string
+}
+
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
+    manifestViewRef: MutableRefObject<ManifestViewRefType>
+    getComponentKey: () => string
 }
 
 export interface NodeTreeDetailTabProps {
@@ -514,6 +538,7 @@ export interface NodeTreeDetailTabProps {
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
     isExternalApp?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface K8ResourceComponentProps {
@@ -522,8 +547,10 @@ export interface K8ResourceComponentProps {
     handleFocusTabs: () => void
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
-    isExternalApp?: boolean
     isDevtronApp?: boolean
+    clusterId?: number
+    isDeploymentBlocked?: boolean
+    isExternalApp: boolean
 }
 
 export interface NodeComponentProps {
@@ -531,7 +558,9 @@ export interface NodeComponentProps {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
-    isExternalApp?: boolean
+    clusterId?: number
+    isDeploymentBlocked?: boolean
+    isExternalApp: boolean
 }
 export interface AppDetailsComponentType {
     externalLinks?: ExternalLink[]
@@ -540,4 +569,10 @@ export interface AppDetailsComponentType {
     _init?: () => void
     loadingDetails: boolean
     loadingResourceTree: boolean
+}
+
+export interface NodeDeleteComponentType {
+    nodeDetails: Node
+    appDetails: AppDetails
+    isDeploymentBlocked: boolean
 }

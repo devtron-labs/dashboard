@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import { getElapsedTime } from '../../../../common'
+import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -17,16 +16,18 @@ import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
-import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
+
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 const NodeComponent = ({
     handleFocusTabs,
     externalLinks,
     monitoringTools,
     isDevtronApp,
+    clusterId,
+    isDeploymentBlocked,
     isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
@@ -34,13 +35,11 @@ const NodeComponent = ({
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
-    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
-    const [copiedPortName, setCopiedPortName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ nodeType: NodeType; resourceName: string }>()
+    const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
     const podMetaData = IndexStore.getPodMetaData()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
@@ -79,13 +78,6 @@ const NodeComponent = ({
             setContainerLevelExternalLinks([])
         }
     }, [externalLinks])
-
-    useEffect(() => {
-        if (!copiedNodeName) {
-            return
-        }
-        setTimeout(() => setCopiedNodeName(''), 2000)
-    }, [copiedNodeName])
 
     useEffect(() => {
         if (params.nodeType) {
@@ -146,16 +138,6 @@ const NodeComponent = ({
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
     }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
-
-    const toggleClipBoard = (event: React.MouseEvent, nodeName: string) => {
-        event.stopPropagation()
-        copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
-    }
-
-    const toggleClipBoardPort = (event: React.MouseEvent, node: string) => {
-        event.stopPropagation()
-        copyToClipboard(node, () => setCopiedPortName(node))
-    }
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -218,17 +200,15 @@ const NodeComponent = ({
             return (
                 <>
                     {portList.map((val, idx) => {
+                        const text = `${node.name}.${node.namespace}:${val}`
                         if (idx > 0) {
                             return (
                                 <div className="flex left cn-9 m-0 dc__no-decore">
                                     <div className="" key={node.name}>
-                                        {node.name}.{node.namespace}:{val}
-                                        <Clipboard
-                                            className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
-                                            onClick={(event) => {
-                                                toggleClipBoardPort(event, `${node.name}.${node.namespace}:${val}`)
-                                            }}
-                                        />
+                                        {text}
+                                    </div>
+                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                        <ClipboardButton content={text} />
                                     </div>
                                 </div>
                             )
@@ -239,20 +219,14 @@ const NodeComponent = ({
         }
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
+                const text = `${node.name}.${node.namespace}:${node.port[0]}`
                 return (
                     <>
                         <div>
-                            <span>
-                                {node.name}.{node.namespace}:{node.port[0]}
-                            </span>
+                            <span>{text}</span>
                         </div>
-                        <span>
-                            <Clipboard
-                                className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                                onClick={(event) => {
-                                    toggleClipBoardPort(event, `${node.name}.${node.namespace}:${node.port[0]}`)
-                                }}
-                            />
+                        <span className="pl-4">
+                            <ClipboardButton content={text} />
                         </span>
                         <TippyCustomized
                             hideHeading
@@ -265,7 +239,7 @@ const NodeComponent = ({
                             additionalContent={additionalTippyContent(node)}
                             interactive
                         >
-                            <div>
+                            <div className="pl-4">
                                 <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
                                     +{node.port.length - 1} more
                                 </span>
@@ -281,32 +255,6 @@ const NodeComponent = ({
         }
 
         let _currentNodeHeader = ''
-        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
-            return copiedNodeName === nodeName ? (
-                <Tippy
-                    className="default-tt"
-                    hideOnClick={false}
-                    arrow={false}
-                    placement="bottom"
-                    content={COPIED_MESSAGE}
-                    duration={[100, 200]}
-                    trigger="mouseenter click"
-                >
-                    <span>
-                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
-                    </span>
-                </Tippy>
-            ) : (
-                <span>
-                    <Clipboard
-                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                        onClick={(event) => {
-                            toggleClipBoard(event, nodeName.split(' ').join(''))
-                        }}
-                    />
-                </span>
-            )
-        }
 
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : ${node.port}`
@@ -384,7 +332,7 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name)}
+                                                <div className="pl-8 pr-8"><ClipboardButton content={node.name} /></div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -455,7 +403,11 @@ const NodeComponent = ({
                             node.kind !== 'EndpointSlice' && (
                                 <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
                                     {portNumberPlaceHolder(node)}
-                                    {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
+                                    <div className="pl-8">
+                                        {node.port > 1 ? (
+                                            <ClipboardButton content={nodeName.split(' ').join('')} />
+                                        ) : null}
+                                    </div>
                                 </div>
                             )}
 
@@ -468,6 +420,9 @@ const NodeComponent = ({
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
                             <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
+                                {Number(getPodRestartCount(node)) > 0 && PodRestartIcon && (
+                                    <PodRestartIcon clusterId={clusterId} name={node.name} namespace={node.namespace} />
+                                )}
                             </div>
                         )}
 
@@ -500,10 +455,13 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' &&
-                            !isExternalApp && (
+                            node?.kind !== 'EndpointSlice' && !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                    <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
+                                    <NodeDeleteComponent
+                                        nodeDetails={node}
+                                        appDetails={appDetails}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                    />
                                 </div>
                             )}
                     </div>
@@ -564,6 +522,7 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
+            {PodRestart && <PodRestart />}
         </>
     )
 }

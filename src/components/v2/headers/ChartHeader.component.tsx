@@ -6,8 +6,8 @@ import { URLS, AppListConstants } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import PageHeader from '../../common/header/PageHeader'
 import { ChartHeaderComponentType } from './appHeader.type'
+import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
     const match = useRouteMatch()

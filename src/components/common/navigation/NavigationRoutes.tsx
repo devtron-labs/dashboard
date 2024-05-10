@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
+import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
     getLoginInfo,
@@ -7,6 +7,8 @@ import {
     Reload,
     useAsync,
     DevtronProgressing,
+    useMainContext,
+    MainContextProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -46,16 +48,11 @@ const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
+const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowser'))
-const ResourceBrowserList = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
-
-export const mainContext = createContext<MainContext>(null)
-
-export const useMainContext = () => useContext(mainContext)
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 
@@ -264,7 +261,7 @@ export default function NavigationRoutes() {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
                 if (
-                    location.pathname !== parsedTabsData.key &&
+                    location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
                     localStorage.removeItem('persisted-tabs-data')
@@ -320,7 +317,7 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
     return (
-        <mainContext.Provider
+        <MainContextProvider
             value={{
                 serverMode,
                 setServerMode,
@@ -365,12 +362,7 @@ export default function NavigationRoutes() {
                         >
                             <ErrorBoundary>
                                 <Switch>
-                                    <Route
-                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId/:namespace?/:nodeType?/:group?/:node?`}
-                                    >
-                                        <ResourceBrowserList />
-                                    </Route>
-                                    <Route path={URLS.RESOURCE_BROWSER} exact>
+                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
@@ -446,16 +438,18 @@ export default function NavigationRoutes() {
                     </div>
                 )}
             </main>
-        </mainContext.Provider>
+        </MainContextProvider>
     )
 }
 
 export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentAppName, setCurrentAppName] = useState<string>('')
+
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
@@ -495,34 +489,29 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
 
 export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                <Switch>
-                    <Route
-                        path={`${path}/:appType`}
-                        render={() => (
-                            <NewAppList
-                                isSuperAdmin={isSuperAdmin}
-                                isArgoInstalled={isArgoInstalled}
-                                appListCount={appListCount}
-                            />
-                        )}
-                    />
-                    <Route exact path="">
-                        <RedirectToAppList />
-                    </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+            <Switch>
+                <Route
+                    path={`${path}/:appType`}
+                    render={() => (
+                        <NewAppList
+                            isSuperAdmin={isSuperAdmin}
+                            isArgoInstalled={isArgoInstalled}
+                            appListCount={appListCount}
                         />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
+                    )}
+                />
+                <Route exact path="">
+                    <RedirectToAppList />
+                </Route>
+                <Route>
+                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                </Route>
+            </Switch>
         </ErrorBoundary>
     )
 }
@@ -547,7 +536,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
 
 export const RedirectToAppList = () => {
     const { replace } = useHistory()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     useEffect(() => {
         const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {

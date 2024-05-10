@@ -17,6 +17,7 @@ const NodeTreeDetailTab = ({
     monitoringTools,
     isDevtronApp = false,
     isExternalApp,
+    isDeploymentBlocked,
 }: NodeTreeDetailTabProps) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path, url } = useRouteMatch()
@@ -59,6 +60,8 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                        clusterId={appDetails.clusterId}
                                         isExternalApp={isExternalApp}
                                     />
                                 )
@@ -87,6 +90,8 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        clusterId={appDetails.clusterId}
+                                        isDeploymentBlocked={isDeploymentBlocked}
                                         isExternalApp={isExternalApp}
                                     />
                                 )
@@ -103,6 +108,9 @@ const NodeTreeDetailTab = ({
                                         externalLinks={externalLinks}
                                         monitoringTools={monitoringTools}
                                         isDevtronApp={isDevtronApp}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                        clusterId={appDetails.clusterId}
+                                        isExternalApp={isExternalApp}
                                     />
                                 )
                             }}

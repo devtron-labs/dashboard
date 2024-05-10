@@ -24,8 +24,8 @@ import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -766,7 +766,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     iconClass="fcv-5"
                                     className="bcn-0 deafult-tt"
                                     placement="bottom"
-                                    Icon={QuestionFilled}
+                                    Icon={Help}
                                     heading="Exclude file/folders"
                                     infoText=""
                                     showCloseButton
@@ -775,7 +775,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     interactive
                                 >
                                     <div className="flex">
-                                        <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                        <ICHelpOutline onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
                                     </div>
                                 </TippyCustomized>
                             </span>
@@ -839,7 +839,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                     className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                     heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                     placement="bottom"
-                                                    Icon={QuestionFilled}
+                                                    Icon={Help}
                                                     infoText=""
                                                     showCloseButton
                                                     additionalContent={this.regexInfoSteps()}
@@ -911,7 +911,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 content="Devtron will create the directory and clone the code in it"
                                             >
                                                 <div className="flex">
-                                                    <Question className="icon-dim-16 ml-4" />
+                                                    <ICHelpOutline className="icon-dim-16 ml-4" />
                                                 </div>
                                             </Tippy>
                                         </span>
@@ -954,7 +954,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         content="This will use credentials from default remote of parent repository."
                                     >
                                         <div className="flex">
-                                            <Question className="icon-dim-16 ml-4" />
+                                            <ICHelpOutline className="icon-dim-16 ml-4" />
                                         </div>
                                     </Tippy>
                                 </span>

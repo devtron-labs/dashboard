@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
@@ -39,6 +39,7 @@ import {
     TerminalWrapperType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 
 let clusterTimeOut
 
@@ -55,7 +56,9 @@ export default function ClusterTerminal({
     taints,
     setSelectedNode,
     showTerminal,
+    updateTerminalTabUrl,
 }: ClusterTerminalType) {
+    const { nodeType } = useParams<{ [key: string]: string }>()
     const location = useLocation()
     const history = useHistory()
     const queryParams = new URLSearchParams(location.search)
@@ -344,7 +347,7 @@ export default function ClusterTerminal({
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
             }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0].containerName || ''
+                resourceData?.containers?.[0].containerName || ''
             }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
@@ -553,9 +556,7 @@ export default function ClusterTerminal({
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
-        history.replace({
-            search: queryParams.toString(),
-        })
+        updateTerminalTabUrl(queryParams.toString())
     }
 
     const reconnectTerminal = (): void => {
@@ -1003,7 +1004,7 @@ export default function ClusterTerminal({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: !selectedTabIndex,
+                isTerminalTab: nodeType === AppDetailsTabs.terminal,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
@@ -1019,6 +1020,7 @@ export default function ClusterTerminal({
                 className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
                     isNodeDetailsPage ? '' : 'dc__border-top'
                 }`}
+                isResourceBrowserView
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

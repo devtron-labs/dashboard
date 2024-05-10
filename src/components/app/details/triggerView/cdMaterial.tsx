@@ -12,11 +12,6 @@ import {
     MaterialInfo,
     UserApprovalMetadataType,
     DeploymentNodeType,
-    getRandomColor,
-    CDModalTab,
-    ScanVulnerabilitiesTable,
-    ImageTagButton,
-    ImageTagsContainer,
     GenericEmptyState,
     FilterStates,
     stopPropagation,
@@ -31,6 +26,24 @@ import {
     ToastBodyWithButton,
     FilterConditionsListType,
     useSuperAdmin,
+    ImageCard,
+    ExcludedImageNode,
+    ImageCardAccordion,
+    ArtifactInfo,
+    ArtifactInfoProps,
+    EXCLUDED_IMAGE_TOOLTIP,
+    STAGE_TYPE,
+    getIsMaterialInfoAvailable,
+    ModuleNameMap,
+    ModuleStatus,
+    getGitCommitInfo,
+    ImageTaggingContainerType,
+    SequentialCDCardTitleProps,
+    AnnouncementBanner,
+    ButtonWithLoader,
+    ACTION_STATE,
+    MODAL_TYPE,
+    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -39,28 +52,23 @@ import {
     DeploymentWithConfigType,
     FilterConditionViews,
     MATERIAL_TYPE,
-    STAGE_TYPE,
     TriggerViewContextType,
     BulkSelectionEvents,
+    RenderCTAType,
 } from './types'
-import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
-import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
-import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
-import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as ICAbort } from '../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
-import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
+import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { ButtonWithLoader, importComponentFromFELibrary } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -70,7 +78,6 @@ import {
 } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
     DEPLOYMENT_CONFIGURATION_NAV_MAP,
@@ -82,14 +89,9 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import { ARTIFACT_STATUS, NO_VULNERABILITY_TEXT, EXCLUDED_IMAGE_TOOLTIP, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
-import { ModuleNameMap } from '../../../../config'
+import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
-import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
-import AnnouncementBanner from '../../../common/AnnouncementBanner'
-import { useRouteMatch } from 'react-router-dom'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -99,8 +101,16 @@ const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
+const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
+    'getDeploymentWindowProfileMetaData',
+    null,
+    'function',
+)
+const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
-export default function CDMaterial({
+const CDMaterial = ({
     materialType,
     appId,
     envId,
@@ -125,7 +135,7 @@ export default function CDMaterial({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
-}: Readonly<CDMaterialProps>) {
+}: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
     const { searchParams } = useSearchString()
@@ -142,35 +152,43 @@ export default function CDMaterial({
     const abortControllerRef = useRef(new AbortController())
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
-    const [loadingMaterials, materialsResult, materialsError, reloadMaterials] = useAsync(
+    const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
         () =>
             abortEarlierRequests(abortControllerRef, () =>
-                genericCDMaterialsService(
-                    materialType === MATERIAL_TYPE.rollbackMaterialList
-                        ? CDMaterialServiceEnum.ROLLBACK
-                        : CDMaterialServiceEnum.CD_MATERIALS,
-                    pipelineId,
-                    // Dont think need to set stageType to approval in case of approval node
-                    stageType ?? DeploymentNodeType.CD,
-                    abortControllerRef.current.signal,
-                    // It is meant to fetch the first 20 materials
-                    {
-                        offset: 0,
-                        size: 20,
-                        search: searchImageTag,
-                        // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
-                        // So there should'nt be any additional api call
-                        // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
-                        // filter:
-                        //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
-                        //         ? CDMaterialFilterQuery.RESOURCE
-                        //         : null,
-                    },
-                ),
+                Promise.all([
+                    genericCDMaterialsService(
+                        materialType === MATERIAL_TYPE.rollbackMaterialList
+                            ? CDMaterialServiceEnum.ROLLBACK
+                            : CDMaterialServiceEnum.CD_MATERIALS,
+                        pipelineId,
+                        // Dont think need to set stageType to approval in case of approval node
+                        stageType ?? DeploymentNodeType.CD,
+                        abortControllerRef.current.signal,
+                        // It is meant to fetch the first 20 materials
+                        {
+                            offset: 0,
+                            size: 20,
+                            search: searchImageTag,
+                            // Since by default we are setting filterView to eligible and in case of no filters everything is eligible
+                            // So there should'nt be any additional api call
+                            // NOTE: Uncomment this when backend supports the filtering, there will be some minor handling like number of images in segmented control
+                            // filter:
+                            //     state.filterView === FilterConditionViews.ELIGIBLE && !state.searchApplied
+                            //         ? CDMaterialFilterQuery.RESOURCE
+                            //         : null,
+                        },
+                    ),
+                    getDeploymentWindowProfileMetaData && !isFromBulkCD
+                        ? getDeploymentWindowProfileMetaData(appId, envId)
+                        : null,
+                ]),
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
     )
+
+    const materialsResult = responseList?.[0]
+    const deploymentWindowMetadata = responseList?.[1] ?? {}
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
@@ -179,6 +197,8 @@ export default function CDMaterial({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
+    const [value, setValue] = useState()
+    const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
     const resourceFilters = materialsResult?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
@@ -186,7 +206,7 @@ export default function CDMaterial({
     const userApprovalConfig = materialsResult?.userApprovalConfig
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === "review-config" && searchParams.deploy && searchParams.config
+    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -201,7 +221,10 @@ export default function CDMaterial({
     }
 
     const getWfrId = (initSelectedMaterial?: CDMaterialType) => {
-        if (state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && state.recentDeploymentConfig) {
+        if (
+            state.selectedConfigToDeploy?.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            state.recentDeploymentConfig
+        ) {
             return state.recentDeploymentConfig.wfrId
         }
 
@@ -223,34 +246,36 @@ export default function CDMaterial({
             initSelectedMaterial && state.isRollbackTrigger
                 ? getSpecificDeploymentConfig(appId, pipelineId, getWfrId(initSelectedMaterial))
                 : noop,
-        ]).then(
-            ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
-                status: string
-                value?: any
-                reason?: any
-            }[]) => {
-                const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
-                const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
-                const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
-                const _diffOptions = state.isRollbackTrigger
-                    ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
-                    : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
-                setState((prevState) => ({
-                    ...prevState,
-                    recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
-                    latestDeploymentConfig: _latestDeploymentConfig, // last saved config
-                    specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
-                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                    diffOptions: _diffOptions,
-                    checkingDiff: false,
-                }))
-            },
-        ).catch((error) => {
-            showError(error)
-        })
-        .finally(() => {
-            setState((prevState) => ({ ...prevState, checkingDiff: false }))
-        })
+        ])
+            .then(
+                ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
+                    status: string
+                    value?: any
+                    reason?: any
+                }[]) => {
+                    const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
+                    const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
+                    const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
+                    const _diffOptions = state.isRollbackTrigger
+                        ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
+                        : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
+                    setState((prevState) => ({
+                        ...prevState,
+                        recentDeploymentConfig: _recentDeploymentConfig, // last deployed config
+                        latestDeploymentConfig: _latestDeploymentConfig, // last saved config
+                        specificDeploymentConfig: _specificDeploymentConfig, // config of one particular wfrId
+                        diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                        diffOptions: _diffOptions,
+                        checkingDiff: false,
+                    }))
+                },
+            )
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {
+                setState((prevState) => ({ ...prevState, checkingDiff: false }))
+            })
     }
 
     const setSearchValue = (searchValue: string) => {
@@ -404,25 +429,24 @@ export default function CDMaterial({
         // The above states are derived from material so no need to make a state for them and shift the config diff here
     }, [material])
 
-const getInitialSelectedConfigToDeploy = () => {
-    if (
-        (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
-        searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-    ) {
-        return SPECIFIC_TRIGGER_CONFIG_OPTION
+    const getInitialSelectedConfigToDeploy = () => {
+        if (
+            (materialType === MATERIAL_TYPE.rollbackMaterialList && !searchParams.deploy) ||
+            searchParams.deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+        ) {
+            return SPECIFIC_TRIGGER_CONFIG_OPTION
+        }
+        if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+            return LATEST_TRIGGER_CONFIG_OPTION
+        }
+        return LAST_SAVED_CONFIG_OPTION
     }
-    if (searchParams.deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
-        return LATEST_TRIGGER_CONFIG_OPTION
-    }
-    return LAST_SAVED_CONFIG_OPTION
-}
     useEffect(() => {
         setState((prevState) => ({
             ...prevState,
             isRollbackTrigger: materialType === MATERIAL_TYPE.rollbackMaterialList,
             isSelectImageTrigger: materialType === MATERIAL_TYPE.inputMaterialList,
-            selectedConfigToDeploy:
-                getInitialSelectedConfigToDeploy(),
+            selectedConfigToDeploy: getInitialSelectedConfigToDeploy(),
         }))
     }, [materialType])
 
@@ -445,15 +469,6 @@ const getInitialSelectedConfigToDeploy = () => {
     }, [appId])
 
     /* ------------ Helping utilities  ------------*/
-    const toggleSourceInfo = (
-        materialIndex: number,
-        selectedCDDetail?: { id?: number; type?: DeploymentNodeType } | null,
-    ) => {
-        const _material = [...material]
-        _material[materialIndex].showSourceInfo = !_material[materialIndex].showSourceInfo
-        setMaterial(_material)
-    }
-
     const checkForConfigDiff = async (selectedMaterial: CDMaterialType) => {
         if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
@@ -532,37 +547,6 @@ const getInitialSelectedConfigToDeploy = () => {
         checkForConfigDiff(selectedMaterial)
     }
 
-    const changeTab = (
-        materialIndex: number,
-        artifactId: number,
-        tab,
-        selectedCDDetail?: { id?: number; type?: DeploymentNodeType } | null,
-        appId?: number,
-    ): void => {
-        const _material = [...material]
-        _material[materialIndex].tab = tab
-
-        if (tab !== CDModalTab.Changes && (material[materialIndex].scanned || material[materialIndex].scanEnabled)) {
-            _material[materialIndex].vulnerabilitiesLoading = true
-            setMaterial([..._material])
-            getLastExecutionByArtifactAppEnv(artifactId, appId, envId)
-                .then((response) => {
-                    _material[materialIndex].vulnerabilities = response.result.vulnerabilities
-                    _material[materialIndex].lastExecution = response.result.lastExecution
-                    _material[materialIndex].scanToolId = response.result.scanToolId
-                })
-                .catch((error) => {
-                    showError(error)
-                })
-                .finally(() => {
-                    _material[materialIndex].vulnerabilitiesLoading = false
-                    setMaterial([..._material])
-                })
-        } else {
-            setMaterial([..._material])
-        }
-    }
-
     const handleDisableFiltersView = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         setState((prevState) => ({
@@ -590,24 +574,6 @@ const getInitialSelectedConfigToDeploy = () => {
     const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.approvedUsersData &&
         userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === requestedUserId)
-
-    // NOTE: Pure
-    const getIsMaterialInfoAvailable = (materialInfo: MaterialInfo[]) => {
-        let isMaterialInfoAvailable = true
-        if (materialInfo) {
-            for (const _info of materialInfo) {
-                isMaterialInfoAvailable =
-                    isMaterialInfoAvailable &&
-                    !!(_info.webhookData || _info.author || _info.message || _info.modifiedTime || _info.revision)
-
-                if (!isMaterialInfoAvailable) {
-                    break
-                }
-            }
-        }
-
-        return isMaterialInfoAvailable
-    }
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
@@ -777,7 +743,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 config: DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
                 deploy: getConfigToDeployValue(),
             }
-            
+
             history.push({
                 search: new URLSearchParams(newParams).toString(),
             })
@@ -936,7 +902,7 @@ const getInitialSelectedConfigToDeploy = () => {
 
     const deployTrigger = (e: React.MouseEvent) => {
         e.stopPropagation()
-
+        handleConfirmationClose(e)
         // Blocking the deploy action if already deploying or config is not available
         if (isLoading || isDeployButtonDisabled()) {
             return
@@ -964,6 +930,7 @@ const getInitialSelectedConfigToDeploy = () => {
     }
 
     const loadOlderImages = () => {
+        ReactGA.event(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
         if (!state.loadingMore) {
             setState((prevState) => ({
                 ...prevState,
@@ -1088,7 +1055,6 @@ const getInitialSelectedConfigToDeploy = () => {
             onClick={loadOlderImages}
             disabled={state.loadingMore}
             isLoading={state.loadingMore}
-            loaderColor="blue"
         >
             Fetch More Images
         </ButtonWithLoader>
@@ -1194,20 +1160,12 @@ const getInitialSelectedConfigToDeploy = () => {
     const renderGitMaterialInfo = (materialData: CDMaterialType) => (
         <>
             {materialData.materialInfo.map((mat: MaterialInfo, index) => {
-                const _gitCommit: GitTriggers = {
-                    Commit: mat.revision,
-                    Author: mat.author,
-                    Date: mat.modifiedTime,
-                    Message: mat.message,
-                    WebhookData: JSON.parse(mat.webhookData),
-                    Changes: [],
-                    GitRepoUrl: '',
-                    GitRepoName: '',
-                    CiConfigureSourceType: '',
-                    CiConfigureSourceValue: '',
-                }
+                const _gitCommit = getGitCommitInfo(mat)
 
-                if (materialData.appliedFilters?.length > 0 && CDMaterialInfo) {
+                if (
+                    (materialData.appliedFilters?.length > 0 || materialData.deploymentWindowArtifactMetadata?.type) &&
+                    CDMaterialInfo
+                ) {
                     return (
                         <CDMaterialInfo
                             commitTimestamp={handleUTCTime(materialData.createdTime)}
@@ -1217,6 +1175,8 @@ const getInitialSelectedConfigToDeploy = () => {
                             showConfiguredFilters={(e: React.MouseEvent) => handleShowAppliedFilters(e, materialData)}
                             filterState={materialData.appliedFiltersState}
                             dataSource={materialData.dataSource}
+                            deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
+                            isFilterApplied={materialData.appliedFilters?.length > 0}
                         >
                             {(_gitCommit.WebhookData?.Data ||
                                 _gitCommit.Author ||
@@ -1262,143 +1222,11 @@ const getInitialSelectedConfigToDeploy = () => {
         </>
     )
 
-    // NOTE: Pure component, Conditions can be optimized.
-    const renderVulnerabilities = (mat: CDMaterialType) => {
-        if (!mat.scanned) {
-            return (
-                <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">Image was not scanned</p>
-                </div>
-            )
-        }
-        if (!mat.scanEnabled) {
-            return (
-                <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">Scan is Disabled</p>
-                </div>
-            )
-        }
-        if (mat.vulnerabilitiesLoading) {
-            return (
-                <div className="security-tab-empty">
-                    <Progressing />
-                </div>
-            )
-        }
-        if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
-            return (
-                <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">{NO_VULNERABILITY_TEXT.Secured}</p>
-                    <p>{NO_VULNERABILITY_TEXT.NoVulnerabilityFound}</p>
-                    <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
-                    <p className="pt-8 pb-8 pl-16 pr-16 flexbox dc__align-items-center">
-                        <ScannedByToolModal scanToolId={mat.scanToolId} />
-                    </p>
-                </div>
-            )
-        }
-        return (
-            <div className="security-tab">
-                <div className="flexbox dc__content-space">
-                    <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
-                    <span className="flex right">
-                        <ScannedByToolModal scanToolId={mat.scanToolId} />
-                    </span>
-                </div>
-                <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
-            </div>
-        )
-    }
-
-    // NOTE: Make it pure component by taking parentEnvironment as args
-    const renderActiveCD = (mat: CDMaterialType) => (
-        <>
-            {mat.latest && (
-                <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                    <div className="fw-4 fs-11 lh-16 flex">
-                        <World className="icon-dim-16 mr-4 scg-5" />
-                        {isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
-                        <span className="fw-6 ml-4">{envName} </span>
-                    </div>
-                </span>
-            )}
-
-            {/* NOTE: Have Removed mat?.isVirtualEnvironment since its not even a type, test this */}
-            {mat.runningOnParentCd && (
-                <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                    <div className="fw-4 fs-11 lh-16 flex">
-                        <World className="icon-dim-16 mr-4 scg-5" />
-                        {isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
-                        <span className="fw-6 ml-4">{parentEnvironmentName}</span>
-                    </div>
-                </span>
-            )}
-        </>
-    )
-
-    const renderProgressingCD = () => (
-        <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-            <div className="fw-4 fs-11 lh-16 flex">
-                <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node" />
-                Deploying on <span className="fw-6 ml-4">{envName} </span>
-            </div>
-        </span>
-    )
-
-    const renderFailedCD = () => (
-        <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-            <div className="fw-4 fs-11 lh-16 flex">
-                <Failed className="icon-dim-16 mr-4" />
-                Last deployment failed on <span className="fw-6 ml-4">{envName} </span>
-            </div>
-        </span>
-    )
-
-    const renderSequentialCDCardTitle = (mat) => {
-        if (stageType !== STAGE_TYPE.CD) {
-            return
-        }
-
-        if (
-            mat.latest ||
-            mat.runningOnParentCd ||
-            mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
-            mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-            mat.artifactStatus === ARTIFACT_STATUS.Failed ||
-            mat.index == 0
-        ) {
-            return (
-                <div>
-                    <div className="bcn-0 br-4 mb-8 flex left">
-                        {renderActiveCD(mat)}
-                        {mat.artifactStatus === ARTIFACT_STATUS.Progressing && renderProgressingCD()}
-                        {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-                            mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
-                            renderFailedCD()}
-                        {/* WARNING: Latest from mat is not same as this tag */}
-                        {mat.index == 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag && (
-                            <div className="">
-                                <ImageTagButton
-                                    text="Latest"
-                                    isSoftDeleted={false}
-                                    isEditing={false}
-                                    tagId={0}
-                                    softDeleteTags={[]}
-                                    isSuperAdmin={[]}
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )
-        }
-    }
-
     const renderMaterialCTA = (
         mat: CDMaterialType,
-        isApprovalRequester: boolean = false,
         isImageApprover: boolean = false,
         disableSelection: boolean = false,
+        shouldRenderExpireApproval: boolean = false,
     ) => {
         if (mat.filterState !== FilterStates.ALLOWED) {
             return (
@@ -1439,11 +1267,7 @@ const getInitialSelectedConfigToDeploy = () => {
         if (mat.isSelected) {
             return (
                 <Check
-                    className={`${
-                        materialType !== 'none' && isApprovalRequester && !isImageApprover && !disableSelection
-                            ? ''
-                            : 'dc__align-right'
-                    } icon-dim-24 cursor`}
+                    className={`${shouldRenderExpireApproval ? '' : 'dc__align-right'} icon-dim-24 cursor`}
                     data-testid={`cd-artifact-selected-check-${mat.index}`}
                 />
             )
@@ -1465,314 +1289,146 @@ const getInitialSelectedConfigToDeploy = () => {
         )
     }
 
-    const renderMaterialInfo = (
-        mat: CDMaterialType,
-        isApprovalConfigured: boolean,
-        hideSelector?: boolean,
-        disableSelection?: boolean,
-    ) => {
+    const renderCTA = ({ mat, disableSelection }: RenderCTAType) => {
         const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
-
-        const renderImagePathTippyContent = (imagePath: string, registryName: string) => {
-            return (
-                <div>
-                    <div className="fw-6">{registryName}</div>
-                    <div>{imagePath}</div>
-                </div>
-            )
-        }
+        const shouldRenderExpireApproval =
+            materialType !== MATERIAL_TYPE.none && isApprovalRequester && !isImageApprover && !disableSelection
 
         return (
             <>
-                <div className="flex left column">
-                    {mat.filterState === FilterStates.ALLOWED ? (
-                        <ConditionalWrap
-                            condition={mat.imagePath?.length > 0}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt dc__mxw-500"
-                                    arrow={false}
-                                    placement="top-start"
-                                    content={renderImagePathTippyContent(mat.imagePath, mat.registryName)}
-                                >
-                                    {children}
-                                </Tippy>
-                            )}
-                        >
-                            <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
-                                <div className={`dc__registry-icon ${mat.registryType} mr-8`} />
-                                {mat.image}
-                            </div>
-                        </ConditionalWrap>
-                    ) : (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top"
-                            content={EXCLUDED_IMAGE_TOOLTIP}
-                        >
-                            <div className="flexbox pt-2 pb-2 pl-8 pr-8 br-4 bcr-1 dc__align-items-center dc__gap-4">
-                                <ICAbort className="icon-dim-20 fcr-5" />
+                {shouldRenderExpireApproval && ExpireApproval && (
+                    <>
+                        <ExpireApproval
+                            matId={mat.id}
+                            appId={appId}
+                            pipelineId={pipelineId}
+                            userApprovalMetadata={mat.userApprovalMetadata}
+                            reloadMaterials={reloadMaterials}
+                        />
 
-                                <p className="m-0 fs-12 lh-16 fw-4 cr-5">{mat.image}</p>
+                        {mat.filterState !== FilterStates.ALLOWED && (
+                            <div className="flex dc__gap-12 mr-12">
+                                <div className="h-12 dc__border-left" />
                             </div>
-                        </Tippy>
-                    )}
-                    {stageType !== STAGE_TYPE.CD && mat.latest && (
-                        <span className="last-deployed-status">Last Run</span>
-                    )}
-                </div>
-                {!disableSelection &&
-                    (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
-                    isApprovalConfigured && (
-                        <>
-                            {ApprovalInfoTippy ? (
-                                <ApprovalInfoTippy
-                                    matId={mat.id}
-                                    appId={appId}
-                                    pipelineId={pipelineId}
-                                    requestedUserId={requestedUserId}
-                                    userApprovalMetadata={mat.userApprovalMetadata}
-                                    reloadMaterials={reloadMaterials}
-                                />
-                            ) : (
-                                <div />
-                            )}
-                        </>
-                    )}
-                {materialType === MATERIAL_TYPE.none ? (
-                    <div />
-                ) : (
-                    <div className="material-history__info flex left fs-13">
-                        <DeployIcon className="icon-dim-16 scn-6 mr-8" />
-                        <span className="fs-13 fw-4">{mat.deployedTime}</span>
-                    </div>
-                )}
-
-                {!!mat.deployedBy && state.isRollbackTrigger ? (
-                    <div className="material-history__deployed-by flex left">
-                        {mat.deployedBy === 'system' ? (
-                            <>
-                                <BotIcon className="icon-dim-16 mr-6" />
-                                <span className="fs-13 fw-4">Auto triggered</span>
-                            </>
-                        ) : (
-                            <>
-                                <span
-                                    className="flex fs-13 fw-6 lh-18 icon-dim-20 mr-6 cn-0 m-auto dc__border-transparent dc__uppercase dc__border-radius-50-per"
-                                    style={{
-                                        backgroundColor: getRandomColor(mat.deployedBy),
-                                    }}
-                                >
-                                    {mat.deployedBy[0]}
-                                </span>
-                                <span className="fs-13 fw-4">{mat.deployedBy}</span>
-                            </>
                         )}
-                    </div>
-                ) : (
-                    <div />
+                    </>
                 )}
-                {!hideSelector && (
-                    <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right cursor-default">
-                        {materialType !== 'none' &&
-                            isApprovalRequester &&
-                            !isImageApprover &&
-                            !disableSelection &&
-                            ExpireApproval && (
-                                <>
-                                    <ExpireApproval
-                                        matId={mat.id}
-                                        appId={appId}
-                                        pipelineId={pipelineId}
-                                        userApprovalMetadata={mat.userApprovalMetadata}
-                                        reloadMaterials={reloadMaterials}
-                                    />
-
-                                    {mat.filterState !== FilterStates.ALLOWED && (
-                                        <div className="flex dc__gap-12 mr-12">
-                                            <div className="h-12 dc__border-left" />
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        {renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
-                    </div>
-                )}
+                {renderMaterialCTA(mat, isImageApprover, disableSelection, shouldRenderExpireApproval)}
             </>
         )
+    }
+
+    // Not sending approvalChecksNode as it is not required in this case
+    const getArtifactInfoProps = (mat: CDMaterialType, showApprovalInfoTippy: boolean): ArtifactInfoProps => ({
+        imagePath: mat.imagePath,
+        registryName: mat.registryName,
+        registryType: mat.registryType,
+        image: mat.image,
+        deployedTime: mat.deployedTime,
+        deployedBy: mat.deployedBy,
+        isRollbackTrigger: state.isRollbackTrigger,
+        excludedImagePathNode:
+            mat.filterState === FilterStates.ALLOWED ? null : <ExcludedImageNode image={mat.image} />,
+        approvalInfoTippy: showApprovalInfoTippy ? (
+            <ApprovalInfoTippy
+                matId={mat.id}
+                appId={appId}
+                pipelineId={pipelineId}
+                requestedUserId={requestedUserId}
+                userApprovalMetadata={mat.userApprovalMetadata}
+                reloadMaterials={reloadMaterials}
+            />
+        ) : null,
+    })
+
+    const getImageTagContainerProps = (mat: CDMaterialType): ImageTaggingContainerType => ({
+        ciPipelineId,
+        artifactId: +mat.id,
+        imageComment: mat.imageComment,
+        imageReleaseTags: mat.imageReleaseTags,
+        appReleaseTagNames,
+        setAppReleaseTagNames,
+        tagsEditable,
+        toggleCardMode,
+        setTagsEditable,
+        forceReInit: true,
+        hideHardDelete: hideImageTaggingHardDelete,
+        updateCurrentAppMaterial,
+        isSuperAdmin,
+    })
+
+    const getSequentialCDCardTitleProps = (mat: CDMaterialType): SequentialCDCardTitleProps => {
+        const promotionApprovalMetadata = mat.promotionApprovalMetadata
+        const promotionApprovedBy = promotionApprovalMetadata?.approvedUsersData?.map((users) => users.userEmail)
+
+        return {
+            isLatest: mat.latest,
+            isRunningOnParentCD: mat.runningOnParentCd,
+            artifactStatus: mat.artifactStatus,
+            environmentName: envName,
+            parentEnvironmentName,
+            stageType,
+            showLatestTag: +mat.index === 0 && materialType !== MATERIAL_TYPE.rollbackMaterialList && !searchImageTag,
+            isVirtualEnvironment,
+            additionalInfo:
+                ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
+                    <ImagePromotionInfoChip
+                        promotedTo={envName}
+                        promotedFromType={promotionApprovalMetadata?.promotedFromType}
+                        promotedFrom={promotionApprovalMetadata?.promotedFrom}
+                        promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
+                        approvedBy={promotionApprovedBy}
+                        promotionPolicyName={promotionApprovalMetadata?.policy?.name}
+                        showBackgroundColor
+                    />
+                ) : null,
+        }
     }
 
     const renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) =>
         materialList.map((mat) => {
             const isMaterialInfoAvailable = getIsMaterialInfoAvailable(mat.materialInfo)
             const approvedImageClass = getApprovedImageClass(disableSelection, isApprovalConfigured)
-
-            const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
             const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
             const hideSourceInfo = !state.materialInEditModeMap.get(+mat.id)
-            return (
-                <div
-                    key={`material-history-${mat.index}`}
-                    className={`material-history material-history--cd image-tag-parent-card ${
-                        mat.isSelected && !disableSelection && !getIsImageApprover(mat.userApprovalMetadata)
-                            ? 'material-history-selected'
-                            : ''
-                    }`}
-                >
-                    <div className="p-12 bcn-0 br-4">
-                        <div className="dc__content-space flexbox dc__align-start">
-                            <div>
-                                {renderSequentialCDCardTitle(mat)}
-                                <div
-                                    data-testid={`cd-material-history-image-${mat.index}`}
-                                    className={`material-history__top cursor-default ${approvedImageClass}`}
-                                >
-                                    {renderMaterialInfo(mat, isApprovalConfigured, true, disableSelection)}
-                                </div>
-                            </div>
-                            <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right cursor-default">
-                                {materialType !== 'none' &&
-                                    isApprovalRequester &&
-                                    !isImageApprover &&
-                                    !disableSelection &&
-                                    ExpireApproval && (
-                                        <>
-                                            <ExpireApproval
-                                                matId={mat.id}
-                                                appId={appId}
-                                                pipelineId={pipelineId}
-                                                userApprovalMetadata={mat.userApprovalMetadata}
-                                                reloadMaterials={reloadMaterials}
-                                            />
+            const showApprovalInfoTippy =
+                !disableSelection &&
+                (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
+                isApprovalConfigured &&
+                ApprovalInfoTippy
+            const imageCardRootClassName =
+                mat.isSelected && !disableSelection && !isImageApprover ? 'material-history-selected' : ''
 
-                                            {mat.filterState !== FilterStates.ALLOWED && (
-                                                <div className="flex dc__gap-12 mr-12">
-                                                    <div className="h-12 dc__border-left" />
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                {renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
-                            </div>
-                        </div>
-                        <div data-testid={`image-tags-container-${mat.index}`}>
-                            <ImageTagsContainer
-                                ciPipelineId={ciPipelineId}
-                                artifactId={+mat.id}
-                                imageComment={mat.imageComment}
-                                imageReleaseTags={mat.imageReleaseTags}
-                                appReleaseTagNames={appReleaseTagNames}
-                                setAppReleaseTagNames={setAppReleaseTagNames}
-                                tagsEditable={tagsEditable}
-                                toggleCardMode={toggleCardMode}
-                                setTagsEditable={setTagsEditable}
-                                forceReInit
-                                hideHardDelete={hideImageTaggingHardDelete}
-                                updateCurrentAppMaterial={updateCurrentAppMaterial}
-                                isSuperAdmin={isSuperAdmin}
-                            />
-                        </div>
-                    </div>
+            return (
+                <ImageCard
+                    testIdLocator={String(mat.index)}
+                    cta={renderCTA({
+                        mat,
+                        disableSelection,
+                    })}
+                    sequentialCDCardTitleProps={getSequentialCDCardTitleProps(mat)}
+                    artifactInfoProps={getArtifactInfoProps(mat, showApprovalInfoTippy)}
+                    imageTagContainerProps={getImageTagContainerProps(mat)}
+                    rootClassName={imageCardRootClassName}
+                    materialInfoRootClassName={approvedImageClass}
+                    key={`material-history-${mat.index}`}
+                >
                     {mat.materialInfo.length > 0 &&
+                        !hideInfoTabsContainer &&
                         (isMaterialInfoAvailable || mat.appliedFilters?.length) &&
                         hideSourceInfo && (
-                            <>
-                                <ul
-                                    className={`tab-list tab-list--vulnerability ${
-                                        mat.showSourceInfo ? '' : 'tab-bottom-radius'
-                                    }`}
-                                >
-                                    {mat.showSourceInfo &&
-                                        (state.isSecurityModuleInstalled && !hideInfoTabsContainer ? (
-                                            <>
-                                                <li className="tab-list__tab">
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            changeTab(
-                                                                mat.index,
-                                                                Number(mat.id),
-                                                                CDModalTab.Changes,
-                                                                {
-                                                                    id: pipelineId,
-                                                                    type: stageType,
-                                                                },
-                                                                appId,
-                                                            )
-                                                        }}
-                                                        className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                            mat.tab === CDModalTab.Changes ? 'active' : ''
-                                                        }`}
-                                                    >
-                                                        Changes
-                                                    </button>
-                                                </li>
-                                                <li className="tab-list__tab">
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            changeTab(
-                                                                mat.index,
-                                                                Number(mat.id),
-                                                                CDModalTab.Security,
-                                                                isFromBulkCD
-                                                                    ? {
-                                                                          id: pipelineId,
-                                                                          type: stageType,
-                                                                      }
-                                                                    : null,
-                                                                appId,
-                                                            )
-                                                        }}
-                                                        className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                            mat.tab === CDModalTab.Security ? 'active' : ''
-                                                        }`}
-                                                    >
-                                                        Security
-                                                        {mat.vulnerabilitiesLoading
-                                                            ? ''
-                                                            : ` (${mat.vulnerabilities.length})`}
-                                                    </button>
-                                                </li>
-                                            </>
-                                        ) : (
-                                            <div className="fs-13 fw-6 flex">Source</div>
-                                        ))}
-                                    <li className="flex dc__align-right">
-                                        <button
-                                            type="button"
-                                            className="material-history__changes-btn"
-                                            data-testid={
-                                                mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'
-                                            }
-                                            onClick={(event) => {
-                                                event.stopPropagation()
-                                                toggleSourceInfo(
-                                                    mat.index,
-                                                    isFromBulkCD ? { id: pipelineId, type: stageType } : null,
-                                                )
-                                            }}
-                                        >
-                                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                                            <img
-                                                src={arrow}
-                                                alt=""
-                                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                                            />
-                                        </button>
-                                    </li>
-                                </ul>
-                                {mat.showSourceInfo &&
-                                    (mat.tab === CDModalTab.Changes
-                                        ? renderGitMaterialInfo(mat)
-                                        : renderVulnerabilities(mat))}
-                            </>
+                            <ImageCardAccordion
+                                isSecurityModuleInstalled={state.isSecurityModuleInstalled}
+                                artifactId={+mat.id}
+                                applicationId={appId}
+                                environmentId={envId}
+                                changesCard={renderGitMaterialInfo(mat)}
+                                isScanned={mat.scanned}
+                                isScanEnabled={mat.scanEnabled}
+                            />
                         )}
-                </div>
+                </ImageCard>
             )
         })
 
@@ -1796,6 +1452,7 @@ const getInitialSelectedConfigToDeploy = () => {
                     className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
                     type="button"
                     onClick={clearSearch}
+                    aria-label="Clear search input"
                 >
                     <Clear className="icon-dim-16 icon-n4 dc__vertical-align-middle" />
                 </button>
@@ -1993,9 +1650,8 @@ const getInitialSelectedConfigToDeploy = () => {
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                 <p className="fs-12 fw-4 lh-18 m-0">
                     {state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                    (!state.specificDeploymentConfig ||
-                        !state.specificDeploymentConfig.deploymentTemplate ||
-                        !state.specificDeploymentConfig.pipelineStrategy)
+                    (!state.specificDeploymentConfig?.deploymentTemplate ||
+                        !state.specificDeploymentConfig?.pipelineStrategy)
                         ? 'Please select a different image or configuration to deploy'
                         : 'Please select a different configuration to deploy'}
                 </p>
@@ -2003,15 +1659,54 @@ const getInitialSelectedConfigToDeploy = () => {
         )
     }
 
-    const getDeployButtonIcon = () =>
-        stageType === STAGE_TYPE.CD ? (
-            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-        ) : (
-            <img src={play} alt="trigger" className="trigger-btn__icon" />
+    const getDeployButtonIcon = () => {
+        if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
+            return null
+        } else if (stageType !== STAGE_TYPE.CD) {
+            return (
+                <PlayIC
+                    className={`icon-dim-16 mr-8 dc__no-svg-fill dc__stroke-width-2 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : 'scn-0'}`}
+                />
+            )
+        }
+        return (
+            <DeployIcon
+                className={`icon-dim-16 dc__no-svg-fill mr-8 ${deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
+            />
         )
+    }
+
+    const getCTAClass = (disableDeployButton: boolean): string => {
+        let className = 'cta flex ml-auto h-36'
+        if (disableDeployButton) {
+            className += ' disabled-opacity'
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
+            className += ' danger'
+        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
+            className += ' warning'
+        }
+        return className
+    }
+
+    const onClickDeploy = (e, disableDeployButton: boolean) => {
+        e.stopPropagation()
+        if (!disableDeployButton) {
+            if (
+                deploymentWindowMetadata.userActionState &&
+                deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
+            ) {
+                setShowDeploymentWindowConfirmation(true)
+            } else {
+                deployTrigger(e)
+            }
+        }
+    }
 
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
-        const buttonLabel = CDButtonLabelMap[stageType]
+        const buttonLabel =
+            deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED
+                ? 'Deployment is blocked'
+                : CDButtonLabelMap[stageType]
         const disableDeployButton =
             isDeployButtonDisabled() ||
             (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
@@ -2096,8 +1791,8 @@ const getInitialSelectedConfigToDeploy = () => {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
-                        onClick={disableDeployButton ? noop : deployTrigger}
+                        className={getCTAClass(disableDeployButton)}
+                        onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
                     >
                         {deploymentLoading || isSaveLoading ? (
@@ -2105,7 +1800,11 @@ const getInitialSelectedConfigToDeploy = () => {
                         ) : (
                             <>
                                 {getDeployButtonIcon()}
-                                {buttonLabel} {isVirtualEnvironment && 'to virtual env'}
+                                {buttonLabel}
+                                {isVirtualEnvironment && 'to virtual env'}
+                                {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
+                                    <InfoOutline className="icon-dim-16 ml-5" />
+                                )}
                             </>
                         )}
                     </button>
@@ -2147,6 +1846,11 @@ const getInitialSelectedConfigToDeploy = () => {
         </div>
     )
 
+    const handleConfirmationClose = (e) => {
+        e.stopPropagation()
+        setShowDeploymentWindowConfirmation(false)
+    }
+
     const renderCDModal = (isApprovalConfigured: boolean) => (
         <>
             <div className="trigger-modal__header">
@@ -2163,7 +1867,14 @@ const getInitialSelectedConfigToDeploy = () => {
                             <h1 className="modal__title mb-8">{renderCDModalHeader()}</h1>
                             {state.selectedMaterial && (
                                 <div className="flex left dc__column-gap-24">
-                                    {renderMaterialInfo(state.selectedMaterial, isApprovalConfigured, true)}
+                                    <ArtifactInfo
+                                        {...getArtifactInfoProps(
+                                            state.selectedMaterial,
+                                            (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
+                                                isApprovalConfigured &&
+                                                ApprovalInfoTippy,
+                                        )}
+                                    />
                                 </div>
                             )}
                         </div>
@@ -2191,8 +1902,30 @@ const getInitialSelectedConfigToDeploy = () => {
                         iconClass="icon-dim-20"
                     />
                 )}
+            {!isFromBulkCD &&
+                MaintenanceWindowInfoBar &&
+                deploymentWindowMetadata.type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE &&
+                deploymentWindowMetadata.isActive && (
+                    <MaintenanceWindowInfoBar
+                        windowName={deploymentWindowMetadata.name}
+                        endTime={deploymentWindowMetadata.calculatedTimestamp}
+                    />
+                )}
             {renderTriggerBody(isApprovalConfigured)}
             {renderTriggerModalCTA(isApprovalConfigured)}
+            {DeploymentWindowConfirmationDialog && showDeploymentWindowConfirmation && (
+                <DeploymentWindowConfirmationDialog
+                    onClose={handleConfirmationClose}
+                    value={value}
+                    setValue={setValue}
+                    isLoading={isLoading}
+                    type={MODAL_TYPE.DEPLOY}
+                    onClickActionButton={deployTrigger}
+                    appId={appId}
+                    envId={envId}
+                    envName={envName}
+                />
+            )}
         </>
     )
 
@@ -2277,7 +2010,7 @@ const getInitialSelectedConfigToDeploy = () => {
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (
-           renderCDModal(isApprovalConfigured)
+            renderCDModal(isApprovalConfigured)
         )
     }
 
@@ -2298,3 +2031,5 @@ const getInitialSelectedConfigToDeploy = () => {
         </>
     )
 }
+
+export default CDMaterial

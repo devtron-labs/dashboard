@@ -1,4 +1,4 @@
-import React, { Reducer, createContext, useContext, useEffect, useReducer, useRef, useState } from 'react'
+import React, { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -8,6 +8,8 @@ import {
     Progressing,
     getLockedJSON,
     getUnlockedJSON,
+    useMainContext,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
@@ -34,7 +36,6 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import {
     getBasicFieldValue,
     groupDataByType,
@@ -72,7 +73,7 @@ export default function DeploymentConfig({
     reloadEnvironments,
 }: DeploymentConfigProps) {
     const { appId } = useParams<{ appId: string }>()
-    const { currentServerInfo, isSuperAdmin } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useMainContext()
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
@@ -253,7 +254,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        const _codeEditorStringifyData = YAML.stringify(valuesOverride, { indent: 2 })
+        const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
             template: valuesOverride,
@@ -402,7 +403,7 @@ export default function DeploymentConfig({
                     },
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
-            const _codeEditorStringifyData = YAML.stringify(defaultAppOverride, { indent: 2 })
+            const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
                 schema,
@@ -704,7 +705,7 @@ export default function DeploymentConfig({
             } else {
                 const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
                 updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAML.stringify(newTemplate), !state.yamlMode)
+                editorOnChange(YAMLStringify(newTemplate), !state.yamlMode)
             }
             toggleYamlMode(!state.yamlMode)
         } catch (error) {}
@@ -871,7 +872,7 @@ export default function DeploymentConfig({
             result = await fetchManifestData(state.draftValues)
         } else if (applyPatches && hideLockedKeys) {
             result = fetchManifestData(
-                YAML.stringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+                YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
             )
         } else {
             result = await fetchManifestData(state.tempFormData)

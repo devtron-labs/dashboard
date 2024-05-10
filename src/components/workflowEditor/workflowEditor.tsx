@@ -7,12 +7,11 @@ import {
     DeleteDialog,
     InfoColourBar,
     ConditionalWrap,
-    TippyCustomized,
-    TippyTheme,
     WorkflowNodeType,
     PipelineType,
     AddPipelineType,
     SelectedNode,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -50,6 +49,7 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
 import { WorkflowCreate } from '../app/details/triggerView/config'
+import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -223,6 +223,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ showWorkflowOptionsModal: false })
     }
 
+    handleDisplayLoader = () => {
+        this.setState({ view: ViewType.LOADING })
+    }
+
     deleteWorkflow = (appId?: string, workflowId?: number) => {
         deleteWorkflow(appId || this.props.match.params.appId, workflowId || this.state.workflowId)
             .then((response) => {
@@ -235,6 +239,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
                 if (response.status.toLowerCase() === 'ok') {
                     this.setState({ showDeleteDialog: false })
+                    this.handleDisplayLoader()
                     toast.success('Workflow Deleted')
                     this.getWorkflows()
                     this.props.getWorkflows()
@@ -548,6 +553,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                                     changeCIPayload={this.state.changeCIPayload}
                                     reloadAppConfig={this.props.reloadAppConfig}
+                                    handleDisplayLoader={this.handleDisplayLoader}
                                 />
                             )
                         }}
@@ -780,42 +786,52 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     renderWorkflows() {
-        return this.state.workflows.map((wf) => {
-            return (
-                <Workflow
-                    id={wf.id}
-                    key={wf.id}
-                    name={wf.name}
-                    startX={wf.startX}
-                    startY={wf.startY}
-                    width={wf.width}
-                    height={wf.height}
-                    nodes={wf.nodes}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    handleCDSelect={this.handleCDSelect}
-                    handleCISelect={this.handleCISelect}
-                    openEditWorkflow={this.openEditWorkflow}
-                    showDeleteDialog={this.showDeleteDialog}
-                    addCIPipeline={this.addCIPipeline}
-                    addWebhookCD={this.addWebhookCD}
-                    showWebhookTippy={wf.showTippy}
-                    hideWebhookTippy={this.hideWebhookTippy}
-                    isJobView={this.props.isJobView}
-                    envList={this.props.envList}
-                    filteredCIPipelines={this.state.filteredCIPipelines}
-                    addNewPipelineBlocked={!!this.props.filteredEnvIds}
-                    handleChangeCI={this.handleChangeCI}
-                    selectedNode={this.state.selectedNode}
-                    handleSelectedNodeChange={this.handleSelectedNodeChange}
-                    appName={this.state.appName}
-                    getWorkflows={this.getWorkflows}
-                    reloadEnvironments={this.props.reloadEnvironments}
-                    workflowPositionState={this.state.workflowPositionState}
-                />
-            )
-        })
+        const handleModalClose = () => {
+            this.props.history.push(this.props.match.url)
+        }
+
+        return (
+            <>
+                {this.state.workflows.map((wf) => {
+                    return (
+                        <Workflow
+                            id={wf.id}
+                            key={wf.id}
+                            name={wf.name}
+                            startX={wf.startX}
+                            startY={wf.startY}
+                            width={wf.width}
+                            height={wf.height}
+                            nodes={wf.nodes}
+                            history={this.props.history}
+                            location={this.props.location}
+                            match={this.props.match}
+                            handleCDSelect={this.handleCDSelect}
+                            handleCISelect={this.handleCISelect}
+                            openEditWorkflow={this.openEditWorkflow}
+                            showDeleteDialog={this.showDeleteDialog}
+                            addCIPipeline={this.addCIPipeline}
+                            addWebhookCD={this.addWebhookCD}
+                            showWebhookTippy={wf.showTippy}
+                            hideWebhookTippy={this.hideWebhookTippy}
+                            isJobView={this.props.isJobView}
+                            envList={this.props.envList}
+                            filteredCIPipelines={this.state.filteredCIPipelines}
+                            addNewPipelineBlocked={!!this.props.filteredEnvIds}
+                            handleChangeCI={this.handleChangeCI}
+                            selectedNode={this.state.selectedNode}
+                            handleSelectedNodeChange={this.handleSelectedNodeChange}
+                            appName={this.state.appName}
+                            getWorkflows={this.getWorkflows}
+                            reloadEnvironments={this.props.reloadEnvironments}
+                            workflowPositionState={this.state.workflowPositionState}
+                            handleDisplayLoader={this.handleDisplayLoader}
+                        />
+                    )
+                })}
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={handleModalClose} />
+            </>
+        )
     }
 
     renderOpenCIPipelineBanner = () => {
@@ -860,36 +876,21 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <div className="flex dc__content-space pb-16">
                     <div className="flex dc__gap-8 dc__content-start">
                         <h1 className="m-0 cn-9 fs-16 fw-6">Workflow Editor</h1>
-
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300 h-100 dc__align-left"
-                            placement="right"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
+                        <InfoIconTippy
                             heading={WORKFLOW_EDITOR_HEADER_TIPPY.HEADING}
                             infoText={
                                 this.props.isJobView
                                     ? WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.JOB_VIEW
                                     : WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.DEFAULT
                             }
-                            showCloseButton
-                            trigger="click"
-                            interactive
                             documentationLink={
                                 this.props.isJobView
                                     ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
                                     : DOCUMENTATION.APP_CREATE_WORKFLOW
                             }
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
-                        >
-                            <button
-                                className="p-0 h-20 dc__no-background dc__no-border dc__outline-none-imp flex"
-                                type="button"
-                            >
-                                <ICHelpOutline className="icon-dim-16" />
-                            </button>
-                        </TippyCustomized>
+                            placement="right"
+                        />
                     </div>
 
                     {this.renderWorkflowControlButton()}

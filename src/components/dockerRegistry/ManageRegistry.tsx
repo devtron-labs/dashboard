@@ -1,28 +1,25 @@
 import React, { useState } from 'react'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import Select, { components } from 'react-select'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
-    TippyCustomized,
-    TippyTheme,
     InfoColourBar,
     ClearIndicator,
     multiSelectStyles,
     MultiValueRemove,
     Option,
     CustomInput,
+    ReactSelectInputAction,
     StyledRadioGroup as RadioGroup,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -158,12 +155,12 @@ const ManageRegistry = ({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setBlackList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setBlackList(clusterOption)
@@ -178,12 +175,12 @@ const ManageRegistry = ({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setWhiteList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setWhiteList(clusterOption)
@@ -331,25 +328,14 @@ const ManageRegistry = ({
             >
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-332"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
+                    <InfoIconTippy
                         heading="Manage access of registry credentials"
                         infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                        showCloseButton
-                        trigger="click"
-                        interactive
-                    >
-                        <div className="flex">
-                            <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </div>
-                    </TippyCustomized>
+                        iconClassName="icon-dim-16 fcn-6 ml-4"
+                    />
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>

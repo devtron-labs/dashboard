@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { showError, Progressing, get, Host, useSearchString, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, get, Host, useSearchString, useAsync, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import YamljsParser from 'yaml'
 import { useParams } from 'react-router'
@@ -18,7 +18,7 @@ import WebWorker from './WebWorker'
 import { Subject } from '../../util/Subject'
 import { AggregatedNodes, NodeDetailTabs, NodeDetailTabsType, Nodes, AppDetails } from './types'
 import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-cancelled.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-question.svg'
 import { TerminalView } from '../terminal'
 import { getSelectedNodeItems } from './details/appDetails/utils'
 import { useKeyDown } from '../common'
@@ -234,7 +234,7 @@ export const NodeManifestView: React.FC<NodeManifestViewProps> = ({ nodeName, no
                 >
                     <MonacoEditor
                         language="yaml"
-                        value={YamljsParser.stringify(manifest, { indent: 2 })}
+                        value={YAMLStringify(manifest)}
                         theme="vs-dark--dt"
                         options={{
                             selectOnLineNumbers: true,
@@ -399,7 +399,7 @@ export const LogsView: React.FC<LogsView> = ({
     function getLogsURL() {
         let prefix = ''
         if (import.meta.env.VITE_NODE_ENV === 'production') {
-            prefix = `${location.protocol}//${location.host}`; // eslint-disable-line
+            prefix = `${location.protocol}//${location.host}` // eslint-disable-line
         }
         const pods = getPods()
 
@@ -545,7 +545,7 @@ export const LogsView: React.FC<LogsView> = ({
                                 }
                             >
                                 <div className="flex">
-                                    <Question />
+                                    <QuestionIcon />
                                 </div>
                             </Tippy>
                         </form>

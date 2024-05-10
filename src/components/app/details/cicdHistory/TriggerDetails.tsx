@@ -1,20 +1,19 @@
 import React, { useState } from 'react'
-import { showError, Progressing, ConfirmationDialog, not, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ConfirmationDialog, not, TippyTheme, GitTriggers, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import moment from 'moment'
 import { Link, NavLink } from 'react-router-dom'
-import { createGitCommitUrl, asyncWrap } from '../../../common'
+import { createGitCommitUrl, importComponentFromFELibrary } from '../../../common'
 import { statusColor as colorMap } from '../../config'
-import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
+import { Moment12HourFormat } from '../../../../config'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import {
     CurrentStatusType,
     FinishedType,
-    GitTriggers,
     HistoryComponentType,
     ProgressingStatusType,
     PROGRESSING_STATUS,
@@ -28,23 +27,37 @@ import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../ser
 import { DEFAULT_ENV } from '../triggerView/Constants'
 import { TIMEOUT_VALUE, WORKER_POD_BASE_URL } from './Constants'
 
-const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
-    return (
-        <svg width="25" height="87" viewBox="0 0 25 87" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
-            <circle
-                cx="12.5"
-                cy="74.5"
-                r="6"
-                fill={colorMap[status]}
-                stroke={colorMap[status]}
-                strokeWidth="12"
-                strokeOpacity="0.3"
-            />
-            <line x1="12.5" y1="11.9997" x2="12.5362" y2="69" stroke="#3B444C" />
-        </svg>
-    )
-})
+const DeploymentHistoryTriggerMetaText = importComponentFromFELibrary('DeploymentHistoryTriggerMetaText')
+
+const TriggerDetailsStatusIcon = React.memo(
+    ({ status, isDeploymentWindowInfo }: TriggerDetailsStatusIconType): JSX.Element => {
+        let viewBox = '0 0 25 87',
+            height = '87',
+            cyEndCircle = '74.5',
+            y2Line = '69'
+        if (isDeploymentWindowInfo) {
+            viewBox = '0 0 25 118'
+            height = '118'
+            cyEndCircle = '105'
+            y2Line = '100'
+        }
+        return (
+            <svg width="25" height={height} viewBox={viewBox} fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12.5" cy="6.5" r="6" fill="white" stroke="#3B444C" />
+                <circle
+                    cx="12.5"
+                    cy={cyEndCircle}
+                    r="6"
+                    fill={colorMap[status]}
+                    stroke={colorMap[status]}
+                    strokeWidth="12"
+                    strokeOpacity="0.3"
+                />
+                <line x1="12.5" y1="11.9997" x2="12.5362" y2={y2Line} stroke="#3B444C" />
+            </svg>
+        )
+    },
+)
 
 export const TriggerDetails = React.memo(
     ({
@@ -63,11 +76,15 @@ export const TriggerDetails = React.memo(
         environmentName,
         isJobView,
         workerPodName,
+        triggerMetadata,
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
                 <div className="flex">
-                    <TriggerDetailsStatusIcon status={status?.toLowerCase()} />
+                    <TriggerDetailsStatusIcon
+                        status={status?.toLowerCase()}
+                        isDeploymentWindowInfo={!!(triggerMetadata && DeploymentHistoryTriggerMetaText)}
+                    />
                 </div>
                 <div className="trigger-details__summary">
                     <StartDetails
@@ -80,6 +97,7 @@ export const TriggerDetails = React.memo(
                         type={type}
                         environmentName={environmentName}
                         isJobView={isJobView}
+                        triggerMetadata={triggerMetadata}
                     />
                     <CurrentStatus
                         status={status}
@@ -361,6 +379,7 @@ const StartDetails = ({
     type,
     environmentName,
     isJobView,
+    triggerMetadata,
 }: StartDetailsType): JSX.Element => {
     const { url } = useRouteMatch()
     const { pathname } = useLocation()
@@ -421,6 +440,10 @@ const StartDetails = ({
                     </Link>
                 )}
             </div>
+
+            {triggerMetadata && DeploymentHistoryTriggerMetaText && (
+                <DeploymentHistoryTriggerMetaText triggerMetaData={triggerMetadata} />
+            )}
             {isJobView && (
                 <div className="pt-4 pb-4 pr-0 pl-0">
                     <span className="fw-6 fs-14">Env</span>

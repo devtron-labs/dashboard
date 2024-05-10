@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import yamlJsParser from 'yaml'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
@@ -13,7 +13,7 @@ import {
     DtOutputKeys,
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
@@ -25,7 +25,6 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import '../charts/discoverChartDetail/DiscoverChartDetails.scss'
 import '../charts/modal/DeployChart.scss'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import PageHeader from '../common/header/PageHeader'
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
@@ -751,7 +750,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 <PageHeader
                     headerName="Bulk Edit"
                     isTippyShown
-                    TippyIcon={Question}
+                    TippyIcon={ICHelpOutline}
                     tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
                     tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
                 />

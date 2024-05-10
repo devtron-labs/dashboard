@@ -6,31 +6,6 @@ vite.config.ts
 
 # The following files have eslint errors/warningssrc/App.tsx
 src/App.tsx
-src/Pages/GlobalConfigurations/Authorization/APITokens/GroupPermission.tsx
-src/Pages/GlobalConfigurations/Authorization/APITokens/index.ts
-src/Pages/GlobalConfigurations/Authorization/APITokens/validationRules.ts
-src/Pages/GlobalConfigurations/Authorization/PermissionGroups/AddEdit/index.ts
-src/Pages/GlobalConfigurations/Authorization/PermissionGroups/List/index.ts
-src/Pages/GlobalConfigurations/Authorization/PermissionGroups/index.ts
-src/Pages/GlobalConfigurations/Authorization/SSOLoginServices/SSOLogin.component.tsx
-src/Pages/GlobalConfigurations/Authorization/SSOLoginServices/index.ts
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/AddEdit/UserForm.tsx
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/AddEdit/index.ts
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/List/UserPermissionRow.tsx
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/List/index.ts
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/SSONotConfiguredState.tsx
-src/Pages/GlobalConfigurations/Authorization/UserPermissions/index.ts
-src/Pages/GlobalConfigurations/Authorization/index.ts
-src/Pages/GlobalConfigurations/Authorization/shared/components/AppPermissions.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/FilterEmptyState/index.ts
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sListItemCard.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermission.component.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissionModal.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissions.utils.ts
-src/Pages/GlobalConfigurations/Authorization/shared/components/K8sObjectPermissions/K8sPermissons.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/SuperAdminInfoBar/index.ts
-src/Pages/GlobalConfigurations/Authorization/shared/components/userGroups/UserGroup.tsx
-src/Pages/GlobalConfigurations/Authorization/shared/components/userGroups/userGroups.types.ts
 src/components/AppSelector/AppSelector.tsx
 src/components/AppSelector/AppSelectorUtil.tsx
 src/components/AppSelector/ChartSelector.tsx
@@ -111,7 +86,6 @@ src/components/ConfigMapSecret/ConfigMap/ConfigMapList.tsx
 src/components/ConfigMapSecret/ConfigMapSecret.components.tsx
 src/components/ConfigMapSecret/ConfigMapSecretDataEditorContainer.tsx
 src/components/ConfigMapSecret/ConfigMapSecretForm.tsx
-src/components/ConfigMapSecret/InfoIconWithTippy.tsx
 src/components/ConfigMapSecret/Secret/SecretList.tsx
 src/components/ConfigMapSecret/Secret/secret.utils.tsx
 src/components/ConfigMapSecret/Types.ts

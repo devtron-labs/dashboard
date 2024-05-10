@@ -3,8 +3,9 @@ import {
     Drawer,
     OptionType,
     showError,
-    TippyCustomized,
-    TippyTheme,
+    ButtonWithLoader,
+    YAMLStringify,
+    InfoIconTippy
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -22,7 +23,6 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
-    ButtonWithLoader,
     convertToOptionsList,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -35,8 +35,6 @@ import { DropdownIndicator, menuComponentForImage, Option } from '../../../commo
 import { getHostURLConfiguration } from '../../../../../services/service'
 import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
-import { ReactComponent as HelpIcon } from '../../../../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
 import { SwitchItemValues } from '../../../../login/constants'
@@ -70,7 +68,7 @@ const EphemeralContainerDrawer = ({
     })
     const [ephemeralFormAdvanced, setEphemeralFormAdvanced] = useState<EphemeralFormAdvancedType>({
         advancedData: {
-            manifest: yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 }),
+            manifest: YAMLStringify(sampleConfig?.sampleManifest),
         },
     })
     const [selectedImageList, setSelectedImageList] = useState<OptionType>(null)
@@ -95,7 +93,7 @@ const EphemeralContainerDrawer = ({
                     setEphemeralFormAdvanced({
                         ...ephemeralFormAdvanced,
                         advancedData: {
-                            manifest: yamlJsParser.stringify(jsonManifest, { indent: 2 }),
+                            manifest: YAMLStringify(jsonManifest),
                         },
                     })
                 } else {
@@ -162,22 +160,11 @@ const EphemeralContainerDrawer = ({
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
                     <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
+                    <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        showCloseButton
-                        trigger="click"
-                        interactive
-                    >
-                        <div className="flex">
-                            <QuestionIcon className="icon-dim-16 fcn-6 ml-8 cursor" />
-                        </div>
-                    </TippyCustomized>
+                        iconClassName="icon-dim-16 fcn-6 ml-8"
+                    />
                 </h2>
                 <button
                     type="button"
@@ -380,7 +367,7 @@ const EphemeralContainerDrawer = ({
         const codeEditorBody =
             switchManifest === SwitchItemValues.Configuration
                 ? ephemeralFormAdvanced.advancedData.manifest
-                : yamlJsParser.stringify(sampleConfig?.sampleManifest, { indent: 2 })
+                : YAMLStringify(sampleConfig?.sampleManifest)
         return (
             <div className="mr-24 mb-24 code-editor-container">
                 <CodeEditor
@@ -494,7 +481,6 @@ const EphemeralContainerDrawer = ({
                         disabled={loader}
                         dataTestId="cancel-token"
                         isLoading={false}
-                        loaderColor="white"
                     >
                         Cancel
                     </ButtonWithLoader>
@@ -507,7 +493,6 @@ const EphemeralContainerDrawer = ({
                                 : !ephemeralFormAdvanced.advancedData.manifest
                         }
                         isLoading={loader}
-                        loaderColor="white"
                     >
                         Launch container
                     </ButtonWithLoader>

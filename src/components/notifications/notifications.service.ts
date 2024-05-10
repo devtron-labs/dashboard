@@ -126,11 +126,6 @@ export function getChannelConfigs(): Promise<ResponseType> {
     return get(URL)
 }
 
-export function getDefaultConfig(): Promise<ResponseType> {
-    const URL = `${Routes.NOTIFIER}/channel/config`
-    return get(URL)
-}
-
 export function getWebhookAttributes(): Promise<WebhookAttributesResponseType> {
     return get(`${Routes.NOTIFIER}/variables`)
 }
@@ -368,7 +363,7 @@ export function getWebhookConfiguration(webhookConfigId: number): Promise<Respon
 
 export function saveUpdateWebhookConfiguration(data): Promise<UpdateConfigResponseType> {
     const headerObj = {}
-    const headerPayload = data.payload != '' ? JSON.parse(data.payload) : {}
+    const headerPayload = data.payload !== '' ? data.payload : '';
     data.header.forEach((element) => {
         if (element.key != '') {
             headerObj[element.key] = element.value

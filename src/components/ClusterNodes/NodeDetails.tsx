@@ -5,7 +5,8 @@ import {
     toastAccessDenied,
     ServerErrors,
     ErrorScreenManager,
-    copyToClipboard,
+    ClipboardButton,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -31,7 +32,6 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
@@ -54,7 +54,7 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, K8S_RESOURCE_LIST, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { getEventObjectTypeGVK } from '../ResourceBrowser/Utils'
+import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { GVKType } from '../ResourceBrowser/Types'
@@ -64,9 +64,7 @@ export default function NodeDetails({
     isSuperAdmin,
     markTabActiveByIdentifier,
     addTab,
-    updateNodeSelectionData,
     k8SObjectMapRaw,
-    lastDataSync,
 }: ClusterListType) {
     const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
@@ -127,7 +125,7 @@ export default function NodeDetails({
                     } else if (isShowWarning) {
                         setIsShowWarning(false)
                     }
-                    setModifiedManifest(YAML.stringify(manifestData))
+                    setModifiedManifest(YAMLStringify(manifestData))
                 }
                 setLoader(false)
             })
@@ -142,7 +140,7 @@ export default function NodeDetails({
         const isTabFound = markTabActiveByIdentifier(K8S_EMPTY_GROUP, node, nodeType, url)
 
         if (!isTabFound) {
-            let _urlToCreate = `${url}?${_tabName.toLowerCase()}`
+            let _urlToCreate = url
 
             const query = new URLSearchParams(window.location.search)
 
@@ -157,7 +155,7 @@ export default function NodeDetails({
     useEffect(() => {
         getData(patchData)
         handleSelectedTab(node)
-    }, [node, lastDataSync])
+    }, [node])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -176,7 +174,7 @@ export default function NodeDetails({
         if (!k8SObjectMapRaw) {
             return { gvk: { Kind: Nodes.Pod, Group: '', Version: 'v1' }, namespaced: true }
         }
-        return { gvk: getEventObjectTypeGVK(k8SObjectMapRaw, 'pod'), namespaced: true }
+        return getResourceFromK8SObjectMap(k8SObjectMapRaw, 'pod')
     }, [k8SObjectMapRaw])
 
     const changeNodeTab = (e): void => {
@@ -241,8 +239,9 @@ export default function NodeDetails({
     }
 
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
+        const keyValue = `${key}=${value || ''}`
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
@@ -255,29 +254,9 @@ export default function NodeDetails({
                         {value}
                     </div>
                 )}
-
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(instance) => {
-                        setCopied(false)
-                    }}
-                    interactive
-                >
-                    <div className="flex">
-                        <Clipboard
-                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(`${key}=${value || ''}`, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
-                    </div>
-                </Tippy>
+                <div className="dc__visible-hover--child">
+                    <ClipboardButton content={keyValue} />
+                </div>
             </div>
         )
     }
@@ -312,7 +291,7 @@ export default function NodeDetails({
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -325,15 +304,8 @@ export default function NodeDetails({
                     }}
                     interactive
                 >
-                    <div className="flex">
-                        <Clipboard
-                            className="ml-8 mt-5 cursor hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(key, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
+                    <div className="flex dc__visible-hover--child">
+                        <ClipboardButton content={key} />
                     </div>
                 </Tippy>
             </div>
@@ -657,7 +629,6 @@ export default function NodeDetails({
         }`
         const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
         if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData, _group)
             push(_url)
         } else {
             toast.error(
@@ -733,7 +704,7 @@ export default function NodeDetails({
                                     <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
-                                    <div className="hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
                                         <Tippy
                                             className="default-tt"
                                             arrow={false}
@@ -751,28 +722,10 @@ export default function NodeDetails({
                                                 {pod.name}
                                             </span>
                                         </Tippy>
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="bottom"
-                                            content={copied ? 'Copied!' : 'Copy'}
-                                            trigger="mouseenter click"
-                                            onShow={(instance) => {
-                                                setCopied(false)
-                                            }}
-                                            interactive
-                                        >
-                                            <div className="flex">
-                                                <Clipboard
-                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14 mw-14"
-                                                    onClick={() => {
-                                                        copyToClipboard(pod.name, () => {
-                                                            setCopied(true)
-                                                        })
-                                                    }}
-                                                />
-                                            </div>
-                                        </Tippy>
+                                        <div className="dc__visible-hover--child">
+                                            <ClipboardButton content={pod.name} />
+                                        </div>
+
                                         <ResourceBrowserActionMenu
                                             clusterId={clusterId}
                                             resourceData={pod}
@@ -916,7 +869,7 @@ export default function NodeDetails({
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
         setIsEdit(false)
-        setModifiedManifest(YAML.stringify(nodeDetail.manifest))
+        setModifiedManifest(YAMLStringify(nodeDetail.manifest))
     }
 
     const handleEditorValueChange = (codeEditorData: string): void => {
@@ -997,7 +950,7 @@ export default function NodeDetails({
             <div className="node-details-container">
                 <CodeEditor
                     value={modifiedManifest}
-                    defaultValue={(nodeDetail?.manifest && YAML.stringify(nodeDetail.manifest)) || ''}
+                    defaultValue={(nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || ''}
                     height={getCodeEditorHeight()}
                     readOnly={!isEdit}
                     theme="vs-dark--dt"
@@ -1131,7 +1084,7 @@ export default function NodeDetails({
             <div className="bcn-0 node-data-container flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase())}
+                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
                 />
             </div>
         )

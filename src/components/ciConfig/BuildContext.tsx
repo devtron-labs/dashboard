@@ -2,13 +2,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
-import { CustomInput, OptionType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
 import { _multiSelectStyles, getBuildContextCheckoutSelectStyles } from './CIConfig.utils'
 import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
 const getBuildContextAdditionalContent = () => {
@@ -26,24 +24,15 @@ const getBuildContextAdditionalContent = () => {
 
 const InfoCard: FunctionComponent = () => {
     return (
-        <div className="flex row ml-0">
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={QuestionFilled}
+        <div className="row ml-0">
+            <InfoIconTippy
                 heading="Docker build context"
                 infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                showCloseButton
-                trigger="click"
-                interactive
                 documentationLinkText="View Documentation"
                 additionalContent={getBuildContextAdditionalContent()}
-            >
-                <div className="icon-dim-16 fcn-5 ml-8 cursor">
-                    <Question />
-                </div>
-            </TippyCustomized>
+                iconClassName="icon-dim-16 fcn-6 ml-4"
+                placement="right"
+            />
         </div>
     )
 }

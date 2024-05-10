@@ -15,9 +15,14 @@ import {
     CHECKBOX_VALUE,
     VisibleModal,
     WorkflowNodeType,
+    CommonNodeAttr,
+    WorkflowType,
+    getDefaultConfig,
     KeyValueListType,
     HandleKeyValueChangeType,
     KeyValueListActionType,
+    abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -26,7 +31,7 @@ import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
-import { CIMaterialRouterProps, MATERIAL_TYPE, NodeAttr, WorkflowType } from '../../../app/details/triggerView/types'
+import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -84,14 +89,15 @@ import {
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { getDefaultConfig } from '../../../notifications/notifications.service'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
+import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const processDeploymentWindowStateAppGroup = importComponentFromFELibrary('processDeploymentWindowStateAppGroup', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -235,6 +241,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }
     }, [filteredWorkflows])
 
+    // TODO: This call should not be here rather inside ApprovalMaterialModal
     const getConfigs = () => {
         getDefaultConfig().then((response) => {
             const isConfigPresent = response.result.isConfigured
@@ -260,6 +267,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
+            if(processDeploymentWindowStateAppGroup && _workflows.length){
+              await processDeploymentWindowStateAppGroup(_workflows)
+            }
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -460,7 +470,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         workflows: WorkflowType[],
         _selectedMaterial: CIMaterialType,
     ) => {
-        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash)
+        abortPreviousRequests(
+            () =>
+                getGitMaterialByCommitHash(
+                    ciPipelineMaterialId.toString(),
+                    commitHash,
+                    abortControllerRef.current.signal,
+                ),
+            abortControllerRef,
+        )
             .then((response) => {
                 const _result = response.result
                 if (_result) {
@@ -495,14 +513,26 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedMaterial.isMaterialSelectionError = true
                     _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
-                setFilteredWorkflows(workflows)
+                setFilteredWorkflows([...workflows])
             })
             .catch((error: ServerErrors) => {
-                showError(error)
-                _selectedMaterial.isMaterialLoading = false
-                setFilteredWorkflows(workflows)
+                if (!getIsRequestAborted(error)) {
+                    showError(error)
+                    _selectedMaterial.isMaterialLoading = false
+                    setFilteredWorkflows([...workflows])
+                }
             })
     }
+
+    const getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) =>
+        abortPreviousRequests(
+            () => getMaterialHistory(nodeId, abortControllerRef.current.signal, gitMaterialId, showExcluded),
+            abortControllerRef,
+        ).catch((errors: ServerErrors) => {
+            if (!getIsRequestAborted(errors)) {
+                showError(errors)
+            }
+        })
 
     const getMaterialByCommit = async (
         _ciNodeId: number,
@@ -543,17 +573,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         } else {
             setFilteredWorkflows(_workflows)
-            abortControllerRef.current = new AbortController()
-            getMaterialHistory(
-                selectedCINode.id.toString(),
-                abortControllerRef.current.signal,
-                gitMaterialId,
-                false,
-            ).catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(errors)
-                }
-            })
+            getMaterialHistoryWrapper(selectedCINode.id.toString(), gitMaterialId, false)
         }
     }
 
@@ -575,14 +595,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = new AbortController()
-        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
-            (errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(errors)
-                }
-            },
-        )
+        getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
     }
 
     const getMaterialHistory = (
@@ -666,8 +679,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return wf
         })
         setFilteredWorkflows(_workflows)
-        abortControllerRef.current = abortController ?? new AbortController()
-        refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
+
+        // Would be only aborting the calls before refreshGitMaterial and not the subsequent calls
+        abortPreviousRequests(
+            () => refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal),
+            abortControllerRef,
+        )
             .then((response) => {
                 getMaterialHistory(
                     ciNodeId.toString(),
@@ -675,13 +692,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     gitMaterialId,
                     showExcluded,
                 ).catch((errors: ServerErrors) => {
-                    if (!abortControllerRef.current.signal.aborted) {
+                    if (!getIsRequestAborted(errors)) {
                         showError(errors)
                     }
                 })
             })
             .catch((error: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(error)) {
                     showError(error)
                 }
             })
@@ -770,6 +787,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setShowCIModal(true)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
+        abortControllerRef.current.abort()
         abortControllerRef.current = new AbortController()
         let _appID
         for (const _wf of filteredWorkflows) {
@@ -822,10 +840,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (!abortControllerRef.current.signal.aborted) {
+                if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    setErrorCode(errors.code)
-                    setPageViewType(ViewType.ERROR)
+                    setShowCIModal(false)
                 }
             })
             .finally(() => {
@@ -1056,7 +1073,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
-    const isBuildAndBranchTriggerAllowed = (node: NodeAttr): boolean =>
+    const isBuildAndBranchTriggerAllowed = (node: CommonNodeAttr): boolean =>
         !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
 
     const changeBranch = (value): void => {
@@ -1300,7 +1317,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
-                let _selectedNode: NodeAttr
+                let _selectedNode: CommonNodeAttr
                 const _materialData = cdMaterialResponse[_appId]
 
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
@@ -1333,7 +1350,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setCDLoading(true)
         const _appIdMap = new Map<string, string>()
-        const nodeList: NodeAttr[] = []
+        const nodeList: CommonNodeAttr[] = []
         const triggeredAppList: { appId: number; envId?: number; appName: string }[] = []
 
         for (const _wf of filteredWorkflows) {
@@ -1341,7 +1358,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = _wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
-                let _selectedNode: NodeAttr
+                let _selectedNode: CommonNodeAttr
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
@@ -1443,7 +1460,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403) {
+                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
@@ -1514,7 +1531,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(true)
         let node
         const skippedResources = []
-        const nodeList: NodeAttr[] = []
+        const nodeList: CommonNodeAttr[] = []
         const triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
@@ -1633,7 +1650,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
-                let _selectedNode: NodeAttr
+                let _selectedNode: CommonNodeAttr
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
@@ -1844,7 +1861,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const renderCIMaterial = (): JSX.Element | null => {
         if (showCIModal || showMaterialRegexModal) {
-            let nd: NodeAttr
+            let nd: CommonNodeAttr
             let _appID
             if (selectedCINode?.id) {
                 const configuredMaterialList = new Map<number, Set<number>>()
@@ -2010,7 +2027,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal) {
-            let node: NodeAttr
+            let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
@@ -2076,7 +2093,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && showApprovalModal) {
-            let node: NodeAttr
+            let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
@@ -2093,7 +2110,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return (
                 <ApprovalMaterialModal
                     isLoading={isCDLoading}
-                    node={node ?? ({} as NodeAttr)}
+                    node={node ?? ({} as CommonNodeAttr)}
                     materialType={materialType}
                     stageType={DeploymentNodeType[selectedCDNode?.type]}
                     closeApprovalModal={closeApprovalModal}
@@ -2224,6 +2241,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const handleModalClose = () => {
+        history.push(match.url)
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2258,6 +2279,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         {renderBulkTriggerActionButtons()}
                     </div>
                 )}
+                <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
             </>
         )
     }

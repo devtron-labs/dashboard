@@ -8,6 +8,7 @@ import {
     GenericEmptyState,
     DetailsProgressing,
     DeploymentAppTypes,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -38,6 +39,7 @@ import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { importComponentFromFELibrary } from '../../common'
+import DockerImageDetails from './DockerImageDetails'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -389,7 +391,7 @@ const ChartDeploymentHistory = ({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAML.stringify(parsedJson, { indent: 2 })
+                return YAMLStringify(parsedJson)
             } catch (e) {
                 return value
             }
@@ -572,34 +574,6 @@ const ChartDeploymentHistory = ({
         setShowDockerInfo(false)
     }
 
-    // A functional component for showing docker icon inside deployment history
-    const RenderedDockerImageDetails: React.FC<{ deployment: ChartDeploymentDetail }> = ({ deployment })  =>{
-        return <>
-            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
-                return (
-                    <div key={index} className="dc__app-commit__hash ml-10">
-                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
-                            <span>
-                                <img src={docker} className="commit-hash__icon grayscale" />
-                                <span className="ml-3" data-testid="docker-version-deployment-history">
-                                    {dockerImage.split(':')[1] || dockerImage}
-                                </span>
-                            </span>
-                        </Tippy>
-                    </div>
-                )
-            })}
-            {deployment.dockerImages.length > 3 && (
-                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
-                    <span>
-                        <span className="">{deployment.dockerImages.length - 3}</span>
-                        <span className="ml-3">more</span>
-                    </span>
-                </div>
-            )} 
-        </>
-    }
-
     function renderSelectedDeploymentDetailHeader() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
@@ -624,7 +598,9 @@ const ChartDeploymentHistory = ({
                                     </div>
                                 </div>
                             )}
-                            {deployment.dockerImages?.length && <RenderedDockerImageDetails deployment={deployment} />}
+                            {deployment.dockerImages?.length && (
+                                <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
+                            )}
                         </div>
                     </div>
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (

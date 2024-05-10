@@ -50,7 +50,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.ERROR })
+                this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
     }
 

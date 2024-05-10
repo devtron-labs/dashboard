@@ -5,10 +5,11 @@ import {
     BlockedStateData,
     ConsequenceType,
     ConsequenceAction,
+    WorkflowType,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
-import { WorkflowType } from '../app/details/triggerView/types'
 import { getEnvAppList } from './AppGroup.service'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
 
@@ -124,8 +125,8 @@ export const handleSourceNotConfigured = (
     }
 }
 
-export const envListOptions = (inputValue: string): Promise<[]> =>
-    new Promise((resolve) => {
+export const envListOptions = (inputValue: string, signal?: AbortSignal): Promise<[]> => {
+    return new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
         }
@@ -134,7 +135,7 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                 resolve([])
                 return
             }
-            getEnvAppList({ envName: inputValue })
+            getEnvAppList({ envName: inputValue }, signal)
                 .then((response) => {
                     let appList = []
                     if (response.result) {
@@ -148,13 +149,16 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                     resolve(appList as [])
                 })
                 .catch((errors: ServerErrors) => {
-                    resolve([])
-                    if (errors.code) {
-                        showError(errors)
+                    if (!getIsRequestAborted(errors)) {
+                        resolve([])
+                        if (errors.code) {
+                            showError(errors)
+                        }
                     }
                 })
         }, 300)
     })
+}
 
 export const appGroupAppSelectorStyle = {
     control: (base, state) => ({

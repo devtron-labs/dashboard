@@ -7,19 +7,28 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     useSearchString,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
+import PodPopup from './PodPopup'
+import AppDetailsStore from '../../appDetails.store'
 import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
-import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AppType, NodeType } from '../../appDetails.type'
-import AppDetailsStore from '../../appDetails.store'
+import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
-import { ReactComponent as Trash } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { importComponentFromFELibrary } from '../../../../common'
+import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
+const SecurityModal = importComponentFromFELibrary('SecurityModal')
+const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+
+const NodeDeleteComponent = ({
+    nodeDetails,
+    appDetails,
+    isDeploymentBlocked,
+}: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -27,6 +36,19 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
+    const [manifestPayload, setManifestPayload] = useState<ReturnType<typeof getAppDetailsForManifest> | null>(null)
+
+    const handleShowVulnerabilityModal = () => {
+        /* TODO: need to set to prevent outsideClick propagation */
+        setTimeout(() => {
+            setManifestPayload(getAppDetailsForManifest(appDetails))
+        }, 100)
+    }
+
+    const handleCloseVulnerabilityModal = () => {
+        setManifestPayload(null)
+    }
+
     const { queryParams } = useSearchString()
     const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
@@ -38,47 +60,48 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
         history.push(generatePath(updatedPath, { ...params, tab }))
     }
 
-    const PodPopup: React.FC<{
-        kind: NodeType
-        describeNode: (tab?: NodeDetailTabsType) => void
-    }> = ({ kind, describeNode }) => {
+    const renderDeleteResourcePopup = () => {
+        if (!showDeleteConfirmation) {
+            return null
+        }
+        if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
+            return (
+                <DeploymentWindowConfirmationDialog
+                    onClose={toggleShowDeleteConfirmation}
+                    isLoading={apiCallInProgress}
+                    type={MODAL_TYPE.RESOURCE}
+                    onClickActionButton={deleteResourceAction}
+                    appName={appDetails.appName}
+                    envName={appDetails.environmentName}
+                    appId={params.appId}
+                    envId={params.envId}
+                    forceDelete={forceDelete}
+                    apiCallInProgress={apiCallInProgress}
+                    forceDeleteHandler={forceDeleteHandler}
+                    resourceName={nodeDetails?.name}
+                />
+            )
+        }
         return (
-            <div className="pod-info__popup-container">
-                {kind === NodeType.Pod ? (
-                    <span
-                        data-testid="view-events-button"
-                        className="flex pod-info__popup-row"
-                        onClickCapture={(e) => describeNode(NodeDetailTabs.EVENTS)}
+            <DeleteDialog
+                title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
+                delete={deleteResourceAction}
+                closeDelete={toggleShowDeleteConfirmation}
+                apiCallInProgress={apiCallInProgress}
+            >
+                <DeleteDialog.Description>
+                    <p className="mb-12">Are you sure, you want to delete this resource?</p>
+                    <Checkbox
+                        rootClassName="resource-force-delete"
+                        isChecked={forceDelete}
+                        value={CHECKBOX_VALUE.CHECKED}
+                        disabled={apiCallInProgress}
+                        onChange={forceDeleteHandler}
                     >
-                        View Events
-                    </span>
-                ) : (
-                    ''
-                )}
-                {kind === NodeType.Pod ? (
-                    <span
-                        data-testid="view-logs-button"
-                        className="flex pod-info__popup-row"
-                        onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
-                    >
-                        View Container Logs
-                    </span>
-                ) : (
-                    ''
-                )}
-                {!isExternalArgoApp && (
-                    <span
-                        data-testid="delete-resource-button"
-                        className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                        onClick={(e) => {
-                            setShowDeleteConfirmation(true)
-                        }}
-                    >
-                        <span>Delete</span>
-                        <Trash className="icon-dim-20 scr-5" />
-                    </span>
-                )}
-            </div>
+                        Force delete resource
+                    </Checkbox>
+                </DeleteDialog.Description>
+            </DeleteDialog>
         )
     }
 
@@ -89,7 +112,6 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
             setShowDeleteConfirmation(false)
             setForceDelete(false)
             toast.success('Deletion initiated successfully.')
-            // AppDetailsStore.markResourceDeleted(nodeDetails?.kind, nodeDetails?.name);
             const _tabs = AppDetailsStore.getAppDetailsTabs()
             const appDetailsTabs = _tabs.filter((_tab) => _tab.name === nodeDetails.name)
 
@@ -99,6 +121,7 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
             showError(err)
         } finally {
             setApiCallInProgress(false)
+            setShowDeleteConfirmation(false)
         }
     }
 
@@ -121,30 +144,28 @@ const NodeDeleteComponent = ({ nodeDetails, appDetails }) => {
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>
-                    <PodPopup kind={nodeDetails?.kind} describeNode={describeNodeWrapper} />
+                    <PodPopup
+                        kind={nodeDetails?.kind}
+                        describeNode={describeNodeWrapper}
+                        toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
+                        isExternalArgoApp={isExternalArgoApp}
+                        handleShowVulnerabilityModal={handleShowVulnerabilityModal}
+                    />
                 </PopupMenu.Body>
             </PopupMenu>
-            {showDeleteConfirmation && (
-                <DeleteDialog
-                    title={`Delete ${nodeDetails?.kind} "${nodeDetails?.name}"`}
-                    delete={deleteResourceAction}
-                    closeDelete={toggleShowDeleteConfirmation}
-                    apiCallInProgress={apiCallInProgress}
-                >
-                    <DeleteDialog.Description>
-                        <p className="mb-12">Are you sure, you want to delete this resource?</p>
-                        <Checkbox
-                            rootClassName="resource-force-delete"
-                            isChecked={forceDelete}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            disabled={apiCallInProgress}
-                            onChange={forceDeleteHandler}
-                        >
-                            Force delete resource
-                        </Checkbox>
-                    </DeleteDialog.Description>
-                </DeleteDialog>
+
+            {!!manifestPayload && SecurityModal && (
+                <SecurityModal
+                    resourceScanPayload={{
+                        ...nodeDetails,
+                        ...manifestPayload,
+                        isAppDetailView: true
+                    }}
+                    handleModalClose={handleCloseVulnerabilityModal}
+                />
             )}
+
+            {renderDeleteResourcePopup()}
         </div>
     )
 }

@@ -1,14 +1,14 @@
 import moment from 'moment'
-import { get, post, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
-import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
+import { get, post, APIOptions, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JOB_STATUS } from './Constants'
-import { JobCIPipeline } from './Types'
+import { JobCIPipeline, JobList } from './Types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 
 export const getJobs = (request, options?: APIOptions) => {
-    return post(Routes.JOB_LIST, request, options)
+    return post(Routes.JOB_LIST, request, options) as Promise<JobList>
 }
 
 export const createJob = (request) => {

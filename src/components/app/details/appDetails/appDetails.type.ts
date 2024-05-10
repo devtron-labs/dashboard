@@ -186,6 +186,9 @@ export interface DetailsType {
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnvRef?: React.MutableRefObject<boolean>
+    isDeploymentBlocked?: boolean
+    filteredEnvIds?: string
+    onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {
@@ -217,13 +220,10 @@ export interface IssuesCardType {
 }
 
 export interface SecurityVulnerabilityCardType {
-    severityCount?: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: () => void
     cardLoading?: boolean
+    appId?: string
+    envId?: string
+    installedAppId?: number
 }
 
 export interface DeployedCommitCardType {

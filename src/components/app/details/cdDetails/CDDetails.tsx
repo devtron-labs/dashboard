@@ -7,6 +7,7 @@ import {
     GenericEmptyState,
     DeploymentAppTypes,
     useAsync,
+    STAGE_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -36,7 +37,6 @@ import {
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -251,17 +251,17 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         if (triggerId === triggerDetail?.id) {
             const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
             const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
-            if (appliedFilters.length) {
-                setTriggerHistory((triggerHistory) => {
-                    triggerHistory.set(triggerId, { ...triggerDetail, appliedFilters, appliedFiltersTimestamp })
-                    return new Map(triggerHistory)
-                })
-            } else {
-                setTriggerHistory((triggerHistory) => {
-                    triggerHistory.set(triggerId, triggerDetail)
-                    return new Map(triggerHistory)
-                })
+            const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
+            const additionalDataObject = {
+                ...(appliedFilters.length ? { appliedFilters } : {}),
+                ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
+                ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
             }
+
+            setTriggerHistory((triggerHistory) => {
+                triggerHistory.set(triggerId, { ...triggerDetail, ...additionalDataObject })
+                return new Map(triggerHistory)
+            })
 
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
                 setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
@@ -329,6 +329,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                             tagsEditable={tagsEditable}
                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                             fetchIdData={fetchTriggerIdData}
+                            selectedEnvironmentName={selectedEnv?.environmentName}
                         />
                     </Route>
                 ) : !envId ? (
@@ -362,6 +363,7 @@ export const TriggerOutput: React.FC<{
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
     fetchIdData: FetchIdDataStatus
+    selectedEnvironmentName?: string
 }> = ({
     fullScreenView,
     syncState,
@@ -376,6 +378,7 @@ export const TriggerOutput: React.FC<{
     tagsEditable,
     hideImageTaggingHardDelete,
     fetchIdData,
+    selectedEnvironmentName,
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -479,7 +482,9 @@ export const TriggerOutput: React.FC<{
 
     return (
         <>
-            <div className="trigger-details-container">
+            <div
+                className={`trigger-details-container ${triggerDetails.triggerMetadata ? 'with-trigger-metadata' : ''}`}
+            >
                 {!fullScreenView && (
                     <>
                         <TriggerDetails
@@ -495,6 +500,7 @@ export const TriggerOutput: React.FC<{
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
+                            triggerMetadata={triggerDetails.triggerMetadata}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppTypes.HELM && (
@@ -575,6 +581,7 @@ export const TriggerOutput: React.FC<{
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                selectedEnvironmentName={selectedEnvironmentName}
             />
         </>
     )
@@ -597,6 +604,7 @@ const HistoryLogs: React.FC<{
     appReleaseTags: string[]
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
+    selectedEnvironmentName?: string
 }> = ({
     triggerDetails,
     loading,
@@ -613,6 +621,7 @@ const HistoryLogs: React.FC<{
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
+    selectedEnvironmentName,
 }) => {
     const { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -684,6 +693,8 @@ const HistoryLogs: React.FC<{
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                                 appliedFilters={triggerDetails.appliedFilters ?? []}
                                 appliedFiltersTimestamp={triggerDetails.appliedFiltersTimestamp}
+                                selectedEnvironmentName={selectedEnvironmentName}
+                                promotionApprovalMetadata={triggerDetails?.promotionApprovalMetadata}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (

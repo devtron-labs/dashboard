@@ -1,4 +1,4 @@
-import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -42,6 +42,7 @@ export interface CDPipeline {
     runPostStageInEnv: boolean
     isClusterCdActive: boolean
     deploymentAppType?: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
 }
 
 export interface AppListMin extends ResponseType {
@@ -75,6 +76,8 @@ export interface AppEnvironment {
     isProtected?: boolean
     pipelineId?: number
     latestCdWorkflowRunnerId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppIdWorkflowNamesMapping {
@@ -86,32 +89,6 @@ export interface AppOtherEnvironment extends ResponseType {
 }
 export interface AllWorkflows extends ResponseType {
     result?: AppIdWorkflowNamesMapping
-}
-
-export interface LastExecutionResponseType {
-    code: number
-    status: string
-    result: {
-        scanExecutionId: number
-        lastExecution: string
-        appId?: number
-        appName?: string
-        envId?: number
-        envName?: string
-        pod?: string
-        replicaSet?: string
-        image?: string
-        objectType: 'app' | 'chart'
-        scanned: boolean
-        scanEnabled: boolean
-        severityCount: {
-            critical: number
-            moderate: number
-            low: number
-        }
-        vulnerabilities: VulnerabilityType[]
-        scanToolId?: number
-    }
 }
 
 export interface LastExecutionMinResponseType {

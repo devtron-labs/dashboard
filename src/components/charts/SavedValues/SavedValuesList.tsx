@@ -8,6 +8,7 @@ import {
     useBreadcrumb,
     DeleteDialog,
     GenericEmptyState,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import moment from 'moment'
@@ -29,7 +30,6 @@ import {
     getChartVersionsMin,
 } from '../charts.service'
 import './savedValues.scss'
-import PageHeader from '../../common/header/PageHeader'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 export default function SavedValuesList() {
@@ -377,7 +377,6 @@ export default function SavedValuesList() {
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenManager
                     code={errorStatusCode}
-                    subtitle="Information on this page is available only to superadmin users."
                 />
             </div>
         )

@@ -8,6 +8,7 @@ import {
     DeleteDialog,
     DeploymentNodeType,
     CDMaterialType,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -21,7 +22,6 @@ import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dot
 import CDMaterial from '../app/details/triggerView/cdMaterial'
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import PageHeader from '../common/header/PageHeader'
 
 export interface BulkActionListProps extends RouteComponentProps<{}> {}
 
@@ -77,7 +77,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                 })
             })
             .catch((error) => {
-                this.setState({ view: ViewType.ERROR })
+                this.setState({ view: ViewType.ERROR, code: error.code })
                 showError(error)
             })
     }
@@ -332,10 +332,10 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     render() {
         return (
-            <div>
+            <div className="h-100">
                 <PageHeader headerName="Deployment Groups" renderActionButtons={this.renderActionButtons} />
 
-                <div className="deployment-group-list-page__body">
+                <div className="deployment-group-list-page__body h-100">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}
                     {this.state.view === ViewType.ERROR && <ErrorScreenManager code={this.state.code} />}

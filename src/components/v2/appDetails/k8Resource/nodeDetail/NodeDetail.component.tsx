@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -8,13 +8,14 @@ import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { ManifestViewRefType, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
+import { getResourceFromK8SObjectMap } from '../../../../ResourceBrowser/Utils'
 import './nodeDetail.css'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../../../../ResourceBrowser/Constants'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
@@ -29,8 +30,8 @@ const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     markTabActiveByIdentifier,
+    k8SObjectMapRaw,
     addTab,
-    selectedResource,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
@@ -60,6 +61,7 @@ const NodeDetailComponent = ({
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
     const { path, url } = useRouteMatch()
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
             setManagedFields(true)
@@ -67,6 +69,22 @@ const NodeDetailComponent = ({
             setManagedFields(false)
         }
     }
+
+    const _selectedResource = useMemo(
+        () => getResourceFromK8SObjectMap(k8SObjectMapRaw, params.nodeType),
+        [k8SObjectMapRaw, params.nodeType],
+    )
+
+    const selectedResource = {
+        clusterId: +params.clusterId,
+        kind: _selectedResource?.gvk.Kind as string,
+        version: _selectedResource?.gvk.Version,
+        group: _selectedResource?.gvk.Group,
+        namespace: params.namespace,
+        name: params.node,
+        containers: [],
+    }
+
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],
     )
@@ -77,7 +95,22 @@ const NodeDetailComponent = ({
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [hideDeleteButton, setHideDeleteButton] = useState(false)
 
-    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    // States uplifted from Manifest Component
+    const manifestViewRef = useRef<ManifestViewRefType>({
+        data: {
+            error: false,
+            secretViewAccess: false,
+            desiredManifest: '',
+            manifest: '',
+            activeManifestEditorData: '',
+            modifiedManifest: '',
+            isEditmode: false,
+            activeTab: 'Live manifest', // NOTE: default activeTab
+        },
+        id: '',
+    })
+
+    useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -190,10 +223,12 @@ const NodeDetailComponent = ({
         const isTabFound = isResourceBrowserView
             ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
+        setSelectedTabName(_tabName)
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
+                /* NOTE: shouldn't this be _url instead of url */
+                let _urlToCreate = _url
 
                 const query = new URLSearchParams(window.location.search)
 
@@ -206,10 +241,7 @@ const NodeDetailComponent = ({
                 } else {
                     AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
-                setSelectedTabName(_tabName)
             }, 500)
-        } else if (selectedTabName !== _tabName) {
-            setSelectedTabName(_tabName)
         }
     }
 
@@ -254,12 +286,17 @@ const NodeDetailComponent = ({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
+    const getComponentKeyFromParams = () => {
+        return Object.values(params).join('/')
+    }
+
     const renderPodTerminal = (): JSX.Element => {
         if (!startTerminal) {
             return null
         }
         return (
             <TerminalComponent
+                key={getComponentKeyFromParams()}
                 showTerminal={location.pathname.endsWith('/terminal')}
                 selectedTab={handleSelectedTab}
                 isDeleted={isDeleted}
@@ -357,16 +394,20 @@ const NodeDetailComponent = ({
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
                         <ManifestComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            manifestViewRef={manifestViewRef}
+                            getComponentKey={getComponentKeyFromParams}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
                         <EventsComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
@@ -381,6 +422,7 @@ const NodeDetailComponent = ({
                             }}
                         >
                             <LogsComponent
+                                key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}
                                 logSearchTerms={logSearchTerms}
