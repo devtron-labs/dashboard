@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
@@ -60,7 +60,6 @@ export default function ClusterTerminal({
 }: ClusterTerminalType) {
     const { nodeType } = useParams<{ [key: string]: string }>()
     const location = useLocation()
-    const history = useHistory()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')

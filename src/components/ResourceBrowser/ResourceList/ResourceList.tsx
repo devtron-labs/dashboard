@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import {
     getUserRole,
     BreadCrumb,
@@ -33,8 +33,9 @@ import { renderCreateResourceButton } from '../PageHeader.buttons'
 import { renderRefreshBar } from './ResourceList.component'
 
 const ResourceList = () => {
-    const { clusterId, namespace, nodeType, node } = useParams<URLParams>()
+    const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
     const { replace } = useHistory()
+    const { url } = useRouteMatch()
     const {
         tabs,
         initTabs,
@@ -88,13 +89,29 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const isSuperAdmin = userRole?.result.superAdmin || false
+    const isSuperAdmin = !!userRole?.result.superAdmin
 
     /* FIXME: could use constants for the tab indices */
     const dynamicActiveTab = tabs.find((tab, index) => index > (isSuperAdmin ? 2 : 1) && tab.isSelected)
 
     const initTabsBasedOnRole = (reInit: boolean) => {
-        const _tabs = getTabsBasedOnRole(selectedCluster, namespace, isSuperAdmin)
+        const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+        const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+        const _tabs = getTabsBasedOnRole(
+            selectedCluster,
+            namespace,
+            isSuperAdmin,
+            nodeType === AppDetailsTabs.terminal,
+            /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
+            node && {
+                idPrefix: isNodeTypeNode ? K8S_EMPTY_GROUP : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
+                name: node,
+                kind: nodeType,
+                url,
+                isSelected: true,
+                positionFixed: false,
+            },
+        )
 
         initTabs(_tabs, reInit)
     }
@@ -238,8 +255,14 @@ const ResourceList = () => {
         updateTabLastSyncMoment(tabs[1].id)
     }
 
+    const markTabActiveByIdSetter = (id = '') => () => markTabActiveById(id)
+
     const fixedTabComponents = [
-        <ClusterOverview isSuperAdmin={isSuperAdmin} selectedCluster={selectedCluster} />,
+        <ClusterOverview
+            isSuperAdmin={isSuperAdmin}
+            selectedCluster={selectedCluster}
+            markNodesTabActive={markTabActiveByIdSetter(tabs[1]?.id)}
+        />,
         <K8SResourceTabComponent
             selectedCluster={selectedCluster}
             addTab={addTab}
@@ -310,8 +333,8 @@ const ResourceList = () => {
                 {/* NOTE: to allow for shareable urls if node is available in url but no associated
                  * dynamicTab we allow for this to pass into renderDynamicTabComponent as that will
                  * create the missing tab */}
-                {(dynamicActiveTab || node) &&
-                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey || node)}
+                {(dynamicActiveTab) &&
+                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey)}
             </>
         )
     }

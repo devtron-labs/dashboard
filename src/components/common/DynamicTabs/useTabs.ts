@@ -84,7 +84,7 @@ export function useTabs(persistanceKey: string) {
         const _id = `${_initTab.idPrefix}-${title}`
         return populateTabData(
             _id,
-            title,
+            _initTab.name,
             _initTab.url,
             _initTab.isSelected,
             title,
@@ -92,7 +92,7 @@ export function useTabs(persistanceKey: string) {
             _initTab.iconPath,
             _initTab.dynamicTitle,
             _initTab.showNameOnSelect,
-            _initTab.isAlive || false,
+            !!_initTab.isAlive,
         )
     }
 
@@ -119,6 +119,7 @@ export function useTabs(persistanceKey: string) {
                     _tabs = prevTabs
                 }
             }
+            _tabs.forEach((_tab) => (_tab.isSelected = false))
             if (_tabs.length > 0) {
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
@@ -127,6 +128,8 @@ export function useTabs(persistanceKey: string) {
                 initTabsData.forEach((_initTab, idx) => {
                     if (!tabNames.includes(_initTab.name)) {
                         _tabs.push(populateInitTab(_initTab, idx))
+                    } else if (_initTab.isSelected) {
+                        _tabs[tabNames.indexOf(_initTab.name)].isSelected = true
                     }
                 })
             } else {
@@ -134,6 +137,9 @@ export function useTabs(persistanceKey: string) {
                     _tabs.push(populateInitTab(_initTab, idx))
                 })
             }
+            /* NOTE: need to fix an order ? */
+            _tabs.some((_tab) => _tab.isSelected) || (_tabs[FALLBACK_TAB].isSelected = true)
+            _tabs.sort((a, b) => a.positionFixed ? -1 : 0)
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs, parsedTabsData))
             return _tabs
         })
@@ -153,6 +159,7 @@ export function useTabs(persistanceKey: string) {
      * @param {boolean} [showNameOnSelect] - Whether to show the tab name when selected
      * @param {boolean} [isAlive] - indicates if showNameOnSelect tabs have been selected once
      * @returns {boolean} True if the tab was successfully added
+     * @returns {Promise<boolean>} - A promise resolving if the tab was found. If tab is not found a new tab is added
      */
     const addTab = (
         idPrefix: string,
@@ -164,13 +171,15 @@ export function useTabs(persistanceKey: string) {
         dynamicTitle?: string,
         showNameOnSelect?: boolean,
         isAlive?: boolean,
-    ): boolean => {
+    ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return
         }
+        // @ts-ignore available on all latest browsers
+        const { promise, resolve } = Promise.withResolvers<boolean>()
 
         const title = `${kind}/${name}`
-        let alreadyAdded = false
+        let found = false
         const _id = `${idPrefix}-${title}`
 
         setTabs((prevTabs) => {
@@ -179,16 +188,16 @@ export function useTabs(persistanceKey: string) {
                 if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
                     tab.isSelected = true
                     tab.url = url
-                    alreadyAdded = true
+                    found = true
                 }
                 return tab
             })
 
-            if (!alreadyAdded) {
+            if (!found) {
                 _tabs.push(
                     populateTabData(
                         _id,
-                        title,
+                        name,
                         url,
                         true,
                         title,
@@ -200,13 +209,11 @@ export function useTabs(persistanceKey: string) {
                     ),
                 )
             }
+            resolve(!found)
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
-        /**
-         * FIXME: this is not accurate since the setState is async and can't be sure unless
-         * using the fix in #removeTabByIdentifier (using Promise.withResolvers) */
-        return true
+        return promise
     }
 
     /**

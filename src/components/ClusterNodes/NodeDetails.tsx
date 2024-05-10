@@ -7,6 +7,7 @@ import {
     ErrorScreenManager,
     ClipboardButton,
     YAMLStringify,
+    Nodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -58,11 +59,9 @@ import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { GVKType } from '../ResourceBrowser/Types'
-import { Nodes } from '../app/types'
 
 export default function NodeDetails({
     isSuperAdmin,
-    markTabActiveByIdentifier,
     addTab,
     k8SObjectMapRaw,
 }: ClusterListType) {
@@ -136,25 +135,8 @@ export default function NodeDetails({
             })
     }
 
-    const handleSelectedTab = (_tabName: string) => {
-        const isTabFound = markTabActiveByIdentifier(K8S_EMPTY_GROUP, node, nodeType, url)
-
-        if (!isTabFound) {
-            let _urlToCreate = url
-
-            const query = new URLSearchParams(window.location.search)
-
-            if (query.get('container')) {
-                _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
-            }
-
-            addTab(K8S_EMPTY_GROUP, nodeType, node, _urlToCreate)
-        }
-    }
-
     useEffect(() => {
         getData(patchData)
-        handleSelectedTab(node)
     }, [node])
 
     useEffect(() => {
@@ -627,17 +609,18 @@ export default function NodeDetails({
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
             tab ? `/${tab.toLowerCase()}` : ''
         }`
-        const isAdded = addTab(`${_group}_${namespace}`, 'pod', name, _url)
-        if (isAdded) {
-            push(_url)
-        } else {
+        addTab(`${_group}_${namespace}`, 'pod', name, _url).then((isAdded) => {
+            if (isAdded) {
+                push(_url)
+                return
+            }
             toast.error(
                 <div>
                     <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
                     <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
                 </div>,
             )
-        }
+        })
     }
 
     const renderPodHeaderCell = (

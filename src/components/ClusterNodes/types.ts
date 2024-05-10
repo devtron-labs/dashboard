@@ -5,6 +5,7 @@ import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { ApiResourceGroupType, ClusterOptionType } from '../ResourceBrowser/Types'
+import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -174,16 +175,9 @@ export interface ColumnMetadataType {
 
 export interface ClusterListType {
     isSuperAdmin: boolean
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
     k8SObjectMapRaw: ApiResourceGroupType[]
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: ReturnType<typeof useTabs>['addTab']
 }
 
 export interface ClusterDetailsPropType extends ClusterListType {
@@ -251,16 +245,7 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
-    addTab: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-        dynamicTitle?: string,
-        showNameOnSelect?: boolean,
-    ) => boolean
+    addTab: ReturnType<typeof useTabs>['addTab']
 }
 
 export interface NodeActionRequest {
@@ -399,6 +384,7 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
     selectedCluster: ClusterOptionType
+    markNodesTabActive: () => void
 }
 
 export type SearchTextType = (typeof NODE_SEARCH_TEXT)[keyof typeof NODE_SEARCH_TEXT]

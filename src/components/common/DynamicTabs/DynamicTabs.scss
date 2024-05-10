@@ -105,53 +105,34 @@
 
     .dynamic-tabs-container,
     .fixed-tabs-container {
+        display: flex;
+        align-items: center;
+        height: 36px;
 
-        .dynamic-tabs-wrapper,
-        .fixed-tabs-wrapper {
-            list-style: none;
-            display: flex;
-            margin: 0px;
-            padding: 0px;
+    .dynamic-tab-selected {
+        border-bottom: 2px solid var(--N0);
+        border-left: 1px solid var(--N200);
+        border-right: 1px solid var(--N200);
 
-            .dynamic-tab {
-                max-width: max-content;
-                width: 100%;
-                min-width: 91px;
-            }
-
-            .dynamic-tab,
-            .fixed-tab {
-                cursor: pointer;
-
-                &.dynamic-tab__item-selected {
-                    +.dynamic-tab__border {
-                        display: none;
-                    }
-                }
-
-                .dynamic-tab-selected {
-                    border-top: 1px solid var(--N200);
-                    border-bottom: 1px solid var(--N0);
-                    border-left: 1px solid var(--N200);
-                    border-right: 1px solid var(--N200);
-                    border-top-right-radius: 8px;
-                    border-top-left-radius: 8px;
-
-                    .dynamic-tab__resource {
-                        user-select: none;
-                        text-align: center;
-                        color: var(--N700);
-
-                        &:hover {
-                            color: var(--B500) !important;
-                        }
-
-                        .dynamic-tab__deleted {
-                            text-decoration: line-through;
-                        }
-                    }
-                }
-            }
+        +.dynamic-tab__border {
+            display: none;
         }
+    }
+
+
+    .dynamic-tab__resource {
+        user-select: none;
+        text-align: center;
+        color: var(--N900);
+        padding: 8px 12px;
+
+        &:hover {
+            color: var(--B500) !important;
+        }
+
+        .dynamic-tab__deleted {
+            text-decoration: line-through;
+        }
+    }
     }
 }

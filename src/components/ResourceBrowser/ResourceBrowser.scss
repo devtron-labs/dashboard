@@ -102,10 +102,9 @@
                         }
                     }
 
-                    .search__input {
-                        &:focus {
-                            border: none;
-                        }
+                    .search__input:focus {
+                        outline: solid 1px var(--B500);
+                        border: none;
                     }
 
                     .resource-search-shortcut-key {

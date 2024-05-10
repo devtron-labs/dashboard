@@ -137,7 +137,9 @@ export const K8SResourceList = ({
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         updateK8sResourceTab(location.pathname + `?${searchParamString}`)
-        handleFilterChanges(searchText, resourceList)
+        handleFilterChanges(text, resourceList)
+        text && setResourceListOffset(0) /* NOTE: if resourceListOffset is 0 setState is noop */
+        !text && setFilteredResourceList(resourceList.data)
     }
 
     const resetPaginator = () => {
@@ -151,9 +153,7 @@ export const K8SResourceList = ({
     ): void => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
-            searchWorkerRef.current.onmessage = (e) => {
-                setFilteredResourceList(e.data)
-            }
+            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
         }
 
         if (resourceList) {
@@ -162,19 +162,6 @@ export const K8SResourceList = ({
                 payload: {
                     searchText: _searchText,
                     list: _resourceList.data,
-                    searchInKeys: [
-                        'name',
-                        'namespace',
-                        'status',
-                        'message',
-                        EVENT_LIST.dataKeys.involvedObject,
-                        'source',
-                        'reason',
-                        'type',
-                        'age',
-                        'node',
-                        'ip',
-                    ],
                     origin: new URL(window.__BASE_URL__, window.location.href).origin,
                 },
             })
@@ -205,20 +192,13 @@ export const K8SResourceList = ({
             tab ? `/${tab.toLowerCase()}` : ''
         }`
         const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        const isAdded = addTab(idPrefix, kind, resourceName, _url)
-
-        if (isAdded) {
-            push(_url)
-        }
+        addTab(idPrefix, kind, resourceName, _url).then(() => push(_url))
     }
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        const isAdded = addTab(K8S_EMPTY_GROUP, 'node', name, _url)
-        if (isAdded) {
-            push(_url)
-        }
+        addTab(K8S_EMPTY_GROUP, 'node', name, _url).then(() => push(_url))
     }
 
     const getStatusClass = (status: string) => {
@@ -432,7 +412,7 @@ export const K8SResourceList = ({
                 )}
                 {showPaginatedView && (
                     <Pagination
-                        rootClassName="resource-browser-paginator dc__border-top"
+                        rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
                         size={filteredResourceList.length}
                         pageSize={pageSize}
                         offset={resourceListOffset}

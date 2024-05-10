@@ -215,17 +215,19 @@ const NodeDetailComponent = ({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const _idPrefix = `${
-            selectedResource?.kind === SIDEBAR_KEYS.eventGVK.Kind
-                ? K8S_EMPTY_GROUP
-                : selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP
-        }_${params.namespace}`
-        const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(_idPrefix, params.node, params.nodeType, _url)
-            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
         setSelectedTabName(_tabName)
 
-        if (!isTabFound) {
+        /**
+         * NOTE: resource browser handles creation of missing tabs;
+         * Need to remove this whole function and not keep missing tab creation
+         * logic here. Instead it should be the concern on this component & should
+         * only be done on component mount */
+        if (isResourceBrowserView) {
+            return
+        }
+
+        /* NOTE: this setTimeout is dangerous; Need to refactor later */
+        if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
             setTimeout(() => {
                 /* NOTE: shouldn't this be _url instead of url */
                 let _urlToCreate = _url
@@ -236,11 +238,7 @@ const NodeDetailComponent = ({
                     _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
                 }
 
-                if (isResourceBrowserView) {
-                    addTab(_idPrefix, params.nodeType, params.node, _urlToCreate)
-                } else {
-                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
-                }
+                AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
             }, 500)
         }
     }

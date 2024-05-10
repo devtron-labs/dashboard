@@ -3,12 +3,12 @@ import { useLocation } from 'react-router-dom'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
 import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
+import { InitTabType } from '../common/DynamicTabs/Types'
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType: string): Map<string, K8SObjectMapType> => {
@@ -208,7 +208,9 @@ export const getTabsBasedOnRole = (
     selectedCluster: ClusterOptionType,
     namespace: string,
     isSuperAdmin: boolean,
-) => {
+    isTerminalSelected = false,
+    dynamicTabData: InitTabType,
+): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
         {
@@ -228,7 +230,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: true,
+            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
             positionFixed: true,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
@@ -241,13 +243,15 @@ export const getTabsBasedOnRole = (
                       idPrefix: AppDetailsTabsIdPrefix.terminal,
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-                      isSelected: false,
+                      isSelected: isTerminalSelected,
                       positionFixed: true,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
+                      isAlive: isTerminalSelected,
                       dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
                   },
               ]),
+        ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
     return tabs

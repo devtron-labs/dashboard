@@ -39,10 +39,9 @@ const DynamicTabs = ({
     isOverview,
     setIsDataStale,
 }: DynamicTabsProps & IWithShortcut) => {
-    const { push } = useHistory()
+    const { push, replace } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
-    const dynamicWrapperRef = useRef<HTMLUListElement>(null)
     const moreButtonRef = useRef<Select<DynamicTabType, false, GroupBase<DynamicTabType>>>(null)
     const tabRef = useRef<HTMLAnchorElement>(null)
     const [tabsData, setTabsData] = useState<TabsDataType>(EMPTY_TABS_DATA)
@@ -63,38 +62,41 @@ const DynamicTabs = ({
         }
     }
 
+    const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {
+        markTabActiveById(tab.id)
+        push(tab.url)
+    }
+
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
         const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect, isAlive } = tab
 
         return (
-            <NavLink
-                to={url}
-                ref={updateRef}
-                className={`dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp dc__ellipsis-right pl-12 pt-8 pb-8 ${
-                    isFixed ? 'pr-12' : 'pr-8'
-                } w-100`}
-                data-selected={isSelected}
+            <button
+                className="dc__unset-button-styles"
+                data-testid={isSelected}
+                onClick={getMarkTabActiveHandler(tab)}
+                aria-label={`Select tab ${tab.name}`}
             >
                 <div
-                    className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
+                    className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
                     {(!showNameOnSelect || isAlive || isSelected) && (
                         <span
-                            className={`fs-12 fw-6 lh-20 dc__ellipsis-right ${iconPath ? 'ml-8' : ''} `}
+                            className="fs-12 fw-6 lh-20 dc__ellipsis-right"
                             data-testid={name}
                         >
                             {dynamicTitle || name}
                         </span>
                     )}
                 </div>
-            </NavLink>
+            </button>
         )
     }
 
-    const handleTabCloseAction = (e) => {
-        e.stopPropagation()
-        const pushURLPromise = removeTabByIdentifier(e.currentTarget.dataset.id)
+    const handleTabCloseAction: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+        event.stopPropagation()
+        const pushURLPromise = removeTabByIdentifier(event.currentTarget.dataset.id)
         pushURLPromise.then((url) => url && push(url))
     }
 
@@ -115,65 +117,58 @@ const DynamicTabs = ({
         )
     }
 
-    const markTabActiveOnClickFactory = (tab: DynamicTabType) => () => markTabActiveById(tab.id)
-
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive
 
         return (
             <Fragment key={`${idx}-tab`}>
                 <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
-                <button
-                    id={tab.name}
-                    className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'}  flex left flex-grow-1 ${
-                        tab.isSelected ? 'dynamic-tab__item-selected' : ''
-                    } dc__unset-button-styles`}
-                    onClick={markTabActiveOnClickFactory(tab)}
+                <ConditionalWrap
+                    condition={!isFixed}
+                    wrap={(children) => (
+                        <Tippy
+                            className="default-tt dc__mxw-300 dc__mnw-100"
+                            arrow={false}
+                            placement="top"
+                            duration={[600, 0]}
+                            moveTransition="transform 0.1s ease-out"
+                            content={getTabTippyContent(tab.title)}
+                        >
+                            {children}
+                        </Tippy>
+                    )}
                 >
-                    <ConditionalWrap
-                        condition={!isFixed}
-                        wrap={(children) => (
-                            <Tippy
-                                className="default-tt dc__mxw-300 dc__mnw-100"
-                                arrow={false}
-                                placement="top"
-                                duration={[600, 0]}
-                                moveTransition="transform 0.1s ease-out"
-                                content={getTabTippyContent(tab.title)}
-                            >
-                                {children}
-                            </Tippy>
-                        )}
+                    <div
+                        id={tab.name}
+                        className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${
+                            tab.isSelected ? 'dynamic-tab-selected' : ''
+                        }`}
                     >
-                        <div className="flex w-100">
+                        {getTabNavLink(tab, isFixed)}
+                        {_showNameOnSelect && (
                             <div
-                                className={`w-100 ${
-                                    tab.isSelected ? 'dynamic-tab-selected bcn-0 cn-9' : ''
-                                } flex left ${isFixed && !_showNameOnSelect ? '' : 'pr-12'} h-36`}
+                                className="dynamic-tab__close icon-dim-16 flex ml-auto"
+                                data-id={tab.id}
+                                onClick={handleTabStopAction}
                             >
-                                {getTabNavLink(tab, isFixed)}
-                                {_showNameOnSelect && (
-                                    <div
-                                        className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
-                                        data-id={tab.id}
-                                        onClick={handleTabStopAction}
-                                    >
-                                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                    </div>
-                                )}
-                                {!isFixed && (
-                                    <div
-                                        className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
-                                        data-id={tab.id}
-                                        onClick={handleTabCloseAction}
-                                    >
-                                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                                    </div>
-                                )}
+                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
                             </div>
-                        </div>
-                    </ConditionalWrap>
-                </button>
+                        )}
+                        {!isFixed && (
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles pr-12"
+                                aria-label={`Close tab ${tab.name}`}
+                                onClick={handleTabCloseAction}
+                                data-id={tab.id}
+                            >
+                                <div className="dynamic-tab__close flex br-4">
+                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                </div>
+                            </button>
+                        )}
+                    </div>
+                </ConditionalWrap>
             </Fragment>
         )
     }
@@ -209,13 +204,17 @@ const DynamicTabs = ({
                             />
                         )}
                     </div>
-                    <div
-                        className="dynamic-tab__close icon-dim-20 flex br-5 ml-8"
-                        data-id={data.id}
+                    <button
+                        type="button"
+                        className="dc__unset-button-styles"
+                        aria-label={`Close tab ${data.name}`}
                         onClick={handleTabCloseAction}
+                        data-id={data.id}
                     >
-                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                    </div>
+                        <div className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto">
+                            <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                        </div>
+                    </button>
                 </components.Option>
             </div>
         )
@@ -307,25 +306,21 @@ const DynamicTabs = ({
     }
 
     return (
-        <div ref={tabsSectionRef} className="dynamic-tabs-section flex left pl-12 pr-12 w-100 dc__outline-none-imp">
+        <div ref={tabsSectionRef} className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">
             {tabsData.fixedTabs.length > 0 && (
                 <div ref={fixedContainerRef} className="fixed-tabs-container">
-                    <ul className="fixed-tabs-wrapper flex left p-0 m-0">
-                        {tabsData.fixedTabs.map((tab, idx) => renderTab(tab, idx, true))}
-                    </ul>
+                    {tabsData.fixedTabs.map((tab, idx) => renderTab(tab, idx, true))}
                 </div>
             )}
             {tabsData.dynamicTabs.length > 0 && (
                 <div
-                    className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected ? '' : 'dc__border-left'}`}
+                    className={`dynamic-tabs-container ${tabsData.dynamicTabs[0].isSelected || tabsData.fixedTabs[tabsData.fixedTabs.length - 1].isSelected ? '' : 'dc__border-left'}`}
                 >
-                    <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
-                        {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
-                    </ul>
+                    {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                 </div>
             )}
             {(tabsData.dynamicTabs.length > 0 || (!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
-                <div className="ml-auto flexbox dc__no-shrink dc__align-self-stretch dc__border-left">
+                <div className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${tabsData.dynamicTabs[(tabsData.dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}>
                     {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
                         <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
                     )}

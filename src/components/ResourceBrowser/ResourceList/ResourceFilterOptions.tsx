@@ -32,9 +32,11 @@ const ResourceFilterOptions = ({
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { clusterId,  namespace } = useParams<URLParams>()
-    const [showShortcutKey, setShowShortcutKey] = useState(!searchText)
     const [showFilterModal, setShowFilterModal] = useState(false)
+    const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+
+    const showShortcutKey = !isInputFocused && !searchText
 
     /* TODO: Find use for this loading state */
     const [, namespaceByClusterIdList] = useAsync(
@@ -46,15 +48,6 @@ const ResourceFilterOptions = ({
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],
         [namespaceByClusterIdList],
     )
-
-    const handleInputShortcut = () => {
-        searchInputRef.current?.focus()
-        setShowShortcutKey(false)
-    }
-
-    const handleShowFilterModal = () => {
-        setShowFilterModal(true)
-    }
 
     useEffect(() => {
         /* TODO: handle nicely */
@@ -73,6 +66,14 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut])
 
+    const handleInputShortcut = () => {
+        searchInputRef.current?.focus()
+    }
+
+    const handleShowFilterModal = () => {
+        setShowFilterModal(true)
+    }
+
     const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
         (e.key === 'Escape' || e.key === 'Esc') && searchInputRef.current?.blur()
     }
@@ -90,14 +91,11 @@ const ResourceFilterOptions = ({
         setSelectedNamespace(selected)
     }
 
-    const focusHandler = (e) => {
-        setShowShortcutKey(e.type === 'focus' ? false : !searchText)
+    const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) =>
+        setIsInputFocused(false)
 
-        if (searchInputRef.current?.parentElement) {
-            searchInputRef.current.parentElement.style.border =
-                e.type === 'focus' ? '1px solid var(--B500)' : '1px solid var(--N200)'
-        }
-    }
+    const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) =>
+        setIsInputFocused(true)
 
     const clearSearchInput = () => {
         setSearchText('')
@@ -123,8 +121,8 @@ const ResourceFilterOptions = ({
                             className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
                             onChange={handleOnChangeSearchText}
                             onKeyUp={handleFilterKeyPress}
-                            onFocus={focusHandler}
-                            onBlur={focusHandler}
+                            onFocus={handleInputFocus}
+                            onBlur={handleInputBlur}
                             disabled={isSearchInputDisabled}
                             data-testid="search-input-for-resource"
                         />

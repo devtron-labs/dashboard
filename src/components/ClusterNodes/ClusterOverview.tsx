@@ -22,10 +22,7 @@ import { importComponentFromFELibrary } from '../common'
 
 const Catalog = importComponentFromFELibrary('Catalog')
 
-function ClusterOverview({
-    isSuperAdmin,
-    selectedCluster,
-}: ClusterOverviewProps) {
+function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -120,7 +117,7 @@ function ClusterOverview({
             setDescriptionData(data)
         } else {
             setErrorCode(clusterNoteResponse.reason['code'])
-        } 
+        }
     }
 
     const setClusterCapacityDetails = (clusterCapacityResponse) => {
@@ -213,6 +210,7 @@ function ClusterOverview({
                 nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
+        markNodesTabActive()
         history.push(newUrl)
     }
 
@@ -381,9 +379,9 @@ function ClusterOverview({
             <>
                 {/* Commented to be used in future */}
                 {/* {cardDetailsInBar()} */}
-                <div className="flexbox dc__content-space pb-16">
-                    <div className="flexbox dc__content-space mr-12 w-50 bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16">
-                        <div className="mr-16 w-25">
+                <div className="dc__grid-row-one-half dc__gap-16 pb-16">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.usagePercentage
@@ -391,17 +389,17 @@ function ClusterOverview({
                                     : tippyForMetricsApi()}
                             </div>
                         </div>
-                        <div className="mr-16 w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Capacity</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">{clusterCapacityData?.cpu?.capacity}</div>
                         </div>
-                        <div className="mr-16 w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Requests</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.requestPercentage}
                             </div>
                         </div>
-                        <div className="w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">CPU Limits</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.cpu?.limitPercentage}
@@ -409,8 +407,8 @@ function ClusterOverview({
                         </div>
                     </div>
 
-                    <div className="flexbox dc__content-space w-50 bcn-0 br-4 en-2 bw-1  pt-16 pl-16 pb-16 pr-16">
-                        <div className="mr-16 w-25">
+                    <div className="flexbox dc__gap-12 dc__content-space dc__overflow-scroll bcn-0 br-4 en-2 bw-1 pt-16 pl-16 pb-16 pr-16">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Usage</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.usagePercentage
@@ -418,19 +416,19 @@ function ClusterOverview({
                                     : tippyForMetricsApi()}
                             </div>
                         </div>
-                        <div className="mr-16 w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Capacity</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.capacity}
                             </div>
                         </div>
-                        <div className="mr-16 w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Requests</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.requestPercentage}
                             </div>
                         </div>
-                        <div className="w-25">
+                        <div>
                             <div className="dc__align-left fs-13 fw-4 cn-7 dc__ellipsis-right">Memory Limits</div>
                             <div className="dc__align-left fs-24 fw-4 cn-9">
                                 {clusterCapacityData?.memory?.limitPercentage}
@@ -508,7 +506,7 @@ function ClusterOverview({
             return (
                 <ErrorScreenManager
                     code={errorStatusCode || errorCode}
-                    subtitle={(errorCode==403?unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()):'')}
+                    subtitle={errorCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) : ''}
                 />
             )
         }
