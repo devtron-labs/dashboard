@@ -4023,6 +4023,10 @@ textarea::placeholder {
     filter: blur(1.5px);
 }
 
+.dc__blur-12 {
+    filter: blur(12px);
+}
+
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
