@@ -4482,6 +4482,12 @@ textarea::placeholder {
 }
 
 .last-child {
+    &__display-none {
+        &:last-child {
+            display: none;
+        }
+    }
+
     &__no-border {
         &:last-child {
             border: none;
