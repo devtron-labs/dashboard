@@ -123,8 +123,15 @@ export function useTabs(persistanceKey: string) {
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
                 }
-                const tabNamesSet = new Set(_tabs.map((_tab) => _tab.name))
-                const initTabsNotInTabs = initTabsData.filter((_initTab) => !tabNamesSet.has(_initTab.name))
+                const tabNamesSet = _tabs.map((_tab) => _tab.name)
+                const initTabsNotInTabs = initTabsData.filter((_initTab) => {
+                    const index = tabNamesSet.indexOf(_initTab.name)
+                    if (index === -1) {
+                        return true
+                    }
+                    _tabs[index].isSelected = _initTab.isSelected
+                    return false
+                })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))
             } else {
                 initTabsData.forEach((_initTab) => {
