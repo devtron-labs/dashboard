@@ -146,13 +146,17 @@ const DynamicTabs = ({
                     >
                         {getTabNavLink(tab, isFixed)}
                         {_showNameOnSelect && (
-                            <div
-                                className="dynamic-tab__close icon-dim-16 flex ml-auto"
-                                data-id={tab.id}
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles pr-12"
+                                aria-label={`Stop tab ${tab.name}`}
                                 onClick={handleTabStopAction}
+                                data-id={tab.id}
                             >
-                                <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                            </div>
+                                <div className="dynamic-tab__close flex br-4">
+                                    <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
+                                </div>
+                            </button>
                         )}
                         {!isFixed && (
                             <button

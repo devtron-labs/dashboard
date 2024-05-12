@@ -67,23 +67,29 @@ export const K8SResourceList = ({
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
 
     /* TODO: what to do with the error? */
-    const [resourceListLoader, _resourceList, /*resourceListDataError*/, reloadResourceListData] = useAsync(() => {
-        if (!selectedResource || selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
-            return null
-        }
-        return abortPreviousRequests(
-            () => getResourceList(
-                getResourceListPayload(
-                    clusterId,
-                    selectedNamespace.value.toLowerCase(),
-                    selectedResource,
-                    location.search,
-                ),
-                abortControllerRef.current.signal,
-            ),
-            abortControllerRef,
-        )
-    }, [selectedResource, clusterId, selectedNamespace])
+    const [resourceListLoader, _resourceList, /*resourceListDataError*/, reloadResourceListData] = useAsync(
+        () => {
+            if (!selectedResource || selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
+                return null
+            }
+            return abortPreviousRequests(
+                () =>
+                    getResourceList(
+                        getResourceListPayload(
+                            clusterId,
+                            selectedNamespace.value.toLowerCase(),
+                            selectedResource,
+                            location.search,
+                        ),
+                        abortControllerRef.current.signal,
+                    ),
+                abortControllerRef,
+            )
+        },
+        [selectedResource, clusterId, selectedNamespace],
+        true,
+        { resetOnChange: true },
+    )
 
     const resourceList = _resourceList?.result || null
 
@@ -91,6 +97,7 @@ export const K8SResourceList = ({
 
     useEffect(() => {
         if (!resourceList) {
+            setFilteredResourceList(null)
             return
         }
         switch (selectedResource?.gvk.Kind) {
