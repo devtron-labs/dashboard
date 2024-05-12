@@ -220,7 +220,7 @@ export const getTabsBasedOnRole = (
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
             isSelected: false,
-            positionFixed: true,
+            position: 0,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
         },
@@ -231,7 +231,7 @@ export const getTabsBasedOnRole = (
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
             isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
-            positionFixed: true,
+            position: 1,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -244,7 +244,7 @@ export const getTabsBasedOnRole = (
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      positionFixed: true,
+                      position: 2,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,

@@ -109,7 +109,7 @@ const ResourceList = () => {
                 kind: nodeType,
                 url,
                 isSelected: true,
-                positionFixed: false,
+                position: -1,
             },
         )
 

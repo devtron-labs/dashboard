@@ -9,7 +9,7 @@ interface CommonTabArgsType {
     isSelected: boolean
     title?: string
     isDeleted?: boolean
-    positionFixed: boolean
+    position: number
     iconPath?: string
     dynamicTitle?: string
     showNameOnSelect?: boolean

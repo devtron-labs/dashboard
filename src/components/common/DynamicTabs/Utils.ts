@@ -52,7 +52,7 @@ export const initTabsData = (
             label: tab.name,
             value: tab.id,
         }
-        if (tab.positionFixed) {
+        if (tab.position > -1) {
             fixedTabs.push(tabOption)
         } else {
             dynamicTabs.push(tabOption)
