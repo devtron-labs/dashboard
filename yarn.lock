@@ -982,10 +982,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.81":
-  version "0.0.81"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.81.tgz#ca06a6d86ea2548084b0b9facfde0f27655789ef"
-  integrity sha512-2siZFk6B5lA1E1DxyBn/wMKD6+r+wvoFS1/2mMmuOCx56jJAXkTCgc676H/gMySfj85PohphWJmQadzhxJU0dw==
+"@devtron-labs/devtron-fe-common-lib@0.0.82":
+  version "0.0.82"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.82.tgz#ff09c0c677eb8022eb1a4349b2ddbd73792dd7f5"
+  integrity sha512-mbgyK3I45iNcu0OkzPEikj1yO1IDJsHR816x+XokZnw2wqdCTuQf9/g9Qlyl0ObAOZPZrKzuCvSt56iB/IQE4w==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
@@ -6086,9 +6086,9 @@ schema-utils@^3.0.0:
     ajv "^6.12.5"
     ajv-keywords "^3.5.2"
 
-semver@7.x, semver@^7.3.5, semver@^7.5.4:
+semver@7.x, semver@^7.5.4:
   version "7.6.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.0.tgz#1a46a4db4bffcccd97b743b5005c8325f23d4e2d"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.6.0.tgz"
   integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
   dependencies:
     lru-cache "^6.0.0"
@@ -6097,6 +6097,11 @@ semver@^6.3.0, semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
+
+semver@^7.3.5:
+  version "7.6.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.6.2.tgz#1e3b34759f896e8f14d6134732ce798aeb0c6e13"
+  integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
 
 serialize-javascript@^4.0.0:
   version "4.0.0"

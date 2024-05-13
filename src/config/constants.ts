@@ -311,6 +311,9 @@ export const repoType = {
     CONFIGURE: 'CONFIGURE',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',

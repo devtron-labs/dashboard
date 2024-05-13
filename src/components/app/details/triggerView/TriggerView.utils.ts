@@ -1,9 +1,9 @@
-import { KeyValueListType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { KeyValueListType, showError, DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
-import { DeploymentWithConfigType, RuntimeParamsValidatorReturnType, TriggerViewDeploymentConfigType } from './types'
+import { RuntimeParamsValidatorReturnType, TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
