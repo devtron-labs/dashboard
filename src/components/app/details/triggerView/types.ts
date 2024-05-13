@@ -21,6 +21,7 @@ import {
     HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
+    DeploymentWithConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -98,12 +99,6 @@ export interface CDMaterialProps {
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
     isRedirectedFromAppDetails?:  boolean
-}
-
-export enum DeploymentWithConfigType {
-    LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
-    LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
 }
 
 export interface ConfigToDeployOptionType {
