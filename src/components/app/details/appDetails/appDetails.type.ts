@@ -1,4 +1,4 @@
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, OptionType } from '../../types'
 import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
@@ -188,6 +188,7 @@ export interface DetailsType {
     isVirtualEnvRef?: React.MutableRefObject<boolean>
     isDeploymentBlocked?: boolean
     filteredEnvIds?: string
+    deploymentUserActionState?: ACTION_STATE
     onCloseHideDeploymentWindowConfirmationModal?: () => void
 }
 
