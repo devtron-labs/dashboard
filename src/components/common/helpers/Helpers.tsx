@@ -1202,7 +1202,7 @@ export const getApprovalModalTypeFromURL = (url: string): APPROVAL_MODAL_TYPE =>
 }
 
 export const getCTAClass = (userActionState: string, disableDeployButton?: boolean): string => {
-    let className = 'cta flex ml-auto'
+    let className = 'cta small flex ml-auto'
     if (disableDeployButton) {
         className += ' disabled-opacity'
     } else if (userActionState === ACTION_STATE.BLOCKED) {
