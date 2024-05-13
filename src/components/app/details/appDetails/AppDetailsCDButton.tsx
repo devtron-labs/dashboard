@@ -66,7 +66,7 @@ const AppDetailsCDButton = ({
                     <InfoOutline className="icon-dim-16 mr-6" />
                 ) : (
                     <DeployIcon
-                        className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.ALLOWED ? '' : 'scn-9'}`}
+                        className={`icon-dim-16 dc__no-svg-fill mr-6 ${deploymentUserActionState === ACTION_STATE.PARTIAL ? 'scn-9' : ''}`}
                     />
                 )}
                 {BUTTON_TITLE[DeploymentNodeType.CD]}
