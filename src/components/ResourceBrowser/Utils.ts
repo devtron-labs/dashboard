@@ -4,7 +4,7 @@ import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
+import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType, FIXED_TABS_INDICES } from './Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
@@ -43,7 +43,6 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
 ) => {
     const splittedKey = e.currentTarget.dataset.groupName.split('/')
     const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
-    _k8SObjectMap.forEach((value) => value.isExpanded = false)
 
     if (splittedKey.length > 1) {
         const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
@@ -51,7 +50,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
             return _k8SObjectMap
         }
 
-        _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
         const _childObj = _k8SObjectMap.get(splittedKey[0])
         _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
         _k8SObjectMap.set(splittedKey[0], _childObj)
@@ -61,7 +60,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
             return _k8SObjectMap
         }
 
-        _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
         _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
     }
 
@@ -220,7 +219,7 @@ export const getTabsBasedOnRole = (
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
             isSelected: false,
-            position: 0,
+            position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
         },
@@ -231,7 +230,7 @@ export const getTabsBasedOnRole = (
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
             isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
-            position: 1,
+            position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -244,7 +243,7 @@ export const getTabsBasedOnRole = (
                       name: AppDetailsTabs.terminal,
                       url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
                       isSelected: isTerminalSelected,
-                      position: 2,
+                      position: FIXED_TABS_INDICES.ADMIN_TERMINAL,
                       iconPath: TerminalIcon,
                       showNameOnSelect: true,
                       isAlive: isTerminalSelected,

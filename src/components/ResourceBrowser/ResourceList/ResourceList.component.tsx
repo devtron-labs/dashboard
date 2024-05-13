@@ -149,28 +149,26 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
     namespaced,
     isSelected,
     onClick,
-}) => {
-    return (
-        <button
-            type="button"
-            className="dc__unset-button-styles"
-            key={kind}
-            ref={parentRef}
-            data-group={group}
-            data-version={version}
-            data-kind={kind}
-            data-namespaced={namespaced}
-            data-selected={isSelected}
-            onClick={onClick}
-            aria-label={`Select ${text}`}
+}) => (
+    <button
+        type="button"
+        className="dc__unset-button-styles"
+        key={kind}
+        ref={(isSelected && parentRef) || null}
+        data-group={group}
+        data-version={version}
+        data-kind={kind}
+        data-namespaced={namespaced}
+        data-selected={isSelected}
+        onClick={onClick}
+        aria-label={`Select ${text}`}
+    >
+        <div
+            className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
+                isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
+            }`}
         >
-            <div
-                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                    isSelected ? 'bcb-1 cb-5' : 'cn-7 dc__hover-n50'
-                }`}
-            >
-                {text}
-            </div>
-        </button>
-    )
-}
+            {text}
+        </div>
+    </button>
+)

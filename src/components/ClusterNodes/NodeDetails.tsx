@@ -65,7 +65,7 @@ export default function NodeDetails({
     addTab,
     k8SObjectMapRaw,
 }: ClusterListType) {
-    const { clusterId, nodeType, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
+    const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -92,7 +92,6 @@ export default function NodeDetails({
     const [isEdit, setIsEdit] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
-    const { url } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -12,6 +12,7 @@ import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@dev
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
+import { URLS } from '../../../config'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -31,7 +32,7 @@ const ResourceFilterOptions = ({
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
-    const { clusterId,  namespace } = useParams<URLParams>()
+    const { clusterId, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -86,7 +87,7 @@ const ResourceFilterOptions = ({
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        const pathname = location.pathname.replace(`/${namespace}/`, `/${selected.value}/`)
+        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
         updateK8sResourceTab(pathname + `?${location.search}`)
         setSelectedNamespace(selected)
     }

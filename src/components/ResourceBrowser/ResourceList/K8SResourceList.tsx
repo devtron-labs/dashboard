@@ -23,7 +23,6 @@ import {
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
     SIDEBAR_KEYS,
-    EVENT_LIST,
     SEARCH_QUERY_PARAM_KEY,
 } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
@@ -54,7 +53,7 @@ export const K8SResourceList = ({
     const { push } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
-    const { clusterId, namespace, nodeType } = useParams<URLParams>()
+    const { clusterId, nodeType, group } = useParams<URLParams>()
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
@@ -222,13 +221,13 @@ export const K8SResourceList = ({
         return (
             <div
                 key={`row--${index}-${resourceData.name}`}
-                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__hover-n50"
+                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
                 {resourceList?.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
+                            className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
                         >
@@ -274,7 +273,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                            className={`dc__inline-block dc__ellipsis-right pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
@@ -305,13 +304,15 @@ export const K8SResourceList = ({
                                     }}
                                 />
                                 <span>
-                                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
-                                        <PodRestartIcon
-                                            clusterId={clusterId}
-                                            name={resourceData.name}
-                                            namespace={resourceData.namespace}
-                                        />
-                                    )}
+                                    {columnName === 'restarts' &&
+                                        Number(resourceData.restarts) !== 0 &&
+                                        PodRestartIcon && (
+                                            <PodRestartIcon
+                                                clusterId={clusterId}
+                                                name={resourceData.name}
+                                                namespace={resourceData.namespace}
+                                            />
+                                        )}
                                 </span>
                             </ConditionalWrap>
                         </div>
@@ -324,13 +325,13 @@ export const K8SResourceList = ({
     const emptyStateActionHandler = () => {
         setFilteredResourceList(resourceList?.data)
         setSearchText('')
-        const pathname = location.pathname.replace(`/${namespace}/`, `/${ALL_NAMESPACE_OPTION.value}/`)
+        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
         updateK8sResourceTab(pathname)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
     }
 
     const renderEmptyPage = (): JSX.Element => {
-        if (!resourceList) {
+        if (filteredResourceList.length === 0 && !searchText && selectedNamespace.value === ALL_NAMESPACE_OPTION.value) {
             return (
                 <ResourceListEmptyState
                     title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}

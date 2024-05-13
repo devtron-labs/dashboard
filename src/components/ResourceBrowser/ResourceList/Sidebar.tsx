@@ -9,9 +9,10 @@ import {
     highlightSearchText,
     ReactSelectInputAction,
     useRegisterShortcut,
+    Nodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import {
     ApiResourceGroupType,
     K8SObjectChildMapType,
@@ -20,7 +21,7 @@ import {
     SidebarType,
     URLParams,
 } from '../Types'
-import { AggregationKeys, Nodes } from '../../app/types'
+import { AggregationKeys } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
 import { getK8Abbreviates } from '../ResourceBrowser.service'
@@ -41,13 +42,12 @@ const Sidebar = ({
 }: SidebarType & IWithShortcut) => {
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
-    const { clusterId, namespace, nodeType, group, node } = useParams<URLParams>()
+    const { clusterId, namespace, nodeType } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))
     const [, k8Abbreviates] = useAsync(getK8Abbreviates)
-    const selectedChildRef = useRef<HTMLButtonElement>(null)
-    const preventScrollRef = useRef<boolean>(false)
+    const preventScrollRef = useRef(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
     const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
 
@@ -74,34 +74,16 @@ const Sidebar = ({
         }
     }, [registerShortcut])
 
-    useEffect(() => {
-        if (!list?.size || !selectedChildRef.current) {
-            return
+    const getGroupHeadingClickHandler =
+        (preventCollapse = false) =>
+        (e: React.MouseEvent<HTMLElement> | { currentTarget: { dataset: { groupName: string } } }) => {
+            preventScrollRef.current = true
+            setList(getK8SObjectMapAfterGroupHeadingClick(e, list, preventCollapse))
         }
-        /**
-         * NOTE: on a reload/paste_url selectedResource will be null
-         * Set it to the correct resource figured from nodeType only if
-         * no node is set (i.e no DynamicTab is open) */
-        if (selectedResource.gvk.Kind !== selectedChildRef.current.dataset.kind && !node) {
-            selectedChildRef.current.click()
-        }
-        if (!preventScrollRef.current) {
-            selectedChildRef.current.scrollIntoView({ block: 'center' })
-        }
-    }, [selectedChildRef.current])
-
-    const handleGroupHeadingClick = (
-        /* TODO: simplify this */
-        e: React.MouseEvent<HTMLElement> | { currentTarget: { dataset: { groupName: string } } },
-        preventCollapse = false,
-    ): void => {
-        setList(getK8SObjectMapAfterGroupHeadingClick(e, list, preventCollapse))
-    }
 
     const selectNode = (
         e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
-        preventScroll?: boolean,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
@@ -126,27 +108,23 @@ const Sidebar = ({
          * - Auto scroll to selection
          * Else reset prevent scroll to true
          */
+        preventScrollRef.current = false
         if (groupName) {
-            preventScrollRef.current = false
-            handleGroupHeadingClick(
-                {
-                    currentTarget: {
-                        dataset: {
-                            groupName,
-                        },
+            getGroupHeadingClickHandler(true)({
+                currentTarget: {
+                    dataset: {
+                        groupName,
                     },
                 },
-                true,
-            )
-        } else {
-            preventScrollRef.current = preventScroll ?? true
+            })
         }
     }
 
-    const updateRef = (_node: HTMLButtonElement) => {
-        if (_node?.dataset?.selected === 'true') {
-            selectedChildRef.current = _node
+    const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
+        if (preventScrollRef.current) {
+            return
         }
+        node?.scrollIntoView({ block: 'center' })
     }
 
     const renderChild = (childData: ApiResourceGroupType, useGroupName = false) => {
@@ -155,11 +133,12 @@ const Sidebar = ({
             useGroupName && childData.gvk.Group
                 ? selectedResource?.gvk?.Group === childData.gvk.Group &&
                   selectedResource?.gvk?.Kind === childData.gvk.Kind
-                : nodeType === childData.gvk.Kind.toLowerCase() &&
-                  (group === childData.gvk.Group.toLowerCase() || group === K8S_EMPTY_GROUP)
+                : selectedResource?.gvk?.Kind === childData.gvk.Kind &&
+                  (selectedResource?.gvk?.Group === childData.gvk.Group ||
+                      selectedResource?.gvk?.Group === K8S_EMPTY_GROUP)
         return (
             <SidebarChildButton
-                parentRef={updateRef}
+                parentRef={selectedChildRef}
                 text={nodeName}
                 group={childData.gvk.Group}
                 version={childData.gvk.Version}
@@ -188,17 +167,19 @@ const Sidebar = ({
                 <div
                     className="flex pointer"
                     data-group-name={`${k8sObject.name}/${key}`}
-                    onClick={handleGroupHeadingClick}
+                    onClick={getGroupHeadingClickHandler()}
                 >
-                    <DropDown
+                    <ICExpand
                         className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
                         style={{
-                            ['--rotateBy' as string]: value.isExpanded ? '0deg' : '-90deg',
+                            ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
                         }}
                     />
                     <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
                 </div>
-                {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+                <div className="pl-20 flexbox-col">
+                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+                </div>
             </Fragment>
         )
     }
@@ -240,9 +221,6 @@ const Sidebar = ({
                 },
             },
             option.groupName,
-            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) &&
-                option.label !== (SIDEBAR_KEYS.events as Nodes) &&
-                option.label !== (SIDEBAR_KEYS.nodes as Nodes),
         )
     }
 
@@ -317,7 +295,7 @@ const Sidebar = ({
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
                 <div className="pb-8 flexbox-col">
                     <SidebarChildButton
-                        parentRef={null}
+                        parentRef={selectedChildRef}
                         text={SIDEBAR_KEYS.nodes}
                         group={SIDEBAR_KEYS.nodeGVK.Group}
                         version={SIDEBAR_KEYS.nodeGVK.Version}
@@ -328,7 +306,7 @@ const Sidebar = ({
                     />
                     {list?.size && list.get(AggregationKeys.Events) && (
                         <SidebarChildButton
-                            parentRef={updateRef}
+                            parentRef={selectedChildRef}
                             text={SIDEBAR_KEYS.events}
                             group={SIDEBAR_KEYS.eventGVK.Group}
                             version={SIDEBAR_KEYS.eventGVK.Version}
@@ -340,7 +318,7 @@ const Sidebar = ({
                     )}
                     {list?.size && list.get(AggregationKeys.Namespaces) && (
                         <SidebarChildButton
-                            parentRef={updateRef}
+                            parentRef={selectedChildRef}
                             text={SIDEBAR_KEYS.namespaces}
                             group={SIDEBAR_KEYS.namespaceGVK.Group}
                             version={SIDEBAR_KEYS.namespaceGVK.Version}
@@ -359,11 +337,11 @@ const Sidebar = ({
                                 <div
                                     className="flex pointer"
                                     data-group-name={k8sObject.name}
-                                    onClick={handleGroupHeadingClick}
+                                    onClick={getGroupHeadingClickHandler()}
                                 >
-                                    <DropDown
+                                    <ICExpand
                                         className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
-                                        style={{ ['--rotateBy' as string]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
+                                        style={{ ['--rotateBy' as string]: !k8sObject.isExpanded ? '0deg' : '90deg' }}
                                     />
                                     <span
                                         className="fs-14 fw-6 pointer w-100 pt-6 pb-6"

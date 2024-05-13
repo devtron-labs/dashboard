@@ -230,3 +230,9 @@ export interface SidebarChildButtonPropsType {
     isSelected: boolean
     onClick: React.MouseEventHandler<HTMLButtonElement>
 }
+
+export enum FIXED_TABS_INDICES {
+    OVERVIEW = 0,
+    K8S_RESOURCE_LIST,
+    ADMIN_TERMINAL,
+}

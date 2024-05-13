@@ -110,6 +110,7 @@ export function useTabs(persistanceKey: string) {
         let parsedTabsData: Record<string, any> = {}
         setTabs((prevTabs) => {
             if (!reInit) {
+                /* FIXME: graceful handling of data upon finding old persisted-tabs-data */
                 const persistedTabsData = localStorage.getItem('persisted-tabs-data')
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)

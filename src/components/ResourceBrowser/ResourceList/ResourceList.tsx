@@ -12,7 +12,7 @@ import {
     UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
-import { ClusterOptionType, URLParams } from '../Types'
+import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
@@ -91,8 +91,12 @@ const ResourceList = () => {
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
-    /* FIXME: could use constants for the tab indices */
-    const dynamicActiveTab = tabs.find((tab, index) => index > (isSuperAdmin ? 2 : 1) && tab.isSelected)
+    /* NOTE: the last fixed tab will either be AdminTerminal or K8sResourceList */
+    const dynamicActiveTab = tabs.find(
+        (tab, index) =>
+            index > (isSuperAdmin ? FIXED_TABS_INDICES.ADMIN_TERMINAL : FIXED_TABS_INDICES.K8S_RESOURCE_LIST) &&
+            tab.isSelected,
+    )
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -196,25 +200,28 @@ const ResourceList = () => {
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
-    const updateTerminalTabUrl = useCallback(
-        (queryParams: string) => {
-            const terminalTab = tabs[2]
-            if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
-                return
-            }
-            updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
-            if (!terminalTab.isSelected) {
-                return
-            }
-            replace({ search: queryParams })
-        },
-        [tabs],
-    )
+    const updateTerminalTabUrl = (queryParams: string) => {
+        const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
+        if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
+            return
+        }
+        updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
+        if (!terminalTab.isSelected) {
+            return
+        }
+        replace({ search: queryParams })
+    }
 
     const updateK8sResourceTab = (url: string, dynamicTitle = '') => {
-        updateTabUrl(tabs[1].id, url, dynamicTitle)
+        updateTabUrl(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id, url, dynamicTitle)
         replace(url)
     }
+
+    const updateK8sResourceTabLastSyncMoment = () => {
+        updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+    }
+
+    const markTabActiveByIdSetter = (id = '') => () => markTabActiveById(id)
 
     const refreshData = (): void => {
         const activeTab = tabs.find((tab) => tab.isSelected)
@@ -251,28 +258,28 @@ const ResourceList = () => {
         )
     }
 
-    const updateK8sResourceTabLastSyncMoment = () => {
-        updateTabLastSyncMoment(tabs[1].id)
-    }
-
-    const markTabActiveByIdSetter = (id = '') => () => markTabActiveById(id)
-
     const fixedTabComponents = [
         <ClusterOverview
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
-            markNodesTabActive={markTabActiveByIdSetter(tabs[1]?.id)}
+            markNodesTabActive={markTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)}
         />,
         <K8SResourceTabComponent
             selectedCluster={selectedCluster}
             addTab={addTab}
-            renderRefreshBar={renderRefreshBar(isDataStale, tabs?.[1]?.lastSyncMoment?.toString(), refreshData)}
+            renderRefreshBar={renderRefreshBar(
+                isDataStale,
+                tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.lastSyncMoment?.toString(),
+                refreshData,
+            )}
             isSuperAdmin={isSuperAdmin}
             showStaleDataWarning={isDataStale}
             updateK8sResourceTab={updateK8sResourceTab}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
-        ...(isSuperAdmin && tabs[2]?.name === AppDetailsTabs.terminal && tabs[2].isAlive
+        ...(isSuperAdmin &&
+        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
+        tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
             ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
     ]
@@ -330,9 +337,6 @@ const ResourceList = () => {
                             !tabs[index].isSelected,
                         ),
                     )}
-                {/* NOTE: to allow for shareable urls if node is available in url but no associated
-                 * dynamicTab we allow for this to pass into renderDynamicTabComponent as that will
-                 * create the missing tab */}
                 {(dynamicActiveTab) &&
                     renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey)}
             </>
