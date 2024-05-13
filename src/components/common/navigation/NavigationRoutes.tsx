@@ -9,6 +9,7 @@ import {
     DevtronProgressing,
     useMainContext,
     MainContextProvider,
+    ImageSelectionUtilityProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -17,6 +18,7 @@ import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -56,6 +58,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
+const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -411,6 +414,20 @@ export default function NavigationRoutes() {
                                             ? [
                                                   <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
                                                       <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        ...(Releases
+                                            ? [
+                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                      <ImageSelectionUtilityProvider
+                                                          value={{
+                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
+                                                              getModuleInfo,
+                                                          }}
+                                                      >
+                                                          <Releases />
+                                                      </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
                                             : []),

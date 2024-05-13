@@ -100,6 +100,7 @@ export const URLS = {
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
+    RELEASES: '/releases',
 }
 
 export enum APP_COMPOSE_STAGE {

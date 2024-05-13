@@ -102,3 +102,11 @@ export const EMPTY_STATE = {
 }
 
 export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'
+
+export const TRIGGER_VIEW_PARAMS = {
+    APPROVAL: 'approval',
+    APPROVAL_STATE: 'approval-state',
+    APPROVAL_NODE: 'approval-node',
+    CD_NODE: 'cd-node',
+    NODE_TYPE: 'node-type',
+}

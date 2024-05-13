@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react'
-import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers, PromotionApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers, PromotionApprovalMetadataType, DeploymentStageType } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
 
@@ -254,12 +254,6 @@ export enum HistoryComponentType {
     CD = 'CD',
     GROUP_CI = 'GROUP_CI',
     GROUP_CD = 'GROUP_CD',
-}
-
-export enum DeploymentStageType {
-    PRE = 'PRE',
-    DEPLOY = 'DEPLOY',
-    POST = 'POST',
 }
 
 export enum FetchIdDataStatus {

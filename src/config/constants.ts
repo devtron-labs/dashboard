@@ -311,6 +311,9 @@ export const repoType = {
     CONFIGURE: 'CONFIGURE',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
@@ -504,6 +507,18 @@ export interface RegistryPayloadType {
     ociRegistryConfig?: OCIRegistryStorageConfigType
     repositoryList: string[]
     isPublic: boolean
+    remoteConnectionConfig: {
+        connectionMethod: string
+        proxyConfig: {
+            proxyUrl: string
+        }
+        sshConfig: {
+            sshServerAddress: string
+            sshUsername: string
+            sshPassword: string
+            sshAuthKey: string
+        }
+    }
 }
 
 export const RegistryType = {

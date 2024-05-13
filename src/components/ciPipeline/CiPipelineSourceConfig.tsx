@@ -1,9 +1,9 @@
 import React, { useState, useEffect, ReactNode } from 'react'
 import Tippy from '@tippyjs/react'
+import { getWebhookEventsForEventId } from '@devtron-labs/devtron-fe-common-lib'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
 import { SourceTypeMap, GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
-import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
 
