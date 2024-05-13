@@ -199,17 +199,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                const isBitbucketCloud = response.result?.reduce((acc, item) => {
-                    /**
-                     * NOTE: since the default acc value is true we want to override this
-                     * only when provider is Bitbucket DC; if no such provider exists
-                     * then we will default to cloud & if it exists then the active state
-                     * will determine the state of the toggle */
-                    if (item.provider !== 'BITBUCKET_DC') {
-                        return acc
-                    }
-                    return !item.active
-                }, true)
+                const bitbucketCloudConfig = response.result?.find((item) => item.provider === 'BITBUCKET_CLOUD')
+                const bitbucketDCConfig = response.result?.find((item) => item.provider === 'BITBUCKET_DC')
+                const isBitbucketCloud = (!bitbucketCloudConfig && !bitbucketDCConfig) || (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
