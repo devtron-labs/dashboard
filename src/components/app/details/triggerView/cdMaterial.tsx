@@ -567,11 +567,9 @@ const CDMaterial = ({
     const viewAllImages = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         if (isRedirectedFromAppDetails) {
-            // redirecting to image approval
-            window.open(
-                `${location.origin}${window.__BASE_URL__}app/${appId}/trigger?${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
-                '_blank',
-            )
+            history.push({
+                search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
+            })
         } else {
             closeCDModal(e)
             onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)

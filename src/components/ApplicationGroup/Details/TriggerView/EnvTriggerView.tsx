@@ -2091,7 +2091,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderApprovalMaterial = () => {
-        if (ApprovalMaterialModal && this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
+        if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {

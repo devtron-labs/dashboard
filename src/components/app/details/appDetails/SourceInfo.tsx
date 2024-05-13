@@ -44,7 +44,7 @@ export const SourceInfo = ({
     ciArtifactId,
     setErrorsList,
     filteredEnvIds,
-    deploymentUserActionState
+    deploymentUserActionState,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -207,16 +207,18 @@ export const SourceInfo = ({
                                 <AppDetailsCDButton
                                     appId={appDetails.appId}
                                     environmentId={appDetails.environmentId}
-                                    cdPipelineId={appDetails.cdPipelineId}
-                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                                    ciPipelineId={appDetails.ciPipelineId}
-                                    deploymentAppType={appDetails.deploymentAppType}
-                                    parentEnvironmentName={appDetails.parentEnvironmentName}
-                                    deploymentUserActionState={deploymentUserActionState}
-                                    loadingDetails={loadingDetails}
                                     environmentName={appDetails.environmentName}
-                                    triggerType={appDetails.triggerType}
-                                    isRedirectedFromAppDetails
+                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    loadingDetails={loadingDetails}
+                                    cdModal={{
+                                        cdPipelineId: appDetails.cdPipelineId,
+                                        ciPipelineId: appDetails.ciPipelineId,
+                                        parentEnvironmentName: appDetails.parentEnvironmentName,
+                                        deploymentUserActionState: deploymentUserActionState,
+                                        triggerType: appDetails.triggerType,
+                                        isRedirectedFromAppDetails: true,
+                                    }}
                                 />
                             </div>
                         )}

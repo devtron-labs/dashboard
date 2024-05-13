@@ -57,22 +57,27 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
-export interface AppDetails {
-    appId: number
+export interface CDModalProps {
     cdPipelineId?: number
     triggerType?: string
-    parentEnvironmentName?: string
-    deprecated?: boolean
-    k8sVersion?: number
+    parentEnvironmentName: string
+    ciPipelineId?: number
+    isRedirectedFromAppDetails?: boolean,
+}
+
+export interface AppDetails extends CDModalProps {
+    appId: number
+    deploymentAppType?: DeploymentAppTypes
+    externalCi?: boolean
+    userApprovalConfig?: string
     ciArtifactId?: number
     parentArtifactId?: number
-    ciPipelineId?: number
-    externalCi?: boolean
+    deprecated?: boolean
+    k8sVersion?: number
     clusterName?: string
     dockerRegistryId?: string
     ipsAccessProvided?: boolean
     description?: string
-    userApprovalConfig?: string
     isVirtualEnvironment?: boolean
     image?: string
     helmPackageName?: string
@@ -91,7 +96,6 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -568,15 +572,14 @@ export interface AppDetailsCDButtonType
             AppDetails,
             | 'appId'
             | 'environmentId'
-            | 'cdPipelineId'
             | 'isVirtualEnvironment'
-            | 'ciPipelineId'
             | 'deploymentAppType'
-            | 'parentEnvironmentName'
             | 'environmentName'
-            | 'triggerType'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {isRedirectedFromAppDetails: boolean}
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
+            isRedirectedFromAppDetails?: boolean,
+            cdModal: CDModalProps
+        }
 
 export interface EnvironmentListMinType {
     active?: boolean

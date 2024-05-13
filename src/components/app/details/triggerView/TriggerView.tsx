@@ -11,7 +11,6 @@ import {
     ToastBody,
     CommonNodeAttr,
     WorkflowType,
-    getDefaultConfig,
     HandleKeyValueChangeType,
     KeyValueListActionType,
     getIsRequestAborted,
@@ -133,7 +132,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
-        this.getConfigs = this.getConfigs.bind(this)
         this.abortController = new AbortController()
     }
 
@@ -188,15 +186,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    // TODO: Move it into Approval Modal when we shift to Route
-    getConfigs() {
-        getDefaultConfig().then((response) => {
-            const isConfigPresent = response.result.isConfigured
-            const _isDefaultConfig = response.result.is_default_configured
-            this.setState({ configs: isConfigPresent, isDefaultConfigPresent: _isDefaultConfig })
-        })
-    }
-
     getWorkflows = (isFromOnMount?: boolean) => {
         getTriggerWorkflows(
             this.props.match.params.appId,
@@ -225,7 +214,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     if (isFromOnMount) {
-                        this.getConfigs()
 
                         if (ApprovalMaterialModal) {
                             if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
@@ -1313,8 +1301,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     getModuleInfo={getModuleInfo}
                     GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node.connectingCiPipelineId}
-                    configs={this.state.configs}
-                    isDefaultConfigPresent={this.state.isDefaultConfigPresent}
                     history={this.props.history}
                 />
             )
