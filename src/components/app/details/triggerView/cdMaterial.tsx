@@ -67,8 +67,9 @@ import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
+
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { importComponentFromFELibrary } from '../../../common'
+import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -89,9 +90,10 @@ import {
     processResolvedPromise,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
-import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT } from './Constants'
+import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
+import { useHistory } from 'react-router-dom'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -120,7 +122,6 @@ const CDMaterial = ({
     envName,
     closeCDModal,
     triggerType,
-    history,
     isVirtualEnvironment,
     parentEnvironmentName,
     isLoading,
@@ -135,9 +136,11 @@ const CDMaterial = ({
     // Have'nt sent this from Bulk since not required
     deploymentAppType,
     selectedImageFromBulk,
+    isRedirectedFromAppDetails,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the queryparams returned by useSearchString seems faulty
+    const history = useHistory()
     const { searchParams } = useSearchString()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
@@ -473,7 +476,6 @@ const CDMaterial = ({
         if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
                 state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-
             setState((prevState) => ({
                 ...prevState,
                 selectedMaterial,
@@ -564,8 +566,14 @@ const CDMaterial = ({
 
     const viewAllImages = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
-        closeCDModal(e)
-        onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+        if (isRedirectedFromAppDetails) {
+            history.push({
+                search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${pipelineId}&${TRIGGER_VIEW_PARAMS.APPROVAL_STATE}=${TRIGGER_VIEW_PARAMS.APPROVAL}`,
+            })
+        } else {
+            closeCDModal(e)
+            onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+        }
     }
 
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
@@ -736,7 +744,7 @@ const CDMaterial = ({
         !state.recentDeploymentConfig
 
     const onClickSetInitialParams = (modeParamValue: string) => {
-        if (canReviewConfig) {
+        if (canReviewConfig()) {
             const newParams = {
                 ...searchParams,
                 mode: modeParamValue,
@@ -1676,18 +1684,6 @@ const CDMaterial = ({
         )
     }
 
-    const getCTAClass = (disableDeployButton: boolean): string => {
-        let className = 'cta flex ml-auto h-36'
-        if (disableDeployButton) {
-            className += ' disabled-opacity'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
-            className += ' danger'
-        } else if (deploymentWindowMetadata.userActionState === ACTION_STATE.PARTIAL) {
-            className += ' warning'
-        }
-        return className
-    }
-
     const onClickDeploy = (e, disableDeployButton: boolean) => {
         e.stopPropagation()
         if (!disableDeployButton) {
@@ -1791,7 +1787,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={getCTAClass(disableDeployButton)}
+                        className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
                     >
