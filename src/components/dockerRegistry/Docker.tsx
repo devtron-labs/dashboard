@@ -373,9 +373,10 @@ const DockerForm = ({
             ? password.substring(1, password.length - 1)
             : password
 
-    const _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
-        ? remoteConnectionConfig.connectionMethod
-        : RemoteConnectionType.Direct
+    let _remoteConnectionMethod = RemoteConnectionType.Direct
+    if (remoteConnectionConfig) {
+        _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
+    }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
     const initialSSHAuthenticationType = remoteConnectionConfig.sshConfig
         ? remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey
@@ -1005,50 +1006,35 @@ const DockerForm = ({
 
         if (customState.remoteConnectionConfig) {
             const { proxyConfig, sshConfig } = customState.remoteConnectionConfig
-            if (remoteConnectionMethod === RemoteConnectionType.Proxy) {
-                if (updateWithCustomStateValidationForRemoteConnectionConfig('proxyUrl', proxyConfig.proxyUrl.value)) {
-                    return false
-                }
-            }
+            if (
+                remoteConnectionMethod === RemoteConnectionType.Proxy &&
+                updateWithCustomStateValidationForRemoteConnectionConfig('proxyUrl', proxyConfig.proxyUrl.value)
+            ) {
+                return false
+            }``
             if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
                 if (
                     updateWithCustomStateValidationForRemoteConnectionConfig(
                         'sshServerAddress',
                         sshConfig.sshServerAddress.value,
-                    )
-                ) {
-                    return false
-                }
-                if (
+                    ) ||
                     updateWithCustomStateValidationForRemoteConnectionConfig('sshUsername', sshConfig.sshUsername.value)
                 ) {
                     return false
                 }
                 if (
-                    sshConnectionType === SSHAuthenticationType.Password ||
-                    sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                    (sshConnectionType === SSHAuthenticationType.Password ||
+                        sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) &&
+                    updateWithCustomStateValidationForRemoteConnectionConfig('sshPassword', sshConfig.sshPassword.value)
                 ) {
-                    if (
-                        updateWithCustomStateValidationForRemoteConnectionConfig(
-                            'sshPassword',
-                            sshConfig.sshPassword.value,
-                        )
-                    ) {
-                        return false
-                    }
+                    return false
                 }
                 if (
-                    sshConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                    sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                    (sshConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                        sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) &&
+                    updateWithCustomStateValidationForRemoteConnectionConfig('sshAuthKey', sshConfig.sshAuthKey.value)
                 ) {
-                    if (
-                        updateWithCustomStateValidationForRemoteConnectionConfig(
-                            'sshAuthKey',
-                            sshConfig.sshAuthKey.value,
-                        )
-                    ) {
-                        return false
-                    }
+                    return false
                 }
             }
         }
