@@ -16,7 +16,6 @@ import {
     useSuperAdmin,
     GenericEmptyState,
     DeploymentWindowProfileMetaData,
-    ConditionalWrap,
     ACTION_STATE,
     DEPLOYMENT_WINDOW_TYPE,
     noop,
@@ -91,7 +90,6 @@ export default function BulkCDTrigger({
 
     const location = useLocation()
     const history = useHistory()
-    const match = useRouteMatch()
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
 
@@ -648,8 +646,6 @@ export default function BulkCDTrigger({
                                 triggerDeploy={onClickStartDeploy}
                                 key={selectedApp.appId}
                                 materialType={MATERIAL_TYPE.inputMaterialList}
-                                location={location}
-                                match={match}
                                 appId={selectedApp.appId}
                                 envId={selectedApp.envId}
                                 pipelineId={+selectedApp.cdPipelineId}
@@ -658,7 +654,6 @@ export default function BulkCDTrigger({
                                 envName={selectedApp.envName}
                                 closeCDModal={closeBulkCDModal}
                                 triggerType={selectedApp.triggerType}
-                                history={history}
                                 isLoading={isLoading}
                                 parentPipelineId={selectedApp.parentPipelineId}
                                 parentPipelineType={selectedApp.parentPipelineType}
