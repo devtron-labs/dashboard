@@ -119,6 +119,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
+    const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -170,6 +171,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
         setIsAppDeleted(false)
         if (getDeploymentWindowProfileMetaData) {
             getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
+                setDeploymentUserActionState(userActionState)
                 if (userActionState && userActionState !== ACTION_STATE.ALLOWED) {
                     setShowDeploymentWindowConfirmation(true)
                 } else {
@@ -224,6 +226,7 @@ export default function AppDetail({ filteredEnvIds }: { filteredEnvIds?: string 
                     isVirtualEnvRef={isVirtualEnvRef}
                     isDeploymentBlocked={showDeploymentWindowConfirmation}
                     filteredEnvIds={filteredEnvIds}
+                    deploymentUserActionState={deploymentUserActionState}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -244,6 +247,7 @@ export const Details: React.FC<DetailsType> = ({
     isAppDeleted,
     isVirtualEnvRef,
     isDeploymentBlocked,
+    deploymentUserActionState,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -705,6 +709,7 @@ export const Details: React.FC<DetailsType> = ({
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                     setErrorsList={setErrorsList}
+                    deploymentUserActionState={deploymentUserActionState}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (

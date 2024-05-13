@@ -607,6 +607,7 @@ a:focus {
     -webkit-line-clamp: 2;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    word-break: break-word;
 }
 
 .dc__ellipsis-left {

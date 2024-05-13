@@ -29,7 +29,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps extends RouteComponentProps<{}> {
+export interface CDMaterialProps {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -98,6 +98,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
+    isRedirectedFromAppDetails?:  boolean
 }
 
 export interface ConfigToDeployOptionType {
@@ -365,7 +366,6 @@ export interface TriggerViewState {
     workflows: WorkflowType[]
     showCDModal: boolean
     showCIModal: boolean
-    showApprovalModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null

@@ -10,7 +10,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
-import { Switch, Route, useLocation } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import moment from 'moment'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -35,9 +35,6 @@ export default function BulkActionDetails() {
     const [isLoading, setIsLoading] = useState(false)
     const [materials, saveMaterials] = useState([])
     const [pausing, setPausing] = useState(false)
-    const location = useLocation()
-    const history = useHistory()
-    const match = useRouteMatch()
     const [loading, result, error, reload] = useAsync(
         () => getDeploymentGroupDetail(Number(deploymentGroupId)),
         [deploymentGroupId],
@@ -276,9 +273,6 @@ export default function BulkActionDetails() {
                     closeCDModal={() => {
                         toggleShowCDModal(false)
                     }}
-                    history={history}
-                    location={location}
-                    match={match}
                 />
             )}
         </>
