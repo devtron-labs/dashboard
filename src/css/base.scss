@@ -3932,6 +3932,10 @@ textarea,
     gap: 32px;
 }
 
+.dc__flip-y {
+    transform: scaleY(-1);
+}
+
 .dc__flip-180 {
     transform: rotate(180deg);
 }
