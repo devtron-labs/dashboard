@@ -1001,14 +1001,23 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.82":
-  version "0.0.82"
-  resolved "https://registry.npmjs.org/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.82.tgz"
-  integrity sha512-mbgyK3I45iNcu0OkzPEikj1yO1IDJsHR816x+XokZnw2wqdCTuQf9/g9Qlyl0ObAOZPZrKzuCvSt56iB/IQE4w==
+"@devtron-labs/devtron-fe-common-lib@file:../devtron-fe-common-lib":
+  version "0.0.82-1"
+  resolved "file:../devtron-fe-common-lib"
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
     react-monaco-editor "^0.54.0"
+    sass "^1.69.7"
+    tslib "^2.4.1"
+
+"@devtron-labs/devtron-fe-lib@file:../devtron-fe-lib":
+  version "0.0.91-1"
+  resolved "file:../devtron-fe-lib"
+  dependencies:
+    fast-json-patch "^3.1.1"
+    moment-timezone "^0.5.45"
+    react-ga4 "^1.4.1"
     sass "^1.69.7"
     tslib "^2.4.1"
 
@@ -5746,11 +5755,6 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonpath-plus@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz"
-  integrity sha512-zBfiUPM5nD0YZSBT/o/fbCUlCcepMIdP0CJZxM1+KgA4f2T206f6VAg9e7mX35+KlMaIc5qXW34f3BnwJ3w+RA==
-
 jsonpointer@^5.0.0, jsonpointer@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/jsonpointer/-/jsonpointer-5.0.1.tgz"
@@ -6110,11 +6114,6 @@ moment@^2.18.1, moment@^2.29.4, moment@>=1.6.0:
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
-
-monaco-editor@^0.39.0:
-  version "0.39.0"
-  resolved "https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.39.0.tgz"
-  integrity sha512-zhbZ2Nx93tLR8aJmL2zI1mhJpsl87HMebNBM6R8z4pLfs8pj604pIVIVwyF1TivcfNtIPpMXL+nb3DsBmE/x6Q==
 
 monaco-editor@^0.44.0, monaco-editor@>=0.30.0, monaco-editor@>=0.36, monaco-editor@0.45.0:
   version "0.45.0"
@@ -6765,13 +6764,6 @@ react-moment-proptypes@^1.6.0:
   dependencies:
     moment ">=1.6.0"
 
-react-monaco-editor@^0.54.0:
-  version "0.54.0"
-  resolved "https://registry.npmjs.org/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz"
-  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
-  dependencies:
-    prop-types "^15.8.1"
-
 react-monaco-editor@^0.55.0:
   version "0.55.0"
   resolved "https://registry.npmjs.org/react-monaco-editor/-/react-monaco-editor-0.55.0.tgz"
@@ -6802,7 +6794,7 @@ react-refresh@^0.14.0:
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.14.0.tgz"
   integrity sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==
 
-react-router-dom@^5.3.0, react-router-dom@^5.3.4:
+react-router-dom@^5.3.4:
   version "5.3.4"
   resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-5.3.4.tgz"
   integrity sha512-m4EqFMHv/Ih4kpcBCONHbkT68KoAeHN4p3lAGoNryfHi0dMy0kCzEZakiKRsvg5wHZ/JLrLW8o8KomWiz/qbYQ==
@@ -6815,7 +6807,7 @@ react-router-dom@^5.3.0, react-router-dom@^5.3.4:
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
 
-react-router@^5.3.0, react-router@5.3.4:
+react-router@5.3.4:
   version "5.3.4"
   resolved "https://registry.npmjs.org/react-router/-/react-router-5.3.4.tgz"
   integrity sha512-Ys9K+ppnJah3QuaRiLxk+jDWOR1MekYQrlytiXxC1RyfbdsZkS5pvKAzCCr031xHixZwpnsYNT5xysdFHQaYsA==
@@ -7887,11 +7879,6 @@ tslib@^1.9.3:
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
 tslib@^2.1.0:
-  version "2.6.2"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
-  integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==
-
-tslib@^2.4.1:
   version "2.6.2"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==

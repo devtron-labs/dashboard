@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -155,7 +154,6 @@ interface NavigationType extends RouteComponentProps<{}> {
 export default class Navigation extends Component<
     NavigationType,
     {
-        loginInfo: any
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
@@ -168,7 +166,6 @@ export default class Navigation extends Component<
     constructor(props) {
         super(props)
         this.state = {
-            loginInfo: getLoginInfo(),
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,

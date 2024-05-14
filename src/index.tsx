@@ -5,7 +5,7 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
-import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -135,7 +135,9 @@ ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
             <BrowserRouter basename={window.__BASE_URL__}>
-                <App />
+                <UserEmailProvider>
+                    <App />
+                </UserEmailProvider>
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,

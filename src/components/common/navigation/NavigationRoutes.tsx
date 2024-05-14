@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
-    getLoginInfo,
+    useUserEmail,
     showError,
     Host,
     Reload,
@@ -70,6 +70,7 @@ export default function NavigationRoutes() {
         serverInfo: undefined,
         fetchingServerInfo: false,
     })
+    const { email } = useUserEmail()
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
@@ -152,24 +153,21 @@ export default function NavigationRoutes() {
     }
 
     useEffect(() => {
-        const loginInfo = getLoginInfo()
-
-        if (!loginInfo) {
+        if (!email) {
             return
         }
 
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })
+                    scope.setUser({ email, })
                 })
             }
             if (window._env_.GA_ENABLED) {
-                const email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
                 const path = location.pathname
                 ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                     gaOptions: {
-                        userId: `${email}`,
+                        userId: email,
                     },
                 })
                 ReactGA.send({ hitType: 'pageview', page: path })
@@ -210,7 +208,7 @@ export default function NavigationRoutes() {
                 })
                 .catch((errors) => {})
         }
-    }, [])
+    }, [email])
 
     async function getServerMode() {
         try {

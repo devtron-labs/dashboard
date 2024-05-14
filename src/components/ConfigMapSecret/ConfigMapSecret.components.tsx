@@ -9,6 +9,7 @@ import {
     YAMLStringify,
     noop,
     showError,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -463,6 +464,7 @@ export function ProtectedConfigMapSecretDetails({
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
     const [abortController, setAbortController] = useState(new AbortController())
+    const { email } = useUserEmail()
 
     const getBaseData = async () => {
         try {
@@ -600,7 +602,7 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         }
-        const hasAccess = hasApproverAccess(draftData.approvers)
+        const hasAccess = hasApproverAccess(email, draftData.approvers)
         return (
             <div
                 className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
