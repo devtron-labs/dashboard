@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import Tippy from '@tippyjs/react'
@@ -11,6 +11,8 @@ import {
     Pagination,
     useSearchString,
     Nodes,
+    showError,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -37,9 +39,15 @@ import {
     updateQueryString,
 } from '../Utils'
 import { URLS } from '../../../config'
+import { error } from 'console'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
+const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
+    'getFilterOptionsFromSearchParams',
+    null,
+    'function',
+)
 
 export const K8SResourceList = ({
     selectedResource,
@@ -65,12 +73,12 @@ export const K8SResourceList = ({
 
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
 
-    /* TODO: what to do with the error? */
-    const [resourceListLoader, _resourceList, /*resourceListDataError*/, reloadResourceListData] = useAsync(
+    /* NOTE: _filters is an object */
+    const _filters = getFilterOptionsFromSearchParams?.(location.search)
+    const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
+
+    const [_resourceListLoader, _resourceList, resourceListDataError, reloadResourceListData] = useAsync(
         () => {
-            if (!selectedResource || selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
-                return null
-            }
             return abortPreviousRequests(
                 () =>
                     getResourceList(
@@ -78,17 +86,18 @@ export const K8SResourceList = ({
                             clusterId,
                             selectedNamespace.value.toLowerCase(),
                             selectedResource,
-                            location.search,
+                            filters,
                         ),
                         abortControllerRef.current.signal,
                     ),
                 abortControllerRef,
             )
         },
-        [selectedResource, clusterId, selectedNamespace],
-        true,
-        { resetOnChange: true },
+        [selectedResource, clusterId, selectedNamespace, filters],
+        selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
+
+    const resourceListLoader = _resourceListLoader || getIsRequestAborted(resourceListDataError)
 
     const resourceList = _resourceList?.result || null
 
@@ -145,7 +154,7 @@ export const K8SResourceList = ({
         updateK8sResourceTab(location.pathname + `?${searchParamString}`)
         handleFilterChanges(text, resourceList)
         text && setResourceListOffset(0) /* NOTE: if resourceListOffset is 0 setState is noop */
-        !text && setFilteredResourceList(resourceList.data)
+        !text && setFilteredResourceList(resourceList?.data)
     }
 
     const resetPaginator = () => {
@@ -167,7 +176,7 @@ export const K8SResourceList = ({
                 type: 'start',
                 payload: {
                     searchText: _searchText,
-                    list: _resourceList.data,
+                    list: _resourceList?.data || [],
                     origin: new URL(window.__BASE_URL__, window.location.href).origin,
                 },
             })
@@ -273,7 +282,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`dc__inline-block dc__ellipsis-right pt-12 pb-12 w-150 ${
+                            className={`flexbox dc__align-items-center dc__ellipsis-right pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
@@ -331,22 +340,17 @@ export const K8SResourceList = ({
     }
 
     const renderEmptyPage = (): JSX.Element => {
-        if (filteredResourceList.length === 0 && !searchText && selectedNamespace.value === ALL_NAMESPACE_OPTION.value) {
-            return (
-                <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
-                        selectedResource?.gvk?.Kind,
-                        selectedResource?.namespaced,
-                    )}
-                />
-            )
-        }
-        return (
+        const isFilterApplied = searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+        return isFilterApplied ? (
             <ResourceListEmptyState
                 title={RESOURCE_LIST_EMPTY_STATE.title}
                 subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
                 actionHandler={emptyStateActionHandler}
+            />
+        ) : (
+            <ResourceListEmptyState
+                title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
+                subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(selectedResource?.gvk?.Kind, selectedResource?.namespaced)}
             />
         )
     }
@@ -361,6 +365,10 @@ export const K8SResourceList = ({
     const changePageSize = (size: number) => {
         setPageSize(size)
         setResourceListOffset(0)
+    }
+
+    if (resourceListDataError && !getIsRequestAborted(resourceListDataError)) {
+        showError(resourceListDataError)
     }
 
     const renderResourceList = (): JSX.Element => {
@@ -399,7 +407,7 @@ export const K8SResourceList = ({
     }
 
     const renderList = (): JSX.Element => {
-        if (filteredResourceList.length === 0) {
+        if (filteredResourceList?.length === 0 || resourceListDataError) {
             return renderEmptyPage()
         }
         return (
@@ -433,7 +441,7 @@ export const K8SResourceList = ({
 
     return (
         <div
-            className={`resource-list-container dc__border-left dc__position-rel ${
+            className={`resource-list-container dc__border-left flexbox-col ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
         >
@@ -450,10 +458,12 @@ export const K8SResourceList = ({
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
             />
-            {resourceListLoader || !resourceList || !filteredResourceList ? <Progressing size={32} pageLoader /> : renderList()}
-            {PodRestart && (
-                <PodRestart />
+            {!resourceListDataError && (resourceListLoader || !resourceList || !filteredResourceList) ? (
+                <Progressing size={32} pageLoader />
+            ) : (
+                renderList()
             )}
+            {PodRestart && <PodRestart />}
         </div>
     )
 }

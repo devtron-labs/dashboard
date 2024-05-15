@@ -11,13 +11,6 @@ import {
     ApiResourceGroupType,
 } from './Types'
 import { K8_ABBREVIATES, ALL_NAMESPACE_OPTION } from './Constants'
-import { importComponentFromFELibrary } from '../common'
-
-const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
-    'getFilterOptionsFromSearchParams',
-    null,
-    'function',
-)
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_PERMISSION)
@@ -62,18 +55,16 @@ export const getResourceListPayload = (
     clusterId: string,
     namespace: string,
     selectedResource: ApiResourceGroupType,
-    search: string,
-) => {
-    return {
-        clusterId: +clusterId,
-        k8sRequest: {
-            resourceIdentifier: {
-                groupVersionKind: selectedResource.gvk,
-                ...(selectedResource.namespaced && {
-                    namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
-                }),
-            },
+    filters: object,
+) => ({
+    clusterId: +clusterId,
+    k8sRequest: {
+        resourceIdentifier: {
+            groupVersionKind: selectedResource.gvk,
+            ...(selectedResource.namespaced && {
+                namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
+            }),
         },
-        ...getFilterOptionsFromSearchParams?.(search),
-    }
-}
+    },
+    ...filters,
+})
