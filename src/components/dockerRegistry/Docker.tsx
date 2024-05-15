@@ -374,7 +374,7 @@ const DockerForm = ({
             : password
 
     let _remoteConnectionMethod = RemoteConnectionType.Direct
-    if (remoteConnectionConfig) {
+    if (remoteConnectionConfig.connectionMethod) {
         _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
