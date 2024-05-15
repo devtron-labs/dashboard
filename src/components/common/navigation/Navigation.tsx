@@ -16,6 +16,7 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
+import { ReactComponent as ReleasesIcon } from '../../../assets/icons/ic-open-box.svg'
 // Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
@@ -26,6 +27,9 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { importComponentFromFELibrary } from '../helpers/Helpers'
+
+const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
 
 const NavigationList = [
     {
@@ -55,9 +59,22 @@ const NavigationList = [
         icon: EnvIcon,
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
-        markAsBeta: true,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
+    ...(showReleases
+        ? [
+              {
+                  title: 'Releases',
+                  dataTestId: 'click-on-releases',
+                  type: 'link',
+                  iconClass: 'nav-short-env',
+                  icon: ReleasesIcon,
+                  href: URLS.RELEASES,
+                  isAvailableInEA: false,
+                  markOnlyForSuperAdmin: true,
+              },
+          ]
+        : []),
     {
         title: 'Deployment Groups',
         dataTestId: 'click-on-deployment-groups',

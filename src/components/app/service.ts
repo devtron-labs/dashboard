@@ -8,13 +8,13 @@ import {
     DeploymentNodeType,
     put,
     DATE_TIME_FORMAT_STRING,
+    DeploymentWithConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { DeploymentWithConfigType } from './details/triggerView/types'
 
 const stageMap = {
     PRECD: 'PRE',

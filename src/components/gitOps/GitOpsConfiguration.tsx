@@ -199,6 +199,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
+                const bitbucketCloudConfig = response.result?.find((item) => item.provider === 'BITBUCKET_CLOUD')
+                const bitbucketDCConfig = response.result?.find((item) => item.provider === 'BITBUCKET_DC')
+                const isBitbucketCloud = (!bitbucketCloudConfig && !bitbucketDCConfig) || (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
                 this.setState({
                     gitList: response.result || [],
                     saveLoading: false,
@@ -209,7 +212,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         ...form,
                         token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
                     },
-                    isBitbucketCloud: form.provider === GitProvider.BITBUCKET_CLOUD,
+                    isBitbucketCloud,
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
                     allowCustomGitRepo: form.allowCustomRepository,
@@ -236,7 +239,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
             host: GitHost[newGitOps],
-            provider: newGitOps,
+            provider: gitListKey,
         }
         this.setState({
             providerTab: form.provider === 'BITBUCKET_DC' ? 'BITBUCKET_CLOUD' : form.provider,
@@ -246,7 +249,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: DefaultShortGitOps,
             isFormEdited: false,
-            isBitbucketCloud: this.state.form.provider === GitProvider.BITBUCKET_CLOUD,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
             isUrlValidationError: false,
         })
