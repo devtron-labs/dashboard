@@ -12,3 +12,8 @@ export enum MIME_TYPE {
     TEXT_YAML = 'text/yaml',
     PLAIN_TEXT = 'plain/text',
 }
+
+export enum URL_PARAM_MODE_TYPE {
+    REVIEW_CONFIG = 'review-config',
+    LIST = 'list',
+}
