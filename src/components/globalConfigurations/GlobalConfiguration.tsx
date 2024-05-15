@@ -431,7 +431,7 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                    {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
                             key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
