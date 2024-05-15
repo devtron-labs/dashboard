@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
-import { K8SResourceTabComponentProps, URLParams } from '../Types'
+import { ApiResourceGroupType, K8SResourceTabComponentProps, URLParams } from '../Types'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { SIDEBAR_KEYS } from '../Constants'
 import Sidebar from './Sidebar'
@@ -19,7 +19,7 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTabLastSyncMoment,
 }: K8SResourceTabComponentProps) => {
     const { clusterId } = useParams<URLParams>()
-    const [selectedResource, setSelectedResource] = useState({
+    const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
         gvk: SIDEBAR_KEYS.nodeGVK,
         namespaced: false,
         isGrouped: false,

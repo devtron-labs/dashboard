@@ -52,7 +52,8 @@ export const initTabsData = (
             label: tab.name,
             value: tab.id,
         }
-        if (tab.position > -1) {
+        // NOTE: dynamic tabs are supposed to have position as Number.MAX_SAFE_INTEGER
+        if (tab.position < Number.MAX_SAFE_INTEGER) {
             fixedTabs.push(tabOption)
         } else {
             dynamicTabs.push(tabOption)

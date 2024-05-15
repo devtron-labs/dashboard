@@ -1075,7 +1075,7 @@ export default function NodeDetails({
     return (
         <div className="bcn-0 node-data-container">
             {loader ? (
-                <Progressing pageLoader />
+                <Progressing pageLoader size={32} />
             ) : (
                 <>
                     {renderNodeDetailsTabs()}

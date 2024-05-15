@@ -7,8 +7,6 @@ import dayjs from 'dayjs'
 /* TODO: should this be provided when creating useTabs? */
 const FALLBACK_TAB = 1
 
-/* TODO: cleanup this with reusable functions */
-
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
@@ -141,18 +139,15 @@ export function useTabs(persistanceKey: string) {
             }
             /* NOTE: need to fix an order ? */
             _tabs.some((_tab) => _tab.isSelected) || (_tabs[FALLBACK_TAB].isSelected = true)
-            /* TODO: can be in utils */
             _tabs.sort((a, b) => {
-                if (a.position === -1 && b.position === -1) {
-                    return Number.MAX_SAFE_INTEGER
+                /* NOTE: to mitigate Integer overflow using this comparison */
+                if (a.position < b.position) {
+                    return -1
                 }
-                if (a.position === -1) {
-                    return b.position
+                if (a.position === b.position) {
+                    return 0
                 }
-                if (b.position === -1) {
-                    return a.position
-                }
-                return a.position - b.position
+                return 1
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs, parsedTabsData))
             return _tabs
@@ -167,7 +162,7 @@ export function useTabs(persistanceKey: string) {
      * @param {string} kind - Kind of tab
      * @param {string} name - Name of the tab
      * @param {string} url - URL for the tab
-     * @param {boolean} [position] - Specify the tabs position. If position is -1 it's a dynamic tab.
+     * @param {boolean} [position] - Specify the tabs position. If position is POS_INFY it's a dynamic tab.
      * @param {string} [iconPath] - Path to the tab's icon
      * @param {string} [dynamicTitle] - Dynamic title for the tab
      * @param {boolean} [showNameOnSelect] - Whether to show the tab name when selected
@@ -180,11 +175,11 @@ export function useTabs(persistanceKey: string) {
         kind: string,
         name: string,
         url: string,
-        position = -1,
+        position = Number.MAX_SAFE_INTEGER,
         iconPath?: string,
         dynamicTitle?: string,
-        showNameOnSelect?: boolean,
-        isAlive?: boolean,
+        showNameOnSelect = false,
+        isAlive = false,
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
             return

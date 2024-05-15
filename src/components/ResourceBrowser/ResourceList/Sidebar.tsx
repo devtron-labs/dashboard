@@ -123,8 +123,14 @@ const Sidebar = ({
     }
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
-        /* NOTE: this ref will only be passed into the node that is selected */
-        if (preventScrollRef.current) {
+        /**
+         * NOTE: all list items will be passed this ref callback
+         * The correct node will get selected & scrolled into view */
+        if (nodeType !== selectedResource.gvk.Kind.toLowerCase() && nodeType === node?.dataset.kind.toLowerCase()) {
+            node?.click()
+            return
+        }
+        if (node?.dataset.selected !== 'true' || preventScrollRef.current) {
             return
         }
         node?.scrollIntoView({ block: 'center' })
@@ -178,7 +184,7 @@ const Sidebar = ({
                             ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
                         }}
                     />
-                    <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
+                    <span className={`fs-13 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
                 </div>
                 <div className="pl-20 flexbox-col">
                     {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
@@ -347,7 +353,7 @@ const Sidebar = ({
                                         style={{ ['--rotateBy' as string]: !k8sObject.isExpanded ? '0deg' : '90deg' }}
                                     />
                                     <span
-                                        className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
+                                        className="fs-13 fw-6 pointer w-100 pt-6 pb-6"
                                         data-testid={`k8sObject-${k8sObject.name}`}
                                     >
                                         {k8sObject.name}

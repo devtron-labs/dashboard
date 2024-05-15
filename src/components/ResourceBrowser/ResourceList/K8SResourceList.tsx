@@ -354,10 +354,8 @@ export const K8SResourceList = ({
     const changePage = (pageNo: number) => {
         setResourceListOffset(pageSize * (pageNo - 1))
 
-        // scroll to top on page change
-        if (resourceListRef.current) {
-            resourceListRef.current.scrollTo({ top: 0, behavior: 'smooth' })
-        }
+        /* NOTE: scroll to top on page change */
+        resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     const changePageSize = (size: number) => {

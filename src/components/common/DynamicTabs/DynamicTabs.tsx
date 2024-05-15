@@ -68,14 +68,16 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
-        const { name, url, isDeleted, isSelected, iconPath, dynamicTitle, showNameOnSelect, isAlive } = tab
+        const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive } = tab
+
+        const _title = dynamicTitle || title
 
         return (
             <button
                 className="dc__unset-button-styles"
                 data-testid={isSelected}
                 onClick={getMarkTabActiveHandler(tab)}
-                aria-label={`Select tab ${tab.name}`}
+                aria-label={`Select tab ${_title}`}
             >
                 <div
                     className={`dynamic-tab__resource dc__ellipsis-right flex dc__gap-8 ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
@@ -86,7 +88,7 @@ const DynamicTabs = ({
                             className="fs-12 fw-6 lh-20 dc__ellipsis-right"
                             data-testid={name}
                         >
-                            {dynamicTitle || name}
+                            {_title}
                         </span>
                     )}
                 </div>

@@ -10,10 +10,10 @@ import {
     Progressing,
     ConditionalWrap,
     ErrorScreenManager,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity  } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { Pagination } from '../common'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail, SearchTextType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { OptionType } from '../app/types'
@@ -61,6 +61,7 @@ export default function NodeDetailsList({
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const abortControllerRef = useRef(new AbortController())
+    const nodeListRef = useRef(null)
 
     const [, nodeK8sVersions] = useAsync(() =>
         abortPreviousRequests(async () => {
@@ -111,7 +112,7 @@ export default function NodeDetailsList({
 
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
     const [nodeListOffset, setNodeListOffset] = useState(0)
-    const [pageSize, setPageSize] = useState(20)
+    const [pageSize, setPageSize] = useState(NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value)
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
@@ -476,7 +477,8 @@ export default function NodeDetailsList({
         return (
             <div
                 key={nodeData['name']}
-                className={`dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover ${
+                ref={nodeListRef}
+                className={`dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
             >
@@ -540,12 +542,14 @@ export default function NodeDetailsList({
         query['offset'] = offset
         const queryStr = queryString.stringify(query)
         const url = `${match.url}?${queryStr}`
+        nodeListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
         history.push(url)
     }
     const renderPagination = (): JSX.Element => {
         return (
             filteredFlattenNodeList.length > pageSize && (
                 <Pagination
+                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
                     size={filteredFlattenNodeList.length}
                     pageSize={pageSize}
                     offset={nodeListOffset}
@@ -578,16 +582,16 @@ export default function NodeDetailsList({
     if (clusterDetailsLoader) {
         return (
             <div className="dc__border-left">
-                <Progressing pageLoader />
+                <Progressing pageLoader size={32} />
             </div>
         )
     }
 
     return (
-        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-scroll dc__border-left">
+        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left">
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
-                className={`bcn-0 pt-16 list-min-height ${showStaleDataWarning ? 'sync-error' : ''} ${
+                className={`bcn-0 pt-16 h-100 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
                     noResults ? 'no-result-container' : ''
                 }`}
             >
@@ -612,7 +616,7 @@ export default function NodeDetailsList({
                 ) : (
                     <>
                         <div
-                            className="mt-16"
+                            className="mt-16 dc__overflow-scroll h-100"
                             style={{ width: '100%' }}
                         >
                             <div

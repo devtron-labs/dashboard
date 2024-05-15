@@ -91,12 +91,8 @@ const ResourceList = () => {
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
-    /* NOTE: the last fixed tab will either be AdminTerminal or K8sResourceList */
-    const dynamicActiveTab = tabs.find(
-        (tab, index) =>
-            index > (isSuperAdmin ? FIXED_TABS_INDICES.ADMIN_TERMINAL : FIXED_TABS_INDICES.K8S_RESOURCE_LIST) &&
-            tab.isSelected,
-    )
+    /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
+    const dynamicActiveTab = tabs.find((tab) => tab.position === Number.MAX_SAFE_INTEGER && tab.isSelected)
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -113,7 +109,7 @@ const ResourceList = () => {
                 kind: nodeType,
                 url,
                 isSelected: true,
-                position: -1,
+                position: Number.MAX_SAFE_INTEGER,
             },
         )
 
@@ -332,13 +328,13 @@ const ResourceList = () => {
                 </div>
                 {tabs.length > 0 &&
                     fixedTabComponents.map((component, index) =>
-                        renderInvisible(
-                            renderKeyedTabComponent(component, tabs[index].componentKey),
-                            !tabs[index].isSelected,
+                        renderKeyedTabComponent(
+                            renderInvisible(component, !tabs[index].isSelected),
+                            tabs[index].componentKey,
                         ),
                     )}
-                {(dynamicActiveTab) &&
-                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab?.componentKey)}
+                {dynamicActiveTab &&
+                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab.componentKey)}
             </>
         )
     }
@@ -346,7 +342,7 @@ const ResourceList = () => {
     return (
         <UseRegisterShortcutProvider>
             <ShortcutProvider>
-                <div className="resource-browser-container h-100 bcn-0">
+                <div className="resource-browser-container dc__overflow-hidden h-100 bcn-0">
                     <PageHeader
                         isBreadcrumbs
                         breadCrumbs={renderBreadcrumbs}

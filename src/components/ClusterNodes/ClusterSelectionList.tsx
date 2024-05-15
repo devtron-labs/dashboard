@@ -120,7 +120,7 @@ export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clu
             >
                 <div
                     data-testid={`cluster-row-${clusterData.name}`}
-                    className="cb-5 dc__ellipsis-right cursor  flex left"
+                    className="cb-5 dc__ellipsis-right flex left"
                 >
                     <button
                         data-label={clusterData.name}
