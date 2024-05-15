@@ -8,6 +8,7 @@ import {
     DeploymentAppTypes,
     useAsync,
     STAGE_TYPE,
+    DeploymentStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
@@ -29,7 +30,6 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import {
     CICDSidebarFilterOptionType,
-    DeploymentStageType,
     History,
     HistoryComponentType,
     FetchIdDataStatus,

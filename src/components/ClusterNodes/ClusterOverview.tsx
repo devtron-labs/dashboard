@@ -20,7 +20,7 @@ import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
 
-const Catalog = importComponentFromFELibrary('Catalog')
+const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 
 function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
