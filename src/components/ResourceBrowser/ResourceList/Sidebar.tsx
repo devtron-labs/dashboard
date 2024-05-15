@@ -75,9 +75,9 @@ const Sidebar = ({
     }, [registerShortcut])
 
     const getGroupHeadingClickHandler =
-        (preventCollapse = false) =>
+        (preventCollapse = false, preventScroll = false) =>
         (e: React.MouseEvent<HTMLElement> | { currentTarget: { dataset: { groupName: string } } }) => {
-            preventScrollRef.current = true
+            preventScrollRef.current = preventScroll
             setList(getK8SObjectMapAfterGroupHeadingClick(e, list, preventCollapse))
         }
 
@@ -108,9 +108,11 @@ const Sidebar = ({
          * - Auto scroll to selection
          * Else reset prevent scroll to true
          */
-        preventScrollRef.current = false
         if (groupName) {
-            getGroupHeadingClickHandler(true)({
+            getGroupHeadingClickHandler(
+                true,
+                false,
+            )({
                 currentTarget: {
                     dataset: {
                         groupName,
@@ -121,6 +123,7 @@ const Sidebar = ({
     }
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
+        /* NOTE: this ref will only be passed into the node that is selected */
         if (preventScrollRef.current) {
             return
         }
@@ -167,7 +170,7 @@ const Sidebar = ({
                 <div
                     className="flex pointer"
                     data-group-name={`${k8sObject.name}/${key}`}
-                    onClick={getGroupHeadingClickHandler()}
+                    onClick={getGroupHeadingClickHandler(false, true)}
                 >
                     <ICExpand
                         className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
@@ -337,7 +340,7 @@ const Sidebar = ({
                                 <div
                                     className="flex pointer"
                                     data-group-name={k8sObject.name}
-                                    onClick={getGroupHeadingClickHandler()}
+                                    onClick={getGroupHeadingClickHandler(false, true)}
                                 >
                                     <ICExpand
                                         className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
