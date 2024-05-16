@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
-import { useTabs } from './useTabs'
 import { Dayjs } from 'dayjs'
+import { useTabs } from './useTabs'
 
 interface CommonTabArgsType {
     name: string
@@ -31,7 +31,6 @@ export interface DynamicTabsProps {
     removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
     markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
-    enableShortCut?: boolean
     refreshData: () => void
     isOverview: boolean
     setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
@@ -56,4 +55,9 @@ export interface TimerType {
     transition?: () => JSX.Element
     transpose?: (output: string) => JSX.Element
     format?: (start: Dayjs, now: Dayjs) => string
+}
+
+export type ParsedTabsData = {
+    key: string
+    data: DynamicTabType[]
 }

@@ -1,11 +1,10 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { NavLink, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
-import { stopPropagation, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
-import Select from 'react-select/dist/declarations/src/Select'
+import { stopPropagation, ConditionalWrap, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
@@ -32,18 +31,14 @@ const DynamicTabs = ({
     removeTabByIdentifier,
     markTabActiveById,
     stopTabByIdentifier,
-    enableShortCut,
-    shortcut,
     refreshData,
-    /* NOTE: shouldn't this be named showTimer or hideTimer? */
     isOverview,
     setIsDataStale,
 }: DynamicTabsProps & IWithShortcut) => {
-    const { push, replace } = useHistory()
+    const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
-    const moreButtonRef = useRef<Select<DynamicTabType, false, GroupBase<DynamicTabType>>>(null)
-    const tabRef = useRef<HTMLAnchorElement>(null)
+    const moreButtonRef = useRef(null)
     const [tabsData, setTabsData] = useState<TabsDataType>(EMPTY_TABS_DATA)
     const [selectedTab, setSelectedTab] = useState<DynamicTabType>(null)
     const [tabSearchText, setTabSearchText] = useState('')
@@ -51,29 +46,28 @@ const DynamicTabs = ({
     const tabPopupMenuRef = useRef(null)
     const CLUSTER_TERMINAL_TAB = 'cluster_terminal-Terminal'
 
+    const closeMenu = () => {
+        setIsMenuOpen(false)
+        setTabSearchText('')
+    }
+
     useEffect(() => {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
     }, [tabs])
-
-    const updateRef = (_node: HTMLAnchorElement) => {
-        if (_node?.dataset?.selected === 'true' && _node !== tabRef.current) {
-            _node.focus()
-            tabRef.current = _node
-        }
-    }
 
     const getMarkTabActiveHandler = (tab: DynamicTabType) => () => {
         markTabActiveById(tab.id)
         push(tab.url)
     }
 
-    const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
+    const getTabNavLink = (tab: DynamicTabType) => {
         const { name, isDeleted, isSelected, iconPath, dynamicTitle, title, showNameOnSelect, isAlive } = tab
 
         const _title = dynamicTitle || title
 
         return (
             <button
+                type="button"
                 className="dc__unset-button-styles"
                 data-testid={isSelected}
                 onClick={getMarkTabActiveHandler(tab)}
@@ -84,10 +78,7 @@ const DynamicTabs = ({
                 >
                     {iconPath && <img className="icon-dim-16" src={iconPath} alt={name} />}
                     {(!showNameOnSelect || isAlive || isSelected) && (
-                        <span
-                            className="fs-12 fw-6 lh-20 dc__ellipsis-right"
-                            data-testid={name}
-                        >
+                        <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}
                         </span>
                     )}
@@ -98,14 +89,16 @@ const DynamicTabs = ({
 
     const handleTabCloseAction: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation()
-        const pushURLPromise = removeTabByIdentifier(event.currentTarget.dataset.id)
-        pushURLPromise.then((url) => url && push(url))
+        removeTabByIdentifier(event.currentTarget.dataset.id)
+            .then((url) => url && push(url))
+            .catch(noop)
     }
 
     const handleTabStopAction = (e) => {
         e.stopPropagation()
-        const pushURLPromise = stopTabByIdentifier(e.currentTarget.dataset.id)
-        pushURLPromise.then((url) => url && push(url))
+        stopTabByIdentifier(e.currentTarget.dataset.id)
+            .then((url) => url && push(url))
+            .catch(noop)
     }
 
     const getTabTippyContent = (title: string) => {
@@ -122,31 +115,29 @@ const DynamicTabs = ({
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         const _showNameOnSelect = tab.showNameOnSelect && tab.isAlive
 
+        const renderWithTippy: (children: JSX.Element) => React.ReactNode = (children) => (
+            <Tippy
+                className="default-tt dc__mxw-300 dc__mnw-100"
+                arrow={false}
+                placement="top"
+                duration={[600, 0]}
+                moveTransition="transform 0.1s ease-out"
+                content={getTabTippyContent(tab.title)}
+            >
+                {children}
+            </Tippy>
+        )
         return (
             <Fragment key={`${idx}-tab`}>
                 <div className={!tab.isSelected ? 'dynamic-tab__border' : ''} />
-                <ConditionalWrap
-                    condition={!isFixed}
-                    wrap={(children) => (
-                        <Tippy
-                            className="default-tt dc__mxw-300 dc__mnw-100"
-                            arrow={false}
-                            placement="top"
-                            duration={[600, 0]}
-                            moveTransition="transform 0.1s ease-out"
-                            content={getTabTippyContent(tab.title)}
-                        >
-                            {children}
-                        </Tippy>
-                    )}
-                >
+                <ConditionalWrap condition={!isFixed} wrap={renderWithTippy}>
                     <div
                         id={tab.name}
                         className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${
                             tab.isSelected ? 'dynamic-tab-selected' : ''
                         }`}
                     >
-                        {getTabNavLink(tab, isFixed)}
+                        {getTabNavLink(tab)}
                         {_showNameOnSelect && (
                             <button
                                 type="button"
@@ -179,9 +170,9 @@ const DynamicTabs = ({
         )
     }
 
-    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const highLightText = (highlighted: string) => `<mark>${highlighted}</mark>`
 
-    const tabsOption = (props: OptionProps<any, false, any>) => {
+    const tabsOption = (props: OptionProps<OptionType & DynamicTabType>) => {
         const { selectProps, data } = props
         selectProps.styles.option = getCustomOptionSelectionStyle({
             display: 'flex',
@@ -197,6 +188,7 @@ const DynamicTabs = ({
                     <div className="tab-option__select dc__highlight-text">
                         <small
                             className="cn-7"
+                            // eslint-disable-next-line react/no-danger
                             dangerouslySetInnerHTML={{
                                 __html: splittedLabel[0].replace(regex, highLightText),
                             }}
@@ -204,6 +196,7 @@ const DynamicTabs = ({
                         {splittedLabel[1] && (
                             <div
                                 className="w-100 dc__ellipsis-right"
+                                // eslint-disable-next-line react/no-danger
                                 dangerouslySetInnerHTML={{
                                     __html: splittedLabel[1].replace(regex, highLightText),
                                 }}
@@ -256,15 +249,9 @@ const DynamicTabs = ({
         setTabSearchText('')
     }
 
-    const closeMenu = () => {
-        setIsMenuOpen(false)
-        setTabSearchText('')
-    }
-
-    const escHandler = (e: any) => {
-        if (e.keyCode === 27 || e.key === 'Escape') {
-            closeMenu()
-        }
+    const escHandler = (e: React.KeyboardEvent) => {
+        // eslint-disable-next-line no-unused-expressions
+        e.key !== 'Escape' && closeMenu()
     }
 
     const updateOnStaleData = (now: Dayjs) => {
@@ -326,7 +313,9 @@ const DynamicTabs = ({
                 </div>
             )}
             {(tabsData.dynamicTabs.length > 0 || (!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB)) && (
-                <div className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${tabsData.dynamicTabs[(tabsData.dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}>
+                <div
+                    className={`ml-auto flexbox dc__no-shrink dc__align-self-stretch ${tabsData.dynamicTabs[(tabsData.dynamicTabs?.length || 0) - 1]?.isSelected ? '' : 'dc__border-left'}`}
+                >
                     {!isOverview && selectedTab?.id !== CLUSTER_TERMINAL_TAB && (
                         <div className="flexbox fw-6 cn-7 dc__align-items-center">{timerForSync()}</div>
                     )}

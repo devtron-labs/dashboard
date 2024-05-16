@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
+import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
-import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
@@ -24,7 +24,6 @@ const ResourceFilterOptions = ({
     hideSearchInput,
     searchText,
     setSearchText,
-    isNamespaceSelectDisabled,
     isSearchInputDisabled,
     shortcut,
     renderRefreshBar,
@@ -40,15 +39,20 @@ const ResourceFilterOptions = ({
     const showShortcutKey = !isInputFocused && !searchText
 
     /* TODO: Find use for this loading state */
-    const [, namespaceByClusterIdList] = useAsync(
-        () => namespaceListByClusterId(clusterId),
-        [clusterId],
-    )
+    const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
     const namespaceOptions = useMemo(
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],
         [namespaceByClusterIdList],
     )
+
+    const handleInputShortcut = () => {
+        searchInputRef.current?.focus()
+    }
+
+    const handleShowFilterModal = () => {
+        setShowFilterModal(true)
+    }
 
     useEffect(() => {
         /* TODO: handle nicely */
@@ -67,16 +71,9 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut])
 
-    const handleInputShortcut = () => {
-        searchInputRef.current?.focus()
-    }
-
-    const handleShowFilterModal = () => {
-        setShowFilterModal(true)
-    }
-
-    const handleFilterKeyPress = (e: React.KeyboardEvent<any>): void => {
-        (e.key === 'Escape' || e.key === 'Esc') && searchInputRef.current?.blur()
+    const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
+        // eslint-disable-next-line no-unused-expressions
+        ;(e.key === 'Escape' || e.key === 'Esc') && searchInputRef.current?.blur()
     }
 
     const handleOnChangeSearchText: React.FormEventHandler<HTMLInputElement> = (event): void => {
@@ -88,15 +85,13 @@ const ResourceFilterOptions = ({
             return
         }
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(pathname + `?${location.search}`)
+        updateK8sResourceTab(`${pathname}?${location.search}`)
         setSelectedNamespace(selected)
     }
 
-    const handleInputBlur = (event: React.FocusEvent<HTMLInputElement>) =>
-        setIsInputFocused(false)
+    const handleInputBlur = () => setIsInputFocused(false)
 
-    const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) =>
-        setIsInputFocused(true)
+    const handleInputFocus = () => setIsInputFocused(true)
 
     const clearSearchInput = () => {
         setSearchText('')
@@ -128,7 +123,12 @@ const ResourceFilterOptions = ({
                             data-testid="search-input-for-resource"
                         />
                         {!!searchText && (
-                            <button className="search__clear-button" type="button" onClick={clearSearchInput}>
+                            <button
+                                className="search__clear-button"
+                                type="button"
+                                onClick={clearSearchInput}
+                                aria-label="Search resources"
+                            >
                                 <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
                             </button>
                         )}
@@ -157,16 +157,10 @@ const ResourceFilterOptions = ({
                             className="w-220 ml-8"
                             classNamePrefix="resource-filter-select"
                             options={namespaceOptions}
-                            value={
-                                isNamespaceSelectDisabled
-                                    ? ALL_NAMESPACE_OPTION
-                                    : selectedResource?.namespaced
-                                      ? selectedNamespace
-                                      : NAMESPACE_NOT_APPLICABLE_OPTION
-                            }
+                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
                             onChange={handleNamespaceChange}
                             blurInputOnSelect
-                            isDisabled={isNamespaceSelectDisabled ?? !selectedResource?.namespaced}
+                            isDisabled={!selectedResource?.namespaced}
                             styles={FILTER_SELECT_COMMON_STYLES}
                             components={{
                                 IndicatorSeparator: null,

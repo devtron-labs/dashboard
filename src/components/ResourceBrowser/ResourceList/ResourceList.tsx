@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import {
     getUserRole,
@@ -16,7 +16,6 @@ import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
-import { CreateResource } from './CreateResource'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -29,8 +28,8 @@ import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import AdminTerminal from './AdminTerminal'
-import { renderCreateResourceButton } from '../PageHeader.buttons'
 import { renderRefreshBar } from './ResourceList.component'
+import { renderCreateResourceButton } from '../PageHeader.buttons'
 
 const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
@@ -49,11 +48,10 @@ const ResourceList = () => {
         stopTabByIdentifier,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
-    const [showCreateResourceModal, setShowCreateResourceModal] = useState(false)
     const [isDataStale, setIsDataStale] = useState(false)
 
     /* TODO: Find use for this error */
-    const [rawGVKLoader, k8SObjectMapRaw /*rawGVKError*/] = useAsync(
+    const [rawGVKLoader, k8SObjectMapRaw /* rawGVKError */] = useAsync(
         () => getResourceGroupListRaw(clusterId),
         [clusterId],
     )
@@ -101,16 +99,18 @@ const ResourceList = () => {
             selectedCluster,
             namespace,
             isSuperAdmin,
-            nodeType === AppDetailsTabs.terminal,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             node && {
-                idPrefix: isNodeTypeNode ? K8S_EMPTY_GROUP : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
+                idPrefix: isNodeTypeNode
+                    ? K8S_EMPTY_GROUP
+                    : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
                 name: node,
                 kind: nodeType,
                 url,
                 isSelected: true,
                 position: Number.MAX_SAFE_INTEGER,
             },
+            nodeType === AppDetailsTabs.terminal,
         )
 
         initTabs(_tabs, reInit)
@@ -118,20 +118,6 @@ const ResourceList = () => {
 
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
-
-    useEffect(() => {
-        if (typeof window['crate']?.hide === 'function') {
-            window['crate'].hide()
-        }
-
-        // Clean up on unmount
-        return (): void => {
-            /* TODO: figure this out */
-            if (typeof window['crate']?.show === 'function') {
-                window['crate'].show()
-            }
-        }
-    }, [])
 
     const onClusterChange = (selected) => {
         if (selected.value === selectedCluster?.value) {
@@ -181,15 +167,17 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    const showResourceModal = (): void => {
-        setShowCreateResourceModal(true)
+    const refreshData = (): void => {
+        const activeTab = tabs.find((tab) => tab.isSelected)
+        updateTabComponentKey(activeTab.id)
+        updateTabLastSyncMoment(activeTab.id)
+        setIsDataStale(false)
     }
 
     const closeResourceModal = (_refreshData: boolean): void => {
         if (_refreshData) {
             refreshData()
         }
-        setShowCreateResourceModal(false)
     }
 
     const renderBreadcrumbs = () => {
@@ -208,23 +196,19 @@ const ResourceList = () => {
         replace({ search: queryParams })
     }
 
-    const updateK8sResourceTab = (url: string, dynamicTitle = '') => {
-        updateTabUrl(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id, url, dynamicTitle)
-        replace(url)
+    const updateK8sResourceTab = (_url: string, dynamicTitle = '') => {
+        updateTabUrl(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id, _url, dynamicTitle)
+        replace(_url)
     }
 
     const updateK8sResourceTabLastSyncMoment = () => {
         updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
     }
 
-    const markTabActiveByIdSetter = (id = '') => () => markTabActiveById(id)
-
-    const refreshData = (): void => {
-        const activeTab = tabs.find((tab) => tab.isSelected)
-        updateTabComponentKey(activeTab.id)
-        updateTabLastSyncMoment(activeTab.id)
-        setIsDataStale(false)
-    }
+    const getMarkTabActiveByIdSetter =
+        (id = '') =>
+        () =>
+            markTabActiveById(id)
 
     const renderDynamicTabComponent = (): JSX.Element => {
         if (!node) {
@@ -233,6 +217,7 @@ const ResourceList = () => {
 
         return nodeType.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() ? (
             <NodeDetails
+                key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
                 markTabActiveByIdentifier={markTabActiveByIdentifier}
                 addTab={addTab}
@@ -241,6 +226,7 @@ const ResourceList = () => {
         ) : (
             <div className="resource-details-container">
                 <NodeDetailComponent
+                    key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
@@ -256,11 +242,13 @@ const ResourceList = () => {
 
     const fixedTabComponents = [
         <ClusterOverview
+            key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
-            markNodesTabActive={markTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)}
+            markNodesTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)}
         />,
         <K8SResourceTabComponent
+            key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
             selectedCluster={selectedCluster}
             addTab={addTab}
             renderRefreshBar={renderRefreshBar(
@@ -276,7 +264,13 @@ const ResourceList = () => {
         ...(isSuperAdmin &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.name === AppDetailsTabs.terminal &&
         tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isAlive
-            ? [<AdminTerminal isSuperAdmin={isSuperAdmin} updateTerminalTabUrl={updateTerminalTabUrl} />]
+            ? [
+                  <AdminTerminal
+                      key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
+                      isSuperAdmin={isSuperAdmin}
+                      updateTerminalTabUrl={updateTerminalTabUrl}
+                  />,
+              ]
             : []),
     ]
 
@@ -284,15 +278,11 @@ const ResourceList = () => {
         return <div className={hide ? `hidden` : ''}>{component}</div>
     }
 
-    const renderKeyedTabComponent = (component: React.ReactNode, key: string) => {
-        return <div key={key}>{component}</div>
-    }
-
     const renderMainBody = () => {
         if (error) {
             return (
                 <div className="flex" style={{ height: 'calc(100vh - 48px)' }}>
-                    <ErrorScreenManager code={error['code']} />
+                    <ErrorScreenManager code={error.code} />
                 </div>
             )
         }
@@ -319,7 +309,6 @@ const ResourceList = () => {
                             removeTabByIdentifier={removeTabByIdentifier}
                             markTabActiveById={markTabActiveById}
                             stopTabByIdentifier={stopTabByIdentifier}
-                            enableShortCut={!showCreateResourceModal}
                             refreshData={refreshData}
                             isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
                             setIsDataStale={setIsDataStale}
@@ -327,14 +316,8 @@ const ResourceList = () => {
                     </div>
                 </div>
                 {tabs.length > 0 &&
-                    fixedTabComponents.map((component, index) =>
-                        renderKeyedTabComponent(
-                            renderInvisible(component, !tabs[index].isSelected),
-                            tabs[index].componentKey,
-                        ),
-                    )}
-                {dynamicActiveTab &&
-                    renderKeyedTabComponent(renderDynamicTabComponent(), dynamicActiveTab.componentKey)}
+                    fixedTabComponents.map((component, index) => renderInvisible(component, !tabs[index].isSelected))}
+                {dynamicActiveTab && renderDynamicTabComponent()}
             </>
         )
     }
@@ -347,10 +330,9 @@ const ResourceList = () => {
                         isBreadcrumbs
                         breadCrumbs={renderBreadcrumbs}
                         headerName=""
-                        renderActionButtons={renderCreateResourceButton(showResourceModal)}
+                        renderActionButtons={renderCreateResourceButton(clusterId, closeResourceModal)}
                     />
                     {renderMainBody()}
-                    {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
                 </div>
             </ShortcutProvider>
         </UseRegisterShortcutProvider>

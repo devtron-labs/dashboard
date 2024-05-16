@@ -13,6 +13,7 @@ import {
     Nodes,
     showError,
     getIsRequestAborted,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -28,7 +29,7 @@ import {
     SEARCH_QUERY_PARAM_KEY,
 } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceDetailType, URLParams } from '../Types'
+import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -37,9 +38,9 @@ import {
     sortEventListData,
     removeDefaultForStorageClass,
     updateQueryString,
+    getRenderNodeButton,
 } from '../Utils'
 import { URLS } from '../../../config'
-import { error } from 'console'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -66,7 +67,7 @@ export const K8SResourceList = ({
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(100)
-    const [filteredResourceList, setFilteredResourceList] = useState(null)
+    const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const searchWorkerRef = useRef(null)
     const abortControllerRef = useRef(new AbortController())
@@ -104,6 +105,53 @@ export const K8SResourceList = ({
     const showPaginatedView = resourceList?.data?.length >= 100
 
     useEffect(() => {
+        if (resourceList?.headers.length) {
+            /**
+             * 166 is standard with of every column for calculations
+             * 295 is width of left nav + sidebar
+             * 200 is the diff of name column
+             */
+            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
+            const windowWidth = window.innerWidth
+            const clientWidth = 0
+            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
+        }
+    }, [resourceList?.headers])
+
+    useEffect(() => {
+        return () => {
+            if (!searchWorkerRef.current) {
+                return
+            }
+            searchWorkerRef.current.postMessage({ type: 'stop' })
+            searchWorkerRef.current = null
+        }
+    }, [])
+
+    useEffect(() => {
+        setResourceListOffset(0)
+        setPageSize(100)
+    }, [nodeType])
+
+    const handleFilterChanges = (_searchText: string, data: ResourceDetailType): void => {
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
+        }
+
+        if (resourceList) {
+            searchWorkerRef.current.postMessage({
+                type: 'start',
+                payload: {
+                    searchText: _searchText,
+                    list: data?.data || [],
+                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
+                },
+            })
+        }
+    }
+
+    useEffect(() => {
         if (!resourceList) {
             setFilteredResourceList(null)
             return
@@ -121,66 +169,13 @@ export const K8SResourceList = ({
         handleFilterChanges(searchText, resourceList)
     }, [resourceList])
 
-    useEffect(() => {
-        if (resourceList?.headers.length) {
-            /**
-             * 166 is standard with of every column for calculations
-             * 295 is width of left nav + sidebar
-             * 200 is the diff of name column
-             */
-            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
-            const windowWidth = window.innerWidth
-            const clientWidth = 0
-            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
-        }
-    }, [resourceList?.headers])
-
-    useEffect(() => {
-        resetPaginator()
-    }, [nodeType])
-
-    useEffect(() => {
-        return () => {
-            if (!searchWorkerRef.current) {
-                return
-            }
-            searchWorkerRef.current.postMessage({ type: 'stop' })
-            searchWorkerRef.current = null
-        }
-    }, [])
-
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
-        updateK8sResourceTab(location.pathname + `?${searchParamString}`)
+        updateK8sResourceTab(`${location.pathname}?${searchParamString}`)
         handleFilterChanges(text, resourceList)
+        /* eslint no-unused-expressions: ["error", { "allowShortCircuit": true }] */
         text && setResourceListOffset(0) /* NOTE: if resourceListOffset is 0 setState is noop */
         !text && setFilteredResourceList(resourceList?.data)
-    }
-
-    const resetPaginator = () => {
-        setResourceListOffset(0)
-        setPageSize(100)
-    }
-
-    const handleFilterChanges = (
-        _searchText: string,
-        _resourceList: ResourceDetailType
-    ): void => {
-        if (!searchWorkerRef.current) {
-            searchWorkerRef.current = new WebWorker(searchWorker)
-            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
-        }
-
-        if (resourceList) {
-            searchWorkerRef.current.postMessage({
-                type: 'start',
-                payload: {
-                    searchText: _searchText,
-                    list: _resourceList?.data || [],
-                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
-                },
-            })
-        }
     }
 
     const handleResourceClick = (e) => {
@@ -207,13 +202,17 @@ export const K8SResourceList = ({
             tab ? `/${tab.toLowerCase()}` : ''
         }`
         const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab(idPrefix, kind, resourceName, _url).then(() => push(_url))
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
     }
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        addTab(K8S_EMPTY_GROUP, 'node', name, _url).then(() => push(_url))
+        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+            .then(() => push(_url))
+            .catch(noop)
     }
 
     const getStatusClass = (status: string) => {
@@ -226,54 +225,54 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
+    const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => {
         return (
             <div
                 key={`row--${index}-${resourceData.name}`}
                 className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
-                {resourceList?.headers.map((columnName, idx) =>
+                {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.name}-${idx}`}
+                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
                             className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <div className="w-100 flex left" data-testid="created-resource-name">
-                                <div className="w-303 pr-4">
-                                    <div className="dc__w-fit-content dc__mxw-304 pr-4">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="right"
-                                            content={resourceData.name}
-                                        >
-                                            <a
-                                                className="dc__link dc__ellipsis-right dc__block cursor"
-                                                data-name={resourceData.name}
-                                                data-namespace={resourceData.namespace}
-                                                onClick={handleResourceClick}
-                                            >
-                                                <span
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: DOMPurify.sanitize(
-                                                            highlightSearchText({
-                                                                searchText,
-                                                                text: resourceData.name,
-                                                                highlightClasses: 'p-0 fw-6 bcy-2',
-                                                            }),
-                                                        ),
-                                                    }}
-                                                />
-                                            </a>
-                                        </Tippy>
-                                    </div>
-                                </div>
+                            <div className="w-100 flexbox dc__content-space" data-testid="created-resource-name">
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="right"
+                                    content={resourceData.name}
+                                >
+                                    <button
+                                        type="button"
+                                        className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                        data-name={resourceData.name}
+                                        data-namespace={resourceData.namespace}
+                                        onClick={handleResourceClick}
+                                        aria-label={`Select ${resourceData.name}`}
+                                    >
+                                        <span
+                                            className="dc__link cursor"
+                                            // eslint-disable-next-line react/no-danger
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(
+                                                    highlightSearchText({
+                                                        searchText,
+                                                        text: String(resourceData.name),
+                                                        highlightClasses: 'p-0 fw-6 bcy-2',
+                                                    }),
+                                                ),
+                                            }}
+                                        />
+                                    </button>
+                                </Tippy>
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
                                     resourceData={resourceData}
-                                    getResourceListData={reloadResourceListData}
+                                    getResourceListData={reloadResourceListData as () => Promise<void>}
                                     selectedResource={selectedResource}
                                     handleResourceClick={handleResourceClick}
                                 />
@@ -281,27 +280,21 @@ export const K8SResourceList = ({
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.name}-${idx}`}
-                            className={`flexbox dc__align-items-center dc__ellipsis-right pt-12 pb-12 w-150 ${
+                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
+                            className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
+                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
                             }`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
-                                wrap={(children) => (
-                                    <a
-                                        className="dc__link dc__ellipsis-right dc__block cursor"
-                                        data-name={resourceData[columnName]}
-                                        onClick={handleNodeClick}
-                                    >
-                                        {children}
-                                    </a>
-                                )}
+                                wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
                                 <span
+                                    className="dc__ellipsis-right"
                                     data-testid={`${columnName}-count`}
+                                    // eslint-disable-next-line react/no-danger
                                     dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({

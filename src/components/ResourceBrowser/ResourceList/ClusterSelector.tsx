@@ -9,21 +9,15 @@ import {
     LEARN_MORE,
     SIDEBAR_KEYS,
 } from '../Constants'
-import { ClusterOptionType } from '../Types'
+import { ClusterSelectorType } from '../Types'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
-interface ClusterSelectorType {
-    onChange: ({ label, value }) => void
-    clusterList: ClusterOptionType[]
-    clusterId: string
-}
-
-export default function ClusterSelector({ onChange, clusterList, clusterId }: ClusterSelectorType) {
+const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList, clusterId }) => {
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
-    const defaultOption = filteredClusterList.find((item) => item.value == clusterId)
+    const defaultOption = filteredClusterList.find((item) => String(item.value) === clusterId)
 
     return (
         <ReactSelect
@@ -40,6 +34,8 @@ export default function ClusterSelector({ onChange, clusterList, clusterId }: Cl
         />
     )
 }
+
+export default ClusterSelector
 
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {

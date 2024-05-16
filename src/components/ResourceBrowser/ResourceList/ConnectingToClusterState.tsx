@@ -6,19 +6,40 @@ import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
 
-export default function ConnectingToClusterState({
+const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     loader,
     errorMsg,
     selectedCluster,
     handleRetry,
     requestAbortController,
-}: ConnectingToClusterStateProps) {
+}) => {
     const { replace } = useHistory()
     const { clusterId } = useParams<URLParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)
     let progressTimer = null
+
+    const resetStates = () => {
+        setInfoText(TRYING_TO_CONNECT)
+        setShowCancel(false)
+        setResetProgress(!resetProgress)
+    }
+
+    const initProgressTimer = () => {
+        if (progressTimer) {
+            clearTimeout(progressTimer)
+        }
+
+        progressTimer = setTimeout(() => {
+            setInfoText(TAKING_LONGER_TO_CONNECT)
+            setShowCancel(true)
+
+            if (progressTimer) {
+                clearTimeout(progressTimer)
+            }
+        }, 10000)
+    }
 
     useEffect(() => {
         if (selectedCluster) {
@@ -37,36 +58,15 @@ export default function ConnectingToClusterState({
         }
     }, [clusterId, selectedCluster])
 
-    const initProgressTimer = () => {
-        if (progressTimer) {
-            clearTimeout(progressTimer)
-        }
-
-        progressTimer = setTimeout(() => {
-            setInfoText(TAKING_LONGER_TO_CONNECT)
-            setShowCancel(true)
-
-            if (progressTimer) {
-                clearTimeout(progressTimer)
-            }
-        }, 10000)
-    }
-
-    const renderInfo = (heading: string, infoText: string) => {
+    const renderInfo = (heading: string, _infoText: string) => {
         return (
             <>
                 <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300" data-testid="cluster_info_getting_loaded">
                     {heading}
                 </h2>
-                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{infoText}</p>
+                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{_infoText}</p>
             </>
         )
-    }
-
-    const resetStates = () => {
-        setInfoText(TRYING_TO_CONNECT)
-        setShowCancel(false)
-        setResetProgress(!resetProgress)
     }
 
     const handleCancelClick = () => {
@@ -98,7 +98,7 @@ export default function ConnectingToClusterState({
                 <>
                     <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
                     {renderInfo(`‘${selectedCluster.label}’ is not reachable`, errorMsg)}
-                    <button className="flex cta h-36" onClick={handleRetryClick}>
+                    <button type="button" className="flex cta h-36" onClick={handleRetryClick}>
                         Retry
                     </button>
                 </>
@@ -136,3 +136,5 @@ export default function ConnectingToClusterState({
         </div>
     )
 }
+
+export default ConnectingToClusterState

@@ -4,7 +4,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ApiResourceGroupType, ClusterOptionType } from '../ResourceBrowser/Types'
+import { ApiResourceGroupType, ClusterOptionType, ResourceDetailDataType } from '../ResourceBrowser/Types'
 import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
@@ -117,7 +117,7 @@ export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
 
-export interface PodType {
+export interface PodType extends ResourceDetailDataType {
     name: string
     namespace: string
     cpu: ResourceDetail

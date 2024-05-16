@@ -1,23 +1,37 @@
+import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
-import { ApiResourceGroupType, ClusterOptionType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType, FIXED_TABS_INDICES } from './Types'
+import {
+    ApiResourceGroupType,
+    ClusterOptionType,
+    K8SObjectChildMapType,
+    K8SObjectMapType,
+    K8SObjectType,
+    K8sObjectOptionType,
+    GVKType,
+    FIXED_TABS_INDICES,
+    ResourceDetailDataType,
+} from './Types'
+import { InitTabType } from '../common/DynamicTabs/Types'
 import TerminalIcon from '../../assets/icons/ic-terminal-fill.svg'
 import K8ResourceIcon from '../../assets/icons/ic-object.svg'
 import ClusterIcon from '../../assets/icons/ic-world-black.svg'
-import { InitTabType } from '../common/DynamicTabs/Types'
 
 // Converts k8SObjects list to grouped map
-export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType: string): Map<string, K8SObjectMapType> => {
+export const getGroupedK8sObjectMap = (
+    _k8SObjectList: K8SObjectType[],
+    nodeType: string,
+): Map<string, K8SObjectMapType> => {
     return _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
             child: new Map<string, K8SObjectChildMapType>(),
         }
-        for (const _child of _k8sObject.child) {
+        _k8sObject.child.forEach((_child) => {
             if (childObj.child.has(_child.gvk.Kind)) {
                 childObj.child.set(_child.gvk.Kind, {
                     isGrouped: true,
@@ -30,14 +44,14 @@ export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[], nodeType
                     data: [_child],
                 })
             }
-        }
+        })
         map.set(_k8sObject.name, childObj)
         return map
     }, new Map<string, K8SObjectMapType>())
 }
 
 export const getK8SObjectMapAfterGroupHeadingClick = (
-    e: any,
+    e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } },
     k8SObjectMap: Map<string, K8SObjectMapType>,
     preventCollapse: boolean,
 ) => {
@@ -67,32 +81,34 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     return _k8SObjectMap
 }
 
-export const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
+export const sortEventListData = (eventList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
     if (!eventList?.length) {
-        return
+        return []
     }
-    const warningEvents: Record<string, any>[] = []
-    const otherEvents: Record<string, any>[] = []
-    eventList = eventList.reverse()
-    for (const iterator of eventList) {
-        if (iterator.type === 'Warning') {
-            warningEvents.push(iterator)
+    const warningEvents: ResourceDetailDataType[] = []
+    const otherEvents: ResourceDetailDataType[] = []
+    eventList.reverse().forEach((event) => {
+        if (event.type === 'Warning') {
+            warningEvents.push(event)
         } else {
-            otherEvents.push(iterator)
+            otherEvents.push(event)
         }
-    }
+    })
     return [
-        ...warningEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
-        ...otherEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
+        ...warningEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
+        ...otherEvents.sort(eventAgeComparator<ResourceDetailDataType>(LAST_SEEN)),
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: Record<string, any>[]): Record<string, any>[] => {
-    for (const iterator of storageList) {
-        if (iterator.name.includes('(default)')) {
-            iterator.name = iterator.name.split(' (default)')[0]
-        }
-    }
+export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
+    storageList.map((storage) => {
+        return (storage.name as string).includes('(default)')
+            ? {
+                  ...storage,
+                  name: (storage.name as string).split(' (default)')[0],
+              }
+            : storage
+    })
     return storageList
 }
 
@@ -193,13 +209,13 @@ export const updateQueryString = (
     keys.forEach((key) => {
         query[key] = parsedQueryString[key]
     })
-    for (const [key, value] of entries) {
+    entries.forEach(([key, value]) => {
         if (value) {
             query[key] = value
         } else {
             delete query[key]
         }
-    }
+    })
     return queryString.stringify(query)
 }
 
@@ -207,8 +223,8 @@ export const getTabsBasedOnRole = (
     selectedCluster: ClusterOptionType,
     namespace: string,
     isSuperAdmin: boolean,
-    isTerminalSelected = false,
     dynamicTabData: InitTabType,
+    isTerminalSelected = false,
 ): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
@@ -268,14 +284,31 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
 }
 
-export const getResourceFromK8SObjectMap = (
-    map: ApiResourceGroupType[],
-    nodeType: string,
-) => {
+export const getResourceFromK8SObjectMap = (map: ApiResourceGroupType[], nodeType: string) => {
     const resource = map?.find((value) => value.gvk.Kind.toLowerCase() === nodeType.toLowerCase())
-    return resource && {
-        gvk: resource.gvk,
-        namespaced: resource.namespaced,
-        isGrouped: false,
-    }
+    return (
+        resource && {
+            gvk: resource.gvk,
+            namespaced: resource.namespaced,
+            isGrouped: false,
+        }
+    )
 }
+
+export const getRenderNodeButton =
+    (
+        resourceData: ResourceDetailDataType,
+        columnName: string,
+        handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+    ) =>
+    (children: React.ReactNode) => (
+        <button
+            type="button"
+            className="dc__link dc__ellipsis-right dc__block cursor"
+            data-name={resourceData[columnName]}
+            onClick={handleNodeClick}
+            aria-label={`Select ${resourceData[columnName]}`}
+        >
+            {children}
+        </button>
+    )

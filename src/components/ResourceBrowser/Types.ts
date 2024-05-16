@@ -1,13 +1,16 @@
 import React from 'react'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { Nodes, NodeType, OptionType } from '../app/types'
+import { ResponseType, Nodes, NodeType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
 
+export type ResourceDetailDataType = {
+    [key: string]: string | number | object
+}
+
 export interface ResourceDetailType {
     headers: string[]
-    data: Record<string, any>[]
+    data: ResourceDetailDataType[]
 }
 
 export interface GVKType {
@@ -136,7 +139,6 @@ export interface ResourceFilterOptionsProps {
     searchText?: string
     setSearchText?: (text: string) => void
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
-    isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
@@ -149,20 +151,20 @@ export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'h
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    resourceData: Record<string, any>
+    resourceData: ResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    handleResourceClick: (e: any) => void
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    getResourceListData?: () => void | Promise<void>
+    getResourceListData?: () => Promise<void>
 }
 
 export interface DeleteResourcePopupType {
     clusterId: string
-    resourceData: Record<string, any>
+    resourceData: ResourceDetailDataType
     selectedResource: ApiResourceGroupType
     toggleDeleteDialog: () => void
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
-    getResourceListData?: () => void | Promise<void>
+    getResourceListData?: () => Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
@@ -175,8 +177,8 @@ export interface ResourceListEmptyStateType {
 
 export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
-    filteredData: Record<string, any>[]
-    handleResourceClick: (e: any) => void
+    filteredData: ResourceDetailType['data']
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     paginatedView: boolean
     syncError: boolean
     searchText: string
@@ -235,4 +237,15 @@ export enum FIXED_TABS_INDICES {
     OVERVIEW = 0,
     K8S_RESOURCE_LIST,
     ADMIN_TERMINAL,
+}
+
+export interface ClusterSelectorType {
+    onChange: ({ label, value }) => void
+    clusterList: ClusterOptionType[]
+    clusterId: string
+}
+
+export interface CreateResourceButtonType {
+    clusterId: string
+    closeModal: CreateResourceType['closePopup']
 }

@@ -76,7 +76,7 @@ const Sidebar = ({
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
-        (e: React.MouseEvent<HTMLElement> | { currentTarget: { dataset: { groupName: string } } }) => {
+        (e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } }) => {
             preventScrollRef.current = preventScroll
             setList(getK8SObjectMapAfterGroupHeadingClick(e, list, preventCollapse))
         }
@@ -125,11 +125,7 @@ const Sidebar = ({
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
          * NOTE: all list items will be passed this ref callback
-         * The correct node will get selected & scrolled into view */
-        if (nodeType !== selectedResource.gvk.Kind.toLowerCase() && nodeType === node?.dataset.kind.toLowerCase()) {
-            node?.click()
-            return
-        }
+         * The correct node will get scrolled into view */
         if (node?.dataset.selected !== 'true' || preventScrollRef.current) {
             return
         }
@@ -173,19 +169,24 @@ const Sidebar = ({
         }
         return (
             <Fragment key={`${k8sObject.name}/${key}-child`}>
-                <div
-                    className="flex pointer"
+                <button
+                    type="button"
+                    className="dc__unset-button-styles"
                     data-group-name={`${k8sObject.name}/${key}`}
-                    onClick={getGroupHeadingClickHandler(false, true)}
+                    onClick={getGroupHeadingClickHandler(false, true) as React.MouseEventHandler<HTMLButtonElement>}
                 >
-                    <ICExpand
-                        className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
-                        style={{
-                            ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
-                        }}
-                    />
-                    <span className={`fs-13 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
-                </div>
+                    <div className="flex pointer dc__align-left">
+                        <ICExpand
+                            className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
+                            style={{
+                                ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
+                            }}
+                        />
+                        <span className={`fs-13 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
+                            {key}
+                        </span>
+                    </div>
+                </button>
                 <div className="pl-20 flexbox-col">
                     {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
                 </div>
@@ -301,7 +302,7 @@ const Sidebar = ({
                     }}
                 />
             </div>
-            <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
+            <div className="k8s-object-wrapper flexbox-col dc__border-top-n1 p-8 dc__user-select-none">
                 <div className="pb-8 flexbox-col">
                     <SidebarChildButton
                         parentRef={selectedChildRef}
@@ -343,22 +344,27 @@ const Sidebar = ({
                         k8sObject.name === AggregationKeys.Events ||
                         k8sObject.name === AggregationKeys.Namespaces ? null : (
                             <Fragment key={`${k8sObject.name}-parent`}>
-                                <div
-                                    className="flex pointer"
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles"
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}
                                 >
-                                    <ICExpand
-                                        className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
-                                        style={{ ['--rotateBy' as string]: !k8sObject.isExpanded ? '0deg' : '90deg' }}
-                                    />
-                                    <span
-                                        className="fs-13 fw-6 pointer w-100 pt-6 pb-6"
-                                        data-testid={`k8sObject-${k8sObject.name}`}
-                                    >
-                                        {k8sObject.name}
-                                    </span>
-                                </div>
+                                    <div className="flex pointer dc__align-left">
+                                        <ICExpand
+                                            className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
+                                            style={{
+                                                ['--rotateBy' as string]: !k8sObject.isExpanded ? '0deg' : '90deg',
+                                            }}
+                                        />
+                                        <span
+                                            className="fs-13 fw-6 pointer w-100 pt-6 pb-6"
+                                            data-testid={`k8sObject-${k8sObject.name}`}
+                                        >
+                                            {k8sObject.name}
+                                        </span>
+                                    </div>
+                                </button>
                                 {k8sObject.isExpanded && (
                                     <div className="pl-20 flexbox-col">
                                         {[...k8sObject.child.entries()].map(([key, value]) =>

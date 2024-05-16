@@ -4,7 +4,7 @@ import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { ClusterDetail } from '../ClusterNodes/types'
-import { addClusterButton } from './PageHeader.buttons'
+import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
     const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =
@@ -35,7 +35,7 @@ const ResourceBrowser: React.FC = () => {
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"
-                renderActionButtons={addClusterButton}
+                renderActionButtons={AddClusterButton}
             />
             {initialLoading ? (
                 <div style={{ height: 'calc(100vh - 48px)' }}>

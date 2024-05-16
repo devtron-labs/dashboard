@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { DynamicTabType, InitTabType } from './Types'
 import dayjs from 'dayjs'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import { DynamicTabType, InitTabType, ParsedTabsData } from './Types'
 
 /* TODO: refactor this file */
 
@@ -48,11 +49,11 @@ export function useTabs(persistanceKey: string) {
      * when initializing tabs to maintain their state across page loads.
      *
      * @param {DynamicTabType[]} _tabs - Array of tab data
-     * @param {Record<string, any>} [parsedTabsData] - (Optional) previously parsed tab data.
+     * @param {ParsedTabsData} [parsedTabsData] - (Optional) previously parsed tab data.
      * @returns {string} - JSON string representing tab data
      */
-    const stringifyData = (_tabs: any[], parsedTabsData?: Record<string, any>) => {
-        let _parsedTabsData: Record<string, any> = {}
+    const stringifyData = (_tabs: DynamicTabType[], parsedTabsData?: ParsedTabsData) => {
+        let _parsedTabsData: typeof parsedTabsData
 
         if (parsedTabsData) {
             _parsedTabsData = parsedTabsData
@@ -60,7 +61,9 @@ export function useTabs(persistanceKey: string) {
             const persistedTabsData = localStorage.getItem('persisted-tabs-data')
             try {
                 _parsedTabsData = JSON.parse(persistedTabsData)
-            } catch (err) {}
+            } catch (err) {
+                noop()
+            }
         }
 
         return JSON.stringify({
@@ -105,7 +108,7 @@ export function useTabs(persistanceKey: string) {
      */
     const initTabs = (initTabsData: InitTabType[], reInit?: boolean, tabsToRemove?: string[]) => {
         let _tabs: DynamicTabType[] = []
-        let parsedTabsData: Record<string, any> = {}
+        let parsedTabsData: ParsedTabsData
         setTabs((prevTabs) => {
             if (!reInit) {
                 /* FIXME: graceful handling of data upon finding old persisted-tabs-data */
@@ -117,7 +120,10 @@ export function useTabs(persistanceKey: string) {
                     _tabs = prevTabs
                 }
             }
-            _tabs.forEach((_tab) => (_tab.isSelected = false))
+            _tabs.forEach((_tab) => {
+                // eslint-disable-next-line no-param-reassign
+                _tab.isSelected = false
+            })
             if (_tabs.length > 0) {
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
@@ -137,7 +143,7 @@ export function useTabs(persistanceKey: string) {
                     _tabs.push(populateInitTab(_initTab))
                 })
             }
-            /* NOTE: need to fix an order ? */
+            // eslint-disable-next-line no-unused-expressions
             _tabs.some((_tab) => _tab.isSelected) || (_tabs[FALLBACK_TAB].isSelected = true)
             _tabs.sort((a, b) => {
                 /* NOTE: to mitigate Integer overflow using this comparison */
@@ -175,31 +181,36 @@ export function useTabs(persistanceKey: string) {
         kind: string,
         name: string,
         url: string,
-        position = Number.MAX_SAFE_INTEGER,
         iconPath?: string,
         dynamicTitle?: string,
         showNameOnSelect = false,
         isAlive = false,
+        position = Number.MAX_SAFE_INTEGER,
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
-            return
+            return Promise.resolve(false)
         }
-        // @ts-ignore available on all latest browsers
+        // @ts-expect-error available on all modern browsers
         const { promise, resolve } = Promise.withResolvers<boolean>()
 
         const title = `${kind}/${name}`
-        let found = false
         const _id = `${idPrefix}-${title}`
 
         setTabs((prevTabs) => {
+            let found = false
             const _tabs = prevTabs.map((tab) => {
-                tab.isSelected = false
-                if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
-                    tab.isSelected = true
-                    tab.url = url
-                    found = true
-                }
-                return tab
+                const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                found = found || matched
+                return matched
+                    ? {
+                          ...tab,
+                          url,
+                          isSelected: true,
+                      }
+                    : {
+                          ...tab,
+                          isSelected: false,
+                      }
             })
 
             if (!found) {
@@ -222,6 +233,7 @@ export function useTabs(persistanceKey: string) {
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
+
         return promise
     }
 
@@ -233,7 +245,7 @@ export function useTabs(persistanceKey: string) {
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was removed
      */
     const removeTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-ignore available on all latest browsers
+        // @ts-expect-error available on all modern browsers
         const { promise, resolve } = Promise.withResolvers<string>()
 
         setTabs((prevTabs) => {
@@ -268,7 +280,7 @@ export function useTabs(persistanceKey: string) {
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was stopped
      */
     const stopTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-ignore available on all latest browsers
+        // @ts-expect-error available on all modern browsers
         const { promise, resolve } = Promise.withResolvers<string>()
 
         setTabs((prevTabs) => {
@@ -375,10 +387,12 @@ export function useTabs(persistanceKey: string) {
         const _id = `${idPrefix}-${title}`
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
-                    tab.isDeleted = true
-                }
-                return tab
+                return tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                    ? {
+                          ...tab,
+                          isDeleted: true,
+                      }
+                    : tab
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
@@ -395,15 +409,13 @@ export function useTabs(persistanceKey: string) {
     const updateTabUrl = (id: string, url: string, dynamicTitle?: string, retainSearchParams = false) => {
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                if (tab.id === id) {
-                    if (retainSearchParams) {
-                        tab.url = `${url}?${tab.url.split('?')[1] || ''}`
-                    } else {
-                        tab.url = url
-                    }
-                    tab.dynamicTitle = dynamicTitle || tab.dynamicTitle
-                }
-                return tab
+                return tab.id === id
+                    ? {
+                          ...tab,
+                          url: retainSearchParams ? `${url}?${tab.url.split('?')[1] || ''}` : url,
+                          dynamicTitle: dynamicTitle || tab.dynamicTitle,
+                      }
+                    : tab
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
@@ -418,10 +430,12 @@ export function useTabs(persistanceKey: string) {
     const updateTabComponentKey = (id: string) => {
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                return {
-                    ...tab,
-                    componentKey: getNewTabComponentKey(tab.id),
-                }
+                return tab.id === id
+                    ? {
+                          ...tab,
+                          componentKey: getNewTabComponentKey(id),
+                      }
+                    : tab
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
@@ -431,10 +445,12 @@ export function useTabs(persistanceKey: string) {
     const updateTabLastSyncMoment = (id: string) => {
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
-                return {
-                    ...tab,
-                    lastSyncMoment: dayjs(),
-                }
+                return tab.id === id
+                    ? {
+                          ...tab,
+                          lastSyncMoment: dayjs(),
+                      }
+                    : tab
             })
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
