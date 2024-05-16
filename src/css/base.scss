@@ -4532,6 +4532,10 @@ textarea::placeholder {
     visibility: hidden;
 }
 
+.dc__lh-0 {
+    line-height: 0;
+}
+
 .dc__unset-button-styles {
     background: none;
     color: inherit;
@@ -4552,3 +4556,4 @@ textarea::placeholder {
 .dc__outline-n1 {
     outline: 1px solid var(--N100);
 }
+
