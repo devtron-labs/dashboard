@@ -30,7 +30,6 @@ import {
     AddPipelineType,
     SelectedNode,
     ConditionalWrap,
-
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -672,7 +671,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         return (
             <div className="flexbox-col dc__gap-4 w-200">
                 <p className="m-0 cn-0 fs-12 fw-6 lh-18">{CHANGE_CI_TOOLTIP.TITLE}</p>
-
                 <p className="cn-0 m-0 fs-12 fw-4 lh-18">{CHANGE_CI_TOOLTIP.DISABLED}</p>
             </div>
         )
@@ -714,9 +712,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
 
-        // We are only enabling change CI when CI is linkedCD or normal CI
-        const isChangeCIEnabled =
-            ciPipeline?.isLinkedCD || (ciPipeline && !ciPipeline?.isJobCI && !ciPipeline?.isLinkedCI)
+        // If no node is present in workflow then disable change CI button
+        const isChangeCIEnabled = nodesWithBufferHeight?.length > 0
 
         return (
             <ConditionalWrap
@@ -782,7 +779,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     </Tippy>
                                 )}
 
-                                {!!this.props.handleChangeCI && LinkedCDNode && !this.props.isJobView && (
+                                {!!this.props.handleChangeCI && !this.props.isJobView && (
                                     <Tippy
                                         content={this.renderChangeCITooltip(isChangeCIEnabled)}
                                         placement="top"

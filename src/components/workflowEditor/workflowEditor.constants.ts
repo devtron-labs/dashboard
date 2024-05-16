@@ -73,6 +73,5 @@ export const TOAST_MESSAGES = {
 
 export const CHANGE_CI_TOOLTIP = {
     TITLE: 'Change image source',
-    DISABLED:
-        'Currently, changing image source is only supported between Build Pipeline and Sync with Environment options',
+    DISABLED: 'Can not change image source since no image source is present.',
 }

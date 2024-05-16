@@ -19,15 +19,15 @@ import {
     REQUEST_IN_PROGRESS,
 } from './workflowEditor.constants'
 import SourceTypeCard from './SourceTypeCard'
-import { ChangeCIPayloadType, DisableType, WorkflowOptionsModalProps } from './types'
+import { WorkflowOptionsModalProps } from './types'
 import { CIPipelineNodeType } from '../app/details/triggerView/types'
 import { importComponentFromFELibrary } from '../common'
 import { saveCDPipeline } from '../cdPipeline/cdPipeline.service'
-import { TriggerType } from '../../config'
+import { getSwitchToWebhookPayload } from './utils'
 
 const LINKED_CD_SOURCE_VARIANT = importComponentFromFELibrary('LINKED_CD_SOURCE_VARIANT', null, 'function')
 
-export default function WorkflowOptionsModal({
+const WorkflowOptionsModal = ({
     handleCloseWorkflowOptionsModal,
     addCIPipeline,
     addWebhookCD,
@@ -36,43 +36,45 @@ export default function WorkflowOptionsModal({
     changeCIPayload,
     workflows,
     getWorkflows,
-}: Readonly<WorkflowOptionsModalProps>) {
-    const [currentCIPipelineType, setCurrentCIPipelineType] = useState<CIPipelineNodeType | null>(null)
+}: Readonly<WorkflowOptionsModalProps>) => {
+    const [currentCIPipelineType, setCurrentCIPipelineType] = useState<CIPipelineNodeType | WorkflowNodeType.WEBHOOK>(
+        null,
+    )
     const [loadingWebhook, setLoadingWebhook] = useState<boolean>(false)
 
     useEffect(() => {
         if (changeCIPayload && workflows) {
             const currentWorkflow = workflows.find((workflow) => +workflow.id === changeCIPayload?.appWorkflowId)
             const currentCIPipeline = currentWorkflow?.nodes.find((node) => node.type === WorkflowNodeType.CI)
+            const isWebhook = currentWorkflow?.nodes.some((node) => node.type === WorkflowNodeType.WEBHOOK)
+
+            if (isWebhook) {
+                setCurrentCIPipelineType(WorkflowNodeType.WEBHOOK)
+                return
+            }
+
             if (currentCIPipeline?.isJobCI) {
                 setCurrentCIPipelineType(CIPipelineNodeType.JOB_CI)
-            } else if (currentCIPipeline?.isLinkedCI) {
-                setCurrentCIPipelineType(CIPipelineNodeType.LINKED_CI)
-            } else if (currentCIPipeline?.isExternalCI) {
-                setCurrentCIPipelineType(CIPipelineNodeType.EXTERNAL_CI)
-            } else if (currentCIPipeline?.isLinkedCD) {
-                setCurrentCIPipelineType(CIPipelineNodeType.LINKED_CD)
-            } else {
-                setCurrentCIPipelineType(CIPipelineNodeType.CI)
+                return
             }
+
+            if (currentCIPipeline?.isLinkedCI) {
+                setCurrentCIPipelineType(CIPipelineNodeType.LINKED_CI)
+                return
+            }
+
+            if (currentCIPipeline?.isExternalCI) {
+                setCurrentCIPipelineType(CIPipelineNodeType.EXTERNAL_CI)
+                return
+            }
+
+            if (currentCIPipeline?.isLinkedCD) {
+                setCurrentCIPipelineType(CIPipelineNodeType.LINKED_CD)
+                return
+            }
+            setCurrentCIPipelineType(CIPipelineNodeType.CI)
         }
     }, [workflows, changeCIPayload])
-
-    const getWebhookPayload = (changeCIPayload: ChangeCIPayloadType) => ({
-        appId: changeCIPayload.appId,
-        pipelines: [
-            {
-                // name and triggerType are useless to backend for this case
-                name: 'change-webhook-ci',
-                triggertype: TriggerType.Manual,
-                appWorkflowId: changeCIPayload.appWorkflowId,
-                environmentId: -1,
-                id: 0,
-                parentPipelineType: PipelineType.WEBHOOK,
-                switchFromCiPipelineId: changeCIPayload.switchFromCiPipelineId,
-            },
-        ],
-    })
 
     const handleChangeToWebhook = () => {
         if (changeCIPayload) {
@@ -82,7 +84,7 @@ export default function WorkflowOptionsModal({
             if (containsCDPipeline) {
                 // Only need to disable it in case of error
                 setLoadingWebhook(true)
-                saveCDPipeline(getWebhookPayload(changeCIPayload))
+                saveCDPipeline(getSwitchToWebhookPayload(changeCIPayload))
                     .then((response) => {
                         if (response.result) {
                             toast.success(TOAST_MESSAGES.SUCCESS_CHANGE_TO_WEBHOOK)
@@ -130,21 +132,13 @@ export default function WorkflowOptionsModal({
         handleCloseWorkflowOptionsModal()
     }
 
-    const getDisabledInfo = (requiredCIPipelineType: CIPipelineNodeType) => {
+    const getDisabledInfo = (requiredCIPipelineType: typeof currentCIPipelineType) => {
         if (!showLinkedCDSource && requiredCIPipelineType === CIPipelineNodeType.LINKED_CD) {
             return NO_ENV_FOUND
         }
 
         if (currentCIPipelineType === requiredCIPipelineType) {
             return CHANGE_SAME_CI
-        }
-
-        if (
-            currentCIPipelineType &&
-            requiredCIPipelineType !== CIPipelineNodeType.CI &&
-            requiredCIPipelineType !== CIPipelineNodeType.LINKED_CD
-        ) {
-            return DisableType.COMING_SOON
         }
 
         if (loadingWebhook) {
@@ -165,11 +159,11 @@ export default function WorkflowOptionsModal({
                 <div className="flexbox-col w-250 pt-32 dc__window-bg dc__content-space">
                     {/* Info */}
                     <div className="flexbox-col dc__gap-6 dc__align-self-stretch pt-0 pb-0 pl-24 pr-24">
-                        <p className="m-0 cn-9 fs-16 fw-6 lh-24">
+                        <h2 className="m-0 cn-9 fs-16 fw-6 lh-24">
                             {changeCIPayload
                                 ? WORKFLOW_OPTIONS_MODAL.CHANGE_CI_TEXT
                                 : WORKFLOW_OPTIONS_MODAL.ACTION_TEXT}
-                        </p>
+                        </h2>
 
                         <p className="m-0 cn-7 fs-13 fw-4 lh-20">
                             {changeCIPayload
@@ -189,9 +183,9 @@ export default function WorkflowOptionsModal({
                 {/* Content */}
                 <div className="flexbox-col p-20 dc__gap-12 dc__overflow-scroll">
                     <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                        <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                        <h3 className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
                             {WORKFLOW_OPTIONS_MODAL_TYPES.DEFAULT}
-                        </p>
+                        </h3>
 
                         <SourceTypeCard
                             title={SOURCE_TYPE_CARD_VARIANTS.SOURCE_CODE.title}
@@ -217,9 +211,9 @@ export default function WorkflowOptionsModal({
                     </section>
 
                     <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                        <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                        <h3 className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
                             {WORKFLOW_OPTIONS_MODAL_TYPES.RECIEVE}
-                        </p>
+                        </h3>
 
                         <SourceTypeCard
                             title={SOURCE_TYPE_CARD_VARIANTS.EXTERNAL_SERVICE.title}
@@ -229,7 +223,7 @@ export default function WorkflowOptionsModal({
                             dataTestId={SOURCE_TYPE_CARD_VARIANTS.EXTERNAL_SERVICE.dataTestId}
                             type={SOURCE_TYPE_CARD_VARIANTS.EXTERNAL_SERVICE.type}
                             handleCardAction={handleCardAction}
-                            disableInfo={getDisabledInfo(CIPipelineNodeType.EXTERNAL_CI)}
+                            disableInfo={getDisabledInfo(WorkflowNodeType.WEBHOOK)}
                         />
 
                         {!!LINKED_CD_SOURCE_VARIANT && (
@@ -248,9 +242,9 @@ export default function WorkflowOptionsModal({
 
                     {window._env_.ENABLE_CI_JOB && (
                         <section className="flexbox-col dc__gap-8 dc__align-self-stretch">
-                            <p className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
+                            <h3 className="m-0 cn-7 fs-11 fw-6 lh-16 dc__uppercase">
                                 {WORKFLOW_OPTIONS_MODAL_TYPES.JOB}
-                            </p>
+                            </h3>
 
                             <SourceTypeCard
                                 title={SOURCE_TYPE_CARD_VARIANTS.JOB.title}
@@ -269,3 +263,5 @@ export default function WorkflowOptionsModal({
         </VisibleModal>
     )
 }
+
+export default WorkflowOptionsModal

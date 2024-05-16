@@ -21,10 +21,6 @@ import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { WorkflowProps } from './Workflow'
 
-export enum DisableType {
-    COMING_SOON = 'COMING SOON',
-}
-
 export interface BlackListedCI {
     [key: number]: CiPipeline
 }

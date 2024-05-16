@@ -116,17 +116,4 @@
     margin-top: 40px;
     box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.2);
     background: var(--N0);
-    position: relative;
-
-    .ribbon-wrapper {
-        left: 240px;
-        margin: 0 auto;
-        height: 62px;
-        z-index: 1;
-
-        .ribbon-content {
-            top: 18px;
-            width: 190px;
-        }
-    }
 }
