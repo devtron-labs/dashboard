@@ -404,6 +404,7 @@ const K8sListItemCard = ({
             <div className="mb-16">
                 <ReactSelect
                     placeholder="Select cluster"
+                    classNamePrefix="k8s-permission-select-cluster-dropdown"
                     options={clusterOptions}
                     value={k8sPermission?.cluster}
                     onChange={onClusterChange}
@@ -425,6 +426,7 @@ const K8sListItemCard = ({
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select namespace"
+                            classNamePrefix="k8s-permission-select-namespace-dropdown"
                             options={namespaceMapping?.[k8sPermission?.cluster?.value]}
                             value={k8sPermission.namespace}
                             name="namespace"
@@ -447,6 +449,7 @@ const K8sListItemCard = ({
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select API group"
+                                    classNamePrefix="k8s-permission-select-api-group-dropdown"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
                                     isDisabled={!k8sPermission.namespace || isApiGroupListLoading}
@@ -468,6 +471,7 @@ const K8sListItemCard = ({
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select kind"
+                                    classNamePrefix="k8s-permission-select-kind-dropdown"
                                     options={kindMapping?.[k8sPermission.key]}
                                     isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
@@ -533,6 +537,7 @@ const K8sListItemCard = ({
                     <div className="mb-16 w-300">
                         <ReactSelect
                             placeholder="Select role"
+                            classNamePrefix="k8s-permission-select-role-dropdown"
                             options={k8sOptions}
                             value={k8sPermission.action}
                             defaultValue={k8sOptions[0]}

@@ -487,6 +487,7 @@ const DirectPermission = ({
             {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>
                     <Select
+                        classNamePrefix="dropdown-for-workflow"
                         value={permission.workflow}
                         isMulti
                         closeMenuOnSelect={false}
