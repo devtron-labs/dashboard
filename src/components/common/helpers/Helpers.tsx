@@ -1109,6 +1109,9 @@ export const reloadToastBody = () => {
     )
 }
 
+/**
+ * @deprecated
+ */
 export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     const ref = useRef(null)
     const callbackRef = useRef(callback)

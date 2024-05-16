@@ -211,20 +211,7 @@ export function useTabs(persistanceKey: string) {
             })
 
             if (!found) {
-                _tabs.push(
-                    populateTabData(
-                        _id,
-                        name,
-                        url,
-                        true,
-                        title,
-                        position,
-                        showNameOnSelect,
-                        undefined,
-                        undefined,
-                        undefined,
-                    ),
-                )
+                _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
             }
             resolve(!found)
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))

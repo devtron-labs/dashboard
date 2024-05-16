@@ -87,7 +87,7 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
     }
     const warningEvents: ResourceDetailDataType[] = []
     const otherEvents: ResourceDetailDataType[] = []
-    eventList.reverse().forEach((event) => {
+    eventList.forEach((event) => {
         if (event.type === 'Warning') {
             warningEvents.push(event)
         } else {

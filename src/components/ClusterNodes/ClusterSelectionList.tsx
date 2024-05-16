@@ -15,7 +15,12 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 
-export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clusterListLoader, refreshData }: ClusterSelectionType) {
+const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
+    clusterOptions,
+    isSuperAdmin,
+    clusterListLoader,
+    refreshData,
+}) => {
     const location = useLocation()
     const history = useHistory()
     const [minLoader, setMinLoader] = useState(true)
@@ -104,7 +109,7 @@ export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clu
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
-            return
+            return null
         }
         return value
     }
@@ -118,11 +123,9 @@ export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clu
                     clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
-                <div
-                    data-testid={`cluster-row-${clusterData.name}`}
-                    className="cb-5 dc__ellipsis-right flex left"
-                >
+                <div data-testid={`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
                     <button
+                        type="button"
                         data-label={clusterData.name}
                         data-value={clusterData.id}
                         className="dc__unset-button-styles"
@@ -218,6 +221,7 @@ export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clu
                                   <span>
                                       {lastDataSyncTimeString}
                                       <button
+                                          type="button"
                                           data-testid="cluster-list-refresh-button"
                                           className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
                                           onClick={refreshData}
@@ -233,3 +237,5 @@ export default function ClusterSelectionList({ clusterOptions, isSuperAdmin, clu
         </div>
     )
 }
+
+export default ClusterSelectionList
