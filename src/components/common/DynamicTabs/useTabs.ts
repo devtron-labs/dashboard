@@ -22,10 +22,10 @@ export function useTabs(persistanceKey: string) {
         isSelected: boolean,
         title: string,
         position: number,
-        iconPath: string,
-        dynamicTitle: string,
         showNameOnSelect: boolean,
-        isAlive: boolean,
+        iconPath = '',
+        dynamicTitle = '',
+        isAlive = false,
     ) => {
         return {
             id,
@@ -89,9 +89,9 @@ export function useTabs(persistanceKey: string) {
             _initTab.isSelected,
             title,
             _initTab.position,
+            _initTab.showNameOnSelect,
             _initTab.iconPath,
             _initTab.dynamicTitle,
-            _initTab.showNameOnSelect,
             !!_initTab.isAlive,
         )
     }
@@ -181,10 +181,7 @@ export function useTabs(persistanceKey: string) {
         kind: string,
         name: string,
         url: string,
-        iconPath?: string,
-        dynamicTitle?: string,
         showNameOnSelect = false,
-        isAlive = false,
         position = Number.MAX_SAFE_INTEGER,
     ): Promise<boolean> => {
         if (!name || !url || !kind) {
@@ -222,10 +219,10 @@ export function useTabs(persistanceKey: string) {
                         true,
                         title,
                         position,
-                        iconPath,
-                        dynamicTitle,
                         showNameOnSelect,
-                        isAlive,
+                        undefined,
+                        undefined,
+                        undefined,
                     ),
                 )
             }

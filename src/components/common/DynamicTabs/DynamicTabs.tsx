@@ -251,7 +251,7 @@ const DynamicTabs = ({
 
     const escHandler = (e: React.KeyboardEvent) => {
         // eslint-disable-next-line no-unused-expressions
-        e.key !== 'Escape' && closeMenu()
+        e.key === 'Escape' && closeMenu()
     }
 
     const updateOnStaleData = (now: Dayjs) => {
