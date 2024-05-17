@@ -15,6 +15,7 @@ import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, IST
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { DeploymentWithConfigType } from './details/triggerView/types'
+import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -330,13 +331,19 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
-    const request = {
-        appIds,
-        environmentId: envId,
-        value,
-    }
-    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+    return new Promise((resolve) => {
+        ApiQueuingWithBatch(
+            appIds.map((appId) =>
+                () => put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                    appIds: [appId],
+                    environmentId: envId,
+                    value: value,
+                }),
+            ),
+            httpProtocol,
+        ).then((responses) => resolve(responses.map((response) => response.value?.result.apps[0])))
+    })
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
