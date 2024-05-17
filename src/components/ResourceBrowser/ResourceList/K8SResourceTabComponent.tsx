@@ -41,7 +41,8 @@ const K8SResourceTabComponent = ({
             nodeType !== SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() &&
             k8SObjectMap &&
             setSelectedResource(
-                k8SObjectMap?.result.apiResources.find((item) => item.gvk.Kind.toLowerCase() === nodeType),
+                (prev) =>
+                    k8SObjectMap?.result.apiResources.find((item) => item.gvk.Kind.toLowerCase() === nodeType) || prev,
             ),
         [k8SObjectMap],
     )
