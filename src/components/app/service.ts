@@ -351,7 +351,7 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                 resolve(
                     results.map((result, index) => {
                         if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
-                            return result.value?.result.response[0]
+                            return result.value?.result.apps[0]
                         }
                         const response = {
                             appId: appIds[index],
