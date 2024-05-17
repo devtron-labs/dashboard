@@ -454,10 +454,12 @@ export interface HibernateResponseRowType {
 
 export interface BaseModalProps {
     selectedAppIds: number[]
+    appDetailsList: AppGroupListType['apps']
     envName: string
     envId: string
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
+    httpProtocol: string
 }
 
 export interface HibernateInfoMapProps  {
@@ -480,6 +482,7 @@ export interface UnhibernateModalProps extends BaseModalProps {
 export interface StatusDrawer {
     hibernationOperation: boolean
     showStatus: boolean
+    inProgress: boolean
 }
 
 export interface ManageAppsResponse {
@@ -508,4 +511,11 @@ export interface ApiQueuingWithBatchResponseItem {
     status: ApiQueuingBatchStatusType
     value?: any
     reason?: ServerErrors
+}
+
+export interface ManageAppsResponseType {
+    appName: string
+    success: boolean
+    id: string
+    error: string
 }
