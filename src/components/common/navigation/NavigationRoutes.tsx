@@ -409,7 +409,7 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        ...(Releases
+                                        ...(!window._env_.HIDE_RELEASES && Releases
                                             ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
