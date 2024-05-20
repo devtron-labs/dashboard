@@ -120,7 +120,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         }
         this.setState({ loadingData: true })
         const parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
-        parentCIPipeline.pipelineType = CIPipelineBuildType.CI_EXTERNAL
+        parentCIPipeline.pipelineType = CIPipelineBuildType.CI_LINKED
         const params = {
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,
