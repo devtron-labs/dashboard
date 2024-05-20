@@ -129,25 +129,6 @@ export interface ClusterEnvironmentDetail {
     namespace: string
 }
 
-export interface EnvironmentListHelmResponse extends ResponseType {
-    result?: EnvironmentListHelmResult[]
-}
-
-export interface EnvironmentListHelmResult {
-    clusterId: number
-    clusterName: string
-    environments: EnvironmentHelmResult[]
-}
-
-export interface EnvironmentHelmResult {
-    environmentId: number
-    environmentName: string
-    namespace: string
-    environmentIdentifier: string
-    isVirtualEnvironment?: boolean // Need to confirm for not full mode
-    allowedDeploymentTypes?: DeploymentAppTypes[]
-}
-
 export interface ClusterListResponse extends ResponseType {
     result?: Cluster[]
 }
