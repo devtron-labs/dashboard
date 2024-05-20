@@ -1,9 +1,5 @@
 import { noop, post } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    ApiQueuingBatchStatusType,
-    AppGroupListType,
-    ManageAppsResponseType,
-} from '../../AppGroup.types'
+import { ApiQueuingBatchStatusType, AppGroupListType, ManageAppsResponseType } from '../../AppGroup.types'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { BULK_HIBERNATE_ERROR_MESSAGE, BULK_UNHIBERNATE_ERROR_MESSAGE, BulkResponseStatus } from '../../Constants'
 
