@@ -20,6 +20,7 @@ import {
     ServerErrors,
     useAsync,
     CustomInput,
+    noop,
     InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -60,13 +61,16 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
-import { CredentialType, CustomCredential } from './dockerType'
+import { CredentialType, CustomCredential, RemoteConnectionType, RemoteConnectionTypeRegistry, SSHAuthenticationType } from './dockerType'
+import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
+const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -209,6 +213,7 @@ const CollapsedList = ({
               ignoredClusterIdsCsv: '',
           }
         : null,
+    remoteConnectionConfig = getRemoteConnectionConfig(),
     clusterOption,
     repositoryList = [],
     disabledFields = [],
@@ -285,6 +290,7 @@ const CollapsedList = ({
                         cert,
                         isOCICompliantRegistry,
                         ipsConfig,
+                        remoteConnectionConfig,
                         clusterOption,
                         setToggleCollapse,
                         repositoryList,
@@ -317,6 +323,7 @@ const DockerForm = ({
     cert,
     isOCICompliantRegistry,
     ipsConfig,
+    remoteConnectionConfig,
     clusterOption,
     setToggleCollapse,
     repositoryList,
@@ -366,6 +373,20 @@ const DockerForm = ({
             ? password.substring(1, password.length - 1)
             : password
 
+    let _remoteConnectionMethod = RemoteConnectionType.Direct 
+    if (remoteConnectionConfig.connectionMethod) {
+        _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
+    }
+    const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
+    const initialSSHAuthenticationType = remoteConnectionConfig.sshConfig
+        ? remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey
+            ? SSHAuthenticationType.Password_And_SSH_Private_Key
+            : remoteConnectionConfig.sshConfig.sshAuthKey
+              ? SSHAuthenticationType.SSH_Private_Key
+              : SSHAuthenticationType.Password
+        : SSHAuthenticationType.Password
+    const [sshConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
+
     const [customState, setCustomState] = useState({
         id: { value: id, error: '' },
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
@@ -382,6 +403,18 @@ const DockerForm = ({
         repositoryList: {
             value: repositoryList.join(', ') || '',
             error: '',
+        },
+        remoteConnectionConfig: {
+            connectionMethod: { value: remoteConnectionMethod, error: '' },
+            proxyConfig: {
+                proxyUrl: { value: remoteConnectionConfig.proxyConfig?.proxyUrl || '', error: '' },
+            },
+            sshConfig: {
+                sshServerAddress: { value: remoteConnectionConfig.sshConfig?.sshServerAddress || '', error: '' },
+                sshUsername: { value: remoteConnectionConfig.sshConfig?.sshUsername || '', error: '' },
+                sshPassword: { value: remoteConnectionConfig.sshConfig?.sshPassword || '', error: '' },
+                sshAuthKey: { value: remoteConnectionConfig.sshConfig?.sshAuthKey || '', error: '' },
+            },
         },
     })
     const customStateValidator = {
@@ -404,6 +437,26 @@ const DockerForm = ({
             { error: "Consecutive ',' are not allowed", regex: /^(?!.*,{2,}).*/ },
             { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s+,).*/ },
         ],
+        proxyUrl: [
+            {
+                error: 'Please provide a valid URL. URL must start with http:// or https://',
+                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+            },
+        ],
+        sshServerAddress: [
+            {
+                error: 'Please provide a valid URL. URL must start with http:// or https://',
+                regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+            },
+        ],
+        sshUsername: [
+            {
+                error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
+                regex: /^[A-Za-z0-9_-]+$/,
+            },
+        ],
+        sshPassword: [{ error: 'password is required', regex: /^(?!\s*$).+/ }],
+        sshAuthKey: [{ error: 'private key is required', regex: /^(?!\s*$).+/ }],
     }
 
     const clusterlistMap = new Map()
@@ -486,6 +539,10 @@ const DockerForm = ({
         updateWithCustomStateValidation(e.target.name, e.target.value)
     }
 
+    const changeSSHAuthenticationType = (authType: SSHAuthenticationType) => {
+        setSSHConnectionType(authType)
+    }
+
     const updateWithCustomStateValidation = (name: string, value: any): boolean => {
         let errorMessage: string = ''
         customStateValidator[name]?.forEach((validator) => {
@@ -494,6 +551,40 @@ const DockerForm = ({
             }
         })
         setCustomState((st) => ({ ...st, [name]: { value, error: errorMessage } }))
+        return !!errorMessage
+    }
+
+    const updateWithCustomStateValidationForRemoteConnectionConfig = (name: string, value: string): boolean => {
+        let errorMessage: string = ''
+        customStateValidator[name]?.forEach((validator) => {
+            if (!validator.regex.test(value)) {
+                errorMessage = validator.error
+            }
+        })
+
+        if (name.startsWith('proxy')) {
+            setCustomState((_state) => ({
+                ..._state,
+                remoteConnectionConfig: {
+                    ..._state.remoteConnectionConfig,
+                    proxyConfig: {
+                        ..._state.remoteConnectionConfig.proxyConfig,
+                        [name]: { value, error: errorMessage },
+                    },
+                },
+            }))
+        } else if (name.startsWith('ssh')) {
+            setCustomState((_state) => ({
+                ..._state,
+                remoteConnectionConfig: {
+                    ..._state.remoteConnectionConfig,
+                    sshConfig: {
+                        ..._state.remoteConnectionConfig.sshConfig,
+                        [name]: { value, error: errorMessage },
+                    },
+                },
+            }))
+        }
         return !!errorMessage
     }
 
@@ -507,6 +598,45 @@ const DockerForm = ({
             awsAccessKeyId: { value: '', error: '' },
             awsSecretAccessKey: { value: '', error: '' },
         }))
+    }
+
+    const handleOnChangeForRemoteConnectionRadio = (connectionType) => {
+        setRemoteConnectionMethod(connectionType)
+        setCustomState((_state) => ({
+            ..._state,
+            remoteConnectionConfig: {
+                ..._state.remoteConnectionConfig,
+                connectionMethod: { value: connectionType, error: '' },
+            },
+        }))
+    }
+
+    const handleOnChangeConfig = (e) => {
+        let { name, value } = e.target
+
+        if (name.startsWith('proxy')) {
+            setCustomState((_state) => ({
+                ..._state,
+                remoteConnectionConfig: {
+                    ..._state.remoteConnectionConfig,
+                    proxyConfig: {
+                        ..._state.remoteConnectionConfig.proxyConfig,
+                        [name]: { value: value, error: '' },
+                    },
+                },
+            }))
+        } else if (name.startsWith('ssh')) {
+            setCustomState((_state) => ({
+                ..._state,
+                remoteConnectionConfig: {
+                    ..._state.remoteConnectionConfig,
+                    sshConfig: {
+                        ..._state.remoteConnectionConfig.sshConfig,
+                        [name]: { value: value, error: '' },
+                    },
+                },
+            }))
+        }
     }
 
     const handleRepositoryListChange = (e) => {
@@ -665,6 +795,11 @@ const DockerForm = ({
                                   : ignoredClusterIdsCsv,
                       }
                     : null,
+            remoteConnectionConfig: getRemoteConnectionConfig(
+                customState.remoteConnectionConfig,
+                customState.remoteConnectionConfig.connectionMethod.value,
+                sshConnectionType,
+            ),
         }
     }
 
@@ -746,7 +881,6 @@ const DockerForm = ({
     }
 
     const performCustomValidation = (): boolean => {
-        // Custom state validation for Registry Id
         if (!id && updateWithCustomStateValidation('id', customState.id.value)) {
             return false
         }
@@ -867,6 +1001,41 @@ const DockerForm = ({
                 !(isContainerStore || isOCIRegistryHelmPush || showHelmPull)
             ) {
                 return false
+            }
+        }
+
+        if (customState.remoteConnectionConfig) {
+            const { proxyConfig, sshConfig } = customState.remoteConnectionConfig
+            if (
+                remoteConnectionMethod === RemoteConnectionType.Proxy &&
+                updateWithCustomStateValidationForRemoteConnectionConfig('proxyUrl', proxyConfig.proxyUrl.value)
+            ) {
+                return false
+            }``
+            if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
+                if (
+                    updateWithCustomStateValidationForRemoteConnectionConfig(
+                        'sshServerAddress',
+                        sshConfig.sshServerAddress.value,
+                    ) ||
+                    updateWithCustomStateValidationForRemoteConnectionConfig('sshUsername', sshConfig.sshUsername.value)
+                ) {
+                    return false
+                }
+                if (
+                    (sshConnectionType === SSHAuthenticationType.Password ||
+                        sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) &&
+                    updateWithCustomStateValidationForRemoteConnectionConfig('sshPassword', sshConfig.sshPassword.value)
+                ) {
+                    return false
+                }
+                if (
+                    (sshConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                        sshConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key) &&
+                    updateWithCustomStateValidationForRemoteConnectionConfig('sshAuthKey', sshConfig.sshAuthKey.value)
+                ) {
+                    return false
+                }
             }
         }
         return true
@@ -1102,6 +1271,24 @@ const DockerForm = ({
         ) {
             return (
                 <>
+                    <div className="dc__position-rel dc__hover mb-20">
+                        <span className="form__input-header pb-20">
+                            How do you want Devtron to connect with this registry?
+                        </span>
+                        <span className="pb-20">
+                            {RemoteConnectionRadio && (
+                                <RemoteConnectionRadio
+                                    resourceType={RemoteConnectionTypeRegistry}
+                                    connectionMethod={customState.remoteConnectionConfig.connectionMethod}
+                                    proxyConfig={customState.remoteConnectionConfig.proxyConfig}
+                                    sshConfig={customState.remoteConnectionConfig.sshConfig}
+                                    changeRemoteConnectionType={handleOnChangeForRemoteConnectionRadio}
+                                    changeSSHAuthenticationType={changeSSHAuthenticationType}
+                                    handleOnChange={handleOnChangeConfig}
+                                />
+                            )}
+                        </span>
+                    </div>
                     <div className="mb-12">
                         <span className="flexbox mr-16 cn-7 fs-13 fw-6 lh-20">
                             <span className="flex left w-150">

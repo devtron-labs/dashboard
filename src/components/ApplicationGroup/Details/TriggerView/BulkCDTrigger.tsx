@@ -16,10 +16,10 @@ import {
     useSuperAdmin,
     GenericEmptyState,
     DeploymentWindowProfileMetaData,
-    ConditionalWrap,
     ACTION_STATE,
     DEPLOYMENT_WINDOW_TYPE,
     noop,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -90,7 +90,6 @@ export default function BulkCDTrigger({
 
     const location = useLocation()
     const history = useHistory()
-    const match = useRouteMatch()
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
 
@@ -647,8 +646,6 @@ export default function BulkCDTrigger({
                                 triggerDeploy={onClickStartDeploy}
                                 key={selectedApp.appId}
                                 materialType={MATERIAL_TYPE.inputMaterialList}
-                                location={location}
-                                match={match}
                                 appId={selectedApp.appId}
                                 envId={selectedApp.envId}
                                 pipelineId={+selectedApp.cdPipelineId}
@@ -657,7 +654,6 @@ export default function BulkCDTrigger({
                                 envName={selectedApp.envName}
                                 closeCDModal={closeBulkCDModal}
                                 triggerType={selectedApp.triggerType}
-                                history={history}
                                 isLoading={isLoading}
                                 parentPipelineId={selectedApp.parentPipelineId}
                                 parentPipelineType={selectedApp.parentPipelineType}
@@ -746,7 +742,7 @@ export default function BulkCDTrigger({
                 )}
             </div>
             {showResistanceBox && (
-                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} />
+                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} modalType={MODAL_TYPE.DEPLOY} />
             )}
         </Drawer>
     )

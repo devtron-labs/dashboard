@@ -245,6 +245,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
+    BULK_ROTATE_POD: 'app/template/workloads',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
@@ -310,6 +311,9 @@ export const repoType = {
     CONFIGURE: 'CONFIGURE',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
@@ -503,6 +507,18 @@ export interface RegistryPayloadType {
     ociRegistryConfig?: OCIRegistryStorageConfigType
     repositoryList: string[]
     isPublic: boolean
+    remoteConnectionConfig: {
+        connectionMethod: string
+        proxyConfig: {
+            proxyUrl: string
+        }
+        sshConfig: {
+            sshServerAddress: string
+            sshUsername: string
+            sshPassword: string
+            sshAuthKey: string
+        }
+    }
 }
 
 export const RegistryType = {

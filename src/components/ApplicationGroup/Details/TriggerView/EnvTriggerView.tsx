@@ -50,7 +50,7 @@ import {
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
+import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
@@ -116,7 +116,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [errorCode, setErrorCode] = useState(0)
     const [showCIModal, setShowCIModal] = useState(false)
     const [showCDModal, setShowCDModal] = useState(false)
-    const [showApprovalModal, setShowApprovalModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
@@ -887,13 +886,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         setShowCDModal(!isApprovalNode)
-        setShowApprovalModal(isApprovalNode)
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(location.search)
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
+        }
+        else {
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+            newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
+            newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
+
         }
         history.push({
             search: newParams.toString(),
@@ -1119,10 +1123,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        triggerBranchChange(appIds, +envId, value)
+        triggerBranchChange(appIds, +envId, value, httpProtocol.current)
             .then((response: any) => {
                 const _responseList = []
-                response.result.apps.map((res) => {
+                response.map((res) => {
                     _responseList.push({
                         appId: res.appId,
                         appName: appNameMap.get(res.appId),
@@ -1214,7 +1218,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        setShowApprovalModal(false)
         history.push({
             search: '',
         })
@@ -2071,15 +2074,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 envName={node?.environmentName}
                                 closeCDModal={closeCDModal}
                                 triggerType={node?.triggerType}
-                                history={history}
                                 isVirtualEnvironment={isVirtualEnv}
                                 parentEnvironmentName={node?.parentEnvironmentName}
                                 // Wont need it and it might be isCDLoading
                                 isLoading={isCILoading}
                                 ciPipelineId={node?.connectingCiPipelineId}
-                                // Not Even using the below props
-                                location={location}
-                                match={match}
                                 deploymentAppType={node?.deploymentAppType}
                             />
                         )}
@@ -2092,7 +2091,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderApprovalMaterial = () => {
-        if (ApprovalMaterialModal && showApprovalModal) {
+        if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {

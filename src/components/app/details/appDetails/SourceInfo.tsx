@@ -1,26 +1,26 @@
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
-import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { Nodes, SourceInfoType } from '../../types'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import LoadingCard from './LoadingCard'
+import AppDetailsCDButton from './AppDetailsCDButton'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -39,13 +39,12 @@ export const SourceInfo = ({
     isVirtualEnvironment,
     setRotateModal = null,
     refetchDeploymentStatus,
-    severityCount,
-    showVulnerabilitiesModal,
     toggleIssuesModal,
     envId,
     ciArtifactId,
     setErrorsList,
-    filteredEnvIds
+    filteredEnvIds,
+    deploymentUserActionState,
 }: SourceInfoType) => {
     const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -55,6 +54,7 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -174,7 +174,7 @@ export const SourceInfo = ({
                                     >
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
@@ -195,7 +195,7 @@ export const SourceInfo = ({
                                     >
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
@@ -204,6 +204,22 @@ export const SourceInfo = ({
                                         </button>
                                     </ConditionalWrap>
                                 )}
+                                <AppDetailsCDButton
+                                    appId={appDetails.appId}
+                                    environmentId={appDetails.environmentId}
+                                    environmentName={appDetails.environmentName}
+                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    loadingDetails={loadingDetails}
+                                    cdModal={{
+                                        cdPipelineId: appDetails.cdPipelineId,
+                                        ciPipelineId: appDetails.ciPipelineId,
+                                        parentEnvironmentName: appDetails.parentEnvironmentName,
+                                        deploymentUserActionState: deploymentUserActionState,
+                                        triggerType: appDetails.triggerType,
+                                        isRedirectedFromAppDetails: true,
+                                    }}
+                                />
                             </div>
                         )}
                     </>
@@ -275,13 +291,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && showVulnerabilitiesCard && (
-                              <SecurityVulnerabilityCard
-                                  cardLoading={cardLoading}
-                                  severityCount={severityCount}
-                                  showVulnerabilitiesModal={showVulnerabilitiesModal}
-                              />
-                          )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

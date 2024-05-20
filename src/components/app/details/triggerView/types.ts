@@ -21,6 +21,7 @@ import {
     HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
+    DeploymentWithConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -28,7 +29,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps extends RouteComponentProps<{}> {
+export interface CDMaterialProps {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -97,12 +98,7 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
-}
-
-export enum DeploymentWithConfigType {
-    LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
-    LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
+    isRedirectedFromAppDetails?:  boolean
 }
 
 export interface ConfigToDeployOptionType {
@@ -370,7 +366,6 @@ export interface TriggerViewState {
     workflows: WorkflowType[]
     showCDModal: boolean
     showCIModal: boolean
-    showApprovalModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
