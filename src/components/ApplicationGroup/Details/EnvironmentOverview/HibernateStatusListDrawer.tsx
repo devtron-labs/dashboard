@@ -15,6 +15,8 @@ export default function HibernateStatusListDrawer({
     hibernateInfoMap,
     isDeploymentLoading,
 }) {
+    const isHibernating = showHibernateStatusDrawer.hibernationOperation
+
     useEffect(() => {
         return () => {
             getAppListData().then(() => {})
@@ -25,7 +27,7 @@ export default function HibernateStatusListDrawer({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    {showHibernateStatusDrawer.hibernationOperation
+                    {isHibernating
                         ? 'Hibernate applications'
                         : 'Unhibernate applications'}
                 </h2>
@@ -46,7 +48,7 @@ export default function HibernateStatusListDrawer({
             return (
                 <GenericEmptyState
                     classname='dc__text-center'
-                    title={`Initiating hibernation for selected applications on ${envName}`}
+                    title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
                     subTitle="It might take some time depending upon the number of applications"
                     SvgImage={MechanicalOperation}
                     imageType={ImageType.Large}
@@ -82,7 +84,7 @@ export default function HibernateStatusListDrawer({
                             key={response.id}
                             rowData={response}
                             index={index}
-                            isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
+                            isHibernateOperation={isHibernating}
                             hibernateInfoMap={hibernateInfoMap}
                         />
                     ))}
