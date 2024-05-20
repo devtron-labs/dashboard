@@ -8,7 +8,6 @@ import {
     DeploymentNodeType,
     put,
     DATE_TIME_FORMAT_STRING,
-    DeploymentWithConfigType,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
