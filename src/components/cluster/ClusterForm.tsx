@@ -37,6 +37,7 @@ import {
     SaveClusterPayloadType,
     DEFAULT_CLUSTER_ID,
     SSHAuthenticationType,
+    RemoteConnectionTypeCluster,
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
@@ -747,6 +748,7 @@ export default function ClusterForm({
                             </span>
                             <span className="pb-20">
                                 <RemoteConnectionRadio
+                                    resourceType={RemoteConnectionTypeCluster}
                                     connectionMethod={passedRemoteConnectionMethod}
                                     proxyConfig={proxyConfig}
                                     sshConfig={sshConfig}

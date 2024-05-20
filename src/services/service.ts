@@ -1,4 +1,15 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash, LastExecutionResponseType, DATE_TIME_FORMAT_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    ResponseType,
+    APIOptions,
+    sortCallback,
+    TeamList,
+    trash,
+    LastExecutionResponseType,
+    DATE_TIME_FORMAT_STRING,
+    EnvironmentListHelmResponse,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import {
@@ -8,7 +19,6 @@ import {
     AppOtherEnvironment,
     LastExecutionMinResponseType,
     ClusterEnvironmentDetailList,
-    EnvironmentListHelmResponse,
     ClusterListResponse,
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
@@ -145,15 +155,13 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
+/**
+ * @deprecated Use getEnvironmentListMinPublic form common lib instead
+ */
 export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
     return get(
         `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
     )
-}
-
-export function getClusterListMin() {
-    const URL = `${Routes.CLUSTER}/autocomplete`
-    return get(URL)
 }
 
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
@@ -486,11 +494,6 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
 
 export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
-    return get(URL)
-}
-
-export function getNamespaceListMin(clusterIdsCsv: string): Promise<EnvironmentListHelmResponse> {
-    const URL = `${Routes.NAMESPACE}/autocomplete?ids=${clusterIdsCsv}`
     return get(URL)
 }
 

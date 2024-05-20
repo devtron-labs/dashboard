@@ -749,10 +749,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="fs-13">
                 <PageHeader
                     headerName="Bulk Edit"
-                    isTippyShown
-                    TippyIcon={ICHelpOutline}
-                    tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
-                    tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
+                    tippyProps={{
+                        isTippyCustomized: true,
+                        tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
+                        tippyRedirectLink: DOCUMENTATION.BULK_UPDATE,
+                    }}
                 />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()
