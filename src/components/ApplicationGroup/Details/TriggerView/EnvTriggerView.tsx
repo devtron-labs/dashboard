@@ -1123,10 +1123,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        triggerBranchChange(appIds, +envId, value)
+        triggerBranchChange(appIds, +envId, value, httpProtocol.current)
             .then((response: any) => {
                 const _responseList = []
-                response.result.apps.map((res) => {
+                response.map((res) => {
                     _responseList.push({
                         appId: res.appId,
                         appName: appNameMap.get(res.appId),
