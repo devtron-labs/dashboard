@@ -1273,7 +1273,7 @@ const DockerForm = ({
                 <>
                     <div className="dc__position-rel dc__hover mb-20">
                         <span className="form__input-header pb-20">
-                            How do you want Devtron to connect with this registry?
+                            How do you want Devtron to connect with this registry ?
                         </span>
                         <span className="pb-20">
                             {RemoteConnectionRadio && (
