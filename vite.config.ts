@@ -74,7 +74,7 @@ const jsToBottomNoModule = () => {
 export default defineConfig(({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), ''), VITE_K8S_CLIENT: `${mode === 'K8S_CLIENT'}` }
     const baseConfig = {
-        base: '/dashboard/',
+        base: '/dashboard',
         preview: {
             port: 3000,
         },

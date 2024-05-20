@@ -1,4 +1,4 @@
-import { DeploymentAppTypes, ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -91,32 +91,6 @@ export interface AllWorkflows extends ResponseType {
     result?: AppIdWorkflowNamesMapping
 }
 
-export interface LastExecutionResponseType {
-    code: number
-    status: string
-    result: {
-        scanExecutionId: number
-        lastExecution: string
-        appId?: number
-        appName?: string
-        envId?: number
-        envName?: string
-        pod?: string
-        replicaSet?: string
-        image?: string
-        objectType: 'app' | 'chart'
-        scanned: boolean
-        scanEnabled: boolean
-        severityCount: {
-            critical: number
-            moderate: number
-            low: number
-        }
-        vulnerabilities: VulnerabilityType[]
-        scanToolId?: number
-    }
-}
-
 export interface LastExecutionMinResponseType {
     code: number
     status: string
@@ -153,25 +127,6 @@ export interface ClusterEnvironmentDetail {
     cluster_id: number
     cluster_name: string
     namespace: string
-}
-
-export interface EnvironmentListHelmResponse extends ResponseType {
-    result?: EnvironmentListHelmResult[]
-}
-
-export interface EnvironmentListHelmResult {
-    clusterId: number
-    clusterName: string
-    environments: EnvironmentHelmResult[]
-}
-
-export interface EnvironmentHelmResult {
-    environmentId: number
-    environmentName: string
-    namespace: string
-    environmentIdentifier: string
-    isVirtualEnvironment?: boolean // Need to confirm for not full mode
-    allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
 export interface ClusterListResponse extends ResponseType {

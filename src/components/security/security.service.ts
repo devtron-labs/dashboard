@@ -1,6 +1,5 @@
-import { get, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { DATE_TIME_FORMAT_STRING, get, getClusterListMin, getEnvironmentListMinPublic, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { getClusterListMin, getEnvironmentListMinPublic } from '../../services/service'
 import { Routes } from '../../config'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
 
@@ -112,7 +111,7 @@ export function getSecurityScanList(payload): Promise<SecurityScanListResponseTy
                             moderate: scan.severityCount.moderate,
                             low: scan.severityCount.low,
                         },
-                        lastExecution: moment(scan.lastChecked).utc(false).format('ddd DD MMM YYYY HH:mm:ss'),
+                        lastExecution: moment(scan.lastChecked).utc(false).format(DATE_TIME_FORMAT_STRING),
                     }
                 }),
             },

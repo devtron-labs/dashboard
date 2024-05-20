@@ -13,7 +13,7 @@ import {
     DtOutputKeys,
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
@@ -749,10 +749,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="fs-13">
                 <PageHeader
                     headerName="Bulk Edit"
-                    isTippyShown
-                    TippyIcon={Question}
-                    tippyMessage="Run scripts to bulk edit configurations for multiple devtron components."
-                    tippyRedirectLink={DOCUMENTATION.BULK_UPDATE}
+                    tippyProps={{
+                        isTippyCustomized: true,
+                        tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
+                        tippyRedirectLink: DOCUMENTATION.BULK_UPDATE,
+                    }}
                 />
                 {this.props.serverMode == SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()

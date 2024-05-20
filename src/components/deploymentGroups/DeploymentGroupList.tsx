@@ -77,7 +77,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                 })
             })
             .catch((error) => {
-                this.setState({ view: ViewType.ERROR })
+                this.setState({ view: ViewType.ERROR, code: error.code })
                 showError(error)
             })
     }
@@ -287,9 +287,6 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     selectImage={this.selectImage}
                     closeCDModal={this.closeCDModal}
                     hideInfoTabsContainer
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
                 />
             )
         }
@@ -332,10 +329,10 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
 
     render() {
         return (
-            <div>
+            <div className="h-100">
                 <PageHeader headerName="Deployment Groups" renderActionButtons={this.renderActionButtons} />
 
-                <div className="deployment-group-list-page__body">
+                <div className="deployment-group-list-page__body h-100">
                     {this.state.view === ViewType.LOADING && <Progressing pageLoader />}
                     {this.state.view === ViewType.EMPTY && <NoDeploymentGroups />}
                     {this.state.view === ViewType.ERROR && <ErrorScreenManager code={this.state.code} />}

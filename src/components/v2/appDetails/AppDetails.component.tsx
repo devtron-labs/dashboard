@@ -20,6 +20,7 @@ import {
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
 import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
+import { ClusterMetaDataBar } from '../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
@@ -207,6 +208,11 @@ const AppDetailsComponent = ({
                     isLoading={isInitialTimelineDataLoading}
                 />
             )}
+            <ClusterMetaDataBar
+                clusterName={appDetails.clusterName}
+                namespace={appDetails.namespace}
+                clusterId={appDetails.clusterId?.toString()}
+            />
         </div>
     )
 }

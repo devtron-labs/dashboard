@@ -27,7 +27,6 @@ src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/UnhibernateModal.tsx
-src/components/ApplicationGroup/Details/EnvironmentOverview/service.ts
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkSourceChange.tsx
@@ -86,7 +85,6 @@ src/components/ConfigMapSecret/ConfigMap/ConfigMapList.tsx
 src/components/ConfigMapSecret/ConfigMapSecret.components.tsx
 src/components/ConfigMapSecret/ConfigMapSecretDataEditorContainer.tsx
 src/components/ConfigMapSecret/ConfigMapSecretForm.tsx
-src/components/ConfigMapSecret/InfoIconWithTippy.tsx
 src/components/ConfigMapSecret/Secret/SecretList.tsx
 src/components/ConfigMapSecret/Secret/secret.utils.tsx
 src/components/ConfigMapSecret/Types.ts

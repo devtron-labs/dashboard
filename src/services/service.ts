@@ -1,4 +1,15 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    ResponseType,
+    APIOptions,
+    sortCallback,
+    TeamList,
+    trash,
+    LastExecutionResponseType,
+    DATE_TIME_FORMAT_STRING,
+    EnvironmentListHelmResponse,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import {
@@ -6,10 +17,8 @@ import {
     AppListMin,
     ProjectFilteredApps,
     AppOtherEnvironment,
-    LastExecutionResponseType,
     LastExecutionMinResponseType,
     ClusterEnvironmentDetailList,
-    EnvironmentListHelmResponse,
     ClusterListResponse,
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
@@ -146,15 +155,13 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
+/**
+ * @deprecated Use getEnvironmentListMinPublic form common lib instead
+ */
 export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
     return get(
         `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
     )
-}
-
-export function getClusterListMin() {
-    const URL = `${Routes.CLUSTER}/autocomplete`
-    return get(URL)
 }
 
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
@@ -260,7 +267,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
         result: {
             ...response.result,
             scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: moment(response.result.executionTime).utc(false).format('ddd DD MMM YYYY HH:mm:ss'),
+            lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
             objectType: response.result.objectType,
             severityCount: {
                 critical: response.result?.severityCount?.high,
@@ -316,17 +323,6 @@ export function getLastExecutionByArtifactId(
     })
 }
 
-export function getLastExecutionByArtifactAppEnv(
-    artifact: string | number,
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `artifactId=${artifact}&appId=${appId}&envId=${envId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
 export function getLastExecutionByImageScanDeploy(
     imageScanDeployInfoId: string | number,
     appId: number | string,
@@ -348,7 +344,7 @@ export function getLastExecutionMinByAppAndEnv(
             code: response.code,
             status: response.status,
             result: {
-                lastExecution: moment(response.result.executionTime).utc(false).format('ddd DD MMM YYYY HH:mm:ss'),
+                lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
                 imageScanDeployInfoId: response.result.imageScanDeployInfoId,
                 severityCount: {
                     critical: response.result.severityCount.high,
@@ -482,11 +478,6 @@ export function getWebhookEvents(gitHostId: string | number) {
     return get(URL)
 }
 
-export function getWebhookEventsForEventId(eventId: string | number) {
-    const URL = `git/host/event/${eventId}`
-    return get(URL)
-}
-
 export function getWebhookDataMetaConfig(gitProviderId: string | number) {
     const URL = `git/host/webhook-meta-config/${gitProviderId}`
     return get(URL)
@@ -503,11 +494,6 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
 
 export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
-    return get(URL)
-}
-
-export function getNamespaceListMin(clusterIdsCsv: string): Promise<EnvironmentListHelmResponse> {
-    const URL = `${Routes.NAMESPACE}/autocomplete?ids=${clusterIdsCsv}`
     return get(URL)
 }
 

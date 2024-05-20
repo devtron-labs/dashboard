@@ -7,13 +7,18 @@ import {
     sortCallback,
     DeploymentNodeType,
     put,
+    DATE_TIME_FORMAT_STRING,
+    DeploymentWithConfigType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { DeploymentWithConfigType } from './details/triggerView/types'
+import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
+import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
+import { BulkResponseStatus, BULK_CD_RESPONSE_STATUS_TEXT } from '../ApplicationGroup/Constants'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -329,13 +334,47 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
-    const request = {
-        appIds,
-        environmentId: envId,
-        value,
-    }
-    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+    return new Promise((resolve) => {
+        ApiQueuingWithBatch(
+            appIds.map((appId) =>
+                () => put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                    appIds: [appId],
+                    environmentId: envId,
+                    value: value,
+                }),
+            ),
+            httpProtocol,
+        )
+            .then((results) => {
+                resolve(
+                    results.map((result, index) => {
+                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                            return result.value?.result.apps[0]
+                        }
+                        const response = {
+                            appId: appIds[index],
+                            status: '',
+                            message: ''
+                        }
+                        const errorReason = result.reason
+                        switch (errorReason.code) {
+                            case 403:
+                            case 422:
+                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
+                                response.status = BulkResponseStatus.UNAUTHORIZE
+                                break
+                            case 409:
+                            default:
+                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
+                                response.status = BulkResponseStatus.FAIL
+                        }
+                        return response
+                    }),
+                )
+            })
+            .catch(noop)
+    })
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
@@ -420,25 +459,12 @@ export function getImageTags(pipelineId: number, artifactId: number) {
     return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
 
-function handleTime(ts: string) {
-    let timestamp = ''
-    try {
-        if (ts && ts.length) {
-            const date = moment(ts).utc(true).subtract(5, 'hours').subtract(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
-        }
-    } catch (error) {
-        console.error('Error Parsing Date:', ts)
-    }
-    return timestamp
-}
-
 export function handleTimeWithOffset(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
             const date = moment(ts).add(5, 'hours').add(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
+            timestamp = date.format(DATE_TIME_FORMAT_STRING)
         }
     } catch (error) {
         console.error('Error Parsing Date:', ts)

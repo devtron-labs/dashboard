@@ -320,12 +320,6 @@ export interface LinkedCIPipelineState {
     }
 }
 
-export interface Material {
-    source: { type: string; value: string }
-    gitMaterialId: number
-    isSave: boolean
-}
-
 export interface CIPipelineProps
     extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }> {
     appName: string
@@ -402,6 +396,7 @@ export interface PreBuildType {
 export enum CIPipelineBuildType {
     CI_JOB = 'CI_JOB',
     CI_BUILD = 'CI_BUILD',
-    CI_EXTERNAL = 'CI_EXTERNAL',
+    CI_LINKED = 'LINKED',
     LINKED_CD = 'LINKED_CD',
+    NORMAL_JOB='NORMAL_JOB',
 }

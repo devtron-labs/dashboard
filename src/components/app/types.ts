@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -57,8 +57,30 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
-export interface AppDetails {
+export interface CDModalProps {
+    cdPipelineId?: number
+    triggerType?: string
+    parentEnvironmentName: string
+    ciPipelineId?: number
+    isRedirectedFromAppDetails?: boolean,
+}
+
+export interface AppDetails extends CDModalProps {
     appId: number
+    deploymentAppType?: DeploymentAppTypes
+    externalCi?: boolean
+    userApprovalConfig?: string
+    ciArtifactId?: number
+    parentArtifactId?: number
+    deprecated?: boolean
+    k8sVersion?: number
+    clusterName?: string
+    dockerRegistryId?: string
+    ipsAccessProvided?: boolean
+    description?: string
+    isVirtualEnvironment?: boolean
+    image?: string
+    helmPackageName?: string
     appName: string
     environmentId: number
     environmentName: string
@@ -74,7 +96,6 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -345,6 +366,9 @@ export enum AppListColumnSort {
     lastDeployedSort = 'lastDeployedAt',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -388,6 +412,9 @@ export enum Nodes {
     Namespace = 'Namespace',
     Overview = 'Overview',
 }
+/**
+ * @deprecated - use from fe-common
+ */
 export type NodeType = keyof typeof Nodes
 
 export enum AggregationKeys {
@@ -532,18 +559,27 @@ export interface SourceInfoType {
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
     refetchDeploymentStatus: (showTimeline?: boolean) => void
-    severityCount?: {
-        critical: number
-        moderate: number
-        low: number
-    }
-    showVulnerabilitiesModal?: (e) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number
     setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
     filteredEnvIds?: string
+    deploymentUserActionState?: ACTION_STATE
 }
+
+export interface AppDetailsCDButtonType
+    extends Pick<
+            AppDetails,
+            | 'appId'
+            | 'environmentId'
+            | 'isVirtualEnvironment'
+            | 'deploymentAppType'
+            | 'environmentName'
+        >,
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
+            isRedirectedFromAppDetails?: boolean,
+            cdModal: CDModalProps
+        }
 
 export interface EnvironmentListMinType {
     active?: boolean

@@ -222,7 +222,6 @@ export default function NewCDPipeline({
 
     useEffect(() => {
         getInit()
-        document.addEventListener('keydown', escFunction)
     }, [])
 
     useEffect(() => {
@@ -1278,7 +1277,7 @@ export default function NewCDPipeline({
         <>
             {renderFloatingVariablesWidget()}
 
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <Drawer onEscape={closePipelineModal} position="right" width="75%" minWidth="1024px" maxWidth="1200px">
                 {renderCDPipelineModal()}
             </Drawer>
         </>

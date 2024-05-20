@@ -6,12 +6,13 @@ import {
     Reload,
     Drawer,
     sortCallback,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
-import { useForm } from '../common'
+import { importComponentFromFELibrary, useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
@@ -43,6 +44,9 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
+
+const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
+const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -145,6 +149,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                       }
                   })
                 : []
+
+            const defaultRemoteConnectionConfig = getRemoteConnectionConfig()
             clusters = clusters.concat({
                 id: null,
                 cluster_name: '',
@@ -161,6 +167,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 environments: [],
                 insecureSkipTlsVerify: true,
                 isVirtualCluster: false,
+                remoteConnectionConfig: defaultRemoteConnectionConfig,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters })
@@ -280,6 +287,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 {this.state.showAddCluster && (
                     <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
                         <ClusterForm
+                            {...getSSHConfig(this.state)}
                             id={null}
                             cluster_name={this.state.cluster_name}
                             server_url={this.state.server_url}
@@ -293,10 +301,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isTlsConnection={this.state.isTlsConnection}
                             isClusterDetails={this.state.isClusterDetails}
                             proxyUrl={this.state.proxyUrl}
-                            sshTunnelUser={this.state.sshTunnelUser}
-                            sshTunnelPassword={this.state.sshTunnelPassword}
-                            sshTunnelPrivateKey={this.state.sshTunnelPrivateKey}
-                            sshTunnelUrl={this.state.sshTunnelUrl}
                             isConnectedViaProxy={this.state.isConnectedViaProxy}
                             isConnectedViaSSHTunnel={this.state.isConnectedViaSSHTunnel}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -368,10 +372,10 @@ const Cluster = ({
             prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             proxyUrl: { value: proxyUrl, error: '' },
-            sshTunnelUser: { value: sshTunnelConfig?.user, error: '' },
-            sshTunnelPassword: { value: sshTunnelConfig?.password, error: '' },
-            sshTunnelPrivateKey: { value: sshTunnelConfig?.authKey, error: '' },
-            sshTunnelUrl: { value: sshTunnelConfig?.sshServerAddress, error: '' },
+            sshUsername: { value: sshTunnelConfig?.user, error: '' },
+            sshPassword: { value: sshTunnelConfig?.password, error: '' },
+            sshAuthKey: { value: sshTunnelConfig?.authKey, error: '' },
+            sshServerAddress: { value: sshTunnelConfig?.sshServerAddress, error: '' },
             isConnectedViaProxy: !!proxyUrl?.length,
             isConnectedViaSSHTunnel: toConnectWithSSHTunnel,
             tlsClientKey: { value: config.tls_key, error: '' },
@@ -402,22 +406,22 @@ const Cluster = ({
             toConnectWithSSHTunnel: {
                 required: false,
             },
-            sshTunnelUser: {
+            sshUsername: {
                 required: false,
                 validator: {
                     error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
                     regex: /^[A-Za-z0-9_-]+$/,
                 },
             },
-            sshTunnelPassword: {
+            sshPassword: {
                 required: false,
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
-            sshTunnelPrivateKey: {
+            sshAuthKey: {
                 required: false,
                 validator: { error: 'ssh private key is required', regex: /^(?!\s*$).+/ },
             },
-            sshTunnelUrl: {
+            sshServerAddress: {
                 required: false,
                 validator: { error: 'URL is required', regex: /^.*$/ },
             },
@@ -537,14 +541,8 @@ const Cluster = ({
         }
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
-            payload['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } else {
-            payload['proxyUrl'] = proxyUrlValue
-        }
-        payload.sshTunnelConfig['user'] = state.sshTunnelUser?.value
-        payload.sshTunnelConfig['password'] = state.sshTunnelPassword?.value
-        payload.sshTunnelConfig['authKey'] = state.sshTunnelPrivateKey?.value
-        payload.sshTunnelConfig['sshServerAddress'] = state.sshTunnelUrl?.value
+            payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
+        } 
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -572,14 +570,7 @@ const Cluster = ({
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
             },
-            proxyUrl: state.isConnectedViaProxy ? state.proxyUrl?.value : '',
-            toConnectWithSSHTunnel: state.isConnectedViaSSHTunnel ? state.isConnectedViaSSHTunnel : false,
-            sshTunnelConfig: {
-                user: state.sshTunnelUser?.value,
-                password: state.sshTunnelPassword?.value,
-                authKey: state.sshTunnelPrivateKey?.value,
-                sshServerAddress: state.sshServerAddress?.value,
-            },
+            remoteConnectionConfig: getRemoteConnectionConfig(state),
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
@@ -753,7 +744,7 @@ const Cluster = ({
                                     environment_name ? (
                                         <div
                                             data-testid={`env-container-${environment_name}`}
-                                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-8 pb-8 fs-13 fw-4 pl-16 pr-16 h-44 dc__visible-hover dc__visible-hover--parent"
                                             key={id}
                                             onClick={() =>
                                                 setEnvironment({
@@ -793,9 +784,9 @@ const Cluster = ({
                                                         arrow={false}
                                                         content="Edit Environment"
                                                     >
-                                                        <div className="">
+                                                        <div className="flex p-4 mr-4">
                                                             <PencilEdit
-                                                                className="icon-dim-20 mr-12"
+                                                                className="icon-dim-16 cursor"
                                                                 onClick={showWindowModal}
                                                             />
                                                         </div>
@@ -808,10 +799,10 @@ const Cluster = ({
                                                             arrow={false}
                                                             content="Delete Environment"
                                                         >
-                                                            <div className="">
+                                                            <div className="flex p-4">
                                                                 <DeleteEnvironment
                                                                     data-testid={`env-delete-button-${environment_name}`}
-                                                                    className="icon-dim-20 cursor"
+                                                                    className="icon-dim-16 cursor"
                                                                     onClick={showToggleConfirmation}
                                                                 />
                                                             </div>
@@ -842,6 +833,7 @@ const Cluster = ({
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
                             <ClusterForm
+                                {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}
                                 cluster_name={cluster_name}
                                 server_url={server_url}
@@ -854,10 +846,6 @@ const Cluster = ({
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 proxyUrl={proxyUrl}
-                                sshTunnelUser={sshTunnelConfig?.user}
-                                sshTunnelPassword={sshTunnelConfig?.password}
-                                sshTunnelPrivateKey={sshTunnelConfig?.authKey}
-                                sshTunnelUrl={sshTunnelConfig?.sshServerAddress}
                                 isConnectedViaProxy={!!proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}

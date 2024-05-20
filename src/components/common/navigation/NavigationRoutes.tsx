@@ -9,6 +9,7 @@ import {
     DevtronProgressing,
     useMainContext,
     MainContextProvider,
+    ImageSelectionUtilityProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -17,6 +18,7 @@ import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -55,6 +57,8 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
+const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -406,6 +410,27 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
+                                        ...(ResourceWatcherRouter
+                                            ? [
+                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
+                                                      <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        ...(Releases
+                                            ? [
+                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                      <ImageSelectionUtilityProvider
+                                                          value={{
+                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
+                                                              getModuleInfo,
+                                                          }}
+                                                      >
+                                                          <Releases />
+                                                      </ImageSelectionUtilityProvider>
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -447,9 +472,11 @@ export default function NavigationRoutes() {
 export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentAppName, setCurrentAppName] = useState<string>('')
+
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
@@ -489,34 +516,29 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
 
 export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                <Switch>
-                    <Route
-                        path={`${path}/:appType`}
-                        render={() => (
-                            <NewAppList
-                                isSuperAdmin={isSuperAdmin}
-                                isArgoInstalled={isArgoInstalled}
-                                appListCount={appListCount}
-                            />
-                        )}
-                    />
-                    <Route exact path="">
-                        <RedirectToAppList />
-                    </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+            <Switch>
+                <Route
+                    path={`${path}/:appType`}
+                    render={() => (
+                        <NewAppList
+                            isSuperAdmin={isSuperAdmin}
+                            isArgoInstalled={isArgoInstalled}
+                            appListCount={appListCount}
                         />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
+                    )}
+                />
+                <Route exact path="">
+                    <RedirectToAppList />
+                </Route>
+                <Route>
+                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                </Route>
+            </Switch>
         </ErrorBoundary>
     )
 }
