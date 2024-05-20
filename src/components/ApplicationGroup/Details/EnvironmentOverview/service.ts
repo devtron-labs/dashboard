@@ -1,11 +1,7 @@
 import { noop, post } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    ApiQueuingBatchStatusType,
-    AppGroupListType,
-    ManageAppsResponseType,
-} from '../../AppGroup.types'
+import { ApiQueuingBatchStatusType, AppGroupListType, ManageAppsResponseType } from '../../AppGroup.types'
 import { ApiQueuingWithBatch } from '../../AppGroup.service'
-import { BULK_CD_RESPONSE_STATUS_TEXT, BulkResponseStatus } from '../../Constants'
+import { BULK_HIBERNATE_ERROR_MESSAGE, BULK_UNHIBERNATE_ERROR_MESSAGE, BulkResponseStatus } from '../../Constants'
 
 export const manageApps = async (
     appIds: number[],
@@ -52,11 +48,17 @@ export const manageApps = async (
                         switch (errorReason.code) {
                             case 403:
                             case 422:
-                                response.error = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
+                                response.error =
+                                    action === 'hibernate'
+                                        ? BULK_HIBERNATE_ERROR_MESSAGE[BulkResponseStatus.UNAUTHORIZE]
+                                        : BULK_UNHIBERNATE_ERROR_MESSAGE[BulkResponseStatus.UNAUTHORIZE]
                                 break
                             case 409:
                             default:
-                                response.error = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
+                                response.error =
+                                    action === 'hibernate'
+                                        ? BULK_HIBERNATE_ERROR_MESSAGE[BulkResponseStatus.FAIL]
+                                        : BULK_UNHIBERNATE_ERROR_MESSAGE[BulkResponseStatus.FAIL]
                         }
                         return response
                     }),
