@@ -19,7 +19,7 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
+export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }) => {
     const {
         formData,
         isCdPipeline,
