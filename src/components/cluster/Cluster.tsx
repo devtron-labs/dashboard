@@ -360,7 +360,7 @@ const Cluster = ({
     const drawerRef = useRef(null)
 
     const isDefaultCluster = (): boolean => {
-        return id == 1
+        return id === 1
     }
 
     const { state } = useForm(
