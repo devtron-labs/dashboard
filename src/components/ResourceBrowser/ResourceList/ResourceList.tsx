@@ -12,6 +12,7 @@ import {
     DevtronProgressing,
     PageHeader,
     UseRegisterShortcutProvider,
+    getResourceGroupListRaw,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import {
@@ -32,7 +33,6 @@ import {
 } from '../Types'
 import {
     getResourceGroupList,
-    getResourceGroupListRaw,
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'

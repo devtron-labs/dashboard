@@ -61,7 +61,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
-import { CredentialType, CustomCredential, RemoteConnectionType, SSHAuthenticationType } from './dockerType'
+import { CredentialType, CustomCredential, RemoteConnectionType, RemoteConnectionTypeRegistry, SSHAuthenticationType } from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
@@ -1273,11 +1273,12 @@ const DockerForm = ({
                 <>
                     <div className="dc__position-rel dc__hover mb-20">
                         <span className="form__input-header pb-20">
-                            How do you want Devtron to connect with this cluster?
+                            How do you want Devtron to connect with this registry?
                         </span>
                         <span className="pb-20">
                             {RemoteConnectionRadio && (
                                 <RemoteConnectionRadio
+                                    resourceType={RemoteConnectionTypeRegistry}
                                     connectionMethod={customState.remoteConnectionConfig?.connectionMethod}
                                     proxyConfig={customState.remoteConnectionConfig?.proxyConfig}
                                     sshConfig={customState.remoteConnectionConfig?.sshConfig}
