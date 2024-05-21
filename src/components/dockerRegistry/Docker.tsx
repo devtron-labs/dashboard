@@ -374,14 +374,14 @@ const DockerForm = ({
             : password
 
     let _remoteConnectionMethod = RemoteConnectionType.Direct 
-    if (remoteConnectionConfig.connectionMethod) {
-        _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
+    if (remoteConnectionConfig?.connectionMethod) {
+        _remoteConnectionMethod = remoteConnectionConfig?.connectionMethod
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
-    const initialSSHAuthenticationType = remoteConnectionConfig.sshConfig
-        ? remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey
+    const initialSSHAuthenticationType = remoteConnectionConfig?.sshConfig
+        ? remoteConnectionConfig?.sshConfig.sshPassword && remoteConnectionConfig?.sshConfig.sshAuthKey
             ? SSHAuthenticationType.Password_And_SSH_Private_Key
-            : remoteConnectionConfig.sshConfig.sshAuthKey
+            : remoteConnectionConfig?.sshConfig.sshAuthKey
               ? SSHAuthenticationType.SSH_Private_Key
               : SSHAuthenticationType.Password
         : SSHAuthenticationType.Password
@@ -407,13 +407,13 @@ const DockerForm = ({
         remoteConnectionConfig: {
             connectionMethod: { value: remoteConnectionMethod, error: '' },
             proxyConfig: {
-                proxyUrl: { value: remoteConnectionConfig.proxyConfig?.proxyUrl || '', error: '' },
+                proxyUrl: { value: remoteConnectionConfig?.proxyConfig?.proxyUrl || '', error: '' },
             },
             sshConfig: {
-                sshServerAddress: { value: remoteConnectionConfig.sshConfig?.sshServerAddress || '', error: '' },
-                sshUsername: { value: remoteConnectionConfig.sshConfig?.sshUsername || '', error: '' },
-                sshPassword: { value: remoteConnectionConfig.sshConfig?.sshPassword || '', error: '' },
-                sshAuthKey: { value: remoteConnectionConfig.sshConfig?.sshAuthKey || '', error: '' },
+                sshServerAddress: { value: remoteConnectionConfig?.sshConfig?.sshServerAddress || '', error: '' },
+                sshUsername: { value: remoteConnectionConfig?.sshConfig?.sshUsername || '', error: '' },
+                sshPassword: { value: remoteConnectionConfig?.sshConfig?.sshPassword || '', error: '' },
+                sshAuthKey: { value: remoteConnectionConfig?.sshConfig?.sshAuthKey || '', error: '' },
             },
         },
     })
@@ -1278,9 +1278,9 @@ const DockerForm = ({
                         <span className="pb-20">
                             {RemoteConnectionRadio && (
                                 <RemoteConnectionRadio
-                                    connectionMethod={customState.remoteConnectionConfig.connectionMethod}
-                                    proxyConfig={customState.remoteConnectionConfig.proxyConfig}
-                                    sshConfig={customState.remoteConnectionConfig.sshConfig}
+                                    connectionMethod={customState.remoteConnectionConfig?.connectionMethod}
+                                    proxyConfig={customState.remoteConnectionConfig?.proxyConfig}
+                                    sshConfig={customState.remoteConnectionConfig?.sshConfig}
                                     changeRemoteConnectionType={handleOnChangeForRemoteConnectionRadio}
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     handleOnChange={handleOnChangeConfig}
