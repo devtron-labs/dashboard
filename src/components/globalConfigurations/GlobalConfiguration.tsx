@@ -437,7 +437,7 @@ const NavItem = ({ serverMode }) => {
                             key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Deployment window</div>
+                            <div className="flexbox flex-justify">Deployment Window</div>
                         </NavLink>
                     )}
                     <NavLink
@@ -654,11 +654,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
-            (
-            <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-            </Route>
-            , ),
+            {
+                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                )
+            },
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
