@@ -612,3 +612,4 @@ src/util/DeleteComponent.tsx
 src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
+src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx

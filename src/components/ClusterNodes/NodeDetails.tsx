@@ -59,11 +59,7 @@ import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { GVKType } from '../ResourceBrowser/Types'
 
-export default function NodeDetails({
-    isSuperAdmin,
-    addTab,
-    k8SObjectMapRaw,
-}: ClusterListType) {
+export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, markTerminalTabActive }: ClusterListType) {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -562,6 +558,7 @@ export default function NodeDetails({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
         const url = location.pathname
+        markTerminalTabActive()
         push(
             `${url.split('/').slice(0, -3).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
         )
@@ -1065,7 +1062,9 @@ export default function NodeDetails({
             <div className="bcn-0 node-data-container flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
+                    subtitle={
+                        errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
+                    }
                 />
             </div>
         )

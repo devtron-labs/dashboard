@@ -143,6 +143,11 @@ export default function ClusterTerminal({
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
+        autoSelectNodeRef.current = null
+        setSelectedNodeName(queryParamsData.selectedNode)
+    }, [queryParamsData.selectedNode.value])
+
+    useEffect(() => {
         if (resourceData && update && manifestData) {
             try {
                 socketDisconnecting()

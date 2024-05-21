@@ -12,7 +12,7 @@ import {
     ErrorScreenManager,
     Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getNodeList, getClusterCapacity  } from './clusterNodes.service'
+import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
 import { ColumnMetadataType, TEXT_COLOR_CLASS, NodeDetail, SearchTextType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -32,6 +32,7 @@ export default function NodeDetailsList({
     renderRefreshBar,
     addTab,
     showStaleDataWarning,
+    markTerminalTabActive,
 }) {
     const { clusterId, nodeType } = useParams<{ [key: string]: string }>()
     const match = useRouteMatch()
@@ -63,11 +64,12 @@ export default function NodeDetailsList({
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
 
-    const [, nodeK8sVersions] = useAsync(() =>
-        abortPreviousRequests(async () => {
-            const { result } = await getClusterCapacity(clusterId, abortControllerRef.current?.signal)
-            return result?.nodeK8sVersions || null
-        }, abortControllerRef),
+    const [, nodeK8sVersions] = useAsync(
+        () =>
+            abortPreviousRequests(async () => {
+                const { result } = await getClusterCapacity(clusterId, abortControllerRef.current?.signal)
+                return result?.nodeK8sVersions || null
+            }, abortControllerRef),
         [clusterId],
     )
 
@@ -565,7 +567,10 @@ export default function NodeDetailsList({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
         const url = location.pathname
-        history.push(`${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}?${queryParams.toString()}`)
+        markTerminalTabActive()
+        history.push(
+            `${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+        )
     }
 
     if (errorResponseCode) {
@@ -573,7 +578,9 @@ export default function NodeDetailsList({
             <div className="dc__border-left flex">
                 <ErrorScreenManager
                     code={errorResponseCode}
-                    subtitle={(errorResponseCode==403?unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()):'')}
+                    subtitle={
+                        errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
+                    }
                 />
             </div>
         )
@@ -615,10 +622,7 @@ export default function NodeDetailsList({
                     <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                 ) : (
                     <>
-                        <div
-                            className="mt-16 dc__overflow-scroll h-100"
-                            style={{ width: '100%' }}
-                        >
+                        <div className="mt-16 dc__overflow-scroll h-100" style={{ width: '100%' }}>
                             <div
                                 data-testid="node-status"
                                 className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0"

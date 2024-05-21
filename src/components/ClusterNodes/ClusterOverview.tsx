@@ -7,7 +7,14 @@ import {
     InfoIconTippy,
     EditableTextArea,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType, ClusterCapacityType } from './types'
+import {
+    ClusterErrorType,
+    ClusterOverviewProps,
+    DescriptionDataType,
+    ERROR_TYPE,
+    ClusterDetailsType,
+    ClusterCapacityType,
+} from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
@@ -271,7 +278,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
 
     const tippyForMetricsApi = () => {
         return (
-            <>
+            <div className="flexbox dc__gap-6">
                 <span>NA</span>
                 <InfoIconTippy
                     heading="Metrics API is not available"
@@ -280,7 +287,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
                     documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
                     iconClassName="icon-dim-20 ml-8 fcn-5"
                 />
-            </>
+            </div>
         )
     }
 

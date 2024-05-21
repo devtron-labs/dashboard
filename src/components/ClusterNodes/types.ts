@@ -176,14 +176,8 @@ export interface ColumnMetadataType {
 export interface ClusterListType {
     isSuperAdmin: boolean
     k8SObjectMapRaw: ApiResourceGroupType[]
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    markTerminalTabActive: () => void
     addTab?: ReturnType<typeof useTabs>['addTab']
-}
-
-export interface ClusterDetailsPropType extends ClusterListType {
-    clusterId: string
-    namespaceList: string[]
-    imageList: ClusterImageList[]
 }
 
 export interface ClusterAboutPropType {

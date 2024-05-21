@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
@@ -8,6 +8,7 @@ import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.sv
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
+import { handleUTCTime } from '../../common'
 import { CLUSTER_NOT_REACHABLE, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { SidebarChildButtonPropsType } from '../Types'
@@ -125,20 +126,31 @@ export const KindSearchClearIndicator = (props) => {
     )
 }
 
-export const renderRefreshBar = (show: boolean, lastSyncTime: string, callback: () => void): (() => JSX.Element) => {
-    return () =>
-        !show ? null : (
-            <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
-                <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
-                    <Warning className="icon-dim-20 mr-8" />
-                    <span>Last synced {lastSyncTime}. The data might be stale. </span>
-                    <button className="cb-5 ml-4 fw-6 dc__unset-button-styles cursor" onClick={callback}>
-                        Sync now
-                    </button>
-                </div>
+const WarningStrip: React.FC<{ lastSyncTime: string; callback: () => void }> = ({ lastSyncTime, callback }) => {
+    const [timePassed, setTimePassed] = useState(handleUTCTime(lastSyncTime, true))
+
+    useEffect(() => {
+        const interval = setInterval(() => setTimePassed(handleUTCTime(lastSyncTime, true)), 1000)
+        return () => clearInterval(interval)
+    }, [])
+
+    return (
+        <div className="fs-13 flex left w-100 bcy-1 h-32 warning-icon-y7-imp dc__border-bottom-y2">
+            <div className="pl-12 flex fs-13 pt-6 pb-6 pl-12">
+                <Warning className="icon-dim-20 mr-8" />
+                <span>Last synced {timePassed}. The data might be stale. </span>
+                <button className="cb-5 ml-4 fw-6 dc__unset-button-styles cursor" onClick={callback}>
+                    Sync now
+                </button>
             </div>
-        )
+        </div>
+    )
 }
+
+export const renderRefreshBar =
+    (show: boolean, lastSyncTime: string, callback: () => void): (() => JSX.Element) =>
+    () =>
+        !show ? null : <WarningStrip lastSyncTime={lastSyncTime} callback={callback} />
 
 export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
     parentRef,

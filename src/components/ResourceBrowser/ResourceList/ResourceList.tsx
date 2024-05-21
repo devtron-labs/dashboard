@@ -208,7 +208,7 @@ const ResourceList = () => {
     const getMarkTabActiveByIdSetter =
         (id = '') =>
         () =>
-            markTabActiveById(id)
+            id && markTabActiveById(id)
 
     const renderDynamicTabComponent = (): JSX.Element => {
         if (!node) {
@@ -219,9 +219,9 @@ const ResourceList = () => {
             <NodeDetails
                 key={dynamicActiveTab.componentKey}
                 isSuperAdmin={isSuperAdmin}
-                markTabActiveByIdentifier={markTabActiveByIdentifier}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             />
         ) : (
             <div className="resource-details-container">
@@ -258,6 +258,7 @@ const ResourceList = () => {
             )}
             isSuperAdmin={isSuperAdmin}
             showStaleDataWarning={isDataStale}
+            markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             updateK8sResourceTab={updateK8sResourceTab}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,

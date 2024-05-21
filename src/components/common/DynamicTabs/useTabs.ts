@@ -3,9 +3,6 @@ import dayjs from 'dayjs'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import { DynamicTabType, InitTabType, ParsedTabsData } from './Types'
 
-/* TODO: refactor this file */
-
-/* TODO: should this be provided when creating useTabs? */
 const FALLBACK_TAB = 1
 
 export function useTabs(persistanceKey: string) {
