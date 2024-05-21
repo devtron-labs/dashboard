@@ -156,3 +156,5 @@ export interface ClusterFormType {
     toggleCheckTlsConnection: () => void
     isDrawer: boolean
 }
+
+export const RemoteConnectionTypeCluster = 'cluster'

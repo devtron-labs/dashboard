@@ -165,7 +165,7 @@ a:focus {
 
 .tab-list__tab {
     user-select: none;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: normal;
     line-height: 1.43;
     letter-spacing: normal;
@@ -362,6 +362,10 @@ a:focus {
 
 .dc__top-49 {
     top: 49px;
+}
+
+.dc__top-77 {
+    top: 77px;
 }
 
 .dc__top-88 {
@@ -746,6 +750,7 @@ button.anchor {
     &.f-completed,
     &.f-bound,
     &.f-active,
+    &.f-created,
     &.f-scalingreplicasetdown {
         color: var(--G500);
     }
@@ -771,6 +776,7 @@ button.anchor {
     &.f-terminating,
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
+    &.f-deleted,
     &.f-evicted {
         color: var(--R500);
     }
@@ -780,6 +786,10 @@ button.anchor {
     &.f-unknown,
     &.initiated {
         color: var(--yellow);
+    }
+
+    &.f-updated {
+        color: var(--Y700);
     }
 }
 
@@ -3812,6 +3822,10 @@ textarea,
 
 .ml-36-imp {
     margin-left: 36px !important;
+}
+
+.ml-45 {
+    margin-left: 45px;
 }
 
 .ml-54 {

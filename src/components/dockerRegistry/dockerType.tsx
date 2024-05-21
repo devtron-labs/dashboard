@@ -61,3 +61,5 @@ export const CustomStateKeys = {
     PASSWORD: 'password',
     REPOSITORY_LIST: 'repositoryList',
 }
+
+export const RemoteConnectionTypeRegistry = 'registry'
