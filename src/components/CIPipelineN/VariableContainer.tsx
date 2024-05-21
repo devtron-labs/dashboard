@@ -7,7 +7,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
-    const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
+    const [collapsedSection, setCollapsedSection] = useState<boolean>(type !== PluginVariableType.INPUT)
     const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
