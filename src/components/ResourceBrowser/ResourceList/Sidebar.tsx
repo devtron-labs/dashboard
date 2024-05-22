@@ -182,9 +182,7 @@ const Sidebar = ({
                                 ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
                             }}
                         />
-                        <span className={`fs-13 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
-                            {key}
-                        </span>
+                        <span className="fs-13 cn-9 fw-6 pointer w-100 pt-6 pb-6">{key}</span>
                     </div>
                 </button>
                 <div className="pl-20 flexbox-col">
@@ -260,7 +258,7 @@ const Sidebar = ({
                     }}
                 />
             )}
-            <span className="fs-12 cn-7 lh-18">{option.description}</span>
+            <span className="fs-12 cn-7 lh-18 dc__ellipsis-right">{option.description}</span>
         </div>
     )
 
@@ -360,7 +358,7 @@ const Sidebar = ({
                                             }}
                                         />
                                         <span
-                                            className="fs-13 fw-6 pointer w-100 pt-6 pb-6"
+                                            className="fs-13 cn-9 fw-6 pointer w-100 pt-6 pb-6"
                                             data-testid={`k8sObject-${k8sObject.name}`}
                                         >
                                             {k8sObject.name}

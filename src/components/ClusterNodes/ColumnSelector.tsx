@@ -86,10 +86,7 @@ export default function ColumnSelector() {
         setSelectedColumns(appliedColumns)
     }, [])
 
-    const renderMenuList = useCallback(
-        (props) => <MenuList {...props} selectRef={selectRef} />,
-        [selectRef]
-    )
+    const renderMenuList = useCallback((props) => <MenuList {...props} selectRef={selectRef} />, [selectRef])
 
     const handleMenuState = (menuOpenState: boolean): void => {
         if (menuOpenState) {
@@ -149,7 +146,7 @@ export default function ColumnSelector() {
                 }),
                 option: (base, state) => ({
                     ...base,
-                    padding: '10px 12px',
+                    padding: '10px 0',
                     backgroundColor: state.isFocused ? 'var(--N100) !important' : 'var(--N0) !important',
                     color: 'var(--N900)',
                     overflow: 'hidden',

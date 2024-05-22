@@ -807,7 +807,7 @@ node-details-full-screen
                 </div>
             )
         }
-        return null
+        return <div />
     }
 
     const renderHideManagedFields = () => (
@@ -839,21 +839,6 @@ node-details-full-screen
 
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
-            /* TODO: dead code; remove later */
-            {
-                type: TerminalWrapperType.TITLE_NAME,
-                hideTerminalStripComponent: true,
-                title: SELECT_TITLE.CLUSTER,
-                value: '',
-                dataTestId: 'cluster-terminal-cluster-name',
-            },
-            {
-                type: TerminalWrapperType.CONNECTION_BUTTON,
-                hideTerminalStripComponent: true,
-                connectTerminal,
-                closeTerminalModal,
-                reconnectTerminal,
-            },
             {
                 type: TerminalWrapperType.REACT_SELECT,
                 classNamePrefix: 'cluster-terminal-node',
@@ -981,7 +966,7 @@ node-details-full-screen
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: nodeType === AppDetailsTabs.terminal,
+                isTerminalTab: selectedTabIndex === 0,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },

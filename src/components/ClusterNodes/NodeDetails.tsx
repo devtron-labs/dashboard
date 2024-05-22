@@ -217,7 +217,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
     const renderKeyValueLabel = (key: string, value?: string): JSX.Element => {
         const keyValue = `${key}=${value || ''}`
         return (
-            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div
                     className={`cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                         !value ? ' br-4' : ' dc__left-radius-4 dc__no-right-border'
@@ -230,7 +230,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
                         {value}
                     </div>
                 )}
-                <div className="dc__visible-hover--child">
+                <div className="ml-8 dc__visible-hover--child">
                     <ClipboardButton content={keyValue} />
                 </div>
             </div>
@@ -267,7 +267,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
 
     const renderWithCopy = (key: string): JSX.Element => {
         return (
-            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel">
+            <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div>{key}</div>
                 <Tippy
                     className="default-tt"
@@ -280,7 +280,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
                     }}
                     interactive
                 >
-                    <div className="flex dc__visible-hover--child">
+                    <div className="ml-8 flex dc__visible-hover--child">
                         <ClipboardButton content={key} />
                     </div>
                 </Tippy>
@@ -682,7 +682,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
                                     <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
                                         {pod.namespace}
                                     </div>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9 dc__align-items-center">
                                         <Tippy
                                             className="default-tt"
                                             arrow={false}
@@ -700,7 +700,7 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw, mar
                                                 {pod.name}
                                             </span>
                                         </Tippy>
-                                        <div className="dc__visible-hover--child">
+                                        <div className="ml-8 dc__visible-hover--child">
                                             <ClipboardButton content={pod.name} />
                                         </div>
 

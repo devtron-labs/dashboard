@@ -34,11 +34,12 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
         )
     }
 
-    if (error) {
-        const errCode = error?.errors[0]?.code || error?.code
+    if (error || !selectedDetailsCluster?.nodeCount) {
+        /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
+        /* NOTE: the above happens in case of bad cluster setup */
+        const errCode = error?.errors[0]?.code || error?.code || 403
         return (
             <div className="bcn-0 node-data-container flex">
-                {/* FIXME: is this reload appropiate? */}
                 {isSuperAdmin ? <Reload /> : <ErrorScreenManager code={errCode} />}
             </div>
         )

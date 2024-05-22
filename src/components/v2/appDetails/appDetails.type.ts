@@ -112,8 +112,8 @@ export enum NodeType {
 // export type NodeType = keyof typeof NodeType;
 
 /**
- * 
- * @param nodeType 
+ *
+ * @param nodeType
  * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
  */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
@@ -412,6 +412,7 @@ export interface NodeDetailPropsType extends LogSearchTermType {
     selectedResource?: SelectedResourceType
     k8SObjectMapRaw?: ApiResourceGroupType[]
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
 }
 

@@ -78,7 +78,7 @@ export const K8SResourceList = ({
     const _filters = getFilterOptionsFromSearchParams?.(location.search)
     const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
 
-    const [_resourceListLoader, _resourceList, resourceListDataError, reloadResourceListData] = useAsync(
+    const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () => {
             return abortPreviousRequests(
                 () =>
@@ -98,7 +98,7 @@ export const K8SResourceList = ({
         selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
 
-    const resourceListLoader = _resourceListLoader || getIsRequestAborted(resourceListDataError)
+    const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
 
     const resourceList = _resourceList?.result || null
 
@@ -361,7 +361,7 @@ export const K8SResourceList = ({
         setResourceListOffset(0)
     }
 
-    if (resourceListDataError && !getIsRequestAborted(resourceListDataError)) {
+    if (resourceListDataError) {
         showError(resourceListDataError)
     }
 

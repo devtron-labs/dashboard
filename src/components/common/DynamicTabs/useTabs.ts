@@ -132,6 +132,8 @@ export function useTabs(persistanceKey: string) {
                         return true
                     }
                     _tabs[index].isSelected = _initTab.isSelected
+                    /* NOTE: dynamic title might get updated between re-initialization */
+                    _tabs[index].dynamicTitle = _initTab.dynamicTitle
                     return false
                 })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))

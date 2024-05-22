@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Checkbox,
+    CHECKBOX_VALUE,
+    OptionType,
+    useEffectAfterMount,
+} from '@devtron-labs/devtron-fe-common-lib'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
@@ -34,6 +40,7 @@ const NodeDetailComponent = ({
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
+    updateTabUrl,
     isExternalApp,
 }: NodeDetailPropsType) => {
     const location = useLocation()
@@ -215,6 +222,7 @@ const NodeDetailComponent = ({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
+        updateTabUrl(_url)
 
         /**
          * NOTE: resource browser handles creation of missing tabs;

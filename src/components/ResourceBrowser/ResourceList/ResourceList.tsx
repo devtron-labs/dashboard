@@ -207,7 +207,9 @@ const ResourceList = () => {
         () =>
             id && markTabActiveById(id)
 
-    const renderDynamicTabComponent = (): JSX.Element => {
+    const getUpdateTabUrlForId = (id: string) => (_url: string) => updateTabUrl(id, _url)
+
+    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (!node) {
             return null
         }
@@ -232,6 +234,7 @@ const ResourceList = () => {
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={removeTabByIdentifier}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
                 />
             </div>
         )
@@ -319,7 +322,7 @@ const ResourceList = () => {
                             {renderInvisible(component, !tabs[index].isSelected)}
                         </React.Fragment>
                     ))}
-                {dynamicActiveTab && renderDynamicTabComponent()}
+                {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
             </>
         )
     }
