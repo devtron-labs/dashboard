@@ -223,5 +223,5 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         )
     }
 
-    return renderComponent()
+    return <React.Fragment key={activeStageName}>{renderComponent()}</React.Fragment>
 }
