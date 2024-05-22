@@ -57,6 +57,7 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
@@ -409,6 +410,13 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
+                                        ...(ResourceWatcherRouter
+                                            ? [
+                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
+                                                      <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         ...(Releases
                                             ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>

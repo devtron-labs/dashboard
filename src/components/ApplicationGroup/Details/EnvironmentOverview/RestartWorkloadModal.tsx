@@ -44,6 +44,7 @@ export const RestartWorkloadModal = ({
     envName,
     envId,
     hibernateInfoMap,
+    httpProtocol,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -60,24 +61,6 @@ export const RestartWorkloadModal = ({
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
-    const httpProtocol = useRef('')
-
-    useEffect(() => {
-        const observer = new PerformanceObserver((list) => {
-            list.getEntries().forEach((entry) => {
-                const protocol = entry.nextHopProtocol
-                if (protocol && entry.initiatorType === 'fetch') {
-                    httpProtocol.current = protocol
-                    observer.disconnect()
-                }
-            })
-        })
-
-        observer.observe({ type: 'resource', buffered: true })
-        return () => {
-            observer.disconnect()
-        }
-    }, [])
 
     const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
@@ -569,7 +552,7 @@ export const RestartWorkloadModal = ({
         } else {
             const functionCalls = createFunctionCallsFromRestartPodMap()
             setStatusModalLoading(true)
-            ApiQueuingWithBatch(functionCalls, httpProtocol.current)
+            ApiQueuingWithBatch(functionCalls, httpProtocol)
                 .then(async () => {})
                 .catch(() => {})
                 .finally(() => {
