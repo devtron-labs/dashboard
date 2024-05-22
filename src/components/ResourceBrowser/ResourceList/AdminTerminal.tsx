@@ -29,13 +29,13 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
     if (loading) {
         return (
             <div className="h-100 node-data-container bcn-0">
-                <Progressing pageLoader />
+                <Progressing pageLoader size={32} />
             </div>
         )
     }
 
     if (error) {
-        const errCode = error?.errors[0]?.['code'] || error?.['code']
+        const errCode = error?.errors[0]?.code || error?.code
         return (
             <div className="bcn-0 node-data-container flex">
                 {/* FIXME: is this reload appropiate? */}
@@ -46,14 +46,12 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
 
     return (
         <ClusterTerminal
-            showTerminal
             clusterId={+clusterId}
             nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
             taints={createTaintsList(selectedDetailsCluster.nodeDetails, 'nodeName')}
             clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion)}
             namespaceList={namespaceList[selectedDetailsCluster.name]}
             updateTerminalTabUrl={updateTerminalTabUrl}
-            isNodeDetailsPage
         />
     )
 }

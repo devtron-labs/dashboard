@@ -186,13 +186,10 @@ const ResourceList = () => {
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
-        if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
+        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal || !terminalTab.isSelected) {
             return
         }
         updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
-        if (!terminalTab.isSelected) {
-            return
-        }
         replace({ search: queryParams })
     }
 

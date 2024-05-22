@@ -199,19 +199,11 @@ export interface SelectGroupType {
 
 export interface ClusterTerminalType {
     clusterId: number
-    clusterName?: string
-    nodeList?: string[]
-    closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
-    isClusterDetailsPage?: boolean
-    isNodeDetailsPage?: boolean
     namespaceList: string[]
-    node?: string
-    setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
-    nodeGroups?: SelectGroupType[]
+    nodeGroups: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
-    showTerminal: boolean
-    updateTerminalTabUrl?: (queryParams: string) => void
+    updateTerminalTabUrl: (queryParams: string) => void
 }
 
 export const TEXT_COLOR_CLASS = {

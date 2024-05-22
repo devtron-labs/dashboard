@@ -166,7 +166,7 @@ export const K8SResourceList = ({
             default:
                 break
         }
-        handleFilterChanges(searchText, resourceList)
+        setFilteredResourceList(resourceList.data)
     }, [resourceList])
 
     const setSearchText = (text: string) => {
