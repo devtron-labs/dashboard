@@ -61,7 +61,13 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
-import { CredentialType, CustomCredential, RemoteConnectionType, RemoteConnectionTypeRegistry, SSHAuthenticationType } from './dockerType'
+import {
+    CredentialType,
+    CustomCredential,
+    RemoteConnectionType,
+    RemoteConnectionTypeRegistry,
+    SSHAuthenticationType,
+} from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
@@ -373,18 +379,25 @@ const DockerForm = ({
             ? password.substring(1, password.length - 1)
             : password
 
-    let _remoteConnectionMethod = RemoteConnectionType.Direct 
+    let _remoteConnectionMethod = RemoteConnectionType.Direct
     if (remoteConnectionConfig?.connectionMethod) {
         _remoteConnectionMethod = remoteConnectionConfig?.connectionMethod
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
-    const initialSSHAuthenticationType = remoteConnectionConfig?.sshConfig
-        ? remoteConnectionConfig?.sshConfig.sshPassword && remoteConnectionConfig?.sshConfig.sshAuthKey
-            ? SSHAuthenticationType.Password_And_SSH_Private_Key
-            : remoteConnectionConfig?.sshConfig.sshAuthKey
-              ? SSHAuthenticationType.SSH_Private_Key
-              : SSHAuthenticationType.Password
-        : SSHAuthenticationType.Password
+
+    let initialSSHAuthenticationType
+    if (remoteConnectionConfig?.sshConfig) {
+        if (remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey) {
+            initialSSHAuthenticationType = SSHAuthenticationType.Password_And_SSH_Private_Key
+        } else if (remoteConnectionConfig.sshConfig.sshAuthKey) {
+            initialSSHAuthenticationType = SSHAuthenticationType.SSH_Private_Key
+        } else {
+            initialSSHAuthenticationType = SSHAuthenticationType.Password
+        }
+    } else {
+        initialSSHAuthenticationType = SSHAuthenticationType.Password
+    }
+
     const [sshConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
 
     const [customState, setCustomState] = useState({
@@ -1011,7 +1024,8 @@ const DockerForm = ({
                 updateWithCustomStateValidationForRemoteConnectionConfig('proxyUrl', proxyConfig.proxyUrl.value)
             ) {
                 return false
-            }``
+            }
+            ;``
             if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
                 if (
                     updateWithCustomStateValidationForRemoteConnectionConfig(
