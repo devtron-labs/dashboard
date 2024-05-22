@@ -140,12 +140,6 @@ export interface ClusterListProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
 }
 
-export interface ClusterStepModal {
-    subTitle: string
-    command: string
-    clusterName: string
-}
-
 export interface ClusterTerminalParamsType {
     selectedImage: OptionType
     selectedNamespace: OptionType

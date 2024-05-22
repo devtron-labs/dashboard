@@ -1,6 +1,7 @@
 import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
-    AddEditEnvironmentModal,
+    AddEditEnvironmentForm,
+    AddEditClusterForm,
     showError,
     Progressing,
     ErrorScreenNotAuthorized,
@@ -43,13 +44,15 @@ import {
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import ClusterForm from './ClusterForm'
 
 const deleteEnvironment = noop
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
+const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
+const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -289,7 +292,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 )}
                 {this.state.showAddCluster && (
                     <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                        <ClusterForm
+                        <AddEditClusterForm
                             {...getSSHConfig(this.state)}
                             id={null}
                             cluster_name={this.state.cluster_name}
@@ -313,6 +316,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             isKubeConfigFile={this.state.isKubeConfigFile}
                             toggleClusterDetails={this.toggleClusterDetails}
                             isVirtualCluster={false}
+                            VirtualClusterSelectionTab={VirtualClusterSelectionTab}
+                            RemoteConnectionRadio={RemoteConnectionRadio}
+                            getRemoteConnectionConfig={getRemoteConnectionConfig}
                         />
                     </Drawer>
                 )}
@@ -836,7 +842,7 @@ const Cluster = ({
                 {editMode && (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
-                            <ClusterForm
+                            <AddEditClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
                                 id={clusterId}
                                 cluster_name={cluster_name}
@@ -860,6 +866,9 @@ const Cluster = ({
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails
                                 isVirtualCluster={isVirtualCluster}
+                                VirtualClusterSelectionTab={VirtualClusterSelectionTab}
+                                RemoteConnectionRadio={RemoteConnectionRadio}
+                                getRemoteConnectionConfig={getRemoteConnectionConfig}
                             />
                         </div>
                     </Drawer>
@@ -868,7 +877,7 @@ const Cluster = ({
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0" ref={editLabelRef}>
-                        <AddEditEnvironmentModal
+                        <AddEditEnvironmentForm
                             reload={reload}
                             cluster_name={cluster_name}
                             {...environment}

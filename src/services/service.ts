@@ -9,6 +9,7 @@ import {
     LastExecutionResponseType,
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
+    ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -493,7 +494,7 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
 }
 
 export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
-    const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
+    const URL = `${ROUTES.CLUSTER}/autocomplete?auth=false`
     return get(URL)
 }
 

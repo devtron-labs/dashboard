@@ -1,10 +1,18 @@
-import { DATE_TIME_FORMAT_STRING, get, getClusterListMin, getEnvironmentListMinPublic, post, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DATE_TIME_FORMAT_STRING,
+    get,
+    getClusterListMin,
+    getEnvironmentListMinPublic,
+    post,
+    ResponseType,
+    sortCallback,
+    ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { Routes } from '../../config'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
 
 export function getClusterListMinNoAuth() {
-    const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
+    const URL = `${ROUTES.CLUSTER}/autocomplete?auth=false`
     return get(URL)
 }
 
