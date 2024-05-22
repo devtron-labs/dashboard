@@ -387,9 +387,9 @@ const DockerForm = ({
 
     let initialSSHAuthenticationType
     if (remoteConnectionConfig?.sshConfig) {
-        if (remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey) {
+        if (remoteConnectionConfig?.sshConfig.sshPassword && remoteConnectionConfig?.sshConfig.sshAuthKey) {
             initialSSHAuthenticationType = SSHAuthenticationType.Password_And_SSH_Private_Key
-        } else if (remoteConnectionConfig.sshConfig.sshAuthKey) {
+        } else if (remoteConnectionConfig?.sshConfig.sshAuthKey) {
             initialSSHAuthenticationType = SSHAuthenticationType.SSH_Private_Key
         } else {
             initialSSHAuthenticationType = SSHAuthenticationType.Password
