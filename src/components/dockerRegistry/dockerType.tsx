@@ -20,6 +20,7 @@ export enum SSHAuthenticationType {
     Password_And_SSH_Private_Key = 'PASSWORD_AND_SSH_PRIVATE_KEY',
 }
 
+// Remove
 export enum RemoteConnectionType {
     Direct = 'DIRECT',
     Proxy = 'PROXY',

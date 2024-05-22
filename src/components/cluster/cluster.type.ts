@@ -4,30 +4,26 @@ import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 
+// Remove from dashboard
 export const DEFAULT_CLUSTER_ID = 1
 
-export const AuthenticationType = {
-    BASIC: 'BASIC',
-    ANONYMOUS: 'ANONYMOUS',
-    IAM: 'IAM',
-}
-
-export const emptyClusterTerminalParamsData = {
-    selectedImage: null,
-    selectedNamespace: null,
-    selectedNode: null,
-    selectedShell: null,
-}
-
+// remove
 export interface UserDetails {
     userName: string
     errorInConnecting: string
     config: ConfigCluster
 }
 
-export interface UserNameList {
-    label: string
-    value: string
+// Check if to be removed
+export interface DataListType {
+    id: number
+    cluster_name: string
+    userInfos: UserDetails[]
+    server_url: string
+    active: boolean
+    defaultClusterComponent: number
+    insecureSkipTlsVerify: boolean
+    remoteConnectionConfig: RemoteConnectionConfig
 }
 
 export enum SSHAuthenticationType {
@@ -42,16 +38,6 @@ export interface RemoteConnectionConfig {
     sshConfig: Record<string, string>
 }
 
-export interface DataListType {
-    id: number
-    cluster_name: string
-    userInfos: UserDetails[]
-    server_url: string
-    active: boolean
-    defaultClusterComponent: number
-    insecureSkipTlsVerify: boolean
-    remoteConnectionConfig: RemoteConnectionConfig
-}
 
 export interface SaveClusterPayloadType {
     id: number
@@ -64,6 +50,34 @@ export interface SaveClusterPayloadType {
     server_url: string
     remoteConnectionConfig: RemoteConnectionConfig
 }
+
+export const AuthenticationType = {
+    BASIC: 'BASIC',
+    ANONYMOUS: 'ANONYMOUS',
+    IAM: 'IAM',
+}
+
+// Remove: end
+
+
+
+export const emptyClusterTerminalParamsData = {
+    selectedImage: null,
+    selectedNamespace: null,
+    selectedNode: null,
+    selectedShell: null,
+}
+
+
+
+export interface UserNameList {
+    label: string
+    value: string
+}
+
+
+
+
 
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',
@@ -108,6 +122,7 @@ export interface ClusterInstallStatusProps {
     onClick: (...args) => void
 }
 
+// Remove
 export interface ConfigCluster {
     bearerToken: string
     cert_auth_data: string
@@ -157,4 +172,5 @@ export interface ClusterFormType {
     isDrawer: boolean
 }
 
+// Remove
 export const RemoteConnectionTypeCluster = 'cluster'

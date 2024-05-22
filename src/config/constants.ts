@@ -24,9 +24,9 @@ export const Routes = {
     CI_PIPELINE_SOURCE_BULK_PATCH: 'app/ci-pipeline/bulk/branch-update',
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
-    CLUSTER: 'cluster',
-    VALIDATE: 'cluster/validate',
-    SAVECLUSTER: 'cluster/saveClusters',
+    // CLUSTER: 'cluster',
+    // VALIDATE: 'cluster/validate',
+    // SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/note',
     APPLICATION_NOTE: 'app/note',
@@ -191,6 +191,7 @@ export const Routes = {
     HELM_APP_UNHIBERNATE_API: 'application/unhibernate',
     EXTERNAL_LINKS_API: 'external-links',
     GET_ALL_APPS: 'app/allApps',
+    // Remove
     MODULE_INFO_API: 'module',
     SERVER_INFO_API: 'server',
     LOG_PODNAME_API: 'k8s/resource/inception/info',
@@ -536,6 +537,7 @@ export const RegistryTypeName = {
     OCI_PUBLIC: 'Public Registry',
 }
 
+// TODO: Remove
 export const AppCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
@@ -664,6 +666,7 @@ export const POD_STATUS = {
     PENDING: 'Pending',
 }
 
+// Remove
 export const CLUSTER_COMMAND = {
     k8Cluster: {
         heading: 'K8s cluster providers',
@@ -932,6 +935,7 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
     'Enforced from Global Configurations. Go to Global Configurations to change.'
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
+// Remove
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {

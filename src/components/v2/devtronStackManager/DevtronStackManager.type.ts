@@ -99,6 +99,7 @@ export interface ModuleDetails {
     moduleType?: string
 }
 
+// Remove
 export interface ModuleResourceStatus {
     group: string
     version: string
@@ -228,6 +229,7 @@ export interface AboutDevtronViewType {
     setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+// Remove
 export interface ModuleInfo {
     id: number
     name: string
@@ -240,6 +242,7 @@ export interface ModuleInfoInstalled {
     status: ModuleStatus
 }
 
+// Remove
 export interface ModuleInfoResponse extends ResponseType {
     result?: ModuleInfo
 }

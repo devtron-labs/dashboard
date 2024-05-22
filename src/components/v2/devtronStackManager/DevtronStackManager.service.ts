@@ -14,6 +14,8 @@ import {
 } from './DevtronStackManager.type'
 import { reloadToastBody } from '../../common'
 
+// Remove start
+
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 let serverInfo: ServerInfoResponse
 let isReloadToastShown = false
@@ -97,6 +99,8 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
     }
     return Promise.resolve({ status: '', code: 200, result })
 }
+
+// Remove end
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {
     return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })

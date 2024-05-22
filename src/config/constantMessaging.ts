@@ -320,6 +320,7 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Customize, Dry Run and Save values so they’re ready to be used later.',
     },
 
+    // Check and remove
     LOADING_CLUSTER: {
         TITLE: 'Trying to connect to Cluster',
         SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',

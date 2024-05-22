@@ -11,25 +11,29 @@ export function getCluster(id: number) {
     return get(URL)
 }
 
-export function saveClusters(payload) {
-    const URL = `${Routes.SAVECLUSTER}`
-    return post(URL, payload)
-}
+// export function saveClusters(payload) {
+//     const URL = `${Routes.SAVECLUSTER}`
+//     return post(URL, payload)
+// }
 
-export function validateCluster(payload) {
-    const URL = `${Routes.VALIDATE}`
-    return post(URL, payload)
-}
+// export function validateCluster(payload) {
+//     const URL = `${Routes.VALIDATE}`
+//     return post(URL, payload)
+// }
 
-export function saveCluster(request) {
-    const URL = `${Routes.CLUSTER}`
-    return post(URL, request)
-}
+// export function saveCluster(request) {
+//     const URL = `${Routes.CLUSTER}`
+//     return post(URL, request)
+// }
 
-export function updateCluster(request) {
-    const URL = `${Routes.CLUSTER}`
-    return put(URL, request)
-}
+// export function updateCluster(request) {
+//     const URL = `${Routes.CLUSTER}`
+//     return put(URL, request)
+// }
+
+// export function deleteCluster(request): Promise<any> {
+//     return trash(Routes.CLUSTER, request)
+// }
 
 export function retryClusterInstall(id: number, payload): Promise<ResponseType> {
     const URL = `${Routes.CHART_AVAILABLE}/cluster-component/install/${id}`
@@ -44,8 +48,4 @@ export const getEnvironment = (id: number): Promise<any> => {
 export const getEnvironmentList = (): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}`
     return get(URL).then((response) => response)
-}
-
-export function deleteCluster(request): Promise<any> {
-    return trash(Routes.CLUSTER, request)
 }

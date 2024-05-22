@@ -1095,6 +1095,7 @@ export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
+// Remove start
 export const reloadLocation = () => {
     window.location.reload()
 }
@@ -1108,6 +1109,7 @@ export const reloadToastBody = () => {
         />
     )
 }
+// Remove end
 
 export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     const ref = useRef(null)
