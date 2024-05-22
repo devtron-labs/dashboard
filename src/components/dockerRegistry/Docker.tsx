@@ -385,18 +385,19 @@ const DockerForm = ({
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
 
-    let initialSSHAuthenticationType
-    if (remoteConnectionConfig?.sshConfig) {
-        if (remoteConnectionConfig?.sshConfig.sshPassword && remoteConnectionConfig?.sshConfig.sshAuthKey) {
-            initialSSHAuthenticationType = SSHAuthenticationType.Password_And_SSH_Private_Key
-        } else if (remoteConnectionConfig?.sshConfig.sshAuthKey) {
-            initialSSHAuthenticationType = SSHAuthenticationType.SSH_Private_Key
-        } else {
-            initialSSHAuthenticationType = SSHAuthenticationType.Password
+    const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
+        const sshConfig = remoteConnectionConfig?.sshConfig
+        if (sshConfig) {
+            if (sshConfig.sshPassword && sshConfig.sshAuthKey) {
+                return SSHAuthenticationType.Password_And_SSH_Private_Key
+            } else if (sshConfig.sshAuthKey) {
+                return SSHAuthenticationType.SSH_Private_Key
+            }
         }
-    } else {
-        initialSSHAuthenticationType = SSHAuthenticationType.Password
+        return SSHAuthenticationType.Password
     }
+
+    const initialSSHAuthenticationType = getInitialSSHAuthenticationType(remoteConnectionConfig)
 
     const [sshConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
 
@@ -1025,7 +1026,6 @@ const DockerForm = ({
             ) {
                 return false
             }
-            ;``
             if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
                 if (
                     updateWithCustomStateValidationForRemoteConnectionConfig(
