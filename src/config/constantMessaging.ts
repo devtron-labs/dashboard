@@ -9,6 +9,7 @@ export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are u
 export const DC_CLUSTER_CONFIRMATION_MESSAGE = 'Please delete environments on this cluster and try again.'
 export const DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE =
     'Some applications are currently using this container registry. Please change the container registry in use and try again.'
+// TODO Remove
 export const DC_ENVIRONMENT_CONFIRMATION_MESSAGE =
     'Please delete applications deployed on this environment and try again.'
 export const DOCKER =
@@ -32,7 +33,9 @@ export const enum DeleteComponentsName {
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
     ChartRepository = 'chart repository',
+    // TODO: Remove with cluster
     Cluster = 'cluster',
+    // TODO: Remove with cluster
     Environment = 'environment',
     GitProvider = 'git account',
     MaterialView = 'git repository',

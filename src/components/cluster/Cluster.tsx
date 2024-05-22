@@ -1,5 +1,6 @@
 import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
+    AddEditEnvironmentModal,
     showError,
     Progressing,
     ErrorScreenNotAuthorized,
@@ -19,7 +20,7 @@ import {
     getEnvironmentList,
     getCluster,
     retryClusterInstall,
-    deleteEnvironment,
+    // deleteEnvironment,
 } from './cluster.service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
@@ -43,10 +44,12 @@ import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
-import Environment from './Environment'
+
+const deleteEnvironment = noop
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig = importComponentFromFELibrary('getSSHConfig', noop, 'function')
+const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -816,6 +819,7 @@ const Cluster = ({
                         {confirmation && (
                             <DeleteComponent
                                 setDeleting={clusterDelete}
+                                // TODO: Remove and update
                                 deleteComponent={deleteEnvironment}
                                 payload={getEnvironmentPayload()}
                                 title={environment.environment_name}
@@ -864,13 +868,17 @@ const Cluster = ({
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0" ref={editLabelRef}>
-                        <Environment
+                        <AddEditEnvironmentModal
                             reload={reload}
                             cluster_name={cluster_name}
                             {...environment}
+                            environmentName={environment.environment_name}
+                            clusterId={environment.cluster_id}
+                            prometheusEndpoint={environment.prometheus_endpoint}
                             hideClusterDrawer={hideClusterDrawer}
                             isNamespaceMandatory={!isVirtualCluster}
                             isVirtual={isVirtualCluster}
+                            virtualClusterSaveUpdateApi={virtualClusterSaveUpdateApi}
                         />
                     </div>
                 </Drawer>

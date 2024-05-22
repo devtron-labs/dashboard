@@ -41,16 +41,6 @@ export const getEnvironment = (id: number): Promise<any> => {
     return get(URL)
 }
 
-export const saveEnvironment = (request, id: number): Promise<any> => {
-    const URL = `${Routes.ENVIRONMENT}`
-    return post(URL, request)
-}
-
-export const updateEnvironment = (request, id: number): Promise<any> => {
-    const URL = `${Routes.ENVIRONMENT}`
-    return put(URL, request)
-}
-
 export const getEnvironmentList = (): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}`
     return get(URL).then((response) => response)
@@ -58,8 +48,4 @@ export const getEnvironmentList = (): Promise<any> => {
 
 export function deleteCluster(request): Promise<any> {
     return trash(Routes.CLUSTER, request)
-}
-
-export function deleteEnvironment(request): Promise<any> {
-    return trash(Routes.ENVIRONMENT, request)
 }

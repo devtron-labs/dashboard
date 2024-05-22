@@ -5,6 +5,9 @@ import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
 
+/**
+ * Deprecated in favor of `DeleteDialog` from common lib
+ */
 const DeleteComponent = ({
     setDeleting,
     toggleConfirmation,
