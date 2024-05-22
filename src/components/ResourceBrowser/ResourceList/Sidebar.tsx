@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import React, { Fragment, useEffect, useRef, useState, useMemo } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
@@ -188,7 +188,10 @@ const Sidebar = ({
                     </div>
                 </button>
                 <div className="pl-20 flexbox-col">
-                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+                    {value.isExpanded &&
+                        value.data.map((_child) => (
+                            <React.Fragment key={_child.gvk.Group}>{renderChild(_child, true)}</React.Fragment>
+                        ))}
                 </div>
             </Fragment>
         )
@@ -234,32 +237,31 @@ const Sidebar = ({
         )
     }
 
-    const formatOptionLabel = useCallback(
-        (option: K8sObjectOptionType, formatOptionLabelMeta: FormatOptionLabelMeta<K8sObjectOptionType>) => {
-            return (
-                <div className="flex left column">
-                    {!formatOptionLabelMeta.inputValue ? (
-                        <span className="w-100 dc__ellipsis-right">{option.label}</span>
-                    ) : (
-                        <span
-                            className="w-100 dc__ellipsis-right"
-                            /* eslint-disable react/no-danger */
-                            dangerouslySetInnerHTML={{
-                                // sanitize necessary to prevent XSS attacks
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText: formatOptionLabelMeta.inputValue,
-                                        text: option.label,
-                                        highlightClasses: 'kind-search-select__option--highlight',
-                                    }),
-                                ),
-                            }}
-                        />
-                    )}
-                </div>
-            )
-        },
-        [],
+    const formatOptionLabel = (
+        option: K8sObjectOptionType,
+        formatOptionLabelMeta: FormatOptionLabelMeta<K8sObjectOptionType>,
+    ) => (
+        <div className="flexbox-col left column">
+            {!formatOptionLabelMeta.inputValue ? (
+                <span className="w-100 dc__ellipsis-right">{option.label}</span>
+            ) : (
+                <span
+                    className="w-100 dc__ellipsis-right"
+                    /* eslint-disable react/no-danger */
+                    dangerouslySetInnerHTML={{
+                        // sanitize necessary to prevent XSS attacks
+                        __html: DOMPurify.sanitize(
+                            highlightSearchText({
+                                searchText: formatOptionLabelMeta.inputValue,
+                                text: option.label,
+                                highlightClasses: 'kind-search-select__option--highlight',
+                            }),
+                        ),
+                    }}
+                />
+            )}
+            <span className="fs-12 cn-7 lh-18">{option.description}</span>
+        </div>
     )
 
     const getOptionLabel = (option: K8sObjectOptionType) => {

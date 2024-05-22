@@ -193,6 +193,7 @@ export interface ConnectingToClusterStateProps {
 }
 
 export interface K8sObjectOptionType extends OptionType {
+    description: string
     dataset: {
         group: string
         version: string

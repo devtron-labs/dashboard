@@ -314,7 +314,11 @@ const ResourceList = () => {
                     </div>
                 </div>
                 {tabs.length > 0 &&
-                    fixedTabComponents.map((component, index) => renderInvisible(component, !tabs[index].isSelected))}
+                    fixedTabComponents.map((component, index) => (
+                        <React.Fragment key={component.key}>
+                            {renderInvisible(component, !tabs[index].isSelected)}
+                        </React.Fragment>
+                    ))}
                 {dynamicActiveTab && renderDynamicTabComponent()}
             </>
         )

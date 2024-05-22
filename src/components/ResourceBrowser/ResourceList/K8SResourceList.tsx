@@ -166,7 +166,8 @@ export const K8SResourceList = ({
             default:
                 break
         }
-        setFilteredResourceList(resourceList.data)
+        resourceList.data = resourceList.data.map((data, index) => ({ id: index, ...data }))
+        handleFilterChanges(searchText, resourceList)
     }, [resourceList])
 
     const setSearchText = (text: string) => {
@@ -225,16 +226,16 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => {
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
         return (
             <div
-                key={`row--${index}-${resourceData.name}`}
+                key={`${resourceData.id}-${resourceData.name}`}
                 className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
@@ -280,7 +281,7 @@ export const K8SResourceList = ({
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
@@ -394,7 +395,7 @@ export const K8SResourceList = ({
                 </div>
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
-                    .map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    .map((clusterData) => renderResourceRow(clusterData))}
             </div>
         )
     }
