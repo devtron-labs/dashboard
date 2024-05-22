@@ -240,6 +240,7 @@ const DynamicTabs = ({
         if (option) {
             setSelectedTab(option)
             setIsMenuOpen(false)
+            markTabActiveById(option.id)
             push(option.url)
         }
     }
