@@ -84,6 +84,18 @@ enum CERTTYPE {
     SECURE_WITH_CERT = 'secure-with-cert',
 }
 
+const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
+    const sshConfig = remoteConnectionConfig?.sshConfig
+    if (sshConfig) {
+        if (sshConfig.sshPassword && sshConfig.sshAuthKey) {
+            return SSHAuthenticationType.Password_And_SSH_Private_Key
+        } else if (sshConfig.sshAuthKey) {
+            return SSHAuthenticationType.SSH_Private_Key
+        }
+    }
+    return SSHAuthenticationType.Password
+}
+
 export default function Docker({ ...props }) {
     const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
     const [clusterOption, setClusterOptions] = useState([])
@@ -384,18 +396,6 @@ const DockerForm = ({
         _remoteConnectionMethod = remoteConnectionConfig?.connectionMethod
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
-
-    const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
-        const sshConfig = remoteConnectionConfig?.sshConfig
-        if (sshConfig) {
-            if (sshConfig.sshPassword && sshConfig.sshAuthKey) {
-                return SSHAuthenticationType.Password_And_SSH_Private_Key
-            } else if (sshConfig.sshAuthKey) {
-                return SSHAuthenticationType.SSH_Private_Key
-            }
-        }
-        return SSHAuthenticationType.Password
-    }
 
     const initialSSHAuthenticationType = getInitialSSHAuthenticationType(remoteConnectionConfig)
 
