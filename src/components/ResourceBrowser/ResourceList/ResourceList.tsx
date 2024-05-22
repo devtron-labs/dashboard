@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     getUserRole,
     BreadCrumb,
@@ -35,6 +35,7 @@ const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
     const { replace } = useHistory()
     const { url } = useRouteMatch()
+    const location = useLocation()
     const {
         tabs,
         initTabs,
@@ -86,6 +87,15 @@ const ResourceList = () => {
             },
         [clusterId, clusterOptions],
     )
+
+    useEffectAfterMount(() => {
+        const matchedUrlTab = tabs.find((tab) => tab.url.includes(location.pathname))
+        if (!matchedUrlTab || matchedUrlTab.isSelected) {
+            return
+        }
+        markTabActiveById(matchedUrlTab.id)
+        replace(matchedUrlTab.url)
+    }, [location.pathname])
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
