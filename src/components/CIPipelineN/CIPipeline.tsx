@@ -17,11 +17,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import {
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -602,11 +598,14 @@ export default function CIPipeline({
         if (!isJobView) {
             let ciPipelineType: CIPipelineBuildType = CIPipelineBuildType.CI_BUILD
             if (ciPipeline.isExternal) {
-                ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
+                ciPipelineType = CIPipelineBuildType.CI_LINKED
             } else if (isJobCI) {
                 ciPipelineType = CIPipelineBuildType.CI_JOB
             }
             _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
+        }
+        if (isJobView) {
+            _ciPipeline.pipelineType = CIPipelineBuildType.CI_BUILD
         }
         saveCIPipeline(
             {

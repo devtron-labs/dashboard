@@ -986,14 +986,13 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.82":
-  version "0.0.82"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.82.tgz#ff09c0c677eb8022eb1a4349b2ddbd73792dd7f5"
-  integrity sha512-mbgyK3I45iNcu0OkzPEikj1yO1IDJsHR816x+XokZnw2wqdCTuQf9/g9Qlyl0ObAOZPZrKzuCvSt56iB/IQE4w==
+"@devtron-labs/devtron-fe-common-lib@0.0.83":
+  version "0.0.83"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.83.tgz#c4105a78da11b069fe8992a0e897158481d28bbf"
+  integrity sha512-2Q7AXrC2hLaSEiMyIcVcyOuyN7RxEcqu6VDkf0XQZLk81D0jABhdUGiczvNW+Z0g8g3WRDBfVdxIfNdH3BCxNA==
   dependencies:
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
-    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "^2.4.1"
 
@@ -5142,10 +5141,10 @@ moment@>=1.6.0, moment@^2.29.4:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
-monaco-editor@0.45.0:
-  version "0.45.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.45.0.tgz#6939123a6254aea9fea2d647697f846306dd4448"
-  integrity sha512-mjv1G1ZzfEE3k9HZN0dQ2olMdwIfaeAAjFiwNprLfYNRSz7ctv9XuCT7gPtBGrMUeV1/iZzYKj17Khu1hxoHOA==
+monaco-editor@0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.44.0.tgz#3c0fe3655923bbf7dd647057302070b5095b6c59"
+  integrity sha512-5SmjNStN6bSuSE5WPT2ZV+iYn1/yI9sd4Igtk23ChvqB7kDk9lZbB9F5frsuvpB+2njdIeGGFf2G4gbE6rCC9Q==
 
 monaco-languageserver-types@^0.3.0:
   version "0.3.3"
@@ -5710,13 +5709,6 @@ react-moment-proptypes@^1.6.0:
   integrity sha512-Er940DxWoObfIqPrZNfwXKugjxMIuk1LAuEzn23gytzV6hKS/sw108wibi9QubfMN4h+nrlje8eUCSbQRJo2fQ==
   dependencies:
     moment ">=1.6.0"
-
-react-monaco-editor@^0.54.0:
-  version "0.54.0"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
-  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
-  dependencies:
-    prop-types "^15.8.1"
 
 react-monaco-editor@^0.55.0:
   version "0.55.0"

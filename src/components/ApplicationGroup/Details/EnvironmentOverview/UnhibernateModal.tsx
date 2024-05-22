@@ -4,7 +4,7 @@ import {
     VisibleModal,
     showError,
     stopPropagation,
-    ButtonWithLoader
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
@@ -16,6 +16,7 @@ const ResistantInput = importComponentFromFELibrary('ResistantInput')
 
 export const UnhibernateModal = ({
     selectedAppIds,
+    appDetailsList,
     envName,
     envId,
     setOpenUnhiberateModal,
@@ -23,6 +24,7 @@ export const UnhibernateModal = ({
     setShowHibernateStatusDrawer,
     showDefaultDrawer,
     isDeploymentLoading,
+    httpProtocol,
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -30,17 +32,20 @@ export const UnhibernateModal = ({
     const unhibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
-        manageApps(selectedAppIds, Number(envId), envName, 'unhibernate')
+        setOpenUnhiberateModal(false)
+        setShowHibernateStatusDrawer({
+            hibernationOperation: false,
+            showStatus: false,
+            inProgress: true,
+        })
+        manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'unhibernate', httpProtocol)
             .then((res) => {
-                setOpenUnhiberateModal(false)
-                setAppStatusResponseList(res?.result?.response)
+                setAppStatusResponseList(res)
                 setShowHibernateStatusDrawer({
                     hibernationOperation: false,
                     showStatus: true,
+                    inProgress: false,
                 })
-            })
-            .catch((err) => {
-                showError(err)
             })
             .finally(() => {
                 setLoader(false)
@@ -77,7 +82,9 @@ export const UnhibernateModal = ({
         <VisibleModal close={closeModal} onEscape={closeModal} className="generate-token-modal">
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentLoading ? (
-                     <div className="mh-320 flex"><Progressing pageLoader /></div>
+                    <div className="mh-320 flex">
+                        <Progressing pageLoader />
+                    </div>
                 ) : (
                     <>
                         <div className="flexbox-col dc__gap-12">

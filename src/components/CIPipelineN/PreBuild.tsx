@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    PluginType,
+    ScriptType,
+    VariableType,
+    RefVariableType,
+    Progressing,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -19,7 +26,7 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
+export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }) => {
     const {
         formData,
         isCdPipeline,
@@ -223,5 +230,5 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         )
     }
 
-    return renderComponent()
+    return <React.Fragment key={activeStageName}>{renderComponent()}</React.Fragment>
 }

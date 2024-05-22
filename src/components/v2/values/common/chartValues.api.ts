@@ -1,8 +1,13 @@
 import React from 'react'
-import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Teams,
+    sortCallback,
+    getTeamListMin,
+    EnvironmentListHelmResult,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../config'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../../services/service'
-import { EnvironmentListHelmResult } from '../../../../services/service.types'
 import {
     generateHelmManifest,
     getChartValuesCategorizedListParsed,

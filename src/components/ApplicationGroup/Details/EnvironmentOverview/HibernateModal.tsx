@@ -1,4 +1,11 @@
-import { VisibleModal, showError, stopPropagation, ButtonWithLoader, MODAL_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    VisibleModal,
+    showError,
+    stopPropagation,
+    ButtonWithLoader,
+    MODAL_TYPE,
+    Progressing,
+} from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
@@ -9,6 +16,7 @@ const ResistantInput = importComponentFromFELibrary('ResistantInput')
 
 export const HibernateModal = ({
     selectedAppIds,
+    appDetailsList,
     envName,
     envId,
     setOpenHiberateModal,
@@ -16,23 +24,27 @@ export const HibernateModal = ({
     setShowHibernateStatusDrawer,
     isDeploymentLoading,
     showDefaultDrawer,
+    httpProtocol,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
     const hibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
-        manageApps(selectedAppIds, Number(envId), envName, 'hibernate')
+        setOpenHiberateModal(false)
+        setShowHibernateStatusDrawer({
+            hibernationOperation: true,
+            showStatus: false,
+            inProgress: true,
+        })
+        manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'hibernate', httpProtocol)
             .then((res) => {
-                setAppStatusResponseList(res?.result?.response)
-                setOpenHiberateModal(false)
+                setAppStatusResponseList(res)
                 setShowHibernateStatusDrawer({
                     hibernationOperation: true,
                     showStatus: true,
+                    inProgress: false,
                 })
-            })
-            .catch((err) => {
-                showError(err)
             })
             .finally(() => {
                 setLoader(false)

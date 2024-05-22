@@ -67,6 +67,7 @@ export default function EnvironmentOverview({
     const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
         hibernationOperation: true,
         showStatus: false,
+        inProgress: false,
     })
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
@@ -83,9 +84,28 @@ export default function EnvironmentOverview({
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
-        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+        Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    // NOTE: there is a slim chance that the api is called before httpProtocol is set
+    const httpProtocol = useRef('')
+
+    useEffect(() => {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                const protocol = entry.nextHopProtocol
+                if (protocol && entry.initiatorType === 'fetch') {
+                    httpProtocol.current = protocol
+                    observer.disconnect()
+                }
+            })
+        })
+
+        observer.observe({ type: 'resource', buffered: true })
+        return () => {
+            observer.disconnect()
+        }
+    }, [])
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -116,7 +136,13 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (
+            processDeploymentWindowAppGroupOverviewMap &&
+            (openHiberateModal ||
+                openUnhiberateModal ||
+                showHibernateStatusDrawer.showStatus ||
+                location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
+        ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
@@ -242,6 +268,7 @@ export default function EnvironmentOverview({
         setShowHibernateStatusDrawer({
             ...showHibernateStatusDrawer,
             showStatus: false,
+            inProgress: false,
         })
     }
 
@@ -474,7 +501,7 @@ export default function EnvironmentOverview({
                                     onClick={onClickShowBulkRestartModal}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
-                                     <RotateIcon className="icon-dim-12 mr-4 scn-9" />
+                                    <RotateIcon className="icon-dim-12 mr-4 scn-9" />
                                     Restart Workload
                                 </button>
                             </div>
@@ -540,6 +567,7 @@ export default function EnvironmentOverview({
             {openHiberateModal && (
                 <HibernateModal
                     selectedAppIds={selectedAppIds}
+                    appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
                     setOpenHiberateModal={setOpenHiberateModal}
@@ -547,11 +575,13 @@ export default function EnvironmentOverview({
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                     isDeploymentLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
+                    httpProtocol={httpProtocol.current}
                 />
             )}
             {openUnhiberateModal && (
                 <UnhibernateModal
                     selectedAppIds={selectedAppIds}
+                    appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
                     setOpenUnhiberateModal={setOpenUnhiberateModal}
@@ -559,6 +589,7 @@ export default function EnvironmentOverview({
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
                     isDeploymentLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
+                    httpProtocol={httpProtocol.current}
                 />
             )}
             {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
@@ -569,15 +600,17 @@ export default function EnvironmentOverview({
                     setRestartLoader={setRestartLoader}
                     restartLoader={restartLoader}
                     hibernateInfoMap={hibernateInfoMap}
+                    httpProtocol={httpProtocol.current}
                 />
             )}
-            {showHibernateStatusDrawer.showStatus && (
+            {(showHibernateStatusDrawer.showStatus || showHibernateStatusDrawer.inProgress) && (
                 <HibernateStatusListDrawer
                     closePopup={closePopup}
                     isLoading={false}
+                    envName={appListData.environment}
                     responseList={appStatusResponseList}
                     getAppListData={getAppListData}
-                    isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
+                    showHibernateStatusDrawer={showHibernateStatusDrawer}
                     hibernateInfoMap={hibernateInfoMap}
                     isDeploymentLoading={isDeploymentLoading}
                 />

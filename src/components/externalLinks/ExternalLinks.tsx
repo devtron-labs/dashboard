@@ -1,5 +1,12 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { showError, Progressing, ErrorScreenManager, InfoIconTippy, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    InfoIconTippy,
+    useMainContext,
+    getClusterListMin,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
@@ -13,7 +20,6 @@ import {
     IdentifierOptionType,
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
-import { getClusterListMin } from '../../services/service'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
@@ -459,9 +465,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
         if (errorStatusCode > 0) {
             return (
                 <div className="error-screen-wrapper flex column h-100">
-                    <ErrorScreenManager
-                        code={errorStatusCode}
-                    />
+                    <ErrorScreenManager code={errorStatusCode} />
                 </div>
             )
         }
