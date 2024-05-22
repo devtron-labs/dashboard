@@ -74,6 +74,7 @@ const NavigationList = [
                   href: URLS.RELEASES,
                   isAvailableInEA: false,
                   markOnlyForSuperAdmin: true,
+                  forceHideEnvKey: 'HIDE_RELEASES',
               },
           ]
         : []),

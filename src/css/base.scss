@@ -2405,6 +2405,10 @@ button.anchor {
     max-width: 1068px;
 }
 
+.dc__mxw-1400 {
+    max-width: 1400px;
+}
+
 .dc__mxw-180 {
     max-width: 180px;
 }
@@ -2901,6 +2905,10 @@ textarea,
 
 .mw-24 {
     min-width: 24px !important;
+}
+
+.mw-32 {
+    min-width: 32px !important;
 }
 
 .mw-36 {
@@ -4570,4 +4578,3 @@ textarea::placeholder {
 .dc__outline-n1 {
     outline: 1px solid var(--N100);
 }
-
