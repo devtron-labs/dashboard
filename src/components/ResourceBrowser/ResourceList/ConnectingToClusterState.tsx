@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
+import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT, CONNECTION_TIMEOUT_TIME } from '../Constants'
 import { ConnectingToClusterStateProps, URLParams } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
@@ -18,7 +18,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)
-    let progressTimer = null
+    const progressTimerRef = useRef(null)
 
     const resetStates = () => {
         setInfoText(TRYING_TO_CONNECT)
@@ -27,18 +27,10 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     }
 
     const initProgressTimer = () => {
-        if (progressTimer) {
-            clearTimeout(progressTimer)
-        }
-
-        progressTimer = setTimeout(() => {
+        progressTimerRef.current = setTimeout(() => {
             setInfoText(TAKING_LONGER_TO_CONNECT)
             setShowCancel(true)
-
-            if (progressTimer) {
-                clearTimeout(progressTimer)
-            }
-        }, 10000)
+        }, CONNECTION_TIMEOUT_TIME)
     }
 
     useEffect(() => {
@@ -51,12 +43,10 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
             initProgressTimer()
         }
 
-        return (): void => {
-            if (progressTimer) {
-                clearTimeout(progressTimer)
-            }
-        }
+        return () => clearTimeout(progressTimerRef.current)
     }, [clusterId, selectedCluster])
+
+    useEffect(() => () => clearTimeout(progressTimerRef.current), [])
 
     const renderInfo = (heading: string, _infoText: string) => {
         return (

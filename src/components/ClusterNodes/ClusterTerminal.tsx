@@ -49,6 +49,7 @@ import {
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { URLParams } from '../ResourceBrowser/Types'
 
 let clusterTimeOut
 
@@ -60,7 +61,7 @@ const ClusterTerminal = ({
     taints,
     updateTerminalTabUrl,
 }: ClusterTerminalType) => {
-    const { nodeType } = useParams<{ [key: string]: string }>()
+    const { nodeType } = useParams<URLParams>()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
@@ -966,7 +967,7 @@ node-details-full-screen
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: selectedTabIndex === 0,
+                isTerminalTab: selectedTabIndex === 0 && nodeType === AppDetailsTabs.terminal,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },

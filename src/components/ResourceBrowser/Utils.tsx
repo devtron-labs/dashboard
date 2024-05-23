@@ -277,7 +277,6 @@ export const getTabsBasedOnRole = (
     return tabs
 }
 
-/* TODO: add types */
 export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
     if (!resource) {
         return null

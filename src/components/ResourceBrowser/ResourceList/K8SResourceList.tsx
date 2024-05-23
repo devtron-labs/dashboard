@@ -193,8 +193,8 @@ export const K8SResourceList = ({
             kind = _kind
             resourceName = _resourceName
         } else {
-            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
-            kind = nodeType
+            kind = selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             resourceName = name
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }

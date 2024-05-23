@@ -29,8 +29,10 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 
     const onClose = (): void => {
-        // eslint-disable-next-line no-unused-expressions
-        !loader && closePopup(true)
+        if (loader) {
+            return
+        }
+        closePopup(true)
     }
 
     const escKeyPressHandler = (evt): void => {

@@ -285,9 +285,9 @@ const ResourceList = () => {
             : []),
     ]
 
-    const renderInvisible = (component: React.ReactNode, hide: boolean) => {
-        return <div className={hide ? `hidden` : ''}>{component}</div>
-    }
+    const renderInvisible = (component: React.ReactNode, hide: boolean) => (
+        <div className={hide ? 'dc__hide-section' : ''}>{component}</div>
+    )
 
     const renderMainBody = () => {
         if (error) {

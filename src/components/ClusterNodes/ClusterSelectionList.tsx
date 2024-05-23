@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, Link } from 'react-router-dom'
 import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { handleUTCTime } from '../common'
@@ -101,12 +101,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
     }
 
-    const selectCluster = (event: React.MouseEvent<HTMLButtonElement>): void => {
-        const { value } = event.currentTarget.dataset
-        const url = `${URLS.RESOURCE_BROWSER}/${value}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-        history.push(url)
-    }
-
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
             return null
@@ -123,17 +117,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
-                <div data-testid={`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
-                    <button
-                        type="button"
-                        data-label={clusterData.name}
-                        data-value={clusterData.id}
-                        className="dc__unset-button-styles"
-                        onClick={selectCluster}
-                        aria-label={`Select cluster ${clusterData.name}`}
+                <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
+                    <Link
+                        className="dc__ellipsis-right dc__no-decor"
+                        to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
                     >
                         {clusterData.name}
-                    </button>
+                    </Link>
                     <TerminalIcon
                         data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"

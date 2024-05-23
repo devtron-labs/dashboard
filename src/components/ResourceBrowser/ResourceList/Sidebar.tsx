@@ -321,7 +321,7 @@ const Sidebar = ({
                             group={SIDEBAR_KEYS.eventGVK.Group}
                             version={SIDEBAR_KEYS.eventGVK.Version}
                             kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            namespaced={false}
+                            namespaced
                             isSelected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         />

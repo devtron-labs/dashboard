@@ -50,7 +50,7 @@ const K8SResourceTabComponent = ({
 
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
-    if (loading || error) {
+    if (loading || (error && error.code !== 403)) {
         return (
             <ConnectingToClusterState
                 loader={loading}

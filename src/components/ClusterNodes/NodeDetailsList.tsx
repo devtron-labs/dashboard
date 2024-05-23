@@ -25,6 +25,7 @@ import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
+import { URLParams } from '../ResourceBrowser/Types'
 import './clusterNodes.scss'
 
 export default function NodeDetailsList({
@@ -34,7 +35,7 @@ export default function NodeDetailsList({
     showStaleDataWarning,
     markTerminalTabActive,
 }) {
-    const { clusterId, nodeType } = useParams<{ [key: string]: string }>()
+    const { clusterId, nodeType } = useParams<URLParams>()
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
