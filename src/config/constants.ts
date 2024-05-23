@@ -932,6 +932,9 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
     'Enforced from Global Configurations. Go to Global Configurations to change.'
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {

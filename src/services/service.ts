@@ -400,6 +400,7 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
                     isInstalled: true,
                     isConfigured: response.result.exists,
                     allowCustomRepository: response.result.allowCustomRepository,
+                    authMode: response.result.authMode,
                 },
             }
         })
