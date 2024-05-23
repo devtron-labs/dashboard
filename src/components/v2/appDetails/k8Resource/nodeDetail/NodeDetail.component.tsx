@@ -420,12 +420,7 @@ const NodeDetailComponent = ({
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div
-                            className="resource-node-wrapper"
-                            style={{
-                                minHeight: isResourceBrowserView ? '200px' : '',
-                            }}
-                        >
+                        <div className="flex-grow-1">
                             <LogsComponent
                                 key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}

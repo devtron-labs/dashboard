@@ -453,7 +453,7 @@ const ManifestComponent = ({
     }
 
     return isDeleted ? (
-        <div>
+        <div className="h-100">
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}

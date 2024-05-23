@@ -237,7 +237,7 @@ const ResourceList = () => {
                 markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             />
         ) : (
-            <div className="resource-details-container">
+            <div className="resource-details-container flexbox-col">
                 <NodeDetailComponent
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}

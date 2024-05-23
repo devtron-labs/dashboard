@@ -195,23 +195,6 @@
             }
         }
     }
-
-    .manifest-container,
-    .events-table-container {
-        height: calc(100vh - 118px);
-    }
-
-    .log-viewer-container {
-        height: calc(100vh - 150px);
-    }
-
-    .terminal-container {
-        height: calc(100vh - 185px);
-
-        &.resource-terminal-connected {
-            height: calc(100vh - 175px);
-        }
-    }
 }
 
 .create-resource-container {

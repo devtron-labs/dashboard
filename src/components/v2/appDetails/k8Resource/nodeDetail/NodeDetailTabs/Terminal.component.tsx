@@ -254,13 +254,11 @@ const TerminalComponent = ({
     if (isDeleted || !selectedContainerName.length) {
         return (
             showTerminal && (
-                <div>
-                    <MessageUI
-                        msg="This resource no longer exists"
-                        size={32}
-                        minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-                    />
-                </div>
+                <MessageUI
+                    msg="This resource no longer exists"
+                    size={32}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+                />
             )
         )
     }

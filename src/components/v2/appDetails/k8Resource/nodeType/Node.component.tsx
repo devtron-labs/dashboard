@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
@@ -207,7 +207,7 @@ const NodeComponent = ({
                                     <div className="" key={node.name}>
                                         {text}
                                     </div>
-                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4" onClick={stopPropagation}>
                                         <ClipboardButton content={text} />
                                     </div>
                                 </div>
@@ -332,7 +332,7 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8"><ClipboardButton content={node.name} /></div>
+                                                <div className="pl-8 pr-8" onClick={stopPropagation}><ClipboardButton content={node.name} /></div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${

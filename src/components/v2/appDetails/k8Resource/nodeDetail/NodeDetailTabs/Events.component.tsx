@@ -71,18 +71,13 @@ const EventsComponent = ({
     }, [params.podName, params.node, params.nodeType, params.namespace])
 
     return (
-        <div
-            className="events-table-container"
-            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
-        >
+        <div className="flex-grow-1">
             {isDeleted ? (
-                <div>
-                    <MessageUI
-                        msg={MESSAGING_UI.NO_RESOURCE}
-                        size={32}
-                        minHeight={isResourceBrowserView ? '200px' : ''}
-                    />
-                </div>
+                <MessageUI
+                    msg={MESSAGING_UI.NO_RESOURCE}
+                    size={32}
+                    minHeight={isResourceBrowserView ? '200px' : ''}
+                />
             ) : (
                 (isResourceBrowserView || (pods && pods.length > 0)) && (
                     <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
