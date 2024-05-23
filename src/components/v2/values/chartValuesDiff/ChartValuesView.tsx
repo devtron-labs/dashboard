@@ -186,12 +186,13 @@ const ChartValuesView = ({
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
-            if (result.isInstalled && !result.isConfigured) {
-                dispatch({
-                    type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-                    payload: true,
-                })
-            }
+            dispatch({
+                type: ChartValuesViewActionTypes.updateGitOpsConfiguration,
+                payload: {
+                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured,
+                    authMode: result.authMode,
+                },
+            })
             setAllowedCustomBool(result.allowCustomRepository === true)
         } catch (error) {}
     }

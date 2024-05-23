@@ -11,6 +11,7 @@ import {
     CustomInput,
     Drawer,
     TippyTheme,
+    GitOpsAuthModeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -312,9 +313,10 @@ export const GitOpsDrawer = ({
     isDrawerOpen,
     handleDrawerState,
     showRepoSelector,
-    allowedCustomBool
+    allowedCustomBool,
 }: gitOpsDrawerType): JSX.Element => {
-    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    // TODO: Might move this check to helpers
+    const [selectedRepoType, setSelectedRepoType] = useState(commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE)
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
     const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
@@ -404,6 +406,7 @@ export const GitOpsDrawer = ({
                                     repoURL={repoURL}
                                     selectedRepoType={selectedRepoType}
                                     staleData={staleData}
+                                    authMode={commonState.authMode}
                                 />
                             </div>
                         </div>

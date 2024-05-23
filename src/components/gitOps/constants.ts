@@ -1,4 +1,4 @@
-import { GitProvider } from './gitops.type'
+import { GitOpsState, GitProvider } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -24,7 +24,7 @@ export const DefaultGitOpsConfig = {
     active: true,
 }
 
-export const DefaultShortGitOps = {
+export const DefaultShortGitOps: GitOpsState['isError'] = {
     host: '',
     username: '',
     token: '',
@@ -33,6 +33,8 @@ export const DefaultShortGitOps = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
 }
 
 export const LinkAndLabelSpec = {

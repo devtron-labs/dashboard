@@ -1,4 +1,4 @@
-import { InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import { GitOpsAuthModeType, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import React, { FunctionComponent } from 'react'
 import './gitops.scss'
 import { repoType } from '../../config/constants'
@@ -13,6 +13,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
     repoURL,
     selectedRepoType,
     setSelectedRepoType,
+    authMode,
 }: UserGitRepoProps) => {
     const repoTypeChange = () => {
         const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
@@ -72,24 +73,30 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
                     Application deployment states are saved as manifest in a Git repository. ArgoCD uses these manifests
                     to sync with your live Kubernetes cluster.
                 </div>
-                <RadioGroup
-                    className="radio-group-no-border mt-16"
-                    name="trigger-type"
-                    value={staleData ? repoType.DEFAULT : selectedRepoType}
-                    onChange={repoTypeChange}
-                >
-                    <div>
-                        <RadioGroupItem value={repoType.DEFAULT} dataTestId="auto-create-repository">Auto-create repository</RadioGroupItem>
-                        <div className="ml-26 cn-7 fs-12 fw-4">
-                            Repository will be created automatically using application name
+
+                {authMode !== GitOpsAuthModeType.SSH && (
+                    <RadioGroup
+                        className="radio-group-no-border mt-16"
+                        name="trigger-type"
+                        value={staleData ? repoType.DEFAULT : selectedRepoType}
+                        onChange={repoTypeChange}
+                    >
+                        <div>
+                            <RadioGroupItem value={repoType.DEFAULT} dataTestId="auto-create-repository">
+                                Auto-create repository
+                            </RadioGroupItem>
+                            <div className="ml-26 cn-7 fs-12 fw-4">
+                                Repository will be created automatically using application name
+                            </div>
                         </div>
-                    </div>
-                    <div className="pt-12">
-                        <RadioGroupItem value={!staleData ? repoType.CONFIGURE : ''} disabled={staleData}>
-                            Commit manifest to a desired repository.
-                        </RadioGroupItem>
-                    </div>
-                </RadioGroup>
+                        <div className="pt-12">
+                            <RadioGroupItem value={!staleData ? repoType.CONFIGURE : ''} disabled={staleData}>
+                                Commit manifest to a desired repository.
+                            </RadioGroupItem>
+                        </div>
+                    </RadioGroup>
+                )}
+
                 {selectedRepoType === repoType.CONFIGURE && !staleData && InputUrlBox()}
                 {staleData && (
                     <div className="pt-16">

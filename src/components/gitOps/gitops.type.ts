@@ -1,22 +1,28 @@
 import { RouteComponentProps } from 'react-router'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
+import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 
-export type GitOpsFieldKeyType =
-    | 'host'
-    | 'username'
-    | 'token'
-    | 'gitHubOrgId'
-    | 'azureProjectName'
-    | 'gitLabGroupId'
-    | 'bitBucketWorkspaceId'
-    | 'bitBucketProjectKey'
 export type GitOpsOrganisationIdType =
     | 'gitHubOrgId'
     | 'gitLabGroupId'
     | 'azureProjectName'
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
-export type GitProviderType = 'GITHUB' | 'GITLAB' | 'AZURE_DEVOPS' | 'BITBUCKET_CLOUD' | 'BITBUCKET_DC'
+
+export enum GitProvider {
+    GITLAB = 'GITLAB',
+    GITHUB = 'GITHUB',
+    AZURE_DEVOPS = 'AZURE_DEVOPS',
+    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
+    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
+}
+
+export type GitProviderType =
+    | 'GITHUB'
+    | 'GITLAB'
+    | 'AZURE_DEVOPS'
+    | 'BITBUCKET_CLOUD'
+    | 'BITBUCKET_DC'
+    | GitProvider.AWS_CODE_COMMIT
 
 export interface CustomGitOpsState {
     username: {
@@ -29,19 +35,11 @@ export interface CustomGitOpsState {
     }
 }
 
-export enum GitProvider {
-    GITLAB = 'GITLAB',
-    GITHUB = 'GITHUB',
-    AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-}
-
-export interface GitOpsConfig {
+export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username'> {
     id: number
     provider: GitProviderType
     host: string
     token: string
-    username?: string
     active: boolean
     gitLabGroupId: string
     gitHubOrgId: string
@@ -51,16 +49,38 @@ export interface GitOpsConfig {
 }
 
 export interface GitOpsState {
+    /**
+     * To define loading, error, logical state of component
+     */
     view: string
+    /**
+     * For error screen manager
+     */
     statusCode: number
+    /**
+     * Currently selected tab
+     */
     providerTab: GitProviderType
+    /**
+     * API response list of all providers with their config
+     */
     gitList: GitOpsConfig[]
+    /**
+     * The details of the selected git provider
+     */
     form: GitOpsConfig
     isFormEdited: boolean
+    /**
+     * To show triangular check on the selected git provider
+     * Will be only changed after API call
+     */
     lastActiveGitOp: undefined | GitOpsConfig
     saveLoading: boolean
     validateLoading: boolean
     isBitbucketCloud: boolean
+    /**
+     * Error states for input fields
+     */
     isError: {
         host: string
         username: string
@@ -70,12 +90,20 @@ export interface GitOpsState {
         azureProjectName: string
         bitBucketWorkspaceId: string
         bitBucketProjectKey: string
+        sshHost: string
+        sshKey: string
     }
     validatedTime: string
     validationError: GitOpsConfig[]
+    // TODO: Should be VALIDATION_STATUS, but can't change as of now due to service default to '', connect with @vivek
     validationStatus: string
     deleteRepoError: boolean
+    /**
+     * To show validation response of url of selected git provider
+     * Like using http instead of https
+     */
     isUrlValidationError: boolean
+    // FIXME: Should be repoType from ../../config
     selectedRepoType: string
     validationSkipped: boolean
     allowCustomGitRepo: boolean
@@ -86,7 +114,7 @@ export interface GitOpsProps extends RouteComponentProps<{}> {
 }
 
 export interface UserGitRepoConfigurationProps {
-    respondOnSuccess: (redirection?:boolean) => void
+    respondOnSuccess: (redirection?: boolean) => void
     appId: number
     reloadAppConfig?: () => void
 }
@@ -96,6 +124,7 @@ export interface UserGitRepoProps {
     repoURL: string
     selectedRepoType: string
     staleData?: boolean
+    authMode: GitOpsAuthModeType
 }
 
 export interface BitbucketCloudAndServerToggleSectionPropsType {
