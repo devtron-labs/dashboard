@@ -603,15 +603,24 @@ a:focus {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
 
-.dc__ellipsis-right__2nd-line {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    word-break: break-word;
+    &__2nd-line {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-break: break-word;
+    }
+
+    &__3rd-line {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-break: break-word;
+    }
 }
 
 .dc__ellipsis-left {

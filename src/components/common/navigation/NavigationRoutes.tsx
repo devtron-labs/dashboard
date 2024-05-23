@@ -58,7 +58,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const Releases = importComponentFromFELibrary('Releases', null, 'function')
+const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -417,20 +417,31 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_RELEASES && Releases
+                                        // TODO Eshank: Update flag name?
+                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
-                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                  <Route
+                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                  >
                                                       <ImageSelectionUtilityProvider
                                                           value={{
                                                               gitCommitInfoGeneric: GitCommitInfoGeneric,
                                                               getModuleInfo,
                                                           }}
                                                       >
-                                                          <Releases />
+                                                          <SoftwareDistributionHub />
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []),
+                                            : [
+                                                  <Route
+                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                  >
+                                                      <h1>Distribution Hub</h1>
+                                                  </Route>,
+                                              ]),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

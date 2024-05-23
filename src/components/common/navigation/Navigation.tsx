@@ -31,7 +31,7 @@ import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
+const showSoftwareDistributionHub = !!importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 const NavigationList = [
     {
@@ -63,21 +63,19 @@ const NavigationList = [
         isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
-    ...(showReleases
-        ? [
-              {
-                  title: 'Releases',
-                  dataTestId: 'click-on-releases',
-                  type: 'link',
-                  iconClass: 'nav-short-env',
-                  icon: ReleasesIcon,
-                  href: URLS.RELEASES,
-                  isAvailableInEA: false,
-                  markOnlyForSuperAdmin: true,
-                  forceHideEnvKey: 'HIDE_RELEASES',
-              },
-          ]
-        : []),
+    {
+        // TODO: Update the title post confirmation with product
+        title: 'Releases',
+        dataTestId: 'click-on-releases',
+        type: 'link',
+        iconClass: 'nav-short-env',
+        icon: ReleasesIcon,
+        href: URLS.SOFTWARE_DISTRIBUTION_HUB,
+        isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
+        forceHideEnvKey: 'HIDE_RELEASES',
+        hideNav: !showSoftwareDistributionHub,
+    },
     {
         title: 'Deployment Groups',
         dataTestId: 'click-on-deployment-groups',
