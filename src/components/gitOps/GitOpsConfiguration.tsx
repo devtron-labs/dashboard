@@ -21,6 +21,7 @@ import {
     GitOpsOrganisationIdType,
     GitProvider,
     BitbucketCloudAndServerToggleSectionPropsType,
+    GitProviderTabProps,
 } from './gitops.type'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
@@ -63,31 +64,8 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     }
 }
 
-const GitProviderTab: React.FC<{
-    providerTab: string
-    /**
-     * Acts as handleChange on radio tab
-     */
-    handleGitopsTab: (e) => void
-    /**
-     * Based on this would showCheck of previous selected on tab
-     */
-    lastActiveGitOp: undefined | GitOpsConfig
-    /**
-     * Value of current tab
-     */
-    provider: string
-    /**
-     * The name to be displayed on tab and would be using that in switch case of GitProviderTabIcons
-     */
-    gitops: string
-    /**
-     * If true would disable radio tab
-     */
-    saveLoading: boolean
-    datatestid: string
-}> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading, datatestid }) => {
-    const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === 'BITBUCKET_CLOUD'
+const GitProviderTab: React.FC<GitProviderTabProps> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading, datatestid }) => {
+    const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
 
     return (
@@ -232,7 +210,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                const bitbucketCloudConfig = response.result?.find((item) => item.provider === 'BITBUCKET_CLOUD')
+                const bitbucketCloudConfig = response.result?.find((item) => item.provider === GitProvider.BITBUCKET_CLOUD)
                 const bitbucketDCConfig = response.result?.find((item) => item.provider === 'BITBUCKET_DC')
                 const isBitbucketCloud =
                     (!bitbucketCloudConfig && !bitbucketDCConfig) ||
@@ -277,8 +255,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const newGitOps = event.target.value
-        const bitbucketGitops = this.state.isBitbucketCloud ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC'
-        const gitListKey = event.target.value !== 'BITBUCKET_CLOUD' ? event.target.value : bitbucketGitops
+        const bitbucketGitops = this.state.isBitbucketCloud ? GitProvider.BITBUCKET_CLOUD : 'BITBUCKET_DC'
+        const gitListKey = event.target.value !== GitProvider.BITBUCKET_CLOUD ? event.target.value : bitbucketGitops
         const form = this.state.gitList.find((item) => item.provider === gitListKey) ?? {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
@@ -289,7 +267,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const isAuthModeSSH = this.isAWSCodeCommitTabSelected(form.provider)
 
         this.setState({
-            providerTab: form.provider === 'BITBUCKET_DC' ? 'BITBUCKET_CLOUD' : form.provider,
+            providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
             form: {
                 ...form,
                 token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
@@ -613,12 +591,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return
         }
 
-        const bitbucketGitops = value ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC'
+        const bitbucketGitops = value ? GitProvider.BITBUCKET_CLOUD : 'BITBUCKET_DC'
         const form = this.state.gitList.find((item) => item.provider === bitbucketGitops) ?? {
             ...DefaultGitOpsConfig,
             ...DefaultShortGitOps,
             host: GitHost[GitProvider.BITBUCKET_CLOUD],
-            provider: value ? 'BITBUCKET_CLOUD' : 'BITBUCKET_DC',
+            provider: value ? GitProvider.BITBUCKET_CLOUD : 'BITBUCKET_DC',
         }
         this.setState({
             form: {

@@ -315,7 +315,6 @@ export const GitOpsDrawer = ({
     showRepoSelector,
     allowedCustomBool,
 }: gitOpsDrawerType): JSX.Element => {
-    // TODO: Might move this check to helpers
     const [selectedRepoType, setSelectedRepoType] = useState(commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE)
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)

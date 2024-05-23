@@ -1,4 +1,4 @@
-import { GitOpsState, GitProvider } from './gitops.type'
+import { DefaultShortGitOpsType, GitProvider } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -24,7 +24,7 @@ export const DefaultGitOpsConfig = {
     active: true,
 }
 
-export const DefaultShortGitOps: GitOpsState['isError'] = {
+export const DefaultShortGitOps: DefaultShortGitOpsType = {
     host: '',
     username: '',
     token: '',

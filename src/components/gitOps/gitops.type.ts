@@ -16,13 +16,7 @@ export enum GitProvider {
     AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
 }
 
-export type GitProviderType =
-    | 'GITHUB'
-    | 'GITLAB'
-    | 'AZURE_DEVOPS'
-    | 'BITBUCKET_CLOUD'
-    | 'BITBUCKET_DC'
-    | GitProvider.AWS_CODE_COMMIT
+export type GitProviderType = GitProvider | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
     username: {
@@ -43,6 +37,17 @@ export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' 
     active: boolean
     gitLabGroupId: string
     gitHubOrgId: string
+    azureProjectName: string
+    bitBucketWorkspaceId: string
+    bitBucketProjectKey: string
+}
+
+export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey'> {
+    host: string
+    username: string
+    token: string
+    gitHubOrgId: string
+    gitLabGroupId: string
     azureProjectName: string
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
@@ -81,18 +86,7 @@ export interface GitOpsState {
     /**
      * Error states for input fields
      */
-    isError: {
-        host: string
-        username: string
-        token: string
-        gitHubOrgId: string
-        gitLabGroupId: string
-        azureProjectName: string
-        bitBucketWorkspaceId: string
-        bitBucketProjectKey: string
-        sshHost: string
-        sshKey: string
-    }
+    isError: DefaultShortGitOpsType
     validatedTime: string
     validationError: GitOpsConfig[]
     // TODO: Should be VALIDATION_STATUS, but can't change as of now due to service default to '', connect with @vivek
@@ -130,4 +124,29 @@ export interface UserGitRepoProps {
 export interface BitbucketCloudAndServerToggleSectionPropsType {
     isBitbucketCloud: boolean
     setIsBitbucketCloud: (value: boolean) => void
+}
+
+export interface GitProviderTabProps {
+    providerTab: GitProviderType
+    /**
+     * Acts as handleChange on radio tab
+     */
+    handleGitopsTab: (e) => void
+    /**
+     * Based on this would showCheck of previous selected on tab
+     */
+    lastActiveGitOp: undefined | GitOpsConfig
+    /**
+     * Value of current tab
+     */
+    provider: GitProvider
+    /**
+     * The name to be displayed on tab and would be using that in switch case of GitProviderTabIcons
+     */
+    gitops: string
+    /**
+     * If true would disable radio tab
+     */
+    saveLoading: boolean
+    datatestid: string
 }
