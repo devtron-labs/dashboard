@@ -271,10 +271,10 @@ const ResourceList = () => {
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
-            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected}
+            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected}
             showStaleDataWarning={isDataStale}
             markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
-            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)}
+            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
         ...(isSuperAdmin &&
