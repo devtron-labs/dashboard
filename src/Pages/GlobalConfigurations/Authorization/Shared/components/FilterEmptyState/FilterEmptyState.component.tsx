@@ -1,5 +1,6 @@
 import React from 'react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+// TODO (Eshank): Remove from dashboard and use GenericFilterEmptyState
 import searchNullState from '../../../../../../assets/img/empty-noresult@2x.png'
 import { FilterEmptyStateProps } from './types'
 
