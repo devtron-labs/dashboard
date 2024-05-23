@@ -11,6 +11,7 @@ import {
     PageHeader,
     UseRegisterShortcutProvider,
     getResourceGroupListRaw,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
@@ -88,46 +89,56 @@ const ResourceList = () => {
         [clusterId, clusterOptions],
     )
 
-    useEffectAfterMount(() => {
-        const matchedUrlTab = tabs.find((tab) => tab.url.includes(location.pathname))
-        if (!matchedUrlTab || matchedUrlTab.isSelected) {
-            return
-        }
-        markTabActiveById(matchedUrlTab.id)
-        replace(matchedUrlTab.url)
-    }, [location.pathname])
-
     const isSuperAdmin = !!userRole?.result.superAdmin
 
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => tab.position === Number.MAX_SAFE_INTEGER && tab.isSelected)
 
-    const initTabsBasedOnRole = (reInit: boolean) => {
+    const getDynamicTabData = () => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
         const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+        return {
+            idPrefix: isNodeTypeNode
+                ? K8S_EMPTY_GROUP
+                : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
+            name: node,
+            kind: nodeType,
+            url,
+            isSelected: true,
+            position: Number.MAX_SAFE_INTEGER,
+        }
+    }
+
+    const initTabsBasedOnRole = (reInit: boolean) => {
         const _tabs = getTabsBasedOnRole(
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            node && {
-                idPrefix: isNodeTypeNode
-                    ? K8S_EMPTY_GROUP
-                    : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
-                name: node,
-                kind: nodeType,
-                url,
-                isSelected: true,
-                position: Number.MAX_SAFE_INTEGER,
-            },
+            node && getDynamicTabData(),
             nodeType === AppDetailsTabs.terminal,
         )
-
         initTabs(_tabs, reInit)
     }
 
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
+
+    useEffectAfterMount(() => {
+        /* NOTE: tab selection is interactively done through dynamic tab button clicks
+         * but to ensure consistency with url changes and user moving back through browser history,
+         * correct active tab state is ensured by this effect */
+        const matched = tabs.find((tab) => tab.url.includes(location.pathname))
+        if (!matched || matched.isSelected) {
+            if (!matched && node) {
+                /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
+                const { idPrefix, kind, name, url: _url } = getDynamicTabData()
+                addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            }
+            return
+        }
+        markTabActiveById(matched.id)
+    }, [location.pathname])
 
     const onClusterChange = (selected) => {
         if (selected.value === selectedCluster?.value) {
@@ -190,9 +201,7 @@ const ResourceList = () => {
         }
     }
 
-    const renderBreadcrumbs = () => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
-    }
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
@@ -203,21 +212,16 @@ const ResourceList = () => {
         replace({ search: queryParams })
     }
 
-    const updateK8sResourceTab = (_url: string, dynamicTitle = '') => {
-        updateTabUrl(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id, _url, dynamicTitle)
-        replace(_url)
-    }
-
-    const updateK8sResourceTabLastSyncMoment = () => {
+    const updateK8sResourceTabLastSyncMoment = () =>
         updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
-    }
 
     const getMarkTabActiveByIdSetter =
         (id = '') =>
         () =>
             id && markTabActiveById(id)
 
-    const getUpdateTabUrlForId = (id: string) => (_url: string) => updateTabUrl(id, _url)
+    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
+        updateTabUrl(id, _url, dynamicTitle)
 
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (!node) {
@@ -267,9 +271,10 @@ const ResourceList = () => {
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
+            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected}
             showStaleDataWarning={isDataStale}
             markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
-            updateK8sResourceTab={updateK8sResourceTab}
+            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
         ...(isSuperAdmin &&
@@ -284,10 +289,6 @@ const ResourceList = () => {
               ]
             : []),
     ]
-
-    const renderInvisible = (component: React.ReactNode, hide: boolean) => (
-        <div className={hide ? 'dc__hide-section' : ''}>{component}</div>
-    )
 
     const renderMainBody = () => {
         if (error) {
@@ -309,28 +310,24 @@ const ResourceList = () => {
         return (
             <>
                 <div
-                    className="h-36 flexbox dc__content-space"
-                    style={{
-                        boxShadow: 'inset 0 -1px 0 0 var(--N200)',
-                    }}
+                    className="h-36 resource-browser-tab flex left w-100"
+                    style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
                 >
-                    <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs
-                            tabs={tabs}
-                            removeTabByIdentifier={removeTabByIdentifier}
-                            markTabActiveById={markTabActiveById}
-                            stopTabByIdentifier={stopTabByIdentifier}
-                            refreshData={refreshData}
-                            isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
-                            setIsDataStale={setIsDataStale}
-                        />
-                    </div>
+                    <DynamicTabs
+                        tabs={tabs}
+                        removeTabByIdentifier={removeTabByIdentifier}
+                        markTabActiveById={markTabActiveById}
+                        stopTabByIdentifier={stopTabByIdentifier}
+                        refreshData={refreshData}
+                        isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
+                        setIsDataStale={setIsDataStale}
+                    />
                 </div>
                 {tabs.length > 0 &&
                     fixedTabComponents.map((component, index) => (
-                        <React.Fragment key={component.key}>
-                            {renderInvisible(component, !tabs[index].isSelected)}
-                        </React.Fragment>
+                        <div key={component.key} className={!tabs[index].isSelected ? 'dc__hide-section' : ''}>
+                            {component}
+                        </div>
                     ))}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
             </>

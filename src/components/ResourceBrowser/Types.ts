@@ -114,6 +114,7 @@ export interface SidebarType {
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
     isClusterError?: boolean
 }
 
@@ -209,6 +210,7 @@ export interface K8SResourceTabComponentProps {
     markTerminalTabActive: () => void
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
 }
 
 export interface AdminTerminalProps {

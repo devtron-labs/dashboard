@@ -172,7 +172,9 @@ export const K8SResourceList = ({
 
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
-        updateK8sResourceTab(`${location.pathname}?${searchParamString}`)
+        const url = `${location.pathname}?${searchParamString}`
+        updateK8sResourceTab(url)
+        push(url)
         handleFilterChanges(text, resourceList)
         /* eslint no-unused-expressions: ["error", { "allowShortCircuit": true }] */
         text && setResourceListOffset(0) /* NOTE: if resourceListOffset is 0 setState is noop */

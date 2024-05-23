@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState, useMemo } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -10,6 +10,7 @@ import {
     ReactSelectInputAction,
     useRegisterShortcut,
     Nodes,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
@@ -38,10 +39,12 @@ const Sidebar = ({
     setSelectedResource,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
+    isOpen,
     shortcut,
 }: SidebarType & IWithShortcut) => {
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
+    const { push } = useHistory()
     const { clusterId, namespace, nodeType } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
@@ -69,9 +72,7 @@ const Sidebar = ({
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
-        return (): void => {
-            shortcut.unregisterShortcut(['k'])
-        }
+        return () => shortcut.unregisterShortcut(['k'])
     }, [registerShortcut])
 
     const getGroupHeadingClickHandler =
@@ -84,6 +85,7 @@ const Sidebar = ({
     const selectNode = (
         e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
+        shouldPushUrl = true,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
@@ -101,6 +103,9 @@ const Sidebar = ({
         updateK8sResourceTabLastSyncMoment()
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
         updateK8sResourceTab(_url, e.currentTarget.dataset.kind)
+        if (shouldPushUrl) {
+            push(_url)
+        }
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -121,6 +126,28 @@ const Sidebar = ({
             })
         }
     }
+
+    useEffectAfterMount(() => {
+        /* NOTE: this effect accommodates for user navigating through browser history (push) */
+        if (!isOpen || nodeType === selectedResource.gvk.Kind.toLowerCase()) {
+            return
+        }
+        const match = k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType)
+        if (!match) {
+            return
+        }
+        /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
+        selectNode(
+            {
+                currentTarget: {
+                    dataset: match.dataset,
+                },
+            },
+            match.groupName,
+            /* NOTE: if we push here the history will be lost */
+            false,
+        )
+    }, [nodeType])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**

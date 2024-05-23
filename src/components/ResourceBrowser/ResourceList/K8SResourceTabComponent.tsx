@@ -14,6 +14,7 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     isSuperAdmin,
     addTab,
+    isOpen,
     showStaleDataWarning,
     markTerminalTabActive,
     updateK8sResourceTab,
@@ -68,6 +69,7 @@ const K8SResourceTabComponent = ({
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
                 setSelectedResource={setSelectedResource}
+                isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />

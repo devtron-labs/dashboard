@@ -95,11 +95,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const openTerminalComponent = (clusterData): void => {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('clusterId', clusterData.id)
+    const getOpenTerminalHandler = (clusterData) => () =>
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
-    }
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
@@ -127,7 +124,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     <TerminalIcon
                         data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"
-                        onClick={() => openTerminalComponent(clusterData)}
+                        onClick={getOpenTerminalHandler(clusterData)}
                     />
                 </div>
                 <div>
