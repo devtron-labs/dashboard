@@ -95,7 +95,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 return undefined
             }
 
-            return 'Git Repo URL must follow this pattern: git-codecommit.*.amazonaws.com'
+            return 'Git Repo URL must follow this pattern: git-codecommit.<aws_region>.amazonaws.com'
         }
 
         const res = this.props.providers?.filter((provider) => provider?.id == selectedId) || []

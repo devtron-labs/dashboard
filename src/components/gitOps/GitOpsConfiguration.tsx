@@ -307,7 +307,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError: {
                 ...this.state.isError,
                 [key]:
-                    (key === 'token' && this.state.form.id) || event.target.value.length !== 0
+                    ((key === 'token' || key === 'sshKey') && this.state.form.id) || event.target.value.length !== 0
                         ? ''
                         : 'This is a required field',
                 ...(key === 'sshHost' && { sshHost: this.isValidSSHUrl(event.target.value) }),
@@ -349,7 +349,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 username: this.requiredFieldCheck(form.username),
                 sshHost: this.requiredFieldCheck(form.sshHost) || this.isValidSSHUrl(form.sshHost),
                 // REQUIREMENT: Do not TRIM this field
-                sshKey: this.requiredFieldCheck(form.sshKey),
+                sshKey: this.state.form.id ? '' : this.requiredFieldCheck(form.sshKey),
             }
         }
 
@@ -765,6 +765,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             username={{ value: this.state.form.username, error: this.state.isError.username }}
                             handleChange={this.handleChange}
                             id={this.state.form.id}
+                            isActive={this.state.lastActiveGitOp?.provider === GitProvider.AWS_CODE_COMMIT}
                         />
                     ) : (
                         <>
@@ -990,7 +991,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div>
                         <div className="form__row flex left">
                             <div className="fw-6 cn-9 fs-14 mb-16">Directory management in Git</div>
-                            {/* TODO: Add value in case of aws code commit */}
                             {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
                                 <RadioGroup
                                     className="radio-group-no-border"
