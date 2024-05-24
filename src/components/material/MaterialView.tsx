@@ -20,16 +20,11 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { ReactComponent as ICAWSCodeCommit } from '../../assets/icons/ic-aws-codecommit.svg'
-import { isAWSCodeCommitURL, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -47,26 +42,6 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
-
-const renderMaterialIcon = (url: string) => {
-    if (url.includes('gitlab')) {
-        return <GitLab className="dc__vertical-align-middle icon-dim-20" />
-    }
-
-    if (url.includes('github')) {
-        return <GitHub className="dc__vertical-align-middle icon-dim-20" />
-    }
-
-    if (url.includes('bitbucket')) {
-        return <BitBucket className="dc__vertical-align-middle icon-dim-20" />
-    }
-
-    if (isAWSCodeCommitURL(url)) {
-        return <ICAWSCodeCommit className="dc__vertical-align-middle icon-dim-18" />
-    }
-
-    return <Git className="dc__vertical-align-middle icon-dim-20" />
-}
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
