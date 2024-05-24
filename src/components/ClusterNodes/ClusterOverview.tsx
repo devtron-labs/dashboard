@@ -6,6 +6,7 @@ import {
     getRandomColor,
     InfoIconTippy,
     EditableTextArea,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterErrorType, ClusterOverviewProps, DescriptionDataType, ERROR_TYPE, ClusterDetailsType } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -550,7 +551,7 @@ function ClusterOverview({
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
                     {renderClusterError()}
-                    {Catalog && <Catalog resourceId={clusterId} resourceType="cluster" />}
+                    {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
