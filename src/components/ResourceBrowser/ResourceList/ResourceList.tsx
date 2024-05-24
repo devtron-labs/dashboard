@@ -53,11 +53,9 @@ const ResourceList = () => {
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
 
-    /* TODO: Find use for this error */
-    const [rawGVKLoader, k8SObjectMapRaw /* rawGVKError */] = useAsync(
-        () => getResourceGroupListRaw(clusterId),
-        [clusterId],
-    )
+    const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+
+    const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
     const [loading, data, error] = useAsync(() =>
         Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
@@ -129,21 +127,27 @@ const ResourceList = () => {
         /* NOTE: tab selection is interactively done through dynamic tab button clicks
          * but to ensure consistency with url changes and user moving back through browser history,
          * correct active tab state is ensured by this effect */
-        const matched = tabs.find((tab) => tab.url.includes(location.pathname))
-        if (!matched || matched.isSelected) {
-            if (!node || matched) {
-                return
-            }
+        if (node) {
             /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
             const { idPrefix, kind, name, url: _url } = getDynamicTabData()
             /* NOTE if the corresponding tab exists return */
-            if (tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))) {
+            const match = tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))
+            if (match) {
+                if (!match.isSelected) {
+                    markTabActiveById(match.id)
+                }
                 return
             }
             addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
             return
         }
-        markTabActiveById(matched.id)
+        if (isOverviewNodeType && !tabs[FIXED_TABS_INDICES.OVERVIEW]?.isSelected) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+            return
+        }
+        if (!isOverviewNodeType && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+        }
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -327,7 +331,7 @@ const ResourceList = () => {
                         markTabActiveById={markTabActiveById}
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
-                        isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
+                        isOverview={isOverviewNodeType}
                     />
                 </div>
                 {tabs.length > 0 &&
