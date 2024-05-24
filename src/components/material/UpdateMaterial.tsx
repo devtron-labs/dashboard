@@ -4,6 +4,7 @@ import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { MaterialView } from './MaterialView'
+import { isAWSCodeCommitURL } from '../common'
 
 interface UpdateMaterialProps {
     appId: number
@@ -84,6 +85,14 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
     isGitUrlValid(url: string, selectedId): string | undefined {
         if (!url.length) {
             return 'This is a required field'
+        }
+
+        if (isAWSCodeCommitURL(this.state.material?.gitProvider?.url)) {
+            if (isAWSCodeCommitURL(url)) {
+                return undefined
+            }
+
+            return 'Git Repo URL must follow this pattern: git-codecommit.*.amazonaws.com'
         }
 
         const res = this.props.providers?.filter((provider) => provider?.id === selectedId)
