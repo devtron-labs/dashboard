@@ -64,8 +64,7 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
-        // TODO: Update the title post confirmation with product
-        title: 'Releases',
+        title: 'Software Distribution Hub',
         dataTestId: 'click-on-releases',
         type: 'link',
         iconClass: 'nav-short-env',
