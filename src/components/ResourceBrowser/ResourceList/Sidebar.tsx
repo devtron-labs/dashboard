@@ -10,7 +10,6 @@ import {
     ReactSelectInputAction,
     useRegisterShortcut,
     Nodes,
-    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
@@ -127,7 +126,7 @@ const Sidebar = ({
         }
     }
 
-    useEffectAfterMount(() => {
+    useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
         if (!isOpen || nodeType === selectedResource.gvk.Kind.toLowerCase()) {
             return

@@ -33,7 +33,6 @@ export interface DynamicTabsProps {
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
     refreshData: () => void
     isOverview: boolean
-    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface TabsDataType {

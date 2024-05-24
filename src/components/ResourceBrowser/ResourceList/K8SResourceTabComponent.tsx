@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import { ApiResourceGroupType, K8SResourceTabComponentProps, URLParams } from '../Types'
@@ -20,7 +20,7 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId, nodeType } = useParams<URLParams>()
+    const { clusterId } = useParams<URLParams>()
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
         gvk: SIDEBAR_KEYS.nodeGVK,
         namespaced: false,
@@ -36,17 +36,6 @@ const K8SResourceTabComponent = ({
                 abortControllerRef,
             ),
         [clusterId],
-    )
-
-    useEffect(
-        () =>
-            nodeType !== SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() &&
-            k8SObjectMap &&
-            setSelectedResource(
-                (prev) =>
-                    k8SObjectMap?.result.apiResources.find((item) => item.gvk.Kind.toLowerCase() === nodeType) || prev,
-            ),
-        [k8SObjectMap],
     )
 
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null

@@ -229,6 +229,8 @@ const ResourceList = () => {
     const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
         updateTabUrl(id, _url, dynamicTitle)
 
+    const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
+
     const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (!node) {
             return null
@@ -253,7 +255,7 @@ const ResourceList = () => {
                     addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
-                    removeTabByIdentifier={removeTabByIdentifier}
+                    removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
                     updateTabUrl={getUpdateTabUrlForId(tabId)}
                 />
             </div>
@@ -326,7 +328,6 @@ const ResourceList = () => {
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
                         isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
-                        setIsDataStale={setIsDataStale}
                     />
                 </div>
                 {tabs.length > 0 &&

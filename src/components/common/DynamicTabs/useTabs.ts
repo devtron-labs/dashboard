@@ -117,10 +117,11 @@ export function useTabs(persistanceKey: string) {
                     _tabs = prevTabs
                 }
             }
-            _tabs.forEach((_tab) => {
-                // eslint-disable-next-line no-param-reassign
-                _tab.isSelected = false
-            })
+            _tabs = _tabs.map((_tab) => ({
+                ..._tab,
+                isSelected: false,
+                lastSyncMoment: dayjs(),
+            }))
             if (_tabs.length > 0) {
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)

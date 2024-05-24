@@ -2,11 +2,10 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import Tippy from '@tippyjs/react'
-import { Dayjs } from 'dayjs'
 import { stopPropagation, ConditionalWrap, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData, checkIfDataIsStale } from './Utils'
+import { COMMON_TABS_SELECT_STYLES, EMPTY_TABS_DATA, initTabsData } from './Utils'
 import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu, timerTransition } from './DynamicTabs.component'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
@@ -33,7 +32,6 @@ const DynamicTabs = ({
     stopTabByIdentifier,
     refreshData,
     isOverview,
-    setIsDataStale,
 }: DynamicTabsProps & IWithShortcut) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -251,53 +249,39 @@ const DynamicTabs = ({
     }
 
     const escHandler = (e: React.KeyboardEvent) => {
-        // eslint-disable-next-line no-unused-expressions
-        e.key === 'Escape' && closeMenu()
-    }
-
-    const updateOnStaleData = (now: Dayjs) => {
-        if (!now || !checkIfDataIsStale(selectedTab.lastSyncMoment, now)) {
-            /* NOTE: if new state value is same as old state value setState is a noop */
-            setIsDataStale(false)
+        if (e.key !== 'Escape') {
             return
         }
-        setIsDataStale(true)
+        closeMenu()
     }
 
-    const timerTranspose = (output: string) => {
-        return (
-            <>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                    <div>
-                        <RefreshIcon
-                            data-testid="refresh-icon"
-                            className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                            onClick={refreshData}
-                        />
-                    </div>
-                </Tippy>
-                {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                    <div className="flex">
-                        {output}
-                        <span className="ml-2">ago</span>
-                    </div>
-                )}
-            </>
-        )
-    }
-
-    const timerForSync = () => {
-        return (
-            selectedTab && (
-                <Timer
-                    start={selectedTab.lastSyncMoment}
-                    callback={updateOnStaleData}
-                    transition={timerTransition}
-                    transpose={timerTranspose}
+    const timerTranspose = (output: string) => (
+        <>
+            <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                <RefreshIcon
+                    data-testid="refresh-icon"
+                    className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                    onClick={refreshData}
                 />
-            )
+            </Tippy>
+            {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                <div className="flex">
+                    {output}
+                    <span className="ml-2">ago</span>
+                </div>
+            )}
+        </>
+    )
+
+    const timerForSync = () =>
+        selectedTab && (
+            <Timer
+                key={selectedTab.componentKey}
+                start={selectedTab.lastSyncMoment}
+                transition={timerTransition}
+                transpose={timerTranspose}
+            />
         )
-    }
 
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">
