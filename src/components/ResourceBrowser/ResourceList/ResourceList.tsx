@@ -48,6 +48,7 @@ const ResourceList = () => {
         updateTabComponentKey,
         updateTabLastSyncMoment,
         stopTabByIdentifier,
+        getTabId,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
@@ -130,11 +131,16 @@ const ResourceList = () => {
          * correct active tab state is ensured by this effect */
         const matched = tabs.find((tab) => tab.url.includes(location.pathname))
         if (!matched || matched.isSelected) {
-            if (!matched && node) {
-                /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
-                const { idPrefix, kind, name, url: _url } = getDynamicTabData()
-                addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            if (!node || matched) {
+                return
             }
+            /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
+            const { idPrefix, kind, name, url: _url } = getDynamicTabData()
+            /* NOTE if the corresponding tab exists return */
+            if (tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))) {
+                return
+            }
+            addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
             return
         }
         markTabActiveById(matched.id)

@@ -406,8 +406,9 @@ export function useTabs(persistanceKey: string) {
     }
 
     /* TODO: reuse this */
-    const getTabId = (idPrefix: string, name: string) => {
-        return `${idPrefix}-${name}`
+    const getTabId = (idPrefix: string, name: string, kind: string) => {
+        const title = kind ? `${kind}/${name}` : name
+        return `${idPrefix}-${title}`
     }
 
     const updateTabComponentKey = (id: string) => {

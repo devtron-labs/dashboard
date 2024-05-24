@@ -71,7 +71,7 @@ const EventsComponent = ({
     }, [params.podName, params.node, params.nodeType, params.namespace])
 
     return (
-        <div className="flex-grow-1">
+        <div className="flex-grow-1" style={{ background: 'var(--terminal-bg)' }}>
             {isDeleted ? (
                 <MessageUI
                     msg={MESSAGING_UI.NO_RESOURCE}
