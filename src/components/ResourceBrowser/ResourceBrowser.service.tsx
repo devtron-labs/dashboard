@@ -1,8 +1,7 @@
-import { get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceType, get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
-    APIResourceResponse,
     CreateResourcePayload,
     CreateResourceResponse,
     ResourceListPayloadType,
@@ -29,14 +28,13 @@ export const getResourceList = (
     })
 }
 
-export const getResourceGroupList = (clusterId: string, signal?: AbortSignal): Promise<APIResourceResponse> => {
+export const getResourceGroupList = (
+    clusterId: string,
+    signal?: AbortSignal,
+): Promise<ResponseType<ApiResourceType>> => {
     return get(`${Routes.API_RESOURCE}/${clusterId}`, {
         signal,
     })
-}
-
-export const getResourceGroupListRaw = (clusterId: string): Promise<APIResourceResponse> => {
-    return get(`${Routes.API_RESOURCE}/${Routes.GVK}/${clusterId}`)
 }
 
 export const createNewResource = (resourceListPayload: CreateResourcePayload): Promise<CreateResourceResponse> => {

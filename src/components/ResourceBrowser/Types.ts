@@ -1,5 +1,5 @@
 import React from 'react'
-import { ResponseType, Nodes, NodeType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { K8SObjectBaseType, ResponseType, Nodes, NodeType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
 import { useTabs } from '../common/DynamicTabs'
@@ -13,34 +13,26 @@ export interface ResourceDetailType {
     data: ResourceDetailDataType[]
 }
 
+export interface ResourceListResponse extends ResponseType {
+    result?: ResourceDetailType
+}
+
+/**
+ * @deprecated Use this type form common lib instead
+ */
 export interface GVKType {
     Group: string
     Version: string
     Kind: Nodes | NodeType
 }
 
-export interface ResourceListResponse extends ResponseType {
-    result?: ResourceDetailType
-}
-
+/**
+ * @deprecated Use this type form common lib instead
+ */
 export interface ApiResourceGroupType {
     gvk: GVKType
     namespaced: boolean
     isGrouped?: boolean
-}
-
-export interface ApiResourceType {
-    apiResources: ApiResourceGroupType[]
-    allowedAll: boolean
-}
-
-export interface APIResourceResponse extends ResponseType {
-    result?: ApiResourceType
-}
-
-export interface K8SObjectBaseType {
-    name: string
-    isExpanded: boolean
 }
 
 export interface K8SObjectType extends K8SObjectBaseType {

@@ -10,6 +10,7 @@ import {
     useEffectAfterMount,
     PageHeader,
     UseRegisterShortcutProvider,
+    getResourceGroupListRaw,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
@@ -20,7 +21,6 @@ import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { getTabsBasedOnRole } from '../Utils'
-import { getResourceGroupListRaw } from '../ResourceBrowser.service'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterSelector from './ClusterSelector'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'

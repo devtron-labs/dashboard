@@ -27,8 +27,10 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
 
 const NavigationList = [
@@ -95,6 +97,16 @@ const NavigationList = [
         isAvailableInEA: true,
         markAsBeta: false,
         isAvailableInDesktop: true,
+    },
+    {
+        title: 'Resource Watcher',
+        dataTestId: 'click-on-resource-watcher',
+        type: 'link',
+        href: URLS.RESOURCE_WATCHER,
+        iconClass: 'nav-resource-watcher',
+        icon: ResourceWatcherIcon,
+        isAvailableInEA: true,
+        hideNav: !ResourceWatcherRouter,
     },
     {
         title: 'Chart Store',
@@ -321,6 +333,9 @@ export default class Navigation extends Component<
         const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
         if (window._env_.K8S_CLIENT) {
             return item.isAvailableInDesktop
+        }
+        if (item.hideNav) {
+            return false
         }
         if (
             allowedUser &&
