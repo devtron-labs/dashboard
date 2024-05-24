@@ -24,7 +24,7 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { isAWSCodeCommitURL, renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -110,6 +110,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             return res[0]?.authMode == 'SSH' ? 'ssh' : 'https'
         }
         if (key === 'placeholder') {
+            if (isAWSCodeCommitURL(this.props.material?.gitProvider?.url)) {
+                return 'e.g. git-codecommit.ap-south-1.amazonaws.com/v1/repos/repo_name'
+            }
+
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
         }
     }

@@ -1219,13 +1219,11 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
 }
 
 // Should contain git-codecommit.*.amazonaws.com
-// FIXME: Can be regex
-export const isAWSCodeCommitURL = (url: string): boolean => {
+export const isAWSCodeCommitURL = (url: string = ''): boolean => {
     return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
 }
 
-
-export const renderMaterialIcon = (url: string) => {
+export const renderMaterialIcon = (url: string = '') => {
     if (url.includes('gitlab')) {
         return <GitLab className="dc__vertical-align-middle icon-dim-20" />
     }
