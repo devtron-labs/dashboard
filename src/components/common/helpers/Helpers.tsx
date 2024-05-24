@@ -1212,3 +1212,9 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     }
     return className
 }
+
+// Should contain git-codecommit.*.amazonaws.com
+// FIXME: Can be regex
+export const isAWSCodeCommitURL = (url: string): boolean => {
+    return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
+}

@@ -28,8 +28,8 @@ import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outl
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { ReactComponent as ICAWSCodeCommit } from '../../assets/icons/ic-aws-codecommit.svg'
+import { isAWSCodeCommitURL, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -47,6 +47,26 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+
+const renderMaterialIcon = (url: string) => {
+    if (url.includes('gitlab')) {
+        return <GitLab className="dc__vertical-align-middle icon-dim-20" />
+    }
+
+    if (url.includes('github')) {
+        return <GitHub className="dc__vertical-align-middle icon-dim-20" />
+    }
+
+    if (url.includes('bitbucket')) {
+        return <BitBucket className="dc__vertical-align-middle icon-dim-20" />
+    }
+
+    if (isAWSCodeCommitURL(url)) {
+        return <ICAWSCodeCommit className="dc__vertical-align-middle icon-dim-18" />
+    }
+
+    return <Git className="dc__vertical-align-middle icon-dim-20" />
+}
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -86,14 +106,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     data-testid="already-existing-git-material"
                 >
                     <span className="mr-8">
-                        {this.props.material.url.includes('gitlab') ? <GitLab /> : null}
-                        {this.props.material.url.includes('github') ? <GitHub /> : null}
-                        {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
-                        {this.props.material.url.includes('gitlab') ||
-                        this.props.material.url.includes('github') ||
-                        this.props.material.url.includes('bitbucket') ? null : (
-                            <Git />
-                        )}
+                        {renderMaterialIcon(this.props.material.url)}
                     </span>
                     <div className="">
                         <div className="git__provider">{this.props.material.name}</div>
@@ -651,23 +664,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 IndicatorSeparator: null,
                                 Option: (props) => {
                                     props.selectProps.styles.option = getCustomOptionSelectionStyle()
+
                                     return (
                                         <components.Option {...props}>
-                                            {props.data.url.includes('gitlab') ? (
-                                                <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('github') ? (
-                                                <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('bitbucket') ? (
-                                                <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
-                                                <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            )}
-
+                                            <span className="mr-8">{renderMaterialIcon(props.data.url)}</span>
                                             {props.label}
                                         </components.Option>
                                     )
@@ -695,19 +695,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     if (props.hasValue) {
                                         value = props.getValue()[0].url
                                     }
-                                    const showGit =
-                                        value &&
-                                        !value.includes('github') &&
-                                        !value.includes('gitlab') &&
-                                        !value.includes('bitbucket')
                                     return (
                                         <components.Control {...props}>
-                                            {value.includes('github') ? <GitHub className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('gitlab') ? <GitLab className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('bitbucket') ? (
-                                                <BitBucket className="icon-dim-20 ml-8" />
-                                            ) : null}
-                                            {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
+                                            <span className="ml-8">{renderMaterialIcon(value)}</span>
                                             {props.children}
                                         </components.Control>
                                     )
