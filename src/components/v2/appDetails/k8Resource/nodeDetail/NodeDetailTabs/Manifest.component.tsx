@@ -55,6 +55,7 @@ const ManifestComponent = ({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
+    /* TODO: can be unified later with resource browser */
     const params = useParams<{
         actionName: string
         podName: string
@@ -208,7 +209,7 @@ const ManifestComponent = ({
                         }
                     })
                     .catch((err) => {
-                        setLoading(false)
+                        /* NOTE: if the user switches tab after dismount don't set state */
                         /* if the user aborted using tab switch don't show error */
                         if (
                             err instanceof ServerErrors &&
@@ -217,6 +218,7 @@ const ManifestComponent = ({
                         ) {
                             return
                         }
+                        setLoading(false)
                         setError(true)
                         showError(err)
                     })
