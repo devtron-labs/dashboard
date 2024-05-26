@@ -3,16 +3,16 @@ import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceListEmptyStateType } from '../Types'
 import emptyCustomChart from '../../../assets/img/empty-noresult@2x.png'
 
-export default function ResourceListEmptyState({
+const ResourceListEmptyState = ({
     imgSource,
     title,
     subTitle,
     actionButtonText,
     actionHandler,
-}: ResourceListEmptyStateType) {
+}: ResourceListEmptyStateType) => {
     const handleButton = () => {
         return actionHandler ? (
-            <button onClick={actionHandler} className="add-link cta flex">
+            <button type="button" onClick={actionHandler} className="add-link cta flex">
                 {actionButtonText ?? 'Clear filters'}
             </button>
         ) : null
@@ -28,3 +28,5 @@ export default function ResourceListEmptyState({
         />
     )
 }
+
+export default ResourceListEmptyState

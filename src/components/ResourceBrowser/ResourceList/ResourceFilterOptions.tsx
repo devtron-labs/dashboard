@@ -55,7 +55,6 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        /* TODO: handle nicely */
         if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
             shortcut.registerShortcut(
@@ -72,10 +71,9 @@ const ResourceFilterOptions = ({
     }, [registerShortcut])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
-        if (e.key !== 'Escape' && e.key !== 'Esc') {
-            return
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            searchInputRef.current?.blur()
         }
-        searchInputRef.current?.blur()
     }
 
     const handleOnChangeSearchText: React.FormEventHandler<HTMLInputElement> = (event): void => {

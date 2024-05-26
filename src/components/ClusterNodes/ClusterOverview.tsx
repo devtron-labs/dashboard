@@ -61,7 +61,7 @@ const tippyForMetricsApi = () => {
     )
 }
 
-function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: ClusterOverviewProps) {
+function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -234,7 +234,6 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
                 nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
-        markNodesTabActive()
         history.push(newUrl)
     }
 

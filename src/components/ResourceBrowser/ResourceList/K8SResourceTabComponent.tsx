@@ -16,7 +16,6 @@ const K8SResourceTabComponent = ({
     addTab,
     isOpen,
     showStaleDataWarning,
-    markTerminalTabActive,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
 }: K8SResourceTabComponentProps) => {
@@ -70,7 +69,6 @@ const K8SResourceTabComponent = ({
                     addTab={addTab}
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
-                    markTerminalTabActive={markTerminalTabActive}
                 />
             ) : (
                 <K8SResourceList

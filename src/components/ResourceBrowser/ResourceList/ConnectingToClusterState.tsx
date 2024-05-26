@@ -46,8 +46,6 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         return () => clearTimeout(progressTimerRef.current)
     }, [clusterId, selectedCluster])
 
-    useEffect(() => () => clearTimeout(progressTimerRef.current), [])
-
     const renderInfo = (heading: string, _infoText: string) => {
         return (
             <>

@@ -207,7 +207,6 @@ export interface K8SResourceTabComponentProps {
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
-    markTerminalTabActive: () => void
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
     isOpen: boolean

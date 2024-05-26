@@ -1,5 +1,12 @@
 import React, { useMemo } from 'react'
-import { showError, getUserRole, DevtronProgressing, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    getUserRole,
+    DevtronProgressing,
+    useAsync,
+    PageHeader,
+    ErrorScreenManager,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
@@ -26,8 +33,27 @@ const ResourceBrowser: React.FC = () => {
 
     const isSuperAdmin = userRoleData?.result.superAdmin || false
 
-    if (error || detailClusterListError) {
-        showError(error || detailClusterListError)
+    if (detailClusterListError) {
+        showError(detailClusterListError)
+    }
+
+    const renderContent = () => {
+        if (error) {
+            return <ErrorScreenManager code={error.code} />
+        }
+
+        return (
+            <ClusterSelectionList
+                clusterOptions={sortedClusterList}
+                isSuperAdmin={isSuperAdmin}
+                clusterListLoader={detailClusterListLoading}
+                refreshData={reloadDetailClusterList}
+            />
+        )
+    }
+
+    if (initialLoading) {
+        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
     }
 
     return (
@@ -37,18 +63,7 @@ const ResourceBrowser: React.FC = () => {
                 headerName="Kubernetes Resource Browser"
                 renderActionButtons={AddClusterButton}
             />
-            {initialLoading ? (
-                <div style={{ height: 'calc(100vh - 48px)' }}>
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
-                </div>
-            ) : (
-                <ClusterSelectionList
-                    clusterOptions={sortedClusterList}
-                    isSuperAdmin={isSuperAdmin}
-                    clusterListLoader={detailClusterListLoading}
-                    refreshData={reloadDetailClusterList}
-                />
-            )}
+            {renderContent()}
         </div>
     )
 }

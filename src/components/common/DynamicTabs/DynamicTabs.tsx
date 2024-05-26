@@ -258,11 +258,13 @@ const DynamicTabs = ({
     const timerTranspose = (output: string) => (
         <>
             <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                <RefreshIcon
-                    data-testid="refresh-icon"
-                    className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                    onClick={refreshData}
-                />
+                <span>
+                    <RefreshIcon
+                        data-testid="refresh-icon"
+                        className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                        onClick={refreshData}
+                    />
+                </span>
             </Tippy>
             {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
                 <div className="flex">

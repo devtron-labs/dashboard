@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ReactSelect, { MultiValue } from 'react-select'
 import { useLocation, useHistory } from 'react-router-dom'
 import * as queryString from 'query-string'
@@ -40,6 +40,7 @@ export default function NodeListSearchFliter({
     const [searchInputText, setSearchInputText] = useState('')
     const [isMenuOpen, setMenuOpen] = useState(false)
     const [selectedColumns, setSelectedColumns] = useState<MultiValue<ColumnMetadataType>>([])
+    const selectRef = useRef()
     const location = useLocation()
     const { push } = useHistory()
     useEffect(() => {
@@ -290,6 +291,7 @@ export default function NodeListSearchFliter({
                     setMenuOpen,
                     selectedColumns,
                     setSelectedColumns,
+                    selectRef,
                 }}
             >
                 <ColumnSelector />

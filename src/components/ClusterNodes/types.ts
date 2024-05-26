@@ -176,7 +176,6 @@ export interface ColumnMetadataType {
 export interface ClusterListType {
     isSuperAdmin: boolean
     k8SObjectMapRaw: ApiResourceGroupType[]
-    markTerminalTabActive: () => void
     addTab?: ReturnType<typeof useTabs>['addTab']
 }
 
@@ -370,7 +369,6 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
     selectedCluster: ClusterOptionType
-    markNodesTabActive: () => void
 }
 
 export type SearchTextType = (typeof NODE_SEARCH_TEXT)[keyof typeof NODE_SEARCH_TEXT]

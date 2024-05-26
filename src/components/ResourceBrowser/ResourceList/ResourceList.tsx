@@ -41,7 +41,6 @@ const ResourceList = () => {
         tabs,
         initTabs,
         addTab,
-        markTabActiveByIdentifier,
         markTabActiveById,
         removeTabByIdentifier,
         updateTabUrl,
@@ -52,8 +51,6 @@ const ResourceList = () => {
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
-
-    const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
 
     const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
@@ -90,6 +87,9 @@ const ResourceList = () => {
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
+    const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => tab.position === Number.MAX_SAFE_INTEGER && tab.isSelected)
 
@@ -109,13 +109,14 @@ const ResourceList = () => {
     }
 
     const initTabsBasedOnRole = (reInit: boolean) => {
+        /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
         const _tabs = getTabsBasedOnRole(
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             node && getDynamicTabData(),
-            nodeType === AppDetailsTabs.terminal,
+            isTerminalNodeType,
         )
         initTabs(_tabs, reInit)
     }
@@ -133,21 +134,24 @@ const ResourceList = () => {
             /* NOTE if the corresponding tab exists return */
             const match = tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))
             if (match) {
-                if (!match.isSelected) {
-                    markTabActiveById(match.id)
-                }
+                markTabActiveById(match.id)
                 return
             }
+            /* NOTE: even though addTab updates selection it will override url;
+             * thus to prevent that if found markTabActive and don't let this get called */
             addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
             return
         }
-        if (isOverviewNodeType && !tabs[FIXED_TABS_INDICES.OVERVIEW]?.isSelected) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+        /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
+        if (isOverviewNodeType) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)
             return
         }
-        if (!isOverviewNodeType && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+        if (isTerminalNodeType && isSuperAdmin) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)
+            return
         }
+        markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)
     }, [location.pathname])
 
     const onClusterChange = (selected) => {
@@ -225,11 +229,6 @@ const ResourceList = () => {
     const updateK8sResourceTabLastSyncMoment = () =>
         updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
 
-    const getMarkTabActiveByIdSetter =
-        (id = '') =>
-        () =>
-            id && markTabActiveById(id)
-
     const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
         updateTabUrl(id, _url, dynamicTitle)
 
@@ -246,7 +245,6 @@ const ResourceList = () => {
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             />
         ) : (
             <div className="resource-details-container flexbox-col">
@@ -255,7 +253,6 @@ const ResourceList = () => {
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    markTabActiveByIdentifier={markTabActiveByIdentifier}
                     addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
@@ -271,7 +268,6 @@ const ResourceList = () => {
             key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
-            markNodesTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)}
         />,
         <K8SResourceTabComponent
             key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
@@ -285,7 +281,6 @@ const ResourceList = () => {
             isSuperAdmin={isSuperAdmin}
             isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected}
             showStaleDataWarning={isDataStale}
-            markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
@@ -304,19 +299,11 @@ const ResourceList = () => {
 
     const renderMainBody = () => {
         if (error) {
-            return (
-                <div className="flex" style={{ height: 'calc(100vh - 48px)' }}>
-                    <ErrorScreenManager code={error.code} />
-                </div>
-            )
+            return <ErrorScreenManager code={error.code} />
         }
 
         if (loading) {
-            return (
-                <div style={{ height: 'calc(100vh - 48px)' }}>
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
-                </div>
-            )
+            return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
         }
 
         return (
@@ -334,13 +321,19 @@ const ResourceList = () => {
                         isOverview={isOverviewNodeType}
                     />
                 </div>
-                {tabs.length > 0 &&
-                    fixedTabComponents.map((component, index) => (
-                        <div key={component.key} className={!tabs[index].isSelected ? 'dc__hide-section' : ''}>
-                            {component}
-                        </div>
-                    ))}
+                {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
                 {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
+                {tabs.length > 0 &&
+                    fixedTabComponents.map((component, index) => {
+                        /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
+                        const hideClassName =
+                            tabs[index].name === AppDetailsTabs.terminal ? 'dc__visibility-hidden' : 'dc__hide-section'
+                        return (
+                            <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
+                                {component}
+                            </div>
+                        )
+                    })}
             </>
         )
     }

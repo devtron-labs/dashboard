@@ -407,7 +407,6 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
     addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
     k8SObjectMapRaw?: ApiResourceGroupType[]

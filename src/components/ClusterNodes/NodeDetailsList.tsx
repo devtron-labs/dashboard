@@ -28,13 +28,7 @@ import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '.
 import { URLParams } from '../ResourceBrowser/Types'
 import './clusterNodes.scss'
 
-export default function NodeDetailsList({
-    isSuperAdmin,
-    renderRefreshBar,
-    addTab,
-    showStaleDataWarning,
-    markTerminalTabActive,
-}) {
+export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab, showStaleDataWarning }) {
     const { clusterId, nodeType } = useParams<URLParams>()
     const match = useRouteMatch()
     const location = useLocation()
@@ -568,7 +562,6 @@ export default function NodeDetailsList({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
         const url = location.pathname
-        markTerminalTabActive()
         history.push(
             `${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
         )

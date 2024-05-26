@@ -34,7 +34,6 @@ import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/Delete
 const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
-    markTabActiveByIdentifier,
     k8SObjectMapRaw,
     addTab,
     logSearchTerms,
@@ -236,7 +235,6 @@ const NodeDetailComponent = ({
         /* NOTE: this setTimeout is dangerous; Need to refactor later */
         if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
             setTimeout(() => {
-                /* NOTE: shouldn't this be _url instead of url */
                 let _urlToCreate = _url
 
                 const query = new URLSearchParams(window.location.search)
