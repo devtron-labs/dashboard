@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import {
-    showError,
-    Checkbox,
-    CHECKBOX_VALUE,
-    OptionType,
-    useEffectAfterMount,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'

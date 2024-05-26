@@ -207,9 +207,11 @@ const NodeComponent = ({
                                     <div className="" key={node.name}>
                                         {text}
                                     </div>
-                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4" onClick={stopPropagation}>
-                                        <ClipboardButton content={text} />
-                                    </div>
+                                    <button type="button" className="dc__unset-button-styles" onClick={stopPropagation}>
+                                        <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                            <ClipboardButton content={text} />
+                                        </div>
+                                    </button>
                                 </div>
                             )
                         }
@@ -332,7 +334,15 @@ const NodeComponent = ({
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                <div className="pl-8 pr-8" onClick={stopPropagation}><ClipboardButton content={node.name} /></div>
+                                                <button
+                                                    type="button"
+                                                    className="dc__unset-button-styles"
+                                                    onClick={stopPropagation}
+                                                >
+                                                    <div className="pl-8 pr-8">
+                                                        <ClipboardButton content={node.name} />
+                                                    </div>
+                                                </button>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -455,7 +465,8 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' && !isExternalApp && (
+                            node?.kind !== 'EndpointSlice' &&
+                            !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}

@@ -59,7 +59,7 @@ import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { GVKType } from '../ResourceBrowser/Types'
 
-export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) {
+const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -1116,3 +1116,5 @@ export default function NodeDetails({ isSuperAdmin, addTab, k8SObjectMapRaw }: C
         </div>
     )
 }
+
+export default NodeDetails

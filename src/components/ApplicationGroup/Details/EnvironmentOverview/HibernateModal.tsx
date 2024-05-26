@@ -1,6 +1,5 @@
 import {
     VisibleModal,
-    showError,
     stopPropagation,
     ButtonWithLoader,
     MODAL_TYPE,
