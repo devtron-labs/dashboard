@@ -318,6 +318,7 @@ const ResourceList = () => {
                         markTabActiveById={markTabActiveById}
                         stopTabByIdentifier={stopTabByIdentifier}
                         refreshData={refreshData}
+                        setIsDataStale={setIsDataStale}
                         isOverview={isOverviewNodeType}
                     />
                 </div>

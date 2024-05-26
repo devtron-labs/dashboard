@@ -31,6 +31,7 @@ export interface DynamicTabsProps {
     removeTabByIdentifier: ReturnType<typeof useTabs>['removeTabByIdentifier']
     markTabActiveById: ReturnType<typeof useTabs>['markTabActiveById']
     stopTabByIdentifier: ReturnType<typeof useTabs>['stopTabByIdentifier']
+    setIsDataStale: React.Dispatch<React.SetStateAction<boolean>>
     refreshData: () => void
     isOverview: boolean
 }
