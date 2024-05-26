@@ -16,6 +16,7 @@ const ResistantInput = importComponentFromFELibrary('ResistantInput')
 
 export const UnhibernateModal = ({
     selectedAppIds,
+    appDetailsList,
     envName,
     envId,
     setOpenUnhiberateModal,
@@ -23,6 +24,7 @@ export const UnhibernateModal = ({
     setShowHibernateStatusDrawer,
     showDefaultDrawer,
     isDeploymentLoading,
+    httpProtocol,
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -30,17 +32,20 @@ export const UnhibernateModal = ({
     const unhibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
-        manageApps(selectedAppIds, Number(envId), envName, 'unhibernate')
+        setOpenUnhiberateModal(false)
+        setShowHibernateStatusDrawer({
+            hibernationOperation: false,
+            showStatus: false,
+            inProgress: true,
+        })
+        manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'unhibernate', httpProtocol)
             .then((res) => {
-                setOpenUnhiberateModal(false)
-                setAppStatusResponseList(res?.result?.response)
+                setAppStatusResponseList(res)
                 setShowHibernateStatusDrawer({
                     hibernationOperation: false,
                     showStatus: true,
+                    inProgress: false,
                 })
-            })
-            .catch((err) => {
-                showError(err)
             })
             .finally(() => {
                 setLoader(false)

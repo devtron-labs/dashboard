@@ -72,6 +72,16 @@ export const responseListOrder = {
     [BulkResponseStatus.PASS]: 2,
 }
 
+export const BULK_HIBERNATE_ERROR_MESSAGE = {
+    [BulkResponseStatus.FAIL]: 'Hibernation could not be triggered',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
+export const BULK_UNHIBERNATE_ERROR_MESSAGE = {
+    [BulkResponseStatus.FAIL]: 'Unhibernation could not be triggered',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
 export const BULK_CI_MESSAGING = {
     emptyLinkedCI: {
         title: 'is using a linked build pipeline',
