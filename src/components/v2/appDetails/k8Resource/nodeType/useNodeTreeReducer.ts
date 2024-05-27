@@ -1,5 +1,4 @@
-import { NodeType } from '../../appDetails.type'
-import { AggregationKeys, getAggregator, iNode, Node } from '../../appDetails.type'
+import { AggregationKeys, getAggregator, iNode, Node, NodeType } from '../../appDetails.type'
 import { getPodsRootParentNameAndStatus, reduceKindStatus } from '../../index.store'
 
 export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {

@@ -744,7 +744,7 @@ export const CHART_REPO_LABEL = [
 ]
 
 /** 
-* @deprecated
+* @deprecated - use from fe-common
 */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
@@ -770,7 +770,7 @@ export enum TIMELINE_STATUS {
 }
 
 /** 
-* @deprecated
+* @deprecated - use from fe-common
 */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',

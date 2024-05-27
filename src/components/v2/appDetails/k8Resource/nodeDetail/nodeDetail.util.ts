@@ -9,6 +9,7 @@ import {
     PodContainerOptions,
     PodMetaData,
     SelectedResourceType,
+    NodeType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { ManifestData, NodeDetailTab } from './nodeDetail.type'
@@ -16,7 +17,6 @@ import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { decode } from '../../../../../util/Util'
-import { NodeType } from '../../appDetails.type'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {

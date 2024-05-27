@@ -6,11 +6,10 @@ import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { useRouteMatch, Redirect, useParams } from 'react-router'
 import { URLS } from '../../../config'
 import AppDetailsStore from './appDetails.store'
-import { NodeTreeDetailTabProps } from './appDetails.type'
+import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import IndexStore from './index.store'
 import NodeTreeTabList from './k8Resource/NodeTreeTabList'
-import { NodeType } from './appDetails.type'
 
 const NodeTreeDetailTab = ({
     appDetails,

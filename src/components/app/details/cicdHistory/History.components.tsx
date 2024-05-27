@@ -4,7 +4,6 @@ import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType } from './types'
-import { TIMELINE_STATUS } from '../../../../config'
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     const EmptyViewButton = () => {
@@ -25,18 +24,4 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
             renderButton={EmptyViewButton}
         />
     )
-}
-
-export const triggerStatus = (triggerDetailStatus: string): string => {
-    const triggerStatus = triggerDetailStatus?.toUpperCase()
-    if (triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
-        return 'Failed'
-    }
-    if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
-        return 'Succeeded'
-    }
-    if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
-        return 'Inprogress'
-    }
-    return triggerDetailStatus
 }

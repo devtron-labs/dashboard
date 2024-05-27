@@ -206,8 +206,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         }
     })
 
-    const triggerHistoryArray = Array.from(triggerHistory.values())
-
     const renderDetail = (): JSX.Element => {
         if (triggerHistory.size > 0 || fetchTriggerIdData) {
             const deploymentAppType = pipelineList.find(

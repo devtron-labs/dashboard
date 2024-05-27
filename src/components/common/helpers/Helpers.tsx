@@ -20,6 +20,7 @@ import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types
 import {
     getAggregator as getAppDetailsAggregator,
     AggregationKeys,
+    NodeType,
 } from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
@@ -27,7 +28,6 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { PATTERNS } from '../../../config/constants'
-import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
