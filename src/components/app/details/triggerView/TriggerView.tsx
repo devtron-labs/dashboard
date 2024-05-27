@@ -744,10 +744,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
         } else {
-            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE);
-            const approvalState = currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
-                ? TRIGGER_VIEW_PARAMS.PENDING
-                : TRIGGER_VIEW_PARAMS.APPROVAL;
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
+            const approvalState =
+                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                    ? TRIGGER_VIEW_PARAMS.PENDING
+                    : TRIGGER_VIEW_PARAMS.APPROVAL
 
             newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
