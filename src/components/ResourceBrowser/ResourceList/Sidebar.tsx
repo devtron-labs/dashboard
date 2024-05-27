@@ -131,10 +131,12 @@ const Sidebar = ({
         if (!isOpen || nodeType === selectedResource.gvk.Kind.toLowerCase()) {
             return
         }
-        const match = k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType)
-        if (!match) {
-            return
-        }
+        /* NOTE: match will never be null; due to node fallback */
+        const match =
+            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ||
+            k8sObjectOptionsList.find(
+                (option) => option.dataset.kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+            )
         /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
         selectNode(
             {

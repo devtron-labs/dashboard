@@ -144,14 +144,20 @@ const ResourceList = () => {
         }
         /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
         if (isOverviewNodeType) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)
+            if (tabs[FIXED_TABS_INDICES.OVERVIEW] && !tabs[FIXED_TABS_INDICES.OVERVIEW].isSelected) {
+                markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+            }
             return
         }
-        if (isTerminalNodeType && isSuperAdmin) {
-            markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)
+        if (isTerminalNodeType) {
+            if (tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL] && !tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isSelected) {
+                markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].id)
+            }
             return
         }
-        markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)
+        if (tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST] && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+        }
     }, [location.pathname])
 
     const onClusterChange = (selected) => {

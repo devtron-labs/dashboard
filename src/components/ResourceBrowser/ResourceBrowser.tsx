@@ -14,8 +14,14 @@ import { ClusterDetail } from '../ClusterNodes/types'
 import { AddClusterButton } from './PageHeader.buttons'
 
 const ResourceBrowser: React.FC = () => {
-    const [detailClusterListLoading, detailClusterList, detailClusterListError, reloadDetailClusterList] =
-        useAsync(getClusterList)
+    const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
+        try {
+            return await getClusterList()
+        } catch (err) {
+            showError(err)
+            return null
+        }
+    })
     const [initialLoading, data, error] = useAsync(() =>
         Promise.all([getClusterListMin(), window._env_?.K8S_CLIENT ? null : getUserRole()]),
     )
@@ -32,10 +38,6 @@ const ResourceBrowser: React.FC = () => {
     )
 
     const isSuperAdmin = userRoleData?.result.superAdmin || false
-
-    if (detailClusterListError) {
-        showError(detailClusterListError)
-    }
 
     const renderContent = () => {
         if (error) {
