@@ -1,4 +1,4 @@
-import { NodeType } from '../../appDetails.type'
+import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeDetailTabsType } from '../../../../app/types'
 
 export interface PodPopupProps {

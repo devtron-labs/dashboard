@@ -12,6 +12,7 @@ import {
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
+    NodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -28,7 +29,7 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
+import { AppType, ManifestActionPropsType } from '../../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,

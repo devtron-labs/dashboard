@@ -8,6 +8,7 @@ import {
     CHECKBOX_VALUE,
     useSearchString,
     MODAL_TYPE,
+    NodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
@@ -15,7 +16,7 @@ import { toast } from 'react-toastify'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import './nodeType.scss'
 import { deleteResource } from '../../appDetails.api'
-import { AppType, NodeDeleteComponentType, NodeType } from '../../appDetails.type'
+import { AppType, NodeDeleteComponentType } from '../../appDetails.type'
 import { appendRefetchDataToUrl } from '../../../../util/URLUtil'
 import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'

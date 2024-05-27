@@ -28,6 +28,9 @@ export const statusColor = {
     hibernating: 'var(--N700)',
 }
 
+/**
+ * @deprecated
+ */
 export const statusIcon = {
     failed: 'failed',
     queued: 'queued',

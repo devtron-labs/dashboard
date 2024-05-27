@@ -1,9 +1,10 @@
 import moment from 'moment'
+import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { LAST_SEEN } from '../../config'
 import { Nodes } from '../app/types'
 import { eventAgeComparator } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { getAggregator, NodeType } from '../v2/appDetails/appDetails.type'
+import { getAggregator } from '../v2/appDetails/appDetails.type'
 import { FIXED_GVK_Keys, K8S_EMPTY_GROUP, MARK_AS_STALE_DATA_CUT_OFF_MINS, SIDEBAR_KEYS } from './Constants'
 import { ApiResourceGroupType, K8SObjectChildMapType, K8SObjectMapType, K8SObjectType, K8sObjectOptionType, GVKType } from './Types'
 

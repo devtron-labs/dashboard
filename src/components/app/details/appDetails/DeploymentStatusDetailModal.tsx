@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
 import './appDetails.scss'
-import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, Progressing, DeploymentStatusDetailBreakdown } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentStatusDetailModal({
     appName,

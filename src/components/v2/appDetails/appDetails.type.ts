@@ -1,9 +1,8 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, NodeType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
-import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
 import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
@@ -65,50 +64,6 @@ export enum NodeStatus {
     Unknown = 'unknown',
 }
 
-export enum NodeType {
-    Service = 'Service',
-    Alertmanager = 'Alertmanager',
-    PodSecurity = 'PodSecurityPolicy',
-    ConfigMap = 'ConfigMap',
-    ServiceAccount = 'ServiceAccount',
-    ClusterRoleBinding = 'ClusterRoleBinding',
-    RoleBinding = 'RoleBinding',
-    ClusterRole = 'ClusterRole',
-    Role = 'Role',
-    Prometheus = 'Prometheus',
-    ServiceMonitor = 'ServiceMonitor',
-    Deployment = 'Deployment',
-    MutatingWebhookConfiguration = 'MutatingWebhookConfiguration',
-    DaemonSet = 'DaemonSet',
-    Secret = 'Secret',
-    ValidatingWebhookConfiguration = 'ValidatingWebhookConfiguration',
-    Pod = 'Pod',
-    Ingress = 'Ingress',
-    ReplicaSet = 'ReplicaSet',
-    Endpoints = 'Endpoints',
-    Cluster = 'ClusterRoleBinding',
-    PodSecurityPolicy = 'PodSecurityPolicy',
-    CronJob = 'CronJob',
-    Job = 'Job',
-    ReplicationController = 'ReplicationController',
-    StatefulSet = 'StatefulSet',
-    Rollout = 'Rollout',
-    PersistentVolumeClaim = 'PersistentVolumeClaim',
-    PersistentVolume = 'PersistentVolume',
-    Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
-    InitContainers = 'InitContainers',
-    EndpointSlice = 'EndpointSlice',
-    NetworkPolicy = 'NetworkPolicy',
-    StorageClass = 'StorageClass',
-    VolumeSnapshot = 'VolumeSnapshot',
-    VolumeSnapshotContent = 'VolumeSnapshotContent',
-    VolumeSnapshotClass = 'VolumeSnapshotClass',
-    PodDisruptionBudget = 'PodDisruptionBudget',
-    Event = 'Event',
-}
-
-// export type NodeType = keyof typeof NodeType;
-
 /**
  * 
  * @param nodeType 
@@ -162,48 +117,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
     }
 }
 
-export interface AppDetails {
-    appId?: number
-    appName: string
-    appStoreAppName?: string
-    appStoreAppVersion?: string
-    appStoreChartId?: number
-    appStoreChartName?: string
-    appStoreInstalledAppVersionId?: number
-    ciArtifactId?: number
-    deprecated?: false
-    environmentId?: number
-    environmentName: string
-    installedAppId?: number
-    instanceDetail?: null
-    k8sVersion?: string
-    lastDeployedBy?: string
-    lastDeployedTime: string
-    namespace: string
-    resourceTree: ResourceTree
-    materialInfo?: MaterialInfo[]
-    releaseVersion?: string
-    dataSource?: string
-    lastDeployedPipeline?: string
-    otherEnvironment?: OtherEnvironment[]
-    projectName?: string
-    appType?: AppType
-    helmReleaseStatus?: HelmReleaseStatus
-    clusterId: number
-    notes?: string
-    deploymentAppType?: DeploymentAppTypes
-    ipsAccessProvided?: boolean
-    externalCi?: boolean
-    clusterName?: string
-    dockerRegistryId?: string
-    deploymentAppDeleteRequest?: boolean
-    userApprovalConfig?: string
-    isVirtualEnvironment?: boolean
-    imageTag?: string
-    helmPackageName?: string
-    appStatus?: string
-    chartAvatar?: string
-}
+export type AppDetails = CommonAppDetails
 
 interface MaterialInfo {
     author: string
@@ -245,24 +159,8 @@ export interface Info {
     value: string
     name: string
 }
-export interface Node {
-    createdAt: Date
-    health: Health
-    kind: NodeType
-    name: string
-    namespace: string
-    networkingInfo: NetworkingInfo
-    resourceVersion: string
-    uid: string
-    version: string
-    parentRefs: Array<Node>
-    group: string
-    isSelected: boolean
-    info: Info[]
-    port: number
-    canBeHibernated: boolean
-    isHibernated: boolean
-}
+
+export type Node = CommonNode
 
 export interface Health {
     status: string
@@ -282,13 +180,9 @@ export interface TargetLabel {
     'app.kubernetes.io/name': string
 }
 
-export interface iNodes extends Array<iNode> {}
+export type iNode = CommoniNode
 
-export interface iNode extends Node {
-    childNodes: iNodes
-    type: NodeType
-    status: string
-}
+export interface iNodes extends Array<iNode> {}
 
 export interface AppStreamData {
     result: {

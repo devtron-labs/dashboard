@@ -1,10 +1,10 @@
 import { Moment } from 'moment'
+import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
     K8sResourcePayloadAppType,
     LogState,
-    NodeType,
     Options,
     OptionsBase,
     PodContainerOptions,

@@ -1,4 +1,5 @@
-import { AggregationKeys, getAggregator, iNode, Node, NodeType } from '../../appDetails.type'
+import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { AggregationKeys, getAggregator, iNode, Node } from '../../appDetails.type'
 import { getPodsRootParentNameAndStatus, reduceKindStatus } from '../../index.store'
 
 export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {

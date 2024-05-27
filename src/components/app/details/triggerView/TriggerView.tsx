@@ -14,6 +14,7 @@ import {
     HandleKeyValueChangeType,
     KeyValueListActionType,
     getIsRequestAborted,
+    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -72,7 +73,6 @@ import {
     processConsequenceData,
     processWorkflowStatuses,
 } from '../../../ApplicationGroup/AppGroup.utils'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'

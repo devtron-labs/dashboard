@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { Route } from 'react-router-dom'
-import { useInterval, mapByKey, asyncWrap, useAppContext } from '../../../common'
+import { useAppContext } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
-import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { getAppsCDConfigMin } from '../../AppGroup.service'
-import Sidebar from '../../../app/details/cicdHistory/Sidebar'
-import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
-import { getTriggerHistory } from '../../../app/details/cdDetails/service'
-import {
-    CICDSidebarFilterOptionType,
-    History,
-    HistoryComponentType,
-    FetchIdDataStatus,
-} from '../../../app/details/cicdHistory/types'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
@@ -49,7 +40,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
-        () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
+        () => getTriggerHistory({appId: Number(appId), envId: Number(envId), pagination}),
         [pagination, appId, envId],
         !!appId && !!pipelineId,
     )
@@ -127,7 +118,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
         const [error, result] = await asyncWrap(
-            getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
+            getTriggerHistory({appId: +appId, envId: +envId, pagination: { offset: 0, size: pagination.offset + pagination.size }}),
         )
         if (error) {
             showError(error)
@@ -237,9 +228,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         deploymentHistoryList={deploymentHistoryList}
                         deploymentAppType={deploymentAppType}
                         isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                        deploymentHistoryResult={
-                            deploymentHistoryResult?.result?.cdWorkflows || triggerHistoryArray || []
-                        }
                         appReleaseTags={appReleaseTags}
                         tagsEditable={tagsEditable}
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}

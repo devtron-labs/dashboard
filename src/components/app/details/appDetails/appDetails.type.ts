@@ -98,11 +98,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     }
 }
 
-export interface DeploymentStatusDetailBreakdownType {
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    isVirtualEnvironment?: boolean
-}
-
 export interface DeploymentStatusDetailModalType {
     appName: string
     environmentName: string
@@ -137,14 +132,6 @@ export interface DeploymentStatusDetailRowType {
     type: string
     hideVerticalConnector?: boolean
     deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
-}
-
-export interface ErrorInfoStatusBarType {
-    nonDeploymentError: string
-    type: string
-    errorMessage: string
-    hideVerticalConnector?: boolean
-    hideErrorIcon?: boolean
 }
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'

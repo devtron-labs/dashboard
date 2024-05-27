@@ -6,6 +6,7 @@ import {
     VisibleModal,
     stopPropagation,
     useSearchString,
+    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
@@ -17,7 +18,6 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 

@@ -10,6 +10,7 @@ import {
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
     ACTION_STATE,
+    NodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -20,7 +21,6 @@ import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types
 import {
     getAggregator as getAppDetailsAggregator,
     AggregationKeys,
-    NodeType,
 } from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
@@ -151,6 +151,9 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     return { state, disable, handleOnChange, handleOnSubmit }
 }
 
+/**
+ * @deprecated
+ */
 export function mapByKey<T = Map<any, any>>(arr: any[], id: string): T {
     if (!Array.isArray(arr)) {
         console.error(arr, 'is not array')
@@ -265,6 +268,9 @@ export const useIntersection = (
     return intersecting
 }
 
+/**
+ * @deprecated
+ */
 export function useInterval(callback, delay) {
     const savedCallback = useRef(null)
     // Remember the latest callback.
@@ -284,6 +290,9 @@ export function useInterval(callback, delay) {
     }, [delay])
 }
 
+/**
+ * @deprecated
+ */
 export function shallowEqual(objA, objB) {
     if (objA === objB) {
         return true
@@ -379,6 +388,9 @@ interface scrollableInterface {
     autoBottomScroll: boolean
 }
 
+/**
+ * @deprecated
+ */
 export function useScrollable(options: scrollableInterface) {
     const targetRef = useRef(null)
     const raf_id = useRef(0)
@@ -481,6 +493,9 @@ export function useScrollable(options: scrollableInterface) {
     return [target, topScrollable ? scrollToTop : null, bottomScrollable ? scrollToBottom : null]
 }
 
+/**
+ * @deprecated
+ */
 export function useKeyDown() {
     const [keys, setKeys] = useState([])
     useEffect(() => {
@@ -511,6 +526,9 @@ export function useKeyDown() {
     return keys
 }
 
+/**
+ * @deprecated
+ */
 function useDelayedEffect(callback, delay, deps = []) {
     const timeoutRef = useRef(null)
     useEffect(() => {
@@ -712,6 +730,9 @@ export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string)
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
 
+/**
+ * @deprecated
+ */
 export function asyncWrap(promise): any[] {
     return promise.then((result) => [null, result]).catch((err) => [err])
 }

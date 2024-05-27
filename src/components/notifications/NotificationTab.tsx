@@ -9,6 +9,7 @@ import {
     Checkbox,
     Reload,
     GenericEmptyState,
+    CiPipelineSourceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
@@ -35,7 +36,6 @@ import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { HostURLConfig } from '../../services/service.types'
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { renderPipelineTypeIcon } from './notifications.util'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 

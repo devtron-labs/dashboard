@@ -7,8 +7,7 @@ import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/no
 import 'xterm/css/xterm.css'
 import { Subject } from '../../util/Subject'
 import './LogViewer.scss'
-import { Scroller } from '../app/details/cicdHistory/History.components'
-
+import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
 interface logViewerInterface {
     rootClassName?: string
     style?: object

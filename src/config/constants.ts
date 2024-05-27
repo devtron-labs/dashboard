@@ -645,6 +645,9 @@ export const EVENT_STREAM_EVENTS_MAP = {
     ERROR: 'error',
 }
 
+/**
+ * @deprecated
+ */
 export const TERMINAL_STATUS_MAP = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
@@ -740,6 +743,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
+/** 
+* @deprecated
+*/
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -763,6 +769,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
+/** 
+* @deprecated
+*/
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
