@@ -12,9 +12,8 @@ import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle, ConditionalWrap,useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { Toggle, ConditionalWrap, useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -25,14 +24,12 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
-    canReviewConfig
+    canReviewConfig,
 }: TriggerViewConfigDiffProps) {
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const [activeSideNavOption, setActiveSideNavOption] = useState(
-        searchParams.config,
-    )
+    const [activeSideNavOption, setActiveSideNavOption] = useState(searchParams.config)
     const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
     const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
     const [editorValues, setEditorValues] = useState<{
@@ -158,7 +155,7 @@ export default function TriggerViewConfigDiff({
         set the current(lhs) and base(rhs) config value in code editor for the selected nav option, runs every on nav option selection
     */
 
-    const setParamsValue = ( configVal: string) => {
+    const setParamsValue = (configVal: string) => {
         const newParams = {
             ...searchParams,
             config: configVal,
@@ -480,7 +477,10 @@ export default function TriggerViewConfigDiff({
     }
 
     return (
-        <div className="trigger-view-config-diff__container dc__overflow-hidden">
+        <div
+            className="trigger-view-config-diff__container dc__overflow-hidden"
+            key={`${activeSideNavOption}-${selectedConfigToDeploy.value}`}
+        >
             {renderConfigDiffViewHeader()}
             <div className="trigger-view-config-diff__wrapper">
                 {renderAvailableDiffColumn()}
