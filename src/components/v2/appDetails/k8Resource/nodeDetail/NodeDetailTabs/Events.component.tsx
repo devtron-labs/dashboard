@@ -70,12 +70,9 @@ const EventsComponent = ({
         }
     }, [params.podName, params.node, params.nodeType, params.namespace])
 
-    return (
-        <div
-            className="events-table-container"
-            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
-        >
-            {isDeleted ? (
+    const renderContent = () => {
+        if (isDeleted) {
+            return (
                 <div>
                     <MessageUI
                         msg={MESSAGING_UI.NO_RESOURCE}
@@ -83,12 +80,22 @@ const EventsComponent = ({
                         minHeight={isResourceBrowserView ? '200px' : ''}
                     />
                 </div>
-            ) : (
-                (isResourceBrowserView || (pods && pods.length > 0)) && (
-                    <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
-                )
-            )}
-            {!isResourceBrowserView && pods.length === 0 && <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />}
+            )
+        }
+
+        if (events.length) {
+            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+        }
+
+        return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
+    }
+
+    return (
+        <div
+            className="events-table-container"
+            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
+        >
+            {renderContent()}
         </div>
     )
 }
