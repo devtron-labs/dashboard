@@ -479,7 +479,7 @@ export default function TriggerViewConfigDiff({
     return (
         <div
             className="trigger-view-config-diff__container dc__overflow-hidden"
-            key={`${activeSideNavOption}-${selectedConfigToDeploy.value}`}
+            key={`${activeSideNavOption}-${selectedConfigToDeploy?.value}`}
         >
             {renderConfigDiffViewHeader()}
             <div className="trigger-view-config-diff__wrapper">
