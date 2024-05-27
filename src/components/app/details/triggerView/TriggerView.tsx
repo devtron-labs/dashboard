@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react'
+import React, { Component } from 'react'
 import {
     ServerErrors,
     showError,
@@ -737,8 +737,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(this.props.location.search)
-        let approvalState = TRIGGER_VIEW_PARAMS.APPROVAL
-
         newParams.set(
             isApprovalNode ? TRIGGER_VIEW_PARAMS.APPROVAL_NODE : TRIGGER_VIEW_PARAMS.CD_NODE,
             cdNodeId.toString(),
