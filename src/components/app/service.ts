@@ -9,12 +9,16 @@ import {
     put,
     DATE_TIME_FORMAT_STRING,
     DeploymentWithConfigType,
-    History
+    History,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
+import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
+import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
+import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -330,13 +334,48 @@ export const triggerCDNode = (
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
-    const request = {
-        appIds,
-        environmentId: envId,
-        value,
-    }
-    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+    return new Promise((resolve) => {
+        ApiQueuingWithBatch(
+            appIds.map(
+                (appId) => () =>
+                    put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                        appIds: [appId],
+                        environmentId: envId,
+                        value: value,
+                    }),
+            ),
+            httpProtocol,
+        )
+            .then((results) => {
+                resolve(
+                    results.map((result, index) => {
+                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                            return result.value?.result.apps[0]
+                        }
+                        const response = {
+                            appId: appIds[index],
+                            status: '',
+                            message: '',
+                        }
+                        const errorReason = result.reason
+                        switch (errorReason.code) {
+                            case 403:
+                            case 422:
+                                response.status = BulkResponseStatus.UNAUTHORIZE
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
+                                break
+                            case 409:
+                            default:
+                                response.status = BulkResponseStatus.FAIL
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
+                        }
+                        return response
+                    }),
+                )
+            })
+            .catch(noop)
+    })
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
