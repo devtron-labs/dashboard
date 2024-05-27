@@ -134,7 +134,9 @@ const ResourceList = () => {
             /* NOTE if the corresponding tab exists return */
             const match = tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))
             if (match) {
-                markTabActiveById(match.id)
+                if (!match.isSelected) {
+                    markTabActiveById(match.id)
+                }
                 return
             }
             /* NOTE: even though addTab updates selection it will override url;
