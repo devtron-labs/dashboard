@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAsync, abortPreviousRequests } from '@devtron-labs/devtron-fe-common-lib'
 import { ApiResourceGroupType, K8SResourceTabComponentProps, URLParams } from '../Types'
@@ -14,12 +14,12 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     isSuperAdmin,
     addTab,
+    isOpen,
     showStaleDataWarning,
-    markTerminalTabActive,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId, nodeType } = useParams<URLParams>()
+    const { clusterId } = useParams<URLParams>()
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>({
         gvk: SIDEBAR_KEYS.nodeGVK,
         namespaced: false,
@@ -37,20 +37,9 @@ const K8SResourceTabComponent = ({
         [clusterId],
     )
 
-    useEffect(
-        () =>
-            nodeType !== SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase() &&
-            k8SObjectMap &&
-            setSelectedResource(
-                (prev) =>
-                    k8SObjectMap?.result.apiResources.find((item) => item.gvk.Kind.toLowerCase() === nodeType) || prev,
-            ),
-        [k8SObjectMap],
-    )
-
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
-    if (loading || error) {
+    if (loading || (error && error.code !== 403)) {
         return (
             <ConnectingToClusterState
                 loader={loading}
@@ -68,6 +57,7 @@ const K8SResourceTabComponent = ({
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
                 setSelectedResource={setSelectedResource}
+                isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />
@@ -79,7 +69,6 @@ const K8SResourceTabComponent = ({
                     addTab={addTab}
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
-                    markTerminalTabActive={markTerminalTabActive}
                 />
             ) : (
                 <K8SResourceList

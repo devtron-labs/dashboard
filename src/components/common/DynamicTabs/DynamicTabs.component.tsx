@@ -50,8 +50,9 @@ export const noMatchingTabs = () => 'No matching tabs'
 
 export const timerTransition = (): JSX.Element => {
     return (
-        <div className="ml-12 mr-4 flex">
+        <div className="ml-12 mr-4 flex dc__gap-8">
             <Progressing size={18} />
+            <span>Syncing...</span>
         </div>
     )
 }

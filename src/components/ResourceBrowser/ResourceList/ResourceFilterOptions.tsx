@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ConditionalWrap, useAsync, useRegisterShortcut, OptionType } from '@devtron-labs/devtron-fe-common-lib'
@@ -31,6 +31,7 @@ const ResourceFilterOptions = ({
 }: ResourceFilterOptionsProps & IWithShortcut) => {
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
+    const { replace } = useHistory()
     const { clusterId, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
@@ -38,7 +39,6 @@ const ResourceFilterOptions = ({
 
     const showShortcutKey = !isInputFocused && !searchText
 
-    /* TODO: Find use for this loading state */
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
     const namespaceOptions = useMemo(
@@ -55,7 +55,6 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        /* TODO: handle nicely */
         if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
             shortcut.registerShortcut(
@@ -72,8 +71,9 @@ const ResourceFilterOptions = ({
     }, [registerShortcut])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
-        // eslint-disable-next-line no-unused-expressions
-        ;(e.key === 'Escape' || e.key === 'Esc') && searchInputRef.current?.blur()
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            searchInputRef.current?.blur()
+        }
     }
 
     const handleOnChangeSearchText: React.FormEventHandler<HTMLInputElement> = (event): void => {
@@ -84,8 +84,9 @@ const ResourceFilterOptions = ({
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
-        updateK8sResourceTab(`${pathname}?${location.search}`)
+        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}?${location.search}`
+        updateK8sResourceTab(url)
+        replace(url)
         setSelectedNamespace(selected)
     }
 

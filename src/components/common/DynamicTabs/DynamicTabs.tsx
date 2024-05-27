@@ -32,8 +32,8 @@ const DynamicTabs = ({
     markTabActiveById,
     stopTabByIdentifier,
     refreshData,
-    isOverview,
     setIsDataStale,
+    isOverview,
 }: DynamicTabsProps & IWithShortcut) => {
     const { push } = useHistory()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
@@ -240,6 +240,7 @@ const DynamicTabs = ({
         if (option) {
             setSelectedTab(option)
             setIsMenuOpen(false)
+            markTabActiveById(option.id)
             push(option.url)
         }
     }
@@ -250,8 +251,10 @@ const DynamicTabs = ({
     }
 
     const escHandler = (e: React.KeyboardEvent) => {
-        // eslint-disable-next-line no-unused-expressions
-        e.key === 'Escape' && closeMenu()
+        if (e.key !== 'Escape') {
+            return
+        }
+        closeMenu()
     }
 
     const updateOnStaleData = (now: Dayjs) => {
@@ -263,40 +266,36 @@ const DynamicTabs = ({
         setIsDataStale(true)
     }
 
-    const timerTranspose = (output: string) => {
-        return (
-            <>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
-                    <div>
-                        <RefreshIcon
-                            data-testid="refresh-icon"
-                            className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
-                            onClick={refreshData}
-                        />
-                    </div>
-                </Tippy>
-                {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
-                    <div className="flex">
-                        {output}
-                        <span className="ml-2">ago</span>
-                    </div>
-                )}
-            </>
-        )
-    }
+    const timerTranspose = (output: string) => (
+        <>
+            <Tippy className="default-tt" arrow={false} placement="top" content="Sync Now">
+                <span>
+                    <RefreshIcon
+                        data-testid="refresh-icon"
+                        className="icon-dim-16 scn-6 flexbox mr-6 cursor ml-12"
+                        onClick={refreshData}
+                    />
+                </span>
+            </Tippy>
+            {selectedTab?.name === AppDetailsTabs.k8s_Resources && (
+                <div className="flex">
+                    {output}
+                    <span className="ml-2">ago</span>
+                </div>
+            )}
+        </>
+    )
 
-    const timerForSync = () => {
-        return (
-            selectedTab && (
-                <Timer
-                    start={selectedTab.lastSyncMoment}
-                    callback={updateOnStaleData}
-                    transition={timerTransition}
-                    transpose={timerTranspose}
-                />
-            )
+    const timerForSync = () =>
+        selectedTab && (
+            <Timer
+                key={selectedTab.componentKey}
+                start={selectedTab.lastSyncMoment}
+                callback={updateOnStaleData}
+                transition={timerTransition}
+                transpose={timerTranspose}
+            />
         )
-    }
 
     return (
         <div ref={tabsSectionRef} className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">

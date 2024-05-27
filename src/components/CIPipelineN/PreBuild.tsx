@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    PluginType,
+    ScriptType,
+    VariableType,
+    RefVariableType,
+    Progressing,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'

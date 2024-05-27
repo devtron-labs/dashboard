@@ -20,7 +20,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
         }
         if (eventsList && eventsList.length > 0) {
             return (
-                <div data-testid="app-events-container" className="cn-0 ">
+                <div data-testid="app-events-container" className="cn-0 h-100">
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
                             {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;

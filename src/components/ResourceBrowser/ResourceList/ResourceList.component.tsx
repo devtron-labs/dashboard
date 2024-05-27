@@ -165,7 +165,7 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
     <button
         type="button"
         className="dc__unset-button-styles"
-        key={kind}
+        key={text}
         ref={parentRef}
         data-group={group}
         data-version={version}

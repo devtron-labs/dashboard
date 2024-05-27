@@ -78,7 +78,7 @@ export const K8SResourceList = ({
     const _filters = getFilterOptionsFromSearchParams?.(location.search)
     const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
 
-    const [_resourceListLoader, _resourceList, resourceListDataError, reloadResourceListData] = useAsync(
+    const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
         () => {
             return abortPreviousRequests(
                 () =>
@@ -98,7 +98,7 @@ export const K8SResourceList = ({
         selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
     )
 
-    const resourceListLoader = _resourceListLoader || getIsRequestAborted(resourceListDataError)
+    const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
 
     const resourceList = _resourceList?.result || null
 
@@ -166,16 +166,20 @@ export const K8SResourceList = ({
             default:
                 break
         }
+        resourceList.data = resourceList.data.map((data, index) => ({ id: index, ...data }))
         handleFilterChanges(searchText, resourceList)
     }, [resourceList])
 
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
-        updateK8sResourceTab(`${location.pathname}?${searchParamString}`)
+        const _url = `${location.pathname}?${searchParamString}`
+        updateK8sResourceTab(_url)
+        push(_url)
         handleFilterChanges(text, resourceList)
-        /* eslint no-unused-expressions: ["error", { "allowShortCircuit": true }] */
-        text && setResourceListOffset(0) /* NOTE: if resourceListOffset is 0 setState is noop */
-        !text && setFilteredResourceList(resourceList?.data)
+        if (text) {
+            /* NOTE: if resourceListOffset is 0 setState is noop */
+            setResourceListOffset(0)
+        }
     }
 
     const handleResourceClick = (e) => {
@@ -192,8 +196,8 @@ export const K8SResourceList = ({
             kind = _kind
             resourceName = _resourceName
         } else {
-            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
-            kind = nodeType
+            kind = selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             resourceName = name
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
@@ -225,16 +229,16 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: ResourceDetailDataType, index: number): JSX.Element => {
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
         return (
             <div
-                key={`row--${index}-${resourceData.name}`}
+                key={`${resourceData.id}-${resourceData.name}`}
                 className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
@@ -280,7 +284,7 @@ export const K8SResourceList = ({
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.name}-${resourceData.namespace}-${resourceData.claim}`}
+                            key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
@@ -360,7 +364,7 @@ export const K8SResourceList = ({
         setResourceListOffset(0)
     }
 
-    if (resourceListDataError && !getIsRequestAborted(resourceListDataError)) {
+    if (resourceListDataError) {
         showError(resourceListDataError)
     }
 
@@ -394,7 +398,7 @@ export const K8SResourceList = ({
                 </div>
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
-                    .map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    .map((clusterData) => renderResourceRow(clusterData))}
             </div>
         )
     }

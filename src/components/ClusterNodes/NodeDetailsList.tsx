@@ -25,16 +25,11 @@ import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS, NODE_DETAILS_PAGE_SIZE_OPTIONS } from '../ResourceBrowser/Constants'
+import { URLParams } from '../ResourceBrowser/Types'
 import './clusterNodes.scss'
 
-export default function NodeDetailsList({
-    isSuperAdmin,
-    renderRefreshBar,
-    addTab,
-    showStaleDataWarning,
-    markTerminalTabActive,
-}) {
-    const { clusterId, nodeType } = useParams<{ [key: string]: string }>()
+export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab, showStaleDataWarning }) {
+    const { clusterId, nodeType } = useParams<URLParams>()
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -567,7 +562,6 @@ export default function NodeDetailsList({
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
         const url = location.pathname
-        markTerminalTabActive()
         history.push(
             `${url.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
         )

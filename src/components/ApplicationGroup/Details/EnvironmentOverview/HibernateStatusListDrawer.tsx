@@ -27,9 +27,7 @@ export default function HibernateStatusListDrawer({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    {isHibernating
-                        ? 'Hibernate applications'
-                        : 'Unhibernate applications'}
+                    {isHibernating ? 'Hibernate applications' : 'Unhibernate applications'}
                 </h2>
                 <button
                     type="button"
@@ -47,7 +45,7 @@ export default function HibernateStatusListDrawer({
         if (showHibernateStatusDrawer.inProgress) {
             return (
                 <GenericEmptyState
-                    classname='dc__text-center'
+                    classname="dc__text-center"
                     title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
                     subTitle="It might take some time depending upon the number of applications"
                     SvgImage={MechanicalOperation}

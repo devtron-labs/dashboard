@@ -48,8 +48,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     return (
         <div
             data-testid={dataTestId}
-            className={`dc__text-center ${theme || 'dark'}-background w-100 `}
-            style={{ paddingTop: '200px', minHeight: minHeight || '600px', flex: '1', ...bodyStyle }}
+            className={`dc__text-center h-100 flexbox dc__gap-8 dc__align-items-center dc__content-center ${theme || 'dark'}-background w-100 `}
         >
             <div>
                 {(() => {
@@ -78,7 +77,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                     }
                 })()}
             </div>
-            <div className="fs-14" style={{ marginTop: '8px', color: 'white', ...msgStyle }}>
+            <div className="fs-14 cn-0">
                 {msg}
             </div>
             {isShowActionButton && (

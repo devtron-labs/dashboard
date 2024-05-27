@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import ReactSelect, { components, MultiValue } from 'react-select'
+import ReactSelect, { components, MultiValue, SelectInstance } from 'react-select'
 import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
@@ -34,12 +34,14 @@ const MenuList = (props: any): JSX.Element => {
         selectedColumns,
         setAppliedColumns,
         setMenuOpen,
+        selectRef,
     }: {
         selectedColumns: MultiValue<ColumnMetadataType>
         appliedColumns: MultiValue<ColumnMetadataType>
         setAppliedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
         isMenuOpen: boolean
         setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+        selectRef: React.MutableRefObject<SelectInstance<ColumnMetadataType, true>>
     } = useColumnFilterContext()
     const handleApplySelectedColumns = (): void => {
         setMenuOpen(false)
@@ -47,9 +49,7 @@ const MenuList = (props: any): JSX.Element => {
         if (typeof Storage !== 'undefined') {
             localStorage.appliedColumns = JSON.stringify(_appliedColumns)
         }
-        if (props.selectRef.current) {
-            props.selectRef.current.blur()
-        }
+        selectRef.current?.blur()
         setAppliedColumns(_appliedColumns)
     }
     return (
@@ -70,26 +70,22 @@ export default function ColumnSelector() {
         setSelectedColumns,
         isMenuOpen,
         setMenuOpen,
+        selectRef,
     }: {
         appliedColumns: MultiValue<ColumnMetadataType>
         selectedColumns: MultiValue<ColumnMetadataType>
         setSelectedColumns: React.Dispatch<React.SetStateAction<MultiValue<ColumnMetadataType>>>
         isMenuOpen: boolean
         setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+        selectRef: React.MutableRefObject<SelectInstance<ColumnMetadataType, true>>
     } = useColumnFilterContext()
     const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
     const [columnFilterInput, setColumnFilterInput] = useState('')
-    const selectRef = useRef(null)
 
     useEffect(() => {
         setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
         setSelectedColumns(appliedColumns)
     }, [])
-
-    const renderMenuList = useCallback(
-        (props) => <MenuList {...props} selectRef={selectRef} />,
-        [selectRef]
-    )
 
     const handleMenuState = (menuOpenState: boolean): void => {
         if (menuOpenState) {
@@ -133,7 +129,7 @@ export default function ColumnSelector() {
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                MenuList: renderMenuList,
+                MenuList,
             }}
             styles={{
                 ...containerImageSelectStyles,
@@ -149,7 +145,7 @@ export default function ColumnSelector() {
                 }),
                 option: (base, state) => ({
                     ...base,
-                    padding: '10px 12px',
+                    padding: '10px 0',
                     backgroundColor: state.isFocused ? 'var(--N100) !important' : 'var(--N0) !important',
                     color: 'var(--N900)',
                     overflow: 'hidden',

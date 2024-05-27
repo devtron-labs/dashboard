@@ -28,12 +28,12 @@ import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/Delete
 const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
-    markTabActiveByIdentifier,
     k8SObjectMapRaw,
     addTab,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
+    updateTabUrl,
     isExternalApp,
 }: NodeDetailPropsType) => {
     const location = useLocation()
@@ -215,6 +215,7 @@ const NodeDetailComponent = ({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         setSelectedTabName(_tabName)
+        updateTabUrl?.(_url)
 
         /**
          * NOTE: resource browser handles creation of missing tabs;
@@ -228,7 +229,6 @@ const NodeDetailComponent = ({
         /* NOTE: this setTimeout is dangerous; Need to refactor later */
         if (!AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)) {
             setTimeout(() => {
-                /* NOTE: shouldn't this be _url instead of url */
                 let _urlToCreate = _url
 
                 const query = new URLSearchParams(window.location.search)
@@ -412,12 +412,7 @@ const NodeDetailComponent = ({
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div
-                            className="resource-node-wrapper"
-                            style={{
-                                minHeight: isResourceBrowserView ? '200px' : '',
-                            }}
-                        >
+                        <div className="flex-grow-1">
                             <LogsComponent
                                 key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}

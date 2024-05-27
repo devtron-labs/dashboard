@@ -1,5 +1,5 @@
-import React, { Fragment, useEffect, useRef, useState, useMemo, useCallback } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import React, { Fragment, useEffect, useRef, useState, useMemo } from 'react'
+import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -38,10 +38,12 @@ const Sidebar = ({
     setSelectedResource,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
+    isOpen,
     shortcut,
 }: SidebarType & IWithShortcut) => {
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
+    const { push } = useHistory()
     const { clusterId, namespace, nodeType } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
@@ -69,9 +71,7 @@ const Sidebar = ({
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
-        return (): void => {
-            shortcut.unregisterShortcut(['k'])
-        }
+        return () => shortcut.unregisterShortcut(['k'])
     }, [registerShortcut])
 
     const getGroupHeadingClickHandler =
@@ -84,6 +84,7 @@ const Sidebar = ({
     const selectNode = (
         e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
+        shouldPushUrl = true,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
@@ -101,6 +102,9 @@ const Sidebar = ({
         updateK8sResourceTabLastSyncMoment()
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
         updateK8sResourceTab(_url, e.currentTarget.dataset.kind)
+        if (shouldPushUrl) {
+            push(_url)
+        }
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -121,6 +125,30 @@ const Sidebar = ({
             })
         }
     }
+
+    useEffect(() => {
+        /* NOTE: this effect accommodates for user navigating through browser history (push) */
+        if (!isOpen || nodeType === selectedResource.gvk.Kind.toLowerCase()) {
+            return
+        }
+        /* NOTE: match will never be null; due to node fallback */
+        const match =
+            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ||
+            k8sObjectOptionsList.find(
+                (option) => option.dataset.kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+            )
+        /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
+        selectNode(
+            {
+                currentTarget: {
+                    dataset: match.dataset,
+                },
+            },
+            match.groupName,
+            /* NOTE: if we push here the history will be lost */
+            false,
+        )
+    }, [nodeType])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
@@ -182,13 +210,14 @@ const Sidebar = ({
                                 ['--rotateBy' as string]: value.isExpanded ? '90deg' : '0deg',
                             }}
                         />
-                        <span className={`fs-13 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
-                            {key}
-                        </span>
+                        <span className="fs-13 cn-9 fw-6 pointer w-100 pt-6 pb-6">{key}</span>
                     </div>
                 </button>
                 <div className="pl-20 flexbox-col">
-                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+                    {value.isExpanded &&
+                        value.data.map((_child) => (
+                            <React.Fragment key={_child.gvk.Group}>{renderChild(_child, true)}</React.Fragment>
+                        ))}
                 </div>
             </Fragment>
         )
@@ -234,32 +263,31 @@ const Sidebar = ({
         )
     }
 
-    const formatOptionLabel = useCallback(
-        (option: K8sObjectOptionType, formatOptionLabelMeta: FormatOptionLabelMeta<K8sObjectOptionType>) => {
-            return (
-                <div className="flex left column">
-                    {!formatOptionLabelMeta.inputValue ? (
-                        <span className="w-100 dc__ellipsis-right">{option.label}</span>
-                    ) : (
-                        <span
-                            className="w-100 dc__ellipsis-right"
-                            /* eslint-disable react/no-danger */
-                            dangerouslySetInnerHTML={{
-                                // sanitize necessary to prevent XSS attacks
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText: formatOptionLabelMeta.inputValue,
-                                        text: option.label,
-                                        highlightClasses: 'kind-search-select__option--highlight',
-                                    }),
-                                ),
-                            }}
-                        />
-                    )}
-                </div>
-            )
-        },
-        [],
+    const formatOptionLabel = (
+        option: K8sObjectOptionType,
+        formatOptionLabelMeta: FormatOptionLabelMeta<K8sObjectOptionType>,
+    ) => (
+        <div className="flexbox-col left column">
+            {!formatOptionLabelMeta.inputValue ? (
+                <span className="w-100 dc__ellipsis-right">{option.label}</span>
+            ) : (
+                <span
+                    className="w-100 dc__ellipsis-right"
+                    /* eslint-disable react/no-danger */
+                    dangerouslySetInnerHTML={{
+                        // sanitize necessary to prevent XSS attacks
+                        __html: DOMPurify.sanitize(
+                            highlightSearchText({
+                                searchText: formatOptionLabelMeta.inputValue,
+                                text: option.label,
+                                highlightClasses: 'kind-search-select__option--highlight',
+                            }),
+                        ),
+                    }}
+                />
+            )}
+            <span className="fs-12 cn-7 lh-18 dc__ellipsis-right">{option.description}</span>
+        </div>
     )
 
     const getOptionLabel = (option: K8sObjectOptionType) => {
@@ -321,7 +349,7 @@ const Sidebar = ({
                             group={SIDEBAR_KEYS.eventGVK.Group}
                             version={SIDEBAR_KEYS.eventGVK.Version}
                             kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            namespaced={false}
+                            namespaced
                             isSelected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         />
@@ -358,7 +386,7 @@ const Sidebar = ({
                                             }}
                                         />
                                         <span
-                                            className="fs-13 fw-6 pointer w-100 pt-6 pb-6"
+                                            className="fs-13 cn-9 fw-6 pointer w-100 pt-6 pb-6"
                                             data-testid={`k8sObject-${k8sObject.name}`}
                                         >
                                             {k8sObject.name}

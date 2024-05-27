@@ -114,6 +114,7 @@ export interface SidebarType {
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
     isClusterError?: boolean
 }
 
@@ -185,6 +186,7 @@ export interface ConnectingToClusterStateProps {
 }
 
 export interface K8sObjectOptionType extends OptionType {
+    description: string
     dataset: {
         group: string
         version: string
@@ -205,9 +207,9 @@ export interface K8SResourceTabComponentProps {
     renderRefreshBar: () => JSX.Element
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
-    markTerminalTabActive: () => void
     updateK8sResourceTab: (url: string, dynamicTitle: string) => void
     updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
 }
 
 export interface AdminTerminalProps {

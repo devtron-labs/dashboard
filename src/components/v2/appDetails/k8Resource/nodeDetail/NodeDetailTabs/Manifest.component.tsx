@@ -55,6 +55,7 @@ const ManifestComponent = ({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
+    /* TODO: can be unified later with resource browser */
     const params = useParams<{
         actionName: string
         podName: string
@@ -208,7 +209,7 @@ const ManifestComponent = ({
                         }
                     })
                     .catch((err) => {
-                        setLoading(false)
+                        /* NOTE: if the user switches tab after dismount don't set state */
                         /* if the user aborted using tab switch don't show error */
                         if (
                             err instanceof ServerErrors &&
@@ -217,6 +218,7 @@ const ManifestComponent = ({
                         ) {
                             return
                         }
+                        setLoading(false)
                         setError(true)
                         showError(err)
                     })
@@ -453,7 +455,7 @@ const ManifestComponent = ({
     }
 
     return isDeleted ? (
-        <div>
+        <div className="h-100">
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
@@ -462,9 +464,9 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container `}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flex-grow-1 `}
             data-testid="app-manifest-container"
-            style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
+            style={{ background: '#0B0F22' }}
         >
             {error && !loading && (
                 <MessageUI
@@ -474,7 +476,7 @@ const ManifestComponent = ({
                 />
             )}
             {!error && (
-                <div className="bcn-0">
+                <div className="bcn-0 h-100">
                     {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&

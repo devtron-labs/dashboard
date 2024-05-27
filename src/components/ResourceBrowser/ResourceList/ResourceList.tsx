@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     getUserRole,
     BreadCrumb,
@@ -11,6 +11,7 @@ import {
     PageHeader,
     UseRegisterShortcutProvider,
     getResourceGroupListRaw,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ShortcutProvider } from 'react-keybind'
 import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
@@ -35,26 +36,23 @@ const ResourceList = () => {
     const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
     const { replace } = useHistory()
     const { url } = useRouteMatch()
+    const location = useLocation()
     const {
         tabs,
         initTabs,
         addTab,
-        markTabActiveByIdentifier,
         markTabActiveById,
         removeTabByIdentifier,
         updateTabUrl,
         updateTabComponentKey,
         updateTabLastSyncMoment,
         stopTabByIdentifier,
+        getTabId,
     } = useTabs(URLS.RESOURCE_BROWSER)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
 
-    /* TODO: Find use for this error */
-    const [rawGVKLoader, k8SObjectMapRaw /* rawGVKError */] = useAsync(
-        () => getResourceGroupListRaw(clusterId),
-        [clusterId],
-    )
+    const [rawGVKLoader, k8SObjectMapRaw] = useAsync(() => getResourceGroupListRaw(clusterId), [clusterId])
 
     const [loading, data, error] = useAsync(() =>
         Promise.all([getClusterListMin(), window._env_.K8S_CLIENT ? null : getUserRole()]),
@@ -89,35 +87,80 @@ const ResourceList = () => {
 
     const isSuperAdmin = !!userRole?.result.superAdmin
 
+    const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
+    const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
+
     /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
     const dynamicActiveTab = tabs.find((tab) => tab.position === Number.MAX_SAFE_INTEGER && tab.isSelected)
 
-    const initTabsBasedOnRole = (reInit: boolean) => {
+    const getDynamicTabData = () => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
         const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+        return {
+            idPrefix: isNodeTypeNode
+                ? K8S_EMPTY_GROUP
+                : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
+            name: node,
+            kind: nodeType,
+            url,
+            isSelected: true,
+            position: Number.MAX_SAFE_INTEGER,
+        }
+    }
+
+    const initTabsBasedOnRole = (reInit: boolean) => {
+        /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
         const _tabs = getTabsBasedOnRole(
             selectedCluster,
             namespace,
             isSuperAdmin,
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
-            node && {
-                idPrefix: isNodeTypeNode
-                    ? K8S_EMPTY_GROUP
-                    : `${(!isNodeTypeEvent && group) || K8S_EMPTY_GROUP}_${namespace}`,
-                name: node,
-                kind: nodeType,
-                url,
-                isSelected: true,
-                position: Number.MAX_SAFE_INTEGER,
-            },
-            nodeType === AppDetailsTabs.terminal,
+            node && getDynamicTabData(),
+            isTerminalNodeType,
         )
-
         initTabs(_tabs, reInit)
     }
 
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
+
+    useEffectAfterMount(() => {
+        /* NOTE: tab selection is interactively done through dynamic tab button clicks
+         * but to ensure consistency with url changes and user moving back through browser history,
+         * correct active tab state is ensured by this effect */
+        if (node) {
+            /* NOTE: if a dynamic tab was removed & user tries to get there through url add it */
+            const { idPrefix, kind, name, url: _url } = getDynamicTabData()
+            /* NOTE if the corresponding tab exists return */
+            const match = tabs.find((tab) => tab.id === getTabId(idPrefix, name, kind))
+            if (match) {
+                if (!match.isSelected) {
+                    markTabActiveById(match.id)
+                }
+                return
+            }
+            /* NOTE: even though addTab updates selection it will override url;
+             * thus to prevent that if found markTabActive and don't let this get called */
+            addTab(idPrefix, kind, name, _url).then(noop).catch(noop)
+            return
+        }
+        /* NOTE: it is unlikely that tabs is empty when this is called but it can happen */
+        if (isOverviewNodeType) {
+            if (tabs[FIXED_TABS_INDICES.OVERVIEW] && !tabs[FIXED_TABS_INDICES.OVERVIEW].isSelected) {
+                markTabActiveById(tabs[FIXED_TABS_INDICES.OVERVIEW].id)
+            }
+            return
+        }
+        if (isTerminalNodeType) {
+            if (tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL] && !tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].isSelected) {
+                markTabActiveById(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].id)
+            }
+            return
+        }
+        if (tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST] && !tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].isSelected) {
+            markTabActiveById(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
+        }
+    }, [location.pathname])
 
     const onClusterChange = (selected) => {
         if (selected.value === selectedCluster?.value) {
@@ -180,37 +223,26 @@ const ResourceList = () => {
         }
     }
 
-    const renderBreadcrumbs = () => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
-    }
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
-        if (!terminalTab && terminalTab.name !== AppDetailsTabs.terminal) {
+        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal || !terminalTab.isSelected) {
             return
         }
         updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
-        if (!terminalTab.isSelected) {
-            return
-        }
         replace({ search: queryParams })
     }
 
-    const updateK8sResourceTab = (_url: string, dynamicTitle = '') => {
-        updateTabUrl(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id, _url, dynamicTitle)
-        replace(_url)
-    }
-
-    const updateK8sResourceTabLastSyncMoment = () => {
+    const updateK8sResourceTabLastSyncMoment = () =>
         updateTabLastSyncMoment(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST].id)
-    }
 
-    const getMarkTabActiveByIdSetter =
-        (id = '') =>
-        () =>
-            id && markTabActiveById(id)
+    const getUpdateTabUrlForId = (id: string) => (_url: string, dynamicTitle?: string) =>
+        updateTabUrl(id, _url, dynamicTitle)
 
-    const renderDynamicTabComponent = (): JSX.Element => {
+    const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
+
+    const renderDynamicTabComponent = (tabId: string): JSX.Element => {
         if (!node) {
             return null
         }
@@ -221,20 +253,19 @@ const ResourceList = () => {
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
             />
         ) : (
-            <div className="resource-details-container">
+            <div className="resource-details-container flexbox-col">
                 <NodeDetailComponent
                     key={dynamicActiveTab.componentKey}
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    markTabActiveByIdentifier={markTabActiveByIdentifier}
                     addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
-                    removeTabByIdentifier={removeTabByIdentifier}
+                    removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
+                    updateTabUrl={getUpdateTabUrlForId(tabId)}
                 />
             </div>
         )
@@ -245,7 +276,6 @@ const ResourceList = () => {
             key={tabs[FIXED_TABS_INDICES.OVERVIEW]?.componentKey}
             isSuperAdmin={isSuperAdmin}
             selectedCluster={selectedCluster}
-            markNodesTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.OVERVIEW]?.id)}
         />,
         <K8SResourceTabComponent
             key={tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.componentKey}
@@ -257,9 +287,9 @@ const ResourceList = () => {
                 refreshData,
             )}
             isSuperAdmin={isSuperAdmin}
+            isOpen={!!tabs?.[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.isSelected}
             showStaleDataWarning={isDataStale}
-            markTerminalTabActive={getMarkTabActiveByIdSetter(tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]?.id)}
-            updateK8sResourceTab={updateK8sResourceTab}
+            updateK8sResourceTab={getUpdateTabUrlForId(tabs[FIXED_TABS_INDICES.K8S_RESOURCE_LIST]?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
         />,
         ...(isSuperAdmin &&
@@ -275,50 +305,44 @@ const ResourceList = () => {
             : []),
     ]
 
-    const renderInvisible = (component: React.ReactNode, hide: boolean) => {
-        return <div className={hide ? `hidden` : ''}>{component}</div>
-    }
-
     const renderMainBody = () => {
         if (error) {
-            return (
-                <div className="flex" style={{ height: 'calc(100vh - 48px)' }}>
-                    <ErrorScreenManager code={error.code} />
-                </div>
-            )
+            return <ErrorScreenManager code={error.code} />
         }
 
         if (loading) {
-            return (
-                <div style={{ height: 'calc(100vh - 48px)' }}>
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
-                </div>
-            )
+            return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
         }
 
         return (
             <>
                 <div
-                    className="h-36 flexbox dc__content-space"
-                    style={{
-                        boxShadow: 'inset 0 -1px 0 0 var(--N200)',
-                    }}
+                    className="h-36 resource-browser-tab flex left w-100"
+                    style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
                 >
-                    <div className="resource-browser-tab flex left w-100">
-                        <DynamicTabs
-                            tabs={tabs}
-                            removeTabByIdentifier={removeTabByIdentifier}
-                            markTabActiveById={markTabActiveById}
-                            stopTabByIdentifier={stopTabByIdentifier}
-                            refreshData={refreshData}
-                            isOverview={nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}
-                            setIsDataStale={setIsDataStale}
-                        />
-                    </div>
+                    <DynamicTabs
+                        tabs={tabs}
+                        removeTabByIdentifier={removeTabByIdentifier}
+                        markTabActiveById={markTabActiveById}
+                        stopTabByIdentifier={stopTabByIdentifier}
+                        refreshData={refreshData}
+                        setIsDataStale={setIsDataStale}
+                        isOverview={isOverviewNodeType}
+                    />
                 </div>
+                {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}
+                {dynamicActiveTab && renderDynamicTabComponent(dynamicActiveTab.id)}
                 {tabs.length > 0 &&
-                    fixedTabComponents.map((component, index) => renderInvisible(component, !tabs[index].isSelected))}
-                {dynamicActiveTab && renderDynamicTabComponent()}
+                    fixedTabComponents.map((component, index) => {
+                        /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
+                        const hideClassName =
+                            tabs[index].name === AppDetailsTabs.terminal ? 'dc__visibility-hidden' : 'dc__hide-section'
+                        return (
+                            <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
+                                {component}
+                            </div>
+                        )
+                    })}
             </>
         )
     }

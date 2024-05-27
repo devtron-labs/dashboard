@@ -1,6 +1,7 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
@@ -66,6 +67,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
 
         _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
         const _childObj = _k8SObjectMap.get(splittedKey[0])
+        _childObj.isExpanded = true
         _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
         _k8SObjectMap.set(splittedKey[0], _childObj)
     } else {
@@ -131,6 +133,7 @@ export const getScrollableResourceClass = (
 /* This is a utility function used in #convertK8sObjectMapToOptionsList */
 const newK8sObjectOption = (
     label: string,
+    description: string,
     gvk: GVKType,
     namespaced: boolean,
     grouped: boolean,
@@ -138,6 +141,7 @@ const newK8sObjectOption = (
 ): K8sObjectOptionType => {
     return {
         label,
+        description,
         value: gvk.Group || K8S_EMPTY_GROUP,
         dataset: {
             group: gvk.Group,
@@ -167,14 +171,14 @@ export const convertK8sObjectMapToOptionsList = (
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, '', SIDEBAR_KEYS.namespaceGVK, false, false, ''),
                     )
                     break
 
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.events, SIDEBAR_KEYS.eventGVK, true, false, ''),
+                        newK8sObjectOption(SIDEBAR_KEYS.events, '', SIDEBAR_KEYS.eventGVK, true, false, ''),
                     )
                     break
 
@@ -183,6 +187,7 @@ export const convertK8sObjectMapToOptionsList = (
                         _k8sObjectOptionsList.push(
                             newK8sObjectOption(
                                 data.gvk.Kind,
+                                k8sObjectChild.data.length === 1 ? '' : data.gvk.Group,
                                 data.gvk,
                                 data.namespaced,
                                 k8sObject.child.size > 1,
@@ -194,7 +199,7 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, SIDEBAR_KEYS.nodeGVK, false, false, ''))
+    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, '', SIDEBAR_KEYS.nodeGVK, false, false, ''))
 
     return _k8sObjectOptionsList
 }
@@ -272,7 +277,6 @@ export const getTabsBasedOnRole = (
     return tabs
 }
 
-/* TODO: add types */
 export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map<string, K8SObjectMapType> => {
     if (!resource) {
         return null
@@ -302,13 +306,15 @@ export const getRenderNodeButton =
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
-        <button
-            type="button"
-            className="dc__link dc__ellipsis-right dc__block cursor"
-            data-name={resourceData[columnName]}
-            onClick={handleNodeClick}
-            aria-label={`Select ${resourceData[columnName]}`}
-        >
-            {children}
-        </button>
+        <Tippy className="default-tt" arrow={false} placement="top" content={resourceData[columnName]}>
+            <button
+                type="button"
+                className="dc__unset-button-styles dc__ellipsis-right dc__block"
+                data-name={resourceData[columnName]}
+                onClick={handleNodeClick}
+                aria-label={`Select ${resourceData[columnName]}`}
+            >
+                <span className="dc__link">{children}</span>
+            </button>
+        </Tippy>
     )

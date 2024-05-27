@@ -29,7 +29,39 @@ import { importComponentFromFELibrary } from '../common'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 
-function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: ClusterOverviewProps) {
+/* TODO: move into utils */
+const metricsApiTippyContent = () => (
+    <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
+        Devtron uses Kubernetes’s&nbsp;
+        <a
+            href="https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-api"
+            rel="noreferrer noopener"
+            target="_blank"
+        >
+            Metrics API
+        </a>
+        &nbsp; to show CPU and Memory Capacity. Please install metrics-server in this cluster to display CPU and Memory
+        Capacity.
+    </div>
+)
+
+/* TODO: move into utils */
+const tippyForMetricsApi = () => {
+    return (
+        <div className="flexbox dc__gap-6">
+            <span>NA</span>
+            <InfoIconTippy
+                heading="Metrics API is not available"
+                additionalContent={metricsApiTippyContent()}
+                documentationLinkText="View metrics-server helm chart"
+                documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
+                iconClassName="icon-dim-20 ml-8 fcn-5"
+            />
+        </div>
+    )
+}
+
+function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps) {
     const { clusterId, namespace } = useParams<{
         clusterId: string
         namespace: string
@@ -52,21 +84,6 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
 
     const requestAbortControllerRef = useRef(null)
-
-    const metricsApiTippyContent = () => (
-        <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
-            Devtron uses Kubernetes’s&nbsp;
-            <a
-                href="https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-api"
-                rel="noreferrer noopener"
-                target="_blank"
-            >
-                Metrics API
-            </a>
-            &nbsp; to show CPU and Memory Capacity. Please install metrics-server in this cluster to display CPU and
-            Memory Capacity.
-        </div>
-    )
 
     const handleRetry = async () => {
         abortRequestAndResetError(true)
@@ -217,7 +234,6 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
                 nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
                 group: K8S_EMPTY_GROUP,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
-        markNodesTabActive()
         history.push(newUrl)
     }
 
@@ -275,111 +291,6 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
             </div>
         )
     }
-
-    const tippyForMetricsApi = () => {
-        return (
-            <div className="flexbox dc__gap-6">
-                <span>NA</span>
-                <InfoIconTippy
-                    heading="Metrics API is not available"
-                    additionalContent={metricsApiTippyContent()}
-                    documentationLinkText="View metrics-server helm chart"
-                    documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}/?appStoreName=metrics-server`}
-                    iconClassName="icon-dim-20 ml-8 fcn-5"
-                />
-            </div>
-        )
-    }
-
-    // const cardDetailsInBar = () => {
-    //     /* Commented to be used in future*/
-
-    //     const tempData = {
-    //         totalNodes: 13,
-    //         onDemand: { value: 9, color: '#ABCFF3' },
-    //         fallback: { value: 0, color: '#FFB549' },
-    //         spot: { value: 4, color: '#06C' },
-    //     }
-    //     const tempData2 = {
-    //         totalPods: 140,
-    //         scheduled: { value: 122, color: '#B94DC8' },
-    //         unscheduled: { value: 18, color: '#D0D4D9' },
-    //     }
-    //     const onDemandPercentage = (tempData.onDemand.value / tempData.totalNodes) * 100
-    //     const fallbackPercentage = (tempData.fallback.value / tempData.totalNodes) * 100
-    //     const spotPercentage = (tempData.spot.value / tempData.totalNodes) * 100
-    //     const scheduledPercentage = (tempData2.scheduled.value / tempData2.totalPods) * 100
-    //     const unscheduledPercentage = (tempData2.unscheduled.value / tempData2.totalPods) * 100
-    //     return (
-    //         <div className="flexbox dc__column-gap-24">
-    //             <div className="w-50 bcn-0 flexbox-col">
-    //                 <div className="flexbox dc__column-gap-32">
-    //                     <div>
-    //                         <div className="dc__align-left fs-13 fw-4 cn-7">Total Nodes</div>
-    //                         <div className="dc__align-left fs-20 fw-6 cb-5">{tempData.totalNodes}</div>
-    //                     </div>
-    //                     <div>
-    //                         <div className="flexbox  dc__align-items-center">
-    //                             <div className="mw-4 h-12 bcb-2 mr-4 br-2"></div>
-    //                             <div className="dc__align-left fs-13 fw-4 cn-7">On Demand</div>
-    //                         </div>
-    //                         <div className="dc__align-left fs-20 fw-4 cn-9">{tempData.onDemand.value}</div>
-    //                     </div>
-    //                     <div>
-    //                         <div className="flexbox dc__align-items-center">
-    //                             <div className="mw-4 h-12 bcy-5 mr-4 br-2"></div>
-    //                             <div className="dc__align-left fs-13 fw-4 cn-7">Fallback</div>
-    //                         </div>
-    //                         <div className="dc__align-left fs-20 fw-4 cn-9">{tempData.fallback.value}</div>
-    //                     </div>
-    //                     <div>
-    //                         <div className="flexbox dc__align-items-center">
-    //                             <div className="mw-4 h-12 bcb-5 mr-4 br-2"></div>
-    //                             <div className="dc__align-left fs-13 fw-4 cn-7">Spot</div>
-    //                         </div>
-    //                         <div className="dc__align-left fs-20 fw-4 cn-9">{tempData.spot.value}</div>
-    //                     </div>
-    //                 </div>
-    //                 <div
-    //                     className="h-8 br-4"
-    //                     style={{
-    //                         width: '100%',
-    //                         backgroundImage: `linear-gradient(to right,${tempData.onDemand.color} ${onDemandPercentage}%, ${tempData.fallback.color} ${fallbackPercentage}%, ${tempData.spot.color} ${spotPercentage}%)`,
-    //                     }}
-    //                 ></div>
-    //             </div>
-    //             <div className="dc__content-space w-50 bcn-0 flexbox-col">
-    //                 <div className="flexbox dc__column-gap-32">
-    //                     <div>
-    //                         <div className="dc__align-left fs-13 fw-4 cn-7">Total Pods</div>
-    //                         <div className="dc__align-left fs-20 fw-6 cb-5">{tempData2.totalPods}</div>
-    //                     </div>
-    //                     <div>
-    //                         <div className="flexbox dc__align-items-center">
-    //                             <div className="mw-4 h-12 mr-4 br-2" style={{ backgroundColor: '#B94DC8' }}></div>
-    //                             <div className="dc__align-left fs-13 fw-4 cn-7">Scheduled</div>
-    //                         </div>
-    //                         <div className="dc__align-left fs-20 fw-4 cn-9">{tempData2.scheduled.value}</div>
-    //                     </div>
-    //                     <div>
-    //                         <div className="flexbox dc__align-items-center">
-    //                             <div className="mw-4 h-12 bcn-2 mr-4 br-2"></div>
-    //                             <div className="dc__align-left fs-13 fw-4 cn-7">Unscheduled</div>
-    //                         </div>
-    //                         <div className="dc__align-left fs-20 fw-4 cn-9">{tempData2.unscheduled.value}</div>
-    //                     </div>
-    //                 </div>
-    //                 <div
-    //                     className="h-8 br-4"
-    //                     style={{
-    //                         width: '100%',
-    //                         backgroundImage: `linear-gradient(to right,${tempData2.scheduled.color} ${scheduledPercentage}%, ${tempData2.unscheduled.color} ${unscheduledPercentage}%)`,
-    //                     }}
-    //                 ></div>
-    //             </div>
-    //         </div>
-    //     )
-    // }
 
     const renderCardDetails = () => {
         return (
@@ -472,17 +383,6 @@ function ClusterOverview({ isSuperAdmin, selectedCluster, markNodesTabActive }: 
                 </div>
                 <div className="dc__border-top-n1" />
                 <div className="flexbox-col dc__gap-12">
-                    {/* Commented code since reponse is not coming from backend */}
-                    {/* <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4" data-testid="overview-project">
-                            Cluster Provider
-                        </div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterInfo.clusterProvider}</div>
-                    </div> */}
-                    {/* <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Region</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterInfo.Region}</div>
-                    </div> */}
                     <div>
                         <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Added on</div>
                         <div className="fs-13 fw-6 lh-20 cn-9 dc__ellipsis-right">{clusterDetails.addedOn}</div>

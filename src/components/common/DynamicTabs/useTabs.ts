@@ -108,7 +108,6 @@ export function useTabs(persistanceKey: string) {
         let parsedTabsData: ParsedTabsData
         setTabs((prevTabs) => {
             if (!reInit) {
-                /* FIXME: graceful handling of data upon finding old persisted-tabs-data */
                 const persistedTabsData = localStorage.getItem('persisted-tabs-data')
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
@@ -117,11 +116,19 @@ export function useTabs(persistanceKey: string) {
                     _tabs = prevTabs
                 }
             }
-            _tabs.forEach((_tab) => {
-                // eslint-disable-next-line no-param-reassign
-                _tab.isSelected = false
-            })
             if (_tabs.length > 0) {
+                _tabs = _tabs.map((_tab, index) => ({
+                    ..._tab,
+                    isSelected: false,
+                    /* NOTE: following lines migrate old tab data to new */
+                    lastSyncMoment: dayjs(),
+                    // @ts-expect-error relic of old type
+                    position: _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
+                    ...(_tab.componentKey
+                        ? { componentKey: _tab.componentKey }
+                        : { componentKey: getNewTabComponentKey(_tab.id) }),
+                    ...(_tab.isAlive ? { isAlive: _tab.isAlive } : { isAlive: false }),
+                }))
                 if (tabsToRemove?.length) {
                     _tabs = _tabs.filter((_tab) => tabsToRemove.indexOf(_tab.id) === -1)
                 }
@@ -132,6 +139,10 @@ export function useTabs(persistanceKey: string) {
                         return true
                     }
                     _tabs[index].isSelected = _initTab.isSelected
+                    /* NOTE: dynamic title might get updated between re-initialization */
+                    _tabs[index].dynamicTitle = _initTab.dynamicTitle
+                    _tabs[index].isAlive = _initTab.isAlive
+                    _tabs[index].position = _initTab.position
                     return false
                 })
                 _tabs = _tabs.concat(initTabsNotInTabs.map((_initTab) => populateInitTab(_initTab)))
@@ -140,8 +151,9 @@ export function useTabs(persistanceKey: string) {
                     _tabs.push(populateInitTab(_initTab))
                 })
             }
-            // eslint-disable-next-line no-unused-expressions
-            _tabs.some((_tab) => _tab.isSelected) || (_tabs[FALLBACK_TAB].isSelected = true)
+            if (!_tabs.some((_tab) => _tab.isSelected)) {
+                _tabs[FALLBACK_TAB].isSelected = true
+            }
             _tabs.sort((a, b) => {
                 /* NOTE: to mitigate Integer overflow using this comparison */
                 if (a.position < b.position) {
@@ -338,6 +350,9 @@ export function useTabs(persistanceKey: string) {
      * @returns {boolean} - True if the tab was found and marked as active
      */
     const markTabActiveById = (id: string) => {
+        if (!id) {
+            return
+        }
         setTabs((prevTabs) => {
             const _tabs = prevTabs.map((tab) => {
                 const isMatch = tab.id === id
@@ -404,8 +419,9 @@ export function useTabs(persistanceKey: string) {
     }
 
     /* TODO: reuse this */
-    const getTabId = (idPrefix: string, name: string) => {
-        return `${idPrefix}-${name}`
+    const getTabId = (idPrefix: string, name: string, kind: string) => {
+        const title = kind ? `${kind}/${name}` : name
+        return `${idPrefix}-${title}`
     }
 
     const updateTabComponentKey = (id: string) => {

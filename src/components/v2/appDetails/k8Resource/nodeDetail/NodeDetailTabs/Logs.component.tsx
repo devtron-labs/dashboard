@@ -458,13 +458,11 @@ const LogsComponent = ({
     }
 
     return isDeleted ? (
-        <div>
-            <MessageUI
-                msg="This resource no longer exists"
-                size={32}
-                minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-            />
-        </div>
+        <MessageUI
+            msg="This resource no longer exists"
+            size={32}
+            minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
+        />
     ) : (
         <>
             <div className="node-container-fluid bcn-0">

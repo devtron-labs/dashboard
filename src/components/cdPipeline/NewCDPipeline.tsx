@@ -21,11 +21,7 @@ import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'reac
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import {
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -468,12 +464,9 @@ export default function NewCDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                    selection: YAMLStringify(
-                        allStrategies.current[pipelineConfigFromRes.strategies[i].config],
-                        {
-                            indent: 2,
-                        },
-                    ),
+                    selection: YAMLStringify(allStrategies.current[pipelineConfigFromRes.strategies[i].config], {
+                        indent: 2,
+                    }),
                     isCollapsed: true,
                 })
                 form.strategies = form.strategies.filter(
