@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
 import {
     ServerErrors,
     showError,
@@ -737,6 +737,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(this.props.location.search)
+        let approvalState = TRIGGER_VIEW_PARAMS.APPROVAL
+
         newParams.set(
             isApprovalNode ? TRIGGER_VIEW_PARAMS.APPROVAL_NODE : TRIGGER_VIEW_PARAMS.CD_NODE,
             cdNodeId.toString(),
@@ -744,7 +746,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
         } else {
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE);
+            const approvalState = currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                ? TRIGGER_VIEW_PARAMS.PENDING
+                : TRIGGER_VIEW_PARAMS.APPROVAL;
+
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
         }
