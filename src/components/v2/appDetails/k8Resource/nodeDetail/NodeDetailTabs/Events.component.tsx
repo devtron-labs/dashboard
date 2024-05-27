@@ -26,7 +26,6 @@ const EventsComponent = ({
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const appDetails = IndexStore.getAppDetails()
-    const pods = IndexStore.getNodesByKind(NodeType.Pod)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
