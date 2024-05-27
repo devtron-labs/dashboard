@@ -1,9 +1,10 @@
 import React from 'react'
-import { ModuleNameMap, useMainContext, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { ModuleNameMap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { NodeDetailTabs } from '../../../../app/types'
 import { PodPopupProps } from './types'
 import { ReactComponent as ICDeleteInteractive } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { NodeType } from '../../appDetails.type'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
 
@@ -17,7 +18,7 @@ const PodPopup = ({
 }: PodPopupProps) => {
     const { installedModuleMap } = useMainContext()
     const showResourceScanModal = getShowResourceScanModal(
-        kind,
+        kind as NodeType,
         installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
     )
 

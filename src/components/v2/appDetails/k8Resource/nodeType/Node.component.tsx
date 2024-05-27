@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton, NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
+import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
-import { Node, iNode, NodeComponentProps } from '../../appDetails.type'
+import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
@@ -339,7 +339,7 @@ const NodeComponent = ({
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
                                                     } en-2 bw-1 br-4 dc__w-fit-content`}
                                                 >
-                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                    {getNodeDetailTabs(node.kind as NodeType).map((kind, index) => {
                                                         return (
                                                             <div
                                                                 key={`tab__${index}`}
@@ -351,7 +351,7 @@ const NodeComponent = ({
                                                                         ? ''
                                                                         : 'resource-action-tabs__active'
                                                                 }  ${
-                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                    index === getNodeDetailTabs(node.kind as NodeType)?.length - 1
                                                                         ? ''
                                                                         : 'dc__border-right'
                                                                 } pl-6 pr-6`}

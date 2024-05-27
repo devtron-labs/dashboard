@@ -10,7 +10,6 @@ import {
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
     ACTION_STATE,
-    NodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -28,6 +27,7 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { PATTERNS } from '../../../config/constants'
+import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void

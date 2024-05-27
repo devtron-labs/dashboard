@@ -1,12 +1,11 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { NavLink } from 'react-router-dom'
-import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
 import { useSharedState } from '../../../utils/useSharedState'
-import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus } from '../../appDetails.type'
+import { AggregationKeys, getAggregator, NodeType, iNode, iNodes, NodeStatus } from '../../appDetails.type'
 import { URLS } from '../../../../../config'
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg'
 

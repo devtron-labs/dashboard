@@ -1,5 +1,5 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { OptionType, NodeType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
@@ -62,6 +62,48 @@ export enum NodeStatus {
     Missing = 'missing',
     Suspended = 'suspended',
     Unknown = 'unknown',
+}
+
+export enum NodeType {
+    Service = 'Service',
+    Alertmanager = 'Alertmanager',
+    PodSecurity = 'PodSecurityPolicy',
+    ConfigMap = 'ConfigMap',
+    ServiceAccount = 'ServiceAccount',
+    ClusterRoleBinding = 'ClusterRoleBinding',
+    RoleBinding = 'RoleBinding',
+    ClusterRole = 'ClusterRole',
+    Role = 'Role',
+    Prometheus = 'Prometheus',
+    ServiceMonitor = 'ServiceMonitor',
+    Deployment = 'Deployment',
+    MutatingWebhookConfiguration = 'MutatingWebhookConfiguration',
+    DaemonSet = 'DaemonSet',
+    Secret = 'Secret',
+    ValidatingWebhookConfiguration = 'ValidatingWebhookConfiguration',
+    Pod = 'Pod',
+    Ingress = 'Ingress',
+    ReplicaSet = 'ReplicaSet',
+    Endpoints = 'Endpoints',
+    Cluster = 'ClusterRoleBinding',
+    PodSecurityPolicy = 'PodSecurityPolicy',
+    CronJob = 'CronJob',
+    Job = 'Job',
+    ReplicationController = 'ReplicationController',
+    StatefulSet = 'StatefulSet',
+    Rollout = 'Rollout',
+    PersistentVolumeClaim = 'PersistentVolumeClaim',
+    PersistentVolume = 'PersistentVolume',
+    Containers = 'Containers', // containers are being treated same way as nodes for nested table generation
+    InitContainers = 'InitContainers',
+    EndpointSlice = 'EndpointSlice',
+    NetworkPolicy = 'NetworkPolicy',
+    StorageClass = 'StorageClass',
+    VolumeSnapshot = 'VolumeSnapshot',
+    VolumeSnapshotContent = 'VolumeSnapshotContent',
+    VolumeSnapshotClass = 'VolumeSnapshotClass',
+    PodDisruptionBudget = 'PodDisruptionBudget',
+    Event = 'Event',
 }
 
 /**

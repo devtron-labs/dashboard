@@ -1,4 +1,4 @@
-import { NodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeType } from '../../appDetails.type'
 import { AggregationKeys, getAggregator, iNode, Node } from '../../appDetails.type'
 import { getPodsRootParentNameAndStatus, reduceKindStatus } from '../../index.store'
 
@@ -8,7 +8,7 @@ export const getTreeNodesWithChild = (_nodes: Node[]): iNode[] => {
 
     const nodesByAggregator = _nodes.reduce(
         (nodesByAggregator: Map<string, Map<string, string | [string, string][]>>, node: Node) => {
-            const agg = getAggregator(node.kind)
+            const agg = getAggregator(node.kind as NodeType)
             if (!nodesByAggregator.get(agg)) {
                 nodesByAggregator.set(agg, new Map<string, string | [string, string][]>())
             }
