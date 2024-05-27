@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { toast } from 'react-toastify'
 import { withRouter } from 'react-router-dom'
 import {
@@ -770,7 +770,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <form
                         className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20"
                         autoComplete="off"
-                        key={this.state.providerTab}
                         onKeyDown={handleDisableSubmitOnEnter}
                     >
                         {/* TODO: Can convert it to config based component */}
@@ -842,9 +841,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 // WARNING: Won't work in case we feed bitbucket dc as provider.
                                 isActive={this.state.lastActiveGitOp?.provider === this.state.providerTab}
                                 isAWSCodeCommit={this.isAWSCodeCommitTabSelected()}
+                                key={this.state.providerTab}
                             />
                         ) : (
-                            <>
+                            <Fragment key={this.state.providerTab}>
                                 {/* TODO: can abstract these checks of bitbucket */}
                                 {/* FIXME: These changes should be derived from handleChange */}
                                 {window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE &&
@@ -1063,7 +1063,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         />
                                     </div>
                                 </div>
-                            </>
+                            </Fragment>
                         )}
 
                         <hr />
