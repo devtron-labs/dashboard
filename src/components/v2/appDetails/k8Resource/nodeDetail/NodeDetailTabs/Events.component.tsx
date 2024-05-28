@@ -29,10 +29,6 @@ const EventsComponent = ({
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
-
-        if (!appDetails) {
-            // Refresh case -- need to sent to k8 , histrory push
-        }
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
