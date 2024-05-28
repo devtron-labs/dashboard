@@ -12,10 +12,14 @@ export default () => {
 
     function getFilteredList({ searchText, list }) {
         const searchTextLowerCased = searchText.toLowerCase()
+        if (searchTextLowerCased === '' || !list?.length) {
+            self.postMessage(list)
+            return
+        }
         self.postMessage(
-            list.filter((item) => Object.values(item).some((value: any) =>
-                String(value).toLowerCase().includes(searchTextLowerCased)
-            ))
+            list.filter((item) =>
+                Object.values(item).some((value: any) => String(value).toLowerCase().includes(searchTextLowerCased)),
+            ),
         )
     }
 

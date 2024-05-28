@@ -9,7 +9,7 @@ import {
     noop,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
@@ -62,6 +62,7 @@ const ClusterTerminal = ({
     updateTerminalTabUrl,
 }: ClusterTerminalType) => {
     const { nodeType } = useParams<URLParams>()
+    const { replace } = useHistory()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
@@ -159,6 +160,9 @@ const ClusterTerminal = ({
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
         updateTerminalTabUrl(queryParams.toString())
+        if (nodeType === AppDetailsTabs.terminal) {
+            replace({ search: queryParams.toString() })
+        }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     const socketDisconnecting = (): void => {

@@ -220,3 +220,15 @@
 .resource-details-container {
     height: calc(100vh - 84px);
 }
+
+.cluster-terminal-hidden {
+    visibility: hidden;
+    height: 0;
+    .terminal-action-strip {
+        display: none;
+      }
+}
+
+.cluster-terminal-hidden * {
+    height: 0 !important;
+}

@@ -227,11 +227,10 @@ const ResourceList = () => {
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL]
-        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal || !terminalTab.isSelected) {
+        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
             return
         }
         updateTabUrl(terminalTab.id, `${terminalTab.url.split('?')[0]}?${queryParams}`)
-        replace({ search: queryParams })
     }
 
     const updateK8sResourceTabLastSyncMoment = () =>
@@ -336,7 +335,9 @@ const ResourceList = () => {
                     fixedTabComponents.map((component, index) => {
                         /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
                         const hideClassName =
-                            tabs[index].name === AppDetailsTabs.terminal ? 'dc__visibility-hidden' : 'dc__hide-section'
+                            tabs[index].name === AppDetailsTabs.terminal
+                                ? 'cluster-terminal-hidden'
+                                : 'dc__hide-section'
                         return (
                             <div key={component.key} className={!tabs[index].isSelected ? hideClassName : ''}>
                                 {component}
@@ -350,7 +351,7 @@ const ResourceList = () => {
     return (
         <UseRegisterShortcutProvider>
             <ShortcutProvider>
-                <div className="resource-browser-container dc__overflow-hidden h-100 bcn-0">
+                <div className="resource-browser-container h-100 bcn-0">
                     <PageHeader
                         isBreadcrumbs
                         breadCrumbs={renderBreadcrumbs}

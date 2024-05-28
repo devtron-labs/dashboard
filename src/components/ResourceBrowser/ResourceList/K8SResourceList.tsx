@@ -134,22 +134,20 @@ export const K8SResourceList = ({
         setPageSize(100)
     }, [nodeType])
 
-    const handleFilterChanges = (_searchText: string, data: ResourceDetailType): void => {
+    const handleFilterChanges = (_searchText: string): void => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
             searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
         }
 
-        if (resourceList) {
-            searchWorkerRef.current.postMessage({
-                type: 'start',
-                payload: {
-                    searchText: _searchText,
-                    list: data?.data || [],
-                    origin: new URL(window.__BASE_URL__, window.location.href).origin,
-                },
-            })
-        }
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: resourceList?.data || [],
+                origin: new URL(window.__BASE_URL__, window.location.href).origin,
+            },
+        })
     }
 
     useEffect(() => {
@@ -168,7 +166,7 @@ export const K8SResourceList = ({
                 break
         }
         resourceList.data = resourceList.data.map((data, index) => ({ id: index, ...data }))
-        handleFilterChanges(searchText, resourceList)
+        handleFilterChanges(searchText)
     }, [resourceList])
 
     const setSearchText = (text: string) => {
@@ -176,7 +174,7 @@ export const K8SResourceList = ({
         const _url = `${location.pathname}?${searchParamString}`
         updateK8sResourceTab(_url)
         push(_url)
-        handleFilterChanges(text, resourceList)
+        handleFilterChanges(text)
         if (text) {
             /* NOTE: if resourceListOffset is 0 setState is noop */
             setResourceListOffset(0)
@@ -330,10 +328,10 @@ export const K8SResourceList = ({
     }
 
     const emptyStateActionHandler = () => {
-        setFilteredResourceList(resourceList?.data)
         setSearchText('')
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
         updateK8sResourceTab(pathname)
+        push(pathname)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
     }
 
