@@ -24,6 +24,7 @@ import {
     abortPreviousRequests,
     getIsRequestAborted,
     usePrompt,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -32,7 +33,6 @@ import {
     DEFAULT_GIT_BRANCH_VALUE,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     NO_COMMIT_SELECTED,
-    SourceTypeMap,
     ViewType,
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
@@ -163,7 +163,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
     // Mapping pipelineId to runtime params
     const [runtimeParams, setRuntimeParams] = useState<Record<string, KeyValueListType[]>>({})
-    const [isBulkTriggerLoading, setBulkTriggerLoading] = useState<boolean>(false)
+    const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
@@ -1446,7 +1446,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         type: WorkflowNodeType,
         skippedResources: ResponseRowType[] = [],
     ): void => {
-        setBulkTriggerLoading(true)
+        setIsBulkTriggerLoading(true)
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
             ApiQueuingWithBatch(promiseFunctionList, httpProtocol.current).then((responses: any[]) => {
@@ -1517,14 +1517,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 updateResponseListData(_responseList)
                 setCDLoading(false)
                 setCILoading(false)
-                setBulkTriggerLoading(false)
+                setIsBulkTriggerLoading(false)
                 preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
             setCDLoading(false)
             setCILoading(false)
-            setBulkTriggerLoading(false)
+            setIsBulkTriggerLoading(false)
 
             if (!skippedResources.length) {
                 setShowBulkCDModal(false)
