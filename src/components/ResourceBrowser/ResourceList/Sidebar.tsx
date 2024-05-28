@@ -10,17 +10,11 @@ import {
     ReactSelectInputAction,
     useRegisterShortcut,
     Nodes,
+    ApiResourceGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
-import {
-    ApiResourceGroupType,
-    K8SObjectChildMapType,
-    K8SObjectMapType,
-    K8sObjectOptionType,
-    SidebarType,
-    URLParams,
-} from '../Types'
+import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType, URLParams } from '../Types'
 import { AggregationKeys } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'

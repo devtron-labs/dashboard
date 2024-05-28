@@ -1,11 +1,10 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, OptionType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
 import { useTabs } from '../../common/DynamicTabs/useTabs'
-import { ApiResourceGroupType } from '../../ResourceBrowser/Types'
 import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {

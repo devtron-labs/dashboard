@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactSelect, { components, MultiValue, SelectInstance } from 'react-select'
 import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'

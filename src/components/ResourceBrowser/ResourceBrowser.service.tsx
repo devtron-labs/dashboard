@@ -1,4 +1,4 @@
-import { ApiResourceType, get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceType, get, post, ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
@@ -7,7 +7,6 @@ import {
     ResourceListPayloadType,
     ResourceListResponse,
     K8Abbreviates,
-    ApiResourceGroupType,
 } from './Types'
 import { K8_ABBREVIATES, ALL_NAMESPACE_OPTION } from './Constants'
 

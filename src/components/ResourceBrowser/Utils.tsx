@@ -2,18 +2,17 @@ import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import { ApiResourceGroupType, GVKType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
-    ApiResourceGroupType,
     ClusterOptionType,
     K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     K8sObjectOptionType,
-    GVKType,
     FIXED_TABS_INDICES,
     ResourceDetailDataType,
 } from './Types'

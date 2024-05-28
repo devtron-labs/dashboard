@@ -18,7 +18,7 @@ export interface ResourceListResponse extends ResponseType {
 }
 
 /**
- * @deprecated Use this type form common lib instead
+ * @deprecated Use this type from common lib instead
  */
 export interface GVKType {
     Group: string
@@ -27,7 +27,7 @@ export interface GVKType {
 }
 
 /**
- * @deprecated Use this type form common lib instead
+ * @deprecated Use this type from common lib instead
  */
 export interface ApiResourceGroupType {
     gvk: GVKType

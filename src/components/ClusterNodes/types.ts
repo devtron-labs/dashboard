@@ -1,10 +1,10 @@
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ApiResourceGroupType, ClusterOptionType, ResourceDetailDataType } from '../ResourceBrowser/Types'
+import { ClusterOptionType, ResourceDetailDataType } from '../ResourceBrowser/Types'
 import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {

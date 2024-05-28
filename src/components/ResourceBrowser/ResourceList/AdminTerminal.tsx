@@ -35,7 +35,6 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
     }
 
     if (error || !selectedDetailsCluster?.nodeCount || !namespaceList?.length) {
-        console.log(selectedDetailsCluster?.nodeCount, namespaceList)
         /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
         /* NOTE: the above happens in case of bad cluster setup */
         const errCode = error?.code || 403
