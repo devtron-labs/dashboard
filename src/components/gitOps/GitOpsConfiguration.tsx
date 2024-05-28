@@ -64,7 +64,15 @@ const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     }
 }
 
-const GitProviderTab: React.FC<GitProviderTabProps> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading, datatestid }) => {
+const GitProviderTab: React.FC<GitProviderTabProps> = ({
+    providerTab,
+    handleGitopsTab,
+    lastActiveGitOp,
+    provider,
+    gitops,
+    saveLoading,
+    datatestid,
+}) => {
     const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
 
@@ -210,7 +218,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                const bitbucketCloudConfig = response.result?.find((item) => item.provider === GitProvider.BITBUCKET_CLOUD)
+                const bitbucketCloudConfig = response.result?.find(
+                    (item) => item.provider === GitProvider.BITBUCKET_CLOUD,
+                )
                 const bitbucketDCConfig = response.result?.find((item) => item.provider === 'BITBUCKET_DC')
                 const isBitbucketCloud =
                     (!bitbucketCloudConfig && !bitbucketDCConfig) ||
@@ -297,7 +307,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError: {
                 ...this.state.isError,
                 [key]:
-                    (key === 'token' && this.state.form.id) || event.target.value.length !== 0
+                    ((key === 'token' || key === 'sshKey') && this.state.form.id) || event.target.value.length !== 0
                         ? ''
                         : 'This is a required field',
                 ...(key === 'sshHost' && { sshHost: this.isValidSSHUrl(event.target.value) }),
@@ -339,7 +349,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 username: this.requiredFieldCheck(form.username),
                 sshHost: this.requiredFieldCheck(form.sshHost) || this.isValidSSHUrl(form.sshHost),
                 // REQUIREMENT: Do not TRIM this field
-                sshKey: this.requiredFieldCheck(form.sshKey),
+                sshKey: this.state.form.id ? '' : this.requiredFieldCheck(form.sshKey),
             }
         }
 
@@ -754,6 +764,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             sshKey={{ value: this.state.form.sshKey, error: this.state.isError.sshKey }}
                             username={{ value: this.state.form.username, error: this.state.isError.username }}
                             handleChange={this.handleChange}
+                            id={this.state.form.id}
+                            isActive={this.state.lastActiveGitOp?.provider === GitProvider.AWS_CODE_COMMIT}
                         />
                     ) : (
                         <>
@@ -814,7 +826,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 name="Enter host"
                                 error={this.state.isError.host}
                                 label={getGitOpsLabel()}
-                                tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                 dataTestid={
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
@@ -864,7 +875,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                             value={this.state.form.bitBucketWorkspaceId}
                                             onChange={(event) => this.handleChange(event, 'bitBucketWorkspaceId')}
                                             error={this.state.isError.bitBucketWorkspaceId}
-                                            tabIndex={1}
                                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                             dataTestid="gitops-bitbucket-workspace-id-textbox"
                                             isRequiredField
@@ -880,7 +890,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         LinkAndLabelSpec[this.state.providerTab]['linkText'],
                                     )}
                                     value={this.state.form[key]}
-                                    tabIndex={2}
                                     error={this.state.isError[key]}
                                     onChange={(event) => {
                                         this.handleChange(event, key)
@@ -919,7 +928,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         onChange={(event) => this.handleChange(event, 'username')}
                                         name="Enter username"
                                         error={this.state.isError.username}
-                                        tabIndex={3}
                                         label={
                                             this.state.providerTab === GitProvider.GITLAB
                                                 ? 'GitLab Username'
@@ -958,7 +966,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         )}
                                         value={this.state.form.token}
                                         onChange={(event) => this.handleChange(event, 'token')}
-                                        tabIndex={4}
                                         error={this.state.isError.token}
                                         onFocus={handleOnFocus}
                                         labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
@@ -984,7 +991,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     <div>
                         <div className="form__row flex left">
                             <div className="fw-6 cn-9 fs-14 mb-16">Directory management in Git</div>
-                            {/* TODO: Add value in case of aws code commit */}
                             {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
                                 <RadioGroup
                                     className="radio-group-no-border"
@@ -1039,7 +1045,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 this.saveGitOps()
                             }}
                             data-testid="gitops-save-button"
-                            tabIndex={5}
                             className={`cta m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
                         >
                             {this.state.saveLoading && !this.state.validateLoading ? (

@@ -15,6 +15,8 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
     setSelectedRepoType,
     authMode,
 }: UserGitRepoProps) => {
+    const isAuthModeSSH = authMode === GitOpsAuthModeType.SSH
+
     const repoTypeChange = () => {
         const newRepoType = selectedRepoType === repoType.DEFAULT ? repoType.CONFIGURE : repoType.DEFAULT
         setSelectedRepoType(newRepoType)
@@ -38,7 +40,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
     const InputUrlBox = () => {
         const _repoUrl = repoURL
         return (
-            <div className="ml-26 mt-8">
+            <div className={`${!isAuthModeSSH ? 'ml-26' : ''} mt-8`}>
                 <div className="gitops__id fw-5 fs-13 mb-8 dc__required-field">Git Repo URL</div>
                 <input
                     type="text"
@@ -74,7 +76,7 @@ const UserGitRepo: FunctionComponent<UserGitRepoProps> = ({
                     to sync with your live Kubernetes cluster.
                 </div>
 
-                {authMode !== GitOpsAuthModeType.SSH && (
+                {!isAuthModeSSH && (
                     <RadioGroup
                         className="radio-group-no-border mt-16"
                         name="trigger-type"
