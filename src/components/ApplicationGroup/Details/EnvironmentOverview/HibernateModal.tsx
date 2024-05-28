@@ -71,7 +71,7 @@ export const HibernateModal = ({
         return (
             <>
                 <div>
-                    {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernating' : 'Un-hibernation'} some
+                    {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernating' : 'Unhibernating'} some
                     applications is blocked due to deployment window
                 </div>
                 {ResistantInput && (
@@ -97,7 +97,7 @@ export const HibernateModal = ({
                                 <ICUnHibernate className="dc__align-left" />
                             )}
                             <span className="fs-16 fw-6">
-                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Un-hibernate'} '
+                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '
                                 {selectedAppIds.length}
                                 &nbsp;applications' on '{envName}'
                             </span>
@@ -117,7 +117,7 @@ export const HibernateModal = ({
                                 disabled={!showDefaultDrawer && isActionButtonDisabled}
                                 onClick={handleAction}
                             >
-                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Un-hibernate'}
+                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'}
                             </button>
                         </div>
                     </>
