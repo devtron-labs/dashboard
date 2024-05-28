@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Prompt, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import {
     CDMaterialResponseType,
@@ -23,10 +23,18 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
+import {
+    BUILD_STATUS,
+    DEFAULT_GIT_BRANCH_VALUE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
+    NO_COMMIT_SELECTED,
+    SourceTypeMap,
+    ViewType,
+} from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
@@ -50,7 +58,11 @@ import {
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
+import {
+    CI_MATERIAL_EMPTY_STATE_MESSAGING,
+    TIME_STAMP_ORDER,
+    TRIGGER_VIEW_PARAMS,
+} from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
@@ -97,7 +109,11 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const processDeploymentWindowStateAppGroup = importComponentFromFELibrary('processDeploymentWindowStateAppGroup', null, 'function')
+const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'processDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -106,6 +122,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const location = useLocation()
     const history = useHistory()
     const match = useRouteMatch<CIMaterialRouterProps>()
+
+    const httpProtocol = useRef('')
+    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
+    const handledLocation = useRef(false)
+    const abortControllerRef = useRef(new AbortController())
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isCILoading, setCILoading] = useState(false)
@@ -140,13 +161,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    const httpProtocol = useRef('')
     // Mapping pipelineId to runtime params
     const [runtimeParams, setRuntimeParams] = useState<Record<string, KeyValueListType[]>>({})
+    const [isBulkTriggerLoading, setBulkTriggerLoading] = useState<boolean>(false)
 
-    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
-    const handledLocation = useRef(false)
-    const abortControllerRef = useRef(new AbortController())
+    const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
+    usePrompt({ shouldPrompt: enableRoutePrompt })
 
     useEffect(() => {
         if (ApprovalMaterialModal) {
@@ -266,8 +286,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
-            if(processDeploymentWindowStateAppGroup && _workflows.length){
-              await processDeploymentWindowStateAppGroup(_workflows)
+            if (processDeploymentWindowStateAppGroup && _workflows.length) {
+                await processDeploymentWindowStateAppGroup(_workflows)
             }
             if (showCIModal) {
                 _workflows.forEach((wf) =>
@@ -892,12 +912,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
-        }
-        else {
+        } else {
             newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-
         }
         history.push({
             search: newParams.toString(),
@@ -1428,6 +1446,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         type: WorkflowNodeType,
         skippedResources: ResponseRowType[] = [],
     ): void => {
+        setBulkTriggerLoading(true)
         const _responseList = skippedResources
         if (promiseFunctionList.length) {
             ApiQueuingWithBatch(promiseFunctionList, httpProtocol.current).then((responses: any[]) => {
@@ -1463,7 +1482,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
+                        } else if (errorReason.code === 403 || errorReason.code === 422) {
+                            // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
@@ -1497,12 +1517,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 updateResponseListData(_responseList)
                 setCDLoading(false)
                 setCILoading(false)
+                setBulkTriggerLoading(false)
                 preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
             setCDLoading(false)
             setCILoading(false)
+            setBulkTriggerLoading(false)
+
             if (!skippedResources.length) {
                 setShowBulkCDModal(false)
                 setShowBulkCIModal(false)
@@ -2282,6 +2305,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             </>
         )
     }
+
     return (
         <div
             className="svg-wrapper-trigger app-group-trigger-view-container bcn-0"
@@ -2298,6 +2322,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     Select all apps
                 </Checkbox>
             </div>
+
+            <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache,

@@ -1,5 +1,5 @@
-import { VisibleModal, showError, stopPropagation, ButtonWithLoader, MODAL_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
+import { VisibleModal, stopPropagation, MODAL_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
 import { importComponentFromFELibrary } from '../../../common'
@@ -19,29 +19,23 @@ export const HibernateModal = ({
     showDefaultDrawer,
     httpProtocol,
 }: HibernateModalProps) => {
-    const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
     const hibernateApps = (e) => {
         e.preventDefault()
-        setLoader(true)
         setOpenHiberateModal(false)
         setShowHibernateStatusDrawer({
             hibernationOperation: true,
             showStatus: false,
             inProgress: true,
         })
-        manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'hibernate', httpProtocol)
-            .then((res) => {
-                setAppStatusResponseList(res)
-                setShowHibernateStatusDrawer({
-                    hibernationOperation: true,
-                    showStatus: true,
-                    inProgress: false,
-                })
+        manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'hibernate', httpProtocol).then((res) => {
+            setAppStatusResponseList(res)
+            setShowHibernateStatusDrawer({
+                hibernationOperation: true,
+                showStatus: true,
+                inProgress: false,
             })
-            .finally(() => {
-                setLoader(false)
-            })
+        })
     }
 
     const closeModal = () => {
@@ -90,18 +84,18 @@ export const HibernateModal = ({
                             <button
                                 onClick={closeModal}
                                 className="flex bcn-0 dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
-                                disabled={loader}
                             >
                                 Cancel
                             </button>
-                            <ButtonWithLoader
-                                rootClassName="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
-                                isLoading={loader}
+
+                            <button
+                                type="button"
+                                className="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
                                 disabled={!showDefaultDrawer && isActionButtonDisabled}
                                 onClick={hibernateApps}
                             >
                                 Hibernate
-                            </ButtonWithLoader>
+                            </button>
                         </div>
                     </>
                 )}

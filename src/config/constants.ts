@@ -949,3 +949,5 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  * Value for select all identifier
  */
 export const SELECT_ALL_VALUE = '*'
+export const DEFAULT_ROUTE_PROMPT_MESSAGE =
+    "Please don't wander off! Reloading or going back might disrupt the ongoing operation."

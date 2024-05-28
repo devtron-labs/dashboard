@@ -1,6 +1,15 @@
 import React, { useEffect } from 'react'
-import { Drawer, GenericEmptyState, ImageType, InfoColourBar, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Drawer,
+    GenericEmptyState,
+    ImageType,
+    InfoColourBar,
+    Progressing,
+    usePrompt,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Prompt } from 'react-router-dom'
 import { HibernateStatusRow } from './HibernateStatusRow'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
@@ -8,14 +17,15 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 export default function HibernateStatusListDrawer({
     closePopup,
     responseList,
-    isLoading,
     envName,
     getAppListData,
     showHibernateStatusDrawer,
     hibernateInfoMap,
-    isDeploymentLoading,
+    isDeploymentWindowLoading,
 }) {
-    const isHibernating = showHibernateStatusDrawer.hibernationOperation
+    const { hibernationOperation: isHibernating, inProgress: isHibernationStatusLoading } = showHibernateStatusDrawer
+
+    usePrompt({ shouldPrompt: isHibernationStatusLoading })
 
     useEffect(() => {
         return () => {
@@ -27,15 +37,13 @@ export default function HibernateStatusListDrawer({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    {isHibernating
-                        ? 'Hibernate applications'
-                        : 'Unhibernate applications'}
+                    {isHibernating ? 'Hibernate applications' : 'Unhibernate applications'}
                 </h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
-                    disabled={isLoading}
                     onClick={closePopup}
+                    disabled={isHibernationStatusLoading}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -44,27 +52,31 @@ export default function HibernateStatusListDrawer({
     }
 
     const renderBody = (): JSX.Element => {
-        if (showHibernateStatusDrawer.inProgress) {
+        if (isHibernationStatusLoading) {
             return (
-                <GenericEmptyState
-                    classname='dc__text-center'
-                    title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
-                    subTitle="It might take some time depending upon the number of applications"
-                    SvgImage={MechanicalOperation}
-                    imageType={ImageType.Large}
-                >
-                    <InfoColourBar
-                        message="Please don't wander off! Reloading or going back might disrupt the ongoing operation."
-                        classname="warn cn-9 lh-2 w-100 dc__align-left"
-                        Icon={Error}
-                        iconClass="warning-icon icon-dim-20-imp"
-                        iconSize={20}
-                    />
-                </GenericEmptyState>
+                <>
+                    <GenericEmptyState
+                        classname="dc__text-center"
+                        title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
+                        subTitle="It might take some time depending upon the number of applications"
+                        SvgImage={MechanicalOperation}
+                        imageType={ImageType.Large}
+                    >
+                        <InfoColourBar
+                            message="Please don't wander off! Reloading or going back might disrupt the ongoing operation."
+                            classname="warn cn-9 lh-2 w-100 dc__align-left"
+                            Icon={Error}
+                            iconClass="warning-icon icon-dim-20-imp"
+                            iconSize={20}
+                        />
+                    </GenericEmptyState>
+
+                    <Prompt when message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                </>
             )
         }
 
-        if (isLoading || isDeploymentLoading) {
+        if (isDeploymentWindowLoading) {
             return <Progressing pageLoader />
         }
 
