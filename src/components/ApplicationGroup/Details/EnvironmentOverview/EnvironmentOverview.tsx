@@ -11,11 +11,15 @@ import {
     useUrlFilters,
     EditableTextArea,
     useSearchString,
+    MODAL_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { HibernateModal } from './HibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { RestartWorkloadModal } from './RestartWorkloadModal'
 import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
@@ -27,6 +31,7 @@ import {
     AppGroupListType,
     AppInfoListType,
     AppListDataType,
+    HibernateModalProps,
     ManageAppsResponse,
     StatusDrawer,
 } from '../../AppGroup.types'
@@ -41,17 +46,13 @@ import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-vie
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import './envOverview.scss'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
     null,
     'function',
 )
-import './envOverview.scss'
-import { HibernateModal } from './HibernateModal'
-import HibernateStatusListDrawer from './HibernateStatusListDrawer'
-import { UnhibernateModal } from './UnhibernateModal'
-import { RestartWorkloadModal } from './RestartWorkloadModal'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -72,8 +73,8 @@ export default function EnvironmentOverview({
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
-    const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
-    const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
+    const [openedHibernateModalType, setOpenedHibernateModalType] =
+        useState<HibernateModalProps['openedHibernateModalType']>(null)
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
@@ -138,14 +139,14 @@ export default function EnvironmentOverview({
     useEffect(() => {
         if (
             processDeploymentWindowAppGroupOverviewMap &&
-            (openHiberateModal ||
-                openUnhiberateModal ||
+            (openedHibernateModalType ||
                 showHibernateStatusDrawer.showStatus ||
                 location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
         ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
+    }, [openedHibernateModalType, showHibernateStatusDrawer.showStatus, location.search])
+
     useEffect(() => {
         setLoading(true)
         fetchDeployments()
@@ -272,12 +273,12 @@ export default function EnvironmentOverview({
         })
     }
 
-    const openHiberateModalPopup = () => {
-        setOpenHiberateModal(true)
+    const openHibernateModalPopup = () => {
+        setOpenedHibernateModalType(MODAL_TYPE.HIBERNATE)
     }
 
-    const openUnhiberateModalPopup = () => {
-        setOpenUnhiberateModal(true)
+    const openUnHibernateModalPopup = () => {
+        setOpenedHibernateModalType(MODAL_TYPE.UNHIBERNATE)
     }
 
     const onClickShowBulkRestartModal = () => {
@@ -487,36 +488,20 @@ export default function EnvironmentOverview({
             )
         }
 
-        if (openHiberateModal) {
+        if (openedHibernateModalType) {
             return (
                 <HibernateModal
                     selectedAppIds={selectedAppIds}
                     appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
-                    setOpenHiberateModal={setOpenHiberateModal}
+                    setOpenedHibernateModalType={setOpenedHibernateModalType}
                     setAppStatusResponseList={setAppStatusResponseList}
                     setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
-                    isDeploymentLoading={isDeploymentLoading}
+                    isDeploymentWindowLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
                     httpProtocol={httpProtocol.current}
-                />
-            )
-        }
-
-        if (openUnhiberateModal) {
-            return (
-                <UnhibernateModal
-                    selectedAppIds={selectedAppIds}
-                    appDetailsList={appGroupListData.apps}
-                    envId={envId}
-                    envName={appListData.environment}
-                    setOpenUnhiberateModal={setOpenUnhiberateModal}
-                    setAppStatusResponseList={setAppStatusResponseList}
-                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
-                    isDeploymentLoading={isDeploymentLoading}
-                    showDefaultDrawer={showDefaultDrawer}
-                    httpProtocol={httpProtocol.current}
+                    openedHibernateModalType={openedHibernateModalType}
                 />
             )
         }
@@ -554,14 +539,14 @@ export default function EnvironmentOverview({
                         {selectedAppIds.length > 0 && (
                             <div className="flexbox dc__gap-6">
                                 <button
-                                    onClick={openHiberateModalPopup}
+                                    onClick={openHibernateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <HibernateIcon className="icon-dim-12 mr-4" />
                                     Hibernate
                                 </button>
                                 <button
-                                    onClick={openUnhiberateModalPopup}
+                                    onClick={openUnHibernateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
