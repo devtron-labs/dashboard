@@ -130,6 +130,7 @@ export interface ResourceFilterOptionsProps {
     setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
     hideSearchInput?: boolean
     searchText?: string
+    isOpen: boolean
     setSearchText?: (text: string) => void
     handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
     isSearchInputDisabled?: boolean

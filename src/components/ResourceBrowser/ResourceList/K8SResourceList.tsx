@@ -55,6 +55,7 @@ export const K8SResourceList = ({
     selectedCluster,
     addTab,
     renderRefreshBar,
+    isOpen,
     showStaleDataWarning,
     updateK8sResourceTab,
 }: K8SResourceListType) => {
@@ -448,6 +449,7 @@ export const K8SResourceList = ({
                 setSelectedNamespace={setSelectedNamespace}
                 selectedCluster={selectedCluster}
                 searchText={searchText}
+                isOpen={isOpen}
                 resourceList={resourceList}
                 setSearchText={setSearchText}
                 handleFilterChanges={handleFilterChanges}

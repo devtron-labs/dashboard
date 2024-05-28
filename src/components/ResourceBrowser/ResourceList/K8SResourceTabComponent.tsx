@@ -75,6 +75,7 @@ const K8SResourceTabComponent = ({
                     selectedResource={selectedResource}
                     selectedCluster={selectedCluster}
                     addTab={addTab}
+                    isOpen={isOpen}
                     renderRefreshBar={renderRefreshBar}
                     showStaleDataWarning={showStaleDataWarning}
                     updateK8sResourceTab={updateK8sResourceTab}

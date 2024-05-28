@@ -23,6 +23,7 @@ const ResourceFilterOptions = ({
     setSelectedNamespace,
     hideSearchInput,
     searchText,
+    isOpen,
     setSearchText,
     isSearchInputDisabled,
     shortcut,
@@ -55,7 +56,7 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        if (registerShortcut) {
+        if (registerShortcut && isOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
             shortcut.registerShortcut(
                 handleShowFilterModal,
@@ -68,7 +69,7 @@ const ResourceFilterOptions = ({
             shortcut.unregisterShortcut(['f'])
             shortcut.unregisterShortcut(['r'])
         }
-    }, [registerShortcut])
+    }, [registerShortcut, isOpen])
 
     const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
