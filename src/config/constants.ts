@@ -575,43 +575,6 @@ export const APP_STATUS_CUSTOM_MESSAGES = {
     INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
 }
 
-export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
-    DEPLOYMENT_TEMPLATE: {
-        DISPLAY_NAME: 'Deployment template',
-        VALUE: 'deployment-template',
-    },
-    PIPELINE_STRATEGY: {
-        DISPLAY_NAME: 'Pipeline configurations',
-        VALUE: 'pipeline-strategy',
-    },
-    CONFIGMAP: {
-        DISPLAY_NAME: 'ConfigMap',
-        VALUE: 'configmap',
-    },
-    SECRET: {
-        DISPLAY_NAME: 'Secret',
-        VALUE: 'secret',
-    },
-}
-
-export const EXTERNAL_TYPES = {
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
-        '': 'Kubernetes Secret',
-        KubernetesSecret: 'Kubernetes External Secret',
-        AWSSecretsManager: 'AWS Secrets Manager',
-        AWSSystemManager: 'AWS System Manager',
-        HashiCorpVault: 'Hashi Corp Vault',
-        ESO_HashiCorpVault: 'Hashi Corp Vault',
-        ESO_AWSSecretsManager: 'AWS Secrets Manager',
-        ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager',
-    },
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
-        '': 'Kubernetes ConfigMap',
-        KubernetesConfigMap: 'Kubernetes External ConfigMap',
-    },
-}
-
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
@@ -636,31 +599,6 @@ export const ModuleNameMap = {
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
     NOT_DEPLOYED: 'not deployed',
-}
-
-export const EVENT_STREAM_EVENTS_MAP = {
-    MESSAGE: 'message',
-    START_OF_STREAM: 'START_OF_STREAM',
-    END_OF_STREAM: 'END_OF_STREAM',
-    ERROR: 'error',
-}
-
-/**
- * @deprecated
- */
-export const TERMINAL_STATUS_MAP = {
-    SUCCEEDED: 'succeeded',
-    HEALTHY: 'healthy',
-    RUNNING: 'running',
-    PROGRESSING: 'progressing',
-    STARTING: 'starting',
-    INITIATING: 'initiating',
-    QUEUED: 'queued',
-    FAILED: 'failed',
-    ERROR: 'error',
-    CANCELLED: 'cancelled',
-    UNABLE_TO_FETCH: 'unabletofetch',
-    TIMED_OUT: 'timedout',
 }
 
 export const POD_STATUS = {

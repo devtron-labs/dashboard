@@ -1,14 +1,8 @@
-import { get, } from '@devtron-labs/devtron-fe-common-lib'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES } from '../../../../config'
+import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, decode } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DeploymentHistoryDetail,
     DeploymentHistorySingleValue,
 } from './cd.type'
-import { decode } from '../../../../util/Util'
-
-export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
-    return get(`app/cd-pipeline/workflow/download/${appId}/${envId}/${pipelineId}/${workflowId}`)
-}
 
 export const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     const deploymentTemplateData = {}

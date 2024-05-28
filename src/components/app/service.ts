@@ -277,16 +277,6 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const cancelCiTrigger = (params, isForceAbort) => {
-    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
-    return trash(URL)
-}
-
-export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
-    const URL = `${Routes.CD_CONFIG}/${pipelineId}/workflowRunner/${workflowRunner}`
-    return trash(URL)
-}
-
 export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
     return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
 }

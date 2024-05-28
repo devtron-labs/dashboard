@@ -1,5 +1,4 @@
-import { KeyValueListType, showError, DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
+import { KeyValueListType, showError, DeploymentWithConfigType, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '@devtron-labs/devtron-fe-common-lib'
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'

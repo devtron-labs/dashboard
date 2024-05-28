@@ -12,6 +12,7 @@ import {
     useAsync,
     MODAL_TYPE,
     ACTION_STATE,
+    processDeploymentStatusDetailsData,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -52,7 +53,6 @@ import {
     aggregateNodes,
     getSelectedNodeItems,
     getPodNameSuffix,
-    processDeploymentStatusDetailsData,
     ValueContainer,
     NoParamsNoEnvContext,
     NoParamsWithEnvContext,

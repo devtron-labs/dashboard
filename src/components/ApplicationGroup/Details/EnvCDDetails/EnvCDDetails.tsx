@@ -13,6 +13,7 @@ import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
+import { processVirtualEnvironmentDeploymentData, renderCIListHeader, renderDeploymentApprovalInfo, renderDeploymentHistoryTriggerMetaText, renderRunSource, renderVirtualHistoryArtifacts } from '../../../app/details/cdDetails/utils'
 
 export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -134,6 +135,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setTriggerHistory(newTriggerHistory)
     }
 
+    // Function is passed in sidebar to sync the trigger details as trigger details is also fetched with another api
     function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
         if (triggerDetailsError) {
             if (deploymentHistoryResult.result?.cdWorkflows?.length) {
@@ -146,10 +148,14 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
             const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
             const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
+            const runSource = triggerHistory.get(triggerId)?.runSource
+            
+            // These changes are not subject to change after refresh, add data which will not change
             const additionalDataObject = {
                 ...(appliedFilters.length ? { appliedFilters } : {}),
                 ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
                 ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
+                ...(runSource ? { runSource } : {})
             }
 
             setTriggerHistory((triggerHistory) => {
@@ -231,6 +237,12 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchTriggerIdData}
                         selectedEnvironmentName={currentEnvironmentName}
+                        renderRunSource={renderRunSource}
+                        renderCIListHeader={renderCIListHeader}
+                        renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                        renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                        renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
+                        processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     />
                 </Route>
             )
@@ -264,6 +276,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         setPagination={setPagination}
                         fetchIdData={fetchTriggerIdData}
                         handleViewAllHistory={handleViewAllHistory}
+                        renderRunSource={renderRunSource}
                     />
                 </div>
             )}

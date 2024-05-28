@@ -6,9 +6,8 @@ import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES } from '../../../../../config'
 import { AppStatusDetailType } from '../../appDetails.type'
-import ErrorBar from '../../../../common/error/ErrorBar'
 import { STATUS_SORTING_ORDER } from './constants'
-import { Drawer, AppStatusDetailsChart } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, AppStatusDetailsChart, ErrorBar } from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusDetailModal = ({
     close,

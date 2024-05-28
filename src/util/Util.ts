@@ -30,22 +30,6 @@ export function cleanKubeManifest(manifestJsonString: string): string {
     }
 }
 
-const getDecodedEncodedData = (data, isEncoded: boolean = false) => {
-    if (isEncoded) {
-        return btoa(data)
-    }
-    return atob(data)
-}
-
-export const decode = (data, isEncoded: boolean = false) => {
-    return Object.keys(data)
-        .map((m) => ({ key: m, value: data[m] ? getDecodedEncodedData(data[m], isEncoded) : data[m] }))
-        .reduce((agg, curr) => {
-            agg[curr.key] = curr.value
-            return agg
-        }, {})
-}
-
 export const replaceLastOddBackslash = (str: string): string => {
     let countBackSlash = 0
     const strArr = str.split('')

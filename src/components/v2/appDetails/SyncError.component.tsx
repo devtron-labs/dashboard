@@ -6,12 +6,12 @@ import {
     ServerErrors,
     not,
     showError,
+    renderErrorHeaderMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import IndexStore from './index.store'
-import { renderErrorHeaderMessage } from '../../common/error/error.utils'
 import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
 import {

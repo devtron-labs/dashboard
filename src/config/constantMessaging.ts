@@ -202,6 +202,9 @@ export const API_COMPONENTS = {
     EDIT_API_TITLE: '/ Edit API token',
 }
 
+/**
+ * @deprecated - Use from fe-common
+ */
 export const EMPTY_STATE_STATUS = {
     DATA_NOT_AVAILABLE: 'Data not available',
     API_TOKEN: {

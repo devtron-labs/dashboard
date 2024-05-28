@@ -10,13 +10,14 @@ import {
     noop,
     showError,
     DeploymentHistoryDiffView,
+    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { followCursor } from 'tippy.js'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
+import { PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
