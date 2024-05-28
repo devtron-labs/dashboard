@@ -24,7 +24,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
 
     const imageList = useMemo(() => JSON.parse(hostUrlConfig?.result.value || null), [hostUrlConfig])
 
-    const namespaceList = _namespaceList?.result || null
+    const namespaceList = _namespaceList?.result[selectedDetailsCluster?.name] || null
 
     if (loading) {
         return (
@@ -34,10 +34,11 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
         )
     }
 
-    if (error || !selectedDetailsCluster?.nodeCount) {
+    if (error || !selectedDetailsCluster?.nodeCount || !namespaceList?.length) {
+        console.log(selectedDetailsCluster?.nodeCount, namespaceList)
         /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
         /* NOTE: the above happens in case of bad cluster setup */
-        const errCode = error.code || 403
+        const errCode = error?.code || 403
         return (
             <div className="bcn-0 node-data-container flex">
                 {isSuperAdmin ? <Reload /> : <ErrorScreenManager code={errCode} />}
@@ -51,7 +52,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
             nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
             taints={createTaintsList(selectedDetailsCluster.nodeDetails, 'nodeName')}
             clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion)}
-            namespaceList={namespaceList[selectedDetailsCluster.name]}
+            namespaceList={namespaceList}
             updateTerminalTabUrl={updateTerminalTabUrl}
         />
     )
