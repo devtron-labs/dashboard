@@ -18,7 +18,9 @@ export default () => {
         }
         self.postMessage(
             list.filter((item) =>
-                Object.values(item).some((value: any) => String(value).toLowerCase().includes(searchTextLowerCased)),
+                Object.entries(item).some(
+                    ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
+                ),
             ),
         )
     }
