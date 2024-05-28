@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentConfigContextType, DeploymentConfigFormCTAProps } from '../types'
+import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 
@@ -25,20 +25,28 @@ export default function DeploymentConfigFormCTA({
     reload,
     isValues,
     convertVariables,
+    handleLockedDiffDrawer,
+    isSuperAdmin,
+    setShowLockedDiffForApproval,
+    showLockedDiffForApproval,
+    checkForProtectedLockedChanges,
+    setLockedOverride,
 }: DeploymentConfigFormCTAProps) {
-    const { state, isConfigProtectionEnabled } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { state, isConfigProtectionEnabled, dispatch } =
+        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
-
     const getCTATippyContent = () => {
         if (isApprovalPending) {
             if (!hasAccess) {
                 return 'You do not have permission to approve configuration changes for this application - environment combination.'
-            } else if (approveDisabled) {
+            }
+            if (approveDisabled) {
                 return 'You have made changes to this file. Users who have edited cannot approve the changes.'
             }
         }
@@ -49,9 +57,39 @@ export default function DeploymentConfigFormCTA({
     const renderWrappedChildren = (children) => {
         return (
             <Tippy className="default-tt w-200" arrow={false} placement="top-end" content={getCTATippyContent()}>
-                {children}
+                <div>{children}</div>
             </Tippy>
         )
+    }
+
+    const checkForLockedChangesForApproval = async () => {
+        // setting approveChangesClicked to true only is approve changes button
+        if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
+            setApproveChangesClicked(true)
+            try {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: true,
+                })
+                const deploymentTemplateResp = await checkForProtectedLockedChanges()
+                if (deploymentTemplateResp.result.isLockConfigError) {
+                    setShowLockedDiffForApproval(true)
+                    setLockedOverride(deploymentTemplateResp.result.lockedOverride)
+                    handleLockedDiffDrawer(true)
+                } else {
+                    setShowLockedDiffForApproval(false)
+                }
+            } catch (err) {
+                showError(err)
+            } finally {
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.lockChangesLoading,
+                    payload: false,
+                })
+            }
+        } else if (isApprovalPending) {
+            setApproveChangesClicked(true)
+        }
     }
 
     const renderButton = () => {
@@ -65,12 +103,15 @@ export default function DeploymentConfigFormCTA({
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
                     type={_disabled || isApprovalPending ? 'button' : 'submit'}
+                    onClick={checkForLockedChangesForApproval}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'
                             : 'base-deployment-template-save-changes-button'
                     }`}
-                    disabled={state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables}
+                    disabled={
+                        loading || state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables
+                    }
                 >
                     {loading ? (
                         <Progressing />
@@ -103,7 +144,8 @@ export default function DeploymentConfigFormCTA({
     const renderApplicationMetrics = () => {
         if (!showAppMetricsToggle) {
             return null
-        } else if (isPublishedMode || isApprovalPending) {
+        }
+        if (isPublishedMode || isApprovalPending) {
             return (
                 <div className="form-app-metrics-cta flex left fs-13 fw-4 lh-20 cn-9">
                     <InfoIcon className="icon-dim-16 mr-8" />
@@ -111,85 +153,99 @@ export default function DeploymentConfigFormCTA({
                     <span className="fw-6 ml-4">{isAppMetricsEnabled ? 'Enabled' : 'Not enabled'}</span>
                 </div>
             )
-        } else {
-            return (
-                <div className="form-app-metrics-cta flex top left">
-                    {loading ? (
-                        <>
-                            <Progressing
-                                data-testid="app-metrics-checkbox-loading"
-                                styles={{
-                                    width: 'auto',
-                                    marginRight: '16px',
-                                }}
-                            />
-                            <span className="fs-13 fw-4 lh-20">Application metrics</span>
-                        </>
-                    ) : (
-                        <>
-                            <Checkbox
-                                rootClassName={`mt-2 mr-8 ${
-                                    !_selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
-                                }`}
-                                isChecked={isAppMetricsEnabled}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={toggleAppMetrics}
-                                dataTestId="app-metrics-checkbox"
-                                disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
-                            />
-                            <div className="flex column left">
-                                <div className="flex left fs-13">
-                                    <b className="fw-6 lh-18 cn-9 mr-8">
-                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
-                                    </b>
-                                    {compareTab || state.showReadme ? (
-                                        <Tippy
-                                            className="default-tt w-300"
-                                            arrow={false}
-                                            placement="top"
-                                            content={getInfoText()}
-                                        >
-                                            <span className="icon-dime-16">
-                                                <HelpIcon className="icon-dime-16" />
-                                            </span>
-                                        </Tippy>
-                                    ) : (
-                                        <a
-                                            data-testid="app-metrics-learnmore-link"
-                                            href={DOCUMENTATION.APP_METRICS}
-                                            target="_blank"
-                                            className="fw-4 cb-5 dc__underline-onhover"
-                                        >
-                                            {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
-                                        </a>
-                                    )}
-                                </div>
-                                {!compareTab && !state.showReadme && (
-                                    <div
-                                        data-testid="app-metrics-info-text"
-                                        className={`fs-13 fw-4 lh-18 ${
-                                            !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
-                                        }`}
+        }
+        return (
+            <div className="form-app-metrics-cta flex top left">
+                {loading ? (
+                    <>
+                        <Progressing
+                            data-testid="app-metrics-checkbox-loading"
+                            styles={{
+                                width: 'auto',
+                                marginRight: '16px',
+                            }}
+                        />
+                        <span className="fs-13 fw-4 lh-20">Application metrics</span>
+                    </>
+                ) : (
+                    <>
+                        <Checkbox
+                            rootClassName={`mt-2 mr-8 ${
+                                !_selectedChart.isAppMetricsSupported ? 'dc__opacity-0_5' : ''
+                            }`}
+                            isChecked={isAppMetricsEnabled}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleAppMetrics}
+                            dataTestId="app-metrics-checkbox"
+                            disabled={disableCheckbox || !_selectedChart.isAppMetricsSupported}
+                        />
+                        <div className="flex column left">
+                            <div className="flex left fs-13">
+                                <b className="fw-6 lh-18 cn-9 mr-8">
+                                    {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
+                                </b>
+                                {compareTab || state.showReadme ? (
+                                    <Tippy
+                                        className="default-tt w-300"
+                                        arrow={false}
+                                        placement="top"
+                                        content={getInfoText()}
                                     >
-                                        {getInfoText()}
-                                    </div>
+                                        <span className="icon-dime-16">
+                                            <ICHelpOutline className="icon-dime-16" />
+                                        </span>
+                                    </Tippy>
+                                ) : (
+                                    <a
+                                        data-testid="app-metrics-learnmore-link"
+                                        href={DOCUMENTATION.APP_METRICS}
+                                        target="_blank"
+                                        className="fw-4 cb-5 dc__underline-onhover"
+                                        rel="noreferrer"
+                                    >
+                                        {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
+                                    </a>
                                 )}
                             </div>
-                        </>
-                    )}
-                </div>
-            )
-        }
+                            {!compareTab && !state.showReadme && (
+                                <div
+                                    data-testid="app-metrics-info-text"
+                                    className={`fs-13 fw-4 lh-18 ${
+                                        !_selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'
+                                    }`}
+                                >
+                                    {getInfoText()}
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+        )
     }
 
     const getHeightClass = () => {
         if (compareTab || state.showReadme) {
             return 'h-56'
-        } else if (isPublishedMode) {
-            return 'h-44'
-        } else {
-            return 'h-64'
         }
+        if (isPublishedMode) {
+            return 'h-44'
+        }
+        return 'h-64'
+    }
+
+    function approveRequestTippy(children) {
+        return (
+            <ApproveRequestTippy
+                draftId={state.latestDraft.draftId}
+                draftVersionId={state.latestDraft.draftVersionId}
+                resourceName="deployment template"
+                reload={reload}
+                onClose={() => setApproveChangesClicked(false)}
+            >
+                <span>{children}</span>
+            </ApproveRequestTippy>
+        )
     }
 
     return _selectedChart ? (
@@ -201,20 +257,20 @@ export default function DeploymentConfigFormCTA({
             {compareTab && !state.showReadme && <div className="w-50" />}
             {renderApplicationMetrics()}
             {!isPublishedMode && (
-                <>
-                    {isApprovalPending && state.latestDraft?.canApprove && !approveDisabled && ApproveRequestTippy ? (
-                        <ApproveRequestTippy
-                            draftId={state.latestDraft.draftId}
-                            draftVersionId={state.latestDraft.draftVersionId}
-                            resourceName="deployment template"
-                            reload={reload}
-                        >
-                            {renderButton()}
-                        </ApproveRequestTippy>
-                    ) : (
-                        renderButton()
-                    )}
-                </>
+                <ConditionalWrap
+                    condition={
+                        !showLockedDiffForApproval &&
+                        !state.lockChangesLoading &&
+                        isApprovalPending &&
+                        state.latestDraft?.canApprove &&
+                        !approveDisabled &&
+                        ApproveRequestTippy &&
+                        approveChangesClicked
+                    }
+                    wrap={approveRequestTippy}
+                >
+                    {renderButton()}
+                </ConditionalWrap>
             )}
         </div>
     ) : null

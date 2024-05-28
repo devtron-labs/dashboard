@@ -1,14 +1,22 @@
-import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
+import React, { lazy, useState, useEffect, Suspense } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
+import {
+    showError,
+    Progressing,
+    Toggle,
+    ConditionalWrap,
+    TippyCustomized,
+    TippyTheme,
+    useMainContext,
+    PageHeader,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
-import { showError, Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
-import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
+import arrowTriangle, { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
-import { getHostURLConfiguration } from '../../services/service'
-import { getAppCheckList } from '../../services/service'
+import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {
     ModuleNameMap,
@@ -17,13 +25,12 @@ import {
     Routes,
     SERVER_MODE,
 } from '../../config/constants'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
-import PageHeader from '../common/header/PageHeader'
-import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { BodyType } from './globalConfiguration.type'
+import { BodyType, ProtectedInputType } from './globalConfiguration.type'
+import CodeEditor from '../CodeEditor/CodeEditor'
+import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -33,13 +40,17 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const UserGroup = lazy(() => import('../userGroups/UserGroup'))
-const SSOLogin = lazy(() => import('../login/SSOLogin'))
+const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
+// NOTE: Might import from index itself
+const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
+const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
+const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
+const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -52,7 +63,7 @@ export default function GlobalConfiguration(props) {
         appStageCompleted: 0,
         chartStageCompleted: 0,
     })
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
 
     useEffect(() => {
         serverMode !== SERVER_MODE.EA_ONLY && getHostURLConfig()
@@ -91,16 +102,16 @@ export default function GlobalConfiguration(props) {
     function fetchCheckList(): void {
         getAppCheckList()
             .then((response) => {
-                let appChecklist = response.result.appChecklist || {}
-                let chartChecklist = response.result.chartChecklist || {}
-                let appStageArray: number[] = Object.values(appChecklist)
-                let chartStageArray: number[] = Object.values(chartChecklist)
-                let appStageCompleted: number = appStageArray.reduce((item, sum) => {
-                    sum = sum + item
+                const appChecklist = response.result.appChecklist || {}
+                const chartChecklist = response.result.chartChecklist || {}
+                const appStageArray: number[] = Object.values(appChecklist)
+                const chartStageArray: number[] = Object.values(chartChecklist)
+                const appStageCompleted: number = appStageArray.reduce((item, sum) => {
+                    sum += item
                     return sum
                 }, 0)
-                let chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
-                    sum = sum + item
+                const chartStageCompleted: number = chartStageArray.reduce((item, sum) => {
+                    sum += item
                     return sum
                 }, 0)
 
@@ -120,37 +131,41 @@ export default function GlobalConfiguration(props) {
 
     return (
         <main className="global-configuration">
-            <PageHeader headerName="Global configurations" />
+            <PageHeader headerName="Global Configurations" />
             <Router history={useHistory()}>
-                <section className="global-configuration__navigation">
-                    <NavItem serverMode={serverMode} />
-                </section>
-                <section className="global-configuration__component-wrapper">
-                    <Suspense fallback={<Progressing pageLoader />}>
-                        <ErrorBoundary>
-                            <Body
-                                isSuperAdmin={props.isSuperAdmin}
-                                getHostURLConfig={getHostURLConfig}
-                                checkList={checkList}
-                                serverMode={serverMode}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        </ErrorBoundary>
-                    </Suspense>
-                </section>
+                <GlobalConfigurationProvider>
+                    <section className="global-configuration__navigation">
+                        <NavItem serverMode={serverMode} />
+                    </section>
+                    <section className="global-configuration__component-wrapper">
+                        <Suspense fallback={<Progressing pageLoader />}>
+                            <ErrorBoundary>
+                                <Body
+                                    isSuperAdmin={props.isSuperAdmin}
+                                    getHostURLConfig={getHostURLConfig}
+                                    checkList={checkList}
+                                    serverMode={serverMode}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </ErrorBoundary>
+                        </Suspense>
+                    </section>
+                </GlobalConfigurationProvider>
             </Router>
         </main>
     )
 }
 
-function NavItem({ serverMode }) {
+const NavItem = ({ serverMode }) => {
     const location = useLocation()
-    const { installedModuleMap } = useContext(mainContext)
+    const { installedModuleMap } = useMainContext()
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
-        Authorization: location.pathname.startsWith('/global-config/auth') ? false : true,
+        Authorization: !location.pathname.startsWith('/global-config/auth'),
     })
+    const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
+
     let moduleStatusTimer = null
     const ConfigRequired = [
         {
@@ -167,14 +182,19 @@ function NavItem({ serverMode }) {
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
-            name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
+            name: `Clusters${serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: ClusterList,
             isAvailableInEA: true,
             isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
-        { name: 'Container/ OCI Registry', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
+        {
+            name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
+            href: URLS.GLOBAL_CONFIG_DOCKER,
+            component: Docker,
+            isAvailableInEA: true,
+        },
     ]
 
     const ConfigOptional = [
@@ -185,32 +205,37 @@ function NavItem({ serverMode }) {
             component: CustomChartList,
             isAvailableInEA: false,
         },
-        { name: 'SSO Login Services', href: URLS.GLOBAL_CONFIG_LOGIN, component: SSOLogin, isAvailableInEA: true },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
             preventDefaultKey: URLS.GLOBAL_CONFIG_AUTH,
             group: [
                 {
+                    name: 'SSO Login Services',
+                    dataTestId: 'authorization-sso-login-link',
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
+                    isAvailableInEA: true,
+                },
+                {
                     name: 'User Permissions',
                     dataTestId: 'authorization-user-permissions-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.USER_PERMISSIONS}`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission Groups',
                     dataTestId: 'authorization-permission-groups-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.PERMISSION_GROUPS}`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API Tokens',
                     dataTestId: 'authorization-api-tokens-link',
-                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
+                    href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`,
                     isAvailableInEA: true,
                 },
             ],
-            component: UserGroup,
+            component: Authorization,
             isAvailableInEA: true,
         },
         {
@@ -253,28 +278,57 @@ function NavItem({ serverMode }) {
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
+        const onTippyClose = () => {
+            // Resetting the tippy state
+            setTippyConfig({
+                showTippy: false,
+            })
+        }
+
         return (
-            <NavLink
-                to={`${route.href}`}
-                key={route.href}
-                activeClassName="active-route"
-                data-testid={route.dataTestId}
-                className={`${
-                    route.name === 'API tokens' &&
-                    location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
-                        ? 'active-route'
-                        : ''
-                }`}
-                onClick={(e) => {
-                    if (!preventOnClickOp) {
-                        handleGroupCollapsedState(e, route)
-                    }
-                }}
+            // FIXME: Reuse the renderNavItem function for all nav item to extend the tippy support to all links
+            <ConditionalWrap
+                condition={tippyConfig.showTippy && tippyConfig.showOnRoute === route.href}
+                wrap={(children) => (
+                    <TippyCustomized
+                        theme={TippyTheme.black}
+                        className="w-300 ml-2"
+                        placement="right"
+                        showCloseButton
+                        trigger="manual"
+                        interactive
+                        showOnCreate
+                        arrow
+                        animation="shift-toward-subtle"
+                        onClose={onTippyClose}
+                        {...tippyConfig}
+                    >
+                        <div> {children}</div>
+                    </TippyCustomized>
+                )}
             >
-                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
-                    <div>{route.name}</div>
-                </div>
-            </NavLink>
+                <NavLink
+                    to={`${route.href}`}
+                    key={`${route.name}-${route.href}`}
+                    activeClassName="active-route"
+                    data-testid={route.dataTestId}
+                    className={`${
+                        route.name === 'API tokens' &&
+                        location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
+                            ? 'active-route'
+                            : ''
+                    }`}
+                    onClick={(e) => {
+                        if (!preventOnClickOp) {
+                            handleGroupCollapsedState(e, route)
+                        }
+                    }}
+                >
+                    <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
+                        <div>{route.name}</div>
+                    </div>
+                </NavLink>
+            </ConditionalWrap>
         )
     }
 
@@ -357,7 +411,7 @@ function NavItem({ serverMode }) {
                                     >
                                         {route.name}
                                         <Dropdown
-                                            className="icon-dim-24 rotate"
+                                            className="icon-dim-20 rotate fcn-6"
                                             style={{
                                                 ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg',
                                             }}
@@ -384,7 +438,17 @@ function NavItem({ serverMode }) {
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
 
-                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                    {CatalogFramework && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Catalog Framework</div>
+                        </NavLink>
+                    )}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
@@ -403,6 +467,17 @@ function NavItem({ serverMode }) {
                             <div className="flexbox flex-justify">Plugins</div>
                         </NavLink>
                     )}
+
+                    {PullImageDigest && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Pull Image Digest</div>
+                        </NavLink>
+                    )}
+
                     {TagListContainer && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_TAGS}
@@ -418,7 +493,26 @@ function NavItem({ serverMode }) {
                             key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Filter condition</div>
+                            <div className="flexbox flex-justify">Filter Condition</div>
+                        </NavLink>
+                    )}
+                    {LockConfiguration && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Lock Deployment Config</div>
+                        </NavLink>
+                    )}
+
+                    {serverMode !== SERVER_MODE.EA_ONLY && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Build Infra</div>
                         </NavLink>
                     )}
                 </>
@@ -427,17 +521,17 @@ function NavItem({ serverMode }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) {
+const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
 
     const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
-        } else if (serverMode === SERVER_MODE.EA_ONLY) {
-            return URLS.GLOBAL_CONFIG_PROJECT
-        } else {
-            return URLS.GLOBAL_CONFIG_HOST_URL
         }
+        if (serverMode === SERVER_MODE.EA_ONLY) {
+            return URLS.GLOBAL_CONFIG_PROJECT
+        }
+        return URLS.GLOBAL_CONFIG_HOST_URL
     }
 
     return (
@@ -446,13 +540,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
-                        <div className="flexbox">
-                            <ClusterList
-                                {...props}
-                                serverMode={serverMode}
-                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
-                            />
-                        </div>
+                        <ClusterList
+                            {...props}
+                            serverMode={serverMode}
+                            isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                        />
                     )
                 }}
             />
@@ -462,14 +554,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={URLS.GLOBAL_CONFIG_HOST_URL}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <HostURLConfiguration
-                                    {...props}
-                                    isSuperAdmin={isSuperAdmin}
-                                    refreshGlobalConfig={getHostURLConfig}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                />
-                            </div>
+                            <HostURLConfiguration
+                                {...props}
+                                isSuperAdmin={isSuperAdmin}
+                                refreshGlobalConfig={getHostURLConfig}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                            />
                         )
                     }}
                 />,
@@ -477,33 +567,21 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     key={URLS.GLOBAL_CONFIG_GITOPS}
                     path={URLS.GLOBAL_CONFIG_GITOPS}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                            </div>
-                        )
+                        return <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_PROJECT}
                     path={URLS.GLOBAL_CONFIG_PROJECT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <Project {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_GIT}
                     path={URLS.GLOBAL_CONFIG_GIT}
                     render={(props) => {
-                        return (
-                            <div className="flexbox">
-                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                            </div>
-                        )
+                        return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
                 <Route
@@ -511,13 +589,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
                     render={(props) => {
                         return (
-                            <div className="flexbox">
-                                <Docker
-                                    {...props}
-                                    handleChecklistUpdate={handleChecklistUpdate}
-                                    isSuperAdmin={isSuperAdmin}
-                                />
-                            </div>
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
+                                isHyperionMode={serverMode === SERVER_MODE.EA_ONLY}
+                            />
                         )
                     }}
                 />,
@@ -531,20 +608,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
                     <CustomChartList />
                 </Route>,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_LOGIN}
-                    path={URLS.GLOBAL_CONFIG_LOGIN}
-                    render={(props) => {
-                        return <SSOLogin {...props} />
-                    }}
-                />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_AUTH}
-                    path={URLS.GLOBAL_CONFIG_AUTH}
-                    render={(props) => {
-                        return <UserGroup />
-                    }}
-                />,
+                <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
                     path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
@@ -562,15 +626,32 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                     <ExternalLinks />
                 </Route>,
+                ...(serverMode !== SERVER_MODE.EA_ONLY
+                    ? [
+                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
+                              <BuildInfra isSuperAdmin={isSuperAdmin} />
+                          </Route>,
+                      ]
+                    : []),
             ]}
-            {window._env_.ENABLE_SCOPED_VARIABLES && (
+            {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                 <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {CatalogFramework && (
+                <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
+                </Route>
+            )}
+            {PullImageDigest && (
+                <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
+                    <PullImageDigest isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {TagListContainer && (
@@ -583,12 +664,17 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
+            {LockConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                </Route>
+            )}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
 }
 
-function Logo({ src = '', style = {}, className = '', children = null }) {
+const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     return (
         <>
             {src && <img src={src} alt="" className={`list__logo ${className}`} style={style} />}
@@ -597,7 +683,7 @@ function Logo({ src = '', style = {}, className = '', children = null }) {
     )
 }
 
-function Title({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) {
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
     return (
         <div className="flex column left">
             <div className={`list__title ${className}`} style={style}>
@@ -608,17 +694,27 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-function ListToggle({ onSelect, enabled = false, isButtonDisabled = false, ...props }) {
+const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...props }) => {
     const handleToggle = () => {
         if (!isButtonDisabled) {
-            onSelect(!enabled);
+            onSelect(!enabled)
         }
-    };
-    return <Toggle dataTestId="toggle-button" {...props} onSelect={handleToggle} selected={enabled} disabled={isButtonDisabled} />
+    }
+    return (
+        <Toggle
+            dataTestId="toggle-button"
+            {...props}
+            onSelect={handleToggle}
+            selected={enabled}
+            disabled={isButtonDisabled}
+        />
+    )
 }
 
-function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
-    if (React.isValidElement(src)) return src
+const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
+    if (React.isValidElement(src)) {
+        return src
+    }
     return (
         <img
             {...props}
@@ -631,7 +727,7 @@ function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...
     )
 }
 
-export function List({ dataTestId = '', children = null, className = '', ...props }) {
+export const List = ({ dataTestId = '', children = null, className = '', ...props }) => {
     return (
         <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
@@ -651,66 +747,21 @@ function handleError(error: any): any[] {
     return error
 }
 
-export function CustomInput({
+export const ProtectedInput = ({
     name,
     value,
     error,
     onChange,
-    onBlur = (e) => {},
-    onFocus = (e) => {},
-    label,
-    type = 'text',
-    disabled = false,
-    autoComplete = 'off',
-    labelClassName = '',
-    placeholder = '',
-    tabIndex = 1,
-    dataTestid = '',
-}) {
-    return (
-        <div className="flex column left top">
-            <label className={`form__label ${labelClassName}`}>{label}</label>
-            <input
-                data-testid={dataTestid}
-                type={type}
-                name={name}
-                autoComplete="off"
-                className="form__input"
-                onChange={(e) => {
-                    e.persist()
-                    onChange(e)
-                }}
-                onBlur={onBlur}
-                onFocus={onFocus}
-                placeholder={placeholder}
-                value={value}
-                disabled={disabled}
-                tabIndex={tabIndex}
-            />
-            {handleError(error).map((err) => (
-                <div className="form__error">
-                    <FormError className="form__icon form__icon--error" />
-                    {err}
-                </div>
-            ))}
-        </div>
-    )
-}
-
-export function ProtectedInput({
-    name,
-    value,
-    error,
-    onChange,
-    label,
-    type = 'text',
+    label = '',
     tabIndex = 1,
     disabled = false,
     hidden = true,
     labelClassName = '',
     placeholder = '',
     dataTestid = '',
-}) {
+    onBlur = (e) => {},
+    isRequiredField = false,
+}: ProtectedInputType) => {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
         toggleShown(!hidden)
@@ -718,7 +769,10 @@ export function ProtectedInput({
 
     return (
         <div className="flex column left top ">
-            <label htmlFor="" className={`form__label ${labelClassName}`}>
+            <label
+                htmlFor=""
+                className={`form__label ${labelClassName} ${isRequiredField ? 'dc__required-field' : ''}`}
+            >
                 {label}
             </label>
             <div className="dc__position-rel w-100">
@@ -735,6 +789,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
+                    onBlur={onBlur}
                 />
                 <ShowHide
                     className="protected-input__toggle"
@@ -753,7 +808,13 @@ export function ProtectedInput({
     )
 }
 
-export function ShowHide({ hidden = true, className = '', onClick = null, defaultOnClick = null, disabled = false }) {
+export const ShowHide = ({
+    hidden = true,
+    className = '',
+    onClick = null,
+    defaultOnClick = null,
+    disabled = false,
+}) => {
     return hidden ? (
         <svg
             xmlns="http://www.w3.org/2000/svg"

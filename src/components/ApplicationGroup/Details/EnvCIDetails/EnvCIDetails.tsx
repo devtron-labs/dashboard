@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, showError, sortCallback, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, sortCallback, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
@@ -30,6 +30,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
+    // There seems to be typing issue since result gives CIPipeline here it is CiPipeline
     const [pipelineList, setPipelineList] = useState<CiPipeline[]>([])
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
     const [securityModuleInstalled, setSecurityModuleInstalled] = useState(false)
@@ -47,11 +48,17 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     const _filteredPipelines = []
                     let selectedPipelineExist = false
                     result.pipelineList.forEach((pipeline) => {
+                        if (pipeline.pipelineType === PipelineType.LINKED_CD) {
+                            return
+                        }
+
                         _filteredPipelines.push(pipeline)
                         selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                     })
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
-                    if (!selectedPipelineExist) {
+                    if (!_filteredPipelines.length && pipelineId) {
+                        replace(generatePath(path, { envId }))
+                    } else if (!selectedPipelineExist && _filteredPipelines.length) {
                         replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
                     }
                     setPipelineList(_filteredPipelines)
@@ -153,7 +160,9 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     }
 
     async function pollHistory() {
-        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -178,7 +187,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (!buildId && pipelineId && triggerHistory.size > 0) {
+    }
+    if (!buildId && pipelineId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelineList || []).map((item) => {
@@ -210,7 +220,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     />
                 </Route>
             )
-        } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
+        }
+        if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
             return (
                 <EmptyView
                     title={APP_GROUP_CI_DETAILS.linkedCI.title}
@@ -219,47 +230,45 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )
-        } else {
-            if (!loading) {
-                return (
-                    <EmptyView
-                        title={APP_GROUP_CI_DETAILS.noBuild.title}
-                        subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
-                    />
-                )
-            }
         }
+        if (!loading) {
+            return (
+                <EmptyView
+                    title={APP_GROUP_CI_DETAILS.noBuild.title}
+                    subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
+                />
+            )
+        }
+
         return null
     }
 
     return (
-        <>
-            <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {!fullScreenView && (
-                    <div className="ci-details__history">
-                        <Sidebar
-                            filterOptions={pipelineOptions}
-                            type={HistoryComponentType.GROUP_CI}
-                            hasMore={hasMore}
-                            triggerHistory={triggerHistory}
-                            setPagination={setPagination}
-                            fetchIdData={fetchBuildIdData}
-                            handleViewAllHistory={handleViewAllHistory}
-                        />
-                    </div>
-                )}
-                <div className="ci-details__body">
-                    {!pipelineId ? (
-                        <EmptyView
-                            title="No application selected"
-                            subTitle="Please select an application to see build history."
-                        />
-                    ) : (
-                        pipeline && renderPipelineDetails()
-                    )}
-                    <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
+        <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            {!fullScreenView && (
+                <div className="ci-details__history">
+                    <Sidebar
+                        filterOptions={pipelineOptions}
+                        type={HistoryComponentType.GROUP_CI}
+                        hasMore={hasMore}
+                        triggerHistory={triggerHistory}
+                        setPagination={setPagination}
+                        fetchIdData={fetchBuildIdData}
+                        handleViewAllHistory={handleViewAllHistory}
+                    />
                 </div>
+            )}
+            <div className="ci-details__body">
+                {!pipelineId ? (
+                    <EmptyView
+                        title="No application selected"
+                        subTitle="Please select an application to see build history."
+                    />
+                ) : (
+                    pipeline && renderPipelineDetails()
+                )}
+                <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
-        </>
+        </div>
     )
 }

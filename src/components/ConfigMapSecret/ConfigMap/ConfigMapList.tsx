@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
-import InfoIconWithTippy from '../InfoIconWithTippy'
 import { getConfigMapList } from '../service'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
@@ -67,8 +66,8 @@ export default function ConfigMapList({
                     ? getAllDrafts(appId, envId ?? -1, 1, configMapListAbortRef.current.signal)
                     : { result: null },
             ])
-            const draftDataMap = {},
-                draftDataArr = []
+            const draftDataMap = {}
+            const draftDataArr = []
             let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
@@ -119,34 +118,35 @@ export default function ConfigMapList({
         }
         try {
             setConfigMap((cmList) => {
-                let configData = cmList.configData
+                const { configData } = cmList
                 if (result === null) {
-                    //delete
+                    // delete
                     configData.splice(index, 1)
                     cmList.configData = [...configData]
                     return { ...cmList }
-                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
-                    //insert after create success
+                }
+                if (typeof index !== 'number' && Array.isArray(result.configData)) {
+                    // insert after create success
                     configData.unshift({
                         ...result.configData[0],
                         data: result.configData[0].data,
                     })
                     cmList.configData = [...configData]
                     return { ...cmList }
-                } else {
-                    const updatedConfigData = result.configData[0]
-                    updatedConfigData.secretMode = false
-                    updatedConfigData.unAuthorized = false
-                    delete updatedConfigData.isNew
-                    cmList.configData[index] = updatedConfigData
-                    return { ...cmList }
                 }
+                const updatedConfigData = result.configData[0]
+                updatedConfigData.secretMode = false
+                updatedConfigData.unAuthorized = false
+                delete updatedConfigData.isNew
+                cmList.configData[index] = updatedConfigData
+                return { ...cmList }
             })
         } catch (err) {}
     }
 
-    if (parentState === ComponentStates.loading || !configMap || configMapLoading)
+    if (parentState === ComponentStates.loading || !configMap || configMapLoading) {
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    }
 
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
@@ -159,10 +159,12 @@ export default function ConfigMapList({
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
-                    <InfoIconWithTippy
-                        titleText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
+                    <InfoIconTippy
+                        heading={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CM_CONFIG].learnMoreLink}
+                        iconClassName="icon-dim-16 ml-4"
+                        placement="right"
                     />
                 </h1>
                 <div className="mt-20">
@@ -205,6 +207,7 @@ export default function ConfigMapList({
                     </div>
                 </div>
             </div>
+
             {DraftComments && showComments && selectedDraft && (
                 <DraftComments
                     draftId={selectedDraft.draftId}
@@ -212,9 +215,12 @@ export default function ConfigMapList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
-            <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
+
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position-cmcs">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
+            )}
         </div>
     )
 }

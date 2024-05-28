@@ -39,10 +39,9 @@ export const JOB_LIST_HEADERS = {
     LastRunAt: 'LAST RUN AT',
     LastSuccessAt: 'LAST SUCCESS AT',
     Description: 'Description',
-    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT'
+    RUN_IN_ENVIRONMENT: 'RUN IN ENVIRONMENT',
 }
 
-export const YET_TO_RUN = 'Yet to run'
 export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJob: 'Create your first job',
     createJobInfoText:

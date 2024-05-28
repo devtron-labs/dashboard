@@ -1,30 +1,29 @@
 import React, { useState } from 'react'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import Select, { components } from 'react-select'
-import { RadioGroup } from '../common'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
-    TippyCustomized,
-    TippyTheme,
     InfoColourBar,
     ClearIndicator,
     multiSelectStyles,
     MultiValueRemove,
     Option,
+    CustomInput,
+    ReactSelectInputAction,
+    StyledRadioGroup as RadioGroup,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
-export function DropdownIndicator(props) {
+export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <ArrowDown className="icon-dim-24 icon-n4" />
@@ -32,7 +31,7 @@ export function DropdownIndicator(props) {
     )
 }
 
-function ManageRegistry({
+const ManageRegistry = ({
     clusterOption,
     blackList,
     setBlackList,
@@ -51,7 +50,7 @@ function ManageRegistry({
     setCustomCredential,
     setErrorValidation,
     errorValidation,
-}: ManageRegistryType) {
+}: ManageRegistryType) => {
     const [showAlertBar, setAlertBar] = useState<boolean>(false)
 
     const toggleBlackListEnabled = () => {
@@ -83,11 +82,11 @@ function ManageRegistry({
             (blackList.length === 0 && whiteList.length === clusterOption.length)
         ) {
             return 'None'
-        } else if (isWhiteList) {
-            return `Cluster except ${appliedClusterList}`
-        } else {
-            return `All Cluster except ${ignoredClusterList}`
         }
+        if (isWhiteList) {
+            return `Cluster except ${appliedClusterList}`
+        }
+        return `All Cluster except ${ignoredClusterList}`
     }
 
     const renderActionButton = (): JSX.Element => {
@@ -143,7 +142,7 @@ function ManageRegistry({
         }
         return (
             <components.MultiValueContainer {...{ data, innerProps, selectProps }}>
-                <div className={`flex fs-12 pl-4 pr-4`}>
+                <div className="flex fs-12 pl-4 pr-4">
                     <div className="cn-9">{label}</div>
                 </div>
                 {children[1]}
@@ -156,12 +155,12 @@ function ManageRegistry({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setBlackList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setBlackList(clusterOption)
@@ -176,12 +175,12 @@ function ManageRegistry({
         const areAllOptionsSelected = _selectedOption.findIndex((option) => option.value === '-1') !== -1
         if (args.length > 0) {
             if (
-                (args[0].action === 'remove-value' && args[0].removedValue.value === '-1') ||
-                (args[0].action === 'deselect-option' && args[0].option.value === '-1')
+                (args[0].action === ReactSelectInputAction.removeValue && args[0].removedValue.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.deselectOption && args[0].option.value === '-1')
             ) {
                 setWhiteList([])
             } else if (
-                (args[0].action === 'select-option' && args[0].option.value === '-1') ||
+                (args[0].action === ReactSelectInputAction.selectOption && args[0].option.value === '-1') ||
                 (!areAllOptionsSelected && _selectedOption.length === clusterOption.length - 1)
             ) {
                 setWhiteList(clusterOption)
@@ -194,54 +193,56 @@ function ManageRegistry({
     const renderIgnoredCluster = (): JSX.Element => {
         if (whiteList.length > 0) {
             return renderNoSelectionView()
-        } else if (whiteList.length === 0 && !blackListEnabled) {
-            return renderNotDefinedView('blacklist')
-        } else {
-            return (
-                <Select
-                    isDisabled={whiteList.length > 0}
-                    placeholder="Select cluster"
-                    components={{
-                        MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
-                        DropdownIndicator,
-                        ClearIndicator,
-                        MultiValueRemove,
-                        Option,
-                    }}
-                    styles={{
-                        ...multiSelectStyles,
-                        multiValue: (base) => ({
-                            ...base,
-                            border: `1px solid var(--N200)`,
-                            borderRadius: `4px`,
-                            background: 'white',
-                            height: '30px',
-                            margin: '0 8px 0 0',
-                            padding: '1px',
-                        }),
-                        indicatorSeparator: (base) => ({
-                            ...base,
-                            display: blackList.length > 0 ? 'block' : 'none',
-                        }),
-                    }}
-                    closeMenuOnSelect={false}
-                    isMulti
-                    name="blacklist"
-                    options={clusterOption}
-                    hideSelectedOptions={false}
-                    value={blackList}
-                    onChange={(selected, { ...args }) => onBlackListClusterSelection(selected, { ...args })}
-                />
-            )
         }
+        if (whiteList.length === 0 && !blackListEnabled) {
+            return renderNotDefinedView('blacklist')
+        }
+        return (
+            <Select
+                isDisabled={whiteList.length > 0}
+                placeholder="Select cluster"
+                components={{
+                    MultiValueContainer: ({ ...props }) => <MultiValueChipContainer {...props} validator={null} />,
+                    DropdownIndicator,
+                    ClearIndicator,
+                    MultiValueRemove,
+                    Option,
+                }}
+                styles={{
+                    ...multiSelectStyles,
+                    multiValue: (base) => ({
+                        ...base,
+                        border: `1px solid var(--N200)`,
+                        borderRadius: `4px`,
+                        background: 'white',
+                        height: '30px',
+                        margin: '0 8px 0 0',
+                        padding: '1px',
+                    }),
+                    indicatorSeparator: (base) => ({
+                        ...base,
+                        display: blackList.length > 0 ? 'block' : 'none',
+                    }),
+                }}
+                closeMenuOnSelect={false}
+                isMulti
+                name="blacklist"
+                options={clusterOption}
+                hideSelectedOptions={false}
+                value={blackList}
+                onChange={(selected, { ...args }) => onBlackListClusterSelection(selected, { ...args })}
+            />
+        )
     }
 
     const renderAppliedCluster = (): JSX.Element => {
         if (blackList.length > 0) {
             return renderNoSelectionView()
-        } else if (blackList.length === 0 && blackListEnabled) {
+        }
+        if (blackList.length === 0 && blackListEnabled) {
             return renderNotDefinedView('whitelist')
-        } else if (blackList.length === 0) {
+        }
+        if (blackList.length === 0) {
             return (
                 <Select
                     components={{
@@ -291,9 +292,8 @@ function ManageRegistry({
             if (!e.target.value) {
                 setErrorValidation(true)
                 return null
-            } else {
-                setErrorValidation(false)
             }
+            setErrorValidation(false)
         } else {
             setCustomCredential({
                 ...customCredential,
@@ -310,6 +310,7 @@ function ManageRegistry({
                     className="dc__link"
                     href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
                     target="_blank"
+                    rel="noreferrer"
                 >
                     image pull secret name created via CLI
                 </a>
@@ -327,23 +328,14 @@ function ManageRegistry({
             >
                 <div className="flex left">
                     <div className="fw-6">Manage access of registry credentials</div>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-332"
-                        placement="top"
-                        Icon={HelpIcon}
-                        iconClass="fcv-5"
+                    <InfoIconTippy
                         heading="Manage access of registry credentials"
                         infoText="Clusters need permission to pull container image from private repository in
                                             the registry. You can control which clusters have access to the pull image
                                             from private repositories.
                                         "
-                        showCloseButton={true}
-                        trigger="click"
-                        interactive={true}
-                    >
-                        <Question className="icon-dim-16 fcn-6 ml-4 cursor" />
-                    </TippyCustomized>
+                        iconClassName="icon-dim-16 fcn-6 ml-4"
+                    />
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
@@ -405,23 +397,16 @@ function ManageRegistry({
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                        <input
+                        <CustomInput
                             tabIndex={2}
                             placeholder="Enter image pull secret seperated by comma"
-                            className="form__input mt-8"
+                            rootClassName="mt-8"
                             name={CredentialType.NAME}
                             value={credentialValue}
                             onChange={onClickSpecifyImagePullSecret}
                             autoFocus
-                            autoComplete="off"
+                            error={errorValidation && REQUIRED_FIELD_MSG}
                         />
-
-                        {errorValidation && (
-                            <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
-                                This is a required Field
-                            </span>
-                        )}
                     </>
                 )}
                 {credentialsType === CredentialType.CUSTOM_CREDENTIAL && (

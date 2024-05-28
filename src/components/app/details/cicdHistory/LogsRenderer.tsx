@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Progressing, Host } from '@devtron-labs/devtron-fe-common-lib'
-import { useInterval } from '../../../common'
 import { useParams } from 'react-router'
+import { default as AnsiUp } from 'ansi_up'
+import { useInterval } from '../../../common'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as HelpIcon } from '../../../../assets/icons/ic-help.svg'
 import { DOCUMENTATION, EVENT_STREAM_EVENTS_MAP, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
-import { default as AnsiUp } from 'ansi_up'
 import { HistoryComponentType, LogsRendererType } from './types'
 
 export default function LogsRenderer({
@@ -26,7 +26,7 @@ export default function LogsRenderer({
         __html: string
     } {
         try {
-            log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
+            log = log.replace(/\[[.]*m/, (m) => `\x1B[${m}m`)
             const ansi_up = new AnsiUp()
             return { __html: ansi_up.ansi_to_html(log) }
         } catch (err) {
@@ -71,7 +71,9 @@ function useCIEventSource(url: string, maxLength?: number) {
         buffer.current = []
     }
     function closeEventSource() {
-        if (eventSourceRef.current && eventSourceRef.current.close) eventSourceRef.current.close()
+        if (eventSourceRef.current && eventSourceRef.current.close) {
+            eventSourceRef.current.close()
+        }
     }
 
     function handleMessage(event) {
@@ -148,9 +150,14 @@ const renderBlobNotConfigured = (): JSX.Element => {
         <>
             {renderLogsNotAvailable('Logs are available only at runtime.')}
             <div className="flexbox configure-blob-container pt-8 pr-12 pb-8 pl-12 bcv-1 br-4">
-                <Question className="icon-dim-20 fcv-5" />
+                <HelpIcon className="icon-dim-20 fcv-5" />
                 <span className="fs-13 fw-4 mr-8 ml-8">Want to store logs to view later?</span>
-                <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
+                <a
+                    className="fs-13 fw-6 cb-5 dc__no-decor"
+                    href={DOCUMENTATION.BLOB_STORAGE}
+                    target="_blank"
+                    rel="noreferrer"
+                >
                     Configure blob storage
                 </a>
                 <OpenInNew className="icon-dim-20 ml-8" />

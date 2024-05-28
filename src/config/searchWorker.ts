@@ -26,7 +26,7 @@ export default () => {
 
     self.addEventListener('message', (e) => {
         /**
-         * Verifying the origin of the received message to be similar to 
+         * Verifying the origin of the received message to be similar to
          * from what our page is served on
          */
         if (e.data.payload?.origin !== self.location.origin) {

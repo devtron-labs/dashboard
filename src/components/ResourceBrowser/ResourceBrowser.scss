@@ -43,7 +43,7 @@
 
                     .kind-search-select__menu-list {
                         .kind-search-select__option {
-                            mark {
+                            &--highlight {
                                 padding: 0;
                                 background-color: var(--Y200);
                             }
@@ -160,6 +160,10 @@
                         background-color: var(--N50);
                         .sticky-column {
                             background-color: var(--N50);
+                        }
+
+                        .restart-icon path {
+                            stroke: var(--B500);
                         }
                     }
                 }

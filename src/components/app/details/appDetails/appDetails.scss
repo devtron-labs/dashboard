@@ -245,10 +245,13 @@ table.pod__table td:last-child {
     padding-right: 20px;
 }
 
-.no-pod {
+.no-pod-list{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.no-pod {
     width: 100%;
     height: 100%;
     flex-direction: column;
@@ -749,16 +752,13 @@ table.pod__table td:last-child {
     }
 
     .app-summary__status-name {
-        font-weight: 600;
-        font-size: 12px;
-    }
-
-    .app-summary__status-name {
         &.f-healthy,
         &.f-scalingreplicasetdown {
             color: var(--green);
         }
 
+        &.f-starting,
+        &.f-initiating,
         &.f-suspended,
         &.f-switchedtoactiveservice {
             color: var(--orange);
@@ -779,6 +779,9 @@ table.pod__table td:last-child {
             display: flex;
             align-items: center;
         }
+
+        font-weight: 600;
+        font-size: 12px;
     }
 
     .time-range {
@@ -1136,7 +1139,7 @@ table.pod__table td:last-child {
         height: 200px;
     }
 
-    h3{
+    h3 {
         font-weight: 600;
         text-align: center;
         line-height: 22px;
@@ -1149,8 +1152,8 @@ table.pod__table td:last-child {
     }
 
     button {
-       font-size: 13px;
-       height: 36px;
+        font-size: 13px;
+        height: 36px;
     }
 }
 
@@ -1688,8 +1691,7 @@ table.resource-tree {
 }
 
 .app-metrics-graph__empty-state-wrapper {
-    border-bottom: solid 1px var(--N200);
-    border-top: solid 1px var(--N200);
+    border-bottom: solid 1px var(--N100);
 }
 
 .app-metrics-graph__empty-state {
@@ -1790,108 +1792,110 @@ table.resource-tree {
     margin-right: 4px;
 }
 
-.source-info-container{
-  .dc__app-summary__icon{
-      &.healthy {
-        background-size: contain, contain;
-        background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+.source-info-container,
+.app-details-info-card {
+    .dc__app-summary__icon {
+        &.healthy {
+            background-size: contain, contain;
+            background: url(../../../../assets/icons/appstatus/ic-heart-green.svg), transparent;
+        }
     }
-  }
 
-  .mw-340 {
-    max-width: 340px !important;
-  }
+    .mw-340 {
+        max-width: 340px !important;
+    }
 
-  .mw-400 {
-    max-width: 400px !important;
-  }
+    .mw-400 {
+        max-width: 400px !important;
+    }
 
-  .mw-140 {
-    max-width: 140px !important;
-  }
+    .mw-140 {
+        max-width: 140px !important;
+    }
 }
 
 .source-info-container,
 .deployment-status-breakdown-modal-container,
-.deployment-status-breakdown-container {
-  .app-summary__status-name{
-    text-transform: none !important;
-    &.f-succeeded {
-        color: var(--green);
+.deployment-status-breakdown-container,
+.app-details-info-card {
+    .app-summary__status-name {
+        text-transform: none !important;
+        &.f-succeeded {
+            color: var(--green);
+        }
+        &.f-inprogress {
+            color: #ff7e5b;
+        }
+        &.f-failed,
+        &.f-timed_out,
+        &.f-unable_to_fetch {
+            color: var(--R500);
+        }
     }
-    &.f-inprogress {
-        color: #ff7e5b;
+    .timer-icon {
+        path {
+            stroke: var(--N600);
+        }
     }
-    &.f-failed,
-    &.f-timed_out,
-    &.f-unable_to_fetch {
-        color:  var(--R500);
-    }
-  }
-  .timer-icon{
-    path {
-      stroke: var(--N600);
-    }
-  }
 }
 
 .deployment-status-breakdown-container,
 .deployment-approval-container {
-  .vertical-connector{
-    border-left: 1px solid var(--N300);
-    height: 15px;
-    position: relative;
-    left: 18px;
-    width: 5px;
-  }
-  .deployment-status-breakdown-row{
-    display: flex;
-    align-items: center;
-    justify-content: left;
-
-    &.border-collapse {
-        border-radius: 4px 4px 0 0;
+    .vertical-connector {
+        border-left: 1px solid var(--N300);
+        height: 15px;
+        position: relative;
+        left: 18px;
+        width: 5px;
     }
-  }
+    .deployment-status-breakdown-row {
+        display: flex;
+        align-items: center;
+        justify-content: left;
 
-  .pulse-highlight {
-    width: 12px;
-    height: 12px;
-    border: solid 4px rgba(255, 126, 91, 0.4);
-    background-color: #ff7e5b;
-    position: relative;
-    top: 5px;
-    right: -5px;
-    border-radius: 50%;
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
-
-  .green-tick{
-    path {
-      stroke: var(--G500);
+        &.border-collapse {
+            border-radius: 4px 4px 0 0;
+        }
     }
-  }
 
-  .app-status-row {
+    .pulse-highlight {
+        width: 12px;
+        height: 12px;
+        border: solid 4px rgba(255, 126, 91, 0.4);
+        background-color: #ff7e5b;
+        position: relative;
+        top: 5px;
+        right: -5px;
+        border-radius: 50%;
+        animation-name: pulse;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    .green-tick {
+        path {
+            stroke: var(--G500);
+        }
+    }
+
+    .app-status-row {
         display: grid;
         grid-template-columns: 150px 200px 150px auto;
         grid-column-gap: 16px;
-   }
-  .resource-list {
+    }
+    .resource-list {
         .app-status-row {
             &:hover {
                 background-color: var(--N50);
             }
         }
-  }
+    }
 
-  .detail-tab_border {
-    border-radius: 0 0 4px 4px;
-    border-top: 0;
-  }
+    .detail-tab_border {
+        border-radius: 0 0 4px 4px;
+        border-top: 0;
+    }
 }
 
 .deployment-approval-container + .deployment-status-breakdown-container {
@@ -1902,8 +1906,120 @@ table.resource-tree {
     height: calc(100vh - 70px);
 }
 
-.env-select{
-  font-weight: 600 !important;
-  color: var(--B500);
-  margin-left: 8px !important;
+.env-select {
+    font-weight: 600 !important;
+    color: var(--B500);
+    margin-left: 8px !important;
+}
+
+.app-details-manifest-download-card {
+    overflow: hidden;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
+}
+
+.app-details-info-card {
+    align-items: flex-start;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.20);
+
+    &__top-container {
+        align-items: flex-start;
+        padding: 12px 12px 8px;
+        width: 100%;
+
+        &__content {
+            align-items: flex-start;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            &__title-wrapper {
+                align-items: center;
+                display: inline-flex;
+                position: relative;
+
+                &__title {
+                    font-family: 'Open Sans-Regular', Helvetica;
+                }
+            }
+        }
+    }
+
+    &__bottom-container {
+        display: flex;
+        border-color: var(--N100);
+        border-top-style: solid;
+        border-top-width: 1px;
+        padding: 8px 12px;
+        width: 100%;
+
+        &__message {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--N900);
+            line-height: 18px;
+        }
+
+        &__details {
+            color: var(--B500);
+            line-height: 18px;
+            align-self: flex-start;
+            cursor: pointer;
+        }
+    }
+}
+
+.issues-listing-modal {
+    margin: auto;
+    margin-right: 0;
+    height: 100%;
+    overflow: scroll;
+
+    .issues-listing-modal__header {
+        position: sticky;
+        top: 0
+    }
+
+    &__body {
+        &__head-row {
+            display: flex;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 20px;
+            padding: 12px 0;
+            margin: 0 20px;
+            color: var(--N700);
+            border-color: var(--N100);
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            text-transform: uppercase;
+
+            &__col-1 {
+                flex: 1;
+            }
+
+            &__col-2 {
+                flex: 3;
+            }
+        }
+
+        &__row {
+            display: flex;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 20px;
+            padding: 8px 20px;
+            color: var(--N900);
+
+            &__col-1 {
+                flex: 1;
+            }
+
+            &__col-2 {
+                flex: 3;
+            }
+        }
+    }
 }

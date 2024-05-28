@@ -7,13 +7,15 @@ import {
     GenericEmptyState,
     DeploymentAppTypes,
     useAsync,
+    STAGE_TYPE,
+    DeploymentStageType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
+import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import { getTagDetails } from '../../service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
@@ -28,7 +30,6 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import {
     CICDSidebarFilterOptionType,
-    DeploymentStageType,
     History,
     HistoryComponentType,
     FetchIdDataStatus,
@@ -36,10 +37,9 @@ import {
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
-let statusSet = new Set(['starting', 'running', 'pending'])
+const statusSet = new Set(['starting', 'running', 'pending'])
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
@@ -83,7 +83,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     useEffect(() => {
         // check for more
-        if (loading || !deploymentHistoryResult) return
+        if (loading || !deploymentHistoryResult) {
+            return
+        }
         if (!deploymentHistoryResult?.result?.cdWorkflows?.length) {
             return
         }
@@ -97,10 +99,10 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             setHasMoreLoading(true)
         }
         let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
-        let queryString = new URLSearchParams(location.search)
-        let queryParam = queryString.get('type')
+        const queryString = new URLSearchParams(location.search)
+        const queryParam = queryString.get('type')
         if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
-            let deploymentStageType =
+            const deploymentStageType =
                 queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
             const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
                 return obj.stage === deploymentStageType
@@ -148,7 +150,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             }
             if (result[0]) {
                 const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(curr, true), new Map())
-                let _selectedEnvironment = (result[0]['value']?.result || [])
+                const _selectedEnvironment = (result[0]['value']?.result || [])
                     .filter((env) => {
                         return !filteredEnvMap || filteredEnvMap.get(env.environmentId)
                     })
@@ -174,8 +176,8 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
-            let _selectedEnvironment,
-                isEnvDeleted = false
+            let _selectedEnvironment
+            let isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || [])
                 .filter((env) => {
@@ -218,7 +220,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     }, [result])
 
     async function pollHistory() {
-        if (!pipelineId || !envId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !envId || !fetchTriggerIdData || fetchTriggerIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
         const [error, result] = await asyncWrap(
             getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
@@ -245,10 +249,20 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             return
         }
         if (triggerId === triggerDetail?.id) {
+            const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
+            const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
+            const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
+            const additionalDataObject = {
+                ...(appliedFilters.length ? { appliedFilters } : {}),
+                ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
+                ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
+            }
+
             setTriggerHistory((triggerHistory) => {
-                triggerHistory.set(triggerId, triggerDetail)
+                triggerHistory.set(triggerId, { ...triggerDetail, ...additionalDataObject })
                 return new Map(triggerHistory)
             })
+
             if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
                 setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
             }
@@ -272,68 +286,66 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
-    } else if (
-        result &&
-        (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))
-    ) {
+    }
+    if (result && (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))) {
         return <AppNotConfigured />
-    } else if (!result || (envId && dependencyState[2] !== envId)) {
+    }
+    if (!result || (envId && dependencyState[2] !== envId)) {
         return null
     }
     return (
-        <>
-            <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {!fullScreenView && (
-                    <div className="ci-details__history">
-                        <Sidebar
-                            filterOptions={envOptions}
-                            type={HistoryComponentType.CD}
-                            hasMore={hasMore}
-                            triggerHistory={triggerHistory}
-                            setPagination={setPagination}
-                            fetchIdData={fetchTriggerIdData}
-                            handleViewAllHistory={handleViewAllHistory}
-                        />
-                    </div>
-                )}
-                <div className="ci-details__body">
-                    {triggerHistory.size > 0 || fetchTriggerIdData ? (
-                        <Route
-                            path={`${path
-                                .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
-                        >
-                            <TriggerOutput
-                                fullScreenView={fullScreenView}
-                                syncState={syncState}
-                                triggerHistory={triggerHistory}
-                                setFullScreenView={setFullScreenView}
-                                setDeploymentHistoryList={setDeploymentHistoryList}
-                                deploymentHistoryList={deploymentHistoryList}
-                                deploymentAppType={deploymentAppType}
-                                isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
-                                deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows || []}
-                                appReleaseTags={appReleaseTags}
-                                tagsEditable={tagsEditable}
-                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                fetchIdData={fetchTriggerIdData}
-                            />
-                        </Route>
-                    ) : !envId ? (
-                        <GenericEmptyState
-                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
-                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
-                        />
-                    ) : (
-                        <GenericEmptyState
-                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
-                            subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
-                        />
-                    )}
-                    {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
+        <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            {!fullScreenView && (
+                <div className="ci-details__history">
+                    <Sidebar
+                        filterOptions={envOptions}
+                        type={HistoryComponentType.CD}
+                        hasMore={hasMore}
+                        triggerHistory={triggerHistory}
+                        setPagination={setPagination}
+                        fetchIdData={fetchTriggerIdData}
+                        handleViewAllHistory={handleViewAllHistory}
+                    />
                 </div>
+            )}
+            <div className="ci-details__body">
+                {triggerHistory.size > 0 || fetchTriggerIdData ? (
+                    <Route
+                        path={`${path
+                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                            .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
+                    >
+                        <TriggerOutput
+                            fullScreenView={fullScreenView}
+                            syncState={syncState}
+                            triggerHistory={triggerHistory}
+                            setFullScreenView={setFullScreenView}
+                            setDeploymentHistoryList={setDeploymentHistoryList}
+                            deploymentHistoryList={deploymentHistoryList}
+                            deploymentAppType={deploymentAppType}
+                            isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
+                            deploymentHistoryResult={deploymentHistoryResult?.result?.cdWorkflows || []}
+                            appReleaseTags={appReleaseTags}
+                            tagsEditable={tagsEditable}
+                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                            fetchIdData={fetchTriggerIdData}
+                            selectedEnvironmentName={selectedEnv?.environmentName}
+                        />
+                    </Route>
+                ) : !envId ? (
+                    <GenericEmptyState
+                        title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
+                        subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
+                    />
+                ) : (
+                    <GenericEmptyState
+                        title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                        subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
+                    />
+                )}
+                <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
-        </>
+        </div>
     )
 }
 
@@ -351,6 +363,7 @@ export const TriggerOutput: React.FC<{
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
     fetchIdData: FetchIdDataStatus
+    selectedEnvironmentName?: string
 }> = ({
     fullScreenView,
     syncState,
@@ -365,6 +378,7 @@ export const TriggerOutput: React.FC<{
     tagsEditable,
     hideImageTaggingHardDelete,
     fetchIdData,
+    selectedEnvironmentName,
 }) => {
     const { appId, triggerId, envId, pipelineId } = useParams<{
         appId: string
@@ -374,7 +388,8 @@ export const TriggerOutput: React.FC<{
     }>()
     const triggerDetails = triggerHistory.get(+triggerId)
     const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+        () => getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchIdData }),
+        // TODO: Ask if fetchIdData is required here as dependency
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     )
@@ -397,7 +412,9 @@ export const TriggerOutput: React.FC<{
     )
 
     useEffect(() => {
-        if (triggerDetailsLoading) return
+        if (triggerDetailsLoading) {
+            return
+        }
         let triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageComment: triggerDetails?.imageComment,
@@ -411,7 +428,9 @@ export const TriggerOutput: React.FC<{
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) {
+            return
+        }
         const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
@@ -424,8 +443,9 @@ export const TriggerOutput: React.FC<{
         if (
             !triggerDetails ||
             terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
-        )
-            return null // no interval
+        ) {
+            return null
+        } // no interval
         if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
             // 10s because progressing
             return 10000
@@ -439,8 +459,9 @@ export const TriggerOutput: React.FC<{
         (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
         !triggerId ||
         (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
-    )
+    ) {
         return <Progressing pageLoader />
+    }
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
@@ -449,13 +470,21 @@ export const TriggerOutput: React.FC<{
             />
         )
     }
-    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) return null
+    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) {
+        return <Reload />
+    }
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) {
+        return <Reload />
+    }
+    if (triggerDetails?.id !== +triggerId) {
+        return null
+    }
 
     return (
         <>
-            <div className="trigger-details-container">
+            <div
+                className={`trigger-details-container ${triggerDetails.triggerMetadata ? 'with-trigger-metadata' : ''}`}
+            >
                 {!fullScreenView && (
                     <>
                         <TriggerDetails
@@ -471,6 +500,7 @@ export const TriggerOutput: React.FC<{
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
+                            triggerMetadata={triggerDetails.triggerMetadata}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppTypes.HELM && (
@@ -487,12 +517,7 @@ export const TriggerOutput: React.FC<{
                             )}
                             {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
                                 <li className="tab-list__tab" data-testid="deployment-history-logs-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to={`logs`}
-                                    >
+                                    <NavLink replace className="tab-list__tab-link" activeClassName="active" to="logs">
                                         Logs
                                     </NavLink>
                                 </li>
@@ -502,7 +527,7 @@ export const TriggerOutput: React.FC<{
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`source-code`}
+                                    to="source-code"
                                 >
                                     Source
                                 </NavLink>
@@ -513,7 +538,7 @@ export const TriggerOutput: React.FC<{
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`configuration`}
+                                        to="configuration"
                                     >
                                         Configuration
                                     </NavLink>
@@ -525,7 +550,7 @@ export const TriggerOutput: React.FC<{
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`artifacts`}
+                                        to="artifacts"
                                     >
                                         Artifacts
                                     </NavLink>
@@ -556,6 +581,7 @@ export const TriggerOutput: React.FC<{
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                selectedEnvironmentName={selectedEnvironmentName}
             />
         </>
     )
@@ -578,6 +604,7 @@ const HistoryLogs: React.FC<{
     appReleaseTags: string[]
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
+    selectedEnvironmentName?: string
 }> = ({
     triggerDetails,
     loading,
@@ -594,8 +621,9 @@ const HistoryLogs: React.FC<{
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
+    selectedEnvironmentName,
 }) => {
-    let { path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
         appId: string
         pipelineId: string
@@ -663,6 +691,10 @@ const HistoryLogs: React.FC<{
                                 appReleaseTagNames={appReleaseTags}
                                 tagsEditable={tagsEditable}
                                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                appliedFilters={triggerDetails.appliedFilters ?? []}
+                                appliedFiltersTimestamp={triggerDetails.appliedFiltersTimestamp}
+                                selectedEnvironmentName={selectedEnvironmentName}
+                                promotionApprovalMetadata={triggerDetails?.promotionApprovalMetadata}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
@@ -716,9 +748,9 @@ const HistoryLogs: React.FC<{
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
                                     : triggerDetails.status.toLowerCase() === 'succeeded' ||
-                                      triggerDetails.IsVirtualEnvironment
-                                    ? `artifacts`
-                                    : `logs`
+                                        triggerDetails.IsVirtualEnvironment
+                                      ? `artifacts`
+                                      : `logs`
                             }`}
                         />
                     </Switch>

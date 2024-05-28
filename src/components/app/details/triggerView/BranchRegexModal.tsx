@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { CustomInput, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
@@ -6,12 +7,10 @@ import { ReactComponent as BitBucket } from '../../../../assets/icons/git/bitbuc
 import { SourceTypeMap } from '../../../../config'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as LeftIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { ButtonWithLoader } from '../../../common'
 
 export default function BranchRegexModal({
     material,
@@ -49,7 +48,9 @@ export default function BranchRegexModal({
     }
 
     const renderBranchRegexMaterialHeader = () => {
-        if (hideHeaderFooter) return null
+        if (hideHeaderFooter) {
+            return null
+        }
         return (
             <div className="trigger-modal__header">
                 <h1 className="modal__title flex left fs-16">{title}</h1>
@@ -80,7 +81,6 @@ export default function BranchRegexModal({
                     onClick={onClickNextButton}
                     disabled={_isDisabled || savingRegexValue}
                     isLoading={savingRegexValue}
-                    loaderColor="white"
                 >
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
@@ -94,18 +94,19 @@ export default function BranchRegexModal({
         )
     }
 
-    const renderValidationErrorLabel = (message: string): JSX.Element => {
-        return (
-            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6 ml-36">
-                <Error className="icon-dim-16" />
-                <div className="ml-4 cr-5">{message}</div>
-            </div>
-        )
-    }
-
     const onClickBackArrow = (): void => {
         onCloseBranchRegexModal()
         onShowCIModal()
+    }
+
+    const getErrorMessage = (regexValue) => {
+        if (!regexValue.value) {
+            return REQUIRED_FIELD_MSG
+        }
+        if (regexValue.isInvalid) {
+            return BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName
+        }
+        return ''
     }
 
     return (
@@ -150,21 +151,19 @@ export default function BranchRegexModal({
                                         </div>
                                     </span>
                                 </div>
-                                <input
-                                    data-testid={`branch-name-matching-regex-textbox${index}`}
-                                    tabIndex={index}
-                                    placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
-                                    className="form__input ml-36 w-95"
-                                    name="name"
-                                    value={_regexValue.value}
-                                    onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
-                                    autoFocus
-                                    autoComplete="off"
-                                />
-                                {_regexValue.value &&
-                                    _regexValue.isInvalid &&
-                                    renderValidationErrorLabel(BRANCH_REGEX_MODAL_MESSAGING.NoMatchingBranchName)}
-                                {!_regexValue.value && renderValidationErrorLabel(REQUIRED_FIELD_MSG)}
+                                <div className="ml-36-imp">
+                                    <CustomInput
+                                        name="name"
+                                        data-testid={`branch-name-matching-regex-textbox${index}`}
+                                        tabIndex={index}
+                                        placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
+                                        rootClassName="w-95-imp"
+                                        value={_regexValue.value}
+                                        onChange={(e) => handleRegexInputValue(mat.gitMaterialId, e.target.value, mat)}
+                                        autoFocus
+                                        error={getErrorMessage(_regexValue)}
+                                    />
+                                </div>
                             </div>
                         )
                     )

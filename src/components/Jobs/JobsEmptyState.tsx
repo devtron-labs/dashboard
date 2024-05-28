@@ -21,22 +21,22 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
                 image={nojobs}
                 title={JOBLIST_EMPTY_STATE_MESSAGING.createJob}
                 subTitle={JOBLIST_EMPTY_STATE_MESSAGING.createJobInfoText}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={handleButton}
             />
         )
     }
 
     const renderNoResultsView = () => {
-        const handleButton = () =>{
+        const handleButton = () => {
             return (
                 <button
-                type="button"
-                className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark"
-                onClick={props.clickHandler}
-            >
-                {JOBLIST_EMPTY_STATE_MESSAGING.noJobsButtonLabel}
-            </button>
+                    type="button"
+                    className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark"
+                    onClick={props.clickHandler}
+                >
+                    {JOBLIST_EMPTY_STATE_MESSAGING.noJobsButtonLabel}
+                </button>
             )
         }
         return (
@@ -44,7 +44,7 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
                 image={noresult}
                 title={JOBLIST_EMPTY_STATE_MESSAGING.noJobsFound}
                 subTitle={JOBLIST_EMPTY_STATE_MESSAGING.noJobFoundInfoText}
-                isButtonAvailable={true}
+                isButtonAvailable
                 renderButton={handleButton}
             />
         )

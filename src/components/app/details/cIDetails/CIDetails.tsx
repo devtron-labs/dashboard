@@ -1,10 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, GenericEmptyState, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact, getTagDetails, getArtifactForJobCi } from '../../service'
-import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
-import { URLS, ModuleNameMap } from '../../../../config'
+import {
+    showError,
+    Progressing,
+    Reload,
+    GenericEmptyState,
+    useAsync,
+    PipelineType,
+    ScannedByToolModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import {
+    getCIPipelines,
+    getCIHistoricalStatus,
+    getTriggerHistory,
+    getArtifact,
+    getTagDetails,
+    getArtifactForJobCi,
+} from '../../service'
+import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
+import { URLS, ModuleNameMap } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -21,13 +36,12 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdData
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
-import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
-let statusSet = new Set(['starting', 'running', 'pending'])
+const statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean, filteredEnvIds?: string }) {
+export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: boolean; filteredEnvIds?: string }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -46,7 +60,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const [initDataLoading, initDataResults] = useAsync(
         () =>
             Promise.allSettled([
-                getCIPipelines(+appId, filteredEnvIds),
+                getCIPipelines(+appId, filteredEnvIds, showError),
                 getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
@@ -125,7 +139,9 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     }
 
     async function pollHistory() {
-        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) return
+        if (!pipelineId || !fetchBuildIdData || fetchBuildIdData !== FetchIdDataStatus.SUSPEND) {
+            return
+        }
 
         const [error, result] = await asyncWrap(
             getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
@@ -147,18 +163,23 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
 
     if ((!hasMoreLoading && loading) || initDataLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (!buildId && triggerHistory.size > 0) {
+    }
+    if (pipelineId && !buildId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, pipelineId }))
     }
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
-        (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
-    ) // external pipelines not visible in dropdown
+        (pipeline) => pipeline.pipelineType !== 'EXTERNAL' && pipeline.pipelineType !== PipelineType.LINKED_CD,
+    ) // external and LINKED_CD pipelines not visible in dropdown
     const selectedPipelineExist = !pipelineId || pipelines.find((pipeline) => pipeline.id === +pipelineId)
-    if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist)) {
+
+    if (!pipelines.length && pipelineId) {
+        // reason is un-required params like logs were leaking
+        replace(generatePath(path, { appId }))
+    } else if ((pipelines.length === 1 && !pipelineId) || (!selectedPipelineExist && pipelines.length)) {
         replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
-        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType}
+        return { value: `${item.id}`, label: item.name, pipelineId: item.id, pipelineType: item.pipelineType }
     })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
@@ -174,84 +195,82 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
         )
     }
     return (
-        <>
-            <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
-                {!fullScreenView && (
-                    <div className="ci-details__history">
-                        <Sidebar
-                            filterOptions={pipelineOptions}
-                            type={HistoryComponentType.CI}
-                            hasMore={hasMore}
-                            triggerHistory={triggerHistory}
-                            setPagination={setPagination}
-                            fetchIdData={fetchBuildIdData}
-                            handleViewAllHistory={handleViewAllHistory}
-                        />
-                    </div>
-                )}
-                <div className="ci-details__body">
-                    {!pipelineId ? (
-                        // Empty state if there is no pipeline
-                        <GenericEmptyState
-                            title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
-                            subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
-                                isJobView ? 'to see execution details' : 'to start seeing CI builds'
-                            }.`}
-                        />
-                    ) : (
-                        pipeline && (
-                            <>
-                                {triggerHistory.size > 0 || fetchBuildIdData ? (
-                                    <Route
-                                        path={`${path
-                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                    >
-                                        <Details
-                                            fullScreenView={fullScreenView}
-                                            synchroniseState={synchroniseState}
-                                            triggerHistory={triggerHistory}
-                                            isSecurityModuleInstalled={
-                                                initDataResults[1]?.['value']?.['result']?.status ===
-                                                    ModuleStatus.INSTALLED || false
-                                            }
-                                            isBlobStorageConfigured={
-                                                initDataResults[2]?.['value']?.['result']?.enabled || false
-                                            }
-                                            isJobView={isJobView}
-                                            tagsEditable={tagsEditable}
-                                            appReleaseTags={appReleaseTags}
-                                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                            fetchIdData={fetchBuildIdData}
-                                            isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
-                                        />
-                                    </Route>
-                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    // Empty state if there is no linked pipeline
-                                    <GenericEmptyState
-                                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
-                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
-                                        isButtonAvailable={true}
-                                        renderButton={renderSourcePipelineButton}
-                                    />
-                                ) : (
-                                    !loading && (
-                                        // Empty state if there is no pipeline
-                                        <GenericEmptyState
-                                            title={`${isJobView ? 'Job' : 'Build'} ${
-                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
-                                            }`}
-                                            subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
-                                        />
-                                    )
-                                )}
-                            </>
-                        )
-                    )}
-                    <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
+        <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
+            {!fullScreenView && (
+                <div className="ci-details__history">
+                    <Sidebar
+                        filterOptions={pipelineOptions}
+                        type={HistoryComponentType.CI}
+                        hasMore={hasMore}
+                        triggerHistory={triggerHistory}
+                        setPagination={setPagination}
+                        fetchIdData={fetchBuildIdData}
+                        handleViewAllHistory={handleViewAllHistory}
+                    />
                 </div>
+            )}
+            <div className="ci-details__body">
+                {!pipelineId ? (
+                    // Empty state if there is no pipeline
+                    <GenericEmptyState
+                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
+                        subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
+                            isJobView ? 'to see execution details' : 'to start seeing CI builds'
+                        }.`}
+                    />
+                ) : (
+                    pipeline && (
+                        <>
+                            {triggerHistory.size > 0 || fetchBuildIdData ? (
+                                <Route
+                                    path={`${path
+                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                                >
+                                    <Details
+                                        fullScreenView={fullScreenView}
+                                        synchroniseState={synchroniseState}
+                                        triggerHistory={triggerHistory}
+                                        isSecurityModuleInstalled={
+                                            initDataResults[1]?.['value']?.['result']?.status ===
+                                                ModuleStatus.INSTALLED || false
+                                        }
+                                        isBlobStorageConfigured={
+                                            initDataResults[2]?.['value']?.['result']?.enabled || false
+                                        }
+                                        isJobView={isJobView}
+                                        tagsEditable={tagsEditable}
+                                        appReleaseTags={appReleaseTags}
+                                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                        fetchIdData={fetchBuildIdData}
+                                        isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                    />
+                                </Route>
+                            ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
+                                // Empty state if there is no linked pipeline
+                                <GenericEmptyState
+                                    title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
+                                    subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
+                                    isButtonAvailable
+                                    renderButton={renderSourcePipelineButton}
+                                />
+                            ) : (
+                                !loading && (
+                                    // Empty state if there is no pipeline
+                                    <GenericEmptyState
+                                        title={`${isJobView ? 'Job' : 'Build'} ${
+                                            EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                        }`}
+                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                    />
+                                )
+                            )}
+                        </>
+                    )
+                )}
+                <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
-        </>
+        </div>
     )
 }
 
@@ -296,7 +315,9 @@ export const Details = ({
     )
 
     useEffect(() => {
-        if (triggerDetailsLoading) return
+        if (triggerDetailsLoading) {
+            return
+        }
         let triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: triggerDetails?.imageReleaseTags,
@@ -309,7 +330,9 @@ export const Details = ({
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     useEffect(() => {
-        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) return
+        if (tagDetailsLoading || !triggerDetailsResult || !areTagDetailsRequired) {
+            return
+        }
         const triggerDetailsWithTags = {
             ...triggerDetailsResult?.result,
             imageReleaseTags: tagDetailsResult?.result?.imageReleaseTags,
@@ -322,8 +345,9 @@ export const Details = ({
         if (
             !triggerDetails ||
             terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
-        )
-            return null // no interval
+        ) {
+            return null
+        } // no interval
         if (
             statusSet.has(triggerDetails.status?.toLowerCase()) ||
             (triggerDetails.podStatus && statusSet.has(triggerDetails.podStatus.toLowerCase()))
@@ -339,8 +363,9 @@ export const Details = ({
         (!areTagDetailsRequired && triggerDetailsLoading && !triggerDetails) ||
         !buildId ||
         (areTagDetailsRequired && (tagDetailsLoading || triggerDetailsLoading) && !triggerDetails)
-    )
+    ) {
         return <Progressing pageLoader />
+    }
     if (triggerDetailsError?.code === 404) {
         return (
             <GenericEmptyState
@@ -350,9 +375,15 @@ export const Details = ({
         )
     }
 
-    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) return <Reload />
-    if (triggerDetails.id !== +buildId) return null
+    if (!areTagDetailsRequired && !triggerDetailsLoading && !triggerDetails) {
+        return <Reload />
+    }
+    if (areTagDetailsRequired && !(tagDetailsLoading || triggerDetailsLoading) && !triggerDetails) {
+        return <Reload />
+    }
+    if (triggerDetails.id !== +buildId) {
+        return null
+    }
     return (
         <>
             <div className="trigger-details-container">
@@ -373,6 +404,7 @@ export const Details = ({
                             artifact={triggerDetails.artifact}
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
+                            workerPodName={triggerDetails.podName}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
@@ -380,7 +412,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`logs`}
+                                    to="logs"
                                     data-testid="logs-link"
                                 >
                                     Logs
@@ -391,7 +423,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`source-code`}
+                                    to="source-code"
                                     data-testid="source-code-link"
                                 >
                                     Source
@@ -402,7 +434,7 @@ export const Details = ({
                                     replace
                                     className="tab-list__tab-link"
                                     activeClassName="active"
-                                    to={`artifacts`}
+                                    to="artifacts"
                                     data-testid="artifacts-link"
                                 >
                                     Artifacts
@@ -414,7 +446,7 @@ export const Details = ({
                                         replace
                                         className="tab-list__tab-link"
                                         activeClassName="active"
-                                        to={`security`}
+                                        to="security"
                                         data-testid="security_link"
                                     >
                                         Security
@@ -450,7 +482,7 @@ const HistoryLogs = ({
     tagsEditable,
     hideImageTaggingHardDelete,
 }: HistoryLogsType) => {
-    let { path } = useRouteMatch()
+    const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -565,7 +597,7 @@ const HistoryLogs = ({
         </div>
     )
 }
-export function NoVulnerabilityViewWithTool({ scanToolId }: { scanToolId: number }) {
+export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number }) => {
     return (
         <div className="flex h-100 dc__position-rel">
             <GenericEmptyState
@@ -634,7 +666,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }, [artifactId])
 
     const redirectToCreate = () => {
-        if (!ciPipelineId) return
+        if (!ciPipelineId) {
+            return
+        }
         push(
             `${URLS.APP}/${appId ?? appIdFromParent}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
                 URLS.APP_CI_CONFIG
@@ -642,7 +676,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const severityCount = securityData.severityCount
+    const { severityCount } = securityData
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
@@ -652,19 +686,23 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
-    } else if (['starting', 'running'].includes(status.toLowerCase())) {
-        return <CIRunningView isSecurityTab={true} />
-    } else if (securityData.isLoading) {
+    }
+    if (['starting', 'running'].includes(status.toLowerCase())) {
+        return <CIRunningView isSecurityTab />
+    }
+    if (securityData.isLoading) {
         return <Progressing pageLoader />
-    } else if (securityData.isError) {
+    }
+    if (securityData.isError) {
         return <Reload />
-    } else if (artifactId && !securityData.scanned) {
+    }
+    if (artifactId && !securityData.scanned) {
         if (!securityData.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
-        } else {
-            return <ImageNotScannedView />
         }
-    } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
+        return <ImageNotScannedView />
+    }
+    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
         return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId} />
     }
     const scanToolId = securityData.ScanToolId
@@ -698,49 +736,44 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <>
-                        <table className="security-scan-table">
-                            <tr className="security-scan-table__header">
-                                <th className="security-scan-table__title security-scan-table__cve">CVE</th>
-                                <th className="security-scan-table__title">SEVERITY</th>
-                                <th className="security-scan-table__title security-scan-table--w-18">PACKAGE</th>
-                                <th className="security-scan-table__title security-scan-table--w-18">
-                                    CURRENT VERSION
-                                </th>
-                                <th className="security-scan-table__title security-scan-table--w-18">
-                                    FIXED IN VERSION
-                                </th>
-                            </tr>
-                            {securityData.vulnerabilities.map((item) => {
-                                return (
-                                    <tr className="security-scan-table__row">
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
-                                            <a
-                                                href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
-                                                target="_blank"
-                                            >
-                                                {item.name}
-                                            </a>
-                                        </td>
-                                        <td className="security-scan-table__data security-scan-table__pl">
-                                            <span className={`fill-${item.severity}`} data-testid="severity-check">
-                                                {item.severity}
-                                            </span>
-                                        </td>
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                            {item.package}
-                                        </td>
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                            {item.version}
-                                        </td>
-                                        <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                            {item.fixedVersion}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </table>
-                    </>
+                    <table className="security-scan-table">
+                        <tr className="security-scan-table__header">
+                            <th className="security-scan-table__title security-scan-table__cve">CVE</th>
+                            <th className="security-scan-table__title">SEVERITY</th>
+                            <th className="security-scan-table__title security-scan-table--w-18">PACKAGE</th>
+                            <th className="security-scan-table__title security-scan-table--w-18">CURRENT VERSION</th>
+                            <th className="security-scan-table__title security-scan-table--w-18">FIXED IN VERSION</th>
+                        </tr>
+                        {securityData.vulnerabilities.map((item) => {
+                            return (
+                                <tr className="security-scan-table__row">
+                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
+                                        <a
+                                            href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            {item.name}
+                                        </a>
+                                    </td>
+                                    <td className="security-scan-table__data security-scan-table__pl">
+                                        <span className={`fill-${item.severity}`} data-testid="severity-check">
+                                            {item.severity}
+                                        </span>
+                                    </td>
+                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
+                                        {item.package}
+                                    </td>
+                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
+                                        {item.version}
+                                    </td>
+                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
+                                        {item.fixedVersion}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </table>
                 )}
             </div>
         </>

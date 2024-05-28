@@ -1,42 +1,36 @@
 import React from 'react'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { K8SObjectBaseType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, NodeType, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
+import { useTabs } from '../common/DynamicTabs/useTabs'
 
 export interface ResourceDetailType {
     headers: string[]
     data: Record<string, any>[]
 }
 
+export interface ResourceListResponse extends ResponseType {
+    result?: ResourceDetailType
+}
+
+/**
+ * @deprecated Use this type form common lib instead
+ */
 export interface GVKType {
     Group: string
     Version: string
     Kind: Nodes | NodeType
 }
 
-export interface ResourceListResponse extends ResponseType {
-    result?: ResourceDetailType
-}
 
+/**
+ * @deprecated Use this type form common lib instead
+ */
 export interface ApiResourceGroupType {
     gvk: GVKType
     namespaced: boolean
     isGrouped?: boolean
-}
-
-export interface ApiResourceType {
-    apiResources: ApiResourceGroupType[]
-    allowedAll: boolean
-}
-
-export interface APIResourceResponse extends ResponseType {
-    result?: ApiResourceType
-}
-
-export interface K8SObjectBaseType {
-    name: string
-    isExpanded: boolean
 }
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -62,6 +56,7 @@ export interface ResourceListPayloadType {
             name?: string
         }
         patch?: string
+        forceDelete?: boolean
     }
 }
 
@@ -111,7 +106,6 @@ export interface SidebarType {
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
-    isCreateModalOpen: boolean
     isClusterError?: boolean
 }
 
@@ -127,11 +121,11 @@ export interface ResourceFilterOptionsProps {
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
-    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean ) => void
+    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
     clearSearch: () => void
+    updateTabUrl?: ReturnType<typeof useTabs>['updateTabUrl']
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
-    isCreateModalOpen?: boolean
     renderCallBackSync?: () => JSX.Element
     syncError?: boolean
 }
@@ -142,7 +136,7 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    isCreateModalOpen: boolean
+    clearFilters: () => void
     addTab: (
         idPrefix: string,
         kind: string,
@@ -215,4 +209,8 @@ export interface K8sObjectOptionType extends OptionType {
         grouped: string
     }
     groupName: string
+}
+
+export interface K8Abbreviates {
+    [key: string]: string
 }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'
-import InfoIconWithTippy from '../InfoIconWithTippy'
 import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '../../common'
@@ -58,8 +57,8 @@ export default function SecretList({
                 getSecretList(appId, envId),
                 isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 2) : { result: null },
             ])
-            const draftDataMap = {},
-                draftDataArr = []
+            const draftDataMap = {}
+            const draftDataArr = []
             let configData = []
             if (draftData?.length) {
                 for (const data of draftData) {
@@ -104,35 +103,36 @@ export default function SecretList({
         }
         try {
             setList((list) => {
-                let configData = list.configData
+                const { configData } = list
                 if (result === null) {
-                    //delete
+                    // delete
                     configData.splice(index, 1)
                     list.configData = [...configData]
                     return { ...list }
-                } else if (typeof index !== 'number' && Array.isArray(result.configData)) {
-                    //insert after create success
+                }
+                if (typeof index !== 'number' && Array.isArray(result.configData)) {
+                    // insert after create success
                     configData.unshift({
                         ...result.configData[0],
                         data: result.configData[0].data,
                     })
                     list.configData = [...configData]
                     return { ...list }
-                } else {
-                    const updatedConfigData = result.configData[0]
-                    updatedConfigData.global = list.configData[index].global
-                    updatedConfigData.secretMode = false
-                    updatedConfigData.unAuthorized = result.configData[0].unAuthorized ?? false
-                    delete updatedConfigData.isNew
-                    list.configData[index] = updatedConfigData
-                    return { ...list }
                 }
+                const updatedConfigData = result.configData[0]
+                updatedConfigData.global = list.configData[index].global
+                updatedConfigData.secretMode = false
+                updatedConfigData.unAuthorized = result.configData[0].unAuthorized ?? false
+                delete updatedConfigData.isNew
+                list.configData[index] = updatedConfigData
+                return { ...list }
             })
         } catch (err) {}
     }
 
-    if (parentState === ComponentStates.loading || secretLoading)
+    if (parentState === ComponentStates.loading || secretLoading) {
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
+    }
     return (
         <div className={`cm-secret-main-container ${showComments ? 'with-comment-drawer' : 'form__app-compose'}`}>
             <div className="main-content">
@@ -144,10 +144,11 @@ export default function SecretList({
                         </>
                     )}
                     {SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
-                    <InfoIconWithTippy
-                        titleText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
+                    <InfoIconTippy
+                        heading={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].title}
                         infoText={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].subtitle}
                         documentationLink={SECTION_HEADING_INFO[URLS.APP_CS_CONFIG].learnMoreLink}
+                        iconClassName="icon-dim-16 ml-4"
                     />
                 </h1>
                 <div className="mt-20">
@@ -196,9 +197,12 @@ export default function SecretList({
                     toggleDraftComments={toggleDraftComments}
                 />
             )}
-            <div className="variables-widget-position-cmcs">
-                <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
-            </div>
+
+            {window._env_.ENABLE_SCOPED_VARIABLES && (
+                <div className="variables-widget-position-cmcs">
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} envId={envId} clusterId={clusterId} />
+                </div>
+            )}
         </div>
     )
 }

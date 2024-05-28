@@ -1,13 +1,13 @@
 .app-overview-container {
     display: grid;
-    grid-template-columns: 0 minmax(auto, 1400px);
+    grid-template-columns: 0 minmax(0, 1400px);
     justify-content: center;
     background: linear-gradient(249deg, #D4E6F7 0%, var(--N50) 50.58%);
     overflow: auto;
     transition: grid-template-columns 0.2s ease-out;
 
     &.sidebar-open {
-        grid-template-columns: 300px minmax(auto, 1068px);
+        grid-template-columns: 300px minmax(0, 1068px);
         gap: 32px;
     }
 
@@ -19,13 +19,13 @@
 
             .env-deployments-info-header,
             .env-deployments-info-row {
-                grid-template-columns: 20px 250px 200px 1fr;
+                grid-template-columns: 20px 250px 200px 110px 1fr;
                 column-gap: 16px;
                 grid-auto-rows: 36px;
                 transition: grid-template-columns 0.2s ease-out;
 
                 &.last-deployed-expanded {
-                    grid-template-columns: 20px 250px 400px 1fr;
+                    grid-template-columns: 20px 250px 400px 110px 1fr;
                 }
             }
 
@@ -49,10 +49,10 @@
             &--argo-installed {
                 .env-deployments-info-header,
                 .env-deployments-info-row {
-                    grid-template-columns: 20px 20px 250px 200px 1fr;
+                    grid-template-columns: 20px 20px 250px 200px 110px 1fr;
 
                     &.last-deployed-expanded {
-                        grid-template-columns: 20px 20px 250px 400px 1fr;
+                        grid-template-columns: 20px 20px 250px 400px 110px 1fr;
                     }
                 }
             }

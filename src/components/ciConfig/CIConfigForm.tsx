@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { CIBuildConfigType, CIBuildType, showError, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
-import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
-import {
-    CIBuildConfigType,
-    CIBuildType,
-    showError,
-    Progressing,
-    ConfirmationDialog,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
-import { CIBuildArgType, CIConfigFormProps, LoadingState, ProcessedWorkflowsType } from './types'
-import { processWorkflow } from '../app/details/triggerView/workflow.service'
-import { WorkflowCreate } from '../app/details/triggerView/config'
+import { CIBuildArgType, CIConfigFormProps, LoadingState } from './types'
 import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
@@ -29,8 +20,6 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
-import { useHistory } from 'react-router-dom'
-import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
 
 export default function CIConfigForm({
     parentReloading,
@@ -40,27 +29,24 @@ export default function CIConfigForm({
     reload,
     appId,
     selectedCIPipeline,
-    configOverrideWorkflows,
     configOverrideView,
     allowOverride,
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems,
     parentState,
     setParentState,
     loadingStateFromParent,
     setLoadingStateFromParent,
 }: CIConfigFormProps) {
-    const history = useHistory()
     const currentMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
                   (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.gitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.gitMaterialId
-            ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
-            : sourceConfig.material[0]
+              ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
+              : sourceConfig.material[0]
     const buildCtxGitMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
@@ -68,11 +54,11 @@ export default function CIConfigForm({
                       material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
               )
             : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
-            ? sourceConfig.material.find(
-                  (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
-              )
-            : sourceConfig.material[0]
-    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
+              ? sourceConfig.material.find(
+                    (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
+                )
+              : sourceConfig.material[0]
+    const currentBuildContextGitMaterial = buildCtxGitMaterial || currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
         useState(currentBuildContextGitMaterial)
@@ -80,9 +66,9 @@ export default function CIConfigForm({
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
             : ciConfig && ciConfig.dockerRegistry
-            ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
-            : dockerRegistries.find((reg) => reg.isDefault)
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+              ? dockerRegistries.find((reg) => reg.id === ciConfig.dockerRegistry)
+              : dockerRegistries.find((reg) => reg.isDefault)
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         getCIConfigFormState(ciConfig, selectedCIPipeline, currentMaterial, currentRegistry),
         CI_CONFIG_FORM_VALIDATION,
         onValidation,
@@ -107,11 +93,9 @@ export default function CIConfigForm({
     const [showCustomPlatformWarning, setShowCustomPlatformWarning] = useState<boolean>(_customTargetPlatorm)
     const [showCustomPlatformConfirmation, setShowCustomPlatformConfirmation] = useState<boolean>(false)
     const [showConfigOverrideDiff, setShowConfigOverrideDiff] = useState<boolean>(false)
-    const [processedWorkflows, setProcessedWorkflows] = useState<ProcessedWorkflowsType>({
-        processing: false,
-        workflows: [],
-    })
-    const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB)
+    const configOverridenPipelines = ciConfig?.ciPipelines?.filter(
+        (_ci) => _ci.isDockerConfigOverridden && _ci?.pipelineType !== CIPipelineBuildType.CI_JOB,
+    )
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
         initCurrentCIBuildConfig(
             allowOverride,
@@ -151,13 +135,13 @@ export default function CIConfigForm({
     }
 
     async function onValidation(state) {
-        let args2 = args.map(({ k, v, keyError, valueError }, idx) => {
+        const args2 = args.map(({ k, v, keyError, valueError }, idx) => {
             if (v && !k) {
                 keyError = 'This field is required'
             } else if (k && !v) {
                 valueError = 'This field is required'
             }
-            let arg = { k, v, keyError, valueError }
+            const arg = { k, v, keyError, valueError }
             return arg
         })
         const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError)
@@ -189,7 +173,9 @@ export default function CIConfigForm({
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
                 projectPath: projectPath.value || './',
                 args: buildEnvArgs.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
             }
@@ -199,7 +185,9 @@ export default function CIConfigForm({
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
                 args: args.reduce((agg, { k, v }) => {
-                    if (k && v) agg[k] = v
+                    if (k && v) {
+                        agg[k] = v
+                    }
                     return agg
                 }, {}),
                 dockerfileRepository: repository.value,
@@ -224,12 +212,7 @@ export default function CIConfigForm({
             const saveOrUpdate = ciConfig && ciConfig.id ? updateCIConfig : saveCIConfig
             await saveOrUpdate(requestBody)
             toast.success('Successfully saved.')
-            reload()
-
-            if (!isCiPipeline) {
-                const stageIndex = navItems.findIndex((item) => item.stage === STAGE_NAME.CI_CONFIG)
-                history.push(navItems[stageIndex + 1].href)
-            }
+            reload(false, !isCiPipeline)
         } catch (err) {
             showError(err)
         } finally {
@@ -267,30 +250,6 @@ export default function CIConfigForm({
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>
         )
-    }
-
-    const processFetchedWorkflows = async () => {
-        if (!processedWorkflows.processing) {
-            try {
-                setProcessedWorkflows({
-                    ...processedWorkflows,
-                    processing: true,
-                })
-                const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(
-                    result,
-                    ciConfig,
-                    null,
-                    null,
-                    WorkflowCreate,
-                    WorkflowCreate.workflow,
-                )
-
-                setProcessedWorkflows({ processing: false, workflows })
-            } catch (err) {
-                showError(err)
-            }
-        }
     }
 
     const handleOnChangeConfig = (e) => {
@@ -336,9 +295,6 @@ export default function CIConfigForm({
 
     const toggleConfigOverrideDiffModal = () => {
         setShowConfigOverrideDiff(!showConfigOverrideDiff)
-        if (!showConfigOverrideDiff) {
-            processFetchedWorkflows()
-        }
     }
 
     const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
@@ -434,13 +390,13 @@ export default function CIConfigForm({
                 </div>
             )}
             {showCustomPlatformConfirmation && renderConfirmationModal()}
+            {/* Might cause bug in future since we are toggling the state but directly closes the modal on empty workflow */}
+            {/* TODO: Connect with product if empty state is better? */}
             {configOverridenPipelines?.length > 0 && showConfigOverrideDiff && (
                 <CIConfigDiffView
                     parentReloading={parentReloading}
                     ciConfig={ciConfig}
                     configOverridenPipelines={configOverridenPipelines}
-                    configOverrideWorkflows={configOverrideWorkflows}
-                    processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
                     gitMaterials={sourceConfig.material}

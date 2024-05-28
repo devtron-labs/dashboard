@@ -1,18 +1,14 @@
 import React, { CSSProperties } from 'react'
+import { UserApprovalMetadataType, ReleaseTag, FilterConditionsListType, GitTriggers, PromotionApprovalMetadataType, DeploymentStageType } from '@devtron-labs/devtron-fe-common-lib'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType, ReleaseTag } from '@devtron-labs/devtron-fe-common-lib'
-export interface WebHookData {
-    Id: number
-    EventActionType: string
-    Data: any
-}
 
 export interface History {
     id: number
     name: string
     status: string
     podStatus: string
+    podName: string
     message: string
     startedOn: string
     finishedOn: string
@@ -36,6 +32,10 @@ export interface History {
     imageReleaseTags?: ReleaseTag[]
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
+    promotionApprovalMetadata?: PromotionApprovalMetadataType
+    triggerMetadata?: string
 }
 
 export interface CiMaterial {
@@ -52,19 +52,6 @@ export interface CiMaterial {
     isBranchError: boolean
     branchErrorMsg: string
     url: string
-}
-
-export interface GitTriggers {
-    Commit: string
-    Author: string
-    Date: Date | string
-    Message: string
-    Changes: string[]
-    WebhookData: WebHookData
-    GitRepoUrl: string
-    GitRepoName: string
-    CiConfigureSourceType: string
-    CiConfigureSourceValue: string
 }
 
 export interface ArtifactType {
@@ -86,13 +73,7 @@ export interface ArtifactType {
     jobCIClass?: string
 }
 
-export interface CopyTippyWithTextType {
-    copyText: string
-    copied: boolean
-    setCopied: React.Dispatch<React.SetStateAction<boolean>>
-}
-
-export interface CIListItemType {
+export interface CIListItemType extends Pick<GitChangesType, 'promotionApprovalMetadata' | 'selectedEnvironmentName'> {
     type: 'report' | 'artifact' | 'deployed-artifact'
     userApprovalMetadata?: UserApprovalMetadataType
     triggeredBy?: string
@@ -104,7 +85,9 @@ export interface CIListItemType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
-    isSuperAdmin?:boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
+    isSuperAdmin?: boolean
 }
 
 export interface ImageComment {
@@ -130,7 +113,7 @@ export interface ScrollerType {
     style: CSSProperties
 }
 
-export interface GitChangesType {
+export interface GitChangesType extends Pick<History, 'promotionApprovalMetadata'> {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
     artifact?: string
@@ -143,6 +126,9 @@ export interface GitChangesType {
     appReleaseTagNames?: string[]
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
+    appliedFilters?: FilterConditionsListType[]
+    appliedFiltersTimestamp?: string
+    selectedEnvironmentName?: string
 }
 export interface EmptyViewType {
     imgSrc?: string
@@ -200,10 +186,13 @@ export interface TriggerDetailsType {
     artifact?: string
     environmentName?: string
     isJobView?: boolean
+    workerPodName?: string
+    triggerMetadata?: string
 }
 
 export interface TriggerDetailsStatusIconType {
     status: string
+    isDeploymentWindowInfo?: boolean
 }
 
 export interface FinishedType {
@@ -216,6 +205,8 @@ export interface WorkerStatusType {
     message: string
     podStatus: string
     stage: DeploymentStageType
+    finishedOn?: string
+    workerPodName?: string
 }
 export interface ProgressingStatusType {
     status: string
@@ -223,6 +214,8 @@ export interface ProgressingStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    finishedOn?: string
+    workerPodName?: string
 }
 
 export interface CurrentStatusType {
@@ -234,6 +227,7 @@ export interface CurrentStatusType {
     stage: DeploymentStageType
     type: HistoryComponentType
     isJobView?: boolean
+    workerPodName?: string
 }
 
 export interface StartDetailsType {
@@ -246,6 +240,7 @@ export interface StartDetailsType {
     type: HistoryComponentType
     environmentName?: string
     isJobView?: boolean
+    triggerMetadata?: string
 }
 
 export interface CICDSidebarFilterOptionType extends OptionType {
@@ -259,12 +254,6 @@ export enum HistoryComponentType {
     CD = 'CD',
     GROUP_CI = 'GROUP_CI',
     GROUP_CD = 'GROUP_CD',
-}
-
-export enum DeploymentStageType {
-    PRE = 'PRE',
-    DEPLOY = 'DEPLOY',
-    POST = 'POST',
 }
 
 export enum FetchIdDataStatus {
@@ -284,4 +273,6 @@ export const PROGRESSING_STATUS = {
     [TERMINAL_STATUS_MAP.RUNNING]: 'running',
     [TERMINAL_STATUS_MAP.PROGRESSING]: 'progressing',
     [TERMINAL_STATUS_MAP.STARTING]: 'starting',
+    [TERMINAL_STATUS_MAP.INITIATING]: 'initiating',
+    [TERMINAL_STATUS_MAP.QUEUED]: 'queued',
 }

@@ -1,30 +1,34 @@
 import React, { Component } from 'react'
-import { saveLinkedCIPipeline } from './ciPipeline.service'
-import { ViewType } from '../../config'
 import {
     ServerErrors,
     VisibleModal,
     showError,
     Progressing,
     multiSelectStyles,
+    CustomInput,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import AsyncSelect from 'react-select/async'
+import { saveLinkedCIPipeline } from './ciPipeline.service'
+import { ViewType } from '../../config'
 import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
-import { toast } from 'react-toastify'
 import { ValidationRules } from './validationRules'
-import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader'
 import { Info } from '../common/icons/Icons'
-import { getAppListMin, getCIConfig } from '../../services/service'
+import { getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import './ciPipeline.scss'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
-import AsyncSelect from 'react-select/async'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
+import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
 export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
     validationRules
+
     urlRef
+
     payloadRef
 
     constructor(props) {
@@ -70,7 +74,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     selectApp({ value }): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.parentAppId = value
         form.parentCIPipelineId = 0
         isValid.parentAppId = true
@@ -92,16 +96,16 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     handleName(event): void {
-        let { form, isValid } = { ...this.state }
+        const { form, isValid } = { ...this.state }
         form.name = event.target.value
-        let isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
+        const isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
         isValid.name = +this.props.match.params.appId === this.state.form.parentAppId ? !isFound : true
         this.setState({ form, isValid })
     }
 
     selectPipeline(pipelines): void {
-        let pipeline = pipelines[0]
-        let { form, isValid } = { ...this.state }
+        const pipeline = pipelines[0]
+        const { form, isValid } = { ...this.state }
         form.parentCIPipelineId = pipeline.id
         form.name = pipelines[0].name
         isValid.parentCIPipelineId = true
@@ -115,14 +119,14 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
             return
         }
         this.setState({ loadingData: true })
-        let parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
-        parentCIPipeline.pipelineType = CIPipelineBuildType.CI_EXTERNAL
-        let params = {
+        const parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
+        parentCIPipeline.pipelineType = CIPipelineBuildType.CI_LINKED
+        const params = {
             appId: +this.props.match.params.appId,
             workflowId: +this.props.match.params.workflowId,
             name: this.state.form.name,
         }
-        saveLinkedCIPipeline(parentCIPipeline, params)
+        saveLinkedCIPipeline(parentCIPipeline, params, this.props.changeCIPayload)
             .then((response) => {
                 if (response) {
                     toast.success('Saved Successfully ')
@@ -203,15 +207,15 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     renderCIPipelinesDropdown(app) {
-        let pipeline = this.state.ciPipelines.find((pipeline) => pipeline.id === this.state.form.parentCIPipelineId)
+        const pipeline = this.state.ciPipelines.find((pipeline) => pipeline.id === this.state.form.parentCIPipelineId)
         return (
-            <div className={`typeahead form__row`}>
+            <div className="typeahead form__row">
                 <Typeahead
                     dataTestIdContainer="source-ci-pipeline-container"
                     dataTestIdInput="source-ci-pipeline-input"
-                    labelKey={'name'}
+                    labelKey="name"
                     name="source-ci-pipeline"
-                    label={'Source CI pipeline'}
+                    label="Source CI pipeline"
                     disabled={false}
                     onChange={(event) => {
                         this.selectPipeline(event)
@@ -232,24 +236,27 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         )
                     })}
                     {(() => {
-                        if (this.state.loadingPipelines)
+                        if (this.state.loadingPipelines) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     Loading...
                                 </TypeaheadErrorOption>
                             )
-                        else if (this.state.ciPipelines.length === 0 && !app)
+                        }
+                        if (this.state.ciPipelines.length === 0 && !app) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     Please select an app to view available pipelines
                                 </TypeaheadErrorOption>
                             )
-                        else if (this.state.ciPipelines.length === 0)
+                        }
+                        if (this.state.ciPipelines.length === 0) {
                             return (
                                 <TypeaheadErrorOption className="typeahead__menu-item--blur">
                                     No CI pipelines found
                                 </TypeaheadErrorOption>
                             )
+                        }
                     })()}
                 </Typeahead>
                 {this.state.showError && !this.state.isValid.parentCIPipelineId ? (
@@ -261,7 +268,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 {this.state.showPluginWarning && (
                     <span className="flex left">
                         <Warning className="icon-dim-14 warning-icon-y7 mr-4" />
-                        Some mandatory plugins are not configured for selected CI pipeline. CI trigger might get blocked.
+                        Some mandatory plugins are not configured for selected CI pipeline. CI trigger might get
+                        blocked.
                     </span>
                 )}
             </div>
@@ -270,6 +278,16 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
 
+    getErrorMessage = () => {
+        if (!this.state.form.name) {
+            return REQUIRED_FIELD_MSG
+        }
+        if (!this.state.isValid.name) {
+            return DUPLICATE_PIPELINE_NAME_VALIDATION
+        }
+        return ''
+    }
+
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -277,53 +295,47 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     <Progressing pageLoader />
                 </div>
             )
-        } else {
-            return (
-                <>
-                    <div className="typeahead form__row">
-                        <span className="form__label">Filter By Application</span>
-                        <AsyncSelect
-                            loadOptions={this.loadAppListOptions}
-                            noOptionsMessage={noOptionsMessage}
-                            classNamePrefix="link-pipeline-filter-application"
-                            onChange={this.selectApp}
-                            styles={this._multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                LoadingIndicator: null,
-                            }}
-                            placeholder="Select app"
-                        />
-                        {this.state.showError && !this.state.isValid.parentAppId ? (
-                            <span className="form__error">
-                                <img src={error} alt="" className="form__icon" />
-                                This is a required Field
-                            </span>
-                        ) : null}
-                    </div>
-                    {this.renderCIPipelinesDropdown(null)}
-                    {this.state.form.parentCIPipelineId ? (
-                        <label className="form__row">
-                            <span className="form__label dc__required-field">Name</span>
-                            <input
-                                className="form__input"
-                                placeholder="Enter pipeline name"
-                                type="text"
-                                value={this.state.form.name}
-                                onChange={this.handleName}
-                                data-testid="pipeline-name-for-linked"
-                            />
-                            {!this.state.isValid.name ? (
-                                <span className="form__error">
-                                    <img src={error} alt="" className="form__icon" />
-                                    You cannot use same name for pipeline within an app.
-                                </span>
-                            ) : null}
-                        </label>
-                    ) : null}
-                </>
-            )
         }
+        return (
+            <>
+                <div className="typeahead form__row">
+                    <span className="form__label">Filter By Application</span>
+                    <AsyncSelect
+                        loadOptions={this.loadAppListOptions}
+                        noOptionsMessage={noOptionsMessage}
+                        classNamePrefix="link-pipeline-filter-application"
+                        onChange={this.selectApp}
+                        styles={this._multiSelectStyles}
+                        components={{
+                            IndicatorSeparator: null,
+                            LoadingIndicator: null,
+                        }}
+                        placeholder="Select app"
+                    />
+                    {this.state.showError && !this.state.isValid.parentAppId ? (
+                        <span className="form__error">
+                            <img src={error} alt="" className="form__icon" />
+                            This is a required Field
+                        </span>
+                    ) : null}
+                </div>
+                {this.renderCIPipelinesDropdown(null)}
+                {this.state.form.parentCIPipelineId ? (
+                    <label className="form__row">
+                        <CustomInput
+                            name="name"
+                            label="Name"
+                            placeholder="Enter pipeline name"
+                            value={this.state.form.name}
+                            onChange={this.handleName}
+                            data-testid="pipeline-name-for-linked"
+                            isRequiredField
+                            error={this.getErrorMessage()}
+                        />
+                    </label>
+                ) : null}
+            </>
+        )
     }
 
     render() {
@@ -350,7 +362,6 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                             <ButtonWithLoader
                                 dataTestId="create-linked-ci-button"
                                 rootClassName="cta cta--workflow flex-1"
-                                loaderColor="white"
                                 onClick={this.savePipeline}
                                 isLoading={this.state.loadingData}
                             >

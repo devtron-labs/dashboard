@@ -1,19 +1,31 @@
 import React, { Component } from 'react'
-import { TriggerCDNodeProps } from '../../types'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { DeploymentAppTypes, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
-import Tippy from '@tippyjs/react'
-import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
-import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
+import { DO_NOT_DEPLOY } from '../../Constants'
 
-export class TriggerCDNode extends Component<TriggerCDNodeProps> {
+export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
+        this.state = {
+            showGitOpsRepoConfiguredWarning: false,
+            gitopsConflictLoading: false,
+            reloadNoGitOpsRepoConfiguredModal: false,
+            gitOpsRepoWarningCondition:
+                this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
+        }
     }
 
     getCDNodeDetailsURL(): string {
@@ -29,13 +41,22 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
         this.props.history.push(this.getCDNodeDetailsURL())
     }
 
-    renderStatus(title?: string) {
+    componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>, prevState: Readonly<TriggerCDNodeState>): void {
+        if (prevProps.isGitOpsRepoNotConfigured !== this.props.isGitOpsRepoNotConfigured) {
+            this.setState({
+                gitOpsRepoWarningCondition:
+                    this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
+            })
+        }
+    }
+
+    renderStatus() {
         const url = this.getCDNodeDetailsURL()
-        let statusText = this.props.status ? triggerStatus(this.props.status) : ''
-        let status = statusText ? statusText.toLowerCase() : ''
-        let hideDetails =
+        const statusText = this.props.status ? triggerStatus(this.props.status) : ''
+        const status = statusText ? statusText.toLowerCase() : ''
+        const hideDetails =
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+        if (hideDetails) {
             return (
                 <div
                     data-testid={`cd-trigger-status-${this.props.index}`}
@@ -45,29 +66,60 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     <span>{statusText}</span>
                 </div>
             )
-        else
-            return (
-                <div
-                    data-testid={`cd-trigger-status-${this.props.index}`}
-                    className="dc__cd-trigger-status"
-                    style={{ color: statusColor[status] }}
-                >
-                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    <span>{statusText}</span>
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link
-                                data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
-                                to={url}
-                                className="workflow-node__details-link"
-                            >
-                                Details
-                            </Link>
-                        </>
-                    )}
-                </div>
-            )
+        }
+        return (
+            <div
+                data-testid={`cd-trigger-status-${this.props.index}`}
+                className="dc__cd-trigger-status"
+                style={{ color: statusColor[status] }}
+            >
+                <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
+                <span>{statusText}</span>
+                {!this.props.fromAppGrouping && (
+                    <>
+                        {statusText && <span className="mr-5 ml-5">/</span>}
+                        <Link
+                            data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                            to={url}
+                            className="workflow-node__details-link"
+                        >
+                            Details
+                        </Link>
+                    </>
+                )}
+            </div>
+        )
+    }
+
+    handleShowGitOpsRepoConfiguredWarning = (): void => {
+        this.state.gitOpsRepoWarningCondition &&
+            this.setState({
+                showGitOpsRepoConfiguredWarning: true,
+            })
+    }
+
+    closeNoGitOpsRepoConfiguredWarning = (): void => {
+        this.setState({
+            showGitOpsRepoConfiguredWarning: false,
+        })
+    }
+
+    closeReloadNoGitOpsRepoConfiguredModal = (): void => {
+        this.setState({
+            reloadNoGitOpsRepoConfiguredModal: false,
+        })
+    }
+
+    handleRollbackClick = (context): void => {
+        !this.state.gitOpsRepoWarningCondition && context.onClickRollbackMaterial(+this.props.id)
+        this.handleShowGitOpsRepoConfiguredWarning()
+    }
+
+    handleImageSelection = (event, context): void => {
+        event.stopPropagation()
+        !this.state.gitOpsRepoWarningCondition &&
+            context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
+        this.handleShowGitOpsRepoConfiguredWarning()
     }
 
     renderCardContent() {
@@ -75,53 +127,72 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             <TriggerViewContext.Consumer>
                 {(context) => {
                     return (
-                        <div className="workflow-node">
-                            <div className="workflow-node__trigger-type workflow-node__trigger-type--cd">
-                                {this.props.triggerType}
-                            </div>
-                            <div className="workflow-node__title flex">
-                                <div className="workflow-node__full-width-minus-Icon">
-                                    <span
-                                        data-testid={`${this.props.deploymentStrategy}`}
-                                        className="workflow-node__text-light"
-                                    >
-                                        Deploy: {this.props.deploymentStrategy}
-                                    </span>
-                                    {envDescriptionTippy(this.props.environmentName, this.props.description)}
-                                </div>
+                        <>
+                            <div className="workflow-node">
                                 <div
-                                    className={`workflow-node__icon-common ml-8 ${
-                                        this.props.isVirtualEnvironment
-                                            ? 'workflow-node__CD-rocket-icon'
-                                            : 'workflow-node__CD-icon dc__flip'
-                                    }`}
-                                />
-                            </div>
-                            {this.renderStatus(this.props.title)}
-                            <div className="workflow-node__btn-grp">
-                                {!this.props.isVirtualEnvironment && (
-                                    <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
-                                        <button
-                                            data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
-                                            className="workflow-node__rollback-btn"
-                                            onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
-                                        >
-                                            <Rollback className="icon-dim-20 dc__vertical-align-middle" />
-                                        </button>
-                                    </Tippy>
-                                )}
-                                <button
-                                    data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
-                                    className="workflow-node__deploy-btn"
-                                    onClick={(event) => {
-                                        event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
-                                    }}
+                                    className={`workflow-node__trigger-type workflow-node__trigger-type--cd fw-6 ${this.props.isDeploymentBlocked ? 'bcy-5 cn-9 dc__opacity-1' : ''}`}
                                 >
-                                    Select Image
-                                </button>
+                                    {this.props.isDeploymentBlocked ? DO_NOT_DEPLOY : this.props.triggerType}
+                                </div>
+                                <div className="workflow-node__title flex">
+                                    <div className="workflow-node__full-width-minus-Icon">
+                                        <span
+                                            data-testid={`${this.props.deploymentStrategy}`}
+                                            className="workflow-node__text-light"
+                                        >
+                                            Deploy: {this.props.deploymentStrategy}
+                                        </span>
+                                        {envDescriptionTippy(this.props.environmentName, this.props.description)}
+                                    </div>
+                                    <div
+                                        className={`workflow-node__icon-common ml-8 ${
+                                            this.props.isVirtualEnvironment
+                                                ? 'workflow-node__CD-rocket-icon'
+                                                : 'workflow-node__CD-icon dc__flip'
+                                        }`}
+                                    />
+                                </div>
+                                {this.renderStatus()}
+                                <div className="workflow-node__btn-grp">
+                                    {!this.props.isVirtualEnvironment && (
+                                        <Tippy className="default-tt" arrow placement="bottom" content="Rollback">
+                                            <button
+                                                data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
+                                                className="workflow-node__rollback-btn"
+                                                onClick={(event) => {
+                                                    this.handleRollbackClick(context)
+                                                }}
+                                            >
+                                                <Rollback className="icon-dim-20 dc__vertical-align-middle" />
+                                            </button>
+                                        </Tippy>
+                                    )}
+                                    <button
+                                        data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
+                                        className="workflow-node__deploy-btn"
+                                        onClick={(event) => {
+                                            this.handleImageSelection(event, context)
+                                        }}
+                                    >
+                                        Select Image
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                            {this.state.showGitOpsRepoConfiguredWarning && (
+                                <NoGitOpsRepoConfiguredWarning
+                                    closePopup={this.closeNoGitOpsRepoConfiguredWarning}
+                                    appId={this.props.appId}
+                                    text={gitOpsRepoNotConfiguredWithEnforcedEnv(this.props.environmentName)}
+                                    reload={context.reloadTriggerView}
+                                />
+                            )}
+                            {this.state.reloadNoGitOpsRepoConfiguredModal && (
+                                <ReloadNoGitOpsRepoConfiguredModal
+                                    closePopup={this.closeReloadNoGitOpsRepoConfiguredModal}
+                                    reload={context.reloadTriggerView}
+                                />
+                            )}
+                        </>
                     )
                 }}
             </TriggerViewContext.Consumer>

@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
+import { showError, Progressing, DialogForm, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { ChartGroup, CreateChartGroupProps } from '../charts.types'
-import { showError, Progressing, DialogForm } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartGroups, saveChartGroup, updateChartGroup } from '../charts.service'
 import { getChartGroupEditURL } from '../charts.helper'
-import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { REGEX_ERROR_MESSAGES, REQ_FIELD } from '../constants'
+
 interface ChartGroupCreateState {
     name: { value: string; error: any[] }
     description: string
@@ -74,7 +75,9 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return false
         }
 
-        const isNameUsed = this.state.charts.some((chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId)
+        const isNameUsed = this.state.charts.some(
+            (chart) => chart.name === this.state.name.value && chart.id !== this.props.chartGroupId,
+        )
         if (isNameUsed) {
             toast.error(`A chart group with name ${this.state.name.value} already exists!`)
             return false
@@ -96,7 +99,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             return
         }
 
-        let requestBody = {
+        const requestBody = {
             name: this.state.name.value.trim(),
             description: this.state.description,
         }
@@ -116,7 +119,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     })
                 } else {
                     toast.success('Successfully created.')
-                    let url = getChartGroupEditURL(response.result.id)
+                    const url = getChartGroupEditURL(response.result.id)
                     this.props.history.push(url)
                 }
             })
@@ -127,6 +130,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 this.setState({ loading: false })
             })
     }
+
     async getInitCharts() {
         this.setState({
             loading: true,
@@ -143,7 +147,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
         }
     }
 
-    //TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
+    // TODO: setting state from props is anti-pattern. what is the need of name and description in if condition?
     componentDidMount() {
         if (this.props.chartGroupId && this.props.name) {
             this.setState({ name: { value: this.props.name, error: [] }, description: this.props.description || '' })
@@ -157,53 +161,49 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
             <DialogForm
                 title={this.props.chartGroupId ? 'Update Chart Group' : `Create Chart Group`}
                 className=""
-                closeOnESC={true}
+                closeOnESC
                 isLoading={this.state.loading}
                 close={this.props.closeChartGroupModal}
                 onSave={this.saveChartGroup}
             >
                 <label className="form__row">
-                    <span className="form__label dc__required-field" data-testid="create-group-name-heading">Name</span>
-                    <input
-                        className="form__input"
-                        autoComplete="off"
-                        type="text"
+                    <CustomInput
                         name="name"
+                        label="Name"
                         value={this.state.name.value}
                         data-testid="create-group-name-value"
                         placeholder="e.g. elastic-stack"
-                        autoFocus={true}
+                        autoFocus
                         tabIndex={1}
                         onChange={this.handleNameChange}
-                        required
+                        isRequiredField
+                        error={this.state.name.error}
                     />
-                    <span className="form__error">
-                        {this.state.name.error.map((err) => {
-                            return (
-                                <div data-testid="chart-group-min-5-char">
-                                    <Error className="form__icon form__icon--error" /> {err}
-                                </div>
-                            )
-                        })}
-                    </span>
                 </label>
 
                 <label className="form__row">
-                    <span className="form__label" data-testid="create-group-desc-heading">Description</span>
+                    <span className="form__label" data-testid="create-group-desc-heading">
+                        Description
+                    </span>
                     <textarea
                         className="form__input form__input--textarea"
                         name="description"
                         value={this.state.description}
                         placeholder="Enter a short description for this group."
-                        autoFocus={true}
+                        autoFocus
                         tabIndex={2}
                         data-testid="create-group-desc"
                         onChange={this.handleDescriptionChange}
                         required
                     />
-                    <span className="form__error"></span>
+                    <span className="form__error" />
                 </label>
-                <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup} data-testid="save-group-button">
+                <button
+                    type="button"
+                    className="cta dc__align-right"
+                    onClick={this.saveChartGroup}
+                    data-testid="save-group-button"
+                >
                     {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
                 </button>
             </DialogForm>

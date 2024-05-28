@@ -1,19 +1,14 @@
 import React, { useState, useContext, Fragment, useEffect } from 'react'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import Tippy from '@tippyjs/react'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function VariableContainer({ type }: { type: PluginVariableType }) {
-    const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-    const {
-        formData,
-        selectedTaskIndex,
-        activeStageName,
-        formDataErrorObj,
-    } = useContext(pipelineContext)
+export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
+    const [collapsedSection, setCollapsedSection] = useState<boolean>(type !== PluginVariableType.INPUT)
+    const { formData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const variableLength =
         formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
             type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
@@ -82,7 +77,10 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                             </span>
                                         }
                                     >
-                                        <div data-testid={`${variable.name}-dropdown`} className="fs-13 fw-4 lh-28 dc__ellipsis-right">
+                                        <div
+                                            data-testid={`${variable.name}-dropdown`}
+                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right"
+                                        >
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

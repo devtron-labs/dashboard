@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useParams, useHistory, useLocation, useRouteMatch } from 'react-router'
-import MultiChartSummary from './MultiChartSummary'
-import useChartGroup from './useChartGroup'
-import { Select, mapByKey } from '../common'
+import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
 import {
     showError,
     Progressing,
@@ -10,17 +7,17 @@ import {
     useBreadcrumb,
     ConditionalWrap,
     useEffectAfterMount,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import MultiChartSummary from './MultiChartSummary'
+import useChartGroup from './useChartGroup'
+import { Select, mapByKey } from '../common'
 import AdvancedConfig from './AdvancedConfig'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
-import { deployChartGroup, getChartGroups } from './charts.service'
-import { toast } from 'react-toastify'
-import { Prompt } from 'react-router'
-import { ReactComponent as LeftArrow } from '../../assets/icons/ic-arrow-left.svg'
+import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
-import Tippy from '@tippyjs/react'
-import { ChartSelector } from '../AppSelector'
-import PageHeader from '../common/header/PageHeader'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()
@@ -64,7 +61,9 @@ export default function ChartGroupAdvanceDeploy() {
     const [deployed, setDeployed] = useState(false)
 
     useEffectAfterMount(() => {
-        if (state.loading) return
+        if (state.loading) {
+            return
+        }
         if (state.charts.length === 0) {
             push(url.replace('/deploy', ''))
         }
@@ -72,7 +71,9 @@ export default function ChartGroupAdvanceDeploy() {
     }, [state.loading])
 
     useEffectAfterMount(() => {
-        if (state.chartGroupDetailsLoading) return
+        if (state.chartGroupDetailsLoading) {
+            return
+        }
         setCharts((location?.state as any)?.charts || [])
         if ((location?.state as any)?.projectId) {
             setProject({ id: (location?.state as any).projectId, error: '' })
@@ -98,7 +99,9 @@ export default function ChartGroupAdvanceDeploy() {
 
     useEffectAfterMount(() => {
         // whenver deployment succeeds, go to deployments list
-        if (!deployed) return
+        if (!deployed) {
+            return
+        }
         push(url.replace('/deploy', ''))
     }, [deployed])
 
@@ -128,19 +131,19 @@ export default function ChartGroupAdvanceDeploy() {
     const renderAdvanceBreadcrumb = () => {
         return (
             <div className="flex left">
-                <BreadCrumb sep={'/'} breadcrumbs={breadcrumbs.slice(1)} />
+                <BreadCrumb sep="/" breadcrumbs={breadcrumbs.slice(1)} />
             </div>
         )
     }
 
     return (
         <div className="chart-group-advance-deploy-page">
-            <PageHeader isBreadcrumbs={true} breadCrumbs={renderAdvanceBreadcrumb} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderAdvanceBreadcrumb} />
             <div className="chart-group-advance-deploy__body">
                 {!deployed && (
                     <Prompt
                         when={!isLeavingPageAllowed}
-                        message={'Your changes will be lost. Do you want to leave without deploying?'}
+                        message="Your changes will be lost. Do you want to leave without deploying?"
                     />
                 )}
                 {state.loading && <Progressing pageLoader />}
@@ -170,7 +173,7 @@ export default function ChartGroupAdvanceDeploy() {
                                 getChartVersionsAndValues={getChartVersionsAndValues}
                                 configureChart={configureChart}
                             />
-                            <div className={`deployment-buttons`} style={{ gridTemplateColumns: '1fr' }}>
+                            <div className="deployment-buttons" style={{ gridTemplateColumns: '1fr' }}>
                                 <div className="mb-12">
                                     <label className="dc__required-field">Project</label>
                                     <Select

@@ -39,17 +39,17 @@ export const LinkAndLabelSpec = {
     [GitProvider.GITHUB]: {
         link: GitLink.GITHUB,
         linkText: '(How to create organization in GitHub?)',
-        label: 'GitHub Organisation Name*',
+        label: 'GitHub Organisation Name',
     },
     [GitProvider.GITLAB]: {
         link: GitLink.GITLAB,
         linkText: '(How to create group in GitLab?)',
-        label: 'GitLab Group ID*',
+        label: 'GitLab Group ID',
     },
     [GitProvider.AZURE_DEVOPS]: {
         link: GitLink.AZURE_DEVOPS,
         linkText: '(How to create project in Azure?)',
-        label: 'Azure DevOps Project Name*',
+        label: 'Azure DevOps Project Name',
     },
     [GitProvider.BITBUCKET_CLOUD]: {
         link: GitLink.BITBUCKET_PROJECT,
@@ -57,3 +57,9 @@ export const LinkAndLabelSpec = {
         label: 'Bitbucket Project Key',
     },
 }
+export const gitOpsRepoNotConfiguredWithOptionsHidden =
+    'Deployment via GitOps requires a repository to save deployment manifests. Please configure and try again.'
+export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
+    `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
+export const gitOpsRepoNotConfigured =
+    'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'

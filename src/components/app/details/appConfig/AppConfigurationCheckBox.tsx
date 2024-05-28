@@ -4,16 +4,17 @@ import { CustomNavItemsType } from './appConfig.type'
 interface HelpBoxType {
     selectedNav: CustomNavItemsType
     isJobView?: boolean
+    totalSteps?: number
 }
 
-export default function HelpBox({ selectedNav, isJobView }: HelpBoxType) {
+export default function HelpBox({ selectedNav, isJobView, totalSteps }: HelpBoxType) {
     return (
         <div className="help-container">
             <div>
-                {selectedNav?.currentStep}/{isJobView ? '2' : '4'} Completed
+                {selectedNav?.currentStep}/{isJobView ? '2' : totalSteps} Completed
             </div>
             <div className="progress-container">
-                <div className="progress-tracker" style={{ width: selectedNav?.flowCompletionPercent + '%' }}></div>
+                <div className="progress-tracker" style={{ width: `${selectedNav?.flowCompletionPercent}%` }} />
             </div>
             <div className="fs-13 font-weight-600">{selectedNav?.title}</div>
             <div className="need-help font-weight-600">

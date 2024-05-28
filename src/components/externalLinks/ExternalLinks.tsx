@@ -1,14 +1,9 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { sortOptionsByLabel, sortOptionsByValue } from '../common'
-import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    TippyCustomized,
-    TippyTheme,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
+import React, { Fragment, useEffect, useState } from 'react'
+import { showError, Progressing, ErrorScreenManager, InfoIconTippy, useMainContext, getClusterListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { sortOptionsByLabel, sortOptionsByValue } from '../common'
+import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { getAllApps, getExternalLinks } from './ExternalLinks.service'
 import {
     ExternalLink,
@@ -18,21 +13,16 @@ import {
     IdentifierOptionType,
     OptionTypeWithIcon,
 } from './ExternalLinks.type'
-import { getClusterListMin } from '../../services/service'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'
 import { getMonitoringToolIcon, onImageLoadError, sortByUpdatedOn } from './ExternalLinks.utils'
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { ApplicationFilter, AppliedFilterChips, ClusterFilter, SearchInput } from './ExternalLinksFilters'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import DeleteExternalLinkDialog from './ExternalLinksCRUD/DeleteExternalLinkDialog'
-import Tippy from '@tippyjs/react'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import './externalLinks.scss'
 
-function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
+const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
     const { appId } = useParams<{ appId: string }>()
     const history = useHistory()
     const location = useLocation()
@@ -51,7 +41,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
     const [filteredExternalLinks, setFilteredExternalLinks] = useState<ExternalLink[]>([])
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [selectedLink, setSelectedLink] = useState<ExternalLink>()
-    const { serverMode } = useContext(mainContext)
+    const { serverMode } = useMainContext()
     const isFullMode = serverMode === SERVER_MODE.FULL
 
     useEffect(() => {
@@ -164,7 +154,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
         if (_appliedClusterIds) {
             if (_appliedClusterIds.length === 1 && !_appliedClusterIds[0]) {
                 return defaultToAll ? externalLinks : []
-            } else if (_appliedClusterIds.length > 0) {
+            }
+            if (_appliedClusterIds.length > 0) {
                 return externalLinks.filter(
                     (link) =>
                         link.identifiers.length === 0 ||
@@ -192,7 +183,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 // If contains any link then return empty as it'll be the same array
                 // Else return all external links as default
                 return filteredByClusterIds.length > 0 ? [] : externalLinks
-            } else if (_appliedAppIds.length > 0) {
+            }
+            if (_appliedAppIds.length > 0) {
                 const filteredByAppIds = externalLinks.filter(
                     (link) =>
                         link.identifiers.length === 0 ||
@@ -299,7 +291,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                     isAppConfigView ? 'app-config-view' : ''
                 }`}
             >
-                <div className="external-links__cell--icon"></div>
+                <div className="external-links__cell--icon" />
                 <div className="external-links__cell--tool__name">
                     <span className="external-links__cell-header cn-7 fs-12 fw-6">Name</span>
                 </div>
@@ -409,21 +401,13 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
                     <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
                         External Links
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            placement="bottom"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
+                        <InfoIconTippy
                             heading="External Links"
                             infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                             documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <QuestionIcon className="icon-dim-20 fcn-6 cursor ml-8" />
-                        </TippyCustomized>
+                            iconClassName="icon-dim-20 fcn-6 ml-8"
+                        />
                     </h3>
                     <div className="cta-search-filter-container flex">
                         {renderSearchFilterWrapper()}
@@ -431,7 +415,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                         <AddLinkButton handleOnClick={handleAddLinkClick} />
                     </div>
                 </div>
-                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView={true} />}
+                {isAppConfigView && <RoleBasedInfoNote userRole={userRole} listingView />}
                 {!isAppConfigView && (appliedClusters.length > 0 || appliedApps.length > 0) && (
                     <AppliedFilterChips
                         appliedClusters={appliedClusters}
@@ -476,11 +460,11 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 <div className="error-screen-wrapper flex column h-100">
                     <ErrorScreenManager
                         code={errorStatusCode}
-                        subtitle="Information on this page is available only to superadmin users."
                     />
                 </div>
             )
-        } else if (!externalLinks || externalLinks.length === 0) {
+        }
+        if (!externalLinks || externalLinks.length === 0) {
             return (
                 <NoExternalLinksView
                     isAppConfigView={isAppConfigView}
@@ -489,9 +473,8 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                     history={history}
                 />
             )
-        } else {
-            return renderExternalLinksView()
         }
+        return renderExternalLinksView()
     }
 
     return isLoading ? (

@@ -1,22 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useState, useEffect } from 'react'
+import { DevtronProgressing, useAsync, useMainContext, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router'
+import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import './EnvironmentsList.scss'
-import PageHeader from '../../common/header/PageHeader'
 import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
-import { useHistory, useLocation } from 'react-router-dom'
 import { AppGroupAdminType } from '../AppGroup.types'
-import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     const match = useRouteMatch()
-    const { setPageOverflowEnabled } = useContext(mainContext)
+    const { setPageOverflowEnabled } = useMainContext()
     const location = useLocation()
     const history = useHistory()
     const [searchText, setSearchText] = useState('')
@@ -164,15 +162,15 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                         if (filter.isChecked) {
                             return (
                                 <div key={filter.key} className="saved-env-filter">
-                                    <span className="fw-6 mr-5">{'Cluster'}</span>
-                                    <span className="saved-env-filter-divider"></span>
+                                    <span className="fw-6 mr-5">Cluster</span>
+                                    <span className="saved-env-filter-divider" />
                                     <span className="ml-5">{filter.label}</span>
                                     <button
                                         type="button"
                                         className="saved-env-filter__close-btn"
                                         onClick={() => removeFilter(filter)}
                                     >
-                                        <i className="fa fa-times-circle" aria-hidden="true"></i>
+                                        <i className="fa fa-times-circle" aria-hidden="true" />
                                     </button>
                                 </div>
                             )
@@ -191,12 +189,12 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     }
 
     if (loading) {
-        return <Progressing pageLoader />
+        return <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
     }
 
     return (
         <div>
-            <PageHeader headerName="Application Groups" markAsBeta={true} showAnnouncementHeader={true} />
+            <PageHeader headerName="Application Groups" showAnnouncementHeader />
             <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16" data-testid="search-env-and-cluster">
                     {renderSearch()}

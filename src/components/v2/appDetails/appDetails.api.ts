@@ -1,10 +1,10 @@
-import { Routes } from '../../../config/constants'
 import { DeploymentAppTypes, get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
-  return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
 export const getInstalledChartResourceTree = (_appId: number, _envId: number) => {
@@ -34,11 +34,12 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
 
     const { appName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
     const { group, version, kind, name } = nodeDetails
-    
+
     const data = {
-        appId : appType == AppType.DEVTRON_APP
-        ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-        : getAppId(clusterId, namespace, appName),
+        appId:
+            appType == AppType.DEVTRON_APP
+                ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
+                : getAppId(clusterId, namespace, appName),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -46,12 +47,13 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                     Version: version,
                     Kind: kind,
                 },
-                namespace: namespace,
-                name: name,
+                namespace,
+                name,
             },
+            forceDelete: forceDelete 
         },
-        appType : appType == AppType.DEVTRON_APP ? 0 : 1,
-        deploymentType : deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,
+        appType: appType == AppType.DEVTRON_APP ? 0 : 1,
+        deploymentType: deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,
     }
     return post(Routes.DELETE_RESOURCE, data)
 }

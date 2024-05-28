@@ -85,7 +85,7 @@ foo@bar~$ docker run -p 3000:80 -e SENTRY_ENV=my-custom-env -t artifact/tag
 ### Disable sentry error logging during production deployment, default enabled
 
 ```console
-foo@bar~$ docker run -p 3000:80 -e SENTRY_ERROR_ENABLED=false -t artifact/tag
+foo@bar~$ docker run -p 3000:80 -e ENTRY_ERROR_ENABLED=false -t artifact/tag
 ```
 
 ### Disable sentry performance monitoring during production deployment, default enabled
@@ -128,29 +128,29 @@ foo@bar~$ python uploadTestReport.py
 
 ### Development setup with proxy.
 
-#### **`src/setupProxy.js`**
+#### **`vite.config.ts`**
+Update the `vite.config.ts` file to include the proxy configuration.
+In proxy object, add the target URL of the orchestrator and grafana.
 
 ```js
-const { createProxyMiddleware } = require('http-proxy-middleware')
-
-module.exports = function (app) {
-    app.use(
-        '/orchestrator',
-        createProxyMiddleware({
-            target: 'http://demo.devtron.info:32080',
-            changeOrigin: true,
-            logLevel: 'info',
-        }),
-    )
-}
+server: {
+            port: 3000,
+            proxy: {
+                '/orchestrator': {
+                    target: 'https://preview.devtron.ai/',
+                    changeOrigin: true,
+                },
+                '/grafana': 'https://preview.devtron.ai/',
+            },
+        }
 ```
 
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-REACT_APP_ORCHESTRATOR_ROOT=/orchestrator
+VITE_ORCHESTRATOR_ROOT=/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 
@@ -159,9 +159,9 @@ REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 #### **`.env.development`**
 
 ```console
-GRAFANA_ORG_ID=2
+VITE_GRAFANA_ORG_ID=2
 REACT_APP_EDITOR=code
-REACT_APP_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
+VITE_ORCHESTRATOR_ROOT=http://demo.devtron.info:32080/orchestrator
 REACT_APP_PASSWORD=argocd-server-74b7b94945-nxxnh
 ```
 
@@ -191,10 +191,10 @@ First you need to have the backend project up and running and the dashboard repo
 
 -   Run yarn in the dashboard repo root
 -   Open the project in your preferred IDE
--   Open the `setupProxy.js` file
+-   Open the `vite.config.ts` file
 -   Change the target URL of the orchestrator. Replace it with the URL of your orchestrator
 -   Save the file
--   Run `npm run start`
+-   Run `yarn start`
 -   Go to `localhost:3000`
 -   Click Login as administrator
 -   Provide Admin as username and password from Devtron BE

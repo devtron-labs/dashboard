@@ -1,15 +1,15 @@
 import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { URLS, AppListConstants } from '../../../config'
 import ReactGA from 'react-ga4'
 import { useRouteMatch } from 'react-router'
+import { URLS, AppListConstants } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import PageHeader from '../../common/header/PageHeader'
 import { ChartHeaderComponentType } from './appHeader.type'
+import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
-function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
+const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
     const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
@@ -109,11 +109,11 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
     return (
         <div className="app-header-wrapper helm-app-page-header">
             <PageHeader
-                isBreadcrumbs={true}
-                showTabs={true}
+                isBreadcrumbs
+                showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader={true}
+                showAnnouncementHeader
             />
         </div>
     )

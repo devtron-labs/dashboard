@@ -13,7 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { PipelineFormType } from '../workflowEditor/types'
+import { ChangeCIPayloadType, CustomTagType, PipelineFormType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number
@@ -263,14 +263,15 @@ export interface CIPipelineType {
     deleteWorkflow: (appId?: string, workflowId?: number) => any
     isJobView?: boolean
     isJobCI?: boolean
+    changeCIPayload?: ChangeCIPayloadType
 }
 
 export interface CIPipelineDataType {
     id: number
     ciMaterial: any[]
     dockerArgs: any
-    parentCiPipeline?: number //required in case of linked CI
-    parentAppId?: number //required in case of linked CI
+    parentCiPipeline?: number // required in case of linked CI
+    parentAppId?: number // required in case of linked CI
     active: true
     externalCiConfig: any
     isExternal: boolean
@@ -282,6 +283,7 @@ export interface CIPipelineDataType {
     dockerConfigOverride?: DockerConfigOverrideType
     environmentId?: any
     pipelineType?: string
+    customTag?: CustomTagType
 }
 export interface CIPipelineState {
     code: number
@@ -290,13 +292,13 @@ export interface CIPipelineState {
     loadingData: boolean
     form: PipelineFormType
     ciPipeline: CIPipelineDataType
-    sourcePipelineURL?: string //required Linked CI
+    sourcePipelineURL?: string // required Linked CI
     showDeleteModal: boolean
     showDockerArgs: boolean
     showPreBuild: boolean
     showDocker: boolean
     showPostBuild: boolean
-    isAdvanced?: boolean //required for CIPipeline
+    isAdvanced?: boolean // required for CIPipeline
 }
 
 export interface LinkedCIPipelineState {
@@ -318,12 +320,6 @@ export interface LinkedCIPipelineState {
     }
 }
 
-export interface Material {
-    source: { type: string; value: string }
-    gitMaterialId: number
-    isSave: boolean
-}
-
 export interface CIPipelineProps
     extends RouteComponentProps<{ appId: string; ciPipelineId: string; workflowId: string }> {
     appName: string
@@ -331,6 +327,7 @@ export interface CIPipelineProps
     getWorkflows: () => void
     close: () => void
     deleteWorkflow?: (appId?: string, workflowId?: number) => any
+    changeCIPayload?: ChangeCIPayloadType
 }
 
 export const PatchAction = {
@@ -365,7 +362,7 @@ export interface SourceMaterialsProps {
     webhookData?: WebhookCIProps
     isBranchRegex?: (material) => boolean
     isAdvanced?: boolean
-    handleOnBlur?: (event) => void
+    handleOnBlur?: () => Promise<void>
 }
 
 export interface WebhookCIProps {
@@ -385,22 +382,21 @@ export interface BuildType {
     ciPipeline: CIPipelineDataType
     pageState: string
     isSecurityModuleInstalled: boolean
-    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
-    getPluginData: (_formData?: PipelineFormType) => void
-    imageTagValue: string
-    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
+    getPluginData: (_formData?: PipelineFormType) => Promise<void>
 }
 
 export interface PreBuildType {
-  presetPlugins: PluginDetailType[]
-  sharedPlugins: PluginDetailType[]
-  mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
-  isJobView?: boolean
+    presetPlugins: PluginDetailType[]
+    sharedPlugins: PluginDetailType[]
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
+    isJobView?: boolean
 }
 
 export enum CIPipelineBuildType {
     CI_JOB = 'CI_JOB',
     CI_BUILD = 'CI_BUILD',
-    CI_EXTERNAL = 'CI_EXTERNAL',
+    CI_LINKED = 'LINKED',
+    LINKED_CD = 'LINKED_CD',
+    NORMAL_JOB='NORMAL_JOB',
 }

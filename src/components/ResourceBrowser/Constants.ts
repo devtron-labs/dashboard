@@ -1,5 +1,6 @@
 import { AggregationKeys, AggregationKeysType, Nodes } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
+import { GVKType } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -157,8 +158,15 @@ export const DELETE_MODAL_MESSAGING = {
     checkboxText: 'Force delete resource',
 }
 
-export const SIDEBAR_KEYS = {
-    overview: 'Cluster Overview',
+export const SIDEBAR_KEYS: {
+    nodes: string
+    events: string
+    namespaces: string
+    eventGVK: GVKType
+    namespaceGVK: GVKType
+    nodeGVK: GVKType
+    overviewGVK: GVKType
+} = {
     nodes: 'Nodes',
     events: 'Events',
     namespaces: 'Namespaces',
@@ -180,8 +188,8 @@ export const SIDEBAR_KEYS = {
     overviewGVK: {
         Group: '',
         Version: '',
-        Kind: Nodes.Overview,
-    }
+        Kind: Nodes.Overview as Nodes,
+    },
 }
 
 export const FIXED_GVK_Keys = {
@@ -195,7 +203,8 @@ export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You ca
 export const ERROR_SCREEN_SUBTITLE =
     'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
 export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
-export const clusterOverviewNodeText = (isOverview) => `To view ${isOverview ? 'Cluster overview' : 'Nodes'}, you must have view permission to at least one environment for this cluster. This access can be granted through Devtron Apps or Helm Apps permissions`
+export const clusterOverviewNodeText = (isOverview) =>
+    `To view ${isOverview ? 'Cluster overview' : 'Nodes'}, you must have view permission to at least one environment for this cluster. This access can be granted through Devtron Apps or Helm Apps permissions`
 export const LEARN_MORE = 'Learn more.'
 
 export const RESOURCE_LIST_ERROR_STATE = {
@@ -235,4 +244,32 @@ export const SELECTE_CLUSTER_STATE_MESSAGING = {
     heading: 'Select a cluster to view Kubernetes resources',
     infoText: 'All Kubernetes resources in the selected cluster will be shown here',
     altText: 'No Cluster Selected',
+}
+
+export const K8_ABBREVIATES = {
+    csr: 'certificatesigningrequest',
+    cs: 'componentstatus',
+    cm: 'configmap',
+    ds: 'daemonset',
+    ns: 'namespaces',
+    deploy: 'deployment',
+    ep: 'endpoints',
+    ev: 'events',
+    hpa: 'horizontalpodautoscaler',
+    ing: 'ingress',
+    limits: 'limitrange',
+    no: 'nodes',
+    pvc: 'persistentvolumeclaim',
+    pv: 'persistentvolume',
+    po: 'pod',
+    pdb: 'poddisruptionbudget',
+    rs: 'replicaset',
+    rc: 'replicationcontroller',
+    quota: 'resourcequota',
+    sa: 'serviceaccount',
+    sc: 'storageclass',
+    svc: 'service',
+    wf: 'workflow',
+    sts: 'statefulset',
+    crd: 'customresourcedefinition',
 }

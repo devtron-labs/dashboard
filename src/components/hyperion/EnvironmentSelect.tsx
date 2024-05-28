@@ -1,19 +1,19 @@
-import React from 'react';
-import Select, { components } from 'react-select';
+import React from 'react'
+import Select, { components } from 'react-select'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import { Option } from '../v2/common/ReactSelect.utils';
+import { Option } from '../v2/common/ReactSelect.utils'
 import './EnvironmentSelect.scss'
 
 export default function HyperionEnvironmentSelect({ selectEnvironment, environments, selectedEnvironment }) {
     const clusterValueContainer = (props) => {
-        let length = props
+        const { length } = props
             .getValue()
-            .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*')).length;
-        const value = props.getValue()[0]?.clusterName + "/" + props.getValue()[0]?.namespace;
+            .filter((opt) => opt.value && !opt.value.startsWith('#') && !opt.value.startsWith('*'))
+        const value = `${props.getValue()[0]?.clusterName}/${props.getValue()[0]?.namespace}`
         return (
             <components.ValueContainer {...props}>
                 {length > 0 ? (
-                    <div className='flex'>
+                    <div className="flex">
                         {!props.selectProps.menuIsOpen && value}
                         {React.cloneElement(props.children[1])}
                     </div>
@@ -21,26 +21,25 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                     <>{props.children}</>
                 )}
             </components.ValueContainer>
-        );
-    };
+        )
+    }
 
     function formatGroupLabel(option) {
         return (
             <div>
-                <span>{'Cluster : ' + option.label}</span>
+                <span>{`Cluster : ${option.label}`}</span>
             </div>
-        );
+        )
     }
 
     function formatOptionLabelClusterEnv(option, { inputValue }) {
         return (
             <div
-                className={
-                    'flex left column ' +
-                    (option.value &&
-                        (option.value.startsWith('#') || option.value.startsWith('*')) &&
-                        'cluster-label-all')
-                }
+                className={`flex left column ${
+                    option.value &&
+                    (option.value.startsWith('#') || option.value.startsWith('*')) &&
+                    'cluster-label-all'
+                }`}
             >
                 {!inputValue ? (
                     <>
@@ -63,17 +62,17 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
                             <small
                                 className="light-color"
                                 dangerouslySetInnerHTML={{
-                                    __html: (option.clusterName + '/' + option.namespace).replace(
+                                    __html: `${option.clusterName}/${option.namespace}`.replace(
                                         new RegExp(inputValue, 'gi'),
                                         (highlighted) => `<mark>${highlighted}</mark>`,
                                     ),
                                 }}
-                            ></small>
+                            />
                         )}
                     </>
                 )}
             </div>
-        );
+        )
     }
 
     function customFilter(option, searchText) {
@@ -82,10 +81,9 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
             option.data.clusterName.toLowerCase().includes(searchText.toLowerCase()) ||
             option.data.namespace.toLowerCase().includes(searchText.toLowerCase())
         ) {
-            return true;
-        } else {
-            return false;
+            return true
         }
+        return false
     }
     return (
         <Select
@@ -115,5 +113,5 @@ export default function HyperionEnvironmentSelect({ selectEnvironment, environme
             }}
             onChange={selectEnvironment}
         />
-    );
+    )
 }

@@ -1,4 +1,3 @@
-import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import {
     get,
     post,
@@ -7,19 +6,21 @@ import {
     ResponseType,
     sortCallback,
     DeploymentNodeType,
-    CDModalTab,
-    CDMaterialResponseType,
-    FilterStates,
     put,
+    DATE_TIME_FORMAT_STRING,
+    DeploymentWithConfigType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
-import moment from 'moment-timezone'
+import moment from 'moment'
+import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
+import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, ArtifactsCiJob, EditAppRequest } from './types'
-import { DeploymentWithConfigType } from './details/triggerView/types'
-import { AppMetaInfo } from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
+import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
+import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
+import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
-let stageMap = {
+const stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
     POSTCD: 'POST',
@@ -27,13 +28,7 @@ let stageMap = {
 }
 
 export const getAppList = (request, options?) => {
-    let URL = Routes.APP_LIST
-    if (window._env_.USE_V2) {
-        URL += `/${Routes.APP_LIST_V2}`
-    } else {
-        URL += `/${Routes.APP_LIST_V1}`
-    }
-    return post(URL, request, options)
+    return post(Routes.APP_LIST, request, options)
 }
 
 export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
@@ -41,10 +36,7 @@ export function getCITriggerInfo(params: { envId: number | string; ciArtifactId:
     return get(URL)
 }
 
-export function getCITriggerInfoModal(
-    params: { envId: number | string; ciArtifactId: number | string },
-    commit: string,
-) {
+export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
         materials = materials.map((mat) => {
@@ -68,10 +60,6 @@ export function getCITriggerInfoModal(
                         webhookData: hist.WebhookData,
                     }
                 }),
-                isSelected:
-                    mat.history.find((h) =>
-                        mat.type != SourceTypeMap.WEBHOOK ? h.Commit === commit : h.WebhookData.id == commit,
-                    ) || false,
                 lastFetchTime: mat.lastFetchTime || '',
             }
         })
@@ -81,7 +69,7 @@ export function getCITriggerInfoModal(
         return {
             code: response.code,
             result: {
-                materials: materials,
+                materials,
                 triggeredByEmail: response.result.triggeredByEmail || '',
                 lastDeployedTime: response.result.lastDeployedTime
                     ? handleUTCTime(response.result.lastDeployedTime, false)
@@ -100,7 +88,9 @@ export function getCITriggerInfoModal(
 }
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
-    if (!group) group = ''
+    if (!group) {
+        group = ''
+    }
     const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`
     return trash(URL)
 }
@@ -125,9 +115,9 @@ export function fetchAppDetailsInTime(
     appId: number | string,
     envId: number | string,
     reloadTimeOut: number,
-    signal?: AbortSignal
+    signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal })
 }
 
 export function fetchResourceTreeInTime(
@@ -136,7 +126,10 @@ export function fetchResourceTreeInTime(
     reloadTimeOut: number,
     signal?: AbortSignal,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut, signal: signal })
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
+        timeout: reloadTimeOut,
+        signal,
+    })
 }
 
 export function getEvents(pathParams) {
@@ -168,9 +161,8 @@ export function getCITriggerDetails(params: {
                         : [],
                 },
             }
-        } else {
-            throw new ServerErrors({ code: response.code, errors: response.errors })
         }
+        throw new ServerErrors({ code: response.code, errors: response.errors })
     })
 }
 
@@ -179,7 +171,7 @@ interface CIHistoricalStatus extends ResponseType {
 }
 
 export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
-    let URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
+    const URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
     return get(URL)
 }
 
@@ -189,7 +181,7 @@ export const getTagDetails = (params) => {
 }
 
 const gitTriggersModal = (triggers, materials) => {
-    let ids = Object.keys(triggers)
+    const ids = Object.keys(triggers)
     return ids.map((key) => {
         const material = materials.find((mat) => mat.id === Number(key))
         return {
@@ -281,178 +273,12 @@ export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     })
 }
 
-export function getCDMaterialList(
-    cdMaterialId,
-    stageType: DeploymentNodeType,
-    abortSignal: AbortSignal,
-    isApprovalNode?: boolean,
-    searchParam?: string,
-): Promise<CDMaterialResponseType> {
-    const URL = searchParam
-        ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }&search=${searchParam}`
-        : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
-              isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
-          }`
-
-    return get(URL, {
-        signal: abortSignal,
-    }).then((response) => {
-        if (!response.result) {
-            return {
-                approvalUsers: [],
-                materials: [],
-                userApprovalConfig: null,
-                requestedUserId: 0,
-                tagsEditable: false,
-                appReleaseTagNames: [],
-                hideImageTaggingHardDelete: false,
-                resourceFilters: [],
-            }
-        } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
-            return {
-                approvalUsers: response.result.approvalUsers,
-                materials: cdMaterialListModal(
-                    response.result.ci_artifacts,
-                    1,
-                    response.result.latest_wf_artifact_id,
-                    response.result.latest_wf_artifact_status,
-                ),
-                userApprovalConfig: response.result.userApprovalConfig,
-                requestedUserId: response.result.requestedUserId,
-                appReleaseTagNames: response.result.appReleaseTagNames,
-                tagsEditable: response.result.tagsEditable,
-                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
-                resourceFilters: response.result.resourceFilters ?? [],
-            }
-        } else {
-            return {
-                approvalUsers: [],
-                materials: cdMaterialListModal(
-                    response.result.ci_artifacts,
-                    1,
-                    response.result.latest_wf_artifact_id,
-                    response.result.latest_wf_artifact_status,
-                ),
-                userApprovalConfig: null,
-                requestedUserId: 0,
-                appReleaseTagNames: response.result.appReleaseTagNames,
-                tagsEditable: response.result.tagsEditable,
-                hideImageTaggingHardDelete: response.result.hideImageTaggingHardDelete,
-                resourceFilters: response.result.resourceFilters ?? [],
-            }
-        }
-    })
-}
-
-export function getRollbackMaterialList(
-    cdMaterialId,
-    offset: number,
-    size: number,
-    abortSignal: AbortSignal,
-    imageTag?: string,
-): Promise<ResponseType> {
-    const URL = imageTag ? `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}&search=${imageTag}` : `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
-    return get(URL, {
-        signal: abortSignal,
-    }).then((response) => {
-        return {
-            code: response.code,
-            status: response.status,
-            result: {
-                materials: cdMaterialListModal(response.result?.ci_artifacts, offset),
-                requestedUserId: response.result?.requestedUserId,
-                resourceFilters: response.result?.resourceFilters ?? [],
-            },
-        }
-    })
-}
-
 export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-function cdMaterialListModal(
-    artifacts: any[],
-    offset: number,
-    artifactId?: number,
-    artifactStatus?: string,
-) {
-    if (!artifacts || !artifacts.length) return []
-
-    const markFirstSelected = offset===1
-    const startIndex = offset-1
-    let isImageMarked = false
-
-    const materials = artifacts.map((material, index) => {
-        let artifactStatusValue = ''
-        const filterState = material.filterState ?? FilterStates.ALLOWED
-
-        if (artifactId && artifactStatus && material.id === artifactId) {
-            artifactStatusValue = artifactStatus
-        }
-
-        const selectImage = !isImageMarked && markFirstSelected && (filterState === FilterStates.ALLOWED) ? !material.vulnerable : false
-        if (selectImage) {
-            isImageMarked = true
-        }
-
-        return {
-            index: startIndex+index,
-            id: material.id,
-            deployedTime: material.deployed_time
-                ? moment(material.deployed_time).format(Moment12HourFormat)
-                : 'Not Deployed',
-            deployedBy: material.deployedBy,
-            wfrId: material.wfrId,
-            tab: CDModalTab.Changes,
-            image: extractImage(material.image),
-            showChanges: false,
-            vulnerabilities: [],
-            buildTime: material.build_time || '',
-            isSelected: selectImage,
-            showSourceInfo: false,
-            deployed: material.deployed || false,
-            latest: material.latest || false,
-            vulnerabilitiesLoading: true,
-            scanned: material.scanned,
-            scanEnabled: material.scanEnabled,
-            vulnerable: material.vulnerable,
-            runningOnParentCd: material.runningOnParentCd,
-            artifactStatus: artifactStatusValue,
-            userApprovalMetadata: material.userApprovalMetadata,
-            triggeredBy: material.triggeredBy,
-            isVirtualEnvironment: material.isVirtualEnvironment,
-            imageComment: material.imageComment,
-            imageReleaseTags: material.imageReleaseTags,
-            materialInfo: material.material_info
-                ? material.material_info.map((mat) => {
-                      return {
-                          modifiedTime: mat.modifiedTime ? moment(mat.modifiedTime).format(Moment12HourFormat) : '',
-                          commitLink: createGitCommitUrl(mat.url, mat.revision),
-                          author: mat.author || '',
-                          message: mat.message || '',
-                          revision: mat.revision || '',
-                          tag: mat.tag || '',
-                          webhookData: mat.webhookData || '',
-                          url: mat.url || '',
-                          branch:
-                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
-                                  ? material.ciConfigureSourceValue
-                                  : mat.branch) || '',
-                          type: material.ciConfigureSourceType || '',
-                      }
-                  })
-                : [],
-            filterState,
-        }
-    })
-    return materials
-}
-
-export const cancelCiTrigger = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}`
+export const cancelCiTrigger = (params, isForceAbort) => {
+    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
     return trash(URL)
 }
 
@@ -474,7 +300,7 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
 }
 
 export const triggerCINode = (request) => {
-    let URL = `${Routes.CI_PIPELINE_TRIGGER}`
+    const URL = `${Routes.CI_PIPELINE_TRIGGER}`
     return post(URL, request)
 }
 
@@ -503,16 +329,53 @@ export const triggerCDNode = (
             request['wfrIdForDeploymentWithSpecificTrigger'] = wfrId
         }
     }
-    return post(Routes.CD_TRIGGER_POST, request)
+    const options = getAPIOptionsWithTriggerTimeout()
+
+    return post(Routes.CD_TRIGGER_POST, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
-    const request = {
-        appIds: appIds,
-        environmentId: envId,
-        value: value,
-    }
-    return put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, request)
+export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
+    return new Promise((resolve) => {
+        ApiQueuingWithBatch(
+            appIds.map(
+                (appId) => () =>
+                    put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                        appIds: [appId],
+                        environmentId: envId,
+                        value: value,
+                    }),
+            ),
+            httpProtocol,
+        )
+            .then((results) => {
+                resolve(
+                    results.map((result, index) => {
+                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                            return result.value?.result.apps[0]
+                        }
+                        const response = {
+                            appId: appIds[index],
+                            status: '',
+                            message: '',
+                        }
+                        const errorReason = result.reason
+                        switch (errorReason.code) {
+                            case 403:
+                            case 422:
+                                response.status = BulkResponseStatus.UNAUTHORIZE
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
+                                break
+                            case 409:
+                            default:
+                                response.status = BulkResponseStatus.FAIL
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
+                        }
+                        return response
+                    }),
+                )
+            })
+            .catch(noop)
+    })
 }
 
 export const getPrePostCDTriggerStatus = (params) => {
@@ -525,13 +388,23 @@ export const getWorkflowStatus = (appId: string) => {
     return get(URL)
 }
 
-export const getCIPipelines = (appId, filteredEnvIds?: string) => {
-  let filteredEnvParams = ''
-  if (filteredEnvIds) {
-      filteredEnvParams = `?envIds=${filteredEnvIds}`
-  }
-  const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
-  return get(URL)
+export const getCIPipelines = (appId, filteredEnvIds?: string, callback?: (...args) => void) => {
+    let filteredEnvParams = ''
+    if (filteredEnvIds) {
+        filteredEnvParams = `?envIds=${filteredEnvIds}`
+    }
+    const URL = `${Routes.APP}/${appId}/${Routes.APP_CI_PIPELINE}${filteredEnvParams}`
+    return get(URL).catch((error) => {
+        if (callback) {
+            callback(error)
+        }
+
+        return {
+            code: error.code,
+            status: error.status,
+            result: [],
+        }
+    })
 }
 
 export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {
@@ -550,12 +423,12 @@ export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSign
     })
 }
 
-export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string) {
-    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`)
+export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string, abortSignal?: AbortSignal) {
+    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
 }
 
 export const getCDTriggerStatus = (appId) => {
-    let URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`
+    const URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`
     return get(URL, { timeout: 3 * 60000 }).then((response) => {
         return response.result
             ? response?.result?.map((status) => {
@@ -576,7 +449,7 @@ export const getCDTriggerStatus = (appId) => {
 }
 
 export function getTriggerHistory(pipelineId, params) {
-    let URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
+    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
 export function setImageTags(request, pipelineId: number, artifactId: number) {
@@ -587,25 +460,12 @@ export function getImageTags(pipelineId: number, artifactId: number) {
     return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
 }
 
-function handleTime(ts: string) {
-    let timestamp = ''
-    try {
-        if (ts && ts.length) {
-            let date = moment(ts).utc(true).subtract(5, 'hours').subtract(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
-        }
-    } catch (error) {
-        console.error('Error Parsing Date:', ts)
-    }
-    return timestamp
-}
-
 export function handleTimeWithOffset(ts: string) {
     let timestamp = ''
     try {
         if (ts && ts.length) {
-            let date = moment(ts).add(5, 'hours').add(30, 'minutes')
-            timestamp = date.format('ddd DD MMM YYYY HH:mm:ss')
+            const date = moment(ts).add(5, 'hours').add(30, 'minutes')
+            timestamp = date.format(DATE_TIME_FORMAT_STRING)
         }
     } catch (error) {
         console.error('Error Parsing Date:', ts)
@@ -626,7 +486,9 @@ export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJ
 }
 
 export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
-    if (!group) group = ''
+    if (!group) {
+        group = ''
+    }
     return get(
         `api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`,
     )
@@ -654,7 +516,9 @@ export const getIngressServiceUrls = (params: {
     installedAppId?: string
 }): Promise<ResponseType> => {
     const urlParams = Object.entries(params).map(([key, value]) => {
-        if (!value) return
+        if (!value) {
+            return
+        }
         return `${key}=${value}`
     })
     return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)

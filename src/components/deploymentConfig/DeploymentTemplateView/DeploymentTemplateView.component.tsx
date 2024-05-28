@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
+import { ConfirmationDialog, Progressing, VisibleModal, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
-import { ConfirmationDialog, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
-import infoIcon from '../../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-filled.svg'
 import warningIcon from '../../../assets/img/warning-medium.svg'
 import {
     ChartTypeVersionOptionsProps,
@@ -16,6 +17,7 @@ import {
     DeploymentChartVersionType,
     DeploymentConfigStateActionTypes,
     DropdownItemProps,
+    SaveConfirmationDialogProps,
 } from '../types'
 import {
     DEPLOYMENT_TEMPLATE_LABELS_KEYS,
@@ -24,13 +26,12 @@ import {
     getDeploymentConfigDropdownStyles,
     getDraftOption,
 } from '../constants'
-import { SortingOrder } from '../../app/types'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { toast } from 'react-toastify'
 import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
+import '../deploymentConfig.scss'
 
 export const ChartTypeVersionOptions = ({
     isUnSet,
@@ -155,7 +156,9 @@ export const CompareWithDropdown = ({
     }
 
     useEffect(() => {
-        if (isEnvOverride && groupedData.length === 0) return
+        if (isEnvOverride && groupedData.length === 0) {
+            return
+        }
         _initOptions()
     }, [environments, charts, isValues, groupedData])
 
@@ -172,12 +175,18 @@ export const CompareWithDropdown = ({
 
         // place all options under corresponding groups
         groupedData.forEach((group) => {
-            if (!isValues && group[0].type === 1) return
-            if (isValues && group[0].type === 4) return
-            if (!envId && group[0].type === 3) return
+            if (!isValues && group[0].type === 1) {
+                return
+            }
+            if (isValues && group[0].type === 4) {
+                return
+            }
+            if (!envId && group[0].type === 3) {
+                return
+            }
             _groupOptions[getPosition(isValues, isEnvOverride, group[0].type)] = {
                 label: labelName[group[0].type],
-                //filter out item where item.chartType !== 'deployment
+                // filter out item where item.chartType !== 'deployment
                 options: group
                     .filter((item) => (item.type === 1 ? item?.chartType === 'Deployment' : true))
                     .map((item) => ({
@@ -239,11 +248,11 @@ export const getCodeEditorHeight = (
 ) => {
     if (openComparison || showReadme) {
         return 'calc(100vh - 220px)'
-    } else if (isEnvOverride) {
-        return 'calc(100vh - 272px)'
-    } else {
-        return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
     }
+    if (isEnvOverride) {
+        return 'calc(100vh - 272px)'
+    }
+    return isUnSet ? 'calc(100vh - 236px)' : 'calc(100vh - 240px)'
 }
 
 export const renderEditorHeading = (
@@ -279,7 +288,9 @@ export const renderEditorHeading = (
                             : 'Base configurations are overridden for this file'
                     }
                 >
-                    <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    <div className="flex">
+                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                    </div>
                 </Tippy>
             )}
         </div>
@@ -369,7 +380,9 @@ export const CompareWithApprovalPendingAndDraft = ({
                                 : 'Base configurations are overridden for this file'
                         }
                     >
-                        <Locked className="icon-dim-16 fcn-6 ml-10" />
+                        <div className="flex">
+                            <Locked className="icon-dim-16 fcn-6 ml-10" />
+                        </div>
                     </Tippy>
                 )}
             </div>
@@ -407,38 +420,30 @@ export const SuccessToastBody = ({ chartConfig }) => (
     </div>
 )
 
-export const SaveConfirmationDialog = ({ save }) => {
+export const SaveConfirmationDialog = ({
+    onSave,
+    showAsModal,
+    closeLockedDiffDrawerWithChildModal,
+}: SaveConfirmationDialogProps) => {
     const { state, dispatch } = useContext(DeploymentConfigContext)
-
-    const closeConfirmationDialog = () => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.showConfirmation,
-            payload: false,
-        })
-    }
-
-    const getButtonState = () => {
-        if (state.loading) {
-            return <Progressing />
-        } else if (state.chartConfig.id) {
-            return 'Update'
-        } else {
-            return 'Save'
-        }
-    }
-
-    return (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={infoIcon} />
-            <ConfirmationDialog.Body title="Retain overrides and update" />
-            <p>Changes will only be applied to environments using default configuration.</p>
-            <p>Environments using overriden configurations will not be updated.</p>
-            <ConfirmationDialog.ButtonGroup>
+    const saveConfirmationContent = () => (
+        <div
+            className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
+                !showAsModal && 'position-bottom-right'
+            }`}
+        >
+            <InfoIcon className="icon-dim-48" />
+            <div className="fs-16 fw-6">Retain overrides and update</div>
+            <div>
+                <p>Changes will only be applied to environments using default configuration.</p>
+                <p>Environments using overriden configurations will not be updated.</p>
+            </div>
+            <div className="mt-18 flexbox dc__gap-12 ml-auto">
                 <button
                     data-testid="base-deployment-template-cancel-button"
                     type="button"
                     className="cta cancel"
-                    onClick={closeConfirmationDialog}
+                    onClick={closeLockedDiffDrawerWithChildModal}
                 >
                     Cancel
                 </button>
@@ -446,12 +451,32 @@ export const SaveConfirmationDialog = ({ save }) => {
                     data-testid="base_deployment_template_update_button"
                     type="button"
                     className="cta"
-                    onClick={save}
+                    onClick={onSave}
                 >
                     {getButtonState()}
                 </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+            </div>
+        </div>
+    )
+
+    const getButtonState = () => {
+        if (state.loading) {
+            return <Progressing />
+        }
+        if (state.chartConfig.id) {
+            return 'Update'
+        }
+        return 'Save'
+    }
+
+    return (
+        <>
+            {showAsModal ? (
+                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
+            ) : (
+                saveConfirmationContent()
+            )}
+        </>
     )
 }
 
@@ -512,7 +537,7 @@ export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
     )
 }
 
-export function DropdownItem({ label, onClick, index, isValues }: DropdownItemProps) {
+export const DropdownItem = ({ label, onClick, index, isValues }: DropdownItemProps) => {
     const isSelected = (index === 1 && isValues) || (index === 2 && !isValues)
     return (
         <div

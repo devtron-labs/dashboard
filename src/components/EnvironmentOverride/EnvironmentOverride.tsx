@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { mapByKey, ErrorBoundary, useAppContext } from '../common'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
-import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '../../config'
 import { Redirect, Route, Switch, generatePath } from 'react-router-dom'
+import DeploymentTemplateOverride from './DeploymentTemplateOverride'
+import { mapByKey, ErrorBoundary, useAppContext } from '../common'
+import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '../../config'
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.type'
 import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
 import SecretList from '../ConfigMapSecret/Secret/SecretList'
@@ -41,7 +41,9 @@ export default function EnvironmentOverride({
     }, [location.pathname])
 
     useEffect(() => {
-        if (params.envId) return
+        if (params.envId) {
+            return
+        }
         if (environmentsMap.has(environmentId)) {
             const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
             push(newUrl)
@@ -59,7 +61,8 @@ export default function EnvironmentOverride({
 
     if (!params.envId) {
         return null
-    } else if (viewState === ComponentStates.failed) {
+    }
+    if (viewState === ComponentStates.failed) {
         return (
             <Reload
                 reload={(event) => {
@@ -80,21 +83,21 @@ export default function EnvironmentOverride({
     const getParentName = (): string => {
         if (appList?.length) {
             return appMap.get(+params.appId).name
-        } else if (environments?.length) {
-            return environmentsMap.get(+params.envId)?.environmentName || ''
-        } else {
-            return ''
         }
+        if (environments?.length) {
+            return environmentsMap.get(+params.envId)?.environmentName || ''
+        }
+        return ''
     }
 
     const getEnvName = (): string => {
         if (envName) {
             return envName
-        } else if (environmentsMap.has(+params.envId)) {
-            return environmentsMap.get(+params.envId).environmentName
-        } else {
-            return ''
         }
+        if (environmentsMap.has(+params.envId)) {
+            return environmentsMap.get(+params.envId).environmentName
+        }
+        return ''
     }
 
     return (
@@ -112,10 +115,10 @@ export default function EnvironmentOverride({
                             reloadEnvironments={reloadEnvironments}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList
                             key={`config-map-${params.appId}-${params.envId}`}
-                            isOverrideView={true}
+                            isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
@@ -125,10 +128,10 @@ export default function EnvironmentOverride({
                             clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <SecretList
                             key={`secret-${params.appId}-${params.envId}`}
-                            isOverrideView={true}
+                            isOverrideView
                             parentState={viewState}
                             isProtected={isProtected}
                             parentName={getParentName()}

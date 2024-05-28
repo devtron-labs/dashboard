@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { GlobalChartsCheck } from './GlobalChartCheck';
-import './checklist.scss';
-import CustomAppDeploy from './CustomAppDeploy';
-import SampleAppDeploy from './SampleAppDeploy';
+import React, { Component } from 'react'
+import { GlobalChartsCheck } from './GlobalChartCheck'
+import './checklist.scss'
+import CustomAppDeploy from './CustomAppDeploy'
+import SampleAppDeploy from './SampleAppDeploy'
 
 export class GlobalAllCheckModal extends Component {
     render() {
@@ -14,6 +14,6 @@ export class GlobalAllCheckModal extends Component {
                 <CustomAppDeploy />
                 <GlobalChartsCheck />
             </div>
-        );
+        )
     }
 }

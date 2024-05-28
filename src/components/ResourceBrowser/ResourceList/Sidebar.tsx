@@ -1,5 +1,15 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import React, { Fragment, useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import { useHistory, useParams, useLocation } from 'react-router-dom'
+import ReactSelect, { InputActionMeta, GroupBase } from 'react-select'
+import Select, { FormatOptionLabelMeta } from 'react-select/base'
+import { withShortcut, IWithShortcut } from 'react-keybind'
+import DOMPurify from 'dompurify'
+import {
+    useAsync,
+    highlightSearchText,
+    ReactSelectInputAction,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import {
@@ -11,21 +21,22 @@ import {
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
-import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
-import { withShortcut, IWithShortcut } from 'react-keybind'
+import { getK8Abbreviates } from '../ResourceBrowser.service'
+import { swap } from '../../common/helpers/util'
+import { convertK8sObjectMapToOptionsList } from '../Utils'
 
-function Sidebar({
+const Sidebar = ({
     k8SObjectMap,
     selectedResource,
     handleGroupHeadingClick,
     setSelectedResource,
     updateResourceSelectionData,
     shortcut,
-    isCreateModalOpen,
-}: SidebarType & IWithShortcut) {
+}: SidebarType & IWithShortcut) => {
+    const { registerShortcut } = useRegisterShortcut()
     const { push } = useHistory()
+    const location = useLocation()
     const { clusterId, namespace, nodeType, group } = useParams<{
         clusterId: string
         namespace: string
@@ -34,131 +45,48 @@ function Sidebar({
         group: string
     }>()
     const [searchText, setSearchText] = useState('')
-    const [isMenuOpen, setMenuOpen] = useState(false)
-    const [k8sObjectOptionsList, setK8sObjectOptionsList] = useState<K8sObjectOptionType[]>([])
+    const [, k8Abbreviates] = useAsync(getK8Abbreviates)
     const sideBarElementRef = useRef<HTMLDivElement>(null)
     const preventScrollRef = useRef<boolean>(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
+    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(k8SObjectMap), [k8SObjectMap?.size])
+
+    const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        switch (e.key) {
+            case 'k':
+                searchInputRef.current?.focus()
+                break
+            case 'Escape':
+            case 'Esc':
+                searchInputRef.current?.blur()
+                break
+            default:
+        }
+    }
 
     useEffect(() => {
-        if (!isCreateModalOpen) {
+        if (registerShortcut) {
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
         return (): void => {
             shortcut.unregisterShortcut(['k'])
         }
-    }, [isCreateModalOpen])
+    }, [registerShortcut])
 
     useEffect(() => {
         if (k8SObjectMap?.size) {
             if (!preventScrollRef.current && sideBarElementRef.current) {
                 sideBarElementRef.current.scrollIntoView({ block: 'center' })
             }
-
-            if (!k8sObjectOptionsList.length) {
-                covertK8sMapToOptionsList()
-            }
         }
-    }, [k8SObjectMap?.size, sideBarElementRef.current])
+    }, [sideBarElementRef.current])
 
-    const handleInputShortcut = (e: React.KeyboardEvent<any>) => {
-        const _key = e.key
-        if (_key === 'k') {
-            searchInputRef.current?.focus()
-        } else if (_key === 'Escape' || _key === 'Esc') {
-            searchInputRef.current?.blur()
-        }
-    }
-
-    const covertK8sMapToOptionsList = () => {
-      let isNamespacesAvailable, isEventsAvailable
-        const _k8sObjectOptionsList = [...k8SObjectMap.values()].flatMap((k8sObject) => {
-            return [...k8sObject.child.entries()].flatMap(([key, value]) => {
-                const keyLowerCased = key.toLowerCase()
-                if (
-                    keyLowerCased === 'node' ||
-                    keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                    keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                ) {
-                  isNamespacesAvailable= isNamespacesAvailable || keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()
-                  isEventsAvailable= isEventsAvailable || keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                    return []
-                }
-
-                return value.data.map((childData) => {
-                    return {
-                        label: childData.gvk.Kind,
-                        value: childData.gvk.Group || K8S_EMPTY_GROUP,
-                        dataset: {
-                            group: childData.gvk.Group,
-                            version: childData.gvk.Version,
-                            kind: childData.gvk.Kind,
-                            namespaced: `${childData.namespaced}`,
-                            grouped: `${k8sObject.child.size > 1}`,
-                        },
-                        groupName: value.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
-                    }
-                })
-            })
-        })
-        if (isEventsAvailable) {
-            _k8sObjectOptionsList.push({
-                label: SIDEBAR_KEYS.events as Nodes,
-                value: K8S_EMPTY_GROUP,
-                dataset: {
-                    group: SIDEBAR_KEYS.eventGVK.Group,
-                    version: SIDEBAR_KEYS.eventGVK.Version,
-                    kind: SIDEBAR_KEYS.eventGVK.Kind as Nodes,
-                    namespaced: 'true',
-                    grouped: 'false',
-                },
-                groupName: '',
-            })
-        }
-        if (isNamespacesAvailable) {
-            _k8sObjectOptionsList.push({
-                label: SIDEBAR_KEYS.namespaces as Nodes,
-                value: K8S_EMPTY_GROUP,
-                dataset: {
-                    group: SIDEBAR_KEYS.namespaceGVK.Group,
-                    version: SIDEBAR_KEYS.namespaceGVK.Version,
-                    kind: SIDEBAR_KEYS.namespaceGVK.Kind as Nodes,
-                    namespaced: 'false',
-                    grouped: 'false',
-                },
-                groupName: '',
-            })
-        }
-
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.overview as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.overviewGVK.Group,
-                version: SIDEBAR_KEYS.overviewGVK.Version,
-                kind: SIDEBAR_KEYS.overviewGVK.Kind as Nodes,
-                namespaced: 'false',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
-        _k8sObjectOptionsList.push({
-            label: SIDEBAR_KEYS.nodes as Nodes,
-            value: K8S_EMPTY_GROUP,
-            dataset: {
-                group: SIDEBAR_KEYS.nodeGVK.Group,
-                version: SIDEBAR_KEYS.nodeGVK.Version,
-                kind: SIDEBAR_KEYS.nodeGVK.Kind,
-                namespaced: 'false',
-                grouped: 'false',
-            },
-            groupName: '',
-        })
-        setK8sObjectOptionsList(_k8sObjectOptionsList)
-    }
-
-    const selectNode = (e: any, groupName?: string, preventScroll?: boolean): void => {
+    const selectNode = (
+        e: React.MouseEvent<HTMLDivElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
+        groupName?: string,
+        preventScroll?: boolean,
+    ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
@@ -166,13 +94,16 @@ function Sidebar({
             return
         }
 
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`)
+        push({
+            pathname: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`,
+            search: location.search,
+        })
         const _selectedResource = {
             namespaced: e.currentTarget.dataset.namespaced === 'true',
             gvk: {
                 Group: e.currentTarget.dataset.group,
                 Version: e.currentTarget.dataset.version,
-                Kind: e.currentTarget.dataset.kind,
+                Kind: e.currentTarget.dataset.kind as Nodes,
             },
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
@@ -191,7 +122,7 @@ function Sidebar({
                 {
                     currentTarget: {
                         dataset: {
-                            groupName: groupName,
+                            groupName,
                         },
                     },
                 },
@@ -245,46 +176,60 @@ function Sidebar({
             keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
         ) {
             return null
-        } else if (value.data.length === 1) {
-            return renderChild(value.data[0])
-        } else {
-            return (
-                <Fragment key={`${k8sObject.name}/${key}-child`}>
-                    <div
-                        className="flex pointer"
-                        data-group-name={`${k8sObject.name}/${key}`}
-                        onClick={handleGroupHeadingClick}
-                    >
-                        <DropDown
-                            className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
-                            style={{
-                                ['--rotateBy' as any]: value.isExpanded ? '0deg' : '-90deg',
-                            }}
-                        />
-                        <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>
-                            {key}
-                        </span>
-                    </div>
-                    {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
-                </Fragment>
-            )
         }
+        if (value.data.length === 1) {
+            return renderChild(value.data[0])
+        }
+        return (
+            <Fragment key={`${k8sObject.name}/${key}-child`}>
+                <div
+                    className="flex pointer"
+                    data-group-name={`${k8sObject.name}/${key}`}
+                    onClick={handleGroupHeadingClick}
+                >
+                    <DropDown
+                        className={`${value.isExpanded ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
+                        style={{
+                            ['--rotateBy' as string]: value.isExpanded ? '0deg' : '-90deg',
+                        }}
+                    />
+                    <span className={`fs-14 ${value.isExpanded ? 'fw-6' : 'fw-4'} pointer w-100 pt-6 pb-6`}>{key}</span>
+                </div>
+                {value.isExpanded && value.data.map((_child) => renderChild(_child, true))}
+            </Fragment>
+        )
     }
 
     const handleInputChange = (newValue: string, actionMeta: InputActionMeta): void => {
-        if (actionMeta.action === 'input-change') {
-            setSearchText(newValue)
-            setMenuOpen(!!newValue)
+        if (actionMeta.action !== ReactSelectInputAction.inputChange) {
+            return
         }
+
+        setSearchText(newValue)
+    }
+
+    const bringMatchedAbbreviatedOptionToFront = (options: K8sObjectOptionType[]): K8sObjectOptionType[] => {
+        const lowerSearchText = searchText.toLowerCase()
+        if (!searchText || !k8Abbreviates?.[lowerSearchText]) {
+            return options
+        }
+        const loc = k8sObjectOptionsList.findIndex(
+            (option) => k8Abbreviates[lowerSearchText] === option.label.toLowerCase(),
+        )
+        if (loc > -1) {
+            swap(options, loc, 0)
+        }
+        return options
     }
 
     const hideMenu = () => {
-        setMenuOpen(false)
         setSearchText('')
     }
 
     const handleOnChange = (option: K8sObjectOptionType): void => {
-        if (!option) return
+        if (!option) {
+            return
+        }
         selectNode(
             {
                 currentTarget: {
@@ -292,32 +237,45 @@ function Sidebar({
                 },
             },
             option.groupName,
-            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) && option.label !== (SIDEBAR_KEYS.events as Nodes) && option.label !== (SIDEBAR_KEYS.nodes as Nodes) && option.label !== (SIDEBAR_KEYS.overview as Nodes),
+            option.label !== (SIDEBAR_KEYS.namespaces as Nodes) &&
+                option.label !== (SIDEBAR_KEYS.events as Nodes) &&
+                option.label !== (SIDEBAR_KEYS.nodes as Nodes),
         )
     }
 
-    function formatOptionLabel(option: K8sObjectOptionType, formatOptionLabelMeta: FormatOptionLabelMeta<any>) {
-        return (
-            <div className="flex left column">
-                {!formatOptionLabelMeta.inputValue ? (
-                    <span className="w-100 dc__ellipsis-right">{option.label}</span>
-                ) : (
-                    <span
-                        className="w-100 dc__ellipsis-right"
-                        dangerouslySetInnerHTML={{
-                            __html: option.label.replace(
-                                new RegExp(formatOptionLabelMeta.inputValue, 'gi'),
-                                (highlighted) => `<mark>${highlighted}</mark>`,
-                            ),
-                        }}
-                    />
-                )}
-            </div>
-        )
-    }
+    const formatOptionLabel = useCallback(
+        (option: K8sObjectOptionType, formatOptionLabelMeta: FormatOptionLabelMeta<K8sObjectOptionType>) => {
+            return (
+                <div className="flex left column">
+                    {!formatOptionLabelMeta.inputValue ? (
+                        <span className="w-100 dc__ellipsis-right">{option.label}</span>
+                    ) : (
+                        <span
+                            className="w-100 dc__ellipsis-right"
+                            /* eslint-disable react/no-danger */
+                            dangerouslySetInnerHTML={{
+                                // sanitize necessary to prevent XSS attacks
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText: formatOptionLabelMeta.inputValue,
+                                        text: option.label,
+                                        highlightClasses: 'kind-search-select__option--highlight',
+                                    }),
+                                ),
+                            }}
+                        />
+                    )}
+                </div>
+            )
+        },
+        [],
+    )
 
-    function customFilter(option, searchText) {
-        return option.data.label.toLowerCase().includes(searchText.toLowerCase())
+    const getOptionLabel = (option: K8sObjectOptionType) => {
+        const lowerLabel = option.label.toLowerCase()
+        const lowerSearchText = searchText.toLowerCase()
+        const expandedAbbreviateValue = k8Abbreviates?.[lowerSearchText]
+        return expandedAbbreviateValue === lowerLabel ? lowerSearchText : lowerLabel
     }
 
     const noOptionsMessage = () => 'No matching kind'
@@ -328,20 +286,20 @@ function Sidebar({
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
-                    options={k8sObjectOptionsList}
+                    options={bringMatchedAbbreviatedOptionToFront(k8sObjectOptionsList)}
                     value={k8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}
+                    getOptionValue={getOptionLabel}
                     onInputChange={handleInputChange}
                     onChange={handleOnChange}
                     onBlur={hideMenu}
                     onKeyDown={handleInputShortcut}
-                    menuIsOpen={isMenuOpen}
+                    menuIsOpen={!!searchText}
                     openMenuOnFocus={false}
                     blurInputOnSelect
                     isSearchable
                     isClearable
                     formatOptionLabel={formatOptionLabel}
-                    filterOption={customFilter}
                     noOptionsMessage={noOptionsMessage}
                     classNamePrefix="kind-search-select"
                     styles={KIND_SEARCH_COMMON_STYLES}
@@ -354,7 +312,7 @@ function Sidebar({
                 />
             </div>
             <div className="k8s-object-wrapper dc__border-top-n1 p-8 dc__user-select-none">
-            <div className="pb-8">
+                <div className="pb-8">
                     <div
                         key={SIDEBAR_KEYS.nodeGVK.Kind}
                         ref={updateRef}
@@ -383,7 +341,7 @@ function Sidebar({
                             data-group={SIDEBAR_KEYS.eventGVK.Group}
                             data-version={SIDEBAR_KEYS.eventGVK.Version}
                             data-kind={SIDEBAR_KEYS.eventGVK.Kind}
-                            data-namespaced={true}
+                            data-namespaced
                             data-selected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         >
@@ -409,36 +367,38 @@ function Sidebar({
                             {SIDEBAR_KEYS.namespaces}
                         </div>
                     )}
-            </div>
-                {k8SObjectMap?.size && [...k8SObjectMap.values()].map((k8sObject) =>
-                    k8sObject.name === AggregationKeys.Events || k8sObject.name === AggregationKeys.Namespaces ? null : (
-                        <Fragment key={`${k8sObject.name}-parent`}>
-                            <div
-                                className="flex pointer"
-                                data-group-name={k8sObject.name}
-                                onClick={handleGroupHeadingClick}
-                            >
-                                <DropDown
-                                    className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
-                                    style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
-                                />
-                                <span
-                                    className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
-                                    data-testid={`k8sObject-${k8sObject.name}`}
+                </div>
+                {k8SObjectMap?.size &&
+                    [...k8SObjectMap.values()].map((k8sObject) =>
+                        k8sObject.name === AggregationKeys.Events ||
+                        k8sObject.name === AggregationKeys.Namespaces ? null : (
+                            <Fragment key={`${k8sObject.name}-parent`}>
+                                <div
+                                    className="flex pointer"
+                                    data-group-name={k8sObject.name}
+                                    onClick={handleGroupHeadingClick}
                                 >
-                                    {k8sObject.name}
-                                </span>
-                            </div>
-                            {k8sObject.isExpanded && (
-                                <div className="pl-20">
-                                    {[...k8sObject.child.entries()].map(([key, value]) =>
-                                        renderK8sResourceChildren(key, value, k8sObject),
-                                    )}
+                                    <DropDown
+                                        className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
+                                        style={{ ['--rotateBy' as string]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
+                                    />
+                                    <span
+                                        className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
+                                        data-testid={`k8sObject-${k8sObject.name}`}
+                                    >
+                                        {k8sObject.name}
+                                    </span>
                                 </div>
-                            )}
-                        </Fragment>
-                    ),
-                )}
+                                {k8sObject.isExpanded && (
+                                    <div className="pl-20">
+                                        {[...k8sObject.child.entries()].map(([key, value]) =>
+                                            renderK8sResourceChildren(key, value, k8sObject),
+                                        )}
+                                    </div>
+                                )}
+                            </Fragment>
+                        ),
+                    )}
             </div>
         </div>
     )

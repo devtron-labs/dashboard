@@ -1,33 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg';
-import { ReactComponent as Copy } from '../../assets/icons/ic-copy.svg';
-import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg';
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { WebhookSelectorCondition } from './WebhookSelectorCondition';
-import Tippy from '@tippyjs/react';
+import React, { useState } from 'react'
+import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
+import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-prple.svg'
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { WebhookSelectorCondition } from './WebhookSelectorCondition'
+import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 
-export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHost, selectedWebhookEvent, addWebhookCondition, deleteWebhookCondition, onWebhookConditionSelectorChange, onWebhookConditionSelectorValueChange, canEditPipeline }) {
-    const [copiedUrl, setCopiedUrl] = useState(false)
-    const [copiedKey, setCopiedKey] = useState(false)
+export const ConfigureWebhook = ({
+    webhookConditionList,
+    gitHost,
+    selectedWebhookEvent,
+    addWebhookCondition,
+    deleteWebhookCondition,
+    onWebhookConditionSelectorChange,
+    onWebhookConditionSelectorValueChange,
+    canEditPipeline,
+}) => {
+    const [triggerCopyUrl, setTriggerCopyUrl] = useState<boolean>(false)
+    const [triggerCopyKey, setTriggerCopyKey] = useState<boolean>(false)
 
-    let _allSelectorIdsInConditions = [];
+    const handleUrlCopyTrigger = () => {
+        setTriggerCopyUrl(true)
+    }
+
+    const handleKeyCopyTrigger = () => {
+        setTriggerCopyKey(true)
+    }
+
+    const _allSelectorIdsInConditions = []
     webhookConditionList.map((_condition, index) => {
-        _allSelectorIdsInConditions.push(Number(_condition.selectorId));
+        _allSelectorIdsInConditions.push(Number(_condition.selectorId))
     })
-
-    useEffect(() => {
-        if (!copiedUrl) return
-        setTimeout(() => setCopiedUrl(false), 2000)
-    }, [copiedUrl])
-
-    useEffect(() => {
-        if (!copiedKey) return
-        setTimeout(() => setCopiedKey(false), 2000)
-    }, [copiedKey])
 
     return (
         <>
-            <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4 mt-16">
+            <div className="ci-webhook-info bcv-1 bw-1 ev-2 br-4">
                 <Info className="icon-dim-20" />
                 <p className="fs-13 cn-9 m-0">
                     <span className="fw-6 mr-5">Info:</span>
@@ -46,32 +52,36 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                 </p>
                 <div className="flex left fs-12 fw-6 mt-12">
                     {gitHost.webhookUrl && (
-                        <Tippy content={copiedUrl ? 'Copied!' : 'Copy to clipboard.'}>
-                            <div
-                                className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
-                                data-testid="build-copy-webhook-url-button"
-                                onClick={() => {
-                                    copyToClipboard(gitHost.webhookUrl, () => setCopiedUrl(true))
-                                }}
-                            >
-                                Click to copy webhook URL
-                                <Copy className="icon-dim-16 ml-4" />
+                        <div
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor"
+                            data-testid="build-copy-webhook-url-button"
+                            onClick={handleUrlCopyTrigger}
+                        >
+                            Click to copy webhook URL
+                            <div className="pl-4">
+                                <ClipboardButton
+                                    content={gitHost.webhookUrl}
+                                    trigger={triggerCopyUrl}
+                                    setTrigger={setTriggerCopyUrl}
+                                />
                             </div>
-                        </Tippy>
+                        </div>
                     )}
                     {gitHost.webhookSecret && (
-                        <Tippy content={copiedKey ? 'Copied!' : 'Copy to clipboard.'}>
-                            <div
-                                className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
-                                data-testid="build-copy-secret-key-button"
-                                onClick={() => {
-                                    copyToClipboard(gitHost.webhookSecret, () => setCopiedKey(true))
-                                }}
-                            >
-                                Click to copy secret key
-                                <Copy className="icon-dim-16 ml-4 " />
+                        <div
+                            className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor"
+                            data-testid="build-copy-secret-key-button"
+                            onClick={handleKeyCopyTrigger}
+                        >
+                            Click to copy secret key
+                            <div className="pl-4">
+                                <ClipboardButton
+                                    content={gitHost.webhookSecret}
+                                    trigger={triggerCopyKey}
+                                    setTrigger={setTriggerCopyKey}
+                                />
                             </div>
-                        </Tippy>
+                        </div>
                     )}
                 </div>
             </div>
@@ -103,10 +113,10 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
                     </a>
                 </p>
                 {webhookConditionList.map((_condition, index) => {
-                    let _masterSelectorList = []
+                    const _masterSelectorList = []
                     let _canEditSelectorCondition = canEditPipeline
                     selectedWebhookEvent.selectors.forEach((_selector) => {
-                        let _selectorId = _selector.id
+                        const _selectorId = _selector.id
                         if (
                             _selector.toShowInCiFilter &&
                             (!_allSelectorIdsInConditions.includes(_selectorId) || _condition.selectorId == _selectorId)

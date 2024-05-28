@@ -15,9 +15,11 @@ export const URLS = {
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
+    EXTERNAL_ARGO_APP: 'eaa',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',
+    APP_LIST_ARGO: 'a',
     APPS: '/devtron-apps', // for V2 router
     HELM_CHARTS: 'helm-apps', // for V2 router
     APP_VALUES: 'values', // for V2 router
@@ -34,6 +36,7 @@ export const URLS = {
     APP_CONFIG: 'edit',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
+    APP_GITOPS_CONFIG: 'gitops-config',
     APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: 'deployment-template',
     APP_WORKFLOW_CONFIG: 'workflow',
@@ -50,8 +53,10 @@ export const URLS = {
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
     DEPLOYMENT_GROUPS: '/deployment-groups',
+    LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
+    GIT_OPS_CONFIG: '/gitops/config',
     GLOBAL_CONFIG: '/global-config',
     GLOBAL_CONFIG_HOST_URL: '/global-config/host-url',
     GLOBAL_CONFIG_GIT: '/global-config/git',
@@ -61,18 +66,24 @@ export const URLS = {
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_CUSTOM_CHARTS: '/global-config/custom-charts',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
+    GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',
+    GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS: '/global-config/auth/groups',
     GLOBAL_CONFIG_API: '/api',
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
-    GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
+    GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
     GLOBAL_CONFIG_SCOPED_VARIABLES: '/global-config/scoped-variables',
+    GLOBAL_CONFIG_PULL_IMAGE_DIGEST: '/global-config/pull-image-digest',
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
+    GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
+    GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
+    LINKED_CI_DETAILS: 'linked-ci-details',
     SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
@@ -82,13 +93,14 @@ export const URLS = {
     STACK_MANAGER_ABOUT: '/stack-manager/about',
     STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
     DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
-    CLUSTER_LIST: '/clusters',
     NODES_LIST: '/nodes',
     NODE_DETAILS: '/node-details',
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
+    RESOURCE_WATCHER: '/resource-watcher',
+    RELEASES: '/releases',
 }
 
 export enum APP_COMPOSE_STAGE {
@@ -113,10 +125,14 @@ export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
 
 export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
     const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
-    if (!appStage) return _url
-    for (let stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
+    if (!appStage) {
+        return _url
+    }
+    for (const stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
         const { stage, path } = stageDetail
-        if (stage === appStage) return `${_url}/${path}`
+        if (stage === appStage) {
+            return `${_url}/${path}`
+        }
     }
     return `${_url}/${URLS.APP_GIT_CONFIG}`
 }
@@ -182,11 +198,11 @@ interface StageStatusResponseItem {
 }
 
 export function isCIPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    let ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
+    const ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
     return ciPipeline.status
 }
 
 export function isCDPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    let cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
+    const cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
     return cdPipeline.status
 }

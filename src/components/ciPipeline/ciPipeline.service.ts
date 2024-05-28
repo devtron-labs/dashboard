@@ -1,4 +1,3 @@
-import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     get,
     post,
@@ -8,12 +7,12 @@ import {
     PluginType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
-import { PipelineBuildStageType } from '../workflowEditor/types'
-import { ImageTagType } from '../CIPipelineN/CustomImageTag.type'
+import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -55,12 +54,12 @@ export function getInitData(
                     webhookEvents: pipelineMetaConfig.result.webhookEvents,
                     ciPipelineSourceTypeOptions: pipelineMetaConfig.result.ciPipelineSourceTypeOptions,
                     webhookConditionList: pipelineMetaConfig.result.webhookConditionList,
-                    triggerType: TriggerType.Auto,
+                    triggerType: window._env_.DEFAULT_CI_TRIGGER_TYPE_MANUAL ? TriggerType.Manual : TriggerType.Auto,
                     beforeDockerBuildScripts: [],
                     afterDockerBuildScripts: [],
                     preBuildStage: emptyStepsData(),
                     postBuildStage: emptyStepsData(),
-                    scanEnabled: scanEnabled,
+                    scanEnabled,
                     ciPipelineEditable: true,
                 },
                 loadingData: false,
@@ -94,7 +93,7 @@ function getPipelineBaseMetaConfiguration(appId: string): Promise<any> {
         return {
             code: response.code,
             result: {
-                materials: materials,
+                materials,
                 gitHost: undefined,
                 webhookEvents: undefined,
                 webhookConditionList: undefined,
@@ -168,12 +167,16 @@ export function getInitDataWithCIPipeline(
     })
 }
 
-export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; appId: number; workflowId: number }) {
+export function saveLinkedCIPipeline(
+    parentCIPipeline,
+    params: { name: string; appId: number; workflowId: number },
+    changeCIPayload?: ChangeCIPayloadType,
+) {
     delete parentCIPipeline['beforeDockerBuildScripts']
     delete parentCIPipeline['afterDockerBuildScripts']
-    const request = {
-        appId: params.appId,
-        appWorkflowId: params.workflowId,
+    const request: any = {
+        appId: changeCIPayload?.appId ?? params.appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? params.workflowId,
         action: PatchAction.CREATE,
         ciPipeline: {
             ...parentCIPipeline,
@@ -183,6 +186,12 @@ export function saveLinkedCIPipeline(parentCIPipeline, params: { name: string; a
             parentCiPipeline: parentCIPipeline.id,
             id: null,
         },
+    }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    } else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
     }
 
     return savePipeline(request).then((response) => {
@@ -207,18 +216,23 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    imageTagValue?: string,
+    changeCIPayload?: ChangeCIPayloadType,
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
-    if(imageTagValue === ImageTagType.Default){
-        delete(ci.customTag)
-    }
-    const request = {
-        appId: appId,
-        appWorkflowId: workflowId,
+
+    const request: any = {
+        appId: changeCIPayload?.appId ?? appId,
+        appWorkflowId: changeCIPayload?.appWorkflowId ?? workflowId,
         action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
     }
+
+    if (changeCIPayload?.switchFromCiPipelineId) {
+        request.switchFromCiPipelineId = changeCIPayload.switchFromCiPipelineId
+    } else if (changeCIPayload?.switchFromExternalCiPipelineId) {
+        request.switchFromExternalCiPipelineId = changeCIPayload.switchFromExternalCiPipelineId
+    }
+
     return savePipeline(request).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
         return parseCIResponse(
@@ -243,7 +257,7 @@ export function deleteCIPipeline(
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
-        appId: appId,
+        appId,
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
         ciPipeline: ci,
@@ -272,7 +286,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         externalCiConfig: ciPipeline.externalCiConfig,
         linkedCount: ciPipeline.linkedCount,
         isExternal: isExternalCI,
-        isManual: formData.triggerType == TriggerType.Manual ? true : false,
+        isManual: formData.triggerType == TriggerType.Manual,
         ciMaterial: formData.materials
             .filter((mat) => mat.isSelected)
             .map((mat) => {
@@ -298,8 +312,8 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 }
             }),
         name: formData.name,
-        preBuildStage: preBuildStage,
-        postBuildStage: postBuildStage,
+        preBuildStage,
+        postBuildStage,
         scanEnabled: formData.scanEnabled,
         dockerArgs: formData.args
             .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
@@ -314,6 +328,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
             counterX: formData.customTag ? +formData.customTag.counterX : 0,
         },
+        enableCustomTag: formData.enableCustomTag,
     }
     return ci
 }
@@ -397,7 +412,7 @@ function migrateOldData(
                     script: data.script,
                     conditionDetails: [],
                     outputDirectoryPath: [],
-                    //Default variable introduced as these could be present in some old script
+                    // Default variable introduced as these could be present in some old script
                     inputVariables: [
                         {
                             id: 4,
@@ -477,17 +492,17 @@ function parseCIResponse(
             code: responseCode,
             view: ViewType.FORM,
             showError: false,
-            ciPipeline: ciPipeline,
+            ciPipeline,
             form: {
                 name: ciPipeline.name,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,
-                materials: materials,
+                materials,
                 args: args.length ? args : [],
                 externalCiConfig: createCurlRequest(ciPipeline.externalCiConfig),
                 scanEnabled: ciPipeline.scanEnabled,
-                gitHost: gitHost,
-                webhookEvents: webhookEvents,
-                ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
+                gitHost,
+                webhookEvents,
+                ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
                 ciPipelineEditable: true,
                 preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),
@@ -501,6 +516,7 @@ function parseCIResponse(
                     tagPattern: ciPipeline.customTag?.tagPattern || '',
                     counterX: +ciPipeline.customTag?.counterX || 0,
                 },
+                enableCustomTag: ciPipeline.enableCustomTag,
             },
             loadingData: false,
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
@@ -554,8 +570,8 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginsData(appId: number,isCD: boolean = false): Promise<any> {
-    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : '' }`)
+export function getPluginsData(appId: number, isCD: boolean = false): Promise<any> {
+    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : ''}`)
 }
 
 export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
@@ -565,7 +581,7 @@ export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
 export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
     let variableList = []
     await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {
-        variableList = response.result?.filter((item) => isCD ? item.stageType !== 'ci' : item.stageType === 'ci')
+        variableList = response.result?.filter((item) => (isCD ? item.stageType !== 'ci' : item.stageType === 'ci'))
     })
 
     return { result: variableList }

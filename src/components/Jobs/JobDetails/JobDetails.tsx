@@ -11,7 +11,7 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
-import { BreadCrumb, Progressing, showError, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
 import Overview from '../../app/Overview/Overview'
@@ -20,7 +20,6 @@ import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
 import { ErrorBoundary, trackByGAEvent } from '../../common'
-import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { AppSelector } from '../../AppSelector'
 import '../../app/details/appDetails/appDetails.scss'
@@ -30,9 +29,11 @@ export default function JobDetails() {
     const { appId } = useParams<{ appId: string }>()
     const [jobName, setJobName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [jobListLoading, setJobListLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        getAppMetaInfoRes()
+        setJobListLoading(true)
+        getAppMetaInfoRes().finally(() => setJobListLoading(false))
     }, [appId])
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
@@ -47,6 +48,9 @@ export default function JobDetails() {
             showError(err)
         }
     }
+    if (jobListLoading) {
+        return <Progressing pageLoader />
+    }
 
     return (
         <div className="job-details-page">
@@ -58,13 +62,13 @@ export default function JobDetails() {
                             <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <TriggerView isJobView={true} />
+                            <TriggerView isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} isJobView={true} />
+                            <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} isJobView={true} />
+                            <AppConfig appName={jobName} isJobView />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
@@ -74,7 +78,7 @@ export default function JobDetails() {
     )
 }
 
-function JobHeader({ jobName }: { jobName: string }) {
+const JobHeader = ({ jobName }: { jobName: string }) => {
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -116,12 +120,7 @@ function JobHeader({ jobName }: { jobName: string }) {
             alias: {
                 ':appId(\\d+)': {
                     component: (
-                        <AppSelector
-                            onChange={handleAppChange}
-                            appId={Number(appId)}
-                            appName={jobName}
-                            isJobView={true}
-                        />
+                        <AppSelector onChange={handleAppChange} appId={Number(appId)} appName={jobName} isJobView />
                     ),
                     linked: false,
                 },
@@ -198,8 +197,8 @@ function JobHeader({ jobName }: { jobName: string }) {
         <div className="job-header-wrapper">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
-                isBreadcrumbs={true}
-                showTabs={true}
+                isBreadcrumbs
+                showTabs
                 renderHeaderTabs={renderAppDetailsTabs}
             />
         </div>

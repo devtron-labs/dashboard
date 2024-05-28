@@ -1,73 +1,82 @@
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib';
-import React, { Component } from 'react';
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import React, { Component } from 'react'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 
 export interface DeleteCVEModalProps {
-    closeDelete: () => void;
-    delete: () => void;
+    closeDelete: () => void
+    delete: () => void
 }
 
 export class DeleteCVEModal extends Component<DeleteCVEModalProps, any> {
-
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             clusters: [
                 {
-                    name: "cluster/default_cluster",
+                    name: 'cluster/default_cluster',
                     isCollapsed: false,
-                    environments: [{
-                        name: "prod",
-                        isCollapsed: false,
-                        applications: {
-                            name: "dashoard",
-                        }
-                    }]
+                    environments: [
+                        {
+                            name: 'prod',
+                            isCollapsed: false,
+                            applications: {
+                                name: 'dashoard',
+                            },
+                        },
+                    ],
                 },
                 {
-                    name: "cluster/default_cluster",
+                    name: 'cluster/default_cluster',
                     isCollapsed: false,
-                    environments: [{
-                        name: "devtron-prod",
-                        isCollapsed: false,
-                        applications: {
-                            name: "blobs",
-                        }
-                    }]
+                    environments: [
+                        {
+                            name: 'devtron-prod',
+                            isCollapsed: false,
+                            applications: {
+                                name: 'blobs',
+                            },
+                        },
+                    ],
                 },
                 {
-                    name: "cluster/default_cluster",
+                    name: 'cluster/default_cluster',
                     isCollapsed: false,
-                    environments: [{
-                        name: "prod",
-                        isCollapsed: false,
-                        applications: {
-                            name: "orch",
-                        }
-                    }]
+                    environments: [
+                        {
+                            name: 'prod',
+                            isCollapsed: false,
+                            applications: {
+                                name: 'orch',
+                            },
+                        },
+                    ],
                 },
                 {
-                    name: "cluster/default_cluster",
+                    name: 'cluster/default_cluster',
                     isCollapsed: false,
-                    environments: [{
-                        name: "prod",
-                        isCollapsed: false,
-                        applications: {
-                            name: "orch",
-                        }
-                    }]
-                }
-            ]
+                    environments: [
+                        {
+                            name: 'prod',
+                            isCollapsed: false,
+                            applications: {
+                                name: 'orch',
+                            },
+                        },
+                    ],
+                },
+            ],
         }
     }
 
     renderHeader() {
-        return <div className="modal__header">
-            <h1 className="modal__title">Delete CVE Policy</h1>
-            <button type="button" className="dc__transparent " onClick={this.props.closeDelete}>
-                <Close className="icon-dim-20" />
-            </button>
-        </div>
+        return (
+            <div className="modal__header">
+                <h1 className="modal__title">Delete CVE Policy</h1>
+                <button type="button" className="dc__transparent " onClick={this.props.closeDelete}>
+                    <Close className="icon-dim-20" />
+                </button>
+            </div>
+        )
     }
 
     render() {

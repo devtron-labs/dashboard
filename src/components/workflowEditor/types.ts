@@ -1,16 +1,53 @@
-import { FormType, StepType, TaskErrorObj, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CommonNodeAttr,
+    DeploymentAppTypes,
+    FormType,
+    OptionType,
+    StepType,
+    TaskErrorObj,
+    VariableType,
+    SelectedNode,
+    WorkflowType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
-import { CIPipelineNodeType, NodeAttr } from '../app/details/triggerView/types'
+import {
+    CIPipelineNodeType,
+    CdPipelineResult,
+    CiPipeline,
+} from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
+import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
+import { WorkflowProps } from './Workflow'
+
+export enum DisableType {
+    COMING_SOON = 'COMING SOON',
+}
+
+export interface BlackListedCI {
+    [key: number]: CiPipeline
+}
+
+export interface ChangeCIPayloadType {
+    appWorkflowId: number
+    switchFromCiPipelineId?: number
+    appId: number
+    switchFromExternalCiPipelineId?: number
+}
+
+export interface WorkflowPositionState {
+    nodes: CommonNodeAttr[]
+    maxY: number
+    selectedWorkflowId: number
+}
 
 export interface WorkflowEditState {
     view: string
     code: number
     workflows: any[]
-    allCINodeMap: Map<string, NodeAttr>
-    allDeploymentNodeMap: Map<string, NodeAttr>
+    allCINodeMap: Map<string, CommonNodeAttr>
+    allDeploymentNodeMap: Map<string, CommonNodeAttr>
     workflowId: number
     appName: string
     showDeleteDialog: boolean
@@ -28,10 +65,18 @@ export interface WorkflowEditState {
     showNoGitOpsWarningPopup?: boolean
     cdLink?: string
     noGitOpsConfiguration?: boolean
+    noGitOpsModuleInstalledAndConfigured?: boolean
     envToShowWebhookTippy?: number
     showOpenCIPipelineBanner?: boolean
     filteredCIPipelines?: any[]
     envIds?: number[]
+    isGitOpsRepoNotConfigured?: boolean
+    showWorkflowOptionsModal: boolean
+    cachedCDConfigResponse: CdPipelineResult
+    blackListedCI: BlackListedCI
+    changeCIPayload: ChangeCIPayloadType
+    selectedNode: SelectedNode
+    workflowPositionState: WorkflowPositionState
 }
 
 export interface WorkflowEditProps
@@ -44,6 +89,8 @@ export interface WorkflowEditProps
     envList?: any[]
     ciPipelines?: any[]
     filteredEnvIds?: string
+    reloadEnvironments?: () => void
+    reloadAppConfig?: () => void
 }
 
 export interface AddWorkflowState {
@@ -51,8 +98,18 @@ export interface AddWorkflowState {
     name: string
     showError: boolean
 }
+export interface EmptyWorkflowState {
+    name: string
+    loading: boolean
+    showError: boolean
+}
 
 export interface AddWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
+    name: string
+    onClose: () => void
+    getWorkflows: () => void
+}
+export interface EmptyWorkflowProps extends RouteComponentProps<{ appId: string; workflowId: string }> {
     name: string
     onClose: () => void
     getWorkflows: () => void
@@ -71,7 +128,18 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-export interface CDNodeProps{
+export interface NoGitOpsRepoConfiguredWarningType {
+    closePopup: () => void
+    appId: number
+    text: string
+    reload: () => void
+}
+
+export interface ReloadNoGitOpsRepoConfiguredModalType {
+    closePopup: () => void
+    reload: () => void
+}
+export interface CDNodeProps extends Pick<WorkflowProps, 'handleDisplayLoader'> {
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -93,6 +161,15 @@ export interface CDNodeProps{
     description: string
     isVirtualEnvironment?: boolean
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange: (selectedNode: SelectedNode) => void
+    isLastNode?: boolean
+    appName?: string
+    deploymentAppType?: DeploymentAppTypes
+    appId?: string
+    getWorkflows?: () => void
+    reloadEnvironments?: () => void
+    selectedNode?: SelectedNode
+    isDeploymentBlocked?: boolean
 }
 
 export interface WebhookNodeProps {
@@ -104,27 +181,37 @@ export interface WebhookNodeProps {
     to?: string
     configDiffView?: boolean
     toggleCDMenu?: () => void
-    hideWebhookTippy?:  () => void
+    hideWebhookTippy?: () => void
     addNewPipelineBlocked?: boolean
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    selectedNode?: SelectedNode
+    isLastNode?: boolean
 }
 
 export interface WebhookTippyType {
     link: string
-    hideTippy: ()=> void
+    hideTippy: () => void
 }
 
 export interface DeprecatedWarningModalType {
-  closePopup: () => void
+    closePopup: () => void
 }
 
-export interface CDNodeState{
-  showDeletePipelinePopup: boolean
+export interface CDNodeState {
+    showDeletePipelinePopup: boolean
+    showDeleteDialog: boolean
+    deleteDialog: DeleteDialogType
+    forceDeleteData: ForceDeleteMessageType
+    clusterName: string
+    deleteInProgress: boolean
+    showDeploymentConfirmationDeleteDialog: boolean
+    deploymentWindowConfimationValue: string
 }
 
 export interface PipelineBuildStageType {
-    id: number;
+    id: number
     triggerType?: string
-    steps: StepType[];
+    steps: StepType[]
 }
 
 export interface CustomTagType {
@@ -138,6 +225,10 @@ export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType>
     postBuildStage?: PipelineBuildStageType
     defaultTag?: string[]
     customTag?: CustomTagType
+    enableCustomTag?: boolean
+    customTagStage?: string
+    isDigestEnforcedForPipeline?: boolean
+    isDigestEnforcedForEnv?: boolean
 }
 
 export interface PipelineFormDataErrorType {
@@ -177,7 +268,7 @@ export interface PipelineContext {
         _formData: PipelineFormType,
         activeStageName: string,
         startIndex?: number,
-        isFromMoveTask?: boolean
+        isFromMoveTask?: boolean,
     ) => {
         index: number
         calculatedStageVariables: Map<string, VariableType>[]
@@ -189,17 +280,17 @@ export interface PipelineContext {
     setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
-    isCdPipeline?: boolean,
+    isCdPipeline?: boolean
     configMapAndSecrets?: {
-        label: string;
-        options: any;
-    }[],
+        label: string
+        options: any
+    }[]
     loadingState?: LoadingState
     setLoadingState?: React.Dispatch<React.SetStateAction<LoadingState>>
     appId: string
-    inputVariablesListFromPrevStep?: InputVariablesFromInputListType,
-    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void,
-    addNewTask: () => void,
+    inputVariablesListFromPrevStep?: InputVariablesFromInputListType
+    setInputVariablesListFromPrevStep?: (inputVariables: InputVariablesFromInputListType) => void
+    addNewTask: () => void
     pageState?: string
     setPageState?: React.Dispatch<React.SetStateAction<string>>
     isEnvUsedState?: boolean
@@ -208,6 +299,44 @@ export interface PipelineContext {
     getPrePostStageInEnv?: (isVirtualEnvironment: boolean, isRunPrePostStageInEnv: boolean) => boolean
     isVirtualEnvironment?: boolean
     globalVariables: {
-        stageType?: string, label: string; value: string; format: string; description?: string; variableType?: string
-}[]
+        stageType?: string
+        label: string
+        value: string
+        format: string
+        description?: string
+        variableType?: string
+    }[]
+    savedCustomTagPattern?: string
+    selectedCDStageTypeValue?: OptionType
+    setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
+    setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface SourceTypeCardProps {
+    title: string
+    subtitle: string
+    image: string
+    alt: string
+    handleCardAction: (e: React.MouseEvent | React.KeyboardEvent) => void
+    dataTestId: string
+    type: string
+    disableInfo: string
+}
+
+export interface WorkflowOptionsModalProps {
+    handleCloseWorkflowOptionsModal: () => void
+    addCIPipeline: (type: CIPipelineNodeType, workflowId?: number | string) => void
+    addWebhookCD: (workflowId?: number | string) => void
+    addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
+    showLinkedCDSource: boolean
+    // ------------------ Optional types ------------------
+    changeCIPayload?: ChangeCIPayloadType
+    workflows?: WorkflowType[]
+    getWorkflows?: () => void
+}
+
+export interface ToggleCDSelectButtonProps {
+    addNewPipelineBlocked: boolean
+    onClickAddNode: (event: any) => void
+    testId: string
 }

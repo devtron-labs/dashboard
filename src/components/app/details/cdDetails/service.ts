@@ -1,6 +1,6 @@
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, Routes } from '../../../../config'
-import { History } from '../cicdHistory/types'
+import { FetchIdDataStatus, History } from '../cicdHistory/types'
 import {
     DeploymentTemplateList,
     HistoryDiffSelectorList,
@@ -63,12 +63,23 @@ interface TriggerDetails extends ResponseType {
     result?: History
 }
 
-export function getTriggerDetails({ appId, envId, pipelineId, triggerId }): Promise<TriggerDetails> {
-    if (triggerId) {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}`)
-    } else {
-        return get(`${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last`)
+const getTriggerDetailsQuery = (fetchIdData) => {
+    if (fetchIdData && fetchIdData === FetchIdDataStatus.FETCHING) {
+        return '?SHOW_APPLIED_FILTERS=true'
     }
+
+    return ''
+}
+
+export function getTriggerDetails({ appId, envId, pipelineId, triggerId, fetchIdData }): Promise<TriggerDetails> {
+    if (triggerId) {
+        return get(
+            `${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/${triggerId}${getTriggerDetailsQuery(fetchIdData)}`,
+        )
+    }
+    return get(
+        `${Routes.APP}/cd-pipeline/workflow/trigger-info/${appId}/${envId}/${pipelineId}/last${getTriggerDetailsQuery(fetchIdData)}`,
+    )
 }
 
 export function getCDBuildReport(appId, envId, pipelineId, workflowId) {
@@ -144,13 +155,13 @@ export const prepareConfigMapAndSecretData = (
                 }
                 const decodeNotRequired =
                     skipDecode || Object.keys(secretData).some((data) => secretData[data] === '*****') // Don't decode in case of non admin user
-                    
+
                 historyData.codeEditorValue.value = decodeNotRequired
                     ? historyData.codeEditorValue.value
                     : JSON.stringify(decode(secretData))
                 historyData.codeEditorValue.resolvedValue = decodeNotRequired
                     ? historyData.codeEditorValue.resolvedValue
-                    : JSON.stringify(decode(resolvedSecretData))    
+                    : JSON.stringify(decode(resolvedSecretData))
             }
         }
     }
@@ -220,7 +231,7 @@ export const getDeploymentHistoryDetail = (
     return get(
         `app/history/deployed-component/detail/${appId}/${pipelineId}/${id}?historyComponent=${historyComponent
             .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
     )
 }
 export interface DeploymentConfigurationsRes extends ResponseType {
@@ -249,6 +260,6 @@ export const getDeploymentDiffSelector = (
     return get(
         `app/history/deployed-component/list/${appId}/${pipelineId}?baseConfigurationId=${baseConfigurationId}&historyComponent=${historyComponent
             .replace('-', '_')
-            .toUpperCase()}${historyComponentName ? '&historyComponentName=' + historyComponentName : ''}`,
+            .toUpperCase()}${historyComponentName ? `&historyComponentName=${historyComponentName}` : ''}`,
     )
 }

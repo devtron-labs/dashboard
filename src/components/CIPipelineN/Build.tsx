@@ -1,33 +1,24 @@
 import React, { useContext } from 'react'
+import { Progressing, Toggle, CiPipelineSourceTypeOption, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle, CiPipelineSourceTypeOption } from '@devtron-labs/devtron-fe-common-lib'
 import { BuildType, WebhookCIProps } from '../ciPipeline/types'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-export function Build({
+export const Build = ({
     showFormError,
     isAdvanced,
     ciPipeline,
     pageState,
     isSecurityModuleInstalled,
-    setDockerConfigOverridden,
     isJobView,
     getPluginData,
-    imageTagValue,
-    setImageTagValue,
-}: BuildType) {
-    const {
-        formData,
-        setFormData,
-        formDataErrorObj,
-        setFormDataErrorObj,
-    } = useContext(pipelineContext)
+}: BuildType) => {
+    const { formData, setFormData, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
     const handleSourceChange = (event, gitMaterialId: number, sourceType: string): void => {
         const _formData = { ...formData }
@@ -45,23 +36,21 @@ export function Build({
                     regex: '',
                     value: event.target.value,
                 }
-            } else {
-                return mat
             }
+            return mat
         })
         _formData.materials = allMaterials
         setFormData(_formData)
     }
 
-    const handleOnBlur = (event): void => {
-      getPluginData()
+    const handleOnBlur = async (): Promise<void> => {
+        await getPluginData()
     }
-
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
         const _formData = { ...formData }
-        let isPrevWebhook =
+        const isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
 
         const allMaterials = _formData.materials.map((mat) => {
@@ -164,12 +153,12 @@ export function Build({
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
             gitHost: formData.gitHost,
-            getSelectedWebhookEvent: getSelectedWebhookEvent,
-            copyToClipboard: copyToClipboard,
-            addWebhookCondition: addWebhookCondition,
-            deleteWebhookCondition: deleteWebhookCondition,
-            onWebhookConditionSelectorChange: onWebhookConditionSelectorChange,
-            onWebhookConditionSelectorValueChange: onWebhookConditionSelectorValueChange,
+            getSelectedWebhookEvent,
+            copyToClipboard,
+            addWebhookCondition,
+            deleteWebhookCondition,
+            onWebhookConditionSelectorChange,
+            onWebhookConditionSelectorValueChange,
         }
 
         return (
@@ -181,7 +170,7 @@ export function Build({
                     materials={formData.materials}
                     selectSourceType={selectSourceType}
                     handleSourceChange={handleSourceChange}
-                    includeWebhookEvents={true}
+                    includeWebhookEvents
                     ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
@@ -204,9 +193,9 @@ export function Build({
     const renderPipelineName = () => {
         return (
             <label className="form__row">
-                <span className="form__label dc__required-field">Pipeline Name</span>
-                <input
-                    className="form__input"
+                <CustomInput
+                    name="name"
+                    label="Pipeline Name"
                     data-testid="build-pipeline-name-textbox"
                     autoComplete="off"
                     disabled={!!ciPipeline?.id}
@@ -214,13 +203,9 @@ export function Build({
                     type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
+                    isRequiredField
+                    error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
-                {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
-                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        <span>{formDataErrorObj.name.message}</span>
-                    </span>
-                )}
             </label>
         )
     }
@@ -265,12 +250,7 @@ export function Build({
             {!isJobView && isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
-                    <AdvancedConfigOptions
-                        ciPipeline={ciPipeline}
-                        setDockerConfigOverridden={setDockerConfigOverridden}
-                        imageTagValue={imageTagValue}
-                        setImageTagValue={setImageTagValue}
-                    />
+                    <AdvancedConfigOptions ciPipeline={ciPipeline} />
                 </>
             )}
         </div>

@@ -28,10 +28,10 @@ export interface DynamicTabsProps {
     enableShortCut?: boolean
     loader: boolean
     refreshData: () => void
-    isOverview: boolean,
-    lastDataSync:boolean,
-    setLastDataSyncTimeString: (time: string) => void,
-    isStaleDataRef: any,
+    isOverview: boolean
+    lastDataSync: boolean
+    setLastDataSyncTimeString: (time: string) => void
+    isStaleDataRef: any
 }
 
 export interface TabsDataType {

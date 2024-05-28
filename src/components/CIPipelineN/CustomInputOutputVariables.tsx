@@ -1,21 +1,21 @@
 import React, { useContext } from 'react'
-import { ConditionType, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionType, CustomInput, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect from 'react-select'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.svg'
 import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import ReactSelect from 'react-select'
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
-import Tippy from '@tippyjs/react'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
+const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
     const {
         formData,
         setFormData,
@@ -102,7 +102,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
         if (
             _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]].length === 0
         ) {
-            let conditionDetails = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.conditionDetails
+            const { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail
             for (let i = 0; i < conditionDetails?.length; i++) {
                 if (
                     (type === PluginVariableType.OUTPUT &&
@@ -170,6 +170,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         className="dc__no-decor"
                                         href="https://github.com/Knetic/govaluate/blob/0580e9b47a69125afa0e4ebd1cf93c49eb5a43ec/parsing.go#L258"
                                         target="_blank"
+                                        rel="noreferrer"
                                     >
                                         Standardized date formats
                                     </a>{' '}
@@ -188,7 +189,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
-                <div style={{ lineHeight: '4px' }}></div>
+                <div style={{ lineHeight: '4px' }} />
             </div>
             {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail[VariableFieldType[type]]?.map(
                 (variable, index) => {
@@ -209,9 +210,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     width: type === PluginVariableType.OUTPUT ? '80%' : '100%',
                                                 }}
                                             >
-                                                <input
+                                                <CustomInput
                                                     data-testid={`custom-script-${type.toLowerCase()}-variable-add-variable-variable-name-textbox`}
-                                                    className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
+                                                    rootClassName={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
                                                             ? 'dc__top-radius-4'
                                                             : 'dc__top-left-radius'
@@ -219,10 +220,9 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                     type="text"
                                                     placeholder="Variable name"
                                                     value={variable.name}
-                                                    autoComplete="off"
                                                     name="name"
                                                     onChange={(e) => handleInputOutputValueChange(e, index)}
-                                                    onBlur={(e) => handleBlur()}
+                                                    handleOnBlur={handleBlur}
                                                 />
                                             </div>
 
@@ -296,19 +296,16 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                             </div>
                                         </div>
                                     )}
-                                    <input
+                                    <CustomInput
                                         data-testid={`custom-script-${type.toLowerCase()}-variable-add-description-textbox`}
-                                        style={{ width: '80% !important' }}
-                                        className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
+                                        rootClassName={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
                                             type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''
                                         }`}
-                                        autoComplete="off"
                                         placeholder="Description"
-                                        type="text"
                                         value={variable.description}
                                         name="description"
                                         onChange={(e) => handleInputOutputValueChange(e, index)}
-                                        onBlur={(e) => handleBlur()}
+                                        handleOnBlur={handleBlur}
                                     />
                                 </div>
 

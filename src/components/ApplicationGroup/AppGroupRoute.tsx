@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { URLS } from '../../config'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { URLS } from '../../config'
 import EnvironmentsList from './List/EnvironmentsList'
 import { AppContext } from '../common'
 import { AppGroupAdminType } from './AppGroup.types'
@@ -9,9 +9,12 @@ import AppGroupDetailsRoute from './AppGroupDetailsRoute'
 export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentEnvironmentName, setCurrentEnvironmentName] = useState<string>('')
 
     return (
-        <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+        <AppContext.Provider
+            value={{ environmentId, setEnvironmentId, currentEnvironmentName, setCurrentEnvironmentName }}
+        >
             <Switch>
                 <Route path={`${path}/${URLS.APP_LIST}`}>
                     <EnvironmentsList isSuperAdmin={isSuperAdmin} />

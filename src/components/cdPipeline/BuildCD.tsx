@@ -1,4 +1,5 @@
 import {
+    CustomInput,
     DeploymentAppTypes,
     InfoColourBar,
     Progressing,
@@ -6,12 +7,16 @@ import {
     RadioGroupItem,
     TippyCustomized,
     TippyTheme,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useContext } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { useParams, useHistory } from 'react-router-dom'
+import ReactSelect from 'react-select'
+import yamlJsParser from 'yaml'
+import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ENV_ALREADY_EXIST_ERROR, TriggerType, ViewType } from '../../config'
+import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
 import { Environment, GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
@@ -21,20 +26,23 @@ import {
     GroupHeading,
     groupStyle,
 } from '../v2/common/ReactSelect.utils'
-import ReactSelect from 'react-select'
 import { Info } from '../common/icons/Icons'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import yamlJsParser from 'yaml'
-import { toast } from 'react-toastify'
 import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CodeEditor from '../CodeEditor/CodeEditor'
+import CustomImageTags from '../CIPipelineN/CustomImageTags'
+import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
+import { getGitOpsRepoConfig } from '../../services/service'
+
+import PullImageDigestToggle from './PullImageDigestToggle'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -48,7 +56,9 @@ export default function BuildCD({
     parentPipelineId,
     isWebhookCD,
     dockerRegistries,
-    envIds
+    envIds,
+    isGitOpsRepoNotConfigured,
+    noGitOpsModuleInstalledAndConfigured,
 }) {
     const {
         formData,
@@ -61,9 +71,17 @@ export default function BuildCD({
         isVirtualEnvironment,
         pageState,
         isEnvUsedState,
-        setIsEnvUsedState
+        setIsEnvUsedState,
+        savedCustomTagPattern,
+        selectedCDStageTypeValue,
+        setSelectedCDStageTypeValue,
+        appId,
+        setReloadNoGitOpsRepoConfiguredModal,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
+    const history = useHistory()
+
+    const [gitopsConflictLoading, setGitopsConflictLoading] = useState(false)
     let { cdPipelineId } = useParams<{
         appId: string
         workflowId: string
@@ -144,10 +162,13 @@ export default function BuildCD({
                 ? GeneratedHelmPush.DO_NOT_PUSH
                 : GeneratedHelmPush.PUSH
             _form.allowedDeploymentTypes = selection.allowedDeploymentTypes
+            _form.isDigestEnforcedForEnv = _form.environments.find(
+                (env) => env.id == selection.id,
+            )?.isDigestEnforcedForEnv
             setFormDataErrorObj(_formDataErrorObj)
             setFormData(_form)
         } else {
-            let list = _form.environments.map((item) => {
+            const list = _form.environments.map((item) => {
                 return {
                     ...item,
                     active: false,
@@ -166,23 +187,17 @@ export default function BuildCD({
     const renderPipelineNameInput = () => {
         return (
             <div className="form__row">
-                <label className="form__label dc__required-field">Pipeline Name</label>
-                <input
-                    className="form__input"
-                    autoComplete="off"
+                <CustomInput
+                    name="pipeline-name"
+                    label="Pipeline Name"
                     disabled={!!cdPipelineId}
                     data-testid="advance-pipeline-name-textbox"
                     placeholder="Pipeline name"
-                    type="text"
                     value={formData.name}
                     onChange={handlePipelineName}
+                    isRequiredField
+                    error={formDataErrorObj.name && !formDataErrorObj.name.isValid && formDataErrorObj.name.message}
                 />
-                {formDataErrorObj.name && !formDataErrorObj.name.isValid && (
-                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        <span>{formDataErrorObj.name.message}</span>
-                    </span>
-                )}
             </div>
         )
     }
@@ -217,7 +232,39 @@ export default function BuildCD({
                     </div>
                 </div>
             )
-        } else return null
+        }
+        return null
+    }
+
+    const checkGitOpsRepoConflict = () => {
+        setGitopsConflictLoading(true)
+        getGitOpsRepoConfig(+appId)
+            .then(() => {
+                history.push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+            })
+            .catch((err) => {
+                if (err.code === 409) {
+                    setReloadNoGitOpsRepoConfiguredModal(true)
+                }
+            })
+            .finally(() => {
+                setGitopsConflictLoading(false)
+            })
+    }
+
+    const gitOpsRepoConfigInfoBar = (content: string) => {
+        return (
+            <InfoColourBar
+                message={content}
+                classname="warn mb-16"
+                Icon={Warn}
+                iconClass="warning-icon"
+                linkClass={`flex ${gitopsConflictLoading ? 'loading-dots-cb5 cursor-not-allowed' : ''}`}
+                linkText="Configure GitOps Repository"
+                internalLink
+                linkOnClick={checkGitOpsRepoConflict}
+            />
+        )
     }
 
     const renderTriggerType = () => {
@@ -244,8 +291,8 @@ export default function BuildCD({
     }
 
     const setRepositoryName = (event): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
         formDataError.repositoryError = validationRules.repository(event.target.value)
         form.repoName = event.target.value
         setFormData(form)
@@ -253,34 +300,38 @@ export default function BuildCD({
     }
 
     const handleRegistryChange = (selectedRegistry): void => {
-        const form = {...formData}
-        const formDataError = {...formDataErrorObj}
-        formDataError.containerRegistryError = validationRules.containerRegistry(selectedRegistry.id || formData.containerRegistryName)
+        const form = { ...formData }
+        const formDataError = { ...formDataErrorObj }
+        formDataError.containerRegistryError = validationRules.containerRegistry(
+            selectedRegistry.id || formData.containerRegistryName,
+        )
         form.selectedRegistry = selectedRegistry
         form.containerRegistryName = selectedRegistry.id
         setFormData(form)
         setFormDataErrorObj(formDataError)
-
     }
 
-    const  onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
-        const form = {...formData}
+    const onChangeSetGeneratedHelmPush = (selectedGeneratedHelmValue: string): void => {
+        const form = { ...formData }
         form.generatedHelmPushAction = selectedGeneratedHelmValue
         setFormData(form)
     }
 
     const selectStrategy = (e): void => {
-        const value = e.target.value
+        const { value } = e.target
         const _form = { ...formData }
-        let selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
-        let strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
+        const selection = _form.strategies.find((strategy) => strategy.deploymentTemplate == value)
+        const strategies = _form.strategies.filter((strategy) => strategy.deploymentTemplate != value)
 
-        if (_form.savedStrategies.length == 0) selection.default = true
-        else selection.default = false
+        if (_form.savedStrategies.length == 0) {
+            selection.default = true
+        } else {
+            selection.default = false
+        }
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] = yamlJsParser.stringify(allStrategies.current[selection.deploymentTemplate], {
+        selection['yamlStr'] =YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
             indent: 2,
         })
         selection['isCollapsed'] = true
@@ -291,9 +342,9 @@ export default function BuildCD({
     }
 
     const renderEnvNamespaceAndTriggerType = () => {
-        let envId = formData.environmentId
-        let selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        let namespaceEditable = false
+        const envId = formData.environmentId
+        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
+        const namespaceEditable = false
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
 
         const groupHeading = (props) => {
@@ -304,12 +355,10 @@ export default function BuildCD({
             if (isVirtualEnvironment) {
                 if (formData.namespace) {
                     return 'Will be auto-populated based on environment'
-                } else {
-                    return 'Not available'
                 }
-            } else {
-                return 'Will be auto-populated based on environment'
+                return 'Not available'
             }
+            return 'Will be auto-populated based on environment'
         }
 
         const renderVirtualEnvironmentInfo = () => {
@@ -325,15 +374,25 @@ export default function BuildCD({
         const handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
             return formatHighlightedTextDescription(opt, inputValue, 'name')
         }
+        const isHelmEnforced =
+            formData.allowedDeploymentTypes.length === 1 &&
+            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
+
+        const gitOpsRepoNotConfiguredAndOptionsHidden =
+            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+            selectedEnv &&
+            !noGitOpsModuleInstalledAndConfigured &&
+            !isHelmEnforced &&
+            isGitOpsRepoNotConfigured
 
         return (
             <>
                 <div className="form__row form__row--flex mt-12">
                     <div className="w-50 mr-8">
-                        <div className="form__label">Environment*</div>
+                        <div className="form__label dc__required-field">Environment</div>
                         <ReactSelect
-                            menuPortalTarget={isAdvanced ? null : document.getElementById('visible-modal')}
-                            closeMenuOnScroll={true}
+                            menuPosition={isAdvanced ? null : 'fixed'}
+                            closeMenuOnScroll
                             isDisabled={!!cdPipelineId}
                             classNamePrefix="cd-pipeline-environment-dropdown"
                             placeholder="Select Environment"
@@ -370,26 +429,23 @@ export default function BuildCD({
                         {renderVirtualEnvironmentInfo()}
                     </div>
                     <div className="flex-1 ml-8">
-                        <span className="form__label">Namespace</span>
-                        <input
-                            className="form__input"
-                            autoComplete="off"
+                        <CustomInput
+                            name="namespace"
+                            label="Namespace"
                             placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
-                            type="text"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
                             onChange={handleNamespaceChange}
+                            error={
+                                !formDataErrorObj.nameSpaceError.isValid &&
+                                !isVirtualEnvironment &&
+                                formDataErrorObj.nameSpaceError.message
+                            }
                         />
-
-                        {!formDataErrorObj.nameSpaceError.isValid && !isVirtualEnvironment ? (
-                            <span className="form__error">
-                                <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                {formDataErrorObj.nameSpaceError.message}
-                            </span>
-                        ) : null}
                     </div>
                 </div>
+                {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
                 {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (
@@ -417,13 +473,13 @@ export default function BuildCD({
     const setDefaultStrategy = (selection: string): void => {
         const _form = { ...formData }
 
-        let strategies = _form.strategies.map((strategy) => {
+        const strategies = _form.strategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
             }
         })
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 default: strategy.deploymentTemplate == selection,
@@ -436,14 +492,14 @@ export default function BuildCD({
 
     const deleteStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let removedStrategy = _form.savedStrategies.find(
+        const removedStrategy = _form.savedStrategies.find(
             (savedStrategy) => selection === savedStrategy.deploymentTemplate,
         )
         if (removedStrategy.default) {
             toast.error('Cannot remove default strategy')
             return
         }
-        let savedStrategies = _form.savedStrategies.filter(
+        const savedStrategies = _form.savedStrategies.filter(
             (savedStrategy) => selection !== savedStrategy.deploymentTemplate,
         )
         _form.strategies.push(removedStrategy)
@@ -453,7 +509,7 @@ export default function BuildCD({
 
     const toggleStrategy = (selection: string): void => {
         const _form = { ...formData }
-        let savedStrategies = _form.savedStrategies.map((strategy) => {
+        const savedStrategies = _form.savedStrategies.map((strategy) => {
             return {
                 ...strategy,
                 isCollapsed: strategy.deploymentTemplate === selection ? !strategy.isCollapsed : strategy.isCollapsed,
@@ -465,12 +521,14 @@ export default function BuildCD({
     }
 
     const handleStrategyChange = (value, selection: string, key: 'json' | 'yaml'): void => {
-        let json, jsonStr, yamlStr
+        let json
+        let jsonStr
+        let yamlStr
         if (key === 'json') {
             jsonStr = value
             try {
                 json = JSON.parse(jsonStr)
-                yamlStr = yamlJsParser.stringify(json, { indent: 2 })
+                yamlStr = YAMLStringify(json)
             } catch (error) {}
         } else {
             yamlStr = value
@@ -480,11 +538,17 @@ export default function BuildCD({
             } catch (error) {}
         }
         const _form = { ...formData }
-        let strategies = _form.savedStrategies.map((strategy) => {
+        const strategies = _form.savedStrategies.map((strategy) => {
             if (strategy.deploymentTemplate === selection) {
-                if (json) strategy['config'] = json
-                if (jsonStr) strategy['jsonStr'] = jsonStr
-                if (yamlStr) strategy['yamlStr'] = yamlStr
+                if (json) {
+                    strategy['config'] = json
+                }
+                if (jsonStr) {
+                    strategy['jsonStr'] = jsonStr
+                }
+                if (yamlStr) {
+                    strategy['yamlStr'] = yamlStr
+                }
             }
             return strategy
         })
@@ -508,7 +572,9 @@ export default function BuildCD({
                     handleOnChange={handleDeploymentAppTypeChange}
                     allowedDeploymentTypes={formData.allowedDeploymentTypes}
                     rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                    isFromCDPipeline={true}
+                    isFromCDPipeline
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 />
             </div>
         )
@@ -517,7 +583,7 @@ export default function BuildCD({
     const renderStrategyOptions = () => {
         return (
             <Select rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150" onChange={selectStrategy}>
-                <Select.Button rootClassName="right" hideArrow={true}>
+                <Select.Button rootClassName="right" hideArrow>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
@@ -539,10 +605,10 @@ export default function BuildCD({
     }
 
     const renderBasicDeploymentStartegy = () => {
-        let strategyMenu = Object.keys(allStrategies.current).map((option) => {
+        const strategyMenu = Object.keys(allStrategies.current).map((option) => {
             return { label: option, value: option }
         })
-        let strategy = formData.savedStrategies[0]
+        const strategy = formData.savedStrategies[0]
             ? {
                   label: formData.savedStrategies[0]?.deploymentTemplate,
                   value: formData.savedStrategies[0]?.deploymentTemplate,
@@ -554,8 +620,8 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                 <ReactSelect
-                    menuPortalTarget={document.getElementById('visible-modal')}
-                    closeMenuOnScroll={true}
+                    menuPosition="fixed"
+                    closeMenuOnScroll
                     classNamePrefix="deployment-strategy-dropdown"
                     isSearchable={false}
                     isClearable={false}
@@ -592,13 +658,13 @@ export default function BuildCD({
                     Icon={Help}
                     heading="Deployment strategy"
                     infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
-                    showCloseButton={true}
+                    showCloseButton
                     trigger="click"
-                    interactive={true}
+                    interactive
                     documentationLinkText="View Documentation"
                 >
                     <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                        <Question />
+                        <ICHelpOutline />
                     </div>
                 </TippyCustomized>
             )
@@ -683,6 +749,7 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
+                    !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {isAdvanced && ManualApproval && (
@@ -693,6 +760,21 @@ export default function BuildCD({
                             currentRequiredCount={formData.userApprovalConfig?.requiredCount}
                             onChangeRequiredApprovals={onChangeRequiredApprovals}
                         />
+                    </>
+                )}
+                {isAdvanced && (
+                    <>
+                        <CustomImageTags
+                            formData={formData}
+                            setFormData={setFormData}
+                            formDataErrorObj={formDataErrorObj}
+                            setFormDataErrorObj={setFormDataErrorObj}
+                            isCDBuild
+                            savedTagPattern={savedCustomTagPattern}
+                            selectedCDStageTypeValue={selectedCDStageTypeValue}
+                            setSelectedCDStageTypeValue={setSelectedCDStageTypeValue}
+                        />
+                        <PullImageDigestToggle formData={formData} setFormData={setFormData} />
                     </>
                 )}
             </>

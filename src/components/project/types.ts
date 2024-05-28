@@ -1,24 +1,24 @@
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps } from 'react-router-dom'
 
-export interface ProjectListProps extends RouteComponentProps<{}>{
-    isSuperAdmin: boolean;
+export interface ProjectListProps extends RouteComponentProps<{}> {
+    isSuperAdmin: boolean
 }
 export interface ProjectListState {
-    code: number;
-    loadingData: boolean;
-    view: string;
-    projects: Array<ProjectType>;
+    code: number
+    loadingData: boolean
+    view: string
+    projects: Array<ProjectType>
     isValid: {
-        name: boolean;
-    },
+        name: boolean
+    }
     errorMessage: {
-        name: string;
+        name: string
     }
 }
 
 export interface ProjectType {
-    id: number;
-    name: string;
-    active: boolean;
-    isCollapsed: boolean;
+    id: number
+    name: string
+    active: boolean
+    isCollapsed: boolean
 }

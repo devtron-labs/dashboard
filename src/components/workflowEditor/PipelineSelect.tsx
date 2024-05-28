@@ -1,22 +1,29 @@
 import React, { Component } from 'react'
+import { Modal, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineSelectProps } from './types'
+// Not using this image anywhere when completely deprecated remove this image
 import ci from '../../assets/img/ic-pipeline-ci@2x.png'
 import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
+// Not using this image anywhere when completely deprecated remove this image
 import webhook from '../../assets/img/webhook.svg'
 import ciJobIcon from '../../assets/icons/ic-job-node.svg'
-import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
-import { Modal } from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineNodeType } from '../app/details/triggerView/types'
 
+/**
+ * @deprecated
+ * @description Trying to deprecate this component instead, use WorkflowOptionsModal
+ */
 export class PipelineSelect extends Component<PipelineSelectProps> {
     handleMenuClick = (e): void => {
         this.props.toggleCIMenu(e)
-        const pipelineType = e.currentTarget.dataset.pipelineType
+        const { pipelineType } = e.currentTarget.dataset
         if (pipelineType === PipelineType.WEBHOOK) {
             this.props.addWebhookCD(this.props.workflowId)
         } else {
             this.props.addCIPipeline(pipelineType, this.props.workflowId)
         }
     }
+
     renderCIMenu() {
         return (
             <div className="white-card pipeline-select-container br-4 p-0">
@@ -93,12 +100,13 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
     }
 
     render() {
-        if (!this.props.showMenu) return null
-        else
-            return (
-                <Modal onClick={this.props.toggleCIMenu} style={{ ...this.props.styles }}>
-                    {this.renderCIMenu()}
-                </Modal>
-            )
+        if (!this.props.showMenu) {
+            return null
+        }
+        return (
+            <Modal onClick={this.props.toggleCIMenu} style={{ ...this.props.styles }}>
+                {this.renderCIMenu()}
+            </Modal>
+        )
     }
 }

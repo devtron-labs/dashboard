@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { components, InputActionMeta } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, ClearIndicator, MultiValueRemove, noop, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLinkIdentifierType, ExternalLinkScopeType, IdentifierSelectorProps } from '../ExternalLinks.type'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { IdentifierSelectStyles } from '../ExternalLinks.utils'
@@ -138,7 +138,7 @@ export default function IdentifierSelector({
     }
 
     const handleOnInputChange = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setIdentifierSearchInput(value)
         }
     }
@@ -166,7 +166,7 @@ export default function IdentifierSelector({
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={clusters}
-                        isMulti={true}
+                        isMulti
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}
@@ -198,7 +198,7 @@ export default function IdentifierSelector({
                     <CreatableSelect
                         value={selectedIdentifiers}
                         options={allApps}
-                        isMulti={true}
+                        isMulti
                         closeMenuOnSelect={false}
                         inputValue={identifierSearchInput}
                         onInputChange={handleOnInputChange}

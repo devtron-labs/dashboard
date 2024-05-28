@@ -1,39 +1,41 @@
-import moment from 'moment-timezone';
-import { ZERO_TIME_STRING } from '../../../config';
+import { DATE_TIME_FORMAT_STRING, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
-    let timestamp = "";
+    let timestamp = ''
     try {
         if (ts && ts.length) {
-            let date = moment(ts)
-            if(isRelativeTime){
+            const date = moment(ts)
+            if (isRelativeTime) {
                 // check for minimum date (zero date) (Invoking an empty time.Time struct literal will return Go's zero date)
-                if(ts != ZERO_TIME_STRING){
-                    timestamp = date.fromNow();
+                if (ts != ZERO_TIME_STRING) {
+                    timestamp = date.fromNow()
                 }
-            }
-            else {
-                timestamp = date.format("ddd DD MMM YYYY HH:mm:ss");
+            } else {
+                timestamp = date.format(DATE_TIME_FORMAT_STRING)
             }
         }
     } catch (error) {
-        console.error("Error Parsing Date:", ts);
+        console.error('Error Parsing Date:', ts)
     }
-    return timestamp;
+    return timestamp
 }
 
 export function handleUTCTime(ts: string, isRelativeTime = false) {
-    let timestamp = "";
+    let timestamp = ''
     try {
         if (ts && ts.length) {
-            let date = moment(ts);
-            if (isRelativeTime) timestamp = date.fromNow();
-            else timestamp = date.format("ddd DD MMM YYYY HH:mm:ss");
+            const date = moment(ts)
+            if (isRelativeTime) {
+                timestamp = date.fromNow()
+            } else {
+                timestamp = date.format(DATE_TIME_FORMAT_STRING)
+            }
         }
     } catch (error) {
-        console.error("Error Parsing Date:", ts);
+        console.error('Error Parsing Date:', ts)
     }
-    return timestamp;
+    return timestamp
 }
 
 export const getTimeElapsed = (startedOn, finishedOn) => {
@@ -50,12 +52,4 @@ export const formatDurationDiff = (startedOn: string, finishedOn: string) => {
     const minutes = diff.minutes() > 0 ? `${diff.minutes()}m ` : ''
     const seconds = `${diff.seconds()}s`
     return `${hours}${minutes}${seconds}`
-}
-
-export const processDeployedTime = (lastDeployed, isAgroInstalled) => {
-    if (lastDeployed) {
-        return handleUTCTime(lastDeployed, true)
-    } else {
-        return isAgroInstalled ? '' : 'Not deployed'
-    }
 }

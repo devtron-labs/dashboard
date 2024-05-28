@@ -1,5 +1,6 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
@@ -12,6 +13,10 @@ export interface DeploymentObject {
     chartRepositoryId: number
     valuesOverrride: any
     defaultAppOverride: any
+}
+export interface ConfigKeysWithLockType {
+    config: string[]
+    allowed: boolean
 }
 
 export interface DeploymentConfigState {
@@ -66,9 +71,8 @@ export interface ConfigMapRequest {
 }
 
 export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps {
-    respondOnSuccess?: () => void
+    respondOnSuccess?: (redirection: boolean) => void
     isUnSet: boolean
-    navItems: CustomNavItemsType[]
     isCiPipeline: boolean
     environments: AppEnvironment[]
     isProtected: boolean
@@ -114,6 +118,12 @@ export interface DeploymentConfigFormCTAProps {
     reload: () => void
     isValues?: boolean
     convertVariables?: boolean
+    handleLockedDiffDrawer: (value: boolean) => void
+    isSuperAdmin: boolean
+    showLockedDiffForApproval: boolean
+    setShowLockedDiffForApproval: (show: boolean) => void
+    checkForProtectedLockedChanges: () => Promise<ResponseType>
+    setLockedOverride: (value: Object) => void
 }
 
 export interface CompareWithDropdownProps {
@@ -194,6 +204,9 @@ export interface DeploymentTemplateOptionsTabProps {
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    hideLockedKeys: boolean
+    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -209,6 +222,10 @@ export interface DeploymentTemplateEditorViewProps {
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
     groupedData?: any
+    hideLockedKeys: boolean
+    lockedConfigKeysWithLockType: ConfigKeysWithLockType
+    hideLockKeysToggled: React.MutableRefObject<boolean>
+    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentConfigContextType {
@@ -325,6 +342,7 @@ export interface DeploymentConfigStateType {
     isAppMetricsEnabled: boolean
     tempFormData: string
     chartConfigLoading: boolean
+    lockChangesLoading: boolean
     showConfirmation: boolean
     showReadme: boolean
     openComparison: boolean
@@ -361,7 +379,7 @@ export interface DeploymentConfigStateType {
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
     publishedState: DeploymentConfigStateType
     draftValues: string
-    showSaveChangsModal: boolean
+    showSaveChangesModal: boolean
     allDrafts: any[]
     latestDraft: any
     showComments: boolean
@@ -370,6 +388,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     isDraftOverriden: boolean
     unableToParseYaml: boolean
     selectedCompareOption: DeploymentChartOptionType
+    showLockedTemplateDiff: boolean
 }
 
 export enum DeploymentConfigStateActionTypes {
@@ -404,6 +423,7 @@ export enum DeploymentConfigStateActionTypes {
     toggleDialog = 'toggleDialog',
     reset = 'reset',
     toggleSaveChangesModal = 'toggleSaveChangesModal',
+    toggleShowLockedTemplateDiff = 'toggleShowLockedTemplateDiff',
     allDrafts = 'allDrafts',
     publishedState = 'publishedState',
     toggleDraftComments = 'toggleDraftComments',
@@ -424,6 +444,7 @@ export enum DeploymentConfigStateActionTypes {
     manifestDataLHSOverride = 'manifestDataLHSOverride',
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
+    lockChangesLoading = 'lockChangesLoading',
 }
 
 export interface DeploymentConfigStateAction {
@@ -441,4 +462,10 @@ export interface DropdownItemProps {
     isValues: boolean
     index: number
     onClick: () => void
+}
+
+export interface SaveConfirmationDialogProps {
+    onSave: () => void
+    showAsModal: boolean
+    closeLockedDiffDrawerWithChildModal: () => void
 }

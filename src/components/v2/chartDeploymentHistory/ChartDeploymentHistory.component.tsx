@@ -8,21 +8,23 @@ import {
     GenericEmptyState,
     DetailsProgressing,
     DeploymentAppTypes,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import Tippy from '@tippyjs/react'
+import YAML from 'yaml'
+import { toast } from 'react-toastify'
+import { useHistory, useRouteMatch } from 'react-router'
+import { useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
-import DataNotFound from '../../../assets/img/app-not-deployed.png';
+import DataNotFound from '../../../assets/img/app-not-deployed.png'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import moment from 'moment'
-import Tippy from '@tippyjs/react'
 import '../../app/details/cIDetails/ciDetails.scss'
-import YAML from 'yaml'
 import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'
-import { toast } from 'react-toastify'
-import { useHistory, useRouteMatch } from 'react-router'
 import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
@@ -37,7 +39,8 @@ import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { importComponentFromFELibrary } from '../../common'
-import { useParams } from 'react-router-dom'
+import DockerImageDetails from './DockerImageDetails'
+
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
@@ -47,13 +50,13 @@ interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     isApiCallInProgress?: boolean
 }
 
-function ChartDeploymentHistory({
+const ChartDeploymentHistory = ({
     appId,
     appName,
     isExternal,
     isVirtualEnvironment,
     isLoadingDetails,
-    helmAppPackageName
+    helmAppPackageName,
 }: {
     appId: string
     appName?: string
@@ -61,7 +64,7 @@ function ChartDeploymentHistory({
     isVirtualEnvironment?: boolean
     isLoadingDetails?: boolean
     helmAppPackageName?: string
-}) {
+}) => {
     const params = useParams<{ envId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
@@ -81,7 +84,7 @@ function ChartDeploymentHistory({
     // Checking if deployment app type is argocd only then show steps tab
 
     const deploymentTabs = () => {
-        let tabs = [
+        const tabs = [
             DEPLOYMENT_HISTORY_TAB.SOURCE,
             DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
@@ -167,7 +170,10 @@ function ChartDeploymentHistory({
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (Array.isArray(errors.errors) && String(errors.errors[0].code) === SERVER_ERROR_CODES.RELEASE_NOT_FOUND) {
+                if (
+                    Array.isArray(errors.errors) &&
+                    String(errors.errors[0].code) === SERVER_ERROR_CODES.RELEASE_NOT_FOUND
+                ) {
                     setReleaseNotFound(true)
                 } else {
                     showError(errors)
@@ -272,7 +278,9 @@ function ChartDeploymentHistory({
         return (
             <>
                 {deploymentHistoryArr.map((deployment, index) => {
-                    const helmDeploymentStatus: string = deployment?.status ? deployment.status.toLowerCase() : 'succeeded'
+                    const helmDeploymentStatus: string = deployment?.status
+                        ? deployment.status.toLowerCase()
+                        : 'succeeded'
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
@@ -292,21 +300,17 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    {installedAppInfo ? 
-                                        <div
-                                            className={`dc__app-summary__icon icon-dim-22 ${
-                                                deployment?.status &&
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-                                                    ? deployment?.status.toLowerCase()
-                                                    : ''
-                                            } ${
-                                                installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
-                                                    ? helmDeploymentStatus
-                                                    : ''
-                                            }`}
-                                        ></div> : ''}
+                                    <div
+                                        className={`dc__app-summary__icon icon-dim-22 ${
+                                            (deployment?.status &&
+                                                installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
+                                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                                                ? deployment?.status.toLowerCase()
+                                                : ''
+                                        } ${deployment?.status ? helmDeploymentStatus : ''}`}
+                                    />
                                     <div className="flex column left dc__ellipsis-right">
-                                        <div className="cn-9 fs-14" data-testid = "chart-deployment-time">
+                                        <div className="cn-9 fs-14" data-testid="chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
                                                 Moment12HourFormat,
                                             )}
@@ -387,7 +391,7 @@ function ChartDeploymentHistory({
         if (isExternal || installedAppInfo?.appOfferingMode === 'EA_ONLY') {
             try {
                 const parsedJson = JSON.parse(value)
-                return YAML.stringify(parsedJson, { indent: 2 })
+                return YAMLStringify(parsedJson)
             } catch (e) {
                 return value
             }
@@ -396,12 +400,13 @@ function ChartDeploymentHistory({
     }
 
     function renderCodeEditor(): JSX.Element {
-        const version = deploymentHistoryArr[selectedDeploymentHistoryIndex].version
+        const { version } = deploymentHistoryArr[selectedDeploymentHistoryIndex]
         const selectedDeploymentManifestDetail = deploymentManifestDetails.get(version)
 
         if (selectedDeploymentManifestDetail.loading && !selectedDeploymentManifestDetail.error) {
             return <Progressing theme="white" pageLoader />
-        } else if (
+        }
+        if (
             !selectedDeploymentManifestDetail.loading &&
             ((selectedDeploymentManifestDetail.error && selectedDeploymentManifestDetail.errorCode === 404) ||
                 (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML &&
@@ -417,7 +422,8 @@ function ChartDeploymentHistory({
                     />
                 </div>
             )
-        } else if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
+        }
+        if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
             return (
                 <MessageUI
                     iconClassName="error-exclamation-icon"
@@ -425,7 +431,7 @@ function ChartDeploymentHistory({
                     msg="There was an error loading the file."
                     msgStyle={{ color: '#767D84', marginTop: '0' }}
                     size={24}
-                    isShowActionButton={true}
+                    isShowActionButton
                     actionButtonText="Retry"
                     onActionButtonClick={() => {
                         checkAndFetchDeploymentDetail(version, true)
@@ -445,21 +451,21 @@ function ChartDeploymentHistory({
                     noParsing
                     mode="yaml"
                     height="100vh"
-                    readOnly={true}
-                ></CodeEditor>
+                    readOnly
+                />
             </div>
         )
     }
 
     function renderSelectedDeploymentTabData() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
-        const chartMetadata = deployment.chartMetadata
+        const { chartMetadata } = deployment
         const paramsData = {
             appId,
             envId: params.envId,
             appName: helmAppPackageName,
             workflowId: deployment.version,
-            isHelmApp: true
+            isHelmApp: true,
         }
 
         return (
@@ -471,7 +477,7 @@ function ChartDeploymentHistory({
             >
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS && (
                     <DeploymentDetailSteps
-                        isHelmApps={true}
+                        isHelmApps
                         isGitops={
                             installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS ||
                             installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
@@ -579,47 +585,30 @@ function ChartDeploymentHistory({
                             Deployed at
                         </div>
                         <div className="flex left">
-                            <time className="cn-7 fs-12" data-testid = "deployment-history-time">
+                            <time className="cn-7 fs-12" data-testid="deployment-history-time">
                                 {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(
                                     Moment12HourFormat,
                                 )}
                             </time>
                             {deployment?.deployedBy && (
                                 <div className="flex">
-                                    <div className="dc__bullet mr-6 ml-6"></div>
-                                    <div className="cn-7 fs-12 mr-12" data-testid = "deployed-by">{deployment.deployedBy}</div>
+                                    <div className="dc__bullet mr-6 ml-6" />
+                                    <div className="cn-7 fs-12 mr-12" data-testid="deployed-by">
+                                        {deployment.deployedBy}
+                                    </div>
                                 </div>
                             )}
-                            {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
-                                return (
-                                    <div key={index} className="dc__app-commit__hash ml-10">
-                                        <Tippy arrow={true} className="default-tt" content={dockerImage}>
-                                            <span>
-                                                <img src={docker} className="commit-hash__icon grayscale" />
-                                                <span className="ml-3" data-testid="docker-version-deployment-history">
-                                                    {dockerImage.split(':')[1] || dockerImage}
-                                                </span>
-                                            </span>
-                                        </Tippy>
-                                    </div>
-                                )
-                            })}
-                            {deployment.dockerImages.length > 3 && (
-                                <div onClick={() => setShowDockerInfo(true)} className="cursor anchor ml-10">
-                                    <span>
-                                        <span className="">{deployment.dockerImages.length - 3}</span>
-                                        <span className="ml-3">more</span>
-                                    </span>
-                                </div>
+                            {deployment.dockerImages?.length && (
+                                <DockerImageDetails deployment={deployment} setShowDockerInfo={setShowDockerInfo} />
                             )}
                         </div>
                     </div>
                     {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
-                        <Tippy className="default-tt" arrow={false} content={'Re-deploy this version'}>
+                        <Tippy className="default-tt" arrow={false} content="Re-deploy this version">
                             <button
                                 className="flex cta deploy-button"
                                 onClick={() => setShowRollbackConfirmation(true)}
-                                data-testid = "re-deployment-button"
+                                data-testid="re-deployment-button"
                             >
                                 <DeployButton className="deploy-button-icon" />
                                 <span className="ml-4">Deploy</span>
@@ -666,7 +655,7 @@ function ChartDeploymentHistory({
         }
     }
 
-    function RollbackConfirmationDialog() {
+    const RollbackConfirmationDialog = () => {
         return (
             <ConfirmationDialog className="rollback-confirmation-dialog">
                 <ConfirmationDialog.Body title={rollbackDialogTitle}>
@@ -682,7 +671,12 @@ function ChartDeploymentHistory({
                         >
                             Cancel
                         </button>
-                        <button className="flex cta deploy-button" onClick={handleDeployClick} disabled={deploying} data-testid = "re-deployment-dialog-box-button">
+                        <button
+                            className="flex cta deploy-button"
+                            onClick={handleDeployClick}
+                            disabled={deploying}
+                            data-testid="re-deployment-dialog-box-button"
+                        >
                             {deploying ? (
                                 <Progressing />
                             ) : (
@@ -705,7 +699,8 @@ function ChartDeploymentHistory({
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
-        } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
+        }
+        if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
                 <GenericEmptyState
                     title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
@@ -720,7 +715,11 @@ function ChartDeploymentHistory({
                     <span className="pl-16 pr-16 dc__uppercase" data-testid="deployment-history-deployments-heading">
                         Deployments
                     </span>
-                    <div className="flex column top left" style={{ overflowY: 'auto' }} data-testid = "previous-deployments-list">
+                    <div
+                        className="flex column top left"
+                        style={{ overflowY: 'auto' }}
+                        data-testid="previous-deployments-list"
+                    >
                         {renderDeploymentCards()}
                     </div>
                 </div>
@@ -730,7 +729,7 @@ function ChartDeploymentHistory({
         )
     }
 
-    if(isLoadingDetails){
+    if (isLoadingDetails) {
         return <DetailsProgressing loadingText="Please wait…" size={24} />
     }
     if (showReleaseNotFound) {

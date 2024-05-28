@@ -1,8 +1,8 @@
+// @ts-nocheck
 import React from 'react'
-import { Info, RadioGroup } from '../common'
+import { Info } from '../common'
 import { KeyValueInput, useKeyValueYaml } from './ConfigMapSecret.components'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import YAML from 'yaml'
 import { PATTERNS } from '../../config'
 import { ConfigMapActionTypes, ConfigMapSecretDataEditorContainerProps } from './Types'
 import {
@@ -17,9 +17,11 @@ import {
     VIEW_MODE,
 } from './Secret/secret.utils'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
+import { InfoColourBar, StyledRadioGroup as RadioGroup, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '../../assets/icons/ic-visibility-off.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 
 export const ConfigMapSecretDataEditorContainer = React.memo(
     ({
@@ -33,8 +35,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         const memoisedHandleChange = (index, k, v) => {
             const _currentData = [...state.currentData]
             _currentData[index] = {
-                k: k,
-                v: v,
+                k,
+                v,
                 keyError: '',
                 valueError: '',
             }
@@ -63,7 +65,6 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
         }
 
-
         const { yaml: lockedYaml } = useKeyValueYaml(
             state.currentData?.map(({ k, v }) => ({ k, v: Array(8).fill('*').join('') })),
             setKeyValueArray,
@@ -73,7 +74,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
 
         const isHashiOrAWS = componentType === 'secret' && hasHashiOrAWS(state.externalType)
 
-        const sample = YAML.stringify(sampleJSONs[state.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
+        const sample = YAMLStringify(sampleJSONs[state.externalType] || sampleJSONs[DATA_HEADER_MAP.DEFAULT])
         const isESO = componentType === 'secret' && hasESO(state.externalType)
 
         function changeEditorMode() {
@@ -122,7 +123,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                 payload: json,
             })
             json = json.map((j) => {
-                let temp = {}
+                const temp = {}
                 temp['isBinary'] = j.isBinary
                 if (j.fileName) {
                     temp['key'] = j.fileName
@@ -137,7 +138,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
             dispatch({
                 type: ConfigMapActionTypes.setSecretDataYaml,
-                payload: YAML.stringify(json),
+                payload: YAMLStringify(json),
             })
         }
 
@@ -159,7 +160,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             })
             dispatch({
                 type: ConfigMapActionTypes.setSecretDataYaml,
-                payload: YAML.stringify(json),
+                payload: YAMLStringify(json),
             })
         }
 
@@ -179,11 +180,11 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         const getESOYaml = () => {
             if (state.codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE) {
                 return sample
-            } else if (isESO) {
-                return state.esoSecretYaml
-            } else {
-                return state.secretDataYaml
             }
+            if (isESO) {
+                return state.esoSecretYaml
+            }
+            return state.secretDataYaml
         }
 
         const externalSecretEditor = (): JSX.Element => {
@@ -196,25 +197,24 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         : dataHeaders[state.externalType] || dataHeaders[DATA_HEADER_MAP.DEFAULT],
                     false,
                 )
-            } else {
-                return (
-                    <>
-                        {isHashiOrAWS &&
-                            state.secretData.map((data, index) => (
-                                <KeyValueFileInput
-                                    key={index}
-                                    index={index}
-                                    fileName={data.fileName}
-                                    name={data.name}
-                                    property={data.property}
-                                    isBinary={data.isBinary}
-                                    handleChange={handleSecretDataChange}
-                                    handleDelete={handleSecretDataDelete}
-                                />
-                            ))}
-                    </>
-                )
             }
+            return (
+                <>
+                    {isHashiOrAWS &&
+                        state.secretData.map((data, index) => (
+                            <KeyValueFileInput
+                                key={index}
+                                index={index}
+                                fileName={data.fileName}
+                                name={data.name}
+                                property={data.property}
+                                isBinary={data.isBinary}
+                                handleChange={handleSecretDataChange}
+                                handleDelete={handleSecretDataDelete}
+                            />
+                        ))}
+                </>
+            )
         }
 
         const renderGUIEditor = (): JSX.Element => {
@@ -306,9 +306,8 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
         const getCodeEditorValue = (): string => {
             if (componentType === 'secret' && (state.secretMode || state.unAuthorized)) {
                 return lockedYaml
-            } else {
-                return yaml
             }
+            return yaml
         }
 
         const renderSecretShowHide = (): JSX.Element => {
@@ -332,6 +331,14 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             return null
         }
 
+        const renderInfotext = () => (
+            <div className="flex top">
+                GUI Recommended for multi-line data.
+                <br />
+                Boolean and numeric values must be wrapped in double quotes Eg. "true", "123"
+            </div>
+        )
+
         const renderDataEditorSelector = (): JSX.Element => {
             if (
                 (componentType === 'secret' && state.externalType === 'KubernetesSecret') ||
@@ -339,6 +346,7 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
             ) {
                 return null
             }
+
             return (
                 <>
                     <div className="flex left mb-16">
@@ -360,12 +368,12 @@ export const ConfigMapSecretDataEditorContainer = React.memo(
                         {renderSecretShowHide()}
                     </div>
                     {componentType !== 'secret' && !state.external && state.yamlMode && (
-                        <div className="dc__info-container info__container--configmap mb-16">
-                            <Info />
-                            <div className="flex column left">
-                                <div className="dc__info-subtitle">GUI Recommended for multi-line data.</div>
-                            </div>
-                        </div>
+                        <InfoColourBar
+                            message={renderInfotext()}
+                            Icon={InfoIcon}
+                            iconSize={20}
+                            classname="info_bar cn-9 mt-16 mb-16 lh-20"
+                        />
                     )}
                 </>
             )

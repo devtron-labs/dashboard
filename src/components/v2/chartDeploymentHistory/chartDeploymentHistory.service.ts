@@ -1,5 +1,5 @@
-import { Routes } from '../../../config'
 import { get, put, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '../../../config'
 import { ActionResponse, ChartMetadata, DeployedAt, InstalledAppInfo } from '../../external-apps/ExternalAppService'
 
 export interface ChartDeploymentManifestDetail {
@@ -34,6 +34,11 @@ export interface RollbackReleaseRequest {
     hAppId?: string
     installedAppId?: number
     installedAppVersionId?: number
+}
+
+export interface DockerImageDetailsProps {
+    deployment: ChartDeploymentDetail
+    setShowDockerInfo: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 interface RollbackReleaseResponse extends ResponseType {

@@ -1,73 +1,38 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+import App from './App'
+import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
-interface customEnv {
-    SENTRY_ENV?: string
-    SENTRY_ERROR_ENABLED?: boolean
-    SENTRY_PERFORMANCE_ENABLED?: boolean
-    SENTRY_DSN?: string
-    SENTRY_TRACES_SAMPLE_RATE?: number
-    HOTJAR_ENABLED?: boolean
-    CLUSTER_NAME?: boolean
-    APPLICATION_METRICS_ENABLED?: boolean
-    GA_ENABLED?: boolean
-    GA_TRACKING_ID?: string
-    GTM_ENABLED?: boolean
-    GTM_ID?: string
-    RECOMMEND_SECURITY_SCANNING?: boolean
-    FORCE_SECURITY_SCANNING?: boolean
-    ENABLE_CI_JOB?: boolean
-    HIDE_DISCORD?: boolean
-    POSTHOG_ENABLED?: boolean
-    POSTHOG_TOKEN?: string
-    DEVTRON_APP_DETAILS_POLLING_INTERVAL?: number
-    HELM_APP_DETAILS_POLLING_INTERVAL?: number
-    EA_APP_DETAILS_POLLING_INTERVAL?: number
-    CENTRAL_API_ENDPOINT?: string
-    HIDE_DEPLOYMENT_GROUPS?: boolean
-    HIDE_GITOPS_OR_HELM_OPTION?: boolean
-    CONFIGURABLE_TIMEOUT?: string
-    HIDE_APPLICATION_GROUPS?: boolean
-    K8S_CLIENT?: boolean
-    USE_V2?: boolean
-    CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
-    CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
-    ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
-    HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
-    ENABLE_BUILD_CONTEXT?: boolean
-    CLAIR_TOOL_VERSION?: string
-    ENABLE_RESTART_WORKLOAD?: boolean
-    ENABLE_SCOPED_VARIABLES?: boolean
-    DEFAULT_CI_TRIGGER_TYPE_MANUAL: boolean
-    ANNOUNCEMENT_BANNER_MSG?: string
-    LOGIN_PAGE_IMAGE?: string
-    LOGIN_PAGE_IMAGE_BG?: string
-}
 declare global {
     interface Window {
         _env_: customEnv
         hj: any
         _hjSettings: any
         Worker: any
+        __BASE_URL__: string
+        __ORCHESTRATOR_ROOT__: string
+        __GRAFANA_ORG_ID__: number
     }
 }
 
+if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
+    window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
+    window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
+    window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
+}
+
 const root = document.getElementById('root')
-if (
-    process.env.NODE_ENV === 'production' &&
-    window._env_ &&
-    (window._env_.SENTRY_ERROR_ENABLED)
-) {
+if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))
     if (window._env_.SENTRY_PERFORMANCE_ENABLED) {
         integrationArr.push(new BrowserTracing())
     }
+
     Sentry.init({
         beforeBreadcrumb(breadcrumb, hint) {
             if (breadcrumb.category === 'console') {
@@ -84,7 +49,7 @@ if (
         dsn: window._env_.SENTRY_DSN || '',
         integrations: integrationArr,
         tracesSampleRate: Number(window._env_.SENTRY_TRACES_SAMPLE_RATE) || 0.2,
-        ...(process.env.REACT_APP_GIT_SHA ? { release: `dashboard@${process.env.REACT_APP_GIT_SHA}` } : {}),
+        ...(window._env_.NODE_REACT_APP_GIT_SHA ? { release: `dashboard@${window._env_.REACT_APP_GIT_SHA}` } : {}),
         environment: window._env_ && window._env_.SENTRY_ENV ? window._env_.SENTRY_ENV : 'staging',
         beforeSend(event) {
             const errorList = event?.exception?.values || []
@@ -138,34 +103,42 @@ if (!window || !window._env_) {
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
-        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
-        USE_V2: true,
+        K8S_CLIENT: import.meta.env.VITE_K8S_CLIENT === 'true',
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: false,
-        CLAIR_TOOL_VERSION:'V4',
+        CLAIR_TOOL_VERSION: 'V4',
         ENABLE_RESTART_WORKLOAD: false,
         ENABLE_SCOPED_VARIABLES: false,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
-        ANNOUNCEMENT_BANNER_MSG: 'Avoid deploying non critical changes to production between 1st to 31st August 2023',
+        ANNOUNCEMENT_BANNER_MSG: '',
         LOGIN_PAGE_IMAGE: '',
-        LOGIN_PAGE_IMAGE_BG: ''
+        LOGIN_PAGE_IMAGE_BG: '',
+        HIDE_DEFAULT_CLUSTER: false,
+        GLOBAL_API_TIMEOUT: 60000,
+        TRIGGER_API_TIMEOUT: 60000,
+        LOGIN_DT_LOGO: '',
+        SIDEBAR_DT_LOGO: '',
+        ENABLE_EXTERNAL_ARGO_CD: false,
+        API_BATCH_SIZE: 20,
+        SERVICE_WORKER_TIMEOUT: '1',
+        ENABLE_RESOURCE_SCAN: false,
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
+        ENABLE_RESOURCE_SCAN_V2: false,
+        ENABLE_GITOPS_BITBUCKET_SOURCE: false,
+        HIDE_RELEASES: true,
     }
 }
 
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <BrowserRouter basename={`${process.env.PUBLIC_URL}/`}>
+            <BrowserRouter basename={window.__BASE_URL__}>
                 <App />
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,
     root,
 )
-
-if (process.env.NODE_ENV === 'development') {
-    (module as any).hot.accept()
-}

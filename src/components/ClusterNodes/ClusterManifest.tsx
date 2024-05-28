@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import YAML from 'yaml'
+import { VisibleModal2, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
-import YAML from 'yaml'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'
 import { ClusterManifestType, ManifestPopuptype } from './types'
 import { ReactComponent as Pencil } from '../../assets/icons/ic-pencil.svg'
-import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { defaultManifestErrorText, manifestCommentsRegex } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { getTrimmedManifestData } from '../v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export default function ClusterManifest({
     terminalAccessId,
@@ -19,8 +20,12 @@ export default function ClusterManifest({
     setManifestData,
     errorMessage,
     setManifestAvailable,
-    selectTerminalTab
+    selectTerminalTab,
+    hideManagedFields,
 }: ClusterManifestType) {
+    // Manifest data with managed fields
+    const [originalManifest, setOriginalManifest] = useState('')
+    // Manifest data that we would be comparing with the edited manifest
     const [defaultManifest, setDefaultManifest] = useState('')
     const [manifestValue, setManifest] = useState('')
     const [loading, setLoading] = useState<boolean>(true)
@@ -31,9 +36,16 @@ export default function ClusterManifest({
             setManifestMode(EditModeType.NON_EDIT)
             getClusterManifest(terminalAccessId)
                 .then((response) => {
-                    const _manifest = YAML.stringify(response.result?.manifest)
-                    setDefaultManifest(_manifest)
-                    setManifest(_manifest)
+                    const _manifest = YAMLStringify(response.result?.manifest)
+                    setOriginalManifest(_manifest)
+                    const trimmedManifest = YAML.stringify(getTrimmedManifestData(response.result?.manifest))
+                    setDefaultManifest(trimmedManifest)
+                    // Ideally should have been setManifest(trimmedManifest).
+                    if (hideManagedFields) {
+                        setManifest(trimmedManifest)
+                    } else {
+                        setManifest(_manifest)
+                    }
                     setLoading(false)
                     setManifestAvailable(true)
                 })
@@ -51,10 +63,14 @@ export default function ClusterManifest({
         }
     }, [terminalAccessId])
 
+    // NOTE: Need to remove this useEffect since manifestMode changes on events only.
+    // Since there can be alot of ways this useEffect interferes with other handlers, causing bugs.
+    // Plus it might be a case when this useEffect will run before we have manifest, which will cause issues.
     useEffect(() => {
         const regex = manifestCommentsRegex
         if (manifestMode === EditModeType.NON_EDIT) {
-            setManifest(defaultManifest)
+            const _manifest = hideManagedFields ? defaultManifest : originalManifest
+            setManifest(_manifest)
         } else if (manifestMode === EditModeType.APPLY) {
             const _manifestValue = manifestValue.replace(regex, 'apiVersion:')
             if (_manifestValue !== defaultManifest) {
@@ -63,9 +79,10 @@ export default function ClusterManifest({
                         setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
                     } else {
                         setManifest(defaultManifestErrorText)
+                        setManifestMode(EditModeType.EDIT)
                     }
                 } catch (error) {
-                    setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + _manifestValue)
+                    // Since we check error in edit as well, we can ignore this error and somehow infinite loop is created if we setManifest here.
                     setManifestMode(EditModeType.EDIT)
                 }
             } else {
@@ -73,11 +90,23 @@ export default function ClusterManifest({
                 setManifestMode(EditModeType.NON_EDIT)
             }
         } else if (manifestMode === EditModeType.EDIT) {
-            if (errorMessage?.length) {
-                setManifest(defaultManifestErrorText + '# ' + errorMessage + '\n#\n' + manifestValue)
+            try {
+                // Parsing will remove earlier comments, which will fix internal issues of code, currently the errorMessage is not getting cleared due to line 83.
+                const parsedManifest = YAML.parse(manifestValue)
+                if (parsedManifest) {
+                    // Explicitly setting getTrimmedManifestData(parsedManifest) as object to avoid type error from YAMLStringify.
+                    const trimmedManifest = YAMLStringify(getTrimmedManifestData(parsedManifest) as object)
+                    const errorDetails = errorMessage?.length ? `${defaultManifestErrorText}# ${errorMessage}\n#\n` : ''
+                    setManifest(errorDetails + trimmedManifest)
+                } else {
+                    setManifest(defaultManifestErrorText)
+                }
+            } catch (error) {
+                // Should we directly use error object here?
+                setManifest(`${defaultManifestErrorText}# ${error}\n#\n${manifestValue}`)
             }
         }
-    }, [manifestMode])
+    }, [manifestMode, hideManagedFields])
 
     const switchToEditMode = (): void => {
         setManifestMode(EditModeType.EDIT)
@@ -86,48 +115,48 @@ export default function ClusterManifest({
     const renderManifest = () => {
         if (isResourceMissing) {
             return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} minHeight="100%" />
-        } else if (loading) {
+        }
+        if (loading) {
             return (
                 <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} minHeight="100%" />
             )
-        } else {
-            return (
-                <div className="h-100 flexbox-col">
-                    {manifestMode === EditModeType.REVIEW && (
-                        <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
-                            <div className="pl-12 flex dc__content-space">
-                                Pod manifest
-                                <span className='flex' data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
-                                    <Close className="icon-dim-16 cursor fcn-0" />
-                                </span>
-                            </div>
-                            <div className="pl-12 flex left">
-                                <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
-                            </div>
-                        </div>
-                    )}
-                    <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
-                        <CodeEditor
-                            defaultValue={defaultManifest}
-                            theme="vs-dark--dt"
-                            height="100%"
-                            value={manifestValue}
-                            mode={MODES.YAML}
-                            noParsing
-                            onChange={setManifest}
-                            readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
-                            diffView={manifestMode === EditModeType.REVIEW}
-                        />
-                    </div>
-                </div>
-            )
         }
+        return (
+            <div className="h-100 flexbox-col">
+                {manifestMode === EditModeType.REVIEW && (
+                    <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
+                        <div className="pl-12 flex dc__content-space">
+                            Pod manifest
+                            <span className="flex" data-testid="close-to-edit-manifest" onClick={switchToEditMode}>
+                                <Close className="icon-dim-16 cursor fcn-0" />
+                            </span>
+                        </div>
+                        <div className="pl-12 flex left">
+                            <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
+                        </div>
+                    </div>
+                )}
+                <div className="pt-8 pb-8 flex-1 dc__overflow-hidden">
+                    <CodeEditor
+                        defaultValue={defaultManifest}
+                        theme="vs-dark--dt"
+                        height="100%"
+                        value={manifestValue}
+                        mode={MODES.YAML}
+                        noParsing
+                        onChange={setManifest}
+                        readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
+                        diffView={manifestMode === EditModeType.REVIEW}
+                    />
+                </div>
+            </div>
+        )
     }
 
     return <div className="dc__overflow-hidden h-100">{renderManifest()}</div>
 }
 
-export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) {
+export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) => {
     const closePopupDoNothing = (): void => {
         closePopup(false)
     }
@@ -163,7 +192,11 @@ export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeleteP
                     >
                         {ManifestMessaging.CANCEL}
                     </button>
-                    <button className="cta sso__warn-button btn-confirm" data-testid="terminate-existing-pod-button" onClick={forceDelete}>
+                    <button
+                        className="cta sso__warn-button btn-confirm"
+                        data-testid="terminate-existing-pod-button"
+                        onClick={forceDelete}
+                    >
                         {ManifestMessaging.TERMINATE_EXISTING_POD}
                     </button>
                 </div>

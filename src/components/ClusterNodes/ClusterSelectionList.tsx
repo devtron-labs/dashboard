@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { handleUTCTime } from '../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
-import Tippy from '@tippyjs/react'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
+import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
 
 export default function ClusterSelectionList({
     clusterOptions,
@@ -21,7 +20,7 @@ export default function ClusterSelectionList({
     isSuperAdmin,
     clusterListLoader,
     refreshData,
-    initTabsBasedOnRole
+    initTabsBasedOnRole,
 }: ClusterSelectionType) {
     const location = useLocation()
     const history = useHistory()
@@ -35,19 +34,23 @@ export default function ClusterSelectionList({
     const [searchApplied, setSearchApplied] = useState(false)
 
     useEffect(() => {
+        let filteredClusterOptions = clusterOptions
+        if (window._env_.HIDE_DEFAULT_CLUSTER) {
+            filteredClusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
+        }
         setClusterList([])
         setFilteredClusterList([])
         setLastDataSync(!lastDataSync)
-        setClusterList(clusterOptions)
-        setFilteredClusterList(clusterOptions)
+        setClusterList(filteredClusterOptions)
+        setFilteredClusterList(filteredClusterOptions)
         setMinLoader(false)
     }, [clusterOptions])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+        setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
-            setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
+            setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
         return () => {
             clearInterval(interval)
@@ -68,37 +71,36 @@ export default function ClusterSelectionList({
         setSearchText('')
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
-        }
+    const handleFilterKeyPress = (value): void => {
+        handleFilterChanges(value)
+        setSearchApplied(true)
+    }
+
+    const handleSearchChange = (value): void => {
+        setSearchText(value.trim())
+    }
+
+    const handleOnBlur = (event): void => {
+        event.stopPropagation()
+        let _searchText = event.target.value
+        _searchText = _searchText?.trim()
+        handleFilterChanges(_searchText)
+        setSearchText(_searchText)
     }
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    type="text"
-                    placeholder="Search clusters"
-                    value={searchText}
-                    className="search__input"
-                    onChange={(event) => {
-                        setSearchText(event.target.value)
-                    }}
-                    onKeyDown={handleFilterKeyPress}
-                    disabled={clusterListLoader}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
+            <SearchBar
+                initialSearchText={searchText}
+                handleSearchChange={handleSearchChange}
+                handleEnter={handleFilterKeyPress}
+                containerClassName="w-250-imp"
+                inputProps={{
+                    placeholder: 'Search clusters',
+                    autoFocus: true,
+                    disabled: minLoader,
+                }}
+            />
         )
     }
 
@@ -115,7 +117,9 @@ export default function ClusterSelectionList({
     }
 
     const hideDataOnLoad = (value) => {
-        if (clusterListLoader) return
+        if (clusterListLoader) {
+            return
+        }
         return value
     }
 
@@ -191,28 +195,28 @@ export default function ClusterSelectionList({
                     <Progressing pageLoader />
                 </div>
             )
-        } else if (noResults) {
-            return <ClusterNodeEmptyState actionHandler={clearSearch} />
-        } else {
-            return (
-                <div
-                    data-testid="cluster-list-container"
-                    className="dc__overflow-scroll"
-                    style={{ height: '100vh - 112px)' }}
-                >
-                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                        <div>Cluster</div>
-                        <div data-testid="cluster-list-connection-status">Connection status</div>
-                        <div>Nodes</div>
-                        <div>NODE Errors</div>
-                        <div>K8S version</div>
-                        <div>CPU Capacity</div>
-                        <div>Memory Capacity</div>
-                    </div>
-                    {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
-                </div>
-            )
         }
+        if (noResults) {
+            return <ClusterNodeEmptyState actionHandler={clearSearch} />
+        }
+        return (
+            <div
+                data-testid="cluster-list-container"
+                className="dc__overflow-scroll"
+                style={{ height: '100vh - 112px)' }}
+            >
+                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                    <div>Cluster</div>
+                    <div data-testid="cluster-list-connection-status">Connection status</div>
+                    <div>Nodes</div>
+                    <div>NODE Errors</div>
+                    <div>K8S version</div>
+                    <div>CPU Capacity</div>
+                    <div>Memory Capacity</div>
+                </div>
+                {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
+            </div>
+        )
     }
 
     return (

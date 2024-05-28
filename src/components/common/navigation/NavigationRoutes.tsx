@@ -1,13 +1,24 @@
-import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef, useMemo } from 'react'
+import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { getLoginInfo, showError, Progressing, Host, Reload, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
-import { ErrorBoundary, AppContext } from '../../common'
-import Navigation from './Navigation'
+import {
+    getLoginInfo,
+    showError,
+    Host,
+    Reload,
+    useAsync,
+    DevtronProgressing,
+    useMainContext,
+    MainContextProvider,
+    ImageSelectionUtilityProvider,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
+import Navigation from './Navigation'
+import { ErrorBoundary, AppContext } from '..'
+import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -17,7 +28,7 @@ import {
     updateLoginCount,
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getAllModulesInfo,
     getModuleInfo,
@@ -25,12 +36,14 @@ import {
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
-import { getUserRole } from '../../userGroups/userGroup.service'
+import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { AppListResponse } from '../../app/list-new/AppListService'
+import { AppListResponse } from '../../app/list-new/AppListType'
+import { MainContext } from './types'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
+const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
@@ -39,27 +52,25 @@ const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
-export const mainContext = createContext<any>(null)
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
+const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
-    const [serverMode, setServerMode] = useState(undefined)
+    const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [pageOverflowEnabled, setPageOverflowEnabled] = useState<boolean>(true)
-    const [currentServerInfo, setCurrentServerInfo] = useState<{ serverInfo: ServerInfo; fetchingServerInfo: boolean }>(
-        {
-            serverInfo: undefined,
-            fetchingServerInfo: false,
-        },
-    )
+    const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
+        serverInfo: undefined,
+        fetchingServerInfo: false,
+    })
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
@@ -144,17 +155,19 @@ export default function NavigationRoutes() {
     useEffect(() => {
         const loginInfo = getLoginInfo()
 
-        if (!loginInfo) return
+        if (!loginInfo) {
+            return
+        }
 
-        if (process.env.NODE_ENV === 'production' && window._env_) {
+        if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
                     scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })
                 })
             }
             if (window._env_.GA_ENABLED) {
-                let email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
-                let path = location.pathname
+                const email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
+                const path = location.pathname
                 ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                     gaOptions: {
                         userId: `${email}`,
@@ -187,7 +200,9 @@ export default function NavigationRoutes() {
 
         if (typeof Storage !== 'undefined') {
             setActionWithExpiry('dashboardLoginTime', 0)
-            if (localStorage.isDashboardLoggedIn) return
+            if (localStorage.isDashboardLoggedIn) {
+                return
+            }
             dashboardLoggedIn()
                 .then((response) => {
                     if (response.result) {
@@ -297,144 +312,171 @@ export default function NavigationRoutes() {
     if (pageState === ViewType.LOADING || loginLoader) {
         return (
             <div className="full-height-width">
-                <Progressing pageLoader />
+                <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
             </div>
         )
-    } else if (pageState === ViewType.ERROR) {
-        return <Reload />
-    } else {
-        const _isOnboardingPage = isOnboardingPage()
-
-        return (
-            <mainContext.Provider
-                value={{
-                    serverMode,
-                    setServerMode,
-                    setPageOverflowEnabled,
-                    isHelpGettingStartedClicked,
-                    showCloseButtonAfterGettingStartedClicked,
-                    loginCount,
-                    setLoginCount,
-                    showGettingStartedCard,
-                    setShowGettingStartedCard,
-                    isGettingStartedClicked,
-                    setGettingStartedClicked,
-                    moduleInInstallingState,
-                    setModuleInInstallingState,
-                    installedModuleMap,
-                    currentServerInfo,
-                    isAirgapped,
-                }}
-            >
-                <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
-                    {!_isOnboardingPage && (
-                        <Navigation
-                            history={history}
-                            match={match}
-                            location={location}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            isSuperAdmin={isSuperAdmin}
-                            isAirgapped={isAirgapped}
-                        />
-                    )}
-                    {serverMode && (
-                        <div
-                            className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
-                                pageOverflowEnabled ? '' : 'main__overflow-disabled'
-                            }`}
-                        >
-                            <Suspense fallback={<Progressing pageLoader />}>
-                                <ErrorBoundary>
-                                    <Switch>
-                                        <Route
-                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
-                                        >
-                                            <ResourceBrowserContainer />
-                                        </Route>
-                                        <Route
-                                            path={URLS.GLOBAL_CONFIG}
-                                            render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
-                                        />
-                                        {!window._env_.K8S_CLIENT && [
-                                            <Route
-                                                key={URLS.APP}
-                                                path={URLS.APP}
-                                                render={() => (
-                                                    <AppRouter
-                                                        isSuperAdmin={isSuperAdmin}
-                                                        appListCount={appListCount}
-                                                        loginCount={loginCount}
-                                                    />
-                                                )}
-                                            />,
-                                            <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
-                                                <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                            </Route>,
-                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts isSuperAdmin={isSuperAdmin} />} />,
-                                            <Route
-                                                key={URLS.DEPLOYMENT_GROUPS}
-                                                path={URLS.DEPLOYMENT_GROUPS}
-                                                render={(props) => <BulkActions {...props} />}
-                                            />,
-                                            <Route
-                                                key={URLS.BULK_EDITS}
-                                                path={URLS.BULK_EDITS}
-                                                render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                            />,
-                                            <Route
-                                                key={URLS.SECURITY}
-                                                path={URLS.SECURITY}
-                                                render={(props) => <Security {...props} serverMode={serverMode} />}
-                                            />,
-                                            <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                                <DevtronStackManager
-                                                    serverInfo={currentServerInfo.serverInfo}
-                                                    getCurrentServerInfo={getCurrentServerInfo}
-                                                    isSuperAdmin={isSuperAdmin}
-                                                />
-                                            </Route>,
-                                            <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
-                                                <OnboardingGuide
-                                                    loginCount={loginCount}
-                                                    isSuperAdmin={isSuperAdmin}
-                                                    serverMode={serverMode}
-                                                    isGettingStartedClicked={isGettingStartedClicked}
-                                                />
-                                            </Route>,
-                                        ]}
-                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
-                                            <Route path={URLS.JOB}>
-                                                <AppContext.Provider value={contextValue}>
-                                                    <Jobs />
-                                                </AppContext.Provider>
-                                            </Route>
-                                        )}
-                                        <Route>
-                                            <RedirectUserWithSentry
-                                                isFirstLoginUser={
-                                                    isSuperAdmin && loginCount === 0 && appListCount === 0
-                                                }
-                                            />
-                                        </Route>
-                                    </Switch>
-                                </ErrorBoundary>
-                            </Suspense>
-                        </div>
-                    )}
-                </main>
-            </mainContext.Provider>
-        )
     }
+    if (pageState === ViewType.ERROR) {
+        return <Reload />
+    }
+    const _isOnboardingPage = isOnboardingPage()
+    return (
+        <MainContextProvider
+            value={{
+                serverMode,
+                setServerMode,
+                setPageOverflowEnabled,
+                isHelpGettingStartedClicked,
+                showCloseButtonAfterGettingStartedClicked,
+                loginCount,
+                setLoginCount,
+                showGettingStartedCard,
+                setShowGettingStartedCard,
+                isGettingStartedClicked,
+                setGettingStartedClicked,
+                moduleInInstallingState,
+                setModuleInInstallingState,
+                installedModuleMap,
+                currentServerInfo,
+                isAirgapped,
+                isSuperAdmin,
+            }}
+        >
+            <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+                {!_isOnboardingPage && (
+                    <Navigation
+                        history={history}
+                        match={match}
+                        location={location}
+                        serverMode={serverMode}
+                        moduleInInstallingState={moduleInInstallingState}
+                        installedModuleMap={installedModuleMap}
+                        isSuperAdmin={isSuperAdmin}
+                        isAirgapped={isAirgapped}
+                    />
+                )}
+                {serverMode && (
+                    <div
+                        className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
+                            pageOverflowEnabled ? '' : 'main__overflow-disabled'
+                        }`}
+                    >
+                        <Suspense
+                            fallback={<DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />}
+                        >
+                            <ErrorBoundary>
+                                <Switch>
+                                    <Route
+                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
+                                    >
+                                        <ResourceBrowserContainer />
+                                    </Route>
+                                    <Route
+                                        path={URLS.GLOBAL_CONFIG}
+                                        render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
+                                    />
+                                    {!window._env_.K8S_CLIENT && [
+                                        <Route
+                                            key={URLS.APP}
+                                            path={URLS.APP}
+                                            render={() => (
+                                                <AppRouter
+                                                    isSuperAdmin={isSuperAdmin}
+                                                    appListCount={appListCount}
+                                                    loginCount={loginCount}
+                                                />
+                                            )}
+                                        />,
+                                        <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
+                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                        </Route>,
+                                        <Route
+                                            key={URLS.CHARTS}
+                                            path={URLS.CHARTS}
+                                            render={() => <Charts isSuperAdmin={isSuperAdmin} />}
+                                        />,
+                                        <Route
+                                            key={URLS.DEPLOYMENT_GROUPS}
+                                            path={URLS.DEPLOYMENT_GROUPS}
+                                            render={(props) => <BulkActions {...props} />}
+                                        />,
+                                        <Route
+                                            key={URLS.BULK_EDITS}
+                                            path={URLS.BULK_EDITS}
+                                            render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
+                                        />,
+                                        <Route
+                                            key={URLS.SECURITY}
+                                            path={URLS.SECURITY}
+                                            render={(props) => <Security {...props} serverMode={serverMode} />}
+                                        />,
+                                        ...(ResourceWatcherRouter
+                                            ? [
+                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
+                                                      <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        ...(!window._env_.HIDE_RELEASES && Releases
+                                            ? [
+                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                      <ImageSelectionUtilityProvider
+                                                          value={{
+                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
+                                                              getModuleInfo,
+                                                          }}
+                                                      >
+                                                          <Releases />
+                                                      </ImageSelectionUtilityProvider>
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                            <DevtronStackManager
+                                                serverInfo={currentServerInfo.serverInfo}
+                                                getCurrentServerInfo={getCurrentServerInfo}
+                                                isSuperAdmin={isSuperAdmin}
+                                            />
+                                        </Route>,
+                                        <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
+                                            <OnboardingGuide
+                                                loginCount={loginCount}
+                                                isSuperAdmin={isSuperAdmin}
+                                                serverMode={serverMode}
+                                                isGettingStartedClicked={isGettingStartedClicked}
+                                            />
+                                        </Route>,
+                                    ]}
+                                    {!window._env_.K8S_CLIENT && (
+                                        <Route path={URLS.JOB}>
+                                            <AppContext.Provider value={contextValue}>
+                                                <Jobs />
+                                            </AppContext.Provider>
+                                        </Route>
+                                    )}
+                                    <Route>
+                                        <RedirectUserWithSentry
+                                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                                        />
+                                    </Route>
+                                </Switch>
+                            </ErrorBoundary>
+                        </Suspense>
+                    </div>
+                )}
+            </main>
+        </MainContextProvider>
+    )
 }
 
-export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
+export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [currentAppName, setCurrentAppName] = useState<string>('')
+
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
@@ -448,11 +490,15 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     />
                     <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
                     <Route
+                        path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
+                        render={() => <ExternalArgoApps />}
+                    />
+                    <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
                     />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2={true} />} />
+                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
 
                     <Route exact path="">
                         <RedirectToAppList />
@@ -468,45 +514,42 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
     )
 }
 
-export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
+export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
     const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
     const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
-                <Switch>
-                    <Route
-                        path={`${path}/:appType`}
-                        render={() => (
-                            <NewAppList
-                                isSuperAdmin={isSuperAdmin}
-                                isArgoInstalled={isArgoInstalled}
-                                appListCount={appListCount}
-                            />
-                        )}
-                    />
-                    <Route exact path="">
-                        <RedirectToAppList />
-                    </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+            <Switch>
+                <Route
+                    path={`${path}/:appType`}
+                    render={() => (
+                        <NewAppList
+                            isSuperAdmin={isSuperAdmin}
+                            isArgoInstalled={isArgoInstalled}
+                            appListCount={appListCount}
                         />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
+                    )}
+                />
+                <Route exact path="">
+                    <RedirectToAppList />
+                </Route>
+                <Route>
+                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                </Route>
+            </Switch>
         </ErrorBoundary>
     )
 }
 
-export function RedirectUserWithSentry({ isFirstLoginUser }) {
+export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { push } = useHistory()
     const { pathname } = useLocation()
     useEffect(() => {
-        if (pathname && pathname !== '/') Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        if (pathname && pathname !== '/') {
+            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+        }
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
@@ -518,15 +561,15 @@ export function RedirectUserWithSentry({ isFirstLoginUser }) {
     return null
 }
 
-export function RedirectToAppList() {
-    const { push } = useHistory()
-    const { serverMode } = useContext(mainContext)
+export const RedirectToAppList = () => {
+    const { replace } = useHistory()
+    const { serverMode } = useMainContext()
     useEffect(() => {
-        let baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
+        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
         if (serverMode == SERVER_MODE.FULL) {
-            push(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {
-            push(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
         }
     }, [])
     return null

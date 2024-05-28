@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { ButtonWithLoader } from '../common'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
@@ -47,7 +46,9 @@ export default function ScopedVariablesEditor({
 
     const handleSave = async () => {
         const variablesObj = handleParsing(editorData)
-        if (!variablesObj) return
+        if (!variablesObj) {
+            return
+        }
         try {
             setIsSaving(true)
             const res = await postScopedVariables(variablesObj)
@@ -69,7 +70,9 @@ export default function ScopedVariablesEditor({
 
     const handleReview = async () => {
         const variablesObj = handleParsing(editorData)
-        if (!variablesObj) return
+        if (!variablesObj) {
+            return
+        }
         try {
             setLoadingSavedScopedVariables(true)
             const res = await getScopedVariablesJSON()
@@ -115,7 +118,10 @@ export default function ScopedVariablesEditor({
                 <div className="flexbox-col dc__content-space dc__align-start flex-grow-1 dc__no-shrink dc__align-self-stretch dc__border-radius-4-imp dc__border">
                     <div className="flexbox pt-8 pb-8 pl-12 pr-12 bcn-0 dc__border-bottom dc__gap-16 dc__align-self-stretch dc__align-start dc__top-radius-4">
                         {setShowEditView ? (
-                            <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right">
+                            <p
+                                data-testid={`${showSaveView ? 'review-variables' : 'edit-variables'}`}
+                                className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0 dc__ellipsis-right"
+                            >
                                 {showSaveView ? 'Review' : 'Edit'} <span className="fw-7">Variables</span>
                             </p>
                         ) : (
@@ -188,7 +194,6 @@ export default function ScopedVariablesEditor({
                         <ButtonWithLoader
                             rootClassName="flex mw-56 pt-8 pb-8 pl-16 pr-16 dc__outline-none-imp dc__gap-8 dc__border-radius-4-imp bcb-5 cn-0 fs-13 fw-6 lh-20 dc__no-border h-32 cta"
                             onClick={showSaveView ? handleSave : handleReview}
-                            loaderColor="white"
                             isLoading={showSaveView ? isSaving : loadingSavedScopedVariables}
                             disabled={showSaveView ? isSaving : loadingSavedScopedVariables}
                         >

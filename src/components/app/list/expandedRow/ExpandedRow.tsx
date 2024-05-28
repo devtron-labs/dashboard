@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import { statusIcon, statusColor } from '../../config'
+import { AppStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { statusColor } from '../../config'
 import { handleUTCTime } from '../../../common'
 import { ExpandedRowProps } from './types'
-import { Link } from 'react-router-dom'
 import { ReactComponent as Expand } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Settings } from '../../../../assets/icons/ic-settings.svg'
-import Tippy from '@tippyjs/react'
 import './expandedRow.css'
-import AppStatus from '../../AppStatus'
 
 export class ExpandedRow extends Component<ExpandedRowProps> {
     handleEditApp = () => {
@@ -23,7 +23,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     to={`${this.props.redirect(this.props.app, env.id)}`}
                     className="app-list__row app-list__row--expanded"
                 >
-                    <div className="app-list__cell--icon"></div>
+                    <div className="app-list__cell--icon" />
                     <div className="app-list__cell app-list__cell--name">
                         <svg className="app-status app-status--pseudo" preserveAspectRatio="none" viewBox="0 0 200 40">
                             <line x1="0" y1="20" x2="300" y2="20" stroke={color} strokeWidth="1" />
@@ -44,12 +44,12 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                     </div>
                     <div className="app-list__cell app-list__cell--time">
                         {env.lastDeployedTime && (
-                            <Tippy className="default-tt" arrow={true} placement="top" content={env.lastDeployedTime}>
+                            <Tippy className="default-tt" arrow placement="top" content={env.lastDeployedTime}>
                                 <p className="dc__truncate-text  m-0">{handleUTCTime(env.lastDeployedTime, true)}</p>
                             </Tippy>
                         )}
                     </div>
-                    <div className="app-list__cell app-list__cell--action"></div>
+                    <div className="app-list__cell app-list__cell--action" />
                 </Link>
             )
         })

@@ -19,7 +19,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedTabIndex: 1,
     readme: '',
     fetchedValues: {},
-    fetchedValuesManifest:{},
+    fetchedValuesManifest: {},
     yamlMode: true,
     isBasicLocked: false,
     isBasicLockedInBase: false,
@@ -31,7 +31,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     dialog: false,
     latestAppChartRef: null,
     latestChartRef: null,
-    showSaveChangsModal: false,
+    showSaveChangesModal: false,
     allDrafts: [],
     latestDraft: null,
     draftValues: '',
@@ -44,16 +44,18 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedCompareOption: null,
     isValues: true,
     loadingManifest: false,
-    manifestDataRHS:'',
-    manifestDataLHS:'',
-    groupedOptionsData:[],
-    manifestDataLHSOverride:'',
-    manifestDataRHSOverride:'',
-    loadingManifestOverride:false,
-    isValuesOverride:true,
-    groupedOptionsDataOverride:[],
+    manifestDataRHS: '',
+    manifestDataLHS: '',
+    groupedOptionsData: [],
+    manifestDataLHSOverride: '',
+    manifestDataRHSOverride: '',
+    loadingManifestOverride: false,
+    isValuesOverride: true,
+    groupedOptionsDataOverride: [],
     convertVariables: false,
     convertVariablesOverride: false,
+    showLockedTemplateDiff: false,
+    lockChangesLoading: false,
 }
 
 export const deploymentConfigReducer = (
@@ -85,6 +87,8 @@ export const deploymentConfigReducer = (
             return { ...state, tempFormData: action.payload }
         case DeploymentConfigStateActionTypes.chartConfigLoading:
             return { ...state, chartConfigLoading: action.payload }
+        case DeploymentConfigStateActionTypes.lockChangesLoading:
+            return { ...state, lockChangesLoading: action.payload }
         case DeploymentConfigStateActionTypes.showConfirmation:
             return { ...state, showConfirmation: action.payload }
         case DeploymentConfigStateActionTypes.showReadme:
@@ -98,7 +102,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.fetchedValues:
             return { ...state, fetchedValues: action.payload }
         case DeploymentConfigStateActionTypes.fetchedValuesManifest:
-            return { ...state, fetchedValuesManifest: action.payload }    
+            return { ...state, fetchedValuesManifest: action.payload }
         case DeploymentConfigStateActionTypes.yamlMode:
             return { ...state, yamlMode: action.payload }
         case DeploymentConfigStateActionTypes.isBasicLocked:
@@ -126,7 +130,9 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.reset:
             return { ...initDeploymentConfigState }
         case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
-            return { ...state, showSaveChangsModal: !state.showSaveChangsModal }
+            return { ...state, showSaveChangesModal: !state.showSaveChangesModal }
+        case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:
+            return { ...state, showLockedTemplateDiff: action.payload }
         case DeploymentConfigStateActionTypes.allDrafts:
             return { ...state, allDrafts: action.payload }
         case DeploymentConfigStateActionTypes.toggleDraftComments:
@@ -150,7 +156,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.manifestDataLHS:
             return { ...state, manifestDataLHS: action.payload }
         case DeploymentConfigStateActionTypes.groupedOptionsData:
-            return { ...state, groupedOptionsData: action.payload }   
+            return { ...state, groupedOptionsData: action.payload }
         case DeploymentConfigStateActionTypes.isValuesOverride:
             return { ...state, isValuesOverride: action.payload }
         case DeploymentConfigStateActionTypes.manifestDataLHSOverride:
@@ -162,9 +168,9 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.groupedOptionsDataOverride:
             return { ...state, groupedOptionsDataOverride: action.payload }
         case DeploymentConfigStateActionTypes.convertVariables:
-            return { ...state, convertVariables: action.payload }       
+            return { ...state, convertVariables: action.payload }
         case DeploymentConfigStateActionTypes.convertVariablesOverride:
-            return { ...state, convertVariablesOverride: action.payload }                                      
+            return { ...state, convertVariablesOverride: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

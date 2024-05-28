@@ -2,7 +2,7 @@ export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
 
-//DELETE COMPONENET STARTS
+// DELETE COMPONENET STARTS
 export const DC_MATERIAL_VIEW_CONFIRMATION_MESSAGE =
     'Checkout path for this repository is being used in docker build config. Please change checkout path in use and try again.'
 export const DC_CHART_REPO_CONFIRMATION_MESSAGE = 'Some deployed helm apps are using this repository.'
@@ -44,7 +44,7 @@ export const enum DeleteComponentsName {
     GitRepo = 'Repo',
 }
 
-//DELETE COMPONENT ENDS
+// DELETE COMPONENT ENDS
 
 export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
@@ -55,17 +55,18 @@ export const REPO_NAME_VALIDATION = 'Repository name is not valid; Invalid chara
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
 export const DEPLOY_IMAGE_EXTERNALSOURCE = 'Deploy image from external source'
+export const CHANGE_TO_EXTERNAL_SOURCE = 'Change to external source'
 export const EDIT_DEPLOYMENT_PIPELINE = 'Edit deployment pipeline'
 export const CREATE_DEPLOYMENT_PIPELINE = 'Create deployment pipeline'
 export const ERROR_MESSAGE_FOR_VALIDATION =
     "Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
 export const CHARACTER_ERROR_MIN = 'At least 2 characters required'
 export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
-export const COPIED_MESSAGE = 'Copied!'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CustomErrorMessage = {
-    CUSTOM_TAG_ERROR_MSG: 'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
+    CUSTOM_TAG_ERROR_MSG:
+        'Allowed: Alphanumeric characters, including (_) (.) (-) but cannot begin or end with (.) or (-).',
     CUSTOM_TAG_MANDATORY_X: 'Using variable {x} is mandatory',
     CUSTOM_TAG_LIMIT: 'Max 128 characters.',
     INVALID_IMAGE_PATTERN: 'Invalid image tag pattern',
@@ -79,25 +80,20 @@ export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
 
 export const TOAST_BUTTON_TEXT_VIEW_DETAILS = 'VIEW DETAILS'
 export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
-    title: 'No users Added',
+    title: 'No users added',
     subTitle: 'Add users and assign group or direct permissions',
     notConfigured: 'SSO Login not configured:',
     infoText:
         ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
     linkText: 'Go to SSO login services',
-    redirectLink: '/global-config/login-service',
+    redirectLink: '/global-config/auth/login-service',
 }
 
 export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
-export const TOAST_ACCESS_DENIED = {
-    TITLE: 'Access denied',
-    SUBTITLE: 'You do not have required access to perform this action',
-}
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
 export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
-export const USER_NOT_EDITABLE = 'user cannot be edited'
 
 // Empty state messgaes
 export const ERROR_EMPTY_SCREEN = {
@@ -115,11 +111,9 @@ export const ERROR_EMPTY_SCREEN = {
     NOT_AUTHORIZED: 'Not authorized',
     UNAUTHORIZED: 'unauthorized',
     FORBIDDEN: 'forbidden',
-    REQUIRED_MANAGER_ACCESS:
-        'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
-//Confirmation Dialog messgaes
+// Confirmation Dialog messgaes
 export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
@@ -157,7 +151,7 @@ export const BUTTON_TEXT = {
     CANCEL: 'Cancel',
 }
 
-//Deployment App Types
+// Deployment App Types
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
@@ -232,8 +226,8 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
     },
     CI_BUILD_HISTORY_LINKED_PIPELINE: {
-        TITLE: 'This is a Linked CI Pipelined',
-        SUBTITLE: 'This is a Linked CI Pipelined',
+        TITLE: 'This is a Linked CI Pipeline',
+        SUBTITLE: 'This is a Linked CI Pipeline',
     },
     CI_BUILD_HISTORY_NO_PIPELINE: {
         TITLE: 'No pipeline selected',
@@ -256,9 +250,9 @@ export const EMPTY_STATE_STATUS = {
         TITLE: 'No deployments',
         SUBTITLE: 'No deployment history available for the',
     },
-    CHART:{
+    CHART: {
         NO_SOURCE_TITLE: 'No chart source configured',
-        NO_CHART_FOUND: 'Could not find any matching chart source'
+        NO_CHART_FOUND: 'Could not find any matching chart source',
     },
     CHART_DEPLOYMENT_HISTORY: {
         SUBTITLE:
@@ -406,11 +400,12 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'The trigger you are looking for does not exist',
     },
     OVERVIEW: {
-        DEPLOYMENT_TITLE: 'Explore your application\'s deployment landscape',
-        DEPLOYMENT_SUB_TITLE: 'Although there are no deployments to display just yet, it\'s the perfect time to start configuring and deploying your app to various environments. Let\'s go!',
+        DEPLOYMENT_TITLE: "Explore your application's deployment landscape",
+        DEPLOYMENT_SUB_TITLE:
+            "Although there are no deployments to display just yet, it's the perfect time to start configuring and deploying your app to various environments. Let's go!",
         APP_DESCRIPTION: 'Write a short description for this application',
-        JOB_DESCRIPTION: 'Write a short description for this job'
-    }
+        JOB_DESCRIPTION: 'Write a short description for this job',
+    },
 }
 
 export const INVALID_YAML_MSG = 'Please provide data in valid YAML format'
@@ -427,3 +422,6 @@ export const EPHEMERAL_CONTAINER = {
 export const NO_TASKS_CONFIGURED_ERROR = 'No tasks are configured in this job pipeline'
 
 export const FEATURE_DISABLED = 'This feature is disabled'
+
+export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for pipeline within an app.'
+export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'

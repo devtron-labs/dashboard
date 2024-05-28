@@ -7,7 +7,10 @@ import {
     useBreadcrumb,
     ConditionalWrap,
     useAsync,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
 import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
@@ -21,13 +24,10 @@ import {
     getChartGroups,
     deleteChartGroup,
 } from './charts.service'
-import { toast } from 'react-toastify'
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
-import Tippy from '@tippyjs/react'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
-import PageHeader from '../common/header/PageHeader'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 
 export default function ChartGroupDetails() {
@@ -45,7 +45,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
-        setEnvironmentList
+        setEnvironmentList,
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -86,7 +86,7 @@ export default function ChartGroupDetails() {
     }
 
     function redirectToConfigure() {
-        let url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
+        const url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
         push(url)
     }
 
@@ -122,7 +122,7 @@ export default function ChartGroupDetails() {
     }
 
     function getDeleteComponent() {
-        let payload = {
+        const payload = {
             name: state.name,
             description: state.description,
             id: parseInt(groupId),
@@ -138,7 +138,7 @@ export default function ChartGroupDetails() {
                 title={state.name}
                 toggleConfirmation={toggleConfirmation}
                 component={DeleteComponentsName.ChartGroup}
-                redirectTo={true}
+                redirectTo
                 url={`${URLS.CHARTS}/discover`}
             />
         )
@@ -203,14 +203,14 @@ export default function ChartGroupDetails() {
     const renderBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb sep={'/'} breadcrumbs={breadcrumbs} />
+                <BreadCrumb sep="/" breadcrumbs={breadcrumbs} />
             </div>
         )
     }
     return (
         <div className="chart-group-details-page">
             <PageHeader
-                isBreadcrumbs={true}
+                isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderChartGroupActionButton}
             />
@@ -246,7 +246,7 @@ export default function ChartGroupDetails() {
                                 handleChartValueChange={handleChartValueChange}
                                 handleChartVersionChange={handleChartVersionChange}
                             />
-                            <div className={`flex left deployment-buttons`}>
+                            <div className="flex left deployment-buttons">
                                 <ConditionalWrap
                                     condition={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                     wrap={(children) => (
@@ -263,13 +263,13 @@ export default function ChartGroupDetails() {
                                     <button
                                         type="button"
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
-                                        /*onClick={(e) =>
+                                        /* onClick={(e) =>
                                            push(`${url}/deploy`, {
                                                charts: state.charts,
                                                configureChartIndex: state.charts.findIndex((chart) => chart.isEnabled),
                                            })
 
-                                        }*/
+                                        } */
                                         onClick={handleAdvancedButtonClick}
                                         className="cta cancel dc__ellipsis-right w-100"
                                         data-testid="advanced-options-button"

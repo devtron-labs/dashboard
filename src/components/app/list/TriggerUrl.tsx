@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { Progressing, VisibleModal, GenericEmptyState, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
+import { Progressing, VisibleModal, GenericEmptyState, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
-import { CopyToClipboardTextProps, ManifestUrlList, TriggerURL } from './types'
+import { ManifestUrlList, TriggerURL } from './types'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
-export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
+export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) => {
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
@@ -24,7 +23,6 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                 }
                 if (item.kind === KIND.INGRESS && item.urls?.length) {
                     data.Ingress.push(item)
-                    return
                 }
             }
         })
@@ -44,7 +42,10 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
             setErrorMessage({ title: '', subtitle: '' })
         } catch (error) {
             setLoading(false)
-            setErrorMessage({title: 'Failed to fetch URLs', subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.' })
+            setErrorMessage({
+                title: 'Failed to fetch URLs',
+                subtitle: 'Could not fetch service and ingress URLs. Please try again after some time.',
+            })
         }
     }
 
@@ -112,7 +113,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 placement="top"
                                                             >
                                                                 <a
-                                                                    href={'//' + url}
+                                                                    href={`//${url}`}
                                                                     className="url-box dc__ellipsis-right mr-6"
                                                                     target="_blank"
                                                                     rel="noreferrer noopener"
@@ -120,11 +121,8 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                     {url}
                                                                 </a>
                                                             </Tippy>
-                                                            <span className="icon-dim-16">
-                                                                <CopyToClipboardTextWithTippy
-                                                                    iconClass="pointer dc__visible-hover--child icon-dim-16"
-                                                                    text={url}
-                                                                />
+                                                            <span className="icon-dim-16 dc__visible-hover--child">
+                                                                <ClipboardButton content={url} />
                                                             </span>
                                                         </div>
                                                     ))}
@@ -142,11 +140,8 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                             {value.pointsTo}
                                                         </span>
                                                     </Tippy>
-                                                    <span className="icon-dim-16 pt-2">
-                                                        <CopyToClipboardTextWithTippy
-                                                            iconClass="pointer dc__visible-hover--child icon-dim-16"
-                                                            text={value.pointsTo}
-                                                        />
+                                                    <span className="icon-dim-16 pt-2 dc__visible-hover--child">
+                                                        <ClipboardButton content={value.pointsTo} />
                                                     </span>
                                                 </span>
                                             </div>
@@ -162,42 +157,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardTextWithTippy({
-    text,
-    rootClassName,
-    iconClass,
-    placement = 'bottom',
-}: CopyToClipboardTextProps) {
-    const [copied, setCopied] = useState(false)
-    const copyClipboard = (e): void => {
-        e.stopPropagation()
-        setCopied(true)
-        copyToClipboard(text)
-    }
-
-    return (
-        <Tippy
-            className="default-tt"
-            arrow={false}
-            placement={placement}
-            content={copied ? 'Copied!' : 'Copy'}
-            trigger="mouseenter click"
-            onShow={(_tippy) => {
-                setTimeout(() => {
-                    _tippy.hide()
-                    setCopied(false)
-                }, 2000)
-            }}
-            interactive={true}
-        >
-            <div className={`cluster-clipboard cursor ${rootClassName ?? ''}`} onClick={copyClipboard}>
-                <CopyText className={`${iconClass ?? 'icon-dim-16'}`} />
-            </div>
-        </Tippy>
-    )
-}
-
-function EmptyUrlState({ title = '', subtitle = '' }) {
+const EmptyUrlState = ({ title = '', subtitle = '' }) => {
     return (
         <GenericEmptyState
             title={title || EMPTY_STATE_STATUS.TRIGGER_URL.TITLE}

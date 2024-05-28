@@ -1,7 +1,6 @@
+import { get, put, post, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { get, put, post } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigMapRequest } from './types'
-import yamlJsParser from 'yamljs'
 
 export function getDeploymentTemplate(
     id: number,
@@ -13,11 +12,10 @@ export function getDeploymentTemplate(
         return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
             signal: abortSignal,
         })
-    } else {
-        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
-            signal: abortSignal,
-        })
     }
+    return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+        signal: abortSignal,
+    })
 }
 
 export function getDeploymentTemplateData(
@@ -59,6 +57,14 @@ export const updateDeploymentTemplate = (request, abortSignal) => {
     return post(URL, request, {
         signal: abortSignal,
     })
+}
+
+export const getIfLockedConfigProtected = (request) => {
+    return post(Routes.LOCKED_CONFIG_PROTECTED, request)
+}
+
+export const getIfLockedConfigNonProtected = (request) => {
+    return post(Routes.LOCKED_CONFIG_NON_PROTECTED, request)
 }
 
 export const saveDeploymentTemplate = (request, abortSignal) => {
@@ -111,10 +117,9 @@ function configMapModal(configMap, appId: number) {
             secretsValuesOverride: configMap.secret_data,
             configMapJsonStr: JSON.stringify(configMap.config_map_data || {}, undefined, 2),
             secretsJsonStr: JSON.stringify(configMap.secret_data || {}, undefined, 2),
-            configMapYaml: yamlJsParser.stringify(configMap.config_map_data),
-            secretsYaml: yamlJsParser.stringify(configMap.secret_data),
+            configMapYaml: YAMLStringify(configMap.config_map_data),
+            secretsYaml: YAMLStringify(configMap.secret_data),
         }
-    } else {
-        return null
     }
+    return null
 }

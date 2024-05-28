@@ -1,8 +1,10 @@
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
+import { showError, DetailsProgressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
+import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
-import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { ReactComponent as Lock } from '../../../../assets/icons/ic-locked.svg'
@@ -14,10 +16,7 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import YAML from 'yaml'
-import ReactSelect, { components } from 'react-select'
 import CodeEditor from '../../../CodeEditor/CodeEditor'
-import Tippy from '@tippyjs/react'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import {
     GROUPED_OPTION_LABELS,
@@ -150,16 +149,16 @@ export default function ChartValuesEditor({
         selectedManifestVersionForDiff: null,
     })
 
-
     useEffect(() => {
-        if (
+        const ExternalModeCondition = chartValuesList.length > 0 && isExternalApp
+        const FullModeCondition =
             !manifestView &&
             chartValuesList.length > 0 &&
             (isDeployChartView || isCreateValueView || deploymentHistoryList.length > 0)
-        ) {
-            const deployedChartValues = [],
-                defaultChartValues = [],
-                presetChartValues = []
+        if (ExternalModeCondition || FullModeCondition) {
+            const deployedChartValues = []
+            const defaultChartValues = []
+            const presetChartValues = []
             let _selectedVersionForDiff
 
             for (let index = 0; index < chartValuesList.length; index++) {
@@ -203,21 +202,21 @@ export default function ChartValuesEditor({
                     (deploymentHistoryOptionsList.length > 0
                         ? deploymentHistoryOptionsList[0]
                         : deployedChartValues.length > 0
-                        ? deployedChartValues[0]
-                        : presetChartValues.length > 0
-                        ? presetChartValues[0]
-                        : defaultChartValues[0]),
+                          ? deployedChartValues[0]
+                          : presetChartValues.length > 0
+                            ? presetChartValues[0]
+                            : defaultChartValues[0]),
             })
         }
     }, [chartValuesList, deploymentHistoryList, selectedChartValues])
 
     useEffect(() => {
-        if (comparisonView && valuesForDiffState.selectedVersionForDiff) { 
+        if (comparisonView && valuesForDiffState.selectedVersionForDiff) {
             setValuesForDiffState({
                 ...valuesForDiffState,
                 loadingValuesForDiff: true,
             })
-            const selectedVersionForDiff = valuesForDiffState.selectedVersionForDiff
+            const { selectedVersionForDiff } = valuesForDiffState
             const _version = selectedVersionForDiff.value
             const _currentValues = manifestView
                 ? valuesForDiffState.manifestsForDiff.get(_version)
@@ -253,11 +252,11 @@ export default function ChartValuesEditor({
                         .then((res) => {
                             const _valuesForDiff = valuesForDiffState.valuesForDiff
                             const _manifestsForDiff = valuesForDiffState.manifestsForDiff
-                            let _selectedValues : string
+                            let _selectedValues: string
                             try {
-                                _selectedValues = YAML.stringify(JSON.parse(res.result.valuesYaml))
+                                _selectedValues = YAMLStringify(JSON.parse(res.result.valuesYaml))
                             } catch (error) {
-                                _selectedValues = res.result.valuesYaml 
+                                _selectedValues = res.result.valuesYaml
                             }
                             _valuesForDiff.set(_version, _selectedValues)
                             _manifestsForDiff.set(_version, res.result.manifest)
@@ -321,8 +320,8 @@ export default function ChartValuesEditor({
                     (valuesForDiffState.deploymentHistoryOptionsList.length > 0
                         ? valuesForDiffState.deploymentHistoryOptionsList[0]
                         : valuesForDiffState.deployedChartValues.length > 0
-                        ? valuesForDiffState.deployedChartValues[0]
-                        : valuesForDiffState.defaultChartValues[0]),
+                          ? valuesForDiffState.deployedChartValues[0]
+                          : valuesForDiffState.defaultChartValues[0]),
             })
         }
     }, [comparisonView])
@@ -338,17 +337,25 @@ export default function ChartValuesEditor({
 
     const getDynamicClassName = (): string => {
         if (isDeployChartView) {
-            if (!showInfoText || showEditorHeader) return 'sub130-vh'
+            if (!showInfoText || showEditorHeader) {
+                return 'sub130-vh'
+            }
             return manifestView ? 'sub193-vh' : 'sub160-vh'
         }
 
         if (comparisonView) {
-            if (manifestView) return 'sub193-vh'
+            if (manifestView) {
+                return 'sub193-vh'
+            }
             return 'sub160-vh'
         }
 
-        if (manifestView) return 'sub222-vh'
-        if (showEditorHeader) return 'sub160-vh'
+        if (manifestView) {
+            return 'sub222-vh'
+        }
+        if (showEditorHeader) {
+            return 'sub160-vh'
+        }
         return 'sub189-vh'
     }
 

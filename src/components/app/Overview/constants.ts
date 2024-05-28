@@ -1,14 +1,19 @@
+import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
 import { AppEnvironment } from '../../../services/service.types'
 
 /**
  * Mock data for the shimmer loader
  */
-export const loadingEnvironmentList: AppEnvironment[] = Array.from(Array(3).keys()).map((index) => ({
+export const loadingEnvironmentList: AppEnvironment[] = Array.from(
+    Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys(),
+).map((index) => ({
     environmentId: index,
     environmentName: '',
     appMetrics: false,
     infraMetrics: false,
     prod: false,
+    commits: [],
+    ciArtifactId: 0,
 }))
 
 /**
@@ -22,3 +27,19 @@ export const OVERVIEW_TABS = {
 } as const
 
 export const TAB_SEARCH_KEY = 'tab'
+
+export const MODAL_STATE = {
+    /**
+     * Search param key for the modal
+     */
+    key: 'modal',
+    /**
+     * Value when the modal is open
+     */
+    value: 'open',
+} as const
+
+export enum EnvironmentListSortableKeys {
+    environmentName = 'environment',
+    deployedAt = 'deployedAt',
+}

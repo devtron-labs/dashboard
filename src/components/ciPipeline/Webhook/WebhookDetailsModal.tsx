@@ -1,23 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    InfoColourBar,
+    Reload,
+    copyToClipboard,
+    CustomInput,
+    ClipboardButton,
+    ButtonWithLoader,
+} from '@devtron-labs/devtron-fe-common-lib'
+import ReactSelect, { components } from 'react-select'
+import { useParams } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader } from '../../common'
-import { showError, Progressing, Drawer, InfoColourBar, Reload, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
-import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as ICCopy } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
-import ReactSelect, { components } from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
-import { getUserRole, saveUser } from '../../userGroups/userGroup.service'
-import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES } from '../../../config'
-import { createGeneratedAPIToken } from '../../apiTokens/service'
-import { useParams } from 'react-router-dom'
-import { ActionTypes, CreateUser, EntityTypes } from '../../userGroups/userGroups.types'
+import {
+    getUserRole,
+    createOrUpdateUser,
+} from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
     PLAYGROUND_TAB_LIST,
@@ -28,11 +40,17 @@ import {
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
+import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
+import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
+import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
+import { ActionTypes, EntityTypes, PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import {
+    getDefaultStatusAndTimeout,
+    getDefaultUserStatusAndTimeout,
+} from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
 
-export function WebhookDetailsModal({ close }: WebhookDetailType) {
+export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
         appId: string
         webhookId: string
@@ -61,7 +79,6 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
-    const [copied, setCopied] = useState(false)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const schemaRef = useRef<Array<HTMLDivElement | null>>([])
@@ -82,21 +99,25 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const flattenObject = (ob: Record<string, any>, tableName: string): Record<string, SchemaType> => {
-        let toReturn = {}
+        const toReturn = {}
         toReturn[tableName] = {}
-        for (let key in ob) {
-            if (!ob.hasOwnProperty(key)) continue
+        for (const key in ob) {
+            if (!ob.hasOwnProperty(key)) {
+                continue
+            }
             const currentElement = ob[key]
             if (currentElement.child) {
-                var flatObject = flattenObject(
+                const flatObject = flattenObject(
                     currentElement.dataType === 'Array' ? currentElement.child[0] : currentElement.child,
                     key,
                 )
                 currentElement.createLink = true
                 currentElement.dataType = key
                 delete currentElement.child
-                for (var x in flatObject) {
-                    if (!flatObject.hasOwnProperty(x)) continue
+                for (const x in flatObject) {
+                    if (!flatObject.hasOwnProperty(x)) {
+                        continue
+                    }
                     toReturn[key] = flatObject[x]
                 }
             }
@@ -137,7 +158,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             setModifiedSamplePayload(_modifiedPayload)
             setModifiedSampleString(modifiedJSONString)
             setSampleJSON(modifiedJSONString)
-            //creating sample curl by replacing the actuall wehook url and appending sample data
+            // creating sample curl by replacing the actuall wehook url and appending sample data
             setSampleCURL(
                 CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
             )
@@ -177,10 +198,20 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             }
             const { result } = await createGeneratedAPIToken(payload)
             if (result) {
-                const userPermissionPayload: CreateUser = {
-                    id: result.userId,
-                    email_id: result.userIdentifier,
-                    groups: [],
+                const userPermissionPayload = createUserPermissionPayload({
+                    id: result.id,
+                    userIdentifier: result.userIdentifier,
+                    userGroups: [],
+                    serverMode: SERVER_MODE.FULL,
+                    directPermission: [],
+                    chartPermission: {} as ChartGroupPermissionsFilter,
+                    k8sPermission: [],
+                    permissionType: PermissionType.SPECIFIC,
+                    ...getDefaultUserStatusAndTimeout(),
+                })
+                const { result: userPermissionResponse } = await createOrUpdateUser({
+                    ...userPermissionPayload,
+                    // Override the role filter
                     roleFilters: [
                         {
                             entity: EntityTypes.DIRECT,
@@ -189,11 +220,10 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                             team: webhookDetails.projectName,
                             action: ActionTypes.TRIGGER,
                             accessType: ACCESS_TYPE_MAP.DEVTRON_APPS,
+                            ...getDefaultStatusAndTimeout(),
                         },
                     ],
-                    superAdmin: false,
-                }
-                const { result: userPermissionResponse } = await saveUser(userPermissionPayload)
+                })
                 if (userPermissionResponse) {
                     setGeneratedAPIToken(result.token)
                 }
@@ -261,7 +291,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     }
 
     const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+        const value = props.getValue()[0]?.label
         return (
             <components.ValueContainer {...props}>
                 <>
@@ -284,13 +314,12 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     <Progressing />
                 </div>
             )
-        } else {
-            return (
-                <span className="cb-5 cursor top fw-6" onClick={generateToken}>
-                    Generate token
-                </span>
-            )
         }
+        return (
+            <span className="cb-5 cursor top fw-6" onClick={generateToken}>
+                Generate token
+            </span>
+        )
     }
 
     const renderWebhookURLContainer = (): JSX.Element => {
@@ -299,26 +328,9 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 p-6">
                     <div className="bcg-5 cn-0 lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2">POST</div>
                     <div className="bcn-0 pl-8 w-100">{webhookDetails?.webhookUrl}</div>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive={true}
-                    >
-                        <Clipboard
-                            className="pointer hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(webhookDetails?.webhookUrl, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
-                    </Tippy>
+                    <div className="flex">
+                        <ClipboardButton content={webhookDetails?.webhookUrl} />
+                    </div>
                 </div>
             </div>
         )
@@ -331,46 +343,48 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         }
     }
 
+    const renderWebhhokTokenLabel = (): JSX.Element => {
+        return (
+            <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
+                api-token
+                <Tippy
+                    className="default-white no-content-padding tippy-shadow w-300"
+                    arrow={false}
+                    placement="top"
+                    content={
+                        <>
+                            <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                <Help className="icon-dim-20 mr-6 fcv-5" />
+                                <span className="fs-14 fw-6 cn-9">Why is API token required?</span>
+                            </div>
+                            <div className="fs-13 fw-4 cn-9 p-12">
+                                API token is required to allow requests from an external service. Use an API token with
+                                the permissions mentioned in the above section.
+                            </div>
+                        </>
+                    }
+                >
+                    <div className="flex">
+                        <ICHelpOutline className="icon-dim-16 ml-6" />
+                    </div>
+                </Tippy>
+            </div>
+        )
+    }
+
     const renderWebhookURLTokenContainer = (): JSX.Element => {
         return (
-            <div className="mb-16">
-                <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
-                        api-token
-                        <Tippy
-                            className="default-white no-content-padding tippy-shadow w-300"
-                            arrow={false}
-                            placement="top"
-                            content={
-                                <>
-                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                        <Help className="icon-dim-20 mr-6 fcv-5" />
-                                        <span className="fs-14 fw-6 cn-9">Why is API token required?</span>
-                                    </div>
-                                    <div className="fs-13 fw-4 cn-9 p-12">
-                                        API token is required to allow requests from an external service. Use an API
-                                        token with the permissions mentioned in the above section.
-                                    </div>
-                                </>
-                            }
-                        >
-                            <Question className="icon-dim-16 ml-6" />
-                        </Tippy>
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Enter API token"
-                        className="bcn-0 dc__no-border form__input"
-                        onChange={handleTokenChange}
-                        value={tryoutAPIToken}
-                    />
-                </div>
-                {showTryoutAPITokenError && (
-                    <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        <span>API Token is required to execute webhook</span>
-                    </span>
-                )}
+            <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-16">
+                {renderWebhhokTokenLabel()}
+                <CustomInput
+                    name="api-token"
+                    placeholder="Enter API token"
+                    rootClassName="bcn-0 dc__no-border-imp w-100 h-32 pt-5-imp p-0-8-imp"
+                    onChange={handleTokenChange}
+                    value={tryoutAPIToken}
+                    error={showTryoutAPITokenError && WEBHOOK_NO_API_TOKEN_ERROR}
+                    inputWrapClassName="w-100"
+                />
             </div>
         )
     }
@@ -379,28 +393,11 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__word-break">
+                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp" data-testid="generated-api-token">
                     {token}
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive={true}
-                    >
-                        <Clipboard
-                            className="ml-8 mt-5 pointer hover-only icon-dim-16"
-                            onClick={() => {
-                                copyToClipboard(token, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
-                    </Tippy>
+                    <div className="flex pl-4">
+                        <ClipboardButton content={token} />
+                    </div>
                 </div>
             </div>
         )
@@ -411,6 +408,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
             <>
                 <div className="w-400 h-32 mt-16">
                     <ReactSelect
+                        classNamePrefix='selectToken'
                         value={selectedToken}
                         tabIndex={1}
                         onChange={setSelectedToken}
@@ -442,20 +440,14 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="mt-16">
-                    <div className="mb-8 dc__required-field">Token name</div>
-                    <input
-                        type="text"
-                        className="form__input"
+                    <CustomInput
+                        name="token-name"
+                        label="Token name"
                         value={tokenName}
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
+                        error={showTokenNameError && GENERATE_TOKEN_NAME_VALIDATION}
                     />
-                    {showTokenNameError && (
-                        <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
-                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                            <span>Token name is required to generate token</span>
-                        </span>
-                    )}
                     {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
@@ -483,48 +475,30 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     How to generate API tokens?
                 </a>
             )
-        } else {
-            return !showTokenSection ? (
-                <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
-                    Select or auto-generate token with required permissions
-                </div>
-            ) : (
-                <div className="mt-16">
-                    {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                    {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                    {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-                </div>
-            )
         }
+        return !showTokenSection ? (
+            <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
+                Select or auto-generate token with required permissions
+            </div>
+        ) : (
+            <div className="mt-16">
+                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
+            </div>
+        )
     }
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
-                {showCopyOption && (
-                    <Tippy
-                        className="default-tt font-open-sans"
-                        arrow={false}
-                        placement="bottom"
-                        content={copied ? 'Copied!' : 'Copy'}
-                        trigger="mouseenter click"
-                        onShow={(instance) => {
-                            setCopied(false)
-                        }}
-                        interactive={true}
-                    >
-                        <Clipboard
-                            className="pointer hover-only icon-dim-16 dc__position-abs"
-                            style={{ right: '8px' }}
-                            onClick={() => {
-                                copyToClipboard(value, () => {
-                                    setCopied(true)
-                                })
-                            }}
-                        />
-                    </Tippy>
-                )}
+            <pre
+                className="br-4 fs-13 fw-4 cn-9 flexbox dc__content-space dc__position-rel dc__word-break"
+                data-testid="sample-script"
+            >
                 <code>{value}</code>
+                {showCopyOption && (
+                        <ClipboardButton content={value} />
+                )}
             </pre>
         )
     }
@@ -558,7 +532,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 {data.createLink ? (
                                     <span
                                         className="cb-5 cursor"
-                                        onClick={() => handleSchemaClick(schemaName + '-' + key)}
+                                        onClick={() => handleSchemaClick(`${schemaName}-${key}`)}
                                     >
                                         {key}
                                     </span>
@@ -578,17 +552,18 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderSchemaSection = (schema: Record<string, SchemaType>, schemaName: string): JSX.Element => {
         return (
             <div>
-                {renderSchema(schema['root'], schemaName + '-root')}
+                {renderSchema(schema['root'], `${schemaName}-root`)}
                 {Object.keys(schema).map((key) => {
                     const data = schema[key]
-                    if (key === 'root') return null
-                    else
-                        return (
-                            <>
-                                <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
-                                {renderSchema(schema[key], schemaName + '-root' + '-' + key)}
-                            </>
-                        )
+                    if (key === 'root') {
+                        return null
+                    }
+                    return (
+                        <>
+                            <div className="cn-9 fs-13 fw-6 mt-8 mb-8">{key}</div>
+                            {renderSchema(schema[key], `${schemaName}-root` + `-${key}`)}
+                        </>
+                    )
                 })}
             </div>
         )
@@ -797,7 +772,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(
@@ -810,7 +785,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[0].key &&
                                     renderCodeSnippet(formatSampleJson(response.description.exampleValue))}
                                 {webhookDetails.responses[index].selectedTab === RESPONSE_TAB_LIST[1].key &&
-                                    renderSchemaSection(response.description.schema, 'response-' + index)}
+                                    renderSchemaSection(response.description.schema, `response-${index}`)}
                             </div>
                         </div>
                     ))}
@@ -857,7 +832,6 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     rootClassName="cta h-28 flex mr-8"
                     onClick={executeWebhook}
                     isLoading={webhookExecutionLoader}
-                    loaderColor="white"
                 >
                     <PlayButton className="icon-dim-18 mr-8" />
                     Execute
@@ -875,29 +849,28 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderActualResponseSection = (): JSX.Element | null => {
         if (!webhookResponse) {
             return null
-        } else {
-            return (
-                <div className="mt-16" ref={responseSectionRef}>
-                    <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
-                    <div className="cn-9 fs-13 fw-6 mb-8">
-                        <div className="response-row dc__border-bottom pt-8 pb-8">
-                            <div>Code</div>
-                            <div>Description</div>
-                        </div>
-                        <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
-                            <div>
-                                <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
-                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
-                                {renderCodeSnippet(webhookResponse?.['bodyText'])}
-                                <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
-                                {renderCodeSnippet(webhookResponse?.['headers'])}
-                            </div>
+        }
+        return (
+            <div className="mt-16" ref={responseSectionRef}>
+                <div className="cn-9 fs-13 fw-6 mb-8">Server response</div>
+                <div className="cn-9 fs-13 fw-6 mb-8">
+                    <div className="response-row dc__border-bottom pt-8 pb-8">
+                        <div>Code</div>
+                        <div>Description</div>
+                    </div>
+                    <div className="response-row pt-8 pb-8">
+                        <div className="fs-13 fw-4 cn-9">{webhookResponse?.['code']}</div>
+                        <div>
+                            <div className="fs-13 fw-4 cn-9 mb-16">{webhookResponse?.['result'] || '-'}</div>
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response body</div>
+                            {renderCodeSnippet(webhookResponse?.['bodyText'])}
+                            <div className="cn-9 fs-12 fw-6 mt-16 mb-8">Response header</div>
+                            {renderCodeSnippet(webhookResponse?.['headers'])}
                         </div>
                     </div>
                 </div>
-            )
-        }
+            </div>
+        )
     }
 
     const renderHeaderSection = (): JSX.Element => {
@@ -941,7 +914,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
                     </span>
                 </div>
                 <button className="cta flex h-36" onClick={copySharableURL}>
-                    <Clipboard className="mr-8 icon-dim-16" />
+                    <ICCopy className="mr-8 icon-dim-16" />
                     Copy shareable link
                 </button>
             </div>
@@ -951,16 +924,16 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const renderPageDetails = (): JSX.Element => {
         if (loader) {
             return <Progressing pageLoader />
-        } else if (errorInGetData) {
-            return <Reload />
-        } else {
-            return (
-                <>
-                    {renderBodySection()}
-                    {!isSuperAdmin && renderFooterSection()}
-                </>
-            )
         }
+        if (errorInGetData) {
+            return <Reload />
+        }
+        return (
+            <>
+                {renderBodySection()}
+                {!isSuperAdmin && renderFooterSection()}
+            </>
+        )
     }
 
     return (

@@ -1,14 +1,22 @@
 import {
+    ACTION_STATE,
     CDModalTabType,
+    CHECKBOX_VALUE,
     DeploymentNodeType,
     FilterConditionsListType,
+    KeyValueListType,
     ResponseType,
+    ServerErrors,
     UserApprovalConfigType,
+    WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
-import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
-import { OptionType } from '../app/types'
+import { WebhookPayloads } from '../app/details/triggerView/types'
+import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
+import { GVKType } from '../ResourceBrowser/Types'
+import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -24,6 +32,8 @@ export interface BulkCIDetailType extends BulkTriggerAppDetailType {
     isFirstTrigger: boolean
     isCacheAvailable: boolean
     isLinkedCI: boolean
+    isLinkedCD: boolean
+    title: string
     isJobCI: boolean
     isWebhookCI: boolean
     parentAppId: number
@@ -44,6 +54,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     stageType?: DeploymentNodeType
     triggerType?: string
     envName: string
+    envId: number
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
@@ -81,6 +92,10 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    runtimeParams: Record<string, KeyValueListType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
+    setPageViewType: React.Dispatch<React.SetStateAction<string>>
+    httpProtocol: string
 }
 
 export interface BulkCDTriggerType {
@@ -89,14 +104,14 @@ export interface BulkCDTriggerType {
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
-    changeTab: (
+    changeTab?: (
         materrialId: string | number,
         artifactId: number,
         tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    selectImage: (
+    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    selectImage?: (
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
@@ -106,6 +121,7 @@ export interface BulkCDTriggerType {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
+    httpProtocol: string
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -204,8 +220,13 @@ export interface AppInfoListType {
     appStatus: string
     deploymentStatus: string
     lastDeployed: string
+    lastDeployedImage?: string
+    lastDeployedBy?: string
     appId: number
     envId: number
+    pipelineId?: number
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppListDataType {
@@ -228,6 +249,14 @@ export interface ApplicationRouteType {
 export interface EnvironmentsListViewType {
     removeAllFilters: () => void
     isSuperAdmin: boolean
+}
+
+export interface EnvironmentLinkProps {
+    namespace: string
+    environmentId: number
+    appCount: number
+    handleClusterClick: (e) => void
+    environmentName: string
 }
 
 export interface AppOverridesType {
@@ -266,6 +295,9 @@ export interface AppGroupDetailDefaultType {
     appGroupListData?: AppGroupListType
     isVirtualEnv?: boolean
     envName?: string
+    description?: string
+    getAppListData?: () => Promise<void>
+    handleSaveDescription?: (description: string) => Promise<void>
 }
 
 interface CIPipeline {
@@ -274,6 +306,7 @@ interface CIPipeline {
     id: number
     parentCiPipeline: number
     parentAppId: number
+    pipelineType?: string
 }
 export interface CIConfigListType {
     pipelineList: CIPipeline[]
@@ -322,6 +355,10 @@ export interface ApplistEnvType {
     appName: string
     appStatus: string
     lastDeployedTime: string
+    lastDeployedBy?: string
+    lastDeployedImage?: string
+    commits?: string[]
+    ciArtifactId?: number
 }
 
 export interface AppGroupListType {
@@ -330,6 +367,11 @@ export interface AppGroupListType {
     clusterName: string
     environmentId: number
     apps: ApplistEnvType[]
+    description?: string
+    environmentType?: 'Non-Production' | 'Production'
+    createdOn?: string
+    createdBy?: string
+    clusterId?: number
 }
 export interface ConfigAppListType extends ResponseType {
     result?: ConfigAppList[]
@@ -387,7 +429,180 @@ export interface SearchBarType {
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+export interface EditDescRequestResponse extends ResponseType {
+    result?: EditDescRequest
+}
+
 export enum FilterParentType {
     app = 'env-group',
     env = 'app-group',
 }
+
+export interface HibernateStatusRowType {
+    rowData: HibernateResponseRowType
+    index: number
+    isHibernateOperation: boolean
+    isVirtualEnv?: boolean
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
+}
+
+export interface HibernateResponseRowType {
+    id: number
+    appName: string
+    success: boolean
+    authError?: boolean
+    error?: string
+    skipped?: string
+}
+
+export interface BaseModalProps {
+    selectedAppIds: number[]
+    appDetailsList: AppGroupListType['apps']
+    envName: string
+    envId: string
+    setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
+    setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
+    httpProtocol: string
+}
+
+export interface HibernateInfoMapProps {
+    type: string
+    excludedUserEmails: string[]
+    userActionState: ACTION_STATE
+}
+export interface HibernateModalProps extends BaseModalProps {
+    setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
+}
+
+export interface UnhibernateModalProps extends BaseModalProps {
+    setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
+    isDeploymentLoading: boolean
+    showDefaultDrawer: boolean
+}
+
+export interface StatusDrawer {
+    hibernationOperation: boolean
+    showStatus: boolean
+    inProgress: boolean
+}
+
+export interface ManageAppsResponse {
+    appName: string
+    id: number
+    success: boolean
+    skipped?: string
+    error?: string
+    authError?: boolean
+}
+
+export interface batchConfigType {
+    lastIndex: number
+    results: any[]
+    concurrentCount: number
+    completedCalls: number
+}
+
+export enum ApiQueuingBatchStatusType {
+    FULFILLED = 'fulfilled',
+    REJECTED = 'rejected',
+}
+
+// TODO: use T for value
+export interface ApiQueuingWithBatchResponseItem {
+    status: ApiQueuingBatchStatusType
+    value?: any
+    reason?: ServerErrors
+}
+
+export interface RestartWorkloadModalProps {
+    selectedAppIds: number[]
+    envName: string
+    envId: string
+    restartLoader: boolean
+    setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
+    httpProtocol: string,
+}
+
+export interface RestartStatusListDrawerProps {
+    bulkRotatePodsMap: BulkRotatePodsMap
+    statusModalLoading: boolean
+    envName: string
+    hibernateInfoMap: Record<number, HibernateInfoMapProps>
+}
+
+// ----------------------------Restart Workload DTO--------------------------------------------
+
+export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
+    name: string
+    namespace?: string // This is only in the post response structure and not in get api
+    groupVersionKind: GVKType
+}
+
+export interface AppInfoMetaDataDTO {
+    resourceMetaData: ResourceIdentifierDTO[]
+    appName: string,
+    errorResponse?: string
+}
+
+export interface RestartPodMapDTO {
+    [appId: number]: AppInfoMetaDataDTO
+}
+
+export interface WorkloadListResultDTO {
+    environmentId: number
+    namespace: string
+    restartPodMap: RestartPodMapDTO
+}
+
+// ----------------------------Bulk Restart Data Manipulation-----------------------------------
+
+export interface ResourceErrorMetaData {
+    containsError?: boolean
+    errorResponse?: string
+}
+
+export interface AppStatusMetaData {
+    failedCount?: number
+    successCount?: number
+}
+
+export interface ResourceMetaData extends WorkloadCheckType, ResourceErrorMetaData {
+    group: string
+    kind: Nodes | NodeType
+    version: string
+    name: string
+}
+export interface ResourcesMetaDataMap {
+    [kindName: string]: ResourceMetaData
+}
+export interface BulkRotatePodsMetaData extends WorkloadCheckType, AppStatusMetaData {
+    appName: string
+    resources?: ResourcesMetaDataMap
+    namespace: string
+    errorResponse?: string
+}
+
+export interface BulkRotatePodsMap {
+    [appId: number]: BulkRotatePodsMetaData
+}
+export interface AllExpandableDropdownTypes {
+    expandedAppIds: number[]
+    setExpandedAppIds: React.Dispatch<React.SetStateAction<number[]>>
+    bulkRotatePodsMap: BulkRotatePodsMap
+    SvgImage: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    iconClassName?: string
+    dropdownLabel?: string
+    isExpandableButtonClicked: boolean
+    setExpandableButtonClicked: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ManageAppsResponseType {
+    appName: string
+    success: boolean
+    id: string
+    error: string
+}
+

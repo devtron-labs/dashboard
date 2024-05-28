@@ -121,6 +121,8 @@
 
         .chart-values-view__details {
             padding: 16px 16px 12px;
+            height: calc(100vh - 98px);
+            overflow: scroll;
 
             .chart-values__project-container .chart-values__project-label,
             .chart-values__environment-container .chart-values__environment-label,
@@ -443,4 +445,8 @@
             fill: var(--Y500);
         }
     }
+}
+
+.manifest-repo-link {
+    white-space: nowrap;
 }

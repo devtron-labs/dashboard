@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { showError, GenericEmptyState, ImageTagsContainer, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '../../../common'
+import {
+    showError,
+    GenericEmptyState,
+    ImageTagsContainer,
+    ClipboardButton,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
-import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
+import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
+import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-arrow-down.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import Tippy from '@tippyjs/react'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
+import { ArtifactType, CIListItemType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { getUserRole } from '../../../userGroups/userGroup.service'
+import { getUserRole } from '../../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 
-let ApprovalInfoTippy = null
+let CIListHeader: React.FC<any> | null = null
 
 export default function Artifacts({
     status,
@@ -37,7 +40,7 @@ export default function Artifacts({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
-    jobCIClass
+    jobCIClass,
 }: ArtifactType) {
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(false)
     useEffect(() => {
@@ -61,7 +64,9 @@ export default function Artifacts({
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
-        if (!copied) return
+        if (!copied) {
+            return
+        }
         setTimeout(() => setCopied(false), 2000)
     }, [copied])
 
@@ -80,7 +85,8 @@ export default function Artifacts({
 
     if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING || status.toLowerCase() === TERMINAL_STATUS_MAP.STARTING) {
         return <CIProgressView />
-    } else if (isJobView && !blobStorageEnabled) {
+    }
+    if (isJobView && !blobStorageEnabled) {
         return (
             <div className="flex column p-24 w-100 h-100">
                 <GenericEmptyState
@@ -89,18 +95,24 @@ export default function Artifacts({
                     image={noartifact}
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
-                    <Question className="icon-dim-20 fcv-5" />
+                    <ICHelpOutline className="icon-dim-20 fcv-5" />
                     <span className="fs-13 fw-4 mr-8 ml-8">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
                     </span>
-                    <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
+                    <a
+                        className="fs-13 fw-6 cb-5 dc__no-decor"
+                        href={DOCUMENTATION.BLOB_STORAGE}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
                 </div>
             </div>
         )
-    } else if (isJobView && !isArtifactUploaded) {
+    }
+    if (isJobView && !isArtifactUploaded) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
@@ -108,17 +120,15 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
-    } else if (
-        status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED ||
-        status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
-    ) {
+    }
+    if (status.toLowerCase() === TERMINAL_STATUS_MAP.FAILED || status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED) {
         if (isJobCI) {
             return (
                 <GenericEmptyState
                     title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifacts}
                     subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.FailedToFetchArtifactsError}
                 />
-            ) 
+            )
         }
 
         return (
@@ -127,7 +137,8 @@ export default function Artifacts({
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
-    } else if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
+    }
+    if (!artifactId && status.toLowerCase() === TERMINAL_STATUS_MAP.SUCCEEDED) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsFound}
@@ -135,80 +146,57 @@ export default function Artifacts({
                 image={noartifact}
             />
         )
-    } else {
-        return (
-            <div className={`flex left column p-16 ${jobCIClass??''}`}>
-                {!isJobView && type !== HistoryComponentType.CD && (
-                    <CIListItem
-                        type="artifact"
-                        ciPipelineId={ciPipelineId}
-                        artifactId={artifactId}
-                        imageComment={imageComment}
-                        imageReleaseTags={imageReleaseTags}
-                        appReleaseTagNames={appReleaseTagNames}
-                        tagsEditable={tagsEditable}
-                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                        isSuperAdmin={isSuperAdmin}
-                        
-
-                    >
-                        <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
-                                <CopyTippyWithText
-                                    copyText={extractImage(artifact)}
-                                    copied={copied}
-                                    setCopied={setCopied}
-                                />
-                            </div>
-                            <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
-                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                            </div>
-                        </div>
-                    </CIListItem>
-                )}
-                {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
-                    <CIListItem isSuperAdmin={isSuperAdmin} type="report" hideImageTaggingHardDelete={hideImageTaggingHardDelete}>
-                        <div className="flex column left">
-                    
-                            <div className="cn-9 fs-14">Reports.zip</div>
-                            <button
-                                type="button"
-                                onClick={handleArtifact}
-                                className="anchor p-0 cb-5 fs-12 flex left pointer"
-                            >
-                                Download
-                                <Download className="ml-5 icon-dim-16" />
-                            </button>
-                        </div>
-                    </CIListItem>
-                )}
-            </div>
-        )
-    }
-}
-
-export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
-    const onClickCopyToClipboard = (e): void => {
-        copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
     }
     return (
-        <>
-            {copyText}
-            <Tippy
-                className="default-tt"
-                arrow={false}
-                placement="bottom"
-                content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                trigger="mouseenter click"
-                interactive={true}
-            >
-                <CopyIcon
-                    data-copy-text={copyText}
-                    className="pointer ml-6 icon-dim-16"
-                    onClick={onClickCopyToClipboard}
-                />
-            </Tippy>
-        </>
+        <div className={`flex left column p-16 ${jobCIClass ?? ''}`}>
+            {!isJobView && type !== HistoryComponentType.CD && (
+                <CIListItem
+                    type="artifact"
+                    ciPipelineId={ciPipelineId}
+                    artifactId={artifactId}
+                    imageComment={imageComment}
+                    imageReleaseTags={imageReleaseTags}
+                    appReleaseTagNames={appReleaseTagNames}
+                    tagsEditable={tagsEditable}
+                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    isSuperAdmin={isSuperAdmin}
+                >
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
+                            {extractImage(artifact)}
+                            <div className="pl-4">
+                                <ClipboardButton content={extractImage(artifact)} />
+                            </div>
+                        </div>
+                        <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
+                            {artifact}
+                            <div className="pl-4">
+                                <ClipboardButton content={artifact} />
+                            </div>
+                        </div>
+                    </div>
+                </CIListItem>
+            )}
+            {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
+                <CIListItem
+                    type="report"
+                    hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                    isSuperAdmin={isSuperAdmin}
+                >
+                    <div className="flex column left">
+                        <div className="cn-9 fs-14">Reports.zip</div>
+                        <button
+                            type="button"
+                            onClick={handleArtifact}
+                            className="anchor p-0 cb-5 fs-12 flex left pointer"
+                        >
+                            Download
+                            <Download className="ml-5 icon-dim-16" />
+                        </button>
+                    </div>
+                </CIListItem>
+            )}
+        </div>
     )
 }
 
@@ -234,9 +222,18 @@ export const CIListItem = ({
     appReleaseTagNames,
     tagsEditable,
     hideImageTaggingHardDelete,
+    appliedFilters,
+    appliedFiltersTimestamp,
     isSuperAdmin,
+    promotionApprovalMetadata,
+    selectedEnvironmentName,
 }: CIListItemType) => {
-    if(!ApprovalInfoTippy) ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
+    if (!CIListHeader) {
+        CIListHeader = importComponentFromFELibrary('CIListHeader')
+    }
+
+    const headerMetaDataPresent = !!userApprovalMetadata || !!appliedFilters?.length || !!promotionApprovalMetadata?.promotedFromType
+
     return (
         <>
             {type === 'deployed-artifact' && (
@@ -246,20 +243,22 @@ export const CIListItem = ({
                     <div className="w-50 text-underline-dashed-300" />
                 </div>
             )}
-            {ApprovalInfoTippy && userApprovalMetadata && (
-                <div className="dc__width-inherit bcn-0 dc__border dc__top-radius-4">
-                    <div className="pt-8 pr-16 pb-8 pl-16 lh-20">
-                        <ApprovalInfoTippy
-                            showCount={true}
-                            userApprovalMetadata={userApprovalMetadata}
-                            triggeredBy={triggeredBy}
-                        />
-                    </div>
-                </div>
+
+            {!!CIListHeader && headerMetaDataPresent && (
+                <CIListHeader
+                    userApprovalMetadata={userApprovalMetadata}
+                    showApprovalCounts
+                    triggeredBy={triggeredBy}
+                    appliedFilters={appliedFilters ?? []}
+                    appliedFiltersTimestamp={appliedFiltersTimestamp ?? ''}
+                    promotionApprovalMetadata={promotionApprovalMetadata}
+                    selectedEnvironmentName={selectedEnvironmentName}
+                />
             )}
+
             <div
                 className={`dc__h-fit-content ci-artifact ci-artifact--${type} image-tag-parent-card bcn-0 br-4 dc__border p-12 w-100 dc__mxw-800 ${
-                    ApprovalInfoTippy && userApprovalMetadata ? 'dc__no-top-radius dc__no-top-border' : ''
+                    CIListHeader && headerMetaDataPresent ? 'dc__no-top-radius dc__no-top-border' : ''
                 }`}
                 data-testid="hover-on-report-artifact"
             >

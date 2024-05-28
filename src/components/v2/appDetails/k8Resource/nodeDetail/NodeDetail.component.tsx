@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
+import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { showError, Checkbox, CHECKBOX_VALUE, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import EventsComponent from './NodeDetailTabs/Events.component'
 import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import SummaryComponent from './NodeDetailTabs/Summary.component'
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
-import { NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
+import { ManifestViewRefType, NodeDetailPropsType, NodeType, Options, OptionsBase } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError, Checkbox, CHECKBOX_VALUE, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -25,7 +25,7 @@ import { EDITOR_VIEW } from '../../../../deploymentConfig/constants'
 import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
 import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
 
-function NodeDetailComponent({
+const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     markTabActiveByIdentifier,
@@ -34,7 +34,8 @@ function NodeDetailComponent({
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
-}: NodeDetailPropsType) {
+    isExternalApp,
+}: NodeDetailPropsType) => {
     const location = useLocation()
     const [applicationObjectTabs] = useSharedState(
         AppDetailsStore.getAppDetailsTabs(),
@@ -74,7 +75,24 @@ function NodeDetailComponent({
     const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
-    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    const [hideDeleteButton, setHideDeleteButton] = useState(false)
+
+    // States uplifted from Manifest Component
+    const manifestViewRef = useRef<ManifestViewRefType>({
+        data: {
+            error: false,
+            secretViewAccess: false,
+            desiredManifest: '',
+            manifest: '',
+            activeManifestEditorData: '',
+            modifiedManifest: '',
+            isEditmode: false,
+            activeTab: 'Live manifest', // NOTE: default activeTab
+        },
+        id: '',
+    })
+
+    useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
     useEffect(() => {
         if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
@@ -100,26 +118,25 @@ function NodeDetailComponent({
         }
     }, [loadingResources, params.node, params.namespace])
 
-    const isExternalEphemeralContainer = (cmds: string[], name: string): boolean => {
-        const matchingCmd = `sh ${name}-devtron.sh`
-        const internal = cmds?.find((cmd) => cmd.includes(matchingCmd))
-        return !internal
-    }
-
     const getContainersFromManifest = async () => {
         try {
+            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? params.node : ''
             const { result } = await getManifestResource(
                 appDetails,
-                params.podName,
+                params.node,
                 params.nodeType,
                 isResourceBrowserView,
-                selectedResource,
+                {
+                    ...selectedResource,
+                    name: selectedResource.name ? selectedResource.name : nullCaseName,
+                    namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
+                },
             )
             const _resourceContainers = []
-            if (result?.manifest?.spec) {
-                if (Array.isArray(result.manifest.spec.containers)) {
+            if (result?.manifestResponse?.manifest?.spec) {
+                if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
                     _resourceContainers.push(
-                        ...result.manifest.spec.containers.map((_container) => ({
+                        ...result.manifestResponse.manifest.spec.containers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: false,
                             isEphemeralContainer: false,
@@ -127,40 +144,28 @@ function NodeDetailComponent({
                     )
                 }
 
-                if (Array.isArray(result.manifest.spec.initContainers)) {
+                if (Array.isArray(result.manifestResponse.manifest.spec.initContainers)) {
                     _resourceContainers.push(
-                        ...result.manifest.spec.initContainers.map((_container) => ({
+                        ...result.manifestResponse.manifest.spec.initContainers.map((_container) => ({
                             name: _container.name,
                             isInitContainer: true,
                             isEphemeralContainer: false,
                         })),
                     )
                 }
-
-                if (Array.isArray(result.manifest.spec.ephemeralContainers)) {
-                    const ephemeralContainerStatusMap = new Map<string, string[]>()
-                    result.manifest.spec.ephemeralContainers.forEach((con) => {
-                        ephemeralContainerStatusMap.set(con.name, con.command as string[])
-                    })
-                    let ephemeralContainers = []
-                    result.manifest.status.ephemeralContainerStatuses?.forEach((_container) => {
-                        //con.state contains three states running,waiting and terminated
-                        // at any point of time only one state will be there
-                        if (_container.state.running) {
-                            ephemeralContainers.push({
-                                name: _container.name,
-                                isInitContainer: false,
-                                isEphemeralContainer: true,
-                                isExternal: isExternalEphemeralContainer(
-                                    ephemeralContainerStatusMap.get(_container.name),
-                                    _container.name,
-                                ),
-                            })
-                        }
-                    })
-                    _resourceContainers.push(...ephemeralContainers)
-                }
             }
+
+            if (result?.ephemeralContainers) {
+                _resourceContainers.push(
+                    ...result.ephemeralContainers.map((_container) => ({
+                        name: _container.name,
+                        isInitContainer: false,
+                        isEphemeralContainer: true,
+                        isExternal: _container.isExternal,
+                    })),
+                )
+            }
+
             setResourceContainers(_resourceContainers)
             if (isResourceBrowserView) {
                 setContainers(_resourceContainers ?? [])
@@ -170,8 +175,14 @@ function NodeDetailComponent({
                 setResourceDeleted(false)
             }
         } catch (err) {
+            // when resource is deleted
             if (Array.isArray(err['errors']) && err['errors'].some((_err) => _err.code === '404')) {
                 setResourceDeleted(true)
+                setHideDeleteButton(true)
+                // when user is not authorized to view resource
+            } else if (err['code'] === 403) {
+                setHideDeleteButton(true)
+                showError(err)
             } else {
                 showError(err)
 
@@ -197,12 +208,12 @@ function NodeDetailComponent({
 
         if (!isTabFound) {
             setTimeout(() => {
-                let _urlToCreate = url + '/' + _tabName.toLowerCase()
+                let _urlToCreate = `${url}/${_tabName.toLowerCase()}`
 
                 const query = new URLSearchParams(window.location.search)
 
                 if (query.get('container')) {
-                    _urlToCreate = _urlToCreate + '?container=' + query.get('container')
+                    _urlToCreate = `${_urlToCreate}?container=${query.get('container')}`
                 }
 
                 if (isResourceBrowserView) {
@@ -220,18 +231,18 @@ function NodeDetailComponent({
     const currentTab = applicationObjectTabs.filter((tab) => {
         return (
             tab.name.toLowerCase() ===
-            params.nodeType + '/...' + (isResourceBrowserView ? params.node : params.podName)?.slice(-6)
+            `${params.nodeType}/...${(isResourceBrowserView ? params.node : params.podName)?.slice(-6)}`
         )
     })
     const isDeleted =
         (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
-            (appDetails.resourceTree.nodes?.findIndex(
-                (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
-            ) >= 0
-                ? false
-                : true))
+            !(
+                appDetails.resourceTree.nodes?.findIndex(
+                    (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
+                ) >= 0
+            ))
 
     // Assign extracted containers to selected resource before passing further
     if (selectedResource) {
@@ -258,10 +269,17 @@ function NodeDetailComponent({
         setShowDeleteDialog((prevState) => !prevState)
     }
 
+    const getComponentKeyFromParams = () => {
+        return Object.values(params).join('/')
+    }
+
     const renderPodTerminal = (): JSX.Element => {
-        if (!startTerminal) return null
+        if (!startTerminal) {
+            return null
+        }
         return (
             <TerminalComponent
+                key={getComponentKeyFromParams()}
                 showTerminal={location.pathname.endsWith('/terminal')}
                 selectedTab={handleSelectedTab}
                 isDeleted={isDeleted}
@@ -279,7 +297,7 @@ function NodeDetailComponent({
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
@@ -288,7 +306,7 @@ function NodeDetailComponent({
                             tabs.map((tab: string, index: number) => {
                                 return (
                                     <div
-                                        key={index + 'resourceTreeTab'}
+                                        key={`${index}resourceTreeTab`}
                                         className={`${
                                             tab.toLowerCase() === selectedTabName.toLowerCase()
                                                 ? 'default-tab-row cb-5'
@@ -313,7 +331,7 @@ function NodeDetailComponent({
                     </div>
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
-                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="ml-12 mr-5 tab-cell-border" />
                             <div className="cursor cb-5 fw-6 flex" onClick={onClickShowLaunchEphemeral}>
                                 <EphemeralIcon className="mr-4 icon-dim-16 scb-5" />
                                 Launch Ephemeral Container
@@ -322,7 +340,7 @@ function NodeDetailComponent({
                     )}
                     {isManagedFields && (
                         <>
-                            <div className="ml-12 mr-5 tab-cell-border"></div>
+                            <div className="ml-12 mr-5 tab-cell-border" />
                             <div className="pt-6 pb-6 pl-8 pr-8 top">
                                 <Checkbox
                                     rootClassName="mb-0-imp h-20"
@@ -338,12 +356,13 @@ function NodeDetailComponent({
                         </>
                     )}
                 </div>
-                {isResourceBrowserView && (
-                    <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
-                        <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                    </span>
-                )}
+                {isResourceBrowserView &&
+                    !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
+                        <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={toggleDeleteDialog}>
+                            <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                        </span>
+                    )}
             </div>
             {renderPodTerminal()}
 
@@ -358,16 +377,20 @@ function NodeDetailComponent({
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
                         <ManifestComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            manifestViewRef={manifestViewRef}
+                            getComponentKey={getComponentKeyFromParams}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
                         <EventsComponent
+                            key={getComponentKeyFromParams()}
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
@@ -382,6 +405,7 @@ function NodeDetailComponent({
                             }}
                         >
                             <LogsComponent
+                                key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}
                                 isDeleted={isDeleted}
                                 logSearchTerms={logSearchTerms}
@@ -391,6 +415,7 @@ function NodeDetailComponent({
                                 ephemeralContainerType={ephemeralContainerType}
                                 targetContainerOption={targetContainerOption}
                                 imageListOption={imageListOption}
+                                isExternalApp={isExternalApp}
                             />
                         </div>
                     </Route>
@@ -440,7 +465,7 @@ function NodeDetailComponent({
                     removeTabByIdentifier={removeTabByIdentifier}
                 />
             )}
-        </React.Fragment>
+        </>
     )
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { InputActionMeta } from 'react-select'
+import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -10,11 +11,10 @@ import {
     ExternalLinkIdentifierType,
     IdentifierOptionType,
     URLModificationType,
-} from '../externalLinks/ExternalLinks.type'
+} from './ExternalLinks.type'
 import { OptionType } from '../app/types'
 import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
-import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ClusterFilter = ({
     clusters,
@@ -81,7 +81,7 @@ export const ClusterFilter = ({
     }
 
     const onInputChangeHandler = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setClusterSearchInput(value)
         }
     }
@@ -95,8 +95,8 @@ export const ClusterFilter = ({
                 value={selectedCluster}
                 options={clusters}
                 onChange={handleSelectedFilters}
-                isMulti={true}
-                isSearchable={true}
+                isMulti
+                isSearchable
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 onMenuOpen={onMenuOpenHandler}
@@ -206,7 +206,7 @@ export const ApplicationFilter = ({
     }
 
     const onInputChangeHandler = (value: string, actionMeta: InputActionMeta) => {
-        if (actionMeta.action === 'input-change') {
+        if (actionMeta.action === ReactSelectInputAction.inputChange) {
             setAppSearchInput(value)
         }
     }
@@ -220,8 +220,8 @@ export const ApplicationFilter = ({
                 value={selectedApps}
                 options={allApps}
                 onChange={handleSelectedFilters}
-                isMulti={true}
-                isSearchable={true}
+                isMulti
+                isSearchable
                 closeMenuOnSelect={false}
                 hideSelectedOptions={false}
                 onMenuOpen={onMenuOpenHandler}
@@ -322,7 +322,7 @@ export const AppliedFilterChips = ({
     url,
 }: AppliedFilterChipsType): JSX.Element => {
     const removeFilter = (type: string, filter: IdentifierOptionType): void => {
-        let ids = []
+        const ids = []
         if (type === 'App') {
             const filteredApps = []
             for (const _app of appliedApps) {
@@ -368,7 +368,7 @@ export const AppliedFilterChips = ({
             <>
                 <div key={filter.label} className="saved-filter flex left dc__border bc-n50 pl-6 pr-6">
                     <span className="fw-6">{type}</span>
-                    <span className="saved-filter-divider bcn-2 ml-6 mr-6"></span>
+                    <span className="saved-filter-divider bcn-2 ml-6 mr-6" />
                     <span>{filter.label}</span>
                     <button
                         type="button"

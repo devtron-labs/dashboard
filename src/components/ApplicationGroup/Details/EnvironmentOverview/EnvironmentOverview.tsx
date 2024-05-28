@@ -1,37 +1,154 @@
+import {
+    ACTION_STATE,
+    AppStatus,
+    getRandomColor,
+    handleRelativeDateSorting,
+    processDeployedTime,
+    Progressing,
+    showError,
+    SortableTableHeaderCell,
+    SortingOrder,
+    useUrlFilters,
+    EditableTextArea,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
-import AppStatus from '../../../app/AppStatus'
+import { Link, useHistory, useParams } from 'react-router-dom'
+import { Moment12HourFormat } from '../../../../config'
+import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { processDeployedTime } from '../../../common'
-import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
+import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
+import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
-import { AppGroupDetailDefaultType, AppGroupListType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
+import {
+    AppGroupDetailDefaultType,
+    AppGroupListType,
+    AppInfoListType,
+    AppListDataType,
+    ManageAppsResponse,
+    StatusDrawer,
+} from '../../AppGroup.types'
+import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
+import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
+import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
+import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
+import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
+import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
+import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
+import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+
+const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
+    'processDeploymentWindowAppGroupOverviewMap',
+    null,
+    'function',
+)
 import './envOverview.scss'
+import { HibernateModal } from './HibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { UnhibernateModal } from './UnhibernateModal'
+import { RestartWorkloadModal } from './RestartWorkloadModal'
 
 export default function EnvironmentOverview({
     appGroupListData,
     filteredAppIds,
     isVirtualEnv,
+    description,
+    getAppListData,
+    handleSaveDescription,
 }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
+    const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
+        hibernationOperation: true,
+        showStatus: false,
+        inProgress: false,
+    })
+    const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
+    const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
+    const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
+    const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
+    const [isHovered, setIsHovered] = useState<number>(null)
+    const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
+    const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
+        TriggerInfoModalProps,
+        'ciArtifactId' | 'envId'
+    > | null>(null)
+    const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
+    const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
+    const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
+    const [hibernateInfoMap, setHibernateInfoMap] = useState<
+        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+    >({})
+    const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    // NOTE: there is a slim chance that the api is called before httpProtocol is set
+    const httpProtocol = useRef('')
 
     useEffect(() => {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                const protocol = entry.nextHopProtocol
+                if (protocol && entry.initiatorType === 'fetch') {
+                    httpProtocol.current = protocol
+                    observer.disconnect()
+                }
+            })
+        })
+
+        observer.observe({ type: 'resource', buffered: true })
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            observer.disconnect()
         }
     }, [])
 
+
+    const { sortBy, sortOrder, handleSorting } = useUrlFilters({
+        initialSortKey: EnvironmentOverviewSortableKeys.application,
+    })
+
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
+    useEffect(() => {
+        return () => {
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
+        }
+    }, [])
+
+    async function getDeploymentWindowEnvOverrideMetaData() {
+        const appEnvTuples = selectedAppIds.map((appId) => {
+            return {
+                appId: +appId,
+                envId: +envId,
+            }
+        })
+        setIsDeploymentLoading(true)
+        const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
+        setHibernateInfoMap(_hibernate)
+        setIsDeploymentLoading(false)
+    }
+
+    useEffect(() => {
+        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+            getDeploymentWindowEnvOverrideMetaData()
+        }
+    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
     useEffect(() => {
         setLoading(true)
         fetchDeployments()
         timerId.current = setInterval(fetchDeployments, 30000)
         return () => {
-            if (timerId.current) clearInterval(timerId.current)
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
         }
     }, [appGroupListData])
 
@@ -41,17 +158,79 @@ export default function EnvironmentOverview({
             if (response?.result) {
                 let statusRecord = {}
                 response.result.forEach((item) => {
-                    statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
+                    statusRecord = {
+                        ...statusRecord,
+                        [item.appId]: {
+                            status: item.deployStatus,
+                            pipelineId: item.pipelineId,
+                        },
+                    }
                 })
-                setLoading(false)
+
                 parseAppListData(appGroupListData, statusRecord)
+                setLoading(false)
             }
         } catch (err) {
             showError(err)
         }
     }
 
-    const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
+    const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { checked, value } = e.target
+
+        if (value === 'ALL') {
+            if (checked) {
+                setSelectedAppIds(appListData.appInfoList.map((item) => item.appId))
+            } else {
+                setSelectedAppIds([])
+            }
+        } else if (checked) {
+            setSelectedAppIds([...selectedAppIds, +value])
+        } else {
+            setSelectedAppIds(selectedAppIds.filter((item) => item !== +value))
+        }
+    }
+
+    const toggleIsLastDeployedExpanded = () => {
+        setIsLastDeployedExpanded(!isLastDeployedExpanded)
+    }
+
+    const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
+        `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
+
+    const sortByApplication = () => {
+        handleSorting(EnvironmentOverviewSortableKeys.application)
+    }
+
+    const sortByDeployedAt = () => {
+        handleSorting(EnvironmentOverviewSortableKeys.deployedAt)
+    }
+
+    const sortAndUpdateAppListData = (_appListData) => {
+        setAppListData({
+            ..._appListData,
+            appInfoList: _appListData.appInfoList.sort((a, b) => {
+                if (sortBy === EnvironmentOverviewSortableKeys.deployedAt) {
+                    return handleRelativeDateSorting(a.lastDeployed, b.lastDeployed, sortOrder)
+                }
+
+                return sortOrder === SortingOrder.ASC
+                    ? a.application.localeCompare(b.application)
+                    : b.application.localeCompare(a.application)
+            }),
+        })
+    }
+
+    useEffect(() => {
+        if (appListData) {
+            sortAndUpdateAppListData(appListData)
+        }
+    }, [sortBy, sortOrder])
+
+    const parseAppListData = (
+        data: AppGroupListType,
+        statusRecord: Record<string, { status: string; pipelineId: number }>,
+    ): void => {
         const parsedData = {
             environment: data.environmentName,
             namespace: data.namespace || '-',
@@ -64,13 +243,48 @@ export default function EnvironmentOverview({
                 appId: app.appId,
                 application: app.appName,
                 appStatus: app.appStatus,
-                deploymentStatus: statusRecord[app.appId],
+                deploymentStatus: statusRecord[app.appId].status,
+                pipelineId: statusRecord[app.appId].pipelineId,
                 lastDeployed: app.lastDeployedTime,
+                lastDeployedBy: app.lastDeployedBy,
+                lastDeployedImage: app.lastDeployedImage,
+                commits: app.commits,
+                ciArtifactId: app.ciArtifactId,
             }
             parsedData.appInfoList.push(appInfo)
         })
+
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
-        setAppListData(parsedData)
+
+        sortAndUpdateAppListData(parsedData)
+    }
+
+    const closePopup = () => {
+        setShowHibernateStatusDrawer({
+            ...showHibernateStatusDrawer,
+            showStatus: false,
+            inProgress: false,
+        })
+    }
+
+    const openHiberateModalPopup = () => {
+        setOpenHiberateModal(true)
+    }
+
+    const openUnhiberateModalPopup = () => {
+        setOpenUnhiberateModal(true)
+    }
+
+    const onClickShowBulkRestartModal = () => {
+        const newParams = {
+            ...searchParams,
+            modal: URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD,
+        }
+        history.push({ search: new URLSearchParams(newParams).toString() })
+    }
+
+    const closeCommitInfoModal = () => {
+        setCommitInfoModalConfig(null)
     }
 
     if (loading) {
@@ -82,61 +296,321 @@ export default function EnvironmentOverview({
     }
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
+        const isSelected = selectedAppIds.includes(item.appId)
+
+        const openCommitInfoModal = (e) => {
+            e.stopPropagation()
+            setCommitInfoModalConfig({
+                envId,
+                ciArtifactId: item.ciArtifactId,
+            })
+        }
+
         return (
             <div
                 key={`${item.application}-${index}`}
-                className="app-deployments-info-row display-grid dc__align-items-center"
+                className={`app-deployments-info-row dc__w-fit-inherit display-grid dc__align-items-center ${
+                    isHovered === index ? 'bc-n50' : 'bcn-0'
+                } ${lastDeployedClassName}`}
+                onMouseEnter={() => setIsHovered(index)}
+                onMouseLeave={() => setIsHovered(null)}
             >
-                <span className="fs-13 fw-4 cn-7">{item.application}</span>
-                {!isVirtualEnv && (
-                    <AppStatus
-                        appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                    />
-                )}
+                <div
+                    className={`pl-16 pr-16 app-deployment-info-row-leftsection h-100 dc__border-right-n1 dc__align-items-center display-grid dc__position-sticky sticky-column dc__ellipsis-right  ${
+                        isHovered === index ? 'bc-n50' : 'bcn-0'
+                    }`}
+                >
+                    {isHovered !== index && !isSelected ? (
+                        <DevtronIcon className="icon-dim-20" />
+                    ) : (
+                        <label className="dc__position-rel pointer mb-0">
+                            <input
+                                type="checkbox"
+                                className="form__checkbox"
+                                value={item.appId}
+                                onChange={handleSelect}
+                                checked={isSelected}
+                            />
+                            <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`} />
+                        </label>
+                    )}
+                    {!isVirtualEnv && <AppStatus appStatus={item.appStatus} hideStatusMessage />}
+                    <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">{item.application}</span>
+                </div>
                 <AppStatus
                     appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                    isDeploymentStatus={true}
+                    isDeploymentStatus
                     isVirtualEnv={isVirtualEnv}
                 />
-                <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>
+                {item?.lastDeployedImage && (
+                    <div className="cn-7 fs-14 lh-20 flexbox">
+                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
+                            <div
+                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor max-w-100"
+                                onClick={openCommitInfoModal}
+                            >
+                                <DockerIcon className="icon-dim-14 mw-14" />
+                                {isLastDeployedExpanded ? (
+                                    <div className="mono dc__ellipsis-left direction-left">
+                                        {item.lastDeployedImage}
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div>…</div>
+                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
+                                            {item.lastDeployedImage.split(':').at(-1)}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </Tippy>
+                    </div>
+                )}
+                <CommitChipCell handleClick={openCommitInfoModal} commits={item?.commits} />
+                {item?.lastDeployedBy && (
+                    <span
+                        className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8 mw-none"
+                        style={{ whiteSpace: 'nowrap' }}
+                    >
+                        <span className="flex left dc__gap-8">
+                            <span
+                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                style={{
+                                    backgroundColor: getRandomColor(item?.lastDeployedBy),
+                                }}
+                            >
+                                {item?.lastDeployedBy[0]}
+                            </span>
+                            <span>{item?.lastDeployedBy}</span>
+                        </span>
+                        <Link to={getDeploymentHistoryLink(item.appId, item.pipelineId)}>
+                            {processDeployedTime(item?.lastDeployed, true)}
+                        </Link>
+                    </span>
+                )}
             </div>
         )
     }
 
-    return appListData ? (
-        <div className="env-overview-container display-grid bcn-0 dc__overflow-hidden">
-            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.ENVIRONMENT}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.environment}</div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.NAMESPACE}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9 dc__break-word">{appListData.namespace} </div>
-                </div>
-                <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.CLUSTER}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9 dc__break-word">{appListData.cluster}</div>
-                </div>
-            </div>
-            <div className="dc__overflow-scroll">
-                <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                        <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
+    const renderSideInfoColumn = () => {
+        return (
+            <aside className="flexbox-col dc__gap-16">
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
+                            <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
+                                <GridIconBlue className="w-32 h-32" />
+                            </div>
+                        </div>
                     </div>
-                    <div className="app-deployments-info-wrapper w-100">
-                        <div className="app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                            <span>{OVERVIEW_HEADER.APPLICATION}</span>
-                            {!isVirtualEnv && <span>{OVERVIEW_HEADER.APP_STATUS}</span>}
+
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
+                        {appGroupListData.environmentName}
+                    </div>
+                    <EditableTextArea
+                        emptyState="Write a short description for this environment"
+                        placeholder="Write a short description for this environment"
+                        rows={4}
+                        initialText={description}
+                        updateContent={handleSaveDescription}
+                        validations={{
+                            maxLength: {
+                                value: BIO_MAX_LENGTH,
+                                message: BIO_MAX_LENGTH_ERROR,
+                            },
+                        }}
+                    />
+                </div>
+                <div className="dc__border-top-n1" />
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Type</div>
+                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
+                            {appGroupListData.environmentType}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Namespace</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            <span>{appGroupListData.namespace}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Cluster</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            <span>{appGroupListData.clusterName}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            {appGroupListData.createdOn
+                                ? moment(appGroupListData.createdOn).format(Moment12HourFormat)
+                                : '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                            <div
+                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
+                            >
+                                {appGroupListData.createdBy[0]}
+                            </div>
+                            {appGroupListData.createdBy}
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        )
+    }
+
+    return appListData?.appInfoList?.length > 0 ? (
+        <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
+            <div>{renderSideInfoColumn()}</div>
+            <div className="dc__h-fit-content">
+                <div className="flex column left">
+                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
+                        <span className="flex">
+                            <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
+                        </span>
+                        {selectedAppIds.length > 0 && (
+                            <div className="flexbox dc__gap-6">
+                                <button
+                                    onClick={openHiberateModalPopup}
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                >
+                                    <HibernateIcon className="icon-dim-12 mr-4" />
+                                    Hibernate
+                                </button>
+                                <button
+                                    onClick={openUnhiberateModalPopup}
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                >
+                                    <UnhibernateIcon className="icon-dim-12 mr-4" />
+                                    Unhibernate
+                                </button>
+                                <button
+                                    onClick={onClickShowBulkRestartModal}
+                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                                >
+                                    <RotateIcon className="icon-dim-12 mr-4 scn-9" />
+                                    Restart Workload
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="app-deployments-info-wrapper dc__overflow-scroll w-100 dc__position-rel min-w-500">
+                        <div
+                            className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
+                        >
+                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center dc__ellipsis-right">
+                                <label className="dc__position-rel pointer m-0-imp">
+                                    <input
+                                        type="checkbox"
+                                        className="form__checkbox"
+                                        value="ALL"
+                                        onChange={handleSelect}
+                                        checked={selectedAppIds.length === appListData.appInfoList.length}
+                                    />
+                                    <span
+                                        className={`form__checkbox-container ${
+                                            selectedAppIds.length === appListData.appInfoList.length
+                                                ? 'tick-icon'
+                                                : selectedAppIds.length > 0
+                                                  ? 'any-selected'
+                                                  : ''
+                                        }`}
+                                    />
+                                </label>
+                                {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
+                                <SortableTableHeaderCell
+                                    title={OVERVIEW_HEADER.APPLICATION}
+                                    triggerSorting={sortByApplication}
+                                    isSorted={sortBy === EnvironmentOverviewSortableKeys.application}
+                                    sortOrder={sortOrder}
+                                    disabled={loading}
+                                />
+                            </div>
                             <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
-                            <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                            <button
+                                type="button"
+                                className="dc__outline-none-imp p-0 dc__uppercase dc__transparent flexbox dc__align-items-center dc__gap-4"
+                                onClick={toggleIsLastDeployedExpanded}
+                            >
+                                <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
+                                <ArrowLineDown
+                                    className="icon-dim-14 scn-5 rotate"
+                                    style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
+                                />
+                            </button>
+                            <span>{OVERVIEW_HEADER.COMMIT}</span>
+                            <SortableTableHeaderCell
+                                title={OVERVIEW_HEADER.DEPLOYED_AT}
+                                triggerSorting={sortByDeployedAt}
+                                isSorted={sortBy === EnvironmentOverviewSortableKeys.deployedAt}
+                                sortOrder={sortOrder}
+                                disabled={loading}
+                            />
                         </div>
-                        <div className="app-deployments-info-body">
-                            {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
-                        </div>
+                        <div>{appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}</div>
                     </div>
                 </div>
             </div>
+            {openHiberateModal && (
+                <HibernateModal
+                    selectedAppIds={selectedAppIds}
+                    appDetailsList={appGroupListData.apps}
+                    envId={envId}
+                    envName={appListData.environment}
+                    setOpenHiberateModal={setOpenHiberateModal}
+                    setAppStatusResponseList={setAppStatusResponseList}
+                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
+                    httpProtocol={httpProtocol.current}
+                />
+            )}
+            {openUnhiberateModal && (
+                <UnhibernateModal
+                    selectedAppIds={selectedAppIds}
+                    appDetailsList={appGroupListData.apps}
+                    envId={envId}
+                    envName={appListData.environment}
+                    setOpenUnhiberateModal={setOpenUnhiberateModal}
+                    setAppStatusResponseList={setAppStatusResponseList}
+                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
+                    httpProtocol={httpProtocol.current}
+                />
+            )}
+            {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
+                <RestartWorkloadModal
+                    selectedAppIds={selectedAppIds}
+                    envName={appListData.environment}
+                    envId={envId}
+                    setRestartLoader={setRestartLoader}
+                    restartLoader={restartLoader}
+                    hibernateInfoMap={hibernateInfoMap}
+                    httpProtocol={httpProtocol.current}
+                />
+            )}
+            {(showHibernateStatusDrawer.showStatus || showHibernateStatusDrawer.inProgress) && (
+                <HibernateStatusListDrawer
+                    closePopup={closePopup}
+                    isLoading={false}
+                    envName={appListData.environment}
+                    responseList={appStatusResponseList}
+                    getAppListData={getAppListData}
+                    showHibernateStatusDrawer={showHibernateStatusDrawer}
+                    hibernateInfoMap={hibernateInfoMap}
+                    isDeploymentLoading={isDeploymentLoading}
+                />
+            )}
+            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
         </div>
     ) : null
 }

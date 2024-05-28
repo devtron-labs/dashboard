@@ -3,15 +3,13 @@ import ReactSelect from 'react-select'
 import {
     Checkbox,
     CHECKBOX_VALUE,
-    TippyCustomized,
-    TippyTheme,
     RadioGroup,
     RadioGroupItem,
+    CustomInput,
+    InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import {
     ConfigureLinkActionType,
     ExternalLinkScopeType,
@@ -21,6 +19,7 @@ import {
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
+import { CONFIGURE_LINK_NO_NAME } from '../../../config'
 
 export default function ConfigureLinkAction({
     isFullMode,
@@ -140,15 +139,15 @@ export default function ConfigureLinkAction({
             </div>
             <div className="configure-link-action-content">
                 <div className="link-name">
-                    <input
+                    <CustomInput
                         name={LinkValidationKeys.name}
                         placeholder="Link name"
                         value={link.name}
                         onChange={onNameChange}
-                        onBlur={validateAndUpdateLinksData}
+                        handleOnBlur={validateAndUpdateLinksData}
                         data-testid="external-link-name-input"
+                        error={link.invalidName && CONFIGURE_LINK_NO_NAME}
                     />
-                    {link.invalidName && getErrorLabel('name')}
                 </div>
                 <div className="link-text-area">
                     <textarea
@@ -227,20 +226,11 @@ export default function ConfigureLinkAction({
                         >
                             <span className="fs-13 fw-4 lh-20 cn-9">App admins can edit</span>
                         </Checkbox>
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300"
-                            placement="top"
-                            Icon={HelpIcon}
-                            iconClass="fcv-5"
+                        <InfoIconTippy
                             heading="Who can edit this link?"
                             infoText="If allowed, this link will be visible in app configurations. Application admins and managers will be able to edit this link."
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <QuestionIcon className="icon-dim-16 fcn-6 ml-4 cursor" />
-                        </TippyCustomized>
+                            iconClassName="icon-dim-16 fcn-6 ml-4"
+                        />
                     </div>
                 )}
             </div>

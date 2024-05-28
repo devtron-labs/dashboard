@@ -4,9 +4,7 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { CLAIR_TOOL_VERSION_V2, CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
-import IndexStore from '../appDetails/index.store'
-import { AppDetails, AppType } from '../appDetails/appDetails.type'
+import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
@@ -17,6 +15,8 @@ import {
     ModuleStatus,
     StackManagerNavLinkType,
 } from './DevtronStackManager.type'
+import { AppDetails, AppType } from '../appDetails/appDetails.type'
+import IndexStore from '../appDetails/index.store'
 
 export const MORE_MODULE_DETAILS: ModuleDetails = {
     id: 'moreIntegrations',
@@ -61,13 +61,13 @@ export const handleAction = async (
     updateActionTrigger: (isActionTriggered: boolean) => void,
     history: RouteComponentProps['history'],
     location: RouteComponentProps['location'],
-    moduleType?:string
+    moduleType?: string,
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
             version: upgradeVersion,
-            moduleType: moduleType
+            moduleType,
         }
 
         const { result } = isUpgradeView
@@ -93,7 +93,9 @@ export const handleEnableAction = async (
 ) => {
     try {
         const toolVersion =
-            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
+            moduleName === ModuleNameMap.SECURITY_TRIVY
+                ? TRIVY_TOOL_VERSION
+                : window._env_.CLAIR_TOOL_VERSION || CLAIR_TOOL_VERSION_V4
         const { result } = await executeModuleEnableAction(moduleName, toolVersion)
         if (result?.success) {
             setSuccessState(true)
@@ -114,13 +116,15 @@ const getVersionLevels = (version: string): number[] => {
 }
 
 export const isLatestVersionAvailable = (currentVersion: string, newVersion: string): boolean => {
-    if (!currentVersion || !newVersion) return false
+    if (!currentVersion || !newVersion) {
+        return false
+    }
 
     const currentVersionLevels = getVersionLevels(currentVersion)
     const newVersionLevels = getVersionLevels(newVersion)
     const minLevels = currentVersionLevels.length > newVersionLevels.length ? newVersionLevels : currentVersionLevels
 
-    for (let [idx, level] of minLevels.entries()) {
+    for (const [idx, level] of minLevels.entries()) {
         if (level === newVersionLevels[idx]) {
             continue
         } else if (level > newVersionLevels[idx]) {
@@ -130,7 +134,7 @@ export const isLatestVersionAvailable = (currentVersion: string, newVersion: str
         }
     }
 
-    return currentVersionLevels.length >= newVersionLevels.length ? false : true
+    return !(currentVersionLevels.length >= newVersionLevels.length)
 }
 
 export const DEVTRON_UPGRADE_MESSAGE =
@@ -153,6 +157,7 @@ export const MODULE_CONFIGURATION_DETAIL_MAP = {
 export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResourceStatus[]): any => {
     const _nodes = []
     const _resources = []
+    const resourceStatusDetails = {}
     moduleResourcesStatus?.forEach((moduleResourceStatus) => {
         const _resource = {
             group: moduleResourceStatus.group,
@@ -166,35 +171,24 @@ export const buildResourceStatusModalData = (moduleResourcesStatus: ModuleResour
         }
         _nodes.push(_resource)
         _resources.push(_resource)
+        resourceStatusDetails[`${moduleResourceStatus.kind}/${moduleResourceStatus.name}`] =
+            moduleResourceStatus.healthMessage
     })
-    const _appStreamData = {
-        result: {
-            application: {
-                status: {
-                    operationState: {
-                        syncResult: {
-                            resources: _resources,
-                        },
-                    },
-                },
-            },
-        },
-    }
     const _appDetail: AppDetails = JSON.parse(
         JSON.stringify({
             resourceTree: {
                 nodes: _nodes,
                 status: 'INTEGRATION_INSTALLING',
+                resourcesSyncResult: resourceStatusDetails,
             },
         }),
     )
     IndexStore.publishAppDetails(_appDetail, AppType.DEVTRON_APP)
-    return _appStreamData
 }
 
 export const AppStatusClass = {
-  [ModuleStatus.INSTALLING]: 'progressing',
-  [ModuleStatus.TIMEOUT]: 'degraded',
-  [ModuleStatus.INSTALL_FAILED]: 'degraded',
-  [ModuleStatus.INSTALLED]: 'healthy'
+    [ModuleStatus.INSTALLING]: 'progressing',
+    [ModuleStatus.TIMEOUT]: 'degraded',
+    [ModuleStatus.INSTALL_FAILED]: 'degraded',
+    [ModuleStatus.INSTALLED]: 'healthy',
 }

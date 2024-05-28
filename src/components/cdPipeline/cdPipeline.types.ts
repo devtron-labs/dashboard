@@ -58,6 +58,7 @@ export interface Environment {
     isClusterCdActive: boolean
     isVirtualEnvironment?: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
+    isDigestEnforcedForEnv?: boolean
 }
 export interface CommonError {
     isValid: boolean
@@ -65,8 +66,8 @@ export interface CommonError {
 }
 
 export enum GeneratedHelmPush {
-  PUSH = 'PUSH',
-  DO_NOT_PUSH = 'DO_NOT_PUSH',
+    PUSH = 'PUSH',
+    DO_NOT_PUSH = 'DO_NOT_PUSH',
 }
 export interface CDPipelineState {
     environments: Environment[]
@@ -135,6 +136,7 @@ export interface PipelineConfig {
     userApprovalConfig?: {
         requiredCount: number
     }
+    isDigestEnforcedForEnv?: boolean
 }
 
 export interface BasicCDPipelineModalProps {
@@ -190,9 +192,9 @@ export interface AdvanceCDPipelineModalProps {
 }
 
 interface ConfigSecretType {
-    label: string,
-    value: string,
-    type: string,
+    label: string
+    value: string
+    type: string
 }
 
 export interface CDFormType {
@@ -204,22 +206,22 @@ export interface CDFormType {
     environments: Environment[]
     deploymentAppType: string
     triggerType: string
-    preBuildStage?: PipelineBuildStageType;
-    postBuildStage?: PipelineBuildStageType;
+    preBuildStage?: PipelineBuildStageType
+    postBuildStage?: PipelineBuildStageType
     strategies: DeploymentStrategy[]
     savedStrategies: SavedDeploymentStrategy[]
-    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
-    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[], secrets: ConfigSecretType[] }
+    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
+    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
     requiredApprovals: string
     userApprovalConfig?: {
         requiredCount: number
     }
     isClusterCdActive: boolean
-    deploymentAppCreated: boolean,
-    clusterId: string,
+    deploymentAppCreated: boolean
+    clusterId: string
     clusterName: string
-    runPreStageInEnv: boolean,
-    runPostStageInEnv: boolean,
+    runPreStageInEnv: boolean
+    runPostStageInEnv: boolean
     allowedDeploymentTypes: DeploymentAppTypes[]
     containerRegistryName: string
     repoName: string

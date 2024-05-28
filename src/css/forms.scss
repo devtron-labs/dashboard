@@ -56,7 +56,7 @@
 .form__error {
     color: var(--R500);
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.45;
     letter-spacing: -0.1px;
     display: block;
@@ -68,7 +68,7 @@
     font-size: 13px;
     line-height: 20px;
     color: var(--N700);
-    font-weight: 500;
+    font-weight: 400;
     display: block;
     margin-bottom: 6px;
 }
@@ -96,23 +96,23 @@
     padding: 8px 10px;
     display: block;
     width: 100%;
-    font-weight: 500;
+    font-weight: 400;
     &.tag-input {
-      &.form__input--error {
-        border: solid 1px var(--R500) !important;
-      }
-      &:not(.form__input--error):focus{
-        border: 1px solid var(--B500) !important;
-      }
-      &:not(.form__input--error):hover{
-        border: 1px solid var(--N400) !important;
-      }
+        &.form__input--error {
+            border: solid 1px var(--R500) !important;
+        }
+        &:not(.form__input--error):focus {
+            border: 1px solid var(--B500) !important;
+        }
+        &:not(.form__input--error):hover {
+            border: 1px solid var(--N400) !important;
+        }
     }
 }
 
 .form__textarea {
     min-height: 36px;
-    resize: vertical
+    resize: vertical;
 }
 
 .form__input--error {
@@ -155,6 +155,10 @@ p.sentence-case:first-letter {
 
 .form__icon--error path[fill='#FFCB5D'] {
     fill: var(--R500);
+}
+
+.form__icon--waiting {
+    fill: var(--Y700);
 }
 
 .form__icon--info path[fill='#06C'] {
@@ -203,7 +207,7 @@ p.sentence-case:first-letter {
         padding: 9px 10px;
         display: block;
         width: 100%;
-        font-weight: 500;
+        font-weight: 400;
     }
 }
 
@@ -259,7 +263,6 @@ p.sentence-case:first-letter {
             padding: 16px 16px 16px 0;
         }
     }
-
 }
 
 .form__checkbox {
@@ -283,7 +286,7 @@ p.sentence-case:first-letter {
 }
 
 .form__checkbox-label {
-    font-weight: 500;
+    font-weight: 400;
     display: inline-block;
     margin-left: 12px;
     line-height: 16px;
@@ -303,11 +306,24 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
+.form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+    background-image: url('../assets/icons/ic-checkbox-selected.svg');
+}
+
+.form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+    background-image: url('../assets/icons/ic-bulk-check.svg');
+}
+
+.any-selected {
+
+    background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
+}
+
+.tick-icon {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
@@ -315,12 +331,13 @@ p.sentence-case:first-letter {
 .form__checkbox:disabled ~ .form__checkbox-container {
     color: var(--N500);
     cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .radio__title {
     display: inline-block;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.43;
     text-transform: capitalize;
     color: var(--N900);
@@ -429,7 +446,7 @@ p.sentence-case:first-letter {
     border: solid 1px #d2d2d2;
     padding: 10px 12px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.54;
     color: #151515;
     width: 100%;
@@ -442,7 +459,7 @@ p.sentence-case:first-letter {
     padding: 10px 12px;
     font-size: 12px;
     line-height: 1.54;
-    font-weight: 500;
+    font-weight: 400;
     color: #151515;
     width: 100%;
     display: block;
@@ -550,7 +567,7 @@ p.sentence-case:first-letter {
     border: solid 1px var(--B500);
 }
 
-.search-input::placeholder{
+.search-input::placeholder {
     font-weight: 400;
 }
 

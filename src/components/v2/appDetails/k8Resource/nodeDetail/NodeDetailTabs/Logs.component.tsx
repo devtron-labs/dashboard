@@ -1,24 +1,27 @@
 import Tippy from '@tippyjs/react'
 import React, { useEffect, useRef, useState } from 'react'
+import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import Select from 'react-select'
+import ReactGA from 'react-ga4'
 import { ReactComponent as PlayButton } from '../../../../../../assets/icons/ic-play-filled.svg'
 import { ReactComponent as StopButton } from '../../../../../../assets/icons/ic-stop-filled.svg'
 import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
 import { ReactComponent as Abort } from '../../../../assets/icons/ic-abort.svg'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { ReactComponent as LinesIcon } from '../../../../../../assets/icons/ic-lines.svg'
+import { ReactComponent as Download } from '../../../../../../assets/icons/ic-arrow-line-down.svg'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { getLogsURL } from '../nodeDetail.api'
+import { downloadLogs, getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Checkbox, CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
-import { toast } from 'react-toastify'
-import Select from 'react-select'
-import { multiSelectStyles } from '../../../../common/ReactSelectCustomization'
+import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-question.svg'
+import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
 import { ReactComponent as CloseImage } from '../../../../assets/icons/ic-cancelled.svg'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
@@ -30,22 +33,35 @@ import {
     getGroupedContainerOptions,
     getInitialPodContainerSelection,
     getPodContainerOptions,
+    getPodLogsOptions,
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
-import ReactGA from 'react-ga4'
+import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
+import { SelectedCustomLogFilterType } from './node.type'
+import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
 
-function LogsComponent({
+const LogsComponent = ({
     selectedTab,
     isDeleted,
     logSearchTerms,
     setLogSearchTerms,
     isResourceBrowserView,
     selectedResource,
-}: LogsComponentProps) {
+    isExternalApp,
+}: LogsComponentProps) => {
+    const [logsShownOption, setLogsShownOption] = useState({
+        prev: getPodLogsOptions()[5],
+        current: getPodLogsOptions()[5],
+    })
+    const [selectedCustomLogFilter, setSelectedCustomLogFilter] = useState<SelectedCustomLogFilterType>({
+        option: 'duration',
+        value: '',
+        unit: 'minutes',
+    })
     const location = useLocation()
     const { url } = useRouteMatch()
     const params = useParams<{
@@ -72,7 +88,10 @@ function LogsComponent({
     )
     const [prevContainer, setPrevContainer] = useState(false)
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
-
+    const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
+    const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
+    const [downloadInProgress, setDownloadInProgress] = useState(false)
+    const {isSuperAdmin} = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -163,7 +182,9 @@ function LogsComponent({
                         setNoPrevContainer(log.toString())
                     }
                 }
-            } else setNoPrevContainer('')
+            } else {
+                setNoPrevContainer('')
+            }
         })
         if (event.data.readyState) {
             setReadyState(event.data.readyState)
@@ -172,13 +193,11 @@ function LogsComponent({
 
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
-            return
         } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
             if (!showStreamErrorRef.current) {
                 updateLogsAndReadyState(event)
                 showStreamErrorRef.current = true
             }
-            return
         } else {
             updateLogsAndReadyState(event)
         }
@@ -203,6 +222,49 @@ function LogsComponent({
         setTimeout(() => setLogsCleared(false), 100)
     }
 
+    const handleDownloadLogs = () => {
+        const nodeName = podContainerOptions.podOptions[0].name
+        if (isResourceBrowserView) {
+            for (const _co of podContainerOptions.containerOptions) {
+                if (_co.selected) {
+                    downloadLogs(
+                        setDownloadInProgress,
+                        appDetails,
+                        nodeName,
+                        _co.name,
+                        prevContainer,
+                        logsShownOption.current,
+                        selectedCustomLogFilter,
+                        isResourceBrowserView,
+                        selectedResource.clusterId,
+                        selectedResource.namespace,
+                    )
+                }
+            }
+        } else {
+            const selectedPods = podContainerOptions.podOptions
+                .filter((_pod) => _pod.selected)
+                .flatMap((_pod) => getSelectedPodList(_pod.name))
+
+            const containers = podContainerOptions.containerOptions.filter((_co) => _co.selected).map((_co) => _co.name)
+            const podsWithContainers = selectedPods
+                .flatMap((_pod) => flatContainers(_pod).map((_container) => [_pod.name, _container]))
+                .filter((_pwc) => containers.includes(_pwc[1]))
+
+            for (const _pwc of podsWithContainers) {
+                downloadLogs(
+                    setDownloadInProgress,
+                    appDetails,
+                    _pwc[0],
+                    _pwc[1],
+                    prevContainer,
+                    logsShownOption.current,
+                    selectedCustomLogFilter,
+                )
+            }
+        }
+    }
+
     const fetchLogs = () => {
         if (podContainerOptions.podOptions.length == 0 || podContainerOptions.containerOptions.length == 0) {
             return
@@ -210,13 +272,12 @@ function LogsComponent({
         workerRef.current = new WebWorker(sseWorker)
         workerRef.current['addEventListener' as any]('message', handleMessage)
 
-        const pods = [],
-            urls = []
+        const pods = []
+        const urls = []
 
         if (isResourceBrowserView) {
             const nodeName = podContainerOptions.podOptions[0].name
             pods.push(nodeName)
-
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     urls.push(
@@ -226,6 +287,9 @@ function LogsComponent({
                             Host,
                             _co.name,
                             prevContainer,
+                            params.podName,
+                            logsShownOption.current,
+                            selectedCustomLogFilter,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -245,23 +309,34 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer))
+                urls.push(
+                    getLogsURL(
+                        appDetails,
+                        _pwc[0],
+                        Host,
+                        _pwc[1],
+                        prevContainer,
+                        params.podName,
+                        logsShownOption.current,
+                        selectedCustomLogFilter,
+                    ),
+                )
             }
 
             if (urls.length == 0) {
                 return
             }
         }
-
         workerRef.current['postMessage' as any]({
             type: 'start',
             payload: {
-                urls: urls,
+                urls,
                 grepTokens: logState.grepTokens,
                 timeout: 300,
-                pods: pods,
+                pods,
             },
         })
+        setNewFilteredLogs(false)
     }
 
     const handleCurrentSearchTerm = (searchTerm: string): void => {
@@ -281,6 +356,18 @@ function LogsComponent({
             const { length, [length - 1]: highlightString } = str.split(' ')
             setHighlightString(highlightString)
             handleCurrentSearchTerm(str)
+        }
+    }
+
+    const handleLogOptionChange = (selected) => {
+        setLogsShownOption({
+            prev: logsShownOption.current,
+            current: selected,
+        })
+        if (selected.value !== CUSTOM_LOGS_FILTER.CUSTOM) {
+            setNewFilteredLogs(true)
+        } else {
+            setShowCustomOptionsMoadal(true)
         }
     }
 
@@ -322,18 +409,18 @@ function LogsComponent({
                 setHighlightString(highlightString)
             }
         }
-        //TODO: reset pauseLog and grepToken
+        // TODO: reset pauseLog and grepToken
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
-        //Values are already set once we reach here
-        //selected pods, containers, searchText
+        // Values are already set once we reach here
+        // selected pods, containers, searchText
         onLogsCleared()
         stopWorker()
         fetchLogs()
 
         return () => stopWorker()
-    }, [logState, prevContainer])
+    }, [logState, prevContainer, newFilteredLogs])
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
@@ -345,8 +432,8 @@ function LogsComponent({
     )
 
     const getPodGroups = () => {
-        const allGroupPods = [],
-            individualPods = []
+        const allGroupPods = []
+        const individualPods = []
 
         const podCreate = (podGroupName, _pod: Options) => {
             podGroupName.push({
@@ -379,9 +466,9 @@ function LogsComponent({
             />
         </div>
     ) : (
-        <React.Fragment>
+        <>
             <div className="node-container-fluid bcn-0">
-                <div data-testid="logs-container-header" className={`pl-16 h-32 flexbox`}>
+                <div data-testid="logs-container-header" className="pl-16 h-32 flexbox">
                     <div className="w-70 flexbox flex-align-center pt-2 pb-2">
                         <Tippy
                             className="default-tt"
@@ -414,9 +501,9 @@ function LogsComponent({
                         </Tippy>
                         {isLogAnalyzer && podContainerOptions.podOptions.length > 0 && (
                             <>
-                                <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                                <div className="h-16 dc__border-right ml-8 mr-8" />
 
-                                <React.Fragment>
+                                <>
                                     <div className="cn-6 ml-8 mr-10 ">Pods</div>
                                     <div className="cn-6 flex left">
                                         <div style={{ width: '200px' }}>
@@ -479,23 +566,19 @@ function LogsComponent({
                                                 components={{
                                                     IndicatorSeparator: null,
                                                     Option: (props) => (
-                                                        <Option
-                                                            {...props}
-                                                            showTippy={true}
-                                                            style={{ direction: 'rtl' }}
-                                                        />
+                                                        <Option {...props} showTippy style={{ direction: 'rtl' }} />
                                                     ),
                                                 }}
                                             />
                                         </div>
                                     </div>
-                                </React.Fragment>
+                                </>
                             </>
                         )}
 
                         {(podContainerOptions?.containerOptions ?? []).length > 0 && (
-                            <React.Fragment>
-                                <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                            <>
+                                <div className="h-16 dc__border-right ml-8 mr-8" />
                                 <div className="cn-6 ml-8 mr-10">Container </div>
                                 <div className="dc__mxw-200">
                                     <Select
@@ -560,14 +643,14 @@ function LogsComponent({
                                         components={{
                                             IndicatorSeparator: null,
                                             Option: (props) => (
-                                                <Option {...props} showTippy={true} style={{ direction: 'rtl' }} />
+                                                <Option {...props} showTippy style={{ direction: 'rtl' }} />
                                             ),
                                         }}
                                     />
                                 </div>
-                            </React.Fragment>
+                            </>
                         )}
-                        <div className="h-16 dc__border-right ml-8 mr-8"></div>
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
                         <Checkbox
                             dataTestId="prev-container-logs"
                             isChecked={prevContainer}
@@ -577,8 +660,46 @@ function LogsComponent({
                         >
                             <span className="fs-12 ">Prev. container</span>
                         </Checkbox>
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
+                        <LinesIcon className="icon-dim-16 mr-8" />
+                        <Select
+                            options={getPodLogsOptions()}
+                            onChange={handleLogOptionChange}
+                            value={logsShownOption.current}
+                            styles={{
+                                ...multiSelectStyles,
+                                ...podsDropdownStyles,
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: (props) => <Option {...props} />,
+                            }}
+                        />
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
+
+                        {!isExternalApp &&
+                            (downloadInProgress ? (
+                                <Progressing
+                                    size={16}
+                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                                />
+                            ) : (
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
+                                    <span>
+                                        <Download
+                                            className={`icon-dim-16 mr-8 cursor ${
+                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                                (prevContainer && showNoPrevContainer != '')
+                                                    ? 'cursor-not-allowed dc__opacity-0_5'
+                                                    : ''
+                                            }`}
+                                            onClick={handleDownloadLogs}
+                                        />
+                                    </span>
+                                </Tippy>
+                            ))}
                     </div>
-                    <div className="dc__border-right "></div>
+                    <div className="dc__border-right " />
                     <form
                         className="w-30 flex flex-justify left bcn-1 pl-10 flex-align-center "
                         onSubmit={handleLogSearchSubmit}
@@ -606,7 +727,7 @@ function LogsComponent({
                                 }}
                             />
                         )}
-                        <div className="dc__border-right h-100"></div>
+                        <div className="dc__border-right h-100" />
                         <Tippy
                             className="default-tt"
                             arrow={false}
@@ -623,7 +744,7 @@ function LogsComponent({
                             }
                         >
                             <div className="w-16 bcn-0 h-100 flexbox flex-align-center">
-                                <Question className="icon-dim-18 cursor ml-8 mr-8" />
+                                <QuestionIcon className="icon-dim-18 cursor ml-8 mr-8" />
                             </div>
                         </Tippy>
                     </form>
@@ -685,7 +806,7 @@ function LogsComponent({
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
-                            }`}
+                            } ${isSuperAdmin && !isResourceBrowserView ? 'dc__bottom-30-imp' : ''}`}
                         >
                             {readyState === 0 && (
                                 <div
@@ -721,7 +842,17 @@ function LogsComponent({
                     />
                 </div>
             )}
-        </React.Fragment>
+
+            {showCustomOptionsModal && (
+                <CustomLogsModal
+                    setSelectedCustomLogFilter={setSelectedCustomLogFilter}
+                    selectedCustomLogFilter={selectedCustomLogFilter}
+                    setLogsShownOption={setLogsShownOption}
+                    setNewFilteredLogs={setNewFilteredLogs}
+                    setShowCustomOptionsMoadal={setShowCustomOptionsMoadal}
+                />
+            )}
+        </>
     )
 }
 

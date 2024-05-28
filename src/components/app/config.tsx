@@ -1,20 +1,22 @@
 export const Colors = {
-    yellow: "#FF7E5B",
+    yellow: '#FF7E5B',
     red: '#FF3E3E',
     green: '#1DAD70',
-    orange: "#FF7E5B",
+    orange: '#FF7E5B',
     gray: 'rgba(128, 128, 128, 1)',
-};
+}
 
 export const statusColor = {
     suspended: '#ffaa00',
     unknown: 'var(--N700)',
+    queued: 'var(--N700)',
     degraded: 'var(--R500)',
     healthy: 'var(--G500)',
     notdeployed: 'var(--N500)',
     missing: 'var(--N700)',
-    progressing: "var(--orange)",
-    starting: "#FF7E5B",
+    progressing: 'var(--orange)',
+    initiating: 'var(--orange)',
+    starting: '#FF7E5B',
     succeeded: '#1dad70',
     running: '#FF7E5B',
     failed: '#f33e3e',
@@ -27,9 +29,11 @@ export const statusColor = {
 }
 
 export const statusIcon = {
-    failed:'failed',
+    failed: 'failed',
+    queued: 'queued',
     suspended: 'suspended',
-    starting: "progressing",
+    starting: 'progressing',
+    initiating: 'progressing',
     unknown: 'unknown',
     degraded: 'degraded',
     healthy: 'healthy',
@@ -40,19 +44,19 @@ export const statusIcon = {
     hibernating: 'hibernating',
     succeeded: 'healthy',
     timedout: 'timed-out',
-    unabletofetch: 'failed'
+    unabletofetch: 'failed',
 }
 
 export const AppListViewType = {
-    LOADING: "LOADING",
-    LIST: "LIST",
-    EMPTY: "LIST_EMPTY",
-    NO_RESULT: "NO_RESULT",
-    ERROR: "ERROR",
+    LOADING: 'LOADING',
+    LIST: 'LIST',
+    EMPTY: 'LIST_EMPTY',
+    NO_RESULT: 'NO_RESULT',
+    ERROR: 'ERROR',
 }
 
 export const CI_PIPELINE_VIEW = {
-    SELECT_PIPELINE: "SELECT_PIPELINE",
+    SELECT_PIPELINE: 'SELECT_PIPELINE',
 }
 
 export const TriggerStatus = {
@@ -64,14 +68,14 @@ export const TriggerStatus = {
     error: Colors.red,
     cancelled: Colors.gray,
     notbuilt: Colors.gray,
-    nottriggered: Colors.gray
+    nottriggered: Colors.gray,
 }
 
 export const APP_STATUS = {
     Degraded: 'Degraded',
-    Healthy : 'Healthy',
+    Healthy: 'Healthy',
     Hibernating: 'HIBERNATING',
     Missing: 'Missing',
-    Progressing : 'Progressing',
-    ['Not Deployed'] : 'NOT DEPLOYED',
+    Progressing: 'Progressing',
+    'Not Deployed': 'NOT DEPLOYED',
 }

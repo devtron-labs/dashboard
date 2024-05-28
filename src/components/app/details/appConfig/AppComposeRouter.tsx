@@ -1,9 +1,8 @@
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch } from 'react-router-dom'
-
+import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation } from 'react-router-dom'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../../../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { AppComposeRouterProps, NextButtonProps, STAGE_NAME } from './appConfig.type'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
@@ -17,11 +16,12 @@ const DeploymentConfig = lazy(() => import('../../../deploymentConfig/Deployment
 const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+const UserGitRepoConfiguration = lazy(() => import('../../../gitOps/UserGitRepConfiguration'))
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
-    let index = navItems.findIndex((item) => item.stage === currentStageName)
-    let nextUrl = navItems[index + 1].href
+    const index = navItems.findIndex((item) => item.stage === currentStageName)
+    const nextUrl = navItems[index + 1].href
     if (!isCiPipeline) {
         return (
             <div className="app-compose__next-section">
@@ -59,10 +59,16 @@ export default function AppComposeRouter({
     isBaseConfigProtected,
     reloadEnvironments,
     configProtectionData,
-    filteredEnvIds
+    filteredEnvIds,
+    isGitOpsConfigurationRequired,
+    reloadAppConfig,
+    lastUnlockedStage,
 }: AppComposeRouterProps) {
-    const { path } = useRouteMatch()
+    const { path ,url,} = useRouteMatch()
+    const location = useLocation()
+
     const renderJobViewRoutes = (): JSX.Element => {
+       // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         return (
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
@@ -94,17 +100,18 @@ export default function AppComposeRouter({
                                 getWorkflows={getWorkflows}
                                 isJobView={isJobView}
                                 envList={environments}
+                                reloadEnvironments={reloadEnvironments}
                             />
                         )}
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CM_CONFIG}`}
-                        path={`${path}/${URLS.APP_CM_CONFIG}`}
+                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
                         render={(props) => <ConfigMapList isJobView={isJobView} isProtected={false} />}
                     />,
                     <Route
                         key={`${path}/${URLS.APP_CS_CONFIG}`}
-                        path={`${path}/${URLS.APP_CS_CONFIG}`}
+                        path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}
                         render={(props) => <SecretList isJobView={isJobView} isProtected={false} />}
                     />,
                     <Route
@@ -148,7 +155,6 @@ export default function AppComposeRouter({
                             respondOnSuccess={respondOnSuccess}
                             isCDPipeline={isCDPipeline}
                             isCiPipeline={isCiPipeline}
-                            navItems={navItems}
                         />
                     </Route>
                 )}
@@ -157,7 +163,6 @@ export default function AppComposeRouter({
                         <DeploymentConfig
                             respondOnSuccess={respondOnSuccess}
                             isUnSet={!isUnlocked.workflowEditor}
-                            navItems={navItems}
                             isCiPipeline={isCiPipeline}
                             environments={environments}
                             isProtected={isBaseConfigProtected}
@@ -167,7 +172,16 @@ export default function AppComposeRouter({
                 )}
                 {canShowExternalLinks && (
                     <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
-                        <ExternalLinks isAppConfigView={true} userRole={userRole} />
+                        <ExternalLinks isAppConfigView userRole={userRole} />
+                    </Route>
+                )}
+                {isGitOpsConfigurationRequired && (
+                    <Route path={`${path}/${URLS.APP_GITOPS_CONFIG}`}>
+                        <UserGitRepoConfiguration
+                            respondOnSuccess={respondOnSuccess}
+                            appId={+appId}
+                            reloadAppConfig={reloadAppConfig}
+                        />
                     </Route>
                 )}
                 {isUnlocked.workflowEditor && ConfigProtectionView && (
@@ -192,13 +206,15 @@ export default function AppComposeRouter({
                                 respondOnSuccess={respondOnSuccess}
                                 getWorkflows={getWorkflows}
                                 filteredEnvIds={filteredEnvIds}
+                                reloadEnvironments={reloadEnvironments}
+                                reloadAppConfig={reloadAppConfig}
                             />
                         )}
                     />,
-                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}`}>
+                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
-                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}`}>
+                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <SecretList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
                     <Route
@@ -209,6 +225,8 @@ export default function AppComposeRouter({
                         )}
                     />,
                 ]}
+                {/* Redirect route is there when current path url has something after /edit*/}
+                {location.pathname !== url && <Redirect to={lastUnlockedStage} />}
             </Switch>
         )
     }

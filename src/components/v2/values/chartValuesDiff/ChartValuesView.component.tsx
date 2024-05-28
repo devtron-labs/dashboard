@@ -1,6 +1,18 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
+import {
+    Progressing,
+    DeleteDialog,
+    RadioGroup,
+    RadioGroupItem,
+    ConditionalWrap,
+    DeploymentAppTypes,
+    CustomInput,
+    Drawer,
+    TippyTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import {
     DropdownIndicator,
     EnvFormatOptions,
@@ -12,14 +24,11 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { importComponentFromFELibrary, Select } from '../../../common'
-import {
-    Progressing,
-    DeleteDialog,
-    RadioGroup,
-    RadioGroupItem,
-    ConditionalWrap,
-    DeploymentAppTypes,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
+import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
+import { AUTO_GENERATE_GITOPS_REPO, GITOPS_REPO_REQUIRED, GITOPS_REPO_REQUIRED_FOR_ENV } from './constant'
+import './ChartValuesView.scss'
+
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -35,6 +44,7 @@ import {
     DeploymentAppSelectorType,
     UpdateApplicationButtonProps,
     ValueNameInputType,
+    gitOpsDrawerType,
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import {
@@ -46,13 +56,12 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { DELETE_ACTION } from '../../../../config'
-import Tippy from '@tippyjs/react'
+import { DELETE_ACTION, repoType } from '../../../../config'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
+import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
-
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
@@ -64,7 +73,7 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
-    isOCICompliantChart
+    isOCICompliantChart,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -77,14 +86,14 @@ export const ChartEnvironmentSelector = ({
     }
 
     const renderOCIContainerRegistryText = () => {
-       if (isOCICompliantChart) {
-           return (
-               <div className="cn-7 fs-12 pt-16 flexbox">
-                   <InfoIcon className="icon-dim-20 mr-4" />
-                   Charts from container registries can be deployed via helm only.
-               </div>
-           )
-       }
+        if (isOCICompliantChart) {
+            return (
+                <div className="cn-7 fs-12 pt-16 flexbox">
+                    <InfoIcon className="icon-dim-20 mr-4" />
+                    Charts from container registries can be deployed via helm only.
+                </div>
+            )
+        }
     }
 
     const renderVirtualTippy = (): JSX.Element => {
@@ -92,7 +101,7 @@ export const ChartEnvironmentSelector = ({
             return (
                 <div className="flex left">
                     <div className="ml-4 mr-4">(Virtual)</div>
-                    <VirtualEnvHelpTippy showVirtualText={true}/>
+                    <VirtualEnvHelpTippy showVirtualText />
                 </div>
             )
         }
@@ -104,16 +113,17 @@ export const ChartEnvironmentSelector = ({
 
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left" data-testid="environment-heading">
+            <h2
+                className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left"
+                data-testid="environment-heading"
+            >
                 Environment {renderVirtualTippy()}
             </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
                     {installedAppInfo
                         ? installedAppInfo.environmentName
-                        : releaseInfo.deployedAppDetail.environmentDetail.clusterName +
-                          '__' +
-                          releaseInfo.deployedAppDetail.environmentDetail.namespace}
+                        : `${releaseInfo.deployedAppDetail.environmentDetail.clusterName}__${releaseInfo.deployedAppDetail.environmentDetail.namespace}`}
                 </span>
             ) : (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" data-testid="environemnt-value">
@@ -123,7 +133,9 @@ export const ChartEnvironmentSelector = ({
         </div>
     ) : (
         <div className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="environment-name-heading">Deploy to environment</span>
+            <span className="form__label required-field" data-testid="environment-name-heading">
+                Deploy to environment
+            </span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -151,7 +163,9 @@ export const DeploymentAppSelector = ({
     isUpdate,
     handleDeploymentAppTypeSelection,
     isDeployChartView,
-    allowedDeploymentTypes
+    allowedDeploymentTypes,
+    gitRepoURL,
+    allowedCustomBool,
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
@@ -172,9 +186,30 @@ export const DeploymentAppSelector = ({
                     )}
                 </span>
             </div>
+            {gitRepoURL && allowedCustomBool && (
+                <div className="pt-12">
+                    <div className="fs-14">
+                        Manifests are committed to
+                        <div>
+                            <Tippy
+                                theme={TippyTheme.black}
+                                className="default-tt manifest-repo-link dc__min-width-fit-content"
+                                arrow={false}
+                                placement="bottom-start"
+                                animation="shift-toward-subtle"
+                                content={gitRepoURL}
+                            >
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target='_blank'>
+                                    {gitRepoURL}
+                                </a>
+                            </Tippy>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     ) : (
-        <div className="form__row form__row--w-100 fw-4">
+        <div className="form__row form__row--w-100 fw-4 pt-16">
             <div className="form__row">
                 <label className="form__label form__label--sentence dc__bold chart-value-deployment_heading">
                     How do you want to deploy?
@@ -193,62 +228,228 @@ export const DeploymentAppSelector = ({
     )
 }
 
-const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: string): JSX.Element=>{
-  return (
-      <Tippy className="default-tt w-200" arrow={false} content={tippyContent}>
-          <div className={`${isFromCDPipeline ? '' : 'bcn-1'}`} style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}>
-              {children}
-          </div>
-      </Tippy>
-  )
+const RadioWithTippy = (children, isFromCDPipeline: boolean, tippyContent: string): JSX.Element => {
+    return (
+        <Tippy className="default-tt w-200" arrow={false} content={tippyContent}>
+            <div className={`${isFromCDPipeline ? '' : 'bcn-1'}`} style={{ flex: isFromCDPipeline ? '' : '1 1 auto' }}>
+                {children}
+            </div>
+        </Tippy>
+    )
 }
 
 export const DeploymentAppRadioGroup = ({
-  isDisabled,
-  deploymentAppType,
-  handleOnChange,
-  allowedDeploymentTypes,
-  rootClassName,
-  isFromCDPipeline
+    isDisabled,
+    deploymentAppType,
+    handleOnChange,
+    allowedDeploymentTypes,
+    rootClassName,
+    isFromCDPipeline,
+    isGitOpsRepoNotConfigured,
+    gitOpsRepoConfigInfoBar,
 }: DeploymentAppRadioGroupType): JSX.Element => {
-  return (
-      <RadioGroup
-          value={deploymentAppType}
-          name="DeploymentAppTypeGroup"
-          onChange={handleOnChange}
-          disabled={isDisabled}
-          className={rootClassName ?? ''}
-      >
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="helm-deployment"
-                  value={DeploymentAppTypes.HELM}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-              >
-                  Helm
-              </RadioGroupItem>
-          </ConditionalWrap>
-          <ConditionalWrap
-              condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              wrap={(children) =>
-                  RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via GitOps')
-              }
-          >
-              <RadioGroupItem
-                  dataTestId="gitops-deployment"
-                  value={DeploymentAppTypes.GITOPS}
-                  disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-              >
-                  GitOps
-              </RadioGroupItem>
-          </ConditionalWrap>
-      </RadioGroup>
-  )
+    const gitOpsNotCongiguredText =
+        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
+    return (
+        <>
+            <RadioGroup
+                value={deploymentAppType}
+                name="DeploymentAppTypeGroup"
+                onChange={handleOnChange}
+                disabled={isDisabled}
+                className={rootClassName ?? ''}
+            >
+                <ConditionalWrap
+                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via Helm',
+                        )
+                    }
+                >
+                    <RadioGroupItem
+                        dataTestId="helm-deployment"
+                        value={DeploymentAppTypes.HELM}
+                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
+                    >
+                        Helm
+                    </RadioGroupItem>
+                </ConditionalWrap>
+                <ConditionalWrap
+                    condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via GitOps',
+                        )
+                    }
+                >
+                    <RadioGroupItem
+                        dataTestId="gitops-deployment"
+                        value={DeploymentAppTypes.GITOPS}
+                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
+                    >
+                        GitOps
+                    </RadioGroupItem>
+                </ConditionalWrap>
+            </RadioGroup>
+            {deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsRepoNotConfigured && (
+                <div className="mt-16">{gitOpsRepoConfigInfoBar(gitOpsNotCongiguredText)}</div>
+            )}
+        </>
+    )
+}
+
+export const GitOpsDrawer = ({
+    commonState,
+    deploymentAppType,
+    allowedDeploymentTypes,
+    staleData,
+    dispatch,
+    isDrawerOpen,
+    handleDrawerState,
+    showRepoSelector,
+    allowedCustomBool
+}: gitOpsDrawerType): JSX.Element => {
+    const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
+    const [gitOpsState, setGitOpsState] = useState(false)
+    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
+
+    useEffect(() => {
+        if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+            setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
+        } else {
+            setGitOpsState(false)
+        }
+    }, [deploymentAppType, allowedDeploymentTypes])
+
+    const handleRepoTypeChange = (newRepoType: string) => {
+        setSelectedRepoType(newRepoType)
+    }
+
+    const handleCloseButton = () => {
+        setIsDeploymentAllowed(false)
+        setGitOpsState(true)
+        handleDrawerState(false)
+    }
+
+    const handleRepoTextChange = (newRepoText: string) => {
+        setRepoURL(newRepoText)
+    }
+
+    const handleSaveButton = () => {
+        if (selectedRepoType === repoType.CONFIGURE && repoURL.length === 0) {
+            return
+        }
+        if (selectedRepoType === repoType.DEFAULT || staleData) {
+            dispatch({
+                type: ChartValuesViewActionTypes.setGitRepoURL,
+                payload: AUTO_GENERATE_GITOPS_REPO,
+            })
+        } else {
+            dispatch({
+                type: ChartValuesViewActionTypes.setGitRepoURL,
+                payload: repoURL,
+            })
+        }
+
+        setGitOpsState(true)
+        setIsDeploymentAllowed(false)
+        handleDrawerState(false)
+    }
+
+    const toggleDrawer = () => {
+        setIsDeploymentAllowed(true)
+    }
+
+    const renderValidationErrorLabel = (message?: string): JSX.Element => {
+        return (
+            <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
+                <div className="error-label-icon">
+                    <Error className="icon-dim-16" />
+                </div>
+                <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
+            </div>
+        )
+    }
+    const deploymentManifestGitRepo =
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? 'Auto-create repository' : commonState.gitRepoURL
+    return (
+        <>
+            {(isDeploymentAllowed || isDrawerOpen) && (
+                <div>
+                    <Drawer onEscape={handleCloseButton} position="right" width="800px">
+                        <div className="cluster-form dc__position-rel h-100 bcn-0">
+                            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
+                                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                                    <span className="fw-6 fs-16 cn-9">Git Repository</span>
+                                </h2>
+                                <button
+                                    data-testid="header_close_icon"
+                                    type="button"
+                                    className="dc__transparent flex icon-dim-24"
+                                    onClick={handleCloseButton}
+                                >
+                                    <Close className="icon-dim-24" />
+                                </button>
+                            </div>
+                            <div className="mr-20">
+                                <UserGitRepo
+                                    setRepoURL={handleRepoTextChange}
+                                    setSelectedRepoType={handleRepoTypeChange}
+                                    repoURL={repoURL}
+                                    selectedRepoType={selectedRepoType}
+                                    staleData={staleData}
+                                />
+                            </div>
+                        </div>
+                        <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
+                            <button
+                                data-testid="cancel_button"
+                                className="cta cancel h-36 lh-36 mr-10"
+                                type="button"
+                                onClick={handleCloseButton}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                data-testid="save_cluster_list_button_after_selection"
+                                className="cta h-36 lh-36"
+                                type="button"
+                                disabled={selectedRepoType === repoType.CONFIGURE && !repoURL.trim()}
+                                onClick={handleSaveButton}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </Drawer>
+                </div>
+            )}
+            {(gitOpsState && allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) !== -1) ||
+            (showRepoSelector && window._env_.HIDE_GITOPS_OR_HELM_OPTION) ? (
+                <div className="form__input dashed mt-10 flex bc-n50">
+                    <div className="">
+                        <span>
+                            Commit deployment manifests to
+                            <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
+                        </span>
+                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left" onClick={toggleDrawer}>
+                            {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
+                        </a>
+                    </div>
+                    {commonState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                        allowedCustomBool &&
+                        commonState.gitRepoURL.length === 0 &&
+                        renderValidationErrorLabel()}
+                </div>
+            ) : null}
+            <hr />
+        </>
+    )
 }
 
 export const ChartProjectSelector = ({
@@ -259,7 +460,9 @@ export const ChartProjectSelector = ({
 }: ChartProjectSelectorType): JSX.Element => {
     return (
         <label className="form__row form__row--w-100 fw-4">
-            <span className="form__label required-field" data-testid="project-name-heading">Project</span>
+            <span className="form__label required-field" data-testid="project-name-heading">
+                Project
+            </span>
             <ReactSelect
                 components={{
                     IndicatorSeparator: null,
@@ -329,7 +532,9 @@ export const ChartValuesSelector = ({
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">Chart Values</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
+                Chart Values
+            </span>
             <ChartValuesSelect
                 className="chart-values-selector"
                 chartValuesList={chartValuesList}
@@ -382,7 +587,9 @@ export const ChartVersionValuesSelector = ({
 export const ActiveReadmeColumn = ({ fetchingReadMe, activeReadMe }: ActiveReadmeColumnProps) => {
     return (
         <div className="chart-values-view__readme">
-            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">Readme</div>
+            <div className="code-editor__header flex left fs-12 fw-6 cn-7" data-testid="readme-heading">
+                Readme
+            </div>
             {fetchingReadMe ? (
                 <Progressing pageLoader />
             ) : (
@@ -448,19 +655,19 @@ export const ValueNameInput = ({
 }: ValueNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
-            <span className="form__label required-field">Name</span>
-            <input
-                autoComplete="off"
+            <CustomInput
+                name="value-name"
+                label="Name"
                 tabIndex={1}
                 placeholder="Eg. value-template"
-                className="form__input"
                 value={valueName}
                 onChange={(e) => handleValueNameChange(e.target.value)}
-                onBlur={() => handleValueNameOnBlur()}
+                handleOnBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
                 data-testid="preset-values-name-input"
+                isRequiredField
+                error={invalidValueName && (invalidValueNameMessage || REQUIRED_FIELD_MSG)}
             />
-            {invalidValueName && renderValidationErrorLabel(invalidValueNameMessage)}
         </label>
     )
 }
@@ -474,18 +681,18 @@ export const AppNameInput = ({
 }: AppNameInputType) => {
     return (
         <label className="form__row form__row--w-100">
-            <span className="form__label required-field" data-testid="app-name-heading">App Name</span>
-            <input
-                autoComplete="off"
+            <CustomInput
+                name="app-name"
                 tabIndex={1}
+                label="App Name"
                 placeholder="Eg. app-name"
-                className="form__input"
                 value={appName}
                 onChange={(e) => handleAppNameChange(e.target.value)}
-                onBlur={() => handleAppNameOnBlur()}
+                handleOnBlur={handleAppNameOnBlur}
                 data-testid="app-name-input"
+                isRequiredField
+                error={invalidAppName && (invalidAppNameMessage || REQUIRED_FIELD_MSG)}
             />
-            {invalidAppName && renderValidationErrorLabel(invalidAppNameMessage)}
         </label>
     )
 }
@@ -550,8 +757,8 @@ export const UpdateApplicationButton = ({
                                   chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
                               }`
                             : isDeployChartView
-                            ? UPDATE_APP_BUTTON_TEXTS.Deploying
-                            : UPDATE_APP_BUTTON_TEXTS.Updating}
+                              ? UPDATE_APP_BUTTON_TEXTS.Deploying
+                              : UPDATE_APP_BUTTON_TEXTS.Updating}
                     </span>
                     <span className="ml-10">
                         <Progressing />
@@ -569,4 +776,3 @@ export const UpdateApplicationButton = ({
         </button>
     )
 }
-

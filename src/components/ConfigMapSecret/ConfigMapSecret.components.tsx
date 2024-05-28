@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, ResizableTextarea, ToastBody, noop, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    CustomInput,
+    Progressing,
+    ResizableTextarea,
+    TippyTheme,
+    ToastBody,
+    YAMLStringify,
+    noop,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import Tippy from '@tippyjs/react'
+import { followCursor } from 'tippy.js'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
@@ -28,9 +42,6 @@ import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
 import { getCMSecret, getConfigMapList, getSecretList } from './service'
-import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import Tippy from '@tippyjs/react'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
@@ -56,18 +67,15 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                 )}
                 <div className="form__field">
                     <label>
-                        {keyLabel}
-                        <input
+                        <CustomInput
+                            name="key"
+                            label={keyLabel}
                             data-testid={`secrets-gui-key-textbox-${index}`}
-                            type="text"
-                            autoComplete="off"
-                            placeholder=""
                             value={k}
                             onChange={(e) => onChange(index, e.target.value, v)}
-                            className="form__input"
                             disabled={typeof onChange !== 'function'}
+                            error={keyError}
                         />
-                        {keyError ? <span className="form__error">{keyError}</span> : <div />}
                     </label>
                 </div>
                 <div className="form__field">
@@ -82,12 +90,10 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                             data-testid="Configmap-gui-value-textbox"
                         />
                     ) : (
-                        <input
-                            type="text"
-                            autoComplete="off"
+                        <CustomInput
+                            name="value"
                             value={v}
                             onChange={(e) => onChange(index, k, e.target.value)}
-                            className="form__input"
                             disabled={typeof onChange !== 'function'}
                         />
                     )}
@@ -98,7 +104,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
     },
 )
 
-export function ConfigMapSecretContainer({
+export const ConfigMapSecretContainer = ({
     componentType,
     title,
     appChartRef,
@@ -113,13 +119,14 @@ export function ConfigMapSecretContainer({
     reduceOpacity,
     parentName,
     reloadEnvironments,
-}: ConfigMapSecretProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
-    const [collapsed, toggleCollapse] = useState(true)
+}: ConfigMapSecretProps) => {
+    const { appId, envId, name } = useParams<{ appId; envId; name }>()
+    const history = useHistory()
+    const match = useRouteMatch()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [draftData, setDraftData] = useState(null)
     const [selectedTab, setSelectedTab] = useState(data?.draftState === 4 ? 2 : 3)
-    const [abortController, setAbortController] = useState(new AbortController());
+    const [abortController, setAbortController] = useState(new AbortController())
 
     let cmSecretStateLabel = !data?.isNew ? CM_SECRET_STATE.BASE : CM_SECRET_STATE.UNPUBLISHED
     if (isOverrideView) {
@@ -130,19 +137,32 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    useEffect(() => {
+        if (title !== '' && title === name) {
+            getData()
+        }
+    }, [])
+
     const getData = async () => {
         try {
             abortController.abort()
-            const newAbortController = new AbortController();
-            setAbortController(newAbortController);
+            const newAbortController = new AbortController()
             setLoader(true)
+            setAbortController(newAbortController)
             const [_draftData, _cmSecretData] = await Promise.allSettled([
                 isProtected && getDraftByResourceName
-                    ? getDraftByResourceName(appId, envId ?? -1, componentType === 'secret' ? 2 : 1, data.name, newAbortController.signal )
+                    ? getDraftByResourceName(
+                          appId,
+                          envId ?? -1,
+                          componentType === 'secret' ? 2 : 1,
+                          title,
+                          newAbortController.signal,
+                      )
                     : null,
-                !data?.isNew ? getCMSecret(componentType, id, appId, data?.name, envId, newAbortController.signal ) : null,
+                !data?.isNew ? getCMSecret(componentType, id, appId, title, envId, newAbortController.signal) : null,
             ])
-            let draftId, draftState
+            let draftId
+            let draftState
             if (
                 _draftData?.status === 'fulfilled' &&
                 _draftData.value?.result &&
@@ -181,6 +201,7 @@ export function ConfigMapSecretContainer({
                 } else {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
+                    redirectURLToInitial()
                 }
             } else if (
                 cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
@@ -193,10 +214,14 @@ export function ConfigMapSecretContainer({
                 } else if (_draftData.value.result.draftState === 2) {
                     toast.error(`The ${componentType} '${data?.name}' has been deleted`)
                     update(index, null)
+                    redirectURLToInitial()
                 }
             }
-            if((_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) || (_draftData?.status === 'fulfilled' && _draftData?.value !== null)) {
-                toggleCollapse(false)
+            if (
+                (_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) ||
+                (_draftData?.status === 'fulfilled' && _draftData?.value !== null)
+            ) {
+                setLoader(true)
             }
             if (
                 (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
@@ -213,20 +238,30 @@ export function ConfigMapSecretContainer({
         }
     }
 
+    const redirectURLToInitial = (urlTo: string = '') => {
+        const componentTypeName = componentType === 'secret' ? 'secrets' : 'configmap'
+        const urlPrefix = match.url.split(componentTypeName)[0]
+        history.push(`${urlPrefix}${componentTypeName}/${urlTo}`)
+    }
+
     const updateCollapsed = (_collapsed?: boolean): void => {
-        if (_collapsed !== undefined) {
-            toggleCollapse(_collapsed)
-        } else {
-            if (collapsed && data?.name) {
-                getData()
-            } else {
-                toggleCollapse(!collapsed)
-                if (!collapsed) {
-                    toggleDraftComments(null)
-                    setDraftData(null)
-                }
+        if (!title) {
+            // Redirect and Add config map & secret
+            if (name === 'create') {
+                toggleDraftComments(null)
+                setDraftData(null)
+                return redirectURLToInitial()
             }
+            return redirectURLToInitial('create')
         }
+        // Redirect and Open existing config map & secret
+        if (name === title) {
+            toggleDraftComments(null)
+            setDraftData(null)
+            return redirectURLToInitial()
+        }
+        getData()
+        return redirectURLToInitial(title)
     }
 
     const handleTabSelection = (index: number): void => {
@@ -234,19 +269,17 @@ export function ConfigMapSecretContainer({
     }
 
     const toggleDraftCommentModal = () => {
-        toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index: index })
+        toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index })
     }
 
     const renderIcon = (): JSX.Element => {
         if (!title) {
             return <Add className="configuration-list__logo icon-dim-20 fcb-5" />
-        } else {
-            if (componentType === 'secret') {
-                return <KeyIcon className="configuration-list__logo icon-dim-20" />
-            } else {
-                return <File className="configuration-list__logo icon-dim-20" />
-            }
         }
+        if (componentType === 'secret') {
+            return <KeyIcon className="configuration-list__logo icon-dim-20" />
+        }
+        return <File className="configuration-list__logo icon-dim-20" />
     }
 
     const reload = (): void => {
@@ -255,6 +288,9 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDetails = (): JSX.Element => {
+        if ((name && ((!title && name !== 'create') || (title && name !== title))) || !name) {
+            return null
+        }
         if (title && isProtected && draftData?.draftId) {
             return (
                 <>
@@ -265,7 +301,7 @@ export function ConfigMapSecretContainer({
                         selectedTabIndex={selectedTab}
                         handleTabSelection={handleTabSelection}
                         isDraftMode={draftData.draftState === 1 || draftData.draftState === 4}
-                        noReadme={true}
+                        noReadme
                         showReadme={false}
                         isReadmeAvailable={false}
                         handleReadMeClick={noop}
@@ -323,10 +359,11 @@ export function ConfigMapSecretContainer({
     }
 
     const renderDraftState = (): JSX.Element => {
-        if (collapsed) {
+        if (title !== name) {
             if (data.draftState === 1) {
                 return <i className="mr-10 cr-5">In draft</i>
-            } else if (data.draftState === 4) {
+            }
+            if (data.draftState === 4) {
                 return <i className="mr-10 cg-5">Approval pending</i>
             }
         }
@@ -334,54 +371,76 @@ export function ConfigMapSecretContainer({
         return null
     }
 
-    const handleCMSecretClick = () => {
+    const handleCMSecretClick = (event) => {
         if (title && isProtected && draftData?.draftId) {
             setSelectedTab(draftData.draftState === 4 ? 2 : 3)
         }
         updateCollapsed()
     }
 
+    const showBlurEffect = name && ((!title && name !== 'create') || (title && name !== title))
+
     return (
-        <>
-            <section
-                className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
-                    reduceOpacity ? 'dc__disable-click dc__blur-1_5' : ''
-                }`}
-            >
-                <article
-                    className="dc__configuration-list pointer pr-16 pl-16 mb-16"
-                    onClick={handleCMSecretClick}
-                    data-testid="click-to-add-configmaps-secret"
+        <ConditionalWrap
+            condition={showBlurEffect}
+            wrap={(children) => (
+                <Tippy
+                    theme={TippyTheme.black}
+                    followCursor
+                    plugins={[followCursor]}
+                    arrow
+                    animation="shift-toward-subtle"
+                    placement="top"
+                    content={`Collapse opened ${componentType === 'secret' ? ' Secret' : ' ConfigMap'} first`}
                 >
-                    {renderIcon()}
-                    <div
-                        data-testid={`add-${componentType}-button`}
-                        className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+                    <div>{children}</div>
+                </Tippy>
+            )}
+        >
+            <div className={`${showBlurEffect ? 'cursor-not-allowed' : 'cursor'}`}>
+                <section
+                    className={`pt-16 dc__border bcn-0 br-8 ${title ? 'mb-16' : 'en-3 bw-1 dashed mb-20'} ${
+                        reduceOpacity || showBlurEffect ? 'dc__disable-click dc__blur-1_5' : ''
+                    }`}
+                >
+                    <article
+                        className="dc__configuration-list pr-16 pl-16 mb-16"
+                        onClick={handleCMSecretClick}
+                        data-testid="click-to-add-configmaps-secret"
                     >
-                        {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
-                        {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
-                    </div>
-                    {title && (
-                        <div className="flex right">
-                            {isProtected && (
-                                <>
-                                    {renderDraftState()}
-                                    <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
-                                </>
-                            )}
-                            {isLoader ? (
-                                <span style={{ width: '20px' }}>
-                                    <Progressing />
-                                </span>
-                            ) : (
-                                <Dropdown className={`icon-dim-20 rotate ${collapsed ? '' : 'dc__flip-180'}`} />
-                            )}
+                        {renderIcon()}
+                        <div
+                            data-testid={`add-${componentType}-button`}
+                            className={`flex left lh-20 ${!title ? 'fw-5 fs-14 cb-5' : 'fw-5 fs-14 cn-9'}`}
+                        >
+                            {title || `Add ${componentType === 'secret' ? 'Secret' : 'ConfigMap'}`}
+                            {cmSecretStateLabel && <div className="flex tag ml-12">{cmSecretStateLabel}</div>}
                         </div>
-                    )}
-                </article>
-                {!collapsed && renderDetails()}
-            </section>
-        </>
+                        {title && (
+                            <div className="flex right">
+                                {isProtected && (
+                                    <>
+                                        {renderDraftState()}
+                                        <ProtectedIcon className="icon-dim-20 mr-10 fcv-5" />
+                                    </>
+                                )}
+                                {isLoader ? (
+                                    <span style={{ width: '20px' }}>
+                                        <Progressing />
+                                    </span>
+                                ) : (
+                                    <Dropdown
+                                        className={`icon-dim-20 rotate ${name === title ? 'dc__flip-180' : ''}`}
+                                    />
+                                )}
+                            </div>
+                        )}
+                    </article>
+
+                    {!isLoader ? renderDetails() : null}
+                </section>
+            </div>
+        </ConditionalWrap>
     )
 }
 
@@ -400,19 +459,20 @@ export function ProtectedConfigMapSecretDetails({
     parentName,
     reloadEnvironments,
 }: ProtectedConfigMapSecretDetailsProps) {
-    const { appId, envId } = useParams<{ appId; envId }>()
+    const { appId, name } = useParams<{ appId; name }>()
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
-    const [abortController, setAbortController] = useState(new AbortController());
-    
+    const [abortController, setAbortController] = useState(new AbortController())
 
     const getBaseData = async () => {
         try {
             abortController.abort()
-            let newAbortController = new AbortController()
+            const newAbortController = new AbortController()
             setAbortController(newAbortController)
             setLoader(true)
-            const { result } = await(componentType === 'secret' ? getSecretList(appId, {signal: newAbortController.signal}) : getConfigMapList(appId, {signal: newAbortController.signal}))
+            const { result } = await (componentType === 'secret'
+                ? getSecretList(appId, { signal: newAbortController.signal })
+                : getConfigMapList(appId, { signal: newAbortController.signal }))
             let _baseData
             if (result?.configData?.length) {
                 _baseData = result.configData.find((config) => config.name === data.name)
@@ -420,7 +480,9 @@ export function ProtectedConfigMapSecretDetails({
                     _baseData.unAuthorized = data.unAuthorized
                 }
                 if (componentType === 'secret' && !data.unAuthorized) {
-                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {signal: newAbortController.signal})
+                    const { result: secretResult } = await getCMSecret(componentType, result.id, appId, data?.name, {
+                        signal: newAbortController.signal,
+                    })
                     if (secretResult?.configData?.length) {
                         _baseData = { ...secretResult.configData[0], unAuthorized: false }
                     }
@@ -435,7 +497,7 @@ export function ProtectedConfigMapSecretDetails({
 
     useEffect(() => {
         if (draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN) {
-            getBaseData()   
+            getBaseData()
         }
     }, [])
 
@@ -445,11 +507,11 @@ export function ProtectedConfigMapSecretDetails({
                 return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
                     ? baseData
                     : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
-            } else if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
-                return null
-            } else {
-                return data
             }
+            if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
+                return null
+            }
+            return data
         } catch (error) {
             return null
         }
@@ -469,28 +531,32 @@ export function ProtectedConfigMapSecretDetails({
         if (isOverridden) {
             if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
                 return getObfuscatedData(cmSecretData.defaultData)
-            } else if (componentType === 'secret') {
+            }
+            if (componentType === 'secret') {
                 if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultSecretData
-                } else if (Object.keys(data.defaultESOSecretData ?? {}).length > 0) {
+                }
+                if (Object.keys(data.defaultESOSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultESOSecretData
                 }
             }
         }
         if (Object.keys(cmSecretData.data ?? {}).length > 0) {
             return getObfuscatedData(cmSecretData.data)
-        } else if (componentType === 'secret') {
+        }
+        if (componentType === 'secret') {
             if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
                 return cmSecretData.secretData
-            } else if (Object.keys(cmSecretData.esoSecretData ?? {}).length > 0) {
+            }
+            if (Object.keys(cmSecretData.esoSecretData ?? {}).length > 0) {
                 return cmSecretData.esoSecretData
             }
         }
     }
 
     const getCurrentConfig = (): DeploymentHistoryDetail => {
-        let currentConfigData = {},
-            codeEditorValue = { displayName: 'data', value: '' }
+        let currentConfigData = {}
+        const codeEditorValue = { displayName: 'data', value: '' }
         try {
             currentConfigData =
                 draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
@@ -533,53 +599,52 @@ export function ProtectedConfigMapSecretDetails({
     const renderApproveButton = (): JSX.Element => {
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
-        } else {
-            const hasAccess = hasApproverAccess(draftData.approvers)
-            return (
-                <div
-                    className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
-                        hasAccess && draftData.canApprove ? 'tippy-over' : ''
-                    }`}
-                >
-                    {hasAccess && draftData.canApprove ? (
-                        <ApproveRequestTippy
-                            draftId={draftData.draftId}
-                            draftVersionId={draftData.draftVersionId}
-                            resourceName={componentType}
-                            reload={reload}
-                            envName={parentName}
-                        >
-                            <button
-                                data-testid="approve-config-button"
-                                type="button"
-                                className="cta dc__bg-g5 m-0-imp h-32 lh-20-imp p-6-12-imp"
-                            >
-                                Approve changes
-                            </button>
-                        </ApproveRequestTippy>
-                    ) : (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top-end"
-                            content={
-                                hasAccess
-                                    ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
-                                    : 'You do not have permission to approve configuration changes for this application - environment combination.'
-                            }
-                        >
-                            <button
-                                data-testid="approve-config-button"
-                                type="button"
-                                className="cta dc__bg-g5 approval-config-disabled m-0-imp h-32 lh-20-imp p-6-12-imp"
-                            >
-                                Approve changes
-                            </button>
-                        </Tippy>
-                    )}
-                </div>
-            )
         }
+        const hasAccess = hasApproverAccess(draftData.approvers)
+        return (
+            <div
+                className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
+                    hasAccess && draftData.canApprove ? 'tippy-over' : ''
+                }`}
+            >
+                {hasAccess && draftData.canApprove ? (
+                    <ApproveRequestTippy
+                        draftId={draftData.draftId}
+                        draftVersionId={draftData.draftVersionId}
+                        resourceName={componentType}
+                        reload={reload}
+                        envName={parentName}
+                    >
+                        <button
+                            data-testid="approve-config-button"
+                            type="button"
+                            className="cta dc__bg-g5 m-0-imp h-32 lh-20-imp p-6-12-imp"
+                        >
+                            Approve changes
+                        </button>
+                    </ApproveRequestTippy>
+                ) : (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top-end"
+                        content={
+                            hasAccess
+                                ? 'You have made changes to this file. Users who have edited cannot approve the changes.'
+                                : 'You do not have permission to approve configuration changes for this application - environment combination.'
+                        }
+                    >
+                        <button
+                            data-testid="approve-config-button"
+                            type="button"
+                            className="cta dc__bg-g5 approval-config-disabled m-0-imp h-32 lh-20-imp p-6-12-imp"
+                        >
+                            Approve changes
+                        </button>
+                    </Tippy>
+                )}
+            </div>
+        )
     }
 
     const renderDiffView = (): JSX.Element => {
@@ -611,7 +676,7 @@ export function ProtectedConfigMapSecretDetails({
                 <DeploymentHistoryDiffView
                     currentConfiguration={getBaseConfig()}
                     baseTemplateConfiguration={getCurrentConfig()}
-                    previousConfigAvailable={true}
+                    previousConfigAvailable
                     isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
                     isDeleteDraft={draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN}
                     rootClassName="dc__no-top-radius mt-0-imp"
@@ -635,7 +700,8 @@ export function ProtectedConfigMapSecretDetails({
     const renderForm = (): JSX.Element => {
         if (selectedTab === 1 && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
             return renderEmptyMessage('No published version of this file is available')
-        } else if (selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN) {
+        }
+        if (selectedTab === 3 && draftData.action === 3 && cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN) {
             return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
         }
         return (
@@ -654,7 +720,7 @@ export function ProtectedConfigMapSecretDetails({
                 }
                 isJobView={isJobView}
                 readonlyView={selectedTab === 1}
-                isProtectedView={true}
+                isProtectedView
                 draftMode={
                     selectedTab === 3 && (draftData.action !== 3 || cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN)
                 }
@@ -675,13 +741,6 @@ export function ProtectedConfigMapSecretDetails({
     }
 
     return selectedTab === 2 ? renderDiffView() : renderForm()
-}
-
-export const convertToValidValue = (k: any): string => {
-    if (k !== false && k !== true && k !== '' && !isNaN(Number(k))) {
-        return Number(k).toString()
-    }
-    return k.toString()
 }
 
 export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
@@ -707,8 +766,8 @@ export function validateKeyValuePair(arr: KeyValue[]): KeyValueValidated {
 }
 
 export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, keyError): KeyValueYaml {
-    //input containing array of [{k, v, keyError, valueError}]
-    //return {yaml, handleYamlChange}
+    // input containing array of [{k, v, keyError, valueError}]
+    // return {yaml, handleYamlChange}
     const [yaml, setYaml] = useState('')
     const [error, setError] = useState('')
     useEffect(() => {
@@ -718,10 +777,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             return
         }
         setYaml(
-            YAML.stringify(
-                keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
-                { indent: 2 },
-            ),
+            YAMLStringify( keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}))
         )
     }, [keyValueArray])
 
@@ -731,31 +787,51 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             return
         }
         try {
-            let obj = YAML.parse(yamlConfig)
+            const obj = YAML.parse(yamlConfig)
             if (typeof obj !== 'object') {
                 setError('Could not parse to valid YAML')
                 return null
             }
-            let errorneousKeys = []
-            let tempArray = Object.keys(obj).reduce((agg, k) => {
-                if (!k && !obj[k]) return agg
-                let v =
+            const errorneousKeys = []
+            const errorneousValues = []
+
+            const tempArray = Object.keys(obj).reduce((agg, k) => {
+                if (!k && !obj[k]) {
+                    return agg
+                }
+                const v =
                     obj[k] && typeof obj[k] === 'object'
-                        ? YAML.stringify(obj[k], { indent: 2 })
-                        : convertToValidValue(obj[k])
+                        ? YAMLStringify(obj[k])
+                        : obj[k].toString()
                 let keyErr: string
+                let valErr: string
                 if (k && keyPattern.test(k)) {
                     keyErr = ''
                 } else {
                     keyErr = keyError
                     errorneousKeys.push(k)
                 }
+
+                if (
+                    v &&
+                    (typeof obj[k] === 'boolean' || typeof obj[k] === 'number')
+                ) {
+                    errorneousValues.push(v)
+                }
                 return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
             }, [])
             setKeyValueArray(tempArray)
             let error = ''
             if (errorneousKeys.length > 0) {
-                error = `Keys can contain: (Alphanumeric) (-) (_) (.) > Errors: ${errorneousKeys
+                error = `Error: Keys can contain: (Alphanumeric) (-) (_) (.) | Invalid key(s): ${errorneousKeys
+                    .map((e) => `"${e}"`)
+                    .join(', ')}`
+            }
+            if (errorneousValues.length > 0) {
+                if (error !== '') {
+                    error += '\n';
+                }
+                error += `Error: Boolean and numeric values must be wrapped in double quotes Eg. ${errorneousValues
                     .map((e) => `"${e}"`)
                     .join(', ')}`
             }
@@ -768,20 +844,20 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
     return { yaml, handleYamlChange, error }
 }
 
-export function Override({ overridden, onClick, loading = false, type, readonlyView, isProtectedView }) {
+export const Override = ({ overridden, onClick, loading = false, type, readonlyView, isProtectedView }) => {
     const renderButtonContent = (): JSX.Element => {
         if (loading) {
             return <Progressing />
-        } else if (overridden) {
+        }
+        if (overridden) {
             return (
                 <>
                     <DeleteIcon className="icon-dim-16 mr-8" />
                     <span>Delete override{isProtectedView ? '...' : ''}</span>
                 </>
             )
-        } else {
-            return <>Allow override</>
         }
+        return <>Allow override</>
     }
     return (
         <div className={`override-container ${overridden ? 'override-warning' : ''}`}>

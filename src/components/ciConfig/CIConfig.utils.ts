@@ -1,11 +1,11 @@
+import { multiSelectStyles, CIBuildType, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
-import { multiSelectStyles, CIBuildType, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
-import {RootBuildContext} from "./ciConfigConstant";
+import { RootBuildContext } from './ciConfigConstant'
 
 export const _customStyles = {
     control: (base) => ({
@@ -95,6 +95,26 @@ export const tempMultiSelectStyles = {
     }),
 }
 
+export const getBuildContextCheckoutSelectStyles = (checkoutPathOptions) => ({
+    ..._multiSelectStyles,
+    menu: (base) => ({
+        ...base,
+        marginTop: '0',
+        paddingBottom: '4px',
+        width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
+    }),
+    control: (base) => ({
+        ...base,
+        borderTopRightRadius: '0px',
+        borderBottomRightRadius: '0px',
+        borderRight: '0px',
+    }),
+    dropdownIndicator: (base) => ({
+        ...base,
+        paddingLeft: '0px',
+    }),
+})
+
 export const TARGET_PLATFORM_LIST: OptionType[] = [
     { label: 'linux/arm64', value: 'linux/arm64' },
     { label: 'linux/amd64', value: 'linux/amd64' },
@@ -112,7 +132,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
     dockerfile: {
         required: true,
         validator: {
-            error: 'Dockerfile is required',
+            error: 'Invalid Dockerfile Path',
             regex: PATTERNS.STRING,
         },
     },
@@ -141,7 +161,7 @@ export const getCIConfigFormState = (
     currentRegistry: any,
 ) => {
     return {
-        //when creating app for the first time,ciConfig will be null as CiPipelineResult will be empty,set the default values
+        // when creating app for the first time,ciConfig will be null as CiPipelineResult will be empty,set the default values
         repository: { value: currentMaterial?.name || '', error: '' },
         dockerfile: {
             value:
@@ -164,25 +184,24 @@ export const getCIConfigFormState = (
             value: selectedCIPipeline?.isDockerConfigOverridden
                 ? selectedCIPipeline.dockerConfigOverride?.dockerRepository
                 : ciConfig
-                ? ciConfig.dockerRepository
-                : '',
+                  ? ciConfig.dockerRepository
+                  : '',
             error: '',
         },
         buildContext: {
-            value:
-                (selectedCIPipeline?.isDockerConfigOverridden
-                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                    : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                    ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext),
-            error: '', 
-        },
-        useRootBuildContext : {
-            value : (selectedCIPipeline?.isDockerConfigOverridden
-                ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.useRootBuildContext
-                : ciConfig?.ciBuildConfig ?
-                ciConfig.ciBuildConfig.useRootBuildContext : true),
+            value: selectedCIPipeline?.isDockerConfigOverridden
+                ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                : ciConfig?.ciBuildConfig?.dockerBuildConfig && ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext,
             error: '',
-        }
+        },
+        useRootBuildContext: {
+            value: selectedCIPipeline?.isDockerConfigOverridden
+                ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.useRootBuildContext
+                : ciConfig?.ciBuildConfig
+                  ? ciConfig.ciBuildConfig.useRootBuildContext
+                  : true,
+            error: '',
+        },
     }
 }
 
@@ -194,7 +213,7 @@ export const initCurrentCIBuildConfig = (
     selectedBuildContextGitMaterial: any,
     dockerfileValue: string,
     buildContextValue: string,
-    useRootBuildContext: boolean
+    useRootBuildContext: boolean,
 ) => {
     if (
         allowOverride &&
@@ -213,9 +232,10 @@ export const initCurrentCIBuildConfig = (
             },
             gitMaterialId: selectedMaterial?.id,
             buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
-            useRootBuildContext: useRootBuildContext,
+            useRootBuildContext,
         }
-    } else if (ciConfig?.ciBuildConfig) {
+    }
+    if (ciConfig?.ciBuildConfig) {
         return {
             buildPackConfig: ciConfig.ciBuildConfig.buildPackConfig,
             ciBuildType: ciConfig.ciBuildConfig.ciBuildType || CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
@@ -226,21 +246,20 @@ export const initCurrentCIBuildConfig = (
             },
             gitMaterialId: selectedMaterial?.id,
             buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
-            useRootBuildContext: useRootBuildContext,
+            useRootBuildContext,
         }
-    } else {
-        return {
-            buildPackConfig: null,
-            ciBuildType: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
-            dockerBuildConfig: {
-                dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
-                dockerfileContent: '',
-                buildContext: buildContextValue,
-            },
-            gitMaterialId: selectedMaterial?.id,
-            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
-            useRootBuildContext: useRootBuildContext,
-        }
+    }
+    return {
+        buildPackConfig: null,
+        ciBuildType: CIBuildType.SELF_DOCKERFILE_BUILD_TYPE,
+        dockerBuildConfig: {
+            dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
+            dockerfileContent: '',
+            buildContext: buildContextValue,
+        },
+        gitMaterialId: selectedMaterial?.id,
+        buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
+        useRootBuildContext,
     }
 }
 
@@ -402,8 +421,10 @@ const updateBuildpackDiffValues = (
             overridenValue: currentMaterialName,
         })
 
-        const baseProjectPath = getAbsoluteProjectPath(globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath),
-            overridenProjectPath = getAbsoluteProjectPath(ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath)
+        const baseProjectPath = getAbsoluteProjectPath(globalCIConfig.ciBuildConfig?.buildPackConfig?.projectPath)
+        const overridenProjectPath = getAbsoluteProjectPath(
+            ciConfigOverride.ciBuildConfig?.buildPackConfig?.projectPath,
+        )
         ciConfigDiffValues.push({
             configName: 'Project Path',
             changeBGColor: baseProjectPath !== overridenProjectPath,
@@ -445,14 +466,20 @@ export const getCIConfigDiffValues = (
 ): CIConfigDiffType[] => {
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
-    let globalGitMaterialName, currentMaterialName
-    let globalBuildContextGitMaterialItem, currentBuildContextGitMaterialItem
-    let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
-        currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-    let globalUseRootBuildContext = globalCIConfig.ciBuildConfig ? globalCIConfig.ciBuildConfig.useRootBuildContext : true
-    let currentUseRootBuildContext = ciConfigOverride?.ciBuildConfig ? ciConfigOverride?.ciBuildConfig.useRootBuildContext : true
-    globalBuildContext = globalBuildContext ? globalBuildContext : ''
-    currentBuildContext = currentBuildContext ? currentBuildContext : ''
+    let globalGitMaterialName
+    let currentMaterialName
+    let globalBuildContextGitMaterialItem
+    let currentBuildContextGitMaterialItem
+    let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext
+    let currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+    const globalUseRootBuildContext = globalCIConfig.ciBuildConfig
+        ? globalCIConfig.ciBuildConfig.useRootBuildContext
+        : true
+    const currentUseRootBuildContext = ciConfigOverride?.ciBuildConfig
+        ? ciConfigOverride?.ciBuildConfig.useRootBuildContext
+        : true
+    globalBuildContext = globalBuildContext || ''
+    currentBuildContext = currentBuildContext || ''
     if (
         globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
         ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE
@@ -469,8 +496,8 @@ export const getCIConfigDiffValues = (
             }
         }
 
-        if(window._env_.ENABLE_BUILD_CONTEXT && gitMaterials){
-            for (const gitMaterial of gitMaterials){
+        if (window._env_.ENABLE_BUILD_CONTEXT && gitMaterials) {
+            for (const gitMaterial of gitMaterials) {
                 if (gitMaterial.id === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
                     globalBuildContextGitMaterialItem = gitMaterial
                 }
@@ -544,14 +571,25 @@ export const getCIConfigDiffValues = (
             },
             {
                 configName: 'Build context',
-                changeBGColor: (globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext) !== (currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext),
-                baseValue: globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext,
-                overridenValue: currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext,
+                changeBGColor:
+                    (globalUseRootBuildContext
+                        ? RootBuildContext
+                        : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext) !==
+                    (currentUseRootBuildContext
+                        ? RootBuildContext
+                        : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext),
+                baseValue: globalUseRootBuildContext
+                    ? RootBuildContext
+                    : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext,
+                overridenValue: currentUseRootBuildContext
+                    ? RootBuildContext
+                    : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext,
             },
         )
     }
     return ciConfigDiffValues
 }
+
 const getTargetPlatformChangeBGColor = (
     globalCIConfig: DockerConfigOverrideType,
     ciConfigOverride: DockerConfigOverrideType,

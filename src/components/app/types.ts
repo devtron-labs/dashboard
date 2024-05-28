@@ -1,9 +1,8 @@
-import { ReactNode } from 'react'
-
-import { DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import React, { ReactNode } from 'react'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
-import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -58,8 +57,30 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
-export interface AppDetails {
+export interface CDModalProps {
+    cdPipelineId?: number
+    triggerType?: string
+    parentEnvironmentName: string
+    ciPipelineId?: number
+    isRedirectedFromAppDetails?: boolean,
+}
+
+export interface AppDetails extends CDModalProps {
     appId: number
+    deploymentAppType?: DeploymentAppTypes
+    externalCi?: boolean
+    userApprovalConfig?: string
+    ciArtifactId?: number
+    parentArtifactId?: number
+    deprecated?: boolean
+    k8sVersion?: number
+    clusterName?: string
+    dockerRegistryId?: string
+    ipsAccessProvided?: boolean
+    description?: string
+    isVirtualEnvironment?: boolean
+    image?: string
+    helmPackageName?: string
     appName: string
     environmentId: number
     environmentName: string
@@ -75,7 +96,6 @@ export interface AppDetails {
     resourceTree: ResourceTree
     projectName?: string
     clusterId?: number
-    deploymentAppType?: DeploymentAppTypes
     deploymentAppDeleteRequest: boolean
     imageTag?: string
 }
@@ -94,8 +114,8 @@ export interface ChartUsed {
 }
 
 interface GitMaterial {
-  displayName: string,
-  redirectionUrl: string,
+    displayName: string
+    redirectionUrl: string
 }
 
 export interface AppMetaInfo {
@@ -343,9 +363,12 @@ export interface GenericNode<T> {
 
 export enum AppListColumnSort {
     appNameSort = 'appName',
-    lastDeployedSort = 'lastDeployedAt'
+    lastDeployedSort = 'lastDeployedAt',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export enum Nodes {
     Service = 'Service',
     Alertmanager = 'Alertmanager',
@@ -387,8 +410,11 @@ export enum Nodes {
     PodDisruptionBudget = 'PodDisruptionBudget',
     Event = 'Event',
     Namespace = 'Namespace',
-    Overview = 'Overview'
+    Overview = 'Overview',
 }
+/**
+ * @deprecated - use from fe-common
+ */
 export type NodeType = keyof typeof Nodes
 
 export enum AggregationKeys {
@@ -438,11 +464,6 @@ export enum NodeDetailTabs {
     TERMINAL = 'TERMINAL',
 }
 export type NodeDetailTabsType = keyof typeof NodeDetailTabs
-
-export enum SortingOrder {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
 
 export interface EditAppRequest {
     id: number
@@ -504,18 +525,6 @@ export interface DeleteComponentProps {
     closeCustomComponent?: () => void
 }
 
-export interface AppStatusType {
-    appStatus: string
-    isDeploymentStatus?: boolean
-    isJobView?: boolean
-    isVirtualEnv?: boolean
-    /**
-     * Hide the status message if true
-     *
-     * @default false
-     */
-    hideStatusMessage?: boolean
-}
 export interface JobPipeline {
     ciPipelineID: number
     ciPipelineName: string
@@ -530,27 +539,47 @@ export interface JobPipeline {
 export interface TagChipsContainerType {
     labelTags: TagType[]
     onAddTagButtonClick: (e) => void
-    resourceName: string;
+    resourceName: string
     /**
      * Toggles the background to white when true
      */
-    whiteBackground?: boolean;
+    whiteBackground?: boolean
 }
 export interface SourceInfoType {
-  appDetails: AppDetails
-  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
-  environment: AppEnvironment
-  environments: AppEnvironment[]
-  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
-  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-  loadingDetails?: boolean
-  loadingResourceTree?: boolean
-  isVirtualEnvironment?: boolean
-  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-  refetchDeploymentStatus: (showTimeline?: boolean)=> void
+    appDetails: AppDetails
+    setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+    environment: AppEnvironment
+    environments: AppEnvironment[]
+    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    loadingDetails?: boolean
+    loadingResourceTree?: boolean
+    isVirtualEnvironment?: boolean
+    setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
+    refetchDeploymentStatus: (showTimeline?: boolean) => void
+    toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
+    envId?: number | string
+    ciArtifactId?: number
+    setErrorsList?: React.Dispatch<React.SetStateAction<ErrorItem[]>>
+    filteredEnvIds?: string
+    deploymentUserActionState?: ACTION_STATE
 }
+
+export interface AppDetailsCDButtonType
+    extends Pick<
+            AppDetails,
+            | 'appId'
+            | 'environmentId'
+            | 'isVirtualEnvironment'
+            | 'deploymentAppType'
+            | 'environmentName'
+        >,
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
+            isRedirectedFromAppDetails?: boolean,
+            cdModal: CDModalProps
+        }
 
 export interface EnvironmentListMinType {
     active?: boolean
@@ -565,4 +594,40 @@ export interface EnvironmentListMinType {
     isVirtualEnvironment?: boolean
     namespace?: string
     allowedDeploymentTypes?: DeploymentAppTypes[]
+}
+
+export interface PayloadParsedFromURL {
+    appNameSearch?: string
+    appStatuses?
+    environments?
+    hOffset?: number
+    namespaces?
+    offset?: number
+    size?: number
+    sortBy?: string
+    sortOrder?: string
+    teams?
+}
+
+export interface ExternalArgoListType {
+    serverMode?: string
+    payloadParsedFromUrl: PayloadParsedFromURL
+    sortApplicationList
+    clearAllFilters
+    fetchingExternalApps
+    setFetchingExternalAppsState
+    updateDataSyncing
+    setShowPulsatingDotState
+    masterFilters
+    syncListData
+    isArgoInstalled: boolean
+}
+export interface EditDescRequest {
+    id: number
+    environment_name: string
+    cluster_id: number
+    namespace: string
+    active: boolean
+    default: boolean
+    description: string
 }

@@ -36,6 +36,12 @@ export enum SSHAuthenticationType {
     Password_And_SSH_Private_Key = 'PASSWORD_AND_SSH_PRIVATE_KEY',
 }
 
+export interface RemoteConnectionConfig {
+    connectionMethod: string
+    proxyConfig: Record<string, string>
+    sshConfig: Record<string, string>
+}
+
 export interface DataListType {
     id: number
     cluster_name: string
@@ -44,9 +50,7 @@ export interface DataListType {
     active: boolean
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
-    proxyUrl: string
-    isConnectedViaSSHTunnel: boolean
-    sshTunnelConfig: Record<string, string>
+    remoteConnectionConfig: RemoteConnectionConfig
 }
 
 export interface SaveClusterPayloadType {
@@ -58,12 +62,8 @@ export interface SaveClusterPayloadType {
     prometheus_url: string
     prometheusAuth: Record<string, string>
     server_url: string
-    proxyUrl: string
-    isConnectedViaSSHTunnel: boolean
-    sshTunnelConfig: Record<string, string>
+    remoteConnectionConfig: RemoteConnectionConfig
 }
-
-export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',
@@ -156,3 +156,5 @@ export interface ClusterFormType {
     toggleCheckTlsConnection: () => void
     isDrawer: boolean
 }
+
+export const RemoteConnectionTypeCluster = 'cluster'

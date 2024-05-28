@@ -12,7 +12,7 @@ export default function TriggerResponseModal({
     onClickRetryBuild,
     isVirtualEnv,
     envName,
-    setDownloadPopupOpen
+    setDownloadPopupOpen,
 }: TriggerResponseModalType) {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
 
@@ -33,13 +33,21 @@ export default function TriggerResponseModal({
                 {responseList
                     .sort((a, b) => sortCallback('appName', a, b))
                     .map((response, index) => (
-                        <TriggerModalRow key={response.appId} rowData={response} index={index} isVirtualEnv={isVirtualEnv} envName={envName} setDownloadPopupOpen={setDownloadPopupOpen} />
+                        <TriggerModalRow
+                            key={response.appId}
+                            rowData={response}
+                            index={index}
+                            isVirtualEnv={isVirtualEnv}
+                            envName={envName}
+                            setDownloadPopupOpen={setDownloadPopupOpen}
+                        />
                     ))}
             </div>
         )
     }
 
-    const handleRetryBuild = (): void => {
+    const handleRetryBuild = (e: React.MouseEvent): void => {
+        e.stopPropagation()
         const appsToRetry: Record<string, boolean> = {}
         for (const response of responseList) {
             if (response.status === BulkResponseStatus.FAIL) {

@@ -5,6 +5,7 @@ import { appGroupAppSelectorStyle } from './AppGroup.utils'
 import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
+import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function AppGroupAppFilter() {
     const {
@@ -18,7 +19,7 @@ export default function AppGroupAppFilter() {
         groupFilterOptions,
         selectedGroupFilter,
         setSelectedGroupFilter,
-        filterParentType
+        filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
@@ -49,7 +50,7 @@ export default function AppGroupAppFilter() {
     }
 
     const onAppFilterInputChange = (value, action) => {
-        if (action.action === 'input-change') {
+        if (action.action === ReactSelectInputAction.inputChange) {
             if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
                 setAppFilterAppInput(value)
             } else {
@@ -90,7 +91,7 @@ export default function AppGroupAppFilter() {
             value={selectedFilterTab === AppFilterTabs.APP_FILTER ? selectedAppList : selectedGroupFilter}
             options={selectedFilterTab === AppFilterTabs.APP_FILTER ? appListOptions : groupFilterOptions}
             onChange={onChangeFilter}
-            isMulti={true}
+            isMulti
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
             onMenuOpen={handleOpenFilter}
@@ -102,9 +103,9 @@ export default function AppGroupAppFilter() {
             components={{
                 IndicatorSeparator: null,
                 ClearIndicator: null,
-                Option: Option,
-                ValueContainer: ValueContainer,
-                MenuList: MenuList,
+                Option,
+                ValueContainer,
+                MenuList,
             }}
             placeholder={getPlaceHolder()}
             styles={appGroupAppSelectorStyle}

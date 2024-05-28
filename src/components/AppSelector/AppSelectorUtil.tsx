@@ -1,7 +1,7 @@
 import React from 'react'
 import { components } from 'react-select'
+import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin } from '../../services/service'
 
 let timeoutId
@@ -64,7 +64,7 @@ export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
             <DropDownIcon
-                className={`rotate`}
+                className="rotate"
                 style={{
                     ['--rotateBy' as any]: props.selectProps.menuIsOpen ? '180deg' : '0deg',
                     height: '24px',
@@ -82,8 +82,10 @@ export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
     return 'No matching results'
 }
 
-export const appListOptions = (inputValue: string, isJobView?: boolean): Promise<[]> =>
-    new Promise((resolve) => {
+export const appListOptions = (inputValue: string, isJobView?: boolean, signal?: AbortSignal): Promise<[]> => {
+    const options = signal ? { signal } : null
+
+    return new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
         }
@@ -92,7 +94,7 @@ export const appListOptions = (inputValue: string, isJobView?: boolean): Promise
                 resolve([])
                 return
             }
-            getAppListMin(null, null, inputValue, isJobView ?? false)
+            getAppListMin(null, options, inputValue, isJobView ?? false)
                 .then((response) => {
                     let appList = []
                     if (response.result) {
@@ -105,10 +107,13 @@ export const appListOptions = (inputValue: string, isJobView?: boolean): Promise
                     resolve(appList as [])
                 })
                 .catch((errors: ServerErrors) => {
-                    resolve([])
-                    if (errors.code) {
-                        showError(errors)
+                    if (!getIsRequestAborted(errors)) {
+                        resolve([])
+                        if (errors.code) {
+                            showError(errors)
+                        }
                     }
                 })
         }, 300)
     })
+}

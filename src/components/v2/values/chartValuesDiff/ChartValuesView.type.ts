@@ -1,11 +1,11 @@
+import YAML from 'yaml'
+import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
-import YAML from 'yaml'
-import {AppMetaInfo} from "../../../app/types";
+import { AppMetaInfo } from '../../../app/types'
 import { DELETE_ACTION } from '../../../../config'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -90,15 +90,30 @@ export interface DeploymentAppSelectorType {
     handleDeploymentAppTypeSelection?: (event) => void
     isDeployChartView: boolean
     allowedDeploymentTypes?: DeploymentAppTypes[]
+    gitRepoURL: string
+    allowedCustomBool: boolean
 }
 
 export interface DeploymentAppRadioGroupType {
-    isDisabled: boolean
+    isDisabled?: boolean
     deploymentAppType: string
     handleOnChange?: (event) => void
     allowedDeploymentTypes?: DeploymentAppTypes[]
     rootClassName?: string
     isFromCDPipeline?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    gitOpsRepoConfigInfoBar?: (content: string) => JSX.Element
+}
+
+export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
+    commonState: ChartValuesViewState
+    dispatch: React.Dispatch<ChartValuesViewAction>
+    staleData?: boolean
+    setStaleData?: (boolean) => void
+    isDrawerOpen?: boolean
+    handleDrawerState?: (boolean) => void
+    showRepoSelector?: boolean
+    allowedCustomBool: boolean
 }
 
 export interface ChartProjectSelectorType {
@@ -267,9 +282,9 @@ export interface ChartValuesViewState {
         message: string
     }
     nonCascadeDeleteData: {
-        nonCascade: boolean,
-        clusterName: string,
-    },
+        nonCascade: boolean
+        clusterName: string
+    }
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
@@ -280,6 +295,7 @@ export interface ChartValuesViewState {
     formValidationError: Record<string, boolean>
     showNoGitOpsWarning: boolean
     deploymentAppType: string
+    gitRepoURL: string
 }
 
 export enum ChartValuesViewActionTypes {
@@ -332,8 +348,8 @@ export enum ChartValuesViewActionTypes {
     multipleOptions = 'multipleOptions',
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
+    setGitRepoURL = 'setGitRepoURL',
 }
-
 
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
@@ -383,7 +399,7 @@ export interface CompareWithDropdownProps {
     deploymentHistoryOptionsList?: ChartValuesDiffOptionType[]
     selectedVersionForDiff?: ChartValuesDiffOptionType
     handleSelectedVersionForDiff: (selected: ChartValuesDiffOptionType) => void
-    manifestView:boolean
+    manifestView: boolean
 }
 
 export interface ValuesForDiffStateType {
@@ -398,13 +414,13 @@ export interface ValuesForDiffStateType {
     valuesForDiff: Map<number, string>
     manifestsForDiff: Map<number, string>
     selectedManifestForDiff?: string
-    selectedValuesForDiff: string 
+    selectedValuesForDiff: string
 }
 
 export interface DeleteChartDialogProps {
     appName: string
     handleDelete: (deleteAction: DELETE_ACTION) => void
-    toggleConfirmation: (isDeleteConfirmation:boolean) => void
+    toggleConfirmation: (isDeleteConfirmation: boolean) => void
     isCreateValueView?: boolean
     disableButton?: boolean
 }

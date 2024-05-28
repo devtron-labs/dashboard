@@ -1,8 +1,7 @@
-import { getGeneratedHelmManifest } from '../common/chartValues.api'
-import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
-import YAML from 'yaml'
-import { Collection } from 'yaml/types'
+import YAML,{ YAMLMap } from 'yaml'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
+import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
@@ -103,10 +102,10 @@ const generateManifestGenerationKey = (
     return isCreateValueView
         ? `0_${valueName}_${commonState.chartValues?.id}_default_${commonState.selectedVersionUpdatePage?.id}`
         : isExternalApp
-        ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
-        : `${commonState.selectedEnvironment?.value || 0}_${appName}_${commonState.chartValues?.id}_${
-              commonState.selectedEnvironment?.namespace || 'default'
-          }_${commonState.selectedVersionUpdatePage?.id}`
+          ? `${commonState.releaseInfo.deployedAppDetail.environmentDetail.namespace}_${commonState.releaseInfo.deployedAppDetail.appName}_${commonState.chartValues?.id}_${commonState.selectedVersionUpdatePage?.id}`
+          : `${commonState.selectedEnvironment?.value || 0}_${appName}_${commonState.chartValues?.id}_${
+                commonState.selectedEnvironment?.namespace || 'default'
+            }_${commonState.selectedVersionUpdatePage?.id}`
 }
 
 export const updateGeneratedManifest = (
@@ -190,7 +189,7 @@ export const updateGeneratedManifest = (
 const getFieldType = (type: string, renderType: string, containsEnum): string => {
     switch (type) {
         case 'string':
-            return containsEnum ? 'select' : renderType ? renderType : 'input'
+            return containsEnum ? 'select' : renderType || 'input'
         case 'object':
             return 'formBox'
         case 'boolean':
@@ -206,7 +205,8 @@ const getFieldType = (type: string, renderType: string, containsEnum): string =>
 const isFieldEnabled = (property: any, isChild: boolean): boolean => {
     if (property.form && (isChild || !property.properties)) {
         return true
-    } else if (!isChild && property.properties) {
+    }
+    if (!isChild && property.properties) {
         return Object.values(property.properties).some((_prop) => {
             if (_prop['properties']) {
                 return isFieldEnabled(_prop, isChild)
@@ -225,7 +225,8 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
 
         if (_parentValue?.required) {
             return _parentValue.required.includes(property.key.split('/').slice(1).join('/'))
-        } else if (property.parentRef) {
+        }
+        if (property.parentRef) {
             return isRequiredField(_parentValue, true, schemaJson)
         }
     }
@@ -235,16 +236,16 @@ export const isRequiredField = (property: any, isChild: boolean, schemaJson: Map
 
 const convertItemsToObj = (items) => {
     const itemsObj = {}
-    for (let item of items) {
+    for (const item of items) {
         itemsObj[item.key.value] = item.value.value
     }
     return itemsObj
 }
 
 const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Document.Parsed): string[] => {
-    let currentPath: string[] = [],
-        noValueInCurrentPath = false
-    for (let _pathKey of parentPathKey) {
+    let currentPath: string[] = []
+    let noValueInCurrentPath = false
+    for (const _pathKey of parentPathKey) {
         if (noValueInCurrentPath) {
             break
         } else {
@@ -253,7 +254,7 @@ const getAvailalbePath = (parentPathKey: string[], valuesYamlDocument: YAML.Docu
             if (
                 typeof _valueInCurrentPath === 'undefined' ||
                 _valueInCurrentPath === null ||
-                (_valueInCurrentPath instanceof Collection &&
+                (_valueInCurrentPath instanceof YAMLMap &&
                     _valueInCurrentPath.items &&
                     !_valueInCurrentPath.items.length)
             ) {
@@ -275,14 +276,14 @@ export const getPathAndValueToSetIn = (
     pathToSetIn: string[]
     valueToSetIn: any
 } => {
-    let pathToSetIn = [],
-        valueToSetIn
+    let pathToSetIn = []
+    let valueToSetIn
     const parentPathKey = pathKey.slice(0, pathKey.length - 1)
     const parentValue = valuesYamlDocument.getIn(parentPathKey)
     if (
         typeof parentValue === 'undefined' ||
         parentValue === null ||
-        (parentValue instanceof Collection && parentValue.items && !parentValue.items.length)
+        (parentValue instanceof YAMLMap && parentValue.items && !parentValue.items.length)
     ) {
         const availablePath = getAvailalbePath(parentPathKey, valuesYamlDocument)
         const availablePathToSetIn = pathKey.slice(availablePath.length + 1)
@@ -308,7 +309,7 @@ export const getAndUpdateSchemaValue = (
     const updatedSchemaJson = schemaJson
 
     if (updatedSchemaJson?.size && parsedValuesYamlDocument?.contents) {
-        for (let [key, value] of updatedSchemaJson) {
+        for (const [key, value] of updatedSchemaJson) {
             const _value = parsedValuesYamlDocument.getIn(key.split('/')) ?? value.default
             value.value =
                 value['type'] === 'select'
@@ -335,7 +336,7 @@ const getPathKeyAndPropsPair = (
     pathKeyAndPropsPair = new Map<string, any>(),
 ): Map<string, any> => {
     if (schema?.properties) {
-        const properties = schema.properties
+        const { properties } = schema
         Object.keys(properties).forEach((propertyKey) => {
             const propertyPath = `${parentRef}${parentRef ? '/' : ''}${propertyKey}`
             const property = properties[propertyKey]
@@ -347,7 +348,7 @@ const getPathKeyAndPropsPair = (
                 showBox: property.type === 'object' && property.form,
                 value: property.enum ? { label: property.enum[0], value: property.enum[0] } : property.default,
                 showField: property.required || isFieldEnabled(property, !!parentRef),
-                parentRef: parentRef,
+                parentRef,
                 children: haveChildren && Object.keys(property.properties).map((key) => `${propertyPath}/${key}`),
             }
 

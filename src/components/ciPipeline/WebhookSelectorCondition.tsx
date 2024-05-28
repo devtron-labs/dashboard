@@ -1,10 +1,18 @@
-import React from 'react';
-import ReactSelect from 'react-select';
-import { Option } from '../v2/common/ReactSelect.utils';
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
+import ReactSelect from 'react-select'
+import { CustomInput, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { Option } from '../v2/common/ReactSelect.utils'
+import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 
-export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition, canEditSelectorCondition}) {
+export const WebhookSelectorCondition = ({
+    conditionIndex,
+    masterSelectorList,
+    selectorCondition,
+    onSelectorChange,
+    onSelectorValueChange,
+    deleteWebhookCondition,
+    canEditSelectorCondition,
+}) => {
     return (
         <div className="ci-webhook-condition mb-16 flex left">
             <ReactSelect
@@ -15,7 +23,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                     Option,
                 }}
                 classNamePrefix={`build-webhook-select-key-dropdown-${conditionIndex}`}
-                isSearchable={true}
+                isSearchable
                 tabIndex={1}
                 placeholder="Select Key"
                 styles={{
@@ -34,10 +42,9 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
                 isDisabled={!canEditSelectorCondition}
             />
-            <input
-                type="text"
+            <CustomInput
+                name="selector-value"
                 data-testid={`build-webhook-select-key-input-${conditionIndex}`}
-                className="form__input"
                 placeholder="Enter regex"
                 disabled={!canEditSelectorCondition}
                 onChange={(event) => {

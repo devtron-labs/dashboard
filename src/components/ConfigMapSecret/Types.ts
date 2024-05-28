@@ -1,4 +1,3 @@
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CM_SECRET_STATE } from './Constants'
 import { ExtendedOptionType } from '../app/types'
@@ -22,19 +21,19 @@ export interface SuggestedTagOptionType {
 }
 
 export interface OptionsListType {
-    value: string 
+    value: string
     description: string
-    format: string 
+    format: string
     label: string
     stageType: string
     variableType: string
 }
 
-export interface InputPluginSelectionType { 
+export interface InputPluginSelectionType {
     selectedOutputVariable: ExtendedOptionType
     variableOptions?: SuggestedTagOptionType[]
     variableData?: ExtendedOptionType
-    setVariableData?: (tagData:ExtendedOptionType ) => void
+    setVariableData?: (tagData: ExtendedOptionType) => void
     refVar?: React.MutableRefObject<HTMLTextAreaElement>
     noBackDrop?: boolean
     placeholder: string
@@ -232,10 +231,4 @@ export enum ConfigMapActionTypes {
 export interface ConfigMapAction {
     type: ConfigMapActionTypes
     payload?: any
-}
-
-export interface InfoIconWithTippyType {
-    titleText: string
-    infoText: string
-    documentationLink: string
 }

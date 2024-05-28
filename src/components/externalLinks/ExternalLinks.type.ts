@@ -2,8 +2,8 @@ import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
-import { UserRoleType } from '../userGroups/userGroups.types'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
+import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
 
 export interface OptionTypeWithIcon {
     label: string
@@ -84,7 +84,7 @@ export interface ConfigureLinkActionType {
 
 export interface ExternalLinkResponse extends ResponseType {
     result?: {
-        ExternalLinks: ExternalLink[],
+        ExternalLinks: ExternalLink[]
         Tools: MonitoringTool[]
     }
 }

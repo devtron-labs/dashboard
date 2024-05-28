@@ -1,4 +1,13 @@
 import React, { Component } from 'react'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    DeploymentNodeType,
+    noop,
+    WorkflowNodeType,
+    PipelineType,
+    CommonNodeAttr,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
 import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
@@ -6,19 +15,20 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType, TriggerViewContextType } from '../types'
+import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerViewContext } from '../config'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
+const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
+const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
-    goToWorkFlowEditor = (node: NodeAttr) => {
+    goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
                 this.props.appId?.toString() ?? this.props.match.params.appId,
@@ -44,19 +54,23 @@ export class Workflow extends Component<WorkflowProps> {
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
                 return this.renderSourceNode(node)
-            } else if (node.type === WorkflowNodeType.CI) {
+            }
+            if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
-            } else if (node.type === PipelineType.WEBHOOK) {
+            }
+            if (node.type === PipelineType.WEBHOOK) {
                 return this.renderWebhookNode(node)
-            } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
+            }
+            if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
-            } else if (node.type === WorkflowNodeType.CD) {
+            }
+            if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
             }
         })
     }
 
-    renderSourceNode(node: NodeAttr) {
+    renderSourceNode(node: CommonNodeAttr) {
         return (
             <StaticNode
                 key={`${node.type}-${node.id}`}
@@ -81,6 +95,7 @@ export class Workflow extends Component<WorkflowProps> {
             />
         )
     }
+
     renderWebhookNode(node) {
         return (
             <WebhookNode
@@ -94,7 +109,22 @@ export class Workflow extends Component<WorkflowProps> {
         )
     }
 
-    renderCINodes(node: NodeAttr) {
+    renderCINodes(node: CommonNodeAttr) {
+        if (node.isLinkedCD && LinkedCDNode) {
+            return (
+                <LinkedCDNode
+                    key={`linked-cd-${node.id}`}
+                    x={node.x}
+                    y={node.y}
+                    width={node.width}
+                    height={node.height}
+                    configDiffView={false}
+                    title={node.title}
+                    readOnly
+                />
+            )
+        }
+
         if (node.isLinkedCI) {
             return (
                 <TriggerLinkedCINode
@@ -123,7 +153,8 @@ export class Workflow extends Component<WorkflowProps> {
                     isCITriggerBlocked={node.isCITriggerBlocked}
                 />
             )
-        } else if (node.isExternalCI) {
+        }
+        if (node.isExternalCI) {
             return (
                 <TriggerExternalCINode
                     key={`${node.type}-${node.id}`}
@@ -146,42 +177,41 @@ export class Workflow extends Component<WorkflowProps> {
                     inputMaterialsNew={[]}
                 />
             )
-        } else {
-            return (
-                <TriggerCINode
-                    workflowId={this.props.id}
-                    key={`${node.type}-${node.id}`}
-                    x={node.x}
-                    y={node.y}
-                    status={node.status}
-                    height={node.height}
-                    width={node.width}
-                    id={node.id}
-                    type={node.type}
-                    downstreams={node.downstreams}
-                    title={node.title}
-                    triggerType={node.triggerType}
-                    colorCode={node.colorCode}
-                    isExternalCI={node.isExternalCI}
-                    isLinkedCI={node.isLinkedCI}
-                    isJobCI={node.isJobCI}
-                    description={node.description}
-                    linkedCount={node.linkedCount}
-                    inputMaterialsNew={[]}
-                    history={this.props.history}
-                    location={this.props.location}
-                    match={this.props.match}
-                    branch={node.branch}
-                    fromAppGrouping={this.props.fromAppGrouping}
-                    isJobView={this.props.isJobView}
-                    index={this.props.index}
-                    isCITriggerBlocked={node.isCITriggerBlocked}
-                    ciBlockState={node.ciBlockState}
-                    filteredCIPipelines={this.props.filteredCIPipelines}
-                    environmentLists={this.props.environmentLists}
-                />
-            )
         }
+        return (
+            <TriggerCINode
+                workflowId={this.props.id}
+                key={`${node.type}-${node.id}`}
+                x={node.x}
+                y={node.y}
+                status={node.status}
+                height={node.height}
+                width={node.width}
+                id={node.id}
+                type={node.type}
+                downstreams={node.downstreams}
+                title={node.title}
+                triggerType={node.triggerType}
+                colorCode={node.colorCode}
+                isExternalCI={node.isExternalCI}
+                isLinkedCI={node.isLinkedCI}
+                isJobCI={node.isJobCI}
+                description={node.description}
+                linkedCount={node.linkedCount}
+                inputMaterialsNew={[]}
+                history={this.props.history}
+                location={this.props.location}
+                match={this.props.match}
+                branch={node.branch}
+                fromAppGrouping={this.props.fromAppGrouping}
+                isJobView={this.props.isJobView}
+                index={this.props.index}
+                isCITriggerBlocked={node.isCITriggerBlocked}
+                ciBlockState={node.ciBlockState}
+                filteredCIPipelines={this.props.filteredCIPipelines}
+                environmentLists={this.props.environmentLists}
+            />
+        )
     }
 
     renderCDNodes(node) {
@@ -214,6 +244,10 @@ export class Workflow extends Component<WorkflowProps> {
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
                 isVirtualEnvironment={node.isVirtualEnvironment}
+                isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
+                deploymentAppType={node.deploymentAppType}
+                appId={this.props.appId}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }
@@ -225,6 +259,7 @@ export class Workflow extends Component<WorkflowProps> {
                 x={node.x}
                 y={node.y}
                 environmentId={node.environmentId}
+                environmentName={node.environmentName}
                 description={node.description}
                 type={node.type}
                 stageIndex={node.stageIndex}
@@ -242,6 +277,9 @@ export class Workflow extends Component<WorkflowProps> {
                 match={this.props.match}
                 fromAppGrouping={this.props.fromAppGrouping}
                 index={this.props.index}
+                isGitOpsRepoNotConfigured={node.isGitOpsRepoNotConfigured}
+                deploymentAppType={node.deploymentAppType}
+                isDeploymentBlocked={node.isDeploymentBlocked}
             />
         )
     }
@@ -249,11 +287,11 @@ export class Workflow extends Component<WorkflowProps> {
     getEdges() {
         return this.props.nodes.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
-                let endNode = this.props.nodes.find((val) => val.type + '-' + val.id == downStreamNodeId)
-                    edgeList.push({
-                        startNode: node,
-                        endNode: endNode,
-                    })
+                const endNode = this.props.nodes.find((val) => `${val.type}-${val.id}` == downStreamNodeId)
+                edgeList.push({
+                    startNode: node,
+                    endNode,
+                })
             })
             return edgeList
         }, [])
@@ -262,7 +300,7 @@ export class Workflow extends Component<WorkflowProps> {
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
         this.props.history.push({
-            search: `approval-node=${nodeId}`
+            search: `approval-node=${nodeId}`,
         })
     }
 
@@ -302,15 +340,13 @@ export class Workflow extends Component<WorkflowProps> {
         const isExternalCiWorkflow = this.props.nodes.some(
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
+
         return (
-            <div
-                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
-                style={{ minWidth: `${this.props.width}px` }}
-            >
-                <div className="workflow__header">
+            <div className="workflow--trigger flexbox-col mb-16 dc__gap-6" style={{ minWidth: 'auto' }}>
+                <div className="bcn-0 cn-9 fs-13 fw-6 lh-20 flexbox dc__align-items-center dc__content-space">
                     {this.props.fromAppGrouping ? (
                         <Checkbox
-                            rootClassName="fs-13 fw-6 mb-0 app-group-checkbox"
+                            rootClassName="mb-0 app-group-checkbox"
                             isChecked={this.props.isSelected}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={this.handleWorkflowSelection}
@@ -319,13 +355,27 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span data-testid="workflow-heading" className="workflow__name">
-                            {this.props.name}
-                        </span>
+                        <>
+                            <span data-testid="workflow-heading" className="m-0">
+                                {this.props.name}
+                            </span>
+
+                            {ImagePromotionLink && (
+                                <ImagePromotionLink
+                                    isConfigured={this.props.artifactPromotionMetadata?.isConfigured ?? false}
+                                    isApprovalPendingForPromotion={
+                                        this.props.artifactPromotionMetadata?.isApprovalPendingForPromotion ?? false
+                                    }
+                                    workflowId={this.props.id}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
-                <div className="workflow__body">
+                <div
+                    className={`workflow__body bc-n50 dc__overflow-scroll dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
+                >
                     <svg x={this.props.startX} y={0} height={this.props.height} width={this.props.width}>
                         {this.renderEdgeList()}
                         {this.renderNodes()}

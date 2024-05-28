@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import branch from '../../../../../../assets/icons/misc/branch.svg'
 import Tippy from '@tippyjs/react'
+import branch from '../../../../../../assets/icons/misc/branch.svg'
 import { CiPipelineSourceConfig } from '../../../../../ciPipeline/CiPipelineSourceConfig'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../../config'
 
@@ -38,7 +38,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                     <CiPipelineSourceConfig
                         sourceType={this.props.sourceType}
                         sourceValue={this.props.branch}
-                        showTooltip={true}
+                        showTooltip
                         showIcons={this.props.branch !== GIT_BRANCH_NOT_CONFIGURED}
                         regex={this.props.regex}
                         isRegex={this.props.isRegex}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
@@ -7,7 +8,6 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ChartValuesType } from '../charts.types'
 import { ChartVersionSelectorModalType, PrimaryOptionType } from './types'
 import { PrimaryOptions, ValueType } from './constants'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ChartVersionSelectorModal({
     closePopup,
@@ -45,17 +45,13 @@ export default function ChartVersionSelectorModal({
             return (
                 <div className="fw-4 fs-13 cn-7">
                     <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
-                    <a
-                        className="dc__link"
-                        href={cardDetail.helpLink}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
+                    <a className="dc__link" href={cardDetail.helpLink} rel="noreferrer noopener" target="_blank">
                         {cardDetail.noDataSubtitle[1]}
                     </a>
                 </div>
             )
-        } else if (cardDetail.valueType === ValueType.DEPLOYED) {
+        }
+        if (cardDetail.valueType === ValueType.DEPLOYED) {
             return (
                 <div className="fw-4 fs-13 cn-7">
                     <span className="cr-5">{cardDetail.noDataSubtitle[0]}</span>&nbsp;
@@ -151,7 +147,7 @@ export default function ChartVersionSelectorModal({
         return (
             <div style={{ height: 'calc(100vh - 170px)' }}>
                 <div className="chart-value-row fw-6 cn-7 fs-12 dc__border-top dc__border-bottom dc__uppercase pt-8 pr-16 pb-8 pl-16">
-                    <div className="pr-16"></div>
+                    <div className="pr-16" />
                     <div className="pr-16">Name</div>
                     <div>Chart Version</div>
                 </div>

@@ -1,18 +1,13 @@
 import React, { useContext } from 'react'
+import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { MountPathMap } from '../ciPipeline/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
-function MountFromHost() {
-    const {
-        selectedTaskIndex,
-        formData,
-        setFormData,
-        activeStageName,
-        formDataErrorObj,
-    } = useContext(pipelineContext)
+const MountFromHost = () => {
+    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj } = useContext(pipelineContext)
     const addMountDirectoryfromHost = () => {
         const _formData = { ...formData }
 
@@ -41,7 +36,7 @@ function MountFromHost() {
     return (
         <>
             <div className="row-container mb-12">
-                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
+                <div className="fw-6 fs-13 lh-32 cn-7 " />
                 <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addMountDirectoryfromHost}>
                     <Add className="add-icon mt-6" />
                     Add mapping
@@ -56,24 +51,20 @@ function MountFromHost() {
                     return (
                         <>
                             <div className="mount-row mb-4 mt-4">
-                                <div className="fw-6 fs-13 lh-32 cn-7 "></div>
-                                <input
+                                <div className="fw-6 fs-13 lh-32 cn-7 " />
+                                <CustomInput
                                     data-testid="script-mount-host-file-path-host"
-                                    className="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__left-radius-4 dc__no-right-border"
-                                    autoComplete="off"
+                                    rootClassName="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__left-radius-4 dc__no-right-border"
                                     placeholder="File path on Host"
-                                    type="text"
                                     onChange={(e) => handleMountPath(e, index)}
                                     value={mountPathMap[MountPathMap.FILEPATHONDISK]}
                                     name={MountPathMap.FILEPATHONDISK}
                                 />
                                 <div className="flex bw-1 en-2">:</div>
-                                <input
+                                <CustomInput
                                     data-testid="script-mount-host-file-path-container"
-                                    className="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__right-radius-4 dc__no-left-border"
-                                    autoComplete="off"
+                                    rootClassName="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__right-radius-4 dc__no-left-border"
                                     placeholder="File path on container"
-                                    type="text"
                                     onChange={(e) => handleMountPath(e, index)}
                                     value={mountPathMap[MountPathMap.FILEPATHONCONTAINER]}
                                     name={MountPathMap.FILEPATHONCONTAINER}

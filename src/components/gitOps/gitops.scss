@@ -24,6 +24,21 @@
 		color: var(--B500);
 	}
 }
+
 .stroke_width {
 	stroke-width: 2px;
+}
+
+.form__radio-item {
+	&.disabled {
+		background-color: var(--N0);
+		opacity: 0.5;
+
+	}
+}
+
+.bitbucket-radio-group {
+	.form__radio-group .form__radio-item .form__radio-item-content {
+		padding: 4px 16px 4px 0;
+	}
 }

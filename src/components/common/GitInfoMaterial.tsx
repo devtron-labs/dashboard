@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { not, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { not, stopPropagation, CIMaterialSidebarType } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { useHistory } from 'react-router'
+import { useLocation } from 'react-router-dom'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
-import EmptyStateCIMaterial from '../app/details/triggerView//EmptyStateCIMaterial'
+import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -17,14 +20,14 @@ import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg
 import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
 import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
-import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, importComponentFromFELibrary } from '../common'
-import { useHistory } from 'react-router'
-import { useLocation } from 'react-router-dom'
+import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
+const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
+// TODO: ADD prop type
 export default function GitInfoMaterial({
     dataTestId = '',
     material,
@@ -41,17 +44,26 @@ export default function GitInfoMaterial({
     onClickShowBranchRegexModal,
     fromAppGrouping,
     appId,
+    // Only coming from BulkCI
+    appName = null,
     fromBulkCITrigger,
     hideSearchHeader,
     isJobView = false,
     isJobCI = false,
     isCITriggerBlocked = false,
+    // Not required for BulkCI
+    currentSidebarTab,
+    // Not required for BulkCI
+    handleSidebarTabChange,
+    runtimeParams,
+    handleRuntimeParametersChange,
     ciBlockState = null,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [showAllCommits, setShowAllCommits] = useState(false)
     const [showExcludePopUp, setShowExcludePopUp] = useState(false)
+
     const { push } = useHistory()
     const location = useLocation()
     const triggerViewContext = useContext(TriggerViewContext)
@@ -102,13 +114,29 @@ export default function GitInfoMaterial({
     function renderMaterialSource() {
         const refreshMaterial = {
             refresh: triggerViewContext.refreshMaterial,
-            pipelineId: pipelineId,
+            pipelineId,
         }
+        const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
+            value: tabValue,
+            label: tabValue,
+        }))
+
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
-                    Git Repository
-                </div>
+                {GitInfoMaterialTabs && !isJobCI && !isJobView ? (
+                    <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
+                        <GitInfoMaterialTabs
+                            tabs={sidebarTabs}
+                            initialTab={currentSidebarTab}
+                            onChange={handleSidebarTabChange}
+                        />
+                    </div>
+                ) : (
+                    <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
+                        Git Repository
+                    </div>
+                )}
+
                 <MaterialSource
                     material={material}
                     selectMaterial={triggerViewContext.selectMaterial}
@@ -144,19 +172,13 @@ export default function GitInfoMaterial({
                         arrow={false}
                         placement="top"
                         content={selectedMaterial.value}
-                        interactive={true}
+                        interactive
                     >
                         <div className="dc__ellipsis-right">{selectedMaterial.value}</div>
                     </Tippy>
                 )}
                 {selectedMaterial.regex && (
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content="Change branch"
-                        interactive={true}
-                    >
+                    <Tippy className="default-tt" arrow={false} placement="top" content="Change branch" interactive>
                         <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
@@ -290,32 +312,46 @@ export default function GitInfoMaterial({
         )
     }
 
-    function renderMaterialHistory(selectedMaterial: CIMaterialType) {
-        let anyCommit = selectedMaterial.history?.length > 0
-        const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
+    const renderMaterialHistoryHeader = (selectedMaterial: CIMaterialType) => {
         const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
+
         return (
-            <div className="select-material select-material--trigger-view">
-                {!isWebhook && !hideSearchHeader && (
-                    <div
-                        className="flex dc__content-space dc__position-sticky "
-                        style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
-                    >
-                        <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
-                        {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                            <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
-                                {renderSearch()}
-                                {excludeIncludeEnv && renderExcludedCommitsOption()}
-                            </div>
-                        )}
+            <div
+                className="flex dc__content-space dc__position-sticky "
+                style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
+            >
+                <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
+                {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
+                    <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
+                        {renderSearch()}
+                        {excludeIncludeEnv && renderExcludedCommitsOption()}
                     </div>
                 )}
+            </div>
+        )
+    }
 
-                {selectedMaterial.isMaterialLoading ||
-                selectedMaterial.isRepoError ||
-                selectedMaterial.isBranchError ||
-                selectedMaterial.noSearchResult ||
-                !anyCommit ? (
+    const getRuntimeParametersHeading = () => {
+        const headingPrefix = 'Pass parameters'
+        const headingSuffix = appName ? `for '${appName}'` : ''
+        return `${headingPrefix} ${headingSuffix}`
+    }
+
+    function renderMaterialHistory(selectedMaterial: CIMaterialType) {
+        const anyCommit = selectedMaterial.history?.length > 0
+        const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
+        const materialError =
+            selectedMaterial.isMaterialLoading ||
+            selectedMaterial.isRepoError ||
+            selectedMaterial.isBranchError ||
+            selectedMaterial.noSearchResult
+        const showHeader = !isWebhook && !hideSearchHeader && currentSidebarTab === CIMaterialSidebarType.CODE_SOURCE
+
+        if (materialError || !anyCommit) {
+            return (
+                <div className="select-material select-material--trigger-view">
+                    {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
+
                     <div className="select-material__empty-state-container flex dc__position-rel">
                         <EmptyStateCIMaterial
                             isRepoError={selectedMaterial.isRepoError}
@@ -340,33 +376,49 @@ export default function GitInfoMaterial({
                             toggleExclude={toggleExclude}
                         />
                     </div>
-                ) : (
-                    <>
-                        {selectedMaterial.type === SourceTypeMap.WEBHOOK && (
-                            <div className="cn-7 fs-12 fw-0 pl-20 flex left">
-                                Showing results matching &nbsp;
-                                <CiPipelineSourceConfig
-                                    sourceType={selectedMaterial.type}
-                                    sourceValue={selectedMaterial.value}
-                                    showTooltip={true}
-                                    baseText="configured filters"
-                                    showIcons={false}
-                                />
-                                .&nbsp;
-                                <span className="dc__link cursor" onClick={_toggleWebhookModal}>
-                                    View all incoming webhook payloads
-                                </span>
-                            </div>
-                        )}
-                        <MaterialHistory
-                            material={selectedMaterial}
-                            pipelineName={pipelineName}
-                            ciPipelineId={pipelineId}
-                            selectCommit={triggerViewContext.selectCommit}
-                            toggleChanges={triggerViewContext.toggleChanges}
+                </div>
+            )
+        }
+
+        if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
+            return (
+                <RuntimeParameters
+                    heading={getRuntimeParametersHeading()}
+                    parameters={runtimeParams}
+                    handleKeyValueChange={handleRuntimeParametersChange}
+                    isJobCI={isJobCI}
+                />
+            )
+        }
+
+        return (
+            <div className="select-material select-material--trigger-view">
+                {showHeader && renderMaterialHistoryHeader(selectedMaterial)}
+
+                {selectedMaterial.type === SourceTypeMap.WEBHOOK && (
+                    <div className="cn-7 fs-12 fw-0 pl-20 flex left">
+                        Showing results matching &nbsp;
+                        <CiPipelineSourceConfig
+                            sourceType={selectedMaterial.type}
+                            sourceValue={selectedMaterial.value}
+                            showTooltip
+                            baseText="configured filters"
+                            showIcons={false}
                         />
-                    </>
+                        .&nbsp;
+                        <span className="dc__link cursor" onClick={_toggleWebhookModal}>
+                            View all incoming webhook payloads
+                        </span>
+                    </div>
                 )}
+
+                <MaterialHistory
+                    material={selectedMaterial}
+                    pipelineName={pipelineName}
+                    ciPipelineId={pipelineId}
+                    selectCommit={triggerViewContext.selectCommit}
+                    toggleChanges={triggerViewContext.toggleChanges}
+                />
             </div>
         )
     }

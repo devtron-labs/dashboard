@@ -1,14 +1,14 @@
 import moment from 'moment'
-import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
-import { get, post, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, APIOptions, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { Moment12HourFormat, Routes } from '../../config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
 import { JOB_STATUS } from './Constants'
-import { JobCIPipeline } from './Types'
+import { JobCIPipeline, JobList } from './Types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 
 export const getJobs = (request, options?: APIOptions) => {
-    return post(Routes.JOB_LIST, request, options)
+    return post(Routes.JOB_LIST, request, options) as Promise<JobList>
 }
 
 export const createJob = (request) => {
@@ -72,11 +72,10 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
             return sortOptionsByLabel(a, b)
         })
 
-
         return {
-            projectsRes: projectsRes,
-            environmentsRes: environmentsRes,
-            filters: filters,
+            projectsRes,
+            environmentsRes,
+            filters,
         }
     })
 }
@@ -110,7 +109,7 @@ export const getAppListDataToExport = (
             const _jobDataList = []
             for (const _job of result.jobContainers) {
                 if (_job.ciPipelines?.length > 0) {
-                    for (let _pipeline of _job.ciPipelines as JobCIPipeline[]) {
+                    for (const _pipeline of _job.ciPipelines as JobCIPipeline[]) {
                         _jobDataList.push({
                             jobId: _job.jobId,
                             jobName: _job.jobName,

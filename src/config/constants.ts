@@ -1,5 +1,6 @@
 import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
-export const DEFAULT_STATUS = 'Checking Status...'
+export const DEFAULT_STATUS = 'checking'
+export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -45,9 +46,11 @@ export const Routes = {
 
     DEPLOYMENT_TEMPLATE: 'app/template',
     DEPLOYMENT_TEMPLATE_UPDATE: 'app/template/update',
+    LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
+    LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
-    DEPLOYMENT_OPTIONS:'app/template/list',
+    DEPLOYMENT_OPTIONS: 'app/template/list',
 
     DEPLOYMENT_STRATEGY: 'app/cd-pipeline/strategies',
     ENVIRONMENT_CONFIG: 'app/env',
@@ -65,6 +68,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
+    ARGO_APPLICATION: 'argo-application/detail',
+    EPHEMERAL_CONTAINERS: 'k8s/resources/ephemeralContainers',
     APP_EDIT: 'app/edit',
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
@@ -77,6 +82,7 @@ export const Routes = {
     DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
     DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
     LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
+    LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
     GIT_MATERIAL: 'app/material',
@@ -84,11 +90,13 @@ export const Routes = {
     PROJECT: 'team',
     PROJECT_LIST: 'team',
     PROJECT_LIST_MIN: 'team/autocomplete',
-    TEAM_USER: 'team/app/user', //TODO: PROJECT_USER
+    TEAM_USER: 'team/app/user', // TODO: PROJECT_USER
     DOCKER_REGISTRY_CONFIG: 'docker/registry',
     DOCKER_REGISTRY_MIN: 'docker/registry/autocomplete',
     GITOPS: 'gitops/config',
+    GITOPS_DEVTRON_APP: `app/template/gitops/config`,
     GITOPS_VALIDATE: 'gitops/validate',
+    GITOPOS_HELM_VALIDATE: 'app-store/gitops/validate',
     GITOPS_CONFIGURED: 'gitops/configured',
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
@@ -109,13 +117,11 @@ export const Routes = {
     REFRESH_MATERIAL: 'app/ci-pipeline/refresh-material',
     COMMIT_INFO: 'app/commit-info',
     APPLICATIONS: 'api/v1/applications',
+    USER_PERMISSIONS: 'users',
+    PERMISSION_GROUPS: 'groups',
+    SSO_LOGIN_SERVICES: 'login-service',
     API_TOKEN: 'api-token',
     API_TOKEN_WEBHOOK: 'api-token/webhook',
-    USER_CREATE: 'user/create',
-    USER_UPDATE: 'user/update',
-    USER_LIST: 'user/all',
-    ALL_USERS_LIST: 'user/detail/get',
-    ALL_GROUPS_LIST: 'user/role/group/detailed/get',
 
     DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_CONFIG_MAP_GET: 'configmap/applevel/get',
@@ -128,6 +134,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_SAVE: 'configmap/create/pipelinelevel',
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
+    ARGO_APPS: 'argo-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -238,13 +245,15 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
+    BULK_ROTATE_POD: 'app/template/workloads',
     DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
     EDIT: 'edit',
     JOB_CONFIG_ENVIRONMENTS: 'config/environment',
     PERMISSION: 'permission/check',
     SCOPED_GLOBAL_VARIABLES: 'global/variables',
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
-    GVK: 'gvk'
+    GVK: 'gvk',
+    USER: 'user',
 }
 
 export const ViewType = {
@@ -287,16 +296,24 @@ export const PATTERNS = {
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
     ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
-    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, //Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
+    CUSTOM_TAG: /^(?![.-])([a-zA-Z0-9_.-]*\{[Xx]\}[a-zA-Z0-9_.-]*)(?<![.-])$/, // Allowed: Alphanumeric characters, including (_) (.) (-) {x} {X} but cannot begin or end with (.) or (-)
     ALPHANUMERIC_WITH_SPECIAL_CHAR_AND_SLASH: /^[A-Za-z0-9._/-]+$/, // allow alphanumeric,(.) ,(-),(_),(/)
-
+    ESCAPED_CHARACTERS: /[.*+?^${}()|[\]\\]/g,
 }
 
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
+} as const
+
+export const repoType = {
+    DEFAULT: 'DEFAULT',
+    CONFIGURE: 'CONFIGURE',
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',
@@ -327,7 +344,7 @@ export const DOCUMENTATION = {
     SECURITY: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/security-features`,
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
-    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
+    GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/container-registries`,
     GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
     GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
@@ -360,7 +377,8 @@ export const DOCUMENTATION = {
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
     JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
-    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`
+    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
+    MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -388,10 +406,12 @@ export const AppListConstants = {
     AppTabs: {
         DEVTRON_APPS: 'Devtron Apps',
         HELM_APPS: 'Helm Apps',
+        ARGO_APPS: 'ArgoCD Apps',
     },
     AppType: {
         DEVTRON_APPS: 'd',
         HELM_APPS: 'h',
+        ARGO_APPS: 'a',
     },
     FilterType: {
         PROJECT: 'team',
@@ -412,7 +432,8 @@ export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
-    HELM_APPS = 'helm-app', //helm app work flow
+    HELM_APPS = 'helm-app', // helm app work flow
+    JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
 export enum MODES {
@@ -436,7 +457,7 @@ export const OCIRegistryConfigConstants: Record<string, OCIRegistryStorageAction
 
 export const RegistryStorageType = {
     OCI_PRIVATE: 'OCI_PRIVATE',
-    OCI_PUBLIC: 'OCI_PUBLIC'
+    OCI_PUBLIC: 'OCI_PUBLIC',
 }
 
 export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
@@ -444,6 +465,13 @@ export const REGISTRY_TITLE_DESCRIPTION_CONTENT = {
     infoText:
         'A registry is used to store container images built by a build pipeline. The connected deployment pipeline then pulls the required image from the registry for deployment.',
     additionalParagraphText: 'You can also control which clusters have access to pull images from a registry.',
+    documentationLinkText: 'View documentation',
+}
+
+export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
+    heading: 'OCI Registry',
+    infoText:
+        'Devtron can pull helm charts stored in OCI Registry. Charts pulled from added OCI Registries are shown in Chart Store which can be used for deployment.',
     documentationLinkText: 'View documentation',
 }
 
@@ -479,21 +507,33 @@ export interface RegistryPayloadType {
     ociRegistryConfig?: OCIRegistryStorageConfigType
     repositoryList: string[]
     isPublic: boolean
+    remoteConnectionConfig: {
+        connectionMethod: string
+        proxyConfig: {
+            proxyUrl: string
+        }
+        sshConfig: {
+            sshServerAddress: string
+            sshUsername: string
+            sshPassword: string
+            sshAuthKey: string
+        }
+    }
 }
 
 export const RegistryType = {
-   DOCKER_HUB: 'docker-hub',
-   ACR: 'acr',
-   QUAY: 'quay',
-   OTHER: 'other',
-   ECR: 'ecr',
-   ARTIFACT_REGISTRY: 'artifact-registry',
-   GCR: 'gcr'
+    DOCKER_HUB: 'docker-hub',
+    ACR: 'acr',
+    QUAY: 'quay',
+    OTHER: 'other',
+    ECR: 'ecr',
+    ARTIFACT_REGISTRY: 'artifact-registry',
+    GCR: 'gcr',
 }
 
 export const RegistryTypeName = {
-    'OCI_PRIVATE': 'Private Registry',
-    'OCI_PUBLIC': 'Public Registry'
+    OCI_PRIVATE: 'Private Registry',
+    OCI_PUBLIC: 'Public Registry',
 }
 
 export const AppCreationType = {
@@ -564,7 +604,7 @@ export const EXTERNAL_TYPES = {
         ESO_HashiCorpVault: 'Hashi Corp Vault',
         ESO_AWSSecretsManager: 'AWS Secrets Manager',
         ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager'
+        ESO_AzureSecretsManager: 'Azure Secrets Manager',
     },
     [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
         '': 'Kubernetes ConfigMap',
@@ -575,11 +615,13 @@ export const EXTERNAL_TYPES = {
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
-export const SCAN_TOOL_ID_TRIVY = 3
 export const TRIVY_TOOL_VERSION = 'V1'
 export const CLAIR_TOOL_VERSION_V4 = 'V4'
 export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
+/**
+ * @deprecated Use from fe-common-lib
+ */
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
@@ -609,6 +651,8 @@ export const TERMINAL_STATUS_MAP = {
     RUNNING: 'running',
     PROGRESSING: 'progressing',
     STARTING: 'starting',
+    INITIATING: 'initiating',
+    QUEUED: 'queued',
     FAILED: 'failed',
     ERROR: 'error',
     CANCELLED: 'cancelled',
@@ -680,7 +724,6 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
-export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',
@@ -701,6 +744,8 @@ export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
     GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    ARGOCD_SYNC = 'ARGOCD_SYNC',
+    ARGOCD_SYNC_FAILED = 'ARGOCD_SYNC_FAILED',
     KUBECTL_APPLY = 'KUBECTL_APPLY',
     KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
     KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
@@ -726,9 +771,13 @@ export const DEPLOYMENT_STATUS = {
     UNABLE_TO_FETCH: 'unable_to_fetch',
     INPROGRESS: 'inprogress',
     PROGRESSING: 'progressing',
+    STARTING: 'starting',
+    INITIATING: 'initiating',
     SUPERSEDED: 'superseded',
+    QUEUED: 'queued',
     UNKNOWN: 'unknown',
-}
+    CHECKING: 'checking',
+} as const
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
@@ -749,6 +798,7 @@ export const NO_COMMIT_SELECTED = 'No commit is selected'
 export enum MANIFEST_KEY_FIELDS {
     METADATA = 'metadata',
     MANAGED_FIELDS = 'managedFields',
+    DATA = 'data',
 }
 
 export enum KEY_VALUE {
@@ -784,9 +834,118 @@ export const ManifestMessaging = {
 }
 
 export const SERVER_ERROR_CODES = {
-    RELEASE_NOT_FOUND: "7001",
+    RELEASE_NOT_FOUND: '7001',
     CHART_ALREADY_EXISTS: '5001',
     CHART_NAME_RESERVED: '5002',
 }
 
 export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const CVE_ID_NOT_FOUND = 'CVE ID not found'
+export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
+export const NO_HOST_URL = 'Please enter host url'
+export const WEBHOOK_NO_API_TOKEN_ERROR = 'API Token is required to execute webhook'
+
+export enum CUSTOM_LOGS_FILTER {
+    SINCE = 'since',
+    LINES = 'lines',
+    DURATION = 'duration',
+    ALL = 'all',
+    CUSTOM = 'custom',
+}
+
+export const CUSTOM_LOGS_OPTIONS = [
+    {
+        label: 'Set duration',
+        value: CUSTOM_LOGS_FILTER.DURATION,
+    },
+    {
+        label: 'Set lines',
+        value: CUSTOM_LOGS_FILTER.LINES,
+    },
+    {
+        label: 'Since date & time',
+        value: CUSTOM_LOGS_FILTER.SINCE,
+    },
+    {
+        label: 'All available',
+        value: CUSTOM_LOGS_FILTER.ALL,
+    },
+]
+
+export const ALLOW_UNTIL_TIME = {
+    '12:00 AM': '00:00:00',
+    '12:30 AM': '00:30:00',
+    '01:00 AM': '01:00:00',
+    '01:30 AM': '01:30:00',
+    '02:00 AM': '02:00:00',
+    '02:30 AM': '02:30:00',
+    '03:00 AM': '03:00:00',
+    '03:30 AM': '03:30:00',
+    '04:00 AM': '04:00:00',
+    '04:30 AM': '04:30:00',
+    '05:00 AM': '05:00:00',
+    '05:30 AM': '05:30:00',
+    '06:00 AM': '06:00:00',
+    '06:30 AM': '06:30:00',
+    '07:00 AM': '07:00:00',
+    '07:30 AM': '07:30:00',
+    '08:00 AM': '08:00:00',
+    '08:30 AM': '08:30:00',
+    '09:00 AM': '09:00:00',
+    '09:30 AM': '09:30:00',
+    '10:00 AM': '10:00:00',
+    '10:30 AM': '10:30:00',
+    '11:00 AM': '11:00:00',
+    '11:30 AM': '11:30:00',
+    '12:00 PM': '12:00:00',
+    '12:30 PM': '12:30:00',
+    '01:00 PM': '13:00:00',
+    '01:30 PM': '13:30:00',
+    '02:00 PM': '14:00:00',
+    '02:30 PM': '14:30:00',
+    '03:00 PM': '15:00:00',
+    '03:30 PM': '15:30:00',
+    '04:00 PM': '16:00:00',
+    '04:30 PM': '16:30:00',
+    '05:00 PM': '17:00:00',
+    '05:30 PM': '17:30:00',
+    '06:00 PM': '18:00:00',
+    '06:30 PM': '18:30:00',
+    '07:00 PM': '19:00:00',
+    '07:30 PM': '19:30:00',
+    '08:00 PM': '20:00:00',
+    '08:30 PM': '20:30:00',
+    '09:00 PM': '21:00:00',
+    '09:30 PM': '21:30:00',
+    '10:00 PM': '22:00:00',
+    '10:30 PM': '22:30:00',
+    '11:00 PM': '23:00:00',
+    '11:30 PM': '23:30:00',
+}
+
+export const ALLOW_UNTIL_TIME_OPTIONS: any[] = Object.entries(ALLOW_UNTIL_TIME).map(([key, value]) => ({
+    label: key,
+    value,
+}))
+
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
+    'Enforced from Global Configurations. Go to Global Configurations to change.'
+export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
+    'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
+
+export const API_STATUS_CODES = {
+    UNAUTHORIZED: 401,
+    PERMISSION_DENIED: 403,
+    NOT_FOUND: 404,
+    EXPECTATION_FAILED: 417,
+}
+
+export const DEFAULT_SHIMMER_LOADING_TABLE_ROWS = 3
+
+export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
+
+/**
+ * Value for select all identifier
+ */
+export const SELECT_ALL_VALUE = '*'

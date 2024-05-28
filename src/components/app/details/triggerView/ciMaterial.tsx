@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
-import { ButtonWithLoader, getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
+import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -15,6 +15,7 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
 export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
@@ -29,18 +30,20 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
             }
         })
+
         this.state = {
-            regexValue: regexValue,
+            regexValue,
             savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
+            currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
         }
     }
 
     componentDidMount() {
         this.getSecurityModuleStatus()
-        if(this.props.isJobView && this.props.environmentLists?.length > 0) {
-            let envId = this.state.selectedCIPipeline?.environmentId || 0
+        if (this.props.isJobView && this.props.environmentLists?.length > 0) {
+            const envId = this.state.selectedCIPipeline?.environmentId || 0
             const _selectedEnv = this.props.environmentLists.find((env) => env.id == envId)
             this.props.setSelectedEnv(_selectedEnv)
         }
@@ -53,6 +56,13 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 this.setState({ isBlobStorageConfigured: true })
             }
         } catch (error) {}
+    }
+
+
+    handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            currentSidebarTab: e.target.value as CIMaterialSidebarType,
+        })
     }
 
     onClickStopPropagation = (e): void => {
@@ -70,7 +80,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.state.isBlobStorageConfigured) {
+        }
+        if (!this.state.isBlobStorageConfigured) {
             return (
                 <div className="flexbox flex-align-center">
                     <Storage className="icon-dim-24 mr-8" />
@@ -82,6 +93,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.BLOB_STORAGE}
                                 target="_blank"
+                                rel="noreferrer"
                             >
                                 {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
                             </a>
@@ -90,7 +102,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else if (!this.props.isCacheAvailable) {
+        }
+        if (!this.props.isCacheAvailable) {
             return (
                 <div className="flexbox">
                     <Info className="icon-dim-20 mr-8" />
@@ -100,27 +113,33 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     </div>
                 </div>
             )
-        } else {
-            return (
-                <Checkbox
-                    isChecked={this.context.invalidateCache}
-                    onClick={this.onClickStopPropagation}
-                    rootClassName="form__checkbox-label--ignore-cache mb-0"
-                    value={'CHECKED'}
-                    onChange={this.context.toggleInvalidateCache}
-                    data-testid="set-clone-directory"
-                >
-                    <div className="mr-5">
-                        <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
-                        <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
-                    </div>
-                </Checkbox>
-            )
         }
+        return (
+            <Checkbox
+                isChecked={this.context.invalidateCache}
+                onClick={this.onClickStopPropagation}
+                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                value="CHECKED"
+                onChange={this.context.toggleInvalidateCache}
+                data-testid="set-clone-directory"
+            >
+                <div className="mr-5">
+                    <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
+                    <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
+                </div>
+            </Checkbox>
+        )
     }
 
     renderEnvironments = () => {
-        return <EnvironmentList isBuildStage={false} environments={this.props.environmentLists} selectedEnv={this.props.selectedEnv} setSelectedEnv={this.props.setSelectedEnv}/>
+        return (
+            <EnvironmentList
+                isBuildStage={false}
+                environments={this.props.environmentLists}
+                selectedEnv={this.props.selectedEnv}
+                setSelectedEnv={this.props.setSelectedEnv}
+            />
+        )
     }
 
     handleStartBuildAction = (e) => {
@@ -130,7 +149,14 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     redirectToCIPipeline = () => {
         this.props.history.push(
-            getCIPipelineURL(this.props.appId, this.props.workflowId.toString(), true, this.props.pipelineId, false, this.props.isJobCI),
+            getCIPipelineURL(
+                this.props.appId,
+                this.props.workflowId.toString(),
+                true,
+                this.props.pipelineId,
+                false,
+                this.props.isJobCI,
+            ),
         )
     }
 
@@ -145,7 +171,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <ButtonWithLoader
                         rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                         dataTestId="ci-trigger-start-build-button"
-                        loaderColor="#ffffff"
                         disabled={!canTrigger}
                         isLoading={this.props.isLoading}
                         onClick={noop}
@@ -161,7 +186,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             <ButtonWithLoader
                 rootClassName="cta-with-img cta-with-img--ci-trigger-btn cta flex ml-auto h-36 w-auto-imp"
                 dataTestId="ci-trigger-start-build-button"
-                loaderColor="#ffffff"
                 disabled={!canTrigger}
                 isLoading={this.props.isLoading}
                 onClick={this.handleStartBuildAction}
@@ -225,6 +249,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isCITriggerBlocked={this.props.isCITriggerBlocked}
                         ciBlockState={this.props.ciBlockState}
                         isJobCI={this.props.isJobCI}
+                        currentSidebarTab={this.state.currentSidebarTab}
+                        handleSidebarTabChange={this.handleSidebarTabChange}
+                        runtimeParams={this.props.runtimeParams}
+                        handleRuntimeParametersChange={this.props.handleRuntimeParametersChange}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null
@@ -332,7 +360,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     savingRegexValue={this.state.savingRegexValue}
                 />
             )
-        } else if (this.props.showCIModal) {
+        }
+        if (this.props.showCIModal) {
             return this.renderCIModal()
         }
         return <></>

@@ -1,15 +1,17 @@
-import React, { useEffect, useRef, useState} from 'react'
-import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
-import CopyToast, { handleSelectionChange } from '../CopyToast'
+import React, { useEffect, useRef, useState } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
+import CopyToast, { handleSelectionChange } from '../CopyToast'
+import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
+import { restrictXtermAccessibilityWidth } from './terminal.utils'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 let clusterTimeOut
 
@@ -23,13 +25,15 @@ export default function TerminalView({
     registerLinkMatcher,
     terminalMessageData,
     clearTerminal,
-    dataTestId
+    dataTestId,
+    isResourceBrowserView,
 }: TerminalViewType) {
     const socket = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const fitAddon = useRef(null)
+    const { isSuperAdmin } = useMainContext()
 
     function resizeSocket() {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
@@ -51,6 +55,7 @@ export default function TerminalView({
         }
         if (sessionId && terminalRef.current) {
             setIsReconnection(true)
+            restrictXtermAccessibilityWidth()
             postInitialize(sessionId)
         } else {
             setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -90,13 +95,19 @@ export default function TerminalView({
         })
         handleSelectionChange(terminalRef.current, setPopupText)
         fitAddon.current = new FitAddon()
-        const webFontAddon = new XtermWebfont()
+        /**
+         * Adding default check due to vite build changing the export
+         * for production the value will be `webFontAddon.current = new XtermWebfont.default()`
+         * for local the value will be `webFontAddon.current = new XtermWebfont()`
+         */
+        const webFontAddon = XtermWebfont.default ? new XtermWebfont.default() : new XtermWebfont()
         terminalRef.current.loadAddon(fitAddon.current)
         terminalRef.current.loadAddon(webFontAddon)
         if (typeof registerLinkMatcher === 'function') {
             registerLinkMatcher(terminalRef.current)
         }
         terminalRef.current.loadWebfontAndOpen(document.getElementById('terminal-id'))
+        // terminalRef.current.open(document.getElementById('terminal-id'))
         fitAddon.current?.fit()
         terminalRef.current.reset()
         terminalRef.current.attachCustomKeyEventHandler((event) => {
@@ -109,7 +120,7 @@ export default function TerminalView({
     }
 
     const generateSocketURL = () => {
-        let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
+        let socketURL = window.__ORCHESTRATOR_ROOT__
         socketURL += '/k8s/pod/exec/sockjs/ws/'
         return socketURL
     }
@@ -151,7 +162,7 @@ export default function TerminalView({
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
 
-            let dim = _fitAddon?.proposeDimensions()
+            const dim = _fitAddon?.proposeDimensions()
             if (dim) {
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
@@ -203,11 +214,9 @@ export default function TerminalView({
         if (!window.location.origin) {
             // Some browsers (mainly IE) do not have this property, so we need to build it manually...
             // @ts-ignore
-            window.location.origin =
-                window.location.protocol +
-                '//' +
-                window.location.hostname +
-                (window.location.port ? ':' + window.location.port : '')
+            window.location.origin = `${window.location.protocol}//${
+                window.location.hostname
+            }${window.location.port ? `:${window.location.port}` : ''}`
         }
 
         setSocketConnection(SocketConnectionType.CONNECTING)
@@ -231,9 +240,14 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className="terminal-wrapper" data-testid={dataTestId}>
+        <div className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
             {renderConnectionStrip()}
-            <div ref={myDivRef} id="terminal-id" data-testid="terminal-editor-container" className="mt-8 mb-4 terminal-component ml-20">
+            <div
+                ref={myDivRef}
+                id="terminal-id"
+                data-testid="terminal-editor-container"
+                className="mt-8 mb-4 terminal-component ml-20"
+            >
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>

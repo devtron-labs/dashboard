@@ -1,48 +1,54 @@
-import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, IMAGE_SCAN_TOOL } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
 import { ModuleNameMap } from '../../../config'
 import { SuccessModalType } from './DevtronStackManager.type'
-import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import React from 'react'
-export function SuccessModalComponent({
+
+export const SuccessModalComponent = ({
     moduleDetails,
     setSuccessState,
     setSelectedModule,
     setStackDetails,
     stackDetails,
     setToggled,
-}: SuccessModalType) {
+}: SuccessModalType) => {
     const enableModuleState = (moduleName: string) => {
-        let _moduleList = stackDetails.installedModulesList.map((module) => {
+        const _moduleList = stackDetails.installedModulesList.map((module) => {
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
             }
-            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+            if (
+                (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||
+                (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)
+            ) {
                 return {
                     ...module,
                     enabled: false,
                 }
-            } 
-            
+            }
+
             return module
         })
-        let _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
+        const _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
             }
-            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+            if (
+                (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||
+                (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)
+            ) {
                 return {
                     ...module,
                     enabled: false,
                 }
-            } 
+            }
             return module
         })
         setStackDetails({

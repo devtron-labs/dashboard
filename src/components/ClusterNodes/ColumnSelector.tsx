@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
-import { Option } from '@devtron-labs/devtron-fe-common-lib'
+import { Option, ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'
@@ -8,7 +8,7 @@ import { useColumnFilterContext } from './NodeListSearchFilter'
 import { COLUMN_METADATA } from './constants'
 
 const ValueContainer = (props: any): JSX.Element => {
-    const length = props.getValue().length
+    const { length } = props.getValue()
 
     return (
         <components.ValueContainer {...props}>
@@ -48,8 +48,8 @@ const MenuList = (props: any): JSX.Element => {
             localStorage.appliedColumns = JSON.stringify(_appliedColumns)
         }
         if (props.selectRef.current) {
-            props.selectRef.current.blur();
-          }
+            props.selectRef.current.blur()
+        }
         setAppliedColumns(_appliedColumns)
     }
     return (
@@ -79,7 +79,7 @@ export default function ColumnSelector() {
     } = useColumnFilterContext()
     const [columnOptions, setColumnOptions] = useState<MultiValue<ColumnMetadataType>>([])
     const [columnFilterInput, setColumnFilterInput] = useState('')
-    const selectRef = useRef(null);
+    const selectRef = useRef(null)
 
     useEffect(() => {
         setColumnOptions(COLUMN_METADATA.filter((columnData) => !columnData.isDisabled))
@@ -100,13 +100,14 @@ export default function ColumnSelector() {
 
     return (
         <ReactSelect
+            classNamePrefix="node-column-list-filter"
             ref={selectRef}
             menuIsOpen={isMenuOpen}
             name="columns"
             value={selectedColumns}
             options={columnOptions}
             onChange={setSelectedColumns}
-            isMulti={true}
+            isMulti
             autoFocus={false}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
@@ -118,10 +119,12 @@ export default function ColumnSelector() {
                 setColumnFilterInput('')
             }}
             onInputChange={(value, action) => {
-                if (action.action === 'input-change') setColumnFilterInput(value)
+                if (action.action === ReactSelectInputAction.inputChange) {
+                    setColumnFilterInput(value)
+                }
             }}
             components={{
-                Option: Option,
+                Option,
                 ValueContainer,
                 IndicatorSeparator: null,
                 ClearIndicator: null,

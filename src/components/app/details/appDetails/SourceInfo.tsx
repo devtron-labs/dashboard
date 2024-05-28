@@ -1,28 +1,31 @@
-//@ts-nocheck
-
-import React from 'react'
-import { Link } from 'react-router-dom'
+// @ts-nocheck - @TODO: Remove this by fixing the type issues
+import React, { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router'
+import Tippy from '@tippyjs/react'
+import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
-import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
-import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
-import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
-import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga4'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { ConditionalWrap, DeploymentAppTypes, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
+import DeployedCommitCard from './DeployedCommitCard'
+import IssuesCard from './IssuesCard'
+import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
+import AppStatusCard from './AppStatusCard'
+import { getLastExecutionByArtifactId } from '../../../../services/service'
+import LoadingCard from './LoadingCard'
+import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
 
-export function SourceInfo({
+export const SourceInfo = ({
     appDetails,
     setDetailed = null,
     environment,
@@ -35,15 +38,23 @@ export function SourceInfo({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    refetchDeploymentStatus
-}: SourceInfoType) {
+    refetchDeploymentStatus,
+    toggleIssuesModal,
+    envId,
+    ciArtifactId,
+    setErrorsList,
+    filteredEnvIds,
+    deploymentUserActionState,
+}: SourceInfoType) => {
+    const [showVulnerabilitiesCard, setShowVulnerabilitiesCard] = useState<boolean>(false)
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
-    let Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+    const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
         Array.isArray(conditions) &&
@@ -54,15 +65,33 @@ export function SourceInfo({
     } else if (Array.isArray(Rollout) && Rollout.length > 0 && Rollout[0].health && Rollout[0].health.message) {
         message = Rollout[0].health.message
     }
-    const showApplicationDetailedModal = (): void => {
-        setDetailed && setDetailed(true)
-        ReactGA.event({
-            category: 'App Details',
-            action: 'App Status clicked',
-        })
+
+    const getScannedStatus = async () => {
+        const { appId, ciArtifactId } = appDetails
+        try {
+            const {
+                result: { scanEnabled, scanned },
+            } = await getLastExecutionByArtifactId(appId, ciArtifactId)
+            if (scanEnabled && scanned) {
+                // If scanEnabled and scanned is true, then show the vulnerabilities card
+                setShowVulnerabilitiesCard(true)
+            } else {
+                setShowVulnerabilitiesCard(false)
+            }
+        } catch (error) {
+            setShowVulnerabilitiesCard(false)
+            showError(error)
+        }
     }
 
-    const onClickShowCommitInfo = (): void => {
+    useEffect(() => {
+        if (appDetails?.ciArtifactId && appDetails?.appId) {
+            getScannedStatus()
+        }
+    }, [appDetails?.ciArtifactId, appDetails?.appId])
+
+    const onClickShowCommitInfo = (e): void => {
+        e.stopPropagation()
         showCommitInfo(true)
     }
 
@@ -72,6 +101,15 @@ export function SourceInfo({
 
     const onClickShowHibernateModal = (): void => {
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
+    }
+
+    const shimmerLoaderBlocks = () => {
+        const loadingCards = []
+        for (let i = 0; i < 4; i++) {
+            loadingCards.push(<LoadingCard key={i} />)
+        }
+
+        return <div className="flex left mb-16">{loadingCards}</div>
     }
 
     const conditionalScalePodsButton = (children) => {
@@ -89,7 +127,7 @@ export function SourceInfo({
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
-            <div className="flex left w-100 mb-16">
+            <div className="flex left w-100">
                 <EnvSelector
                     environments={environments}
                     disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
@@ -103,7 +141,9 @@ export function SourceInfo({
                             isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                        <div className="flex">
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                        </div>
                     </Tippy>
                 )}
                 {isdeploymentAppDeleting && (
@@ -127,16 +167,6 @@ export function SourceInfo({
                                         URLs
                                     </button>
                                 )}
-                                {appDetails?.dataSource !== 'EXTERNAL' && showCommitInfo && (
-                                    <button
-                                        className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                        onClick={onClickShowCommitInfo}
-                                        data-testid="app-details-commit-info"
-                                    >
-                                        <CommitIcon className="icon-dim-16 mr-6" />
-                                        commit info
-                                    </button>
-                                )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
@@ -144,12 +174,12 @@ export function SourceInfo({
                                     >
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
                                             <ScaleDown
-                                                className={`icon-dim-16 mr-6 rotate`}
+                                                className="icon-dim-16 mr-6 rotate"
                                                 style={{
                                                     ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
                                                 }}
@@ -165,15 +195,31 @@ export function SourceInfo({
                                     >
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
-                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-9" />
+                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
                                             Restart workloads
                                         </button>
                                     </ConditionalWrap>
                                 )}
+                                <AppDetailsCDButton
+                                    appId={appDetails.appId}
+                                    environmentId={appDetails.environmentId}
+                                    environmentName={appDetails.environmentName}
+                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    loadingDetails={loadingDetails}
+                                    cdModal={{
+                                        cdPipelineId: appDetails.cdPipelineId,
+                                        ciPipelineId: appDetails.ciPipelineId,
+                                        parentEnvironmentName: appDetails.parentEnvironmentName,
+                                        deploymentUserActionState: deploymentUserActionState,
+                                        triggerType: appDetails.triggerType,
+                                        isRedirectedFromAppDetails: true,
+                                    }}
+                                />
                             </div>
                         )}
                     </>
@@ -182,39 +228,9 @@ export function SourceInfo({
         )
     }
 
-    const shimmerLoaderBlocks = () => {
-        return (
-            <div className="flex left mb-16">
-                <div className="bcn-0 w-220 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
-                        <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
-                        <div>
-                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                            <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
-                        </div>
-                    </div>
-                </div>
-                <div className="bcn-0 w-400 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
-                        <div className="flex left">
-                            <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
-                            <div>
-                                <div className="shimmer-loading w-150 h-16 br-2 mb-6" />
-                                <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
-                            </div>
-                        </div>
-                        <div className="dc__border-right-n1 ml-12 mr-12 h-60" />
-                        <div>
-                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                            <div className="shimmer-loading w-54 h-12 br-2 mb-6" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
+
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
             appId: +params.appId,
@@ -227,113 +243,78 @@ export function SourceInfo({
     }
 
     return (
-        <div className="flex left w-100 column source-info-container">
+        <div className="flex left w-100 column source-info-container dc__gap-16">
             {renderDevtronAppsEnvironmentSelector(environment)}
-            {loadingDetails ? (
-                shimmerLoaderBlocks()
-            ) : (
-                <>
-                    {!isdeploymentAppDeleting && environment && (
-                        <div className="flex left w-100">
-                            {!isVirtualEnvironment && (
-                                <div
-                                    data-testid="app-status-card"
-                                    onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                    className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
-                                >
-                                    <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                        {loadingResourceTree ? (
-                                            <div className="icon-dim-32 shimmer-loading" />
-                                        ) : (
-                                            <figure
-                                                className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
-                                                style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                                            ></figure>
-                                        )}
-                                    </div>
-                                    <div className="flex left column">
-                                        <div className="flexbox">
-                                            <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
-
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="top"
-                                                content="The health status of your app"
-                                            >
-                                                <Question className="icon-dim-16 mt-2" />
-                                            </Tippy>
-                                        </div>
-                                        {loadingResourceTree ? (
-                                            <div className="flex left column mt-6">
-                                                <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                                                <div className="shimmer-loading w-54 h-12 br-2" />
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <div
-                                                    data-testid="app-status-name"
-                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
-                                                >
-                                                    {isHibernated ? 'Hibernating' : status}
-                                                </div>
-                                                <div className="flex left">
-                                                    {appDetails?.deploymentAppType === DeploymentAppTypes.HELM ? (
-                                                        <span
-                                                            data-testid="app-status-card-details"
-                                                            className="cb-5 fw-6"
-                                                        >
-                                                            Details
-                                                        </span>
-                                                    ) : (
-                                                        <>
-                                                            {message && (
-                                                                <span className="select-material-message">
-                                                                    {message.slice(0, 30)}
-                                                                </span>
-                                                            )}
-                                                            <span
-                                                                data-testid="app-status-card-details"
-                                                                className={`${
-                                                                    message?.length > 30 ? 'more-message' : ''
-                                                                } cb-5 fw-6`}
-                                                            >
-                                                                Details
-                                                            </span>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                            {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                            <DeploymentStatusCard
-                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                                loadingResourceTree={loadingResourceTree}
-                                hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
-                                isVirtualEnvironment={isVirtualEnvironment}
-                                refetchDeploymentStatus={refetchDeploymentStatus}
-                            />
-                            <div className="flex right ml-auto">
-                                {appDetails?.appStoreChartId && (
-                                    <>
-                                        <span className="mr-8 fs-12 cn-7">Chart:</span>
-                                        <Link
-                                            className="cb-5 fw-6"
-                                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
-                                        >
-                                            {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
-                                            {appDetails.appStoreAppVersion})
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </>
-            )}
+            {loadingDetails
+                ? shimmerLoaderBlocks()
+                : !isdeploymentAppDeleting &&
+                  environment && (
+                      <div className="flex left w-100">
+                          {!isVirtualEnvironment && (
+                              <AppStatusCard
+                                  appDetails={appDetails}
+                                  status={status}
+                                  cardLoading={cardLoading}
+                                  setDetailed={setDetailed}
+                                  message={message}
+                              />
+                          )}
+                          {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                          {!loadingResourceTree && (
+                              <IssuesCard
+                                  cardLoading={cardLoading}
+                                  toggleIssuesModal={toggleIssuesModal}
+                                  setErrorsList={setErrorsList}
+                                  setDetailed={setDetailed}
+                              />
+                          )}
+                          <DeploymentStatusCard
+                              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                              cardLoading={cardLoading}
+                              hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                              isVirtualEnvironment={isVirtualEnvironment}
+                              refetchDeploymentStatus={refetchDeploymentStatus}
+                          />
+                          {appDetails?.dataSource !== 'EXTERNAL' && (
+                              <DeployedCommitCard
+                                  cardLoading={cardLoading}
+                                  showCommitInfoDrawer={onClickShowCommitInfo}
+                                  envId={envId}
+                                  ciArtifactId={ciArtifactId}
+                              />
+                          )}
+                          {DeploymentWindowStatusCard && (
+                              <DeploymentWindowStatusCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                                  filteredEnvIds={filteredEnvIds}
+                              />
+                          )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
+                          <div className="flex right ml-auto">
+                              {appDetails?.appStoreChartId && (
+                                  <>
+                                      <span className="mr-8 fs-12 cn-7">Chart:</span>
+                                      <Link
+                                          className="cb-5 fw-6"
+                                          to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                                      >
+                                          {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
+                                          {appDetails.appStoreAppVersion})
+                                      </Link>
+                                  </>
+                              )}
+                          </div>
+                      </div>
+                  )}
         </div>
     )
 }

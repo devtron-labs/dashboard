@@ -45,6 +45,7 @@ export enum BulkResponseStatus {
     'PASS' = 'pass',
     'FAIL' = 'fail',
     'UNAUTHORIZE' = 'unauthorized',
+    'SKIP' = 'skip',
 }
 
 export const BULK_VIRTUAL_RESPONSE_STATUS = {
@@ -71,6 +72,16 @@ export const responseListOrder = {
     [BulkResponseStatus.PASS]: 2,
 }
 
+export const BULK_HIBERNATE_ERROR_MESSAGE = {
+    [BulkResponseStatus.FAIL]: 'Hibernation could not be triggered',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
+export const BULK_UNHIBERNATE_ERROR_MESSAGE = {
+    [BulkResponseStatus.FAIL]: 'Unhibernation could not be triggered',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
 export const BULK_CI_MESSAGING = {
     emptyLinkedCI: {
         title: 'is using a linked build pipeline',
@@ -91,6 +102,11 @@ export const BULK_CI_MESSAGING = {
         infoText: 'Cache not available',
         title: 'Cache will be generated for this pipeline run',
         subTitle: 'Cache will be used in future runs to reduce build time.',
+    },
+    linkedCD: {
+        title: (envName: string) => `Syncs images deployed on ${envName}`,
+        subTitle: (envName: string) =>
+            `Nothing to build. Images deployed on ${envName} will be available for deployment`,
     },
 }
 
@@ -126,8 +142,10 @@ export const NO_ACCESS_TOAST_MESSAGE = {
 export const OVERVIEW_HEADER = {
     APPLICATION: 'application',
     APP_STATUS: 'app status',
+    COMMIT: 'commit',
     DEPLOYMENT_STATUS: 'deployment status',
     LAST_DEPLOYED: 'last deployed',
+    DEPLOYED_AT: 'deployed at',
 }
 
 export const ENV_APP_GROUP_GA_EVENTS = {
@@ -174,6 +192,8 @@ export const CREATE_GROUP_TABS = {
 
 export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus => {
     switch (statusText) {
+        case BulkResponseStatus.SKIP:
+            return BulkResponseStatus.SKIP
         case BULK_VIRTUAL_RESPONSE_STATUS.pass:
             return BulkResponseStatus.PASS
         case BULK_VIRTUAL_RESPONSE_STATUS.fail:
@@ -181,8 +201,33 @@ export const GetBranchChangeStatus = (statusText: string): BulkResponseStatus =>
         case BULK_VIRTUAL_RESPONSE_STATUS.unauthorized:
             return BulkResponseStatus.UNAUTHORIZE
         default:
-            return
     }
 }
 
 export const FILTER_NAME_REGEX = /^[a-z][a-z0-9-]{1,}[a-z0-9]$/
+export const SKIPPED_RESOURCES_MESSAGE = 'Build action is not applicable'
+export const SKIPPED_RESOURCES_STATUS_TEXT = 'Skipped'
+
+export const BULK_CD_MATERIAL_STATUS = (noOfApps) => ({
+    title: `Fetching images for ${noOfApps} Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+
+export const BULK_CD_DEPLOYMENT_STATUS = (noOfApps, env) => ({
+    title: `Verifying selected images for ${noOfApps} Applications & initiating deployment on '${env}'`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+
+export const BULK_CI_MATERIAL_STATUS = (noOfApps) => ({
+    title: `Fetching code sources for ${noOfApps} Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+export const BULK_CI_BUILD_STATUS = (noOfApps) => ({
+    title: `Verifying selected code sources for ${noOfApps} Applications & initiating build pipelines Applications`,
+    subTitle: 'It might take some time depending upon the number of applications',
+})
+
+export enum EnvironmentOverviewSortableKeys {
+    application = 'application',
+    deployedAt = 'deployedAt',
+}

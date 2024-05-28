@@ -15,9 +15,9 @@ export function cleanKubeManifest(manifestJsonString: string): string {
         delete obj['status']
 
         // 2 - delete all fields from metadata except some predefined
-        let metadata = obj['metadata']
+        const metadata = obj['metadata']
         if (metadata) {
-            for (let key in metadata) {
+            for (const key in metadata) {
                 if (!MANIFEST_METADATA_REQUIRED_FIELDS.includes(key)) {
                     delete metadata[key]
                 }
@@ -30,30 +30,37 @@ export function cleanKubeManifest(manifestJsonString: string): string {
     }
 }
 
-export const decode = (data) => {
+const getDecodedEncodedData = (data, isEncoded: boolean = false) => {
+    if (isEncoded) {
+        return btoa(data)
+    }
+    return atob(data)
+}
+
+export const decode = (data, isEncoded: boolean = false) => {
     return Object.keys(data)
-        .map((m) => ({ key: m, value: data[m] ? atob(data[m]) : data[m] }))
+        .map((m) => ({ key: m, value: data[m] ? getDecodedEncodedData(data[m], isEncoded) : data[m] }))
         .reduce((agg, curr) => {
             agg[curr.key] = curr.value
             return agg
         }, {})
 }
 
-export const replaceLastOddBackslash = (str: string): string=>{
-  let countBackSlash = 0
-  const strArr = str.split('')
-  for (let index = strArr.length - 1; index >= 0; index--) {
-      const char = strArr[index]
-      if (char === '\\') {
-          countBackSlash++
-      } else {
-          break
-      }
-  }
-  if (countBackSlash % 2 !== 0) {
-      str += '\\'
-  }
-  return str
+export const replaceLastOddBackslash = (str: string): string => {
+    let countBackSlash = 0
+    const strArr = str.split('')
+    for (let index = strArr.length - 1; index >= 0; index--) {
+        const char = strArr[index]
+        if (char === '\\') {
+            countBackSlash++
+        } else {
+            break
+        }
+    }
+    if (countBackSlash % 2 !== 0) {
+        str += '\\'
+    }
+    return str
 }
 
 export const safeTrim = (str: string): string => {

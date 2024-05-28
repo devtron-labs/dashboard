@@ -8,10 +8,13 @@ import {
     PluginDetailType,
     VariableType,
     MandatoryPluginDetailType,
+    CommonNodeAttr,
+    WorkflowType,
+    Material,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
-import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
+import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
@@ -60,7 +63,6 @@ export interface CIConfigState {
 }
 
 export interface ProcessedWorkflowsType {
-    processing: boolean
     workflows: WorkflowType[]
 }
 
@@ -80,7 +82,7 @@ export interface LoadingState {
 }
 
 export interface CIConfigProps {
-    respondOnSuccess: () => void
+    respondOnSuccess: (redirection?: boolean) => void
     configOverrideView?: boolean
     allowOverride?: boolean
     parentState?: CIConfigParentState
@@ -88,7 +90,6 @@ export interface CIConfigProps {
     updateDockerConfigOverride?: (key, value) => void
     isCDPipeline?: boolean
     isCiPipeline?: boolean
-    navItems?: CustomNavItemsType[]
     loadingStateFromParent?: LoadingState
     setLoadingStateFromParent?: React.Dispatch<React.SetStateAction<LoadingState>>
 }
@@ -97,8 +98,6 @@ export interface CIConfigDiffViewProps {
     parentReloading: boolean
     ciConfig: CiPipelineResult
     configOverridenPipelines: CiPipeline[]
-    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
-    processedWorkflows: ProcessedWorkflowsType
     toggleConfigOverrideDiffModal: () => void
     reload: (skipPageReload?: boolean) => Promise<void>
     gitMaterials: any
@@ -109,16 +108,14 @@ export interface CIConfigFormProps {
     dockerRegistries: any
     sourceConfig: any
     ciConfig: CiPipelineResult
-    reload: (skipPageReload?: boolean) => Promise<void>
+    reload: (skipPageReload?: boolean, redirection?: boolean) => Promise<void>
     appId: string
     selectedCIPipeline: CIPipelineDataType
-    configOverrideWorkflows: ConfigOverrideWorkflowDetails[]
     configOverrideView: boolean
     allowOverride: boolean
     updateDockerConfigOverride: (key: string, value: CIBuildConfigType | boolean | string) => void
     isCDPipeline: boolean
     isCiPipeline: boolean
-    navItems: CustomNavItemsType[]
     parentState: CIConfigParentState
     setParentState: React.Dispatch<React.SetStateAction<CIConfigParentState>>
     loadingStateFromParent?: LoadingState
@@ -127,9 +124,6 @@ export interface CIConfigFormProps {
 
 export interface AdvancedConfigOptionsProps {
     ciPipeline: CIPipelineDataType
-    setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
-    imageTagValue: string
-    setImageTagValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 interface LanguageBuilderType {
@@ -270,20 +264,11 @@ export interface CICreateDockerfileOptionProps {
     setLoadingState: React.Dispatch<React.SetStateAction<LoadingState>>
     currentBuildContextGitMaterial: any
     selectedBuildContextGitMaterial: any
-    handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
     formState: any
     ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
-    renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
-    handleBuildContextCheckoutPathChange: (checkoutPath: any) => void
-    getCheckoutPathValue: (
-        selectedBuildContextGitMaterial: any,
-        currentMaterial: any,
-        useRootBuildContextFlag: boolean,
-    ) => OptionType
-    useRootBuildContextFlag: boolean
-    checkoutPathOptions: OptionType[]
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
 }
 
 export interface CIBuildpackBuildOptionsProps {
@@ -292,7 +277,6 @@ export interface CIBuildpackBuildOptionsProps {
     buildersAndFrameworks: BuildersAndFrameworksType
     setBuildersAndFrameworks: React.Dispatch<React.SetStateAction<BuildersAndFrameworksType>>
     configOverrideView: boolean
-    allowOverride: boolean
     currentMaterial: any
     selectedMaterial: any
     handleFileLocationChange: (selectedMaterial) => void
@@ -303,6 +287,7 @@ export interface CIBuildpackBuildOptionsProps {
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
+    readOnly?: boolean
 }
 
 export interface CIAdvancedConfigProps {
@@ -339,16 +324,6 @@ export interface TargetPlatformSelectorType {
     updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
 
-export interface BuildContextProps {
-    disable: boolean
-    setDisable: React.Dispatch<React.SetStateAction<boolean>>
-    formState: any
-    configOverrideView: boolean
-    allowOverride: boolean
-    ciConfig: CiPipelineResult
-    handleOnChangeConfig: (e) => void
-}
-
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
@@ -376,4 +351,74 @@ export interface TaskListType {
         }>
     >
     isJobView: boolean
+}
+
+export interface BuildContextProps {
+    isDefaultBuildContext: boolean
+    sourceConfig: any
+    selectedBuildContextGitMaterial: any
+    currentMaterial: any
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
+    handleOnChangeConfig: (e) => void
+    buildContextValue: string
+    currentCIBuildConfig: CIBuildConfigType
+    formState: any
+    setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
+    currentBuildContextGitMaterial: any
+    readOnly?: boolean
+    configOverrideView?: boolean
+    repositoryError?: string
+    readOnlyBuildContextPath?: string
+}
+
+export interface CISelfDockerBuildOptionProps {
+    currentMaterial: any
+    sourceMaterials: any
+    readonlyDockerfileRelativePath: string
+    selectedMaterial: any
+    dockerFileValue: string
+    handleFileLocationChange: (selectedMaterial) => void
+    handleOnChangeConfig: (e) => void
+    readOnly?: boolean
+    configOverrideView?: boolean
+    repositoryError?: string
+    dockerfileError?: string
+}
+
+export interface CIBuildTypeOptionType {
+    id: CIBuildType
+    heading: string
+    info: string
+    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+    noIconFill: boolean
+    iconStroke: boolean
+    addDivider: boolean
+}
+
+export interface CreateDockerFileLanguageOptionsProps {
+    editorData: TemplateDataType
+    editorValue: string
+    handleGitRepoChange: (selectedMaterial) => void
+    materialOptions: any[]
+    selectedMaterial: any
+    languageFrameworks: Map<string, FrameworkOptionType[]>
+    selectedLanguage: LanguageOptionType
+    resetChanges: () => void
+    currentMaterial: any
+    languages: LanguageOptionType[]
+    selectedFramework: FrameworkOptionType
+    handleLanguageSelection: (selected: LanguageOptionType) => void
+    handleFrameworkSelection: (selected: FrameworkOptionType) => void
+    readOnly?: boolean
+}
+
+export interface ResetEditorChangesProps {
+    resetChanges: () => void
+    editorData: TemplateDataType
+    editorValue: string
+}
+
+export interface GetCIPipelineModalURLType {
+    ciNode: CommonNodeAttr
+    workflowId: number
 }

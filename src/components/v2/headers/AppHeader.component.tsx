@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { URLS } from '../../../config'
-import { BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { AppSelector } from '../../AppSelector'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
+import { AppSelector } from '../../AppSelector'
+import { URLS } from '../../../config'
 import { OptionType } from './appHeader.type'
 import { useSharedState } from '../utils/useSharedState'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
-import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 
-function AppHeaderComponent() {
+const AppHeaderComponent = () => {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -42,7 +41,7 @@ function AppHeaderComponent() {
             ReactGA.event({
                 category: 'App Selector',
                 action: 'App Selection Changed',
-                label: label,
+                label,
             })
         },
         [location.pathname],
@@ -98,7 +97,7 @@ function AppHeaderComponent() {
                             })
                         }}
                     >
-                       <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
+                        <Settings className="tab-list__icon icon-dim-16 fcn-7 mr-4" />
                         Configure
                     </NavLink>
                 </li>
@@ -107,14 +106,14 @@ function AppHeaderComponent() {
     }
 
     return (
-      <div className="app-header-wrapper">
-        <PageHeader
-            isBreadcrumbs={true}
-            breadCrumbs={renderBreadcrumbs}
-            showTabs={true}
-            renderHeaderTabs={renderHelmDetailsTabs}
-            showAnnouncementHeader={true}
-        />
+        <div className="app-header-wrapper">
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderBreadcrumbs}
+                showTabs
+                renderHeaderTabs={renderHelmDetailsTabs}
+                showAnnouncementHeader
+            />
         </div>
     )
 }

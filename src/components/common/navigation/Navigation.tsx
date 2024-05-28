@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
+import ReactGA from 'react-ga4'
+import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -14,18 +16,22 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
+import { ReactComponent as ReleasesIcon } from '../../../assets/icons/ic-open-box.svg'
+// Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import ReactGA from 'react-ga4'
 import './navigation.scss'
-import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
+import { importComponentFromFELibrary } from '../helpers/Helpers'
+
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
+const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
 
 const NavigationList = [
     {
@@ -45,7 +51,7 @@ const NavigationList = [
         icon: JobsIcon,
         href: URLS.JOB,
         isAvailableInEA: false,
-        markOnlyForSuperAdmin: true,
+        markOnlyForSuperAdmin: false,
     },
     {
         title: 'Application Groups',
@@ -55,9 +61,23 @@ const NavigationList = [
         icon: EnvIcon,
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
-        markAsBeta: true,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
+    ...(showReleases
+        ? [
+              {
+                  title: 'Releases',
+                  dataTestId: 'click-on-releases',
+                  type: 'link',
+                  iconClass: 'nav-short-env',
+                  icon: ReleasesIcon,
+                  href: URLS.RELEASES,
+                  isAvailableInEA: false,
+                  markOnlyForSuperAdmin: true,
+                  forceHideEnvKey: 'HIDE_RELEASES',
+              },
+          ]
+        : []),
     {
         title: 'Deployment Groups',
         dataTestId: 'click-on-deployment-groups',
@@ -78,6 +98,16 @@ const NavigationList = [
         isAvailableInEA: true,
         markAsBeta: false,
         isAvailableInDesktop: true,
+    },
+    {
+        title: 'Resource Watcher',
+        dataTestId: 'click-on-resource-watcher',
+        type: 'link',
+        href: URLS.RESOURCE_WATCHER,
+        iconClass: 'nav-resource-watcher',
+        icon: ResourceWatcherIcon,
+        isAvailableInEA: true,
+        hideNav: !ResourceWatcherRouter,
     },
     {
         title: 'Chart Store',
@@ -147,6 +177,7 @@ export default class Navigation extends Component<
     }
 > {
     securityModuleStatusTimer = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -189,12 +220,8 @@ export default class Navigation extends Component<
             return
         }
         try {
-            const { result: trivyResponse } = await getModuleInfo(
-                ModuleNameMap.SECURITY_TRIVY,true
-            )
-            const { result: clairResponse } = await getModuleInfo(
-               ModuleNameMap.SECURITY_CLAIR,true
-            )
+            const { result: trivyResponse } = await getModuleInfo(ModuleNameMap.SECURITY_TRIVY, true)
+            const { result: clairResponse } = await getModuleInfo(ModuleNameMap.SECURITY_CLAIR, true)
             if (clairResponse?.status === ModuleStatus.INSTALLED) {
                 this.props.installedModuleMap.current = {
                     ...this.props.installedModuleMap.current,
@@ -307,7 +334,11 @@ export default class Navigation extends Component<
         const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
         if (window._env_.K8S_CLIENT) {
             return item.isAvailableInDesktop
-        } else if (
+        }
+        if (item.hideNav) {
+            return false
+        }
+        if (
             allowedUser &&
             (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
         ) {
@@ -335,13 +366,23 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg
-                                    className="devtron-logo"
-                                    data-testid="click-on-devtron-app-logo"
-                                    viewBox="0 0 40 40"
-                                >
-                                    <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
-                                </svg>
+                                {window._env_.SIDEBAR_DT_LOGO ? (
+                                    <img
+                                        src={window._env_.SIDEBAR_DT_LOGO}
+                                        alt="devtron"
+                                        className="icon-dim-40"
+                                        width={40}
+                                        height={40}
+                                    />
+                                ) : (
+                                    <svg
+                                        className="devtron-logo"
+                                        data-testid="click-on-devtron-app-logo"
+                                        viewBox="0 0 40 40"
+                                    >
+                                        <use href={`${NavSprite}#nav-short-devtron-logo`} />
+                                    </svg>
+                                )}
                                 <div className="pl-12">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
@@ -351,9 +392,8 @@ export default class Navigation extends Component<
                             if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
-                                } else {
-                                    return this.renderNavLink(item)
                                 }
+                                return this.renderNavLink(item)
                             }
                         })}
                         {!window._env_.K8S_CLIENT && !this.props.isAirgapped && (

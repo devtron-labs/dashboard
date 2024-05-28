@@ -1,18 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
-import Tippy from '@tippyjs/react'
-import { getElapsedTime } from '../../../../common'
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
+import { Pod, getElapsedTime, importComponentFromFELibrary } from '../../../../common'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
-import { toast } from 'react-toastify'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
@@ -20,21 +16,30 @@ import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
-import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 
-function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+const PodRestart = importComponentFromFELibrary('PodRestart')
+
+const NodeComponent = ({
+    handleFocusTabs,
+    externalLinks,
+    monitoringTools,
+    isDevtronApp,
+    clusterId,
+    isDeploymentBlocked,
+    isExternalApp,
+}: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
-    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
-    const [copiedPortName, setCopiedPortName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<{ nodeType: NodeType; resourceName: string }>()
+    const params = useParams<{ nodeType: NodeType; resourceName: string; namespace: string; name: string }>()
     const podMetaData = IndexStore.getPodMetaData()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
@@ -45,7 +50,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
 
     useEffect(() => {
-        if (externalLinks.length > 0) {
+        if (externalLinks?.length > 0) {
             const _podLevelExternalLinks = []
             const _containerLevelExternalLinks = []
 
@@ -75,13 +80,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }, [externalLinks])
 
     useEffect(() => {
-        if (!copiedNodeName) return
-        setTimeout(() => setCopiedNodeName(''), 2000)
-    }, [copiedNodeName])
-
-    useEffect(() => {
         if (params.nodeType) {
-            let tableHeader: string[], _fcw: string
+            let tableHeader: string[]
+            let _fcw: string
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
@@ -124,7 +125,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             let podsType = []
             if (isPodAvailable) {
                 podsType = _selectedNodes.filter((el) =>
-                    podMetaData?.some((f) => f.name === el.name && f.isNew === podType),
+                    podMetaData?.some((f) => {
+                        // Set f.isNew to false if it is undefined
+                        f.isNew = f.isNew || false
+                        return f.name === el.name && f.isNew === podType
+                    }),
                 )
             }
 
@@ -133,16 +138,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
     }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
-
-    const toggleClipBoard = (event: React.MouseEvent, nodeName: string) => {
-        event.stopPropagation()
-        copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
-    }
-
-    const toggleClipBoardPort = (event: React.MouseEvent, node: string) => {
-        event.stopPropagation()
-        copyToClipboard(node, () => setCopiedPortName(node))
-    }
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -201,21 +196,19 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         const additionalTippyContent = (node) => {
-            const portList = [...new Set(node?.port)];
+            const portList = [...new Set(node?.port)]
             return (
                 <>
                     {portList.map((val, idx) => {
+                        const text = `${node.name}.${node.namespace}:${val}`
                         if (idx > 0) {
                             return (
                                 <div className="flex left cn-9 m-0 dc__no-decore">
                                     <div className="" key={node.name}>
-                                        {node.name}:{node.namespace}:{val}
-                                        <Clipboard
-                                            className="ml-0 resource-action-tabs__clipboard fs-13 dc__truncate-text cursor pt-8"
-                                            onClick={(event) => {
-                                                toggleClipBoardPort(event, `${node.name}:${node.namespace}:${val}`)
-                                            }}
-                                        />
+                                        {text}
+                                    </div>
+                                    <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
+                                        <ClipboardButton content={text} />
                                     </div>
                                 </div>
                             )
@@ -226,33 +219,27 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
         }
         const portNumberPlaceHolder = (node) => {
             if (node.port?.length > 1) {
+                const text = `${node.name}.${node.namespace}:${node.port[0]}`
                 return (
                     <>
                         <div>
-                            <span>
-                                {node.name}.{node.namespace}:{node.port[0]}
-                            </span>
+                            <span>{text}</span>
                         </div>
-                        <span>
-                            <Clipboard
-                                className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                                onClick={(event) => {
-                                    toggleClipBoardPort(event, `${node.name}:${node.namespace}:${node.port[0]}`)
-                                }}
-                            />
+                        <span className="pl-4">
+                            <ClipboardButton content={text} />
                         </span>
                         <TippyCustomized
-                            hideHeading={true}
-                            noHeadingBorder={true}
+                            hideHeading
+                            noHeadingBorder
                             theme={TippyTheme.white}
                             className="default-tt p-12"
                             arrow={false}
                             placement="bottom"
                             trigger="click"
                             additionalContent={additionalTippyContent(node)}
-                            interactive={true}
+                            interactive
                         >
-                            <div>
+                            <div className="pl-4">
                                 <span className="dc__link dc__link_over dc__ellipsis-right cursor" data-key={node.name}>
                                     +{node.port.length - 1} more
                                 </span>
@@ -260,40 +247,14 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </TippyCustomized>
                     </>
                 )
-            } else if(node.port?.length ===  1){
-                return `${node.name}.${node.namespace}:${node.port}`
-            } else {
-                return "Port Number is missing"
             }
+            if (node.port?.length === 1) {
+                return `${node.name}.${node.namespace}:${node.port}`
+            }
+            return 'Port Number is missing'
         }
 
         let _currentNodeHeader = ''
-        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
-            return copiedNodeName === nodeName ? (
-                <Tippy
-                    className="default-tt"
-                    hideOnClick={false}
-                    arrow={false}
-                    placement="bottom"
-                    content={COPIED_MESSAGE}
-                    duration={[100, 200]}
-                    trigger="mouseenter click"
-                >
-                    <span>
-                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
-                    </span>
-                </Tippy>
-            ) : (
-                <span>
-                    <Clipboard
-                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                        onClick={(event) => {
-                            toggleClipBoard(event, nodeName.split(" ").join(""))
-                        }}
-                    />
-                </span>
-            )
-        }
 
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : ${node.port}`
@@ -325,15 +286,15 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             }
 
             return (
-                <React.Fragment key={'grt' + index}>
+                <React.Fragment key={`grt${index}`}>
                     {showHeader && !!_currentNodeHeader && (
                         <div className="flex left fw-6 pt-10 pb-10 pl-16 dc__border-bottom-n1">
-                            <div className={'flex left col-10 pt-9 pb-9'}>{node.kind}</div>
+                            <div className="flex left col-10 pt-9 pb-9">{node.kind}</div>
                             {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
-                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                                <div className="flex left col-1 pt-9 pb-9 pl-9 pr-9">Links</div>
                             )}
                             {node.kind === NodeType.Containers && containerLevelExternalLinks.length > 0 && (
-                                <div className={'flex left col-1 pt-9 pb-9 pl-9 pr-9'}>Links</div>
+                                <div className="flex left col-1 pt-9 pb-9 pl-9 pr-9">Links</div>
                             )}
                         </div>
                     )}
@@ -357,7 +318,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             />
                                         </span>
                                     ) : (
-                                        <span className="pl-12 pr-12"></span>
+                                        <span className="pl-12 pr-12" />
                                     )}
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
@@ -371,7 +332,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {renderClipboardInteraction(node.name)}
+                                                <div className="pl-8 pr-8"><ClipboardButton content={node.name} /></div>
                                                 <div
                                                     data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
@@ -381,9 +342,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                                         return (
                                                             <div
-                                                                key={'tab__' + index}
+                                                                key={`tab__${index}`}
                                                                 data-name={kind}
-                                                                data-testid={kind.toLowerCase() + '-tab'}
+                                                                data-testid={`${kind.toLowerCase()}-tab`}
                                                                 onClick={onClickNodeDetailsTab}
                                                                 className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                                     node.kind === NodeType.Containers
@@ -426,7 +387,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             </span>
                                             {node?.health?.message && (
                                                 <>
-                                                    <div className="dc__bullet ml-4 mr-4 mw-4"></div>
+                                                    <div className="dc__bullet ml-4 mr-4 mw-4" />
                                                     <span className="dc__truncate">
                                                         {node.health.message.toLowerCase()}
                                                     </span>
@@ -437,33 +398,42 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </div>
                             </div>
                         </div>
-                        {params.nodeType === NodeType.Service.toLowerCase() && node.kind !== "Endpoints" && node.kind !== "EndpointSlice" && (
-                            <div className={'col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon'}>
-                                {portNumberPlaceHolder(node)}
-                                {node.port > 1 ? renderClipboardInteraction(nodeName) : null}
-                            </div>
-                        )}
+                        {params.nodeType === NodeType.Service.toLowerCase() &&
+                            node.kind !== 'Endpoints' &&
+                            node.kind !== 'EndpointSlice' && (
+                                <div className="col-5 pt-9 pb-9 flex left cn-9 dc__hover-icon">
+                                    {portNumberPlaceHolder(node)}
+                                    <div className="pl-8">
+                                        {node.port > 1 ? (
+                                            <ClipboardButton content={nodeName.split(' ').join('')} />
+                                        ) : null}
+                                    </div>
+                                </div>
+                            )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-ready-count" className="flex left col-1 pt-9 pb-9">
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-restart-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-restart-count" className="flex left col-1 pt-9 pb-9">
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
+                                {Number(getPodRestartCount(node)) > 0 && PodRestartIcon && (
+                                    <PodRestartIcon clusterId={clusterId} name={node.name} namespace={node.namespace} />
+                                )}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div data-testid="pod-age-count" className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-age-count" className="flex left col-1 pt-9 pb-9">
                                 {getElapsedTime(new Date(node.createdAt))}
                             </div>
                         )}
 
                         {params.nodeType !== NodeType.Service.toLocaleLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div className="flex left col-1 pt-9 pb-9">
                                 {node.kind === NodeType.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         helmAppDetails={appDetails}
@@ -478,16 +448,22 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         nodeLevelExternalLinks={containerLevelExternalLinks}
                                         podName={node['pNode']?.name}
                                         containerName={node.name}
-                                        addExtraSpace={true}
+                                        addExtraSpace
                                     />
                                 )}
                             </div>
                         )}
-                        {node?.kind !== NodeType.Containers && node?.kind !== "Endpoints" && node?.kind !== "EndpointSlice" && (
-                            <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
-                                <NodeDeleteComponent nodeDetails={node} appDetails={appDetails} />
-                            </div>
-                        )}
+                        {node?.kind !== NodeType.Containers &&
+                            node?.kind !== 'Endpoints' &&
+                            node?.kind !== 'EndpointSlice' && !isExternalApp && (
+                                <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
+                                    <NodeDeleteComponent
+                                        nodeDetails={node}
+                                        appDetails={appDetails}
+                                        isDeploymentBlocked={isDeploymentBlocked}
+                                    />
+                                </div>
+                            )}
                     </div>
 
                     {node.childNodes?.length > 0 && _isSelected && (
@@ -522,7 +498,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {tableHeader.map((cell, index) => {
                             return (
                                 <div
-                                    key={'gpt_' + index}
+                                    key={`gpt_${index}`}
                                     className={`${
                                         index === 0 ? `node-row__pdding ${firstColWidth}` : 'col-1'
                                     } pt-9 pb-9`}
@@ -546,6 +522,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     )}
                 </div>
             )}
+            {PodRestart && <PodRestart />}
         </>
     )
 }

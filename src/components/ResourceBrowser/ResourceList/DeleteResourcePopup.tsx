@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { showError, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType, ResourceListPayloadType } from '../Types'
 import { deleteResource } from '../ResourceBrowser.service'
-import { toast } from 'react-toastify'
-import { useHistory } from 'react-router-dom'
 
 export default function DeleteResourcePopup({
     clusterId,
@@ -29,6 +29,7 @@ export default function DeleteResourcePopup({
                         namespace: resourceData.namespace,
                         name: resourceData.name,
                     },
+                    forceDelete: forceDelete
                 },
             }
 

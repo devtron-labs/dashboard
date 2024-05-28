@@ -58,6 +58,10 @@
     justify-content: flex-start !important;
 }
 
+.flex-justify-end {
+    justify-content: flex-end !important;
+}
+
 .flex-justify-center {
     justify-content: center;
 }
@@ -87,10 +91,22 @@
 }
 
 // margins and paddings from 0-40
-$margins: (mb: margin-bottom, mt: margin-top, ml: margin-left, mr: margin-right, m: margin, pb: padding-bottom, pt: padding-top, pl: padding-left, pr: padding-right, p: padding);
+$margins: (
+    mb: margin-bottom,
+    mt: margin-top,
+    ml: margin-left,
+    mr: margin-right,
+    m: margin,
+    pb: padding-bottom,
+    pt: padding-top,
+    pl: padding-left,
+    pr: padding-right,
+    p: padding,
+    px: padding-inline,
+    py: padding-block,
+);
 
-@each $margin,
-$style in $margins {
+@each $margin, $style in $margins {
     @for $i from 0 through 42 {
         $tempStyle: $style;
 
@@ -108,19 +124,14 @@ $style in $margins {
 }
 
 // font-size from 10-24
-@for $i from 10 through 40 {
+@for $i from 8 through 40 {
     .fs-#{$i} {
         font-size: 0px + $i;
     }
 }
 
 //color from B,N,G,Y,R and 100 to 900
-$colors: B,
-N,
-G,
-Y,
-R,
-V;
+$colors: B, N, G, Y, R, V, O;
 $color-suffix: 00;
 
 @each $color in $colors {
@@ -156,6 +167,40 @@ $color-suffix: 00;
     }
 }
 
+// For generating shades of 50, 150, ..., 850.
+@each $color in $colors {
+    @for $i from 50 through 50 {
+        .c#{to-lower-case($color)}-#{$i} {
+            color: var(--#{$color}#{$i});
+        }
+
+        .bc#{to-lower-case($color)}-#{$i} {
+            background-color: var(--#{$color}#{$i});
+        }
+
+        .e#{to-lower-case($color)}-#{$i} {
+            border-color: var(--#{$color}#{$i});
+            border-style: solid;
+        }
+
+        .sc#{to-lower-case($color)}-#{$i} {
+            stroke: var(--#{$color}#{$i});
+
+            path {
+                stroke: var(--#{$color}#{$i});
+            }
+        }
+
+        .fc#{to-lower-case($color)}-#{$i} {
+            fill: var(--#{$color}#{$i});
+
+            path {
+                fill: var(--#{$color}#{$i});
+            }
+        }
+    }
+}
+
 // border-radius
 @for $i from 0 through 16 {
     .br-#{$i} {
@@ -175,7 +220,7 @@ $color-suffix: 00;
     font-family: 'Merriweather';
 }
 
-@mixin cta($bg, $color, $border, $cursor:pointer) {
+@mixin cta($bg, $color, $border, $cursor: pointer) {
     background: $bg;
     color: $color;
     border: 1px solid $border;
@@ -203,7 +248,6 @@ $color-suffix: 00;
 }
 
 .cta,
-
 .cta-with-img {
     height: 40px;
     font-size: 12px;
@@ -219,7 +263,7 @@ $color-suffix: 00;
     @include cta(var(--B500), var(--white), transparent);
 
     &.disabled-opacity {
-        @include cta-disabled-opacity(var(--B500), var(--white), transparent)
+        @include cta-disabled-opacity(var(--B500), var(--white), transparent);
     }
 
     &.small {
@@ -263,6 +307,17 @@ $color-suffix: 00;
         }
     }
 
+    &.success {
+        @include cta(var(--G500), var(--N0), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--G600), var(--N0), transparent);
+        }
+    }
+
+    /// Button with red border and text
     &.delete {
         @include cta(white, var(--R500), var(--R500));
 
@@ -273,6 +328,34 @@ $color-suffix: 00;
         &:active,
         &:focus {
             @include cta(var(--R600), white, white);
+        }
+    }
+
+    /// Button with red background
+    &.danger {
+        @include cta(var(--R500), var(--N0), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--R600), var(--N0), transparent);
+        }
+        &.action-blocked {
+            &:hover,
+            &:active,
+            &:focus {
+                @include cta(var(--R500), var(--N0), transparent, not-allowed);
+            }
+        }
+    }
+
+    &.warning {
+        @include cta(var(--Y500), var(--N900), transparent);
+
+        &:hover,
+        &:active,
+        &:focus {
+            @include cta(var(--Y600), var(--N900), transparent);
         }
     }
 
@@ -298,14 +381,17 @@ $color-suffix: 00;
     }
 
     &.delete,
+    &.danger,
     &.small,
     &.ghosted,
     &.secondary,
     &.cancel,
     &.neutral,
     &.tertiary,
+    &.success,
+    &.warning,
+    &.text,
     & {
-
         &:disabled,
         :disabled:hover,
         &.disabled,
@@ -325,16 +411,16 @@ $color-suffix: 00;
     line-height: 1.43;
 }
 
-.lh-1-33{
+.lh-1-33 {
     line-height: 1.33;
- }
+}
 
-.lh-1-25{
+.lh-1-25 {
     line-height: 1.25;
- }
- .lh-1-5{
+}
+.lh-1-5 {
     line-height: 1.5;
- }
+}
 
 .divider {
     border-top: 1px solid var(--N200);
@@ -352,11 +438,11 @@ $color-suffix: 00;
 }
 
 .lh-1-54 {
-    line-height: 1.54
+    line-height: 1.54;
 }
 
 .lh-1-25 {
-    line-height: 1.25
+    line-height: 1.25;
 }
 
 .ml-auto {
@@ -379,12 +465,11 @@ $color-suffix: 00;
     border-bottom: 1px dashed var(--N200);
 }
 
-
 .header {
     position: fixed;
     top: 0;
     z-index: 999;
-    width: 800px
+    width: 800px;
 }
 
 .modal__top-fixed {

@@ -1,7 +1,4 @@
 import { RouteComponentProps } from 'react-router'
-import { HostURLConfig } from '../../../../services/service.types'
-import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { CIMaterialType } from './MaterialHistory'
 import {
     CDMaterialType,
     CDModalTabType,
@@ -15,14 +12,29 @@ import {
     DeploymentAppTypes,
     TaskErrorObj,
     FilterConditionsListType,
+    CDMaterialResponseType,
+    PipelineType,
+    WorkflowType,
+    Material,
+    KeyValueListType,
+    CIMaterialSidebarType,
+    HandleKeyValueChangeType,
+    RuntimeParamsTriggerPayloadType,
+    ArtifactPromotionMetadata,
+    DeploymentWithConfigType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { HostURLConfig } from '../../../../services/service.types'
+import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
+import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
+import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps extends RouteComponentProps<{}> {
-    material: CDMaterialType[]
+export interface CDMaterialProps {
+    material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
     envName: string
+    envId?: number
     redirectToCD?: () => void
     stageType: DeploymentNodeType
     changeTab?: (
@@ -32,19 +44,20 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (
+    triggerDeploy?: (
         stageType: DeploymentNodeType,
         _appId: number,
+        ciArtifactId: number,
         deploymentWithConfig?: string,
         wfrId?: number,
     ) => void
-    selectImage: (
+    selectImage?: (
         index: number,
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?:number,
+        appId?: number,
     ) => void
-    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeCDModal: (e: React.MouseEvent) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
@@ -71,18 +84,21 @@ export interface CDMaterialProps extends RouteComponentProps<{}> {
     tagsEditable?: boolean
     hideImageTaggingHardDelete?: boolean
     setTagsEditable?: (tagsEditable: boolean) => void
-    updateCurrentAppMaterial? : (matId:number, releaseTags?:ReleaseTag[], imageComment?:ImageComment) => void
-    isApplicationGroupTrigger?: boolean
-    handleMaterialFilters?: ( text: string, cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, fromRollback?: boolean) => void
+    updateCurrentAppMaterial?: (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => void
+    handleMaterialFilters?: (
+        text: string,
+        cdNodeId,
+        nodeType: DeploymentNodeType,
+        isApprovalNode?: boolean,
+        fromRollback?: boolean,
+    ) => void
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    isSuperAdmin?:boolean
-}
-
-export enum DeploymentWithConfigType {
-    LAST_SAVED_CONFIG = 'LAST_SAVED_CONFIG',
-    LATEST_TRIGGER_CONFIG = 'LATEST_TRIGGER_CONFIG',
-    SPECIFIC_TRIGGER_CONFIG = 'SPECIFIC_TRIGGER_CONFIG',
+    updateBulkCDMaterialsItem?: (singleCDMaterialResponse: CDMaterialResponseType) => void
+    deploymentAppType?: DeploymentAppTypes
+    selectedImageFromBulk?: string
+    isSuperAdmin?: boolean
+    isRedirectedFromAppDetails?:  boolean
 }
 
 export interface ConfigToDeployOptionType {
@@ -99,13 +115,12 @@ export enum FilterConditionViews {
 export interface CDMaterialState {
     isSecurityModuleInstalled: boolean
     checkingDiff: boolean
-    showSearch:boolean
+    showSearch: boolean
     diffFound: boolean
     diffOptions: Record<string, boolean>
     showConfigDiffView: boolean
     loadingMore: boolean
     showOlderImages: boolean
-    noMoreImages: boolean
     selectedConfigToDeploy: ConfigToDeployOptionType
     isRollbackTrigger: boolean
     recentDeploymentConfig: any
@@ -113,13 +128,13 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
-    materialInEditModeMap: Map<number,boolean>
+    materialInEditModeMap: Map<number, boolean>
     areMaterialsPassingFilters: boolean
     searchApplied: boolean
     searchText: string
     showConfiguredFilters: boolean
     filterView: FilterConditionViews
-    isSuperAdmin?:boolean
+    isSuperAdmin?: boolean
 }
 
 export interface MaterialInfo {
@@ -171,13 +186,15 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isJobView?: boolean
     isCITriggerBlocked?: boolean
     ciBlockState?: {
-        action: any,
+        action: any
         metadataField: string
     }
     selectedEnv?: Environment
-    setSelectedEnv?: (selectedEnv: Environment) => void;
+    setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
+    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    runtimeParams: KeyValueListType[]
 }
 
 export interface RegexValueType {
@@ -190,10 +207,7 @@ export interface CIMaterialState {
     savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
-}
-
-export interface NodeAttr extends CommonNodeAttr {
-    cipipelineId?: number
+    currentSidebarTab: CIMaterialSidebarType
 }
 
 export interface DownStreams {
@@ -233,6 +247,17 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     description: string
     index?: number
     isVirtualEnvironment?: boolean
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+    appId: number
+    isDeploymentBlocked?: boolean
+}
+
+export interface TriggerCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
+    gitopsConflictLoading: boolean
+    reloadNoGitOpsRepoConfiguredModal: boolean
+    gitOpsRepoWarningCondition: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -243,6 +268,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     status: string
     id: string
     environmentId: string
+    environmentName: string
     title: string
     triggerType: string
     colourCode: string
@@ -254,6 +280,12 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isGitOpsRepoNotConfigured?: boolean
+    deploymentAppType: DeploymentAppTypes
+    isDeploymentBlocked?: boolean
+}
+export interface TriggerPrePostCDNodeState {
+    showGitOpsRepoConfiguredWarning: boolean
 }
 
 export interface TriggerEdgeType {
@@ -261,14 +293,14 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
+export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
     startY: number
     width: number
     height: number
-    nodes: NodeAttr[]
+    nodes: CommonNodeAttr[]
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
@@ -283,7 +315,6 @@ export interface TriggerViewContextType {
     invalidateCache: boolean
     refreshMaterial: (ciNodeId: number, materialId: number) => void
     onClickTriggerCINode: () => void
-    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
     onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
@@ -294,6 +325,11 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
+    reloadTriggerView: () => void
+}
+
+export enum BulkSelectionEvents {
+    SELECT_NONE = 'SELECT_NONE',
 }
 
 export interface TriggerViewRouterProps {
@@ -301,33 +337,13 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<{
-    appId: string
-    envId: string
-}> {
+export interface TriggerViewProps
+    extends RouteComponentProps<{
+        appId: string
+        envId: string
+    }> {
     isJobView?: boolean
     filteredEnvIds?: string
-}
-
-export interface WorkflowType {
-    id: string
-    name: string
-    gitMaterials?: Material[]
-    ciConfiguredGitMaterialId?: number
-    startX: number
-    startY: number
-    width: number
-    height: number
-    nodes: NodeAttr[]
-    dag: any
-    showTippy?: boolean
-    appId?: number
-    isSelected?: boolean
-    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
-    imageReleaseTags: string[]
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -350,7 +366,6 @@ export interface TriggerViewState {
     workflows: WorkflowType[]
     showCDModal: boolean
     showCIModal: boolean
-    showApprovalModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
@@ -378,9 +393,10 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
+    runtimeParams?: KeyValueListType[]
 }
 
-//-- begining of response type objects for trigger view
+// -- begining of response type objects for trigger view
 
 export interface TriggerViewResponse {
     ciPipelineId: number
@@ -402,26 +418,12 @@ export interface ApplicationConditionResponse {
     message: string
 }
 
-export enum PipelineType {
-    CI_PIPELINE = 'CI_PIPELINE',
-    CD_PIPELINE = 'CD_PIPELINE',
-    WEBHOOK = 'WEBHOOK',
-}
-
 export enum CIPipelineNodeType {
     EXTERNAL_CI = 'EXTERNAL-CI',
     CI = 'CI',
     LINKED_CI = 'LINKED-CI',
     JOB_CI = 'JOB-CI',
-}
-
-export enum WorkflowNodeType {
-    GIT = 'GIT',
-    CI = 'CI',
-    WEBHOOK = 'WEBHOOK',
-    PRE_CD = 'PRECD',
-    CD = 'CD',
-    POST_CD = 'POSTCD',
+    LINKED_CD = 'LINKED_CD',
 }
 
 export interface Task {
@@ -431,7 +433,7 @@ export interface Task {
     args?: Array<string>
 }
 
-//Start Workflow Response
+// Start Workflow Response
 export interface Tree {
     id: number
     appWorkflowId: number
@@ -447,16 +449,18 @@ export interface Workflow {
     name: string
     appId: number
     tree?: Tree[]
+    artifactPromotionMetadata?: ArtifactPromotionMetadata
 }
 
 export interface WorkflowResult {
     appId: number
     appName: string
+    isGitOpsRepoNotConfigured: boolean
     workflows: Workflow[]
 }
-//End Workflow Response
+// End Workflow Response
 
-//Start CI Response
+// Start CI Response
 export interface DockerBuildConfig {
     gitMaterialId: number
     dockerfileRelativePath: string
@@ -520,16 +524,11 @@ export interface CiPipeline {
     componentId?: number
     isCITriggerBlocked?: boolean
     ciBlockState?: {
-        action: any,
+        action: any
         metadataField: string
     }
     isOffendingMandatoryPlugin?: boolean
     pipelineType?: string
-}
-
-export interface Material {
-    gitMaterialId: number
-    materialName: string
 }
 
 export interface CiPipelineResult {
@@ -548,9 +547,9 @@ export interface CiPipelineResult {
     afterDockerBuild?: Array<Task>
     ciGitConfiguredId?: number
 }
-//End CI Response
+// End CI Response
 
-//Start CD response
+// Start CD response
 export interface Strategy {
     deploymentTemplate: string
     config: any
@@ -570,13 +569,14 @@ export interface CDStageConfigMapSecretNames {
 }
 
 export interface PrePostDeployStageType {
-    isValid: boolean;
-    steps: TaskErrorObj[];
+    isValid: boolean
+    steps: TaskErrorObj[]
     triggerType: string
     name: string
     status: string
 }
 
+// Remove this and use from fe-common
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -606,6 +606,8 @@ export interface CdPipeline {
     helmPackageName?: string
     preDeployStage?: PrePostDeployStageType
     postDeployStage?: PrePostDeployStageType
+    isGitOpsRepoNotConfigured?: boolean
+    isDeploymentBlocked?: boolean
 }
 
 export interface CdPipelineResult {
@@ -613,9 +615,9 @@ export interface CdPipelineResult {
     appId: number
 }
 
-//End CD response
+// End CD response
 
-type PartialNodeAttr = Partial<NodeAttr>
+type PartialNodeAttr = Partial<CommonNodeAttr>
 
 export interface FullNode {
     node: PartialNodeAttr
@@ -626,7 +628,7 @@ export interface FullNode {
 export interface WorkflowDisplay {
     id: number
     name: string
-    nodes: Array<NodeAttr>
+    nodes: Array<CommonNodeAttr>
     type: string
 }
 
@@ -664,21 +666,13 @@ export interface TriggerViewConfigDiffProps {
     diffOptions: Record<string, boolean>
     isRollbackTriggerSelected: boolean
     isRecentConfigAvailable: boolean
+    canReviewConfig: boolean
 }
 
 export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
     none: 'none',
-}
-
-export const STAGE_TYPE = {
-    CD: 'CD',
-    CI: 'CI',
-    GIT: 'GIT',
-    PRECD: 'PRECD',
-    POSTCD: 'POSTCD',
-    ROLLBACK: 'ROLLBACK',
 }
 
 export interface EmptyStateCIMaterialProps {
@@ -714,4 +708,22 @@ export interface MaterialSourceProps {
     ciPipelineId?: number
     fromTriggerInfo?: boolean
     clearSearch?: (e: any) => void
+}
+
+export interface AddDimensionsToDownstreamDeploymentsParams {
+    downstreams: CommonNodeAttr[]
+    dimensions: WorkflowDimensions
+    startX: number
+    startY: number
+}
+
+export interface RenderCTAType {
+    mat: CDMaterialType
+    disableSelection: boolean
+}
+
+export interface RuntimeParamsValidatorReturnType {
+    isValid: boolean
+    message?: string
+    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }

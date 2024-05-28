@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import * as DOMPurify from 'dompurify'
+import DOMPurify from 'dompurify'
 import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'
@@ -17,8 +17,12 @@ export default function SuggestionItem({
     const handleCopyTrigger = () => setTriggerCopy(true)
 
     const sanitiseVariableValue = (value): JSX.Element => {
-        if (isRedacted) return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
-        if (value === '') return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+        if (isRedacted) {
+            return <i className="cn-3 fs-12 fw-6 lh-18 m-0">is sensitive & hidden</i>
+        }
+        if (value === '') {
+            return <p className="cn-0 fs-12 fw-6 lh-18 m-0">&apos;&quot;&quot;&apos;</p>
+        }
         if (typeof value === 'boolean') {
             return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
         }
@@ -26,7 +30,9 @@ export default function SuggestionItem({
     }
 
     const highlightedText = (text: string): string => {
-        if (highlightText === '') return text
+        if (highlightText === '') {
+            return text
+        }
 
         try {
             const regex = new RegExp(highlightText, 'gi')
@@ -37,7 +43,9 @@ export default function SuggestionItem({
     }
 
     const renderDescription = (): JSX.Element => {
-        if (description === NO_DEFINED_DESCRIPTION) return <p className="m-0 fs-12 fw-4 lh-18">{description}</p>
+        if (description === NO_DEFINED_DESCRIPTION) {
+            return <p className="m-0 fs-12 fw-4 lh-18">{description}</p>
+        }
 
         return (
             <p
@@ -58,7 +66,7 @@ export default function SuggestionItem({
         <Tippy
             className="default-tt dc__word-break-all"
             content={
-                <div className="mw-200 flex column dc__content-start dc__align-start">
+                <div className="mw-200 flex column dc__content-start dc__align-start mxh-140 dc__overflow-scroll">
                     <div className="flex column dc__content-start dc__align-start">Value</div>
                     <div className="flex column dc__content-start dc__align-start">
                         {sanitiseVariableValue(variableValue)}
@@ -66,6 +74,9 @@ export default function SuggestionItem({
                 </div>
             }
             placement="left"
+            interactive
+            // Have to append to body because the parent is draggable
+            appendTo={document.body}
         >
             <div
                 className="flexbox-col pt-8 pb-8 pl-12 pr-12 dc__align-self-stretch bcn-0 dc__border-bottom-n1 dc__hover-n50"
@@ -78,7 +89,6 @@ export default function SuggestionItem({
                     <ClipboardButton
                         content={`@{{${variableName}}}`}
                         copiedTippyText={`Copied: @{{${variableName}}}`}
-                        duration={1000}
                         trigger={triggerCopy}
                         setTrigger={setTriggerCopy}
                     />

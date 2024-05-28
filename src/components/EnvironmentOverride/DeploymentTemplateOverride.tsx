@@ -1,7 +1,7 @@
-import React, { useEffect, useReducer, useContext, Reducer, useRef } from 'react'
+import React, { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
 import YAML from 'yaml'
-import { showError, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, useAsync, useMainContext, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
@@ -22,7 +22,6 @@ import {
     updateTemplateFromBasicValue,
     validateBasicView,
 } from '../deploymentConfig/DeploymentConfig.utils'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
@@ -38,7 +37,7 @@ export default function DeploymentTemplateOverride({
     isProtected,
     reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
-    const { currentServerInfo } = useContext(mainContext)
+    const { currentServerInfo, isSuperAdmin } = useMainContext()
     const { appId, envId } = useParams<{ appId; envId }>()
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
@@ -210,7 +209,7 @@ export default function DeploymentTemplateOverride({
         const payload = {
             chartConfigLoading: false,
             duplicate: envOverrideValues,
-            draftValues: YAML.stringify(envOverrideValues, { indent: 2 }),
+            draftValues: YAMLStringify(envOverrideValues),
             environmentConfig: {
                 id,
                 status,
@@ -219,7 +218,7 @@ export default function DeploymentTemplateOverride({
                 namespace,
             },
             isAppMetricsEnabled,
-            latestDraft: latestDraft,
+            latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
             showReadme: false,
@@ -327,16 +326,15 @@ export default function DeploymentTemplateOverride({
     async function handleOverride(e) {
         e.preventDefault()
         if (state.unableToParseYaml) {
-            return
         } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
-            //permanent delete
+            // permanent delete
             if (isProtected && showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
             } else if (showDeleteModal) {
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
             } else {
-                //remove copy
+                // remove copy
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
                     if (state.isBasicLockedInBase !== null && state.isBasicLockedInBase !== undefined) {
                         const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
@@ -369,7 +367,7 @@ export default function DeploymentTemplateOverride({
                 }
             }
         } else {
-            //create copy
+            // create copy
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload: {
@@ -501,6 +499,7 @@ export default function DeploymentTemplateOverride({
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
                         convertVariablesOverride={state.convertVariablesOverride}
+                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

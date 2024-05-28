@@ -6,9 +6,8 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
     refreshMaterial: (ciNodeId: number, materialId: number) => {},
     onClickTriggerCINode: () => {},
-    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag? : string) => {},
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag?: string) => {},
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
     closeCIModal: () => {},
     selectCommit: (materialId: string, hash: string, ciPipelineId?: string) => {},
@@ -17,6 +16,7 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     toggleInvalidateCache: () => {},
     getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => {},
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {},
+    reloadTriggerView: () => {},
 })
 
 export enum WorkflowDimensionType {
@@ -35,13 +35,13 @@ export const WorkflowCreate = {
     cINodeSizes: {
         nodeHeight: 64,
         nodeWidth: 240,
-        distanceX: 60,
+        distanceX: 100,
         distanceY: 25,
     } as NodeDimension,
     cDNodeSizes: {
         nodeHeight: 64,
         nodeWidth: 240,
-        distanceX: 60,
+        distanceX: 100,
         distanceY: 25,
     } as NodeDimension,
     workflow: {

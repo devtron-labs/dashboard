@@ -1,6 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
-import { TOAST_ACCESS_DENIED } from '../../config/constantMessaging'
+import { TOAST_ACCESS_DENIED } from '@devtron-labs/devtron-fe-common-lib'
 
 export class ToastBody extends React.Component<{
     title: string
@@ -54,10 +54,7 @@ export class ToastBodyWithButton extends React.Component<{
 
 export const toastAccessDenied = (title?: string, subtitle?: string) => {
     return toast.info(
-        <ToastBody
-            title={title || TOAST_ACCESS_DENIED.TITLE}
-            subtitle={subtitle || TOAST_ACCESS_DENIED.SUBTITLE}
-        />,
+        <ToastBody title={title || TOAST_ACCESS_DENIED.TITLE} subtitle={subtitle || TOAST_ACCESS_DENIED.SUBTITLE} />,
         {
             className: 'devtron-toast unauthorized',
         },

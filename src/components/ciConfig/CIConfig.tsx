@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { sortObjectArrayAlphabetically } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { getDockerRegistryMinAuth } from './service'
-import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails } from '../../services/service'
 import { useParams } from 'react-router-dom'
+import { sortObjectArrayAlphabetically } from '../common'
+import { getDockerRegistryMinAuth } from './service'
+import { getSourceConfig, getCIConfig } from '../../services/service'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { CIConfigProps } from './types'
-import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
-import { _multiSelectStyles } from './CIConfig.utils'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
 
+// FIXME: Here the error state is not gracefully handled, we are only showing toast and hiding corresponsing component.
 export default function CIConfig({
     respondOnSuccess,
     configOverrideView,
@@ -20,22 +19,19 @@ export default function CIConfig({
     updateDockerConfigOverride,
     isCDPipeline,
     isCiPipeline,
-    navItems,
     loadingStateFromParent,
     setLoadingStateFromParent,
 }: CIConfigProps) {
     const [dockerRegistries, setDockerRegistries] = useState(parentState?.dockerRegistries)
     const [sourceConfig, setSourceConfig] = useState(parentState?.sourceConfig)
     const [ciConfig, setCIConfig] = useState(parentState?.ciConfig)
-    const [configOverrideWorkflows, setConfigOverrideWorkflows] = useState<ConfigOverrideWorkflowDetails[]>([])
     const [parentReloading, setParentReloading] = useState(false)
     const [loading, setLoading] = useState(
-        configOverrideView && parentState?.loadingState === ComponentStates.loaded ? false : true,
+        !(configOverrideView && parentState?.loadingState === ComponentStates.loaded),
     )
     const { appId } = useParams<{ appId: string }>()
 
     useEffect(() => {
-        
         if (!configOverrideView || parentState?.loadingState !== ComponentStates.loaded) {
             initialise()
         }
@@ -44,16 +40,10 @@ export default function CIConfig({
     async function initialise() {
         try {
             setLoading(true)
-            const [
-                { result: dockerRegistries },
-                { result: sourceConfig },
-                { result: ciConfig },
-                { result: configOverrideWorkflows },
-            ] = await Promise.all([
+            const [{ result: dockerRegistries }, { result: sourceConfig }, { result: ciConfig }] = await Promise.all([
                 getDockerRegistryMinAuth(appId),
                 getSourceConfig(appId),
                 getCIConfig(+appId),
-                getConfigOverrideWorkflowDetails(appId),
             ])
             Array.isArray(dockerRegistries) && sortObjectArrayAlphabetically(dockerRegistries, 'id')
             setDockerRegistries(dockerRegistries || [])
@@ -62,23 +52,19 @@ export default function CIConfig({
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
             setSourceConfig(sourceConfig)
             setCIConfig(ciConfig)
-            setConfigOverrideWorkflows(configOverrideWorkflows?.workflows || [])
 
             if (setParentState) {
                 setParentState({
                     loadingState: ComponentStates.loaded,
                     selectedCIPipeline: parentState.selectedCIPipeline,
-                    dockerRegistries: dockerRegistries,
-                    sourceConfig: sourceConfig,
-                    ciConfig: ciConfig,
-                    defaultDockerConfigs: Object.assign(
-                        {},
-                        {
-                            dockerRegistry: ciConfig.dockerRegistry,
-                            dockerRepository: ciConfig.dockerRepository,
-                            ciBuildConfig: ciConfig.ciBuildConfig,
-                        },
-                    ),
+                    dockerRegistries,
+                    sourceConfig,
+                    ciConfig,
+                    defaultDockerConfigs: {
+                        dockerRegistry: ciConfig.dockerRegistry,
+                        dockerRepository: ciConfig.dockerRepository,
+                        ciBuildConfig: ciConfig.ciBuildConfig,
+                    },
                 })
             }
         } catch (err) {
@@ -102,14 +88,14 @@ export default function CIConfig({
         }
     }
 
-    async function reload(skipPageReload?: boolean) {
+    async function reload(skipPageReload?: boolean, redirection: boolean = false) {
         try {
             updateLoadingState(true, skipPageReload)
             const { result } = await getCIConfig(+appId)
             setCIConfig(result)
 
             if (!skipPageReload) {
-                respondOnSuccess()
+                respondOnSuccess(redirection)
             }
         } catch (err) {
             showError(err)
@@ -118,7 +104,7 @@ export default function CIConfig({
         }
     }
 
-    if (loading)
+    if (loading) {
         return (
             <Progressing
                 size={configOverrideView ? 24 : 48}
@@ -127,7 +113,11 @@ export default function CIConfig({
                 }}
             />
         )
-    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) return null
+    }
+    if (!sourceConfig || !Array.isArray(sourceConfig.material || !Array.isArray(dockerRegistries))) {
+        return null
+    }
+
     return (
         <CIConfigForm
             parentReloading={parentReloading}
@@ -137,13 +127,11 @@ export default function CIConfig({
             reload={reload}
             appId={appId}
             selectedCIPipeline={parentState?.selectedCIPipeline}
-            configOverrideWorkflows={configOverrideWorkflows}
             configOverrideView={configOverrideView}
             allowOverride={allowOverride}
             updateDockerConfigOverride={updateDockerConfigOverride}
             isCDPipeline={isCDPipeline}
             isCiPipeline={isCiPipeline}
-            navItems={navItems}
             parentState={parentState}
             setParentState={setParentState}
             loadingStateFromParent={loadingStateFromParent}
