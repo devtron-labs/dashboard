@@ -18,7 +18,7 @@ import { ClusterOptionType, FIXED_TABS_INDICES, URLParams } from '../Types'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../Constants'
 import { URLS } from '../../../config'
 import { convertToOptionsList, sortObjectArrayAlphabetically } from '../../common'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { getTabsBasedOnRole } from '../Utils'
@@ -118,7 +118,11 @@ const ResourceList = () => {
             node && getDynamicTabData(),
             isTerminalNodeType,
         )
-        initTabs(_tabs, reInit)
+        initTabs(
+            _tabs,
+            reInit,
+            !isSuperAdmin ? [getTabId(AppDetailsTabsIdPrefix.terminal, AppDetailsTabs.terminal, '')] : null,
+        )
     }
 
     useEffect(() => initTabsBasedOnRole(false), [isSuperAdmin])
