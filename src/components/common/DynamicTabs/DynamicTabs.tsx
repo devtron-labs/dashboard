@@ -68,7 +68,7 @@ const DynamicTabs = ({
         return (
             <button
                 type="button"
-                className="dc__unset-button-styles"
+                className="dc__unset-button-styles dc__mxw-250"
                 data-testid={isSelected}
                 onClick={getMarkTabActiveHandler(tab)}
                 aria-label={`Select tab ${_title}`}
