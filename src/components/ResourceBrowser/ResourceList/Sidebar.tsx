@@ -61,12 +61,12 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (registerShortcut) {
+        if (registerShortcut && isOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['k'], 'KindSearchFocus', 'Focus kind search')
         }
 
         return () => shortcut.unregisterShortcut(['k'])
-    }, [registerShortcut])
+    }, [registerShortcut, isOpen])
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
