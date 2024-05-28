@@ -412,7 +412,7 @@ const NodeDetailComponent = ({
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
-                        <div className="flex-grow-1">
+                        <div className="flex-grow-1 flexbox-col">
                             <LogsComponent
                                 key={getComponentKeyFromParams()}
                                 selectedTab={handleSelectedTab}

@@ -755,9 +755,8 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            minHeight: isResourceBrowserView ? '200px' : '600px',
                         }}
-                        className="flex column log-viewer-container"
+                        className="flex flex-grow-1 column log-viewer-container"
                     >
                         <div
                             className={`pod-readyState pod-readyState--top bcr-7 w-100 pl-20 ${
