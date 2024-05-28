@@ -4,7 +4,7 @@ import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../../../index.store'
 import { NodeDetailTab } from '../nodeDetail.type'
 import { getEvent } from '../nodeDetail.api'
-import { ResourceInfoActionPropsType, NodeType } from '../../../appDetails.type'
+import { ResourceInfoActionPropsType } from '../../../appDetails.type'
 import MessageUI from '../../../../common/message.ui'
 import { EventsTable } from './EventsTable'
 import { MESSAGING_UI } from '../../../../../../config/constants'
@@ -26,14 +26,9 @@ const EventsComponent = ({
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const appDetails = IndexStore.getAppDetails()
-    const pods = IndexStore.getNodesByKind(NodeType.Pod)
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
-
-        if (!appDetails) {
-            // Refresh case -- need to sent to k8 , histrory push
-        }
     }, [params.podName, params.node, params.namespace])
 
     useEffect(() => {
@@ -70,20 +65,29 @@ const EventsComponent = ({
         }
     }, [params.podName, params.node, params.nodeType, params.namespace])
 
+    const renderContent = () => {
+        if (isDeleted) {
+            return (
+                <div>
+                    <MessageUI
+                        msg={MESSAGING_UI.NO_RESOURCE}
+                        size={32}
+                        minHeight={isResourceBrowserView ? '200px' : ''}
+                    />
+                </div>
+            )
+        }
+
+        if (events.length) {
+            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+        }
+
+        return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
+    }
+
     return (
         <div className="flex-grow-1" style={{ background: 'var(--terminal-bg)' }}>
-            {isDeleted ? (
-                <MessageUI
-                    msg={MESSAGING_UI.NO_RESOURCE}
-                    size={32}
-                    minHeight={isResourceBrowserView ? '200px' : ''}
-                />
-            ) : (
-                (isResourceBrowserView || (pods && pods.length > 0)) && (
-                    <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
-                )
-            )}
-            {!isResourceBrowserView && pods.length === 0 && <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />}
+            {renderContent()}
         </div>
     )
 }

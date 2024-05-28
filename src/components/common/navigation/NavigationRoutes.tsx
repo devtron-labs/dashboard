@@ -415,7 +415,7 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(Releases
+                                        ...(!window._env_.HIDE_RELEASES && Releases
                                             ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
