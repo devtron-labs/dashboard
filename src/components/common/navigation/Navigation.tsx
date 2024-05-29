@@ -72,7 +72,8 @@ const NavigationList = [
         href: URLS.RELEASES,
         isAvailableInEA: false,
         markOnlyForSuperAdmin: true,
-        hideNav: hideReleases
+        hideNav: hideReleases,
+        forceHideEnvKey: 'HIDE_RELEASES',
     },
     {
         title: 'Deployment Groups',
@@ -104,6 +105,7 @@ const NavigationList = [
         icon: ResourceWatcherIcon,
         isAvailableInEA: true,
         hideNav: hideResourceWatcher,
+        forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
     },
     {
         title: 'Chart Store',
