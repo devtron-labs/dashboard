@@ -10,6 +10,7 @@ import {
     UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
+    AppInfoListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
@@ -213,20 +214,6 @@ export interface EmptyEnvState {
     title?: string
     subTitle?: string
     actionHandler?: () => void
-}
-
-export interface AppInfoListType {
-    application: string
-    appStatus: string
-    deploymentStatus: string
-    lastDeployed: string
-    lastDeployedImage?: string
-    lastDeployedBy?: string
-    appId: number
-    envId: number
-    pipelineId?: number
-    commits?: string[]
-    ciArtifactId?: number
 }
 
 export interface AppListDataType {
