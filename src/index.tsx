@@ -129,6 +129,7 @@ if (!window || !window._env_) {
         ENABLE_RESOURCE_SCAN_V2: false,
         ENABLE_GITOPS_BITBUCKET_SOURCE: false,
         HIDE_RELEASES: true,
+        HIDE_RESOURCE_WATCHER: true,
     }
 }
 
