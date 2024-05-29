@@ -214,7 +214,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     if (isFromOnMount) {
-
                         if (ApprovalMaterialModal) {
                             if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
                                 const searchParams = new URLSearchParams(this.props.location.search)
@@ -666,7 +665,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
                   )
                 : { result: null },
-            getRuntimeParams && !this.props.isJobView ? getRuntimeParams(ciNodeId) : null,
+            getRuntimeParams?.(ciNodeId) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that
@@ -874,9 +873,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams && !node.isJobCI && !this.props.isJobView
-                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
-                : {}),
+            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
         }
 
         triggerCINode(payload)

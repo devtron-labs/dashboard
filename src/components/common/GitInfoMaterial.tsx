@@ -123,7 +123,7 @@ export default function GitInfoMaterial({
 
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                {GitInfoMaterialTabs && !isJobCI && !isJobView ? (
+                {GitInfoMaterialTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
                         <GitInfoMaterialTabs
                             tabs={sidebarTabs}
@@ -386,7 +386,6 @@ export default function GitInfoMaterial({
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleKeyValueChange={handleRuntimeParametersChange}
-                    isJobCI={isJobCI}
                 />
             )
         }
