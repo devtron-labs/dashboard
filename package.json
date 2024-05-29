@@ -21,6 +21,7 @@
         "compute-histogram": "^0.9.11",
         "fast-json-patch": "^3.1.1",
         "flexsearch": "^0.6.32",
+        "dayjs": "^1.11.8",
         "moment": "^2.29.4",
         "monaco-editor": "0.44.0",
         "monaco-yaml": "5.1.1",

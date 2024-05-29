@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, Link } from 'react-router-dom'
 import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { handleUTCTime } from '../common'
 import { ClusterDetail } from './types'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
+import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
 import './clusterNodes.scss'
 import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
+import { URLS } from '../../config'
+import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 
-export default function ClusterSelectionList({
+const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
-    onChangeCluster,
     isSuperAdmin,
     clusterListLoader,
     refreshData,
-    initTabsBasedOnRole,
-}: ClusterSelectionType) {
+}) => {
     const location = useLocation()
     const history = useHistory()
     const [minLoader, setMinLoader] = useState(true)
-    const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
     const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
     const [lastDataSync, setLastDataSync] = useState(false)
     const [searchApplied, setSearchApplied] = useState(false)
+
+    const noResults = searchApplied && filteredClusterList.length === 0
 
     useEffect(() => {
         let filteredClusterOptions = clusterOptions
@@ -60,7 +60,6 @@ export default function ClusterSelectionList({
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredClusterList(_filteredData)
-        setNoResults(_filteredData.length === 0)
     }
 
     const clearSearch = (): void => {
@@ -80,14 +79,6 @@ export default function ClusterSelectionList({
         setSearchText(value.trim())
     }
 
-    const handleOnBlur = (event): void => {
-        event.stopPropagation()
-        let _searchText = event.target.value
-        _searchText = _searchText?.trim()
-        handleFilterChanges(_searchText)
-        setSearchText(_searchText)
-    }
-
     const renderSearch = (): JSX.Element => {
         return (
             <SearchBar
@@ -104,21 +95,12 @@ export default function ClusterSelectionList({
         )
     }
 
-    const openTerminalComponent = (clusterData): void => {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('clusterId', clusterData.id)
+    const getOpenTerminalHandler = (clusterData) => () =>
         history.push(`${location.pathname}/${clusterData.id}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`)
-        initTabsBasedOnRole(true, isSuperAdmin)
-    }
-
-    const selectCluster = (e): void => {
-        const data = e.currentTarget.dataset
-        onChangeCluster({ label: data.label, value: +data.value }, true)
-    }
 
     const hideDataOnLoad = (value) => {
         if (clusterListLoader) {
-            return
+            return null
         }
         return value
     }
@@ -132,22 +114,17 @@ export default function ClusterSelectionList({
                     clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
             >
-                <div
-                    data-testid={`cluster-row-${clusterData.name}`}
-                    className="cb-5 dc__ellipsis-right cursor  flex left"
-                >
-                    <div
-                        key={clusterData.name}
-                        data-label={clusterData.name}
-                        data-value={clusterData.id}
-                        onClick={selectCluster}
+                <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
+                    <Link
+                        className="dc__ellipsis-right dc__no-decor"
+                        to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
                     >
                         {clusterData.name}
-                    </div>
+                    </Link>
                     <TerminalIcon
                         data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"
-                        onClick={() => openTerminalComponent(clusterData)}
+                        onClick={getOpenTerminalHandler(clusterData)}
                     />
                 </div>
                 <div>
@@ -196,13 +173,10 @@ export default function ClusterSelectionList({
                 </div>
             )
         }
-        if (noResults) {
-            return <ClusterNodeEmptyState actionHandler={clearSearch} />
-        }
         return (
             <div
                 data-testid="cluster-list-container"
-                className="dc__overflow-scroll"
+                className="dc__overflow-scroll flexbox-col"
                 style={{ height: '100vh - 112px)' }}
             >
                 <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
@@ -214,14 +188,20 @@ export default function ClusterSelectionList({
                     <div>CPU Capacity</div>
                     <div>Memory Capacity</div>
                 </div>
-                {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
+                {noResults ? (
+                    <div className="flex-grow-1">
+                        <ClusterNodeEmptyState actionHandler={clearSearch} />
+                    </div>
+                ) : (
+                    filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))
+                )}
             </div>
         )
     }
 
     return (
         <div>
-            <div className={`cluster-list-main-container bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+            <div className={`cluster-list-main-container flexbox-col bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
@@ -231,6 +211,7 @@ export default function ClusterSelectionList({
                                   <span>
                                       {lastDataSyncTimeString}
                                       <button
+                                          type="button"
                                           data-testid="cluster-list-refresh-button"
                                           className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
                                           onClick={refreshData}
@@ -246,3 +227,5 @@ export default function ClusterSelectionList({
         </div>
     )
 }
+
+export default ClusterSelectionList

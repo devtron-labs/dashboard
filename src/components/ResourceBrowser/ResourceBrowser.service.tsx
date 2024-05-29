@@ -1,4 +1,4 @@
-import { ApiResourceType, get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceType, get, post, ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import {
@@ -8,7 +8,7 @@ import {
     ResourceListResponse,
     K8Abbreviates,
 } from './Types'
-import { K8_ABBREVIATES } from './Constants'
+import { K8_ABBREVIATES, ALL_NAMESPACE_OPTION } from './Constants'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_PERMISSION)
@@ -47,3 +47,21 @@ export const deleteResource = (resourceListPayload: ResourceListPayloadType): Pr
 export const getK8Abbreviates = (): Promise<K8Abbreviates> => {
     return Promise.resolve(K8_ABBREVIATES)
 }
+
+export const getResourceListPayload = (
+    clusterId: string,
+    namespace: string,
+    selectedResource: ApiResourceGroupType,
+    filters: object,
+) => ({
+    clusterId: +clusterId,
+    k8sRequest: {
+        resourceIdentifier: {
+            groupVersionKind: selectedResource.gvk,
+            ...(selectedResource.namespaced && {
+                namespace: namespace === ALL_NAMESPACE_OPTION.value ? '' : namespace,
+            }),
+        },
+    },
+    ...filters,
+})

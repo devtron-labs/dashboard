@@ -523,7 +523,7 @@ export interface RestartWorkloadModalProps {
     restartLoader: boolean
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
-    httpProtocol: string,
+    httpProtocol: string
 }
 
 export interface RestartStatusListDrawerProps {
@@ -543,7 +543,7 @@ export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
 
 export interface AppInfoMetaDataDTO {
     resourceMetaData: ResourceIdentifierDTO[]
-    appName: string,
+    appName: string
     errorResponse?: string
 }
 
@@ -605,4 +605,3 @@ export interface ManageAppsResponseType {
     id: string
     error: string
 }
-

@@ -1,9 +1,10 @@
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, OptionType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
+import { useTabs } from '../../common/DynamicTabs/useTabs'
 import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
@@ -110,8 +111,8 @@ export enum NodeType {
 // export type NodeType = keyof typeof NodeType;
 
 /**
- * 
- * @param nodeType 
+ *
+ * @param nodeType
  * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
  */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
@@ -405,17 +406,11 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
+    addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: (id: string) => string
+    k8SObjectMapRaw?: ApiResourceGroupType[]
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
 }
 

@@ -1,13 +1,16 @@
 import React from 'react'
-import { K8SObjectBaseType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { Nodes, NodeType, OptionType } from '../app/types'
+import { K8SObjectBaseType, ResponseType, Nodes, NodeType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
-import { useTabs } from '../common/DynamicTabs/useTabs'
+import { useTabs } from '../common/DynamicTabs'
+
+export type ResourceDetailDataType = {
+    [key: string]: string | number | object
+}
 
 export interface ResourceDetailType {
     headers: string[]
-    data: Record<string, any>[]
+    data: ResourceDetailDataType[]
 }
 
 export interface ResourceListResponse extends ResponseType {
@@ -15,7 +18,7 @@ export interface ResourceListResponse extends ResponseType {
 }
 
 /**
- * @deprecated Use this type form common lib instead
+ * @deprecated Use this type from common lib instead
  */
 export interface GVKType {
     Group: string
@@ -23,9 +26,8 @@ export interface GVKType {
     Kind: Nodes | NodeType
 }
 
-
 /**
- * @deprecated Use this type form common lib instead
+ * @deprecated Use this type from common lib instead
  */
 export interface ApiResourceGroupType {
     gvk: GVKType
@@ -60,6 +62,14 @@ export interface ResourceListPayloadType {
     }
 }
 
+export interface URLParams {
+    clusterId: string
+    namespace: string
+    nodeType: string
+    group?: string
+    node?: string
+}
+
 export interface CreateResourcePayload {
     clusterId: number
     manifest: string
@@ -88,11 +98,9 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 
 export interface ClusterSelectionType {
     clusterOptions: ClusterDetail[]
-    onChangeCluster: (selectedCluster: any, fromClusterSelect?: boolean) => void
     isSuperAdmin: boolean
     clusterListLoader: boolean
     refreshData: () => void
-    initTabsBasedOnRole: (reInit: boolean, _isSuperAdmin?: boolean) => void
 }
 
 export interface CreateResourceType {
@@ -101,69 +109,54 @@ export interface CreateResourceType {
 }
 
 export interface SidebarType {
-    k8SObjectMap: Map<string, K8SObjectMapType>
-    handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
+    apiResources: ApiResourceGroupType[]
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
+    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
     isClusterError?: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
 }
 
 export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
-    resourceList: ResourceDetailType
-    selectedCluster?: OptionType
-    namespaceOptions: OptionType[]
-    selectedNamespace: OptionType
-    setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
-    hideSearchInput?: boolean
-    searchText: string
-    setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchApplied: boolean
-    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
-    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
-    clearSearch: () => void
-    updateTabUrl?: ReturnType<typeof useTabs>['updateTabUrl']
-    isNamespaceSelectDisabled?: boolean
+    resourceList?: ResourceDetailType
+    selectedCluster?: ClusterOptionType
+    selectedNamespace?: OptionType
+    setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
+    searchText?: string
+    isOpen: boolean
+    setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
-    renderCallBackSync?: () => JSX.Element
-    syncError?: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
+    renderRefreshBar?: () => JSX.Element
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
-    filteredResourceList: Record<string, any>[]
-    noResults: boolean
-    resourceListLoader: boolean
-    getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    clearFilters: () => void
-    addTab: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
-    k8SObjectMapRaw: Map<string, K8SObjectMapType>
+    addTab: ReturnType<typeof useTabs>['addTab']
+    showStaleDataWarning: boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    resourceData: Record<string, any>
+    resourceData: ResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
-    handleResourceClick: (e: any) => void
-    removeTabByIdentifier?: (id: string) => string
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    getResourceListData?: () => Promise<void>
 }
 
 export interface DeleteResourcePopupType {
     clusterId: string
-    resourceData: Record<string, any>
+    resourceData: ResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    getResourceListData: (retainSearched?: boolean) => Promise<void>
     toggleDeleteDialog: () => void
-    removeTabByIdentifier?: (id: string) => string
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    getResourceListData?: () => Promise<void>
 }
 
 export interface ResourceListEmptyStateType {
@@ -176,31 +169,23 @@ export interface ResourceListEmptyStateType {
 
 export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
-    filteredData: Record<string, any>[]
-    handleResourceClick: (e: any) => void
+    filteredData: ResourceDetailType['data']
+    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     paginatedView: boolean
     syncError: boolean
     searchText: string
 }
 
-export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
-}
-
 export interface ConnectingToClusterStateProps {
     loader: boolean
     errorMsg: string
-    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
-    handleRetry: (e) => void
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
+    handleRetry: React.MouseEventHandler<HTMLButtonElement>
+    requestAbortController: AbortController
 }
 
 export interface K8sObjectOptionType extends OptionType {
+    description: string
     dataset: {
         group: string
         version: string
@@ -213,4 +198,48 @@ export interface K8sObjectOptionType extends OptionType {
 
 export interface K8Abbreviates {
     [key: string]: string
+}
+
+export interface K8SResourceTabComponentProps {
+    selectedCluster: ClusterOptionType
+    isSuperAdmin: boolean
+    renderRefreshBar: () => JSX.Element
+    addTab: ReturnType<typeof useTabs>['addTab']
+    showStaleDataWarning: boolean
+    updateK8sResourceTab: (url: string, dynamicTitle: string) => void
+    updateK8sResourceTabLastSyncMoment: () => void
+    isOpen: boolean
+}
+
+export interface AdminTerminalProps {
+    isSuperAdmin: boolean
+    updateTerminalTabUrl: (queryParams: string) => void
+}
+
+export interface SidebarChildButtonPropsType {
+    parentRef: React.Ref<HTMLButtonElement>
+    group: string
+    version: string
+    kind: string
+    text: string
+    namespaced: boolean
+    isSelected: boolean
+    onClick: React.MouseEventHandler<HTMLButtonElement>
+}
+
+export enum FIXED_TABS_INDICES {
+    OVERVIEW = 0,
+    K8S_RESOURCE_LIST,
+    ADMIN_TERMINAL,
+}
+
+export interface ClusterSelectorType {
+    onChange: ({ label, value }) => void
+    clusterList: ClusterOptionType[]
+    clusterId: string
+}
+
+export interface CreateResourceButtonType {
+    clusterId: string
+    closeModal: CreateResourceType['closePopup']
 }

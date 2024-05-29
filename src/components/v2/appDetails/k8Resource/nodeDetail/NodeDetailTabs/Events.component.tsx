@@ -86,10 +86,7 @@ const EventsComponent = ({
     }
 
     return (
-        <div
-            className="events-table-container"
-            style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)', flex: 1 }}
-        >
+        <div className="flex-grow-1" style={{ background: 'var(--terminal-bg)' }}>
             {renderContent()}
         </div>
     )

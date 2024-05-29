@@ -84,7 +84,7 @@ export default function EnvironmentOverview({
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
-        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+        Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
     // NOTE: there is a slim chance that the api is called before httpProtocol is set
@@ -106,7 +106,6 @@ export default function EnvironmentOverview({
             observer.disconnect()
         }
     }, [])
-
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -137,7 +136,13 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (
+            processDeploymentWindowAppGroupOverviewMap &&
+            (openHiberateModal ||
+                openUnhiberateModal ||
+                showHibernateStatusDrawer.showStatus ||
+                location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
+        ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])

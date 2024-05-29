@@ -132,7 +132,7 @@ const K8sListItemCard = ({
                 const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
-                    [k8sPermission.key]: _optionList,
+                    [k8sPermission.key]: _optionList as OptionType[],
                 }))
                 if (k8sPermission.resource?.[0]?.value === SELECT_ALL_VALUE) {
                     handleK8sPermission(K8sPermissionActionType.onObjectChange, index, _optionList)

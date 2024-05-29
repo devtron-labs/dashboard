@@ -1,19 +1,19 @@
 import React, { useState } from 'react'
-import { showError, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DeleteDialog, Checkbox, CHECKBOX_VALUE, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { useHistory } from 'react-router-dom'
 import { DELETE_MODAL_MESSAGING } from '../Constants'
 import { DeleteResourcePopupType, ResourceListPayloadType } from '../Types'
 import { deleteResource } from '../ResourceBrowser.service'
 
-export default function DeleteResourcePopup({
+const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     clusterId,
     resourceData,
     selectedResource,
     getResourceListData,
     toggleDeleteDialog,
     removeTabByIdentifier,
-}: DeleteResourcePopupType) {
+}) => {
     const { push } = useHistory()
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
     const [forceDelete, setForceDelete] = useState(false)
@@ -26,26 +26,23 @@ export default function DeleteResourcePopup({
                 k8sRequest: {
                     resourceIdentifier: {
                         groupVersionKind: selectedResource.gvk,
-                        namespace: resourceData.namespace,
-                        name: resourceData.name,
+                        namespace: String(resourceData.namespace),
+                        name: String(resourceData.name),
                     },
-                    forceDelete: forceDelete
+                    forceDelete,
                 },
             }
 
             await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            getResourceListData(true)
+            await getResourceListData()
             toggleDeleteDialog()
             if (removeTabByIdentifier) {
-                const pushURL = removeTabByIdentifier(
+                removeTabByIdentifier(
                     `${selectedResource?.gvk?.Kind.toLowerCase()}_${resourceData.namespace}/${resourceData.name}`,
                 )
-                setTimeout(() => {
-                    if (pushURL) {
-                        push(pushURL)
-                    }
-                }, 1)
+                    .then((url) => url && push(url))
+                    .catch(noop)
             }
         } catch (err) {
             showError(err)
@@ -54,7 +51,7 @@ export default function DeleteResourcePopup({
         }
     }
 
-    const forceDeleteHandler = (e) => {
+    const forceDeleteHandler = () => {
         setForceDelete((prevState) => !prevState)
     }
 
@@ -80,3 +77,5 @@ export default function DeleteResourcePopup({
         </DeleteDialog>
     )
 }
+
+export default DeleteResourcePopup

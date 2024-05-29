@@ -1,4 +1,7 @@
-import { TabsDataType } from './Types'
+import { Dayjs } from 'dayjs'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { DynamicTabType, TabsDataType } from './Types'
+import { MARK_AS_STALE_DATA_CUT_OFF_MINS } from '../../ResourceBrowser/Constants'
 
 export const COMMON_TABS_SELECT_STYLES = {
     control: (base) => ({
@@ -37,20 +40,21 @@ export const EMPTY_TABS_DATA = {
 }
 
 export const initTabsData = (
-    tabs: any[],
+    tabs: DynamicTabType[],
     setTabsData: React.Dispatch<React.SetStateAction<TabsDataType>>,
-    setSelectedTab: React.Dispatch<React.SetStateAction<any>>,
+    setSelectedTab: React.Dispatch<React.SetStateAction<OptionType & DynamicTabType>>,
     updateMenuState: () => void,
 ): void => {
     const fixedTabs = []
     const dynamicTabs = []
-    for (const tab of tabs) {
+    tabs.forEach((tab) => {
         const tabOption = {
             ...tab,
-            label: tab.name,
+            label: tab.title,
             value: tab.id,
         }
-        if (tab.positionFixed) {
+        // NOTE: dynamic tabs are supposed to have position as Number.MAX_SAFE_INTEGER
+        if (tab.position < Number.MAX_SAFE_INTEGER) {
             fixedTabs.push(tabOption)
         } else {
             dynamicTabs.push(tabOption)
@@ -59,7 +63,7 @@ export const initTabsData = (
         if (tabOption.isSelected) {
             setSelectedTab(tabOption)
         }
-    }
+    })
 
     setTabsData({
         fixedTabs,
@@ -70,4 +74,8 @@ export const initTabsData = (
     if (dynamicTabs.length === 0) {
         updateMenuState()
     }
+}
+
+export const checkIfDataIsStale = (start: Dayjs, now: Dayjs): boolean => {
+    return now.diff(start, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
 }

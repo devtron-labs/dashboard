@@ -10,18 +10,19 @@ export default () => {
         }
     }
 
-    function getFilteredList({ searchText, list, searchInKeys }) {
+    function getFilteredList({ searchText, list }) {
         const searchTextLowerCased = searchText.toLowerCase()
-        const filteredList = []
-        for (let i = 0; i < list.length; i++) {
-            for (let j = 0; j < searchInKeys.length; j++) {
-                if (list[i][searchInKeys[j]]?.toLowerCase().includes(searchTextLowerCased)) {
-                    filteredList.push(list[i])
-                    break
-                }
-            }
+        if (searchTextLowerCased === '' || !list?.length) {
+            self.postMessage(list)
+            return
         }
-        self.postMessage(filteredList)
+        self.postMessage(
+            list.filter((item) =>
+                Object.entries(item).some(
+                    ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
+                ),
+            ),
+        )
     }
 
     self.addEventListener('message', (e) => {

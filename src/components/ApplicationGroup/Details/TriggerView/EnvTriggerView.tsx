@@ -900,8 +900,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
-        }
-        else {
+        } else {
             const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
             // If the current state is pending, then we should change the state to pending
             const approvalState =
