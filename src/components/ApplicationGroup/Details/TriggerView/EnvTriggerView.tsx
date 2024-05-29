@@ -23,7 +23,6 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
-    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -2116,7 +2115,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}

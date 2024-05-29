@@ -10,7 +10,6 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
-    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -422,7 +421,6 @@ export default function NavigationRoutes() {
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
                                                           value={{
-                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
                                                               getModuleInfo,
                                                           }}
                                                       >
