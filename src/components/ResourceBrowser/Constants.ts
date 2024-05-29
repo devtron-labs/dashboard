@@ -271,3 +271,5 @@ export const K8_ABBREVIATES = {
 export const SEARCH_QUERY_PARAM_KEY = 'search'
 
 export const CONNECTION_TIMEOUT_TIME = 10000
+
+export const DEFAULT_K8SLIST_PAGE_SIZE = 100

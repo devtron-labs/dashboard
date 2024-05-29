@@ -21,7 +21,6 @@ const ResourceFilterOptions = ({
     selectedNamespace,
     selectedCluster,
     setSelectedNamespace,
-    hideSearchInput,
     searchText,
     isOpen,
     setSearchText,
@@ -103,46 +102,40 @@ const ResourceFilterOptions = ({
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
-            <div
-                className={`resource-filter-options-container flexbox ${
-                    hideSearchInput ? 'dc__content-end' : 'dc__content-space'
-                } pt-16 pr-20 pb-12 pl-20 w-100`}
-            >
-                {!hideSearchInput && (
-                    <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
-                        <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />
-                        <input
-                            ref={searchInputRef}
-                            type="text"
-                            placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
-                            value={searchText}
-                            className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
-                            onChange={handleOnChangeSearchText}
-                            onKeyUp={handleFilterKeyPress}
-                            onFocus={handleInputFocus}
-                            onBlur={handleInputBlur}
-                            disabled={isSearchInputDisabled}
-                            data-testid="search-input-for-resource"
+            <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
+                <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32 cursor-text">
+                    <Search className="search__icon icon-dim-16" onClick={handleInputShortcut} />
+                    <input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder={`Search ${selectedResource?.gvk?.Kind || ''}`}
+                        value={searchText}
+                        className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
+                        onChange={handleOnChangeSearchText}
+                        onKeyUp={handleFilterKeyPress}
+                        onFocus={handleInputFocus}
+                        onBlur={handleInputBlur}
+                        disabled={isSearchInputDisabled}
+                        data-testid="search-input-for-resource"
+                    />
+                    {!!searchText && (
+                        <button
+                            className="search__clear-button"
+                            type="button"
+                            onClick={clearSearchInput}
+                            aria-label="Search resources"
+                        >
+                            <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
+                        </button>
+                    )}
+                    {showShortcutKey && (
+                        <ShortcutKeyBadge
+                            shortcutKey="r"
+                            rootClassName="resource-search-shortcut-key"
+                            onClick={handleInputShortcut}
                         />
-                        {!!searchText && (
-                            <button
-                                className="search__clear-button"
-                                type="button"
-                                onClick={clearSearchInput}
-                                aria-label="Search resources"
-                            >
-                                <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                            </button>
-                        )}
-                        {showShortcutKey && (
-                            <ShortcutKeyBadge
-                                shortcutKey="r"
-                                rootClassName="resource-search-shortcut-key"
-                                onClick={handleInputShortcut}
-                            />
-                        )}
-                    </div>
-                )}
+                    )}
+                </div>
                 <div className="flex-grow-1" />
                 {FilterButton && (
                     <FilterButton

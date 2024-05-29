@@ -128,17 +128,15 @@ export interface ResourceFilterOptionsProps {
     selectedCluster?: ClusterOptionType
     selectedNamespace?: OptionType
     setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
-    hideSearchInput?: boolean
     searchText?: string
     isOpen: boolean
     setSearchText?: (text: string) => void
-    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType, hideLoader?: boolean) => void
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'handleFilterChanges'> {
+export interface K8SResourceListType extends ResourceFilterOptionsProps {
     addTab: ReturnType<typeof useTabs>['addTab']
     showStaleDataWarning: boolean
 }
