@@ -827,7 +827,7 @@ const LogsComponent = ({
                 )}
 
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
-                <div className="no-pod no-pod--container ">
+                <div className="no-pod no-pod--container flex-grow-1">
                     <MessageUI
                         icon={MsgUIType.MULTI_CONTAINER}
                         msg={`${
