@@ -6,7 +6,6 @@ import {
     VisibleModal,
     stopPropagation,
     useSearchString,
-    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
@@ -93,7 +92,6 @@ const AppDetailsCDButton = ({
                     appId={appId}
                     pipelineId={cdModal.cdPipelineId}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={cdModal.ciPipelineId}
                     history={history}
                 />

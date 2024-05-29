@@ -14,7 +14,6 @@ import {
     HandleKeyValueChangeType,
     KeyValueListActionType,
     getIsRequestAborted,
-    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -1299,7 +1298,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     appId={Number(this.props.match.params.appId)}
                     pipelineId={this.state.cdNodeId}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node.connectingCiPipelineId}
                     history={this.props.history}
                 />
@@ -1426,14 +1424,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         {this.renderApprovalMaterial()}
                     </TriggerViewContext.Provider>
                 </div>
-
-                {/* Moving GitCommitInfoGeneric felt like big task would re-visit if time is available */}
                 {ImagePromotionRouter && (
                     <ImagePromotionRouter
                         basePath={this.props.match.path}
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
-                        gitCommitInfoGeneric={GitCommitInfoGeneric}
                         getModuleInfo={getModuleInfo}
                     />
                 )}
