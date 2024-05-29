@@ -457,7 +457,6 @@ export const K8SResourceList = ({
                 isOpen={isOpen}
                 resourceList={resourceList}
                 setSearchText={setSearchText}
-                handleFilterChanges={handleFilterChanges}
                 isSearchInputDisabled={resourceListLoader}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
