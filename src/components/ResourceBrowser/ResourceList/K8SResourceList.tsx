@@ -27,6 +27,7 @@ import {
     RESOURCE_PAGE_SIZE_OPTIONS,
     SIDEBAR_KEYS,
     SEARCH_QUERY_PARAM_KEY,
+    DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
 import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
 import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
@@ -67,7 +68,7 @@ export const K8SResourceList = ({
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
-    const [pageSize, setPageSize] = useState(100)
+    const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const searchWorkerRef = useRef(null)
@@ -101,9 +102,26 @@ export const K8SResourceList = ({
 
     const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
 
-    const resourceList = _resourceList?.result || null
+    const resourceList = useMemo(() => {
+        if (!_resourceList) {
+            return null
+        }
+        const result = structuredClone(_resourceList.result)
+        switch (selectedResource?.gvk.Kind) {
+            case SIDEBAR_KEYS.eventGVK.Kind:
+                result.data = sortEventListData(result.data)
+                break
+            case Nodes.StorageClass:
+                result.data = removeDefaultForStorageClass(result.data)
+                break
+            default:
+                break
+        }
+        result.data = result.data.map((data, index) => ({ id: index, ...data }))
+        return result
+    }, [_resourceList])
 
-    const showPaginatedView = resourceList?.data?.length >= 100
+    const showPaginatedView = resourceList?.data?.length >= pageSize
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -131,7 +149,7 @@ export const K8SResourceList = ({
 
     useEffect(() => {
         setResourceListOffset(0)
-        setPageSize(100)
+        setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
     const handleFilterChanges = (_searchText: string): void => {
@@ -155,17 +173,6 @@ export const K8SResourceList = ({
             setFilteredResourceList(null)
             return
         }
-        switch (selectedResource?.gvk.Kind) {
-            case SIDEBAR_KEYS.eventGVK.Kind:
-                resourceList.data = sortEventListData(resourceList.data)
-                break
-            case Nodes.StorageClass:
-                resourceList.data = removeDefaultForStorageClass(resourceList.data)
-                break
-            default:
-                break
-        }
-        resourceList.data = resourceList.data.map((data, index) => ({ id: index, ...data }))
         handleFilterChanges(searchText)
     }, [resourceList])
 

@@ -102,7 +102,7 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
 }
 
 export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
-    storageList.map((storage) => {
+    return storageList.map((storage) => {
         return (storage.name as string).includes('(default)')
             ? {
                   ...storage,
@@ -110,7 +110,6 @@ export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType
               }
             : storage
     })
-    return storageList
 }
 
 export const getScrollableResourceClass = (
