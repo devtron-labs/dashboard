@@ -410,14 +410,14 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        ...(ResourceWatcherRouter
+                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
                                                   <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
                                                       <ResourceWatcherRouter />
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(Releases
+                                        ...(!window._env_.HIDE_RELEASES && Releases
                                             ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
