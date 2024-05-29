@@ -30,8 +30,8 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
-const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
+const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
+const hideReleases = !importComponentFromFELibrary('Releases', null, 'function')
 
 const NavigationList = [
     {
@@ -63,21 +63,18 @@ const NavigationList = [
         isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
-    ...(showReleases
-        ? [
-              {
-                  title: 'Releases',
-                  dataTestId: 'click-on-releases',
-                  type: 'link',
-                  iconClass: 'nav-short-env',
-                  icon: ReleasesIcon,
-                  href: URLS.RELEASES,
-                  isAvailableInEA: false,
-                  markOnlyForSuperAdmin: true,
-                  forceHideEnvKey: 'HIDE_RELEASES',
-              },
-          ]
-        : []),
+    {
+        title: 'Releases',
+        dataTestId: 'click-on-releases',
+        type: 'link',
+        iconClass: 'nav-short-env',
+        icon: ReleasesIcon,
+        href: URLS.RELEASES,
+        isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
+        forceHideEnvKey: 'HIDE_RELEASES',
+        hideNav: hideReleases,
+    },
     {
         title: 'Deployment Groups',
         dataTestId: 'click-on-deployment-groups',
@@ -107,7 +104,8 @@ const NavigationList = [
         iconClass: 'nav-resource-watcher',
         icon: ResourceWatcherIcon,
         isAvailableInEA: true,
-        hideNav: !ResourceWatcherRouter,
+        forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
+        hideNav: hideResourceWatcher,
     },
     {
         title: 'Chart Store',

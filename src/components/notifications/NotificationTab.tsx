@@ -457,7 +457,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     renderOptions() {
         if (this.state.headerCheckbox.isChecked) {
             return (
-                <div className="dc__block mt-20 mb-20">
+                <div className="flex left mt-20 mb-20">
                     <Tippy placement="top" content="Delete">
                         <div className="flex">
                             <Delete
