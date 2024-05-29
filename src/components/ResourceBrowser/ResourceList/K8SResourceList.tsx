@@ -156,7 +156,7 @@ export const K8SResourceList = ({
             return
         }
         switch (selectedResource?.gvk.Kind) {
-            case SIDEBAR_KEYS.nodeGVK.Kind:
+            case SIDEBAR_KEYS.eventGVK.Kind:
                 resourceList.data = sortEventListData(resourceList.data)
                 break
             case Nodes.StorageClass:
