@@ -15,13 +15,7 @@ import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentO
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import {
-    getBasicFieldValue,
-    groupDataByType,
-    isBasicValueChanged,
-    updateTemplateFromBasicValue,
-    validateBasicView,
-} from '../deploymentConfig/DeploymentConfig.utils'
+import { groupDataByType, validateBasicView } from '../deploymentConfig/DeploymentConfig.utils'
 import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
@@ -247,7 +241,6 @@ export default function DeploymentTemplateOverride({
         })
 
         if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-            updateTemplateFromBasicValue(envOverrideValues)
             parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
         }
     }
@@ -283,6 +276,7 @@ export default function DeploymentTemplateOverride({
                 duplicate: state.latestDraft ? state.duplicate : _duplicateFromResp,
                 readme: result.readme,
                 schema: result.schema,
+                guiSchema: JSON.parse(result.guiSchema),
                 isBasicLockedInBase:
                     result.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
                     result.environmentConfig.isBasicViewLocked,
@@ -303,7 +297,6 @@ export default function DeploymentTemplateOverride({
             })
 
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                updateTemplateFromBasicValue(result.environmentConfig.envOverrideValues || result.globalConfig)
                 parseDataForView(
                     result.environmentConfig.isBasicViewLocked,
                     result.environmentConfig.currentViewEditor,
@@ -336,34 +329,11 @@ export default function DeploymentTemplateOverride({
             } else {
                 // remove copy
                 if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                    if (state.isBasicLockedInBase !== null && state.isBasicLockedInBase !== undefined) {
-                        const _basicFieldValues = getBasicFieldValue(state.data.globalConfig)
-                        let _isBasicLocked = false
-                        if (
-                            _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
-                            !_basicFieldValues[BASIC_FIELDS.PORT] ||
-                            !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
-                            !_basicFieldValues[BASIC_FIELDS.RESOURCES]
-                        ) {
-                            _isBasicLocked = true
-                        }
-                        dispatch({
-                            type: DeploymentConfigStateActionTypes.multipleOptions,
-                            payload: {
-                                basicFieldValues: _basicFieldValues,
-                                basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                                isBasicLocked: state.isBasicLockedInBase || _isBasicLocked,
-                                duplicate: null,
-                                isDraftOverriden: false,
-                            },
-                        })
-                    } else {
-                        dispatch({
-                            type: DeploymentConfigStateActionTypes.multipleOptions,
-                            payload: { duplicate: null, isDraftOverriden: false },
-                        })
-                        parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null, {}, false)
-                    }
+                    dispatch({
+                        type: DeploymentConfigStateActionTypes.multipleOptions,
+                        payload: { duplicate: null, isDraftOverriden: false },
+                    })
+                    parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null, {}, false)
                 }
             }
         } else {
@@ -398,12 +368,9 @@ export default function DeploymentTemplateOverride({
                         baseDeploymentAbortController.current.signal,
                         true,
                     )
-                    _isBasicLocked = isBasicValueChanged(defaultAppOverride, baseTemplate)
                 } catch (err) {
-                    _isBasicLocked = true
+                    // _isBasicLocked = true
                 }
-            } else {
-                _isBasicLocked = isBasicValueChanged(baseTemplate, envOverrideValues)
             }
         }
 
@@ -419,23 +386,6 @@ export default function DeploymentTemplateOverride({
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
             statesToUpdate['currentEditorView'] = _currentViewEditor
             statesToUpdate['isBasicLocked'] = _isBasicLocked
-        }
-
-        if (!_isBasicLocked) {
-            const _basicFieldValues = getBasicFieldValue(envOverrideValues || baseTemplate)
-            if (
-                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
-                !_basicFieldValues[BASIC_FIELDS.PORT] ||
-                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
-                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
-            ) {
-                statesToUpdate['yamlMode'] = true
-                statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
-                statesToUpdate['isBasicLocked'] = true
-            } else {
-                statesToUpdate['basicFieldValues'] = _basicFieldValues
-                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
-            }
         }
 
         // Override yamlMode state to advanced when draft state is 4 (approval pending)

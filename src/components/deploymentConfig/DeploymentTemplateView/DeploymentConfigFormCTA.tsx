@@ -31,6 +31,7 @@ export default function DeploymentConfigFormCTA({
     showLockedDiffForApproval,
     checkForProtectedLockedChanges,
     setLockedOverride,
+    handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -102,8 +103,8 @@ export default function DeploymentConfigFormCTA({
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
-                    type={_disabled || isApprovalPending ? 'button' : 'submit'}
-                    onClick={checkForLockedChangesForApproval}
+                    type="button"
+                    onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'

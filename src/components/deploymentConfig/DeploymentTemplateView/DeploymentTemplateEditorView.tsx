@@ -44,6 +44,7 @@ const DeploymentTemplateEditorView = ({
     lockedConfigKeysWithLockType,
     hideLockKeysToggled,
     removedPatches,
+    guiSchema,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -509,7 +510,13 @@ const DeploymentTemplateEditorView = ({
         (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
         renderCodeEditorView()
     ) : (
-        <DeploymentTemplateGUIView fetchingValues={fetchingValues} value={value} readOnly={readOnly} />
+        <DeploymentTemplateGUIView
+            fetchingValues={fetchingValues}
+            value={rhs}
+            readOnly={readOnly}
+            guiSchema={guiSchema}
+            editorOnChange={editorOnChange}
+        />
     )
 }
 

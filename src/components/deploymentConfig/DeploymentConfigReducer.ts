@@ -8,6 +8,8 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedChart: null,
     template: '',
     schema: null,
+    /* NOTE: new state for the json schema for the RJSFForm */
+    guiSchema: null,
     loading: false,
     chartConfig: null,
     isAppMetricsEnabled: false,
@@ -21,10 +23,14 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     fetchedValues: {},
     fetchedValuesManifest: {},
     yamlMode: true,
+    /* FIXME: remove */
     isBasicLocked: false,
+    /* FIXME: remove */
     isBasicLockedInBase: false,
     currentEditorView: '',
+    /* FIXME: remove */
     basicFieldValues: null,
+    /* FIXME: remove */
     basicFieldValuesErrorObj: null,
     data: null,
     duplicate: null,

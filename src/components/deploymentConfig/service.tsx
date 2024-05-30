@@ -8,6 +8,8 @@ export function getDeploymentTemplate(
     abortSignal: AbortSignal,
     isDefaultTemplate?: boolean,
 ) {
+    /* TODO: this option is not being used anywhere. Plus see @getDefaultDeploymentTemplate;
+     * Can we remove this ?*/
     if (isDefaultTemplate) {
         return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
             signal: abortSignal,

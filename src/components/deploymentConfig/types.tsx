@@ -109,6 +109,7 @@ export interface DeploymentConfigFormCTAProps {
     loading: boolean
     showAppMetricsToggle: boolean
     isAppMetricsEnabled: boolean
+    handleSaveChanges: React.MouseEventHandler<HTMLButtonElement>
     isEnvOverride?: boolean
     isCiPipeline?: boolean
     disableCheckbox?: boolean
@@ -214,7 +215,8 @@ export interface DeploymentTemplateEditorViewProps {
     environmentName?: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string, fromBasic?: boolean) => void
+    editorOnChange?: (str: string, fromBasic?: boolean) => void
+    guiSchema: object
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
@@ -337,6 +339,7 @@ export interface DeploymentConfigStateType {
     selectedChart: DeploymentChartVersionType
     template: string
     schema: any
+    guiSchema: object
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -468,4 +471,10 @@ export interface SaveConfirmationDialogProps {
     onSave: () => void
     showAsModal: boolean
     closeLockedDiffDrawerWithChildModal: () => void
+}
+
+export interface DeploymentTemplateGUIViewProps extends Pick<DeploymentTemplateEditorViewProps, 'guiSchema' | 'editorOnChange'> {
+    fetchingValues?: boolean
+    value: string
+    readOnly: boolean
 }

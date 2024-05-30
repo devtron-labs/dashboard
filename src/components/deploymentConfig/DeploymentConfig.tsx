@@ -36,15 +36,7 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import {
-    getBasicFieldValue,
-    groupDataByType,
-    handleConfigProtectionError,
-    isBasicValueChanged,
-    patchBasicData,
-    updateTemplateFromBasicValue,
-    validateBasicView,
-} from './DeploymentConfig.utils'
+import { groupDataByType, handleConfigProtectionError, validateBasicView } from './DeploymentConfig.utils'
 import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
 import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
 import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
@@ -293,7 +285,6 @@ export default function DeploymentConfig({
         })
 
         if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-            updateTemplateFromBasicValue(valuesOverride)
             parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
         }
     }
@@ -317,7 +308,6 @@ export default function DeploymentConfig({
             const {
                 result: { defaultAppOverride },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, abortController.signal, true)
-            _isBasicViewLocked = isBasicValueChanged(defaultAppOverride, template)
         }
 
         if (abortController && !abortController.signal.aborted) {
@@ -327,34 +317,15 @@ export default function DeploymentConfig({
         const statesToUpdate = {}
         if (!state.currentEditorView || !_currentViewEditor) {
             _currentViewEditor =
-                _isBasicViewLocked ||
                 currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
                 state.selectedTabIndex === 2 ||
                 state.showReadme
                     ? EDITOR_VIEW.ADVANCED
                     : EDITOR_VIEW.BASIC
 
-            statesToUpdate['isBasicLocked'] = _isBasicViewLocked
             statesToUpdate['currentEditorView'] = _currentViewEditor
             statesToUpdate['yamlMode'] = _currentViewEditor !== EDITOR_VIEW.BASIC
         }
-        if (!_isBasicViewLocked) {
-            const _basicFieldValues = getBasicFieldValue(template)
-            if (
-                _basicFieldValues[BASIC_FIELDS.HOSTS].length === 0 ||
-                !_basicFieldValues[BASIC_FIELDS.PORT] ||
-                !_basicFieldValues[BASIC_FIELDS.ENV_VARIABLES] ||
-                !_basicFieldValues[BASIC_FIELDS.RESOURCES]
-            ) {
-                statesToUpdate['isBasicLocked'] = true
-                statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
-                statesToUpdate['yamlMode'] = true
-            } else {
-                statesToUpdate['basicFieldValues'] = _basicFieldValues
-                statesToUpdate['basicFieldValuesErrorObj'] = validateBasicView(_basicFieldValues)
-            }
-        }
-
         if (updatePublishedState && templateData['publishedState']) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.publishedState,
@@ -401,6 +372,7 @@ export default function DeploymentConfig({
                         isBasicViewLocked,
                         currentViewEditor,
                     },
+                    guiSchema,
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
@@ -408,6 +380,7 @@ export default function DeploymentConfig({
                 template: defaultAppOverride,
                 schema,
                 readme,
+                guiSchema: JSON.parse(guiSchema),
                 currentEditorView: currentViewEditor,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
@@ -443,8 +416,7 @@ export default function DeploymentConfig({
             })
 
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                updateTemplateFromBasicValue(defaultAppOverride)
-                parseDataForView(isBasicViewLocked, currentViewEditor, defaultAppOverride, payload, true)
+                parseDataForView(false, currentViewEditor, defaultAppOverride, payload, true)
             }
         } catch (err) {
             showError(err)
@@ -492,12 +464,6 @@ export default function DeploymentConfig({
     function openConfirmationOrSaveChangesModal() {
         if (!obj) {
             toast.error(error)
-        } else if (
-            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-            !state.yamlMode &&
-            !state.basicFieldValuesErrorObj.isValid
-        ) {
-            toast.error('Some required fields are missing')
         } else if (isProtected) {
             toggleSaveChangesModal()
         } else if (state.chartConfig.id) {
@@ -627,19 +593,6 @@ export default function DeploymentConfig({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: false,
             })
-            if (
-                state.selectedChart &&
-                (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-                str &&
-                state.currentEditorView &&
-                !state.isBasicLocked &&
-                !fromBasic
-            ) {
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(parsedValues),
-                })
-            }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
             if (!state.isValues) {
@@ -675,40 +628,7 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
-        if (readOnlyPublishedMode) {
-            if (state.publishedState && !state.publishedState.isBasicLocked) {
-                toggleYamlMode(!state.yamlMode)
-            }
-            return
-        }
-        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
-            toast.error('Some required fields are missing')
-            toggleYamlMode(false)
-            return
-        }
-        if (state.isBasicLocked) {
-            return
-        }
-
-        try {
-            const parsedCodeEditorValue = YAML.parse(state.tempFormData)
-
-            if (state.yamlMode) {
-                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload: {
-                        basicFieldValues: _basicFieldValues,
-                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                    },
-                })
-            } else {
-                const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-                updateTemplateFromBasicValue(newTemplate)
-                editorOnChange(YAMLStringify(newTemplate), !state.yamlMode)
-            }
-            toggleYamlMode(!state.yamlMode)
-        } catch (error) {}
+        toggleYamlMode(!state.yamlMode)
     }
 
     const handleTabSelection = (index: number) => {
@@ -814,11 +734,8 @@ export default function DeploymentConfig({
             saveEligibleChanges: saveEligibleChangesCb,
         }
         if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-            requestData.isBasicViewLocked = state.isBasicLocked
-            requestData.currentViewEditor = state.isBasicLocked ? EDITOR_VIEW.ADVANCED : state.currentEditorView
-            if (!state.yamlMode) {
-                requestData.valuesOverride = patchBasicData(obj, state.basicFieldValues)
-            }
+            requestData.isBasicViewLocked = false
+            requestData.currentViewEditor = EDITOR_VIEW.ADVANCED
         }
 
         if (!skipReadmeAndSchema) {
@@ -914,6 +831,7 @@ export default function DeploymentConfig({
                 isValues={state.isValues}
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
+                guiSchema={state.guiSchema}
                 groupedData={state.groupedOptionsData}
                 hideLockedKeys={hideLockedKeys}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
@@ -924,12 +842,10 @@ export default function DeploymentConfig({
     }
 
     const renderValuesView = () => (
-        <form
-            action=""
+        <div
             className={`white-card__deployment-config p-0 bcn-0 ${state.openComparison ? 'comparison-view' : ''} ${
                 state.showReadme ? 'readme-view' : ''
             }`}
-            onSubmit={handleSaveChanges}
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
@@ -967,8 +883,9 @@ export default function DeploymentConfig({
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 setLockedOverride={setLockedOverride}
+                handleSaveChanges={handleSaveChanges}
             />
-        </form>
+        </div>
     )
 
     const getValueForContext = () => ({

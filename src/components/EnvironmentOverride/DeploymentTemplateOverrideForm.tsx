@@ -19,14 +19,7 @@ import { getDeploymentManisfest, getIfLockedConfigProtected } from '../deploymen
 import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
-import {
-    getBasicFieldValue,
-    handleConfigProtectionError,
-    isBasicValueChanged,
-    patchBasicData,
-    updateTemplateFromBasicValue,
-    validateBasicView,
-} from '../deploymentConfig/DeploymentConfig.utils'
+import { handleConfigProtectionError, validateBasicView } from '../deploymentConfig/DeploymentConfig.utils'
 import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -172,12 +165,6 @@ export default function DeploymentTemplateOverrideForm({
     const checkForSaveAsDraft = () => {
         if (!obj && state.yamlMode) {
             toast.error(error)
-        } else if (
-            (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) &&
-            !state.yamlMode &&
-            !state.basicFieldValuesErrorObj.isValid
-        ) {
-            toast.error('Some required fields are missing')
         } else if (isConfigProtectionEnabled) {
             toggleSaveChangesModal()
         }
@@ -214,8 +201,7 @@ export default function DeploymentTemplateOverrideForm({
             state.data.environmentConfig && state.data.environmentConfig.id > 0
                 ? updateDeploymentTemplate
                 : createDeploymentTemplate
-        const envOverrideValuesWithBasic =
-            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
+        const envOverrideValuesWithBasic = obj || state.duplicate
 
         try {
             if (saveEligibleChanges) {
@@ -283,46 +269,8 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const changeEditorMode = (): void => {
-        if (readOnlyPublishedMode) {
-            if (state.publishedState && !state.publishedState.isBasicLocked) {
-                toggleYamlMode(!state.yamlMode)
-            }
-            return
-        }
-        if (state.basicFieldValuesErrorObj && !state.basicFieldValuesErrorObj.isValid) {
-            toast.error('Some required fields are missing')
-            return
-        }
-        if (state.isBasicLocked) {
-            return
-        }
-
-        try {
-            const parsedCodeEditorValue =
-                state.tempFormData && state.tempFormData !== ''
-                    ? YAML.parse(state.tempFormData)
-                    : state.duplicate || state.data.globalConfig
-            if (state.yamlMode) {
-                const _basicFieldValues = getBasicFieldValue(parsedCodeEditorValue)
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.multipleOptions,
-                    payload: {
-                        basicFieldValues: _basicFieldValues,
-                        basicFieldValuesErrorObj: validateBasicView(_basicFieldValues),
-                        yamlMode: false,
-                    },
-                })
-                return
-            }
-            const newTemplate = patchBasicData(parsedCodeEditorValue, state.basicFieldValues)
-            updateTemplateFromBasicValue(newTemplate)
-            editorOnChange(YAMLStringify(newTemplate), state.yamlMode)
-
-            dispatch({
-                type: DeploymentConfigStateActionTypes.yamlMode,
-                payload: true,
-            })
-        } catch (err) {}
+        /* NOTE: this seems like duplicacy */
+        toggleYamlMode(!state.yamlMode)
     }
 
     const isCompareAndApprovalState =
@@ -346,13 +294,6 @@ export default function DeploymentTemplateOverrideForm({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: false,
             })
-
-            if (str && state.currentEditorView && !state.isBasicLocked && !fromBasic) {
-                dispatch({
-                    type: DeploymentConfigStateActionTypes.isBasicLocked,
-                    payload: isBasicValueChanged(parsedValues),
-                })
-            }
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
             if (!isValuesOverride) {
@@ -481,9 +422,7 @@ export default function DeploymentTemplateOverrideForm({
     )
 
     const prepareDataToSaveDraft = () => {
-        const envOverrideValuesWithBasic =
-            !state.yamlMode && patchBasicData(obj || state.duplicate, state.basicFieldValues)
-        return prepareDataToSave(envOverrideValuesWithBasic, true)
+        return prepareDataToSave(obj || state.duplicate, true)
     }
 
     const prepareDataToDeleteOverrideDraft = () => prepareDataToSave(state.data.globalConfig, true)
@@ -544,9 +483,7 @@ export default function DeploymentTemplateOverrideForm({
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
-            codeEditorValue = isOverridden
-                ? YAMLStringify(state.duplicate)
-                : YAMLStringify(state.data.globalConfig)
+            codeEditorValue = isOverridden ? YAMLStringify(state.duplicate) : YAMLStringify(state.data.globalConfig)
         }
         const manifestEditorValue = await fetchManifestData(codeEditorValue)
         return manifestEditorValue
@@ -565,9 +502,7 @@ export default function DeploymentTemplateOverrideForm({
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
-            codeEditorValue = isOverridden
-                ? YAMLStringify(state.duplicate)
-                : YAMLStringify(state.data.globalConfig)
+            codeEditorValue = isOverridden ? YAMLStringify(state.duplicate) : YAMLStringify(state.data.globalConfig)
         }
 
         return codeEditorValue
@@ -648,6 +583,7 @@ export default function DeploymentTemplateOverrideForm({
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
+                guiSchema={state.guiSchema}
             />
         )
     }
@@ -658,11 +594,10 @@ export default function DeploymentTemplateOverrideForm({
     )
 
     const renderValuesView = () => (
-        <form
+        <div
             className={`deployment-template-override-form h-100 ${state.openComparison ? 'comparison-view' : ''} ${
                 state.showReadme ? 'readme-view' : ''
             }`}
-            onSubmit={handleSaveChanges}
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
@@ -704,8 +639,9 @@ export default function DeploymentTemplateOverrideForm({
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 setLockedOverride={setLockedOverride}
+                handleSaveChanges={handleSaveChanges}
             />
-        </form>
+        </div>
     )
 
     const getValueForContext = () => ({
