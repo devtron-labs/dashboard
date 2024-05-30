@@ -1,70 +1,143 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { ConditionalWrap, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 import Tippy from '@tippyjs/react'
-import { highlightSearchedText, importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import { Pagination } from '../../common'
+import {
+    ConditionalWrap,
+    Progressing,
+    useAsync,
+    abortPreviousRequests,
+    highlightSearchText,
+    Pagination,
+    useSearchString,
+    Nodes,
+    showError,
+    getIsRequestAborted,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
+import WebWorker from '../../app/WebWorker'
+import searchWorker from '../../../config/searchWorker'
+import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     ALL_NAMESPACE_OPTION,
     K8S_EMPTY_GROUP,
-    K8S_RESOURCE_LIST,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
     SIDEBAR_KEYS,
+    SEARCH_QUERY_PARAM_KEY,
+    DEFAULT_K8SLIST_PAGE_SIZE,
 } from '../Constants'
-import { K8SResourceListType } from '../Types'
+import { getResourceList, getResourceListPayload } from '../ResourceBrowser.service'
+import { K8SResourceListType, ResourceDetailDataType, ResourceDetailType, URLParams } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { EventList } from './EventList'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { getEventObjectTypeGVK, getScrollableResourceClass } from '../Utils'
+import {
+    getScrollableResourceClass,
+    sortEventListData,
+    removeDefaultForStorageClass,
+    updateQueryString,
+    getRenderNodeButton,
+} from '../Utils'
 import { URLS } from '../../../config'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
+const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
+    'getFilterOptionsFromSearchParams',
+    null,
+    'function',
+)
 
 export const K8SResourceList = ({
     selectedResource,
-    resourceList,
-    filteredResourceList,
-    noResults,
     selectedCluster,
-    namespaceOptions,
-    selectedNamespace,
-    setSelectedNamespace,
-    resourceListLoader,
-    getResourceListData,
-    updateNodeSelectionData,
-    searchText,
-    setSearchText,
-    searchApplied,
-    setSearchApplied,
-    handleFilterChanges,
-    clearSearch,
-    clearFilters,
     addTab,
-    updateTabUrl,
-    renderCallBackSync,
-    syncError,
-    k8SObjectMapRaw,
+    renderRefreshBar,
+    isOpen,
+    showStaleDataWarning,
+    updateK8sResourceTab,
 }: K8SResourceListType) => {
+    const { searchParams } = useSearchString()
     const { push } = useHistory()
     const { url } = useRouteMatch()
-    const { clusterId, namespace, nodeType, node } = useParams<{
-        clusterId: string
-        namespace: string
-        nodeType: string
-        node: string
-        group: string
-        name: string
-    }>()
+    const location = useLocation()
+    const { clusterId, nodeType, group } = useParams<URLParams>()
+    const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
-    const [pageSize, setPageSize] = useState(100)
+    const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
+    const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
-    const showPaginatedView = resourceList?.data?.length >= 100
+    const searchWorkerRef = useRef(null)
+    const abortControllerRef = useRef(new AbortController())
+
+    const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
+
+    /* NOTE: _filters is an object */
+    const _filters = getFilterOptionsFromSearchParams?.(location.search)
+    const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
+
+    const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
+        () => {
+            return abortPreviousRequests(
+                () =>
+                    getResourceList(
+                        getResourceListPayload(
+                            clusterId,
+                            selectedNamespace.value.toLowerCase(),
+                            selectedResource,
+                            filters,
+                        ),
+                        abortControllerRef.current.signal,
+                    ),
+                abortControllerRef,
+            )
+        },
+        [selectedResource, clusterId, selectedNamespace, filters],
+        selectedResource && selectedResource.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind,
+    )
+
+    const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
+
+    const resourceList = useMemo(() => {
+        if (!_resourceList) {
+            return null
+        }
+        const result = structuredClone(_resourceList.result)
+        switch (selectedResource?.gvk.Kind) {
+            case SIDEBAR_KEYS.eventGVK.Kind:
+                result.data = sortEventListData(result.data)
+                break
+            case Nodes.StorageClass:
+                result.data = removeDefaultForStorageClass(result.data)
+                break
+            default:
+                break
+        }
+        result.data = result.data.map((data, index) => ({ id: index, ...data }))
+        return result
+    }, [_resourceList])
+
+    const showPaginatedView = resourceList?.data?.length >= pageSize
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -81,39 +154,73 @@ export const K8SResourceList = ({
     }, [resourceList?.headers])
 
     useEffect(() => {
-        resetPaginator()
+        return () => {
+            if (!searchWorkerRef.current) {
+                return
+            }
+            searchWorkerRef.current.postMessage({ type: 'stop' })
+            searchWorkerRef.current = null
+        }
+    }, [])
+
+    useEffect(() => {
+        setResourceListOffset(0)
+        setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
-    const resetPaginator = () => {
-        setResourceListOffset(0)
-        setPageSize(100)
+    const handleFilterChanges = (_searchText: string): void => {
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
+        }
+
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: resourceList?.data || [],
+                origin: new URL(window.__BASE_URL__, window.location.href).origin,
+            },
+        })
+    }
+
+    useEffect(() => {
+        if (!resourceList) {
+            setFilteredResourceList(null)
+            return
+        }
+        handleFilterChanges(searchText)
+    }, [resourceList])
+
+    const setSearchText = (text: string) => {
+        const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
+        const _url = `${location.pathname}?${searchParamString}`
+        updateK8sResourceTab(_url)
+        push(_url)
+        handleFilterChanges(text)
+        if (text) {
+            /* NOTE: if resourceListOffset is 0 setState is noop */
+            setResourceListOffset(0)
+        }
     }
 
     const handleResourceClick = (e) => {
         const { name, tab, namespace, origin } = e.currentTarget.dataset
-        let resourceParam
-        let kind
-        let resourceName
-        let _nodeSelectionData
-        let _group
+        let resourceParam: string
+        let kind: string
+        let resourceName: string
+        let _group: string
         const _namespace = namespace ?? ALL_NAMESPACE_OPTION.value
         if (origin === 'event') {
             const [_kind, _resourceName] = name.split('/')
-            const _selectedResource = getEventObjectTypeGVK(k8SObjectMapRaw, _kind)
-            _group = _selectedResource?.Group.toLowerCase() || K8S_EMPTY_GROUP
+            _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
             resourceParam = `${_kind}/${_group}/${_resourceName}`
             kind = _kind
             resourceName = _resourceName
-            _nodeSelectionData = { name: `${kind}_${resourceName}`, namespace, isFromEvent: true }
         } else {
-            resourceParam = `${nodeType}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
-            kind = nodeType
+            kind = selectedResource.gvk.Kind.toLowerCase()
+            resourceParam = `${kind}/${selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP}/${name}`
             resourceName = name
-            _nodeSelectionData = resourceList.data.find(
-                (resource) =>
-                    (resource.name === name || resource.name === node) &&
-                    (!resource.namespace || resource.namespace === namespace),
-            )
             _group = selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP
         }
 
@@ -121,28 +228,17 @@ export const K8SResourceList = ({
             tab ? `/${tab.toLowerCase()}` : ''
         }`
         const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        const isAdded = addTab(idPrefix, kind, resourceName, _url)
-
-        if (isAdded) {
-            updateNodeSelectionData(_nodeSelectionData, _group)
-            push(_url)
-        } else {
-            toast.error(
-                <div>
-                    <div>{K8S_RESOURCE_LIST.tabError.maxTabTitle}</div>
-                    <p>{K8S_RESOURCE_LIST.tabError.maxTabSubTitle}</p>
-                </div>,
-            )
-        }
+        addTab(idPrefix, kind, resourceName, _url)
+            .then(() => push(_url))
+            .catch(noop)
     }
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
         const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
-        const isAdded = addTab(K8S_EMPTY_GROUP, 'node', name, _url)
-        if (isAdded) {
-            push(_url)
-        }
+        addTab(K8S_EMPTY_GROUP, 'node', name, _url)
+            .then(() => push(_url))
+            .catch(noop)
     }
 
     const getStatusClass = (status: string) => {
@@ -155,88 +251,96 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
-    const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
+    const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
         return (
             <div
-                key={`row--${index}-${resourceData.name}`}
-                className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover dc__hover-n50"
+                key={`${resourceData.id}-${resourceData.name}`}
+                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
-                {resourceList.headers.map((columnName, idx) =>
+                {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.name}-${idx}`}
-                            className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
+                            key={`${resourceData.id}-${columnName}`}
+                            className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <div className="w-100 flex left" data-testid="created-resource-name">
-                                <div className="w-303 pr-4">
-                                    <div className="dc__w-fit-content dc__mxw-304 pr-4">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="right"
-                                            content={resourceData.name}
-                                        >
-                                            <a
-                                                className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
-                                                data-name={resourceData.name}
-                                                data-namespace={resourceData.namespace}
-                                                onClick={handleResourceClick}
-                                            >
-                                                <span
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: highlightSearchedText(searchText, resourceData.name),
-                                                    }}
-                                                />
-                                            </a>
-                                        </Tippy>
-                                    </div>
-                                </div>
+                            <div className="w-100 flexbox dc__content-space" data-testid="created-resource-name">
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="right"
+                                    content={resourceData.name}
+                                >
+                                    <button
+                                        type="button"
+                                        className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                        data-name={resourceData.name}
+                                        data-namespace={resourceData.namespace}
+                                        onClick={handleResourceClick}
+                                        aria-label={`Select ${resourceData.name}`}
+                                    >
+                                        <span
+                                            className="dc__link cursor"
+                                            // eslint-disable-next-line react/no-danger
+                                            dangerouslySetInnerHTML={{
+                                                __html: DOMPurify.sanitize(
+                                                    highlightSearchText({
+                                                        searchText,
+                                                        text: String(resourceData.name),
+                                                        highlightClasses: 'p-0 fw-6 bcy-2',
+                                                    }),
+                                                ),
+                                            }}
+                                        />
+                                    </button>
+                                </Tippy>
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
                                     resourceData={resourceData}
+                                    getResourceListData={reloadResourceListData as () => Promise<void>}
                                     selectedResource={selectedResource}
-                                    getResourceListData={getResourceListData}
                                     handleResourceClick={handleResourceClick}
                                 />
                             </div>
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.name}-${idx}`}
-                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 flex left${
+                            key={`${resourceData.id}-${columnName}`}
+                            className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
                                 columnName === 'status'
-                                    ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
+                                    ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
                             }`}
                         >
                             <ConditionalWrap
                                 condition={columnName === 'node'}
-                                wrap={(children) => (
-                                    <a
-                                        className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
-                                        data-name={resourceData[columnName]}
-                                        onClick={handleNodeClick}
-                                    >
-                                        {children}
-                                    </a>
-                                )}
+                                wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
                                 <span
+                                    className="dc__ellipsis-right"
                                     data-testid={`${columnName}-count`}
+                                    // eslint-disable-next-line react/no-danger
                                     dangerouslySetInnerHTML={{
-                                        __html: highlightSearchedText(searchText, resourceData[columnName]?.toString()),
+                                        __html: DOMPurify.sanitize(
+                                            highlightSearchText({
+                                                searchText,
+                                                text: resourceData[columnName]?.toString(),
+                                                highlightClasses: 'p-0 fw-6 bcy-2',
+                                            }),
+                                        ),
                                     }}
                                 />
                                 <span>
-                                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
-                                        <PodRestartIcon
-                                            clusterId={clusterId}
-                                            name={resourceData.name}
-                                            namespace={resourceData.namespace}
-                                        />
-                                    )}
+                                    {columnName === 'restarts' &&
+                                        Number(resourceData.restarts) !== 0 &&
+                                        PodRestartIcon && (
+                                            <PodRestartIcon
+                                                clusterId={clusterId}
+                                                name={resourceData.name}
+                                                namespace={resourceData.namespace}
+                                            />
+                                        )}
                                 </span>
                             </ConditionalWrap>
                         </div>
@@ -246,28 +350,26 @@ export const K8SResourceList = ({
         )
     }
 
-    const emptyPageActionHandler = () => {
-        clearSearch()
-        clearFilters()
+    const emptyStateActionHandler = () => {
+        setSearchText('')
+        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
+        updateK8sResourceTab(pathname)
+        push(pathname)
+        setSelectedNamespace(ALL_NAMESPACE_OPTION)
     }
 
     const renderEmptyPage = (): JSX.Element => {
-        if (noResults) {
-            return (
-                <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
-                        selectedResource?.gvk?.Kind,
-                        selectedResource?.namespaced,
-                    )}
-                />
-            )
-        }
-        return (
+        const isFilterApplied = searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+        return isFilterApplied ? (
             <ResourceListEmptyState
                 title={RESOURCE_LIST_EMPTY_STATE.title}
                 subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                actionHandler={emptyPageActionHandler}
+                actionHandler={emptyStateActionHandler}
+            />
+        ) : (
+            <ResourceListEmptyState
+                title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
+                subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(selectedResource?.gvk?.Kind, selectedResource?.namespaced)}
             />
         )
     }
@@ -275,10 +377,8 @@ export const K8SResourceList = ({
     const changePage = (pageNo: number) => {
         setResourceListOffset(pageSize * (pageNo - 1))
 
-        // scroll to top on page change
-        if (resourceListRef.current) {
-            resourceListRef.current.scrollTo({ top: 0, behavior: 'smooth' })
-        }
+        /* NOTE: scroll to top on page change */
+        resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     const changePageSize = (size: number) => {
@@ -286,14 +386,22 @@ export const K8SResourceList = ({
         setResourceListOffset(0)
     }
 
+    if (resourceListDataError) {
+        showError(resourceListDataError)
+    }
+
     const renderResourceList = (): JSX.Element => {
         return (
             <div
                 ref={resourceListRef}
-                className={getScrollableResourceClass('scrollable-resource-list', showPaginatedView, syncError)}
+                className={getScrollableResourceClass(
+                    'scrollable-resource-list',
+                    showPaginatedView,
+                    showStaleDataWarning,
+                )}
             >
                 <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
-                    {resourceList.headers.map((columnName) => (
+                    {resourceList?.headers.map((columnName) => (
                         <div
                             key={columnName}
                             className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
@@ -312,13 +420,13 @@ export const K8SResourceList = ({
                 </div>
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
-                    .map((clusterData, index) => renderResourceRow(clusterData, index))}
+                    .map((clusterData) => renderResourceRow(clusterData))}
             </div>
         )
     }
 
     const renderList = (): JSX.Element => {
-        if (filteredResourceList.length === 0) {
+        if (filteredResourceList?.length === 0 || resourceListDataError) {
             return renderEmptyPage()
         }
         return (
@@ -329,7 +437,7 @@ export const K8SResourceList = ({
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                         handleResourceClick={handleResourceClick}
                         paginatedView={showPaginatedView}
-                        syncError={syncError}
+                        syncError={showStaleDataWarning}
                         searchText={searchText}
                     />
                 ) : (
@@ -337,7 +445,7 @@ export const K8SResourceList = ({
                 )}
                 {showPaginatedView && (
                     <Pagination
-                        rootClassName="resource-browser-paginator dc__border-top"
+                        rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
                         size={filteredResourceList.length}
                         pageSize={pageSize}
                         offset={resourceListOffset}
@@ -352,31 +460,29 @@ export const K8SResourceList = ({
 
     return (
         <div
-            className={`resource-list-container dc__border-left dc__position-rel ${
-                filteredResourceList.length === 0 ? 'no-result-container' : ''
+            className={`resource-list-container dc__border-left flexbox-col ${
+                filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
         >
             <ResourceFilterOptions
                 selectedResource={selectedResource}
-                selectedCluster={selectedCluster}
-                namespaceOptions={namespaceOptions}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}
+                selectedCluster={selectedCluster}
                 searchText={searchText}
-                searchApplied={searchApplied}
+                isOpen={isOpen}
                 resourceList={resourceList}
                 setSearchText={setSearchText}
-                setSearchApplied={setSearchApplied}
-                handleFilterChanges={handleFilterChanges}
-                clearSearch={clearSearch}
-                updateTabUrl={updateTabUrl}
                 isSearchInputDisabled={resourceListLoader}
-                renderCallBackSync={renderCallBackSync}
+                renderRefreshBar={renderRefreshBar}
+                updateK8sResourceTab={updateK8sResourceTab}
             />
-            {resourceListLoader ? <Progressing pageLoader /> : renderList()}
-            {PodRestart && (
-                <PodRestart />
+            {!resourceListDataError && (resourceListLoader || !resourceList || !filteredResourceList) ? (
+                <Progressing size={32} pageLoader />
+            ) : (
+                renderList()
             )}
+            {PodRestart && <PodRestart />}
         </div>
     )
 }
