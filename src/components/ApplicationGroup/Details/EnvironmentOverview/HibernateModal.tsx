@@ -40,6 +40,7 @@ export const HibernateModal = ({
     isDeploymentLoading,
     showDefaultDrawer,
     httpProtocol,
+    isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -71,7 +72,7 @@ export const HibernateModal = ({
     }
 
     const renderHibernateModalBody = () => {
-        if (showDefaultDrawer) {
+        if (showDefaultDrawer || !isDeploymentBlockedViaWindow) {
             return (
                 <>
                     <span>
