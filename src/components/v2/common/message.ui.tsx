@@ -64,7 +64,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
     return (
         <div
             data-testid={dataTestId}
-            className={`dc__text-center h-100 flexbox dc__gap-8 dc__align-items-center dc__content-center ${theme || 'dark'}-background w-100 `}
+            className={`dc__text-center h-100 flexbox flex-grow-1 dc__gap-8 dc__align-items-center dc__content-center ${theme || 'dark'}-background w-100 `}
         >
             <div>
                 {(() => {
