@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     MODAL_TYPE,
     Progressing,
     VisibleModal,
     showError,
     stopPropagation,
-    ButtonWithLoader
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
@@ -82,7 +98,9 @@ export const UnhibernateModal = ({
         <VisibleModal close={closeModal} onEscape={closeModal} className="generate-token-modal">
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentLoading ? (
-                     <div className="mh-320 flex"><Progressing pageLoader /></div>
+                    <div className="mh-320 flex">
+                        <Progressing pageLoader />
+                    </div>
                 ) : (
                     <>
                         <div className="flexbox-col dc__gap-12">

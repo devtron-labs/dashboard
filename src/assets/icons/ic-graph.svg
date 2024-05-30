@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     <path fill="#959BA1" fill-rule="evenodd" d="M3 2a1 1 0 0 1 .993.883L4 3v11.403l4.43-4.428a1 1 0 0 1 1.32-.083l.093.083 3.384 3.383 5.359-5.36L16.091 8a1 1 0 0 1-.993-.883L15.09 7a1 1 0 0 1 .883-.993L16.091 6h4.941l.054.004L21 6a1.008 1.008 0 0 1 .617.213c.063.05.12.107.17.17l-.08-.09a1.008 1.008 0 0 1 .286.59l.003.028.004.07v4.929a1 1 0 0 1-1.993.116L20 11.909l-.001-2.494-6.065 6.065a1 1 0 0 1-1.32.083l-.094-.083-3.384-3.385L4 17.232V20h17a1 1 0 0 1 .993.883L22 21a1 1 0 0 1-.883.993L21 22H3a1 1 0 0 1-.993-.883L2 21V3a1 1 0 0 1 1-1z"/>
 </svg>
