@@ -27,6 +27,7 @@ import {
     useUrlFilters,
     EditableTextArea,
     useSearchString,
+    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -105,7 +106,7 @@ export default function EnvironmentOverview({
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
     // NOTE: there is a slim chance that the api is called before httpProtocol is set
     const httpProtocol = useRef('')
-    const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some((item) => item.isActive)
+    const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(({type, isActive}) => type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive || type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && !isActive)
 
     useEffect(() => {
         const observer = new PerformanceObserver((list) => {
