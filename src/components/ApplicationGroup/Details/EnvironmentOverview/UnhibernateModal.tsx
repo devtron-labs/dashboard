@@ -41,6 +41,7 @@ export const UnhibernateModal = ({
     showDefaultDrawer,
     isDeploymentLoading,
     httpProtocol,
+    isDeploymentBlockedViaWindow
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -73,7 +74,7 @@ export const UnhibernateModal = ({
     }
 
     const renderHibernateModalBody = () => {
-        if (showDefaultDrawer) {
+        if (showDefaultDrawer || !isDeploymentBlockedViaWindow) {
             return (
                 <>
                     <span>
