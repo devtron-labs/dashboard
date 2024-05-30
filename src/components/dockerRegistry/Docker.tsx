@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import {
     showError,
@@ -61,7 +77,13 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
-import { CredentialType, CustomCredential, RemoteConnectionType, SSHAuthenticationType } from './dockerType'
+import {
+    CredentialType,
+    CustomCredential,
+    RemoteConnectionType,
+    RemoteConnectionTypeRegistry,
+    SSHAuthenticationType,
+} from './dockerType'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
@@ -76,6 +98,18 @@ enum CERTTYPE {
     SECURE = 'secure',
     INSECURE = 'insecure',
     SECURE_WITH_CERT = 'secure-with-cert',
+}
+
+const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
+    const sshConfig = remoteConnectionConfig?.sshConfig
+    if (sshConfig) {
+        if (sshConfig.sshPassword && sshConfig.sshAuthKey) {
+            return SSHAuthenticationType.Password_And_SSH_Private_Key
+        } else if (sshConfig.sshAuthKey) {
+            return SSHAuthenticationType.SSH_Private_Key
+        }
+    }
+    return SSHAuthenticationType.Password
 }
 
 export default function Docker({ ...props }) {
@@ -373,18 +407,14 @@ const DockerForm = ({
             ? password.substring(1, password.length - 1)
             : password
 
-    let _remoteConnectionMethod = RemoteConnectionType.Direct 
-    if (remoteConnectionConfig.connectionMethod) {
-        _remoteConnectionMethod = remoteConnectionConfig.connectionMethod
+    let _remoteConnectionMethod = RemoteConnectionType.Direct
+    if (remoteConnectionConfig?.connectionMethod) {
+        _remoteConnectionMethod = remoteConnectionConfig?.connectionMethod
     }
     const [remoteConnectionMethod, setRemoteConnectionMethod] = useState(_remoteConnectionMethod)
-    const initialSSHAuthenticationType = remoteConnectionConfig.sshConfig
-        ? remoteConnectionConfig.sshConfig.sshPassword && remoteConnectionConfig.sshConfig.sshAuthKey
-            ? SSHAuthenticationType.Password_And_SSH_Private_Key
-            : remoteConnectionConfig.sshConfig.sshAuthKey
-              ? SSHAuthenticationType.SSH_Private_Key
-              : SSHAuthenticationType.Password
-        : SSHAuthenticationType.Password
+
+    const initialSSHAuthenticationType = getInitialSSHAuthenticationType(remoteConnectionConfig)
+
     const [sshConnectionType, setSSHConnectionType] = useState(initialSSHAuthenticationType)
 
     const [customState, setCustomState] = useState({
@@ -407,13 +437,13 @@ const DockerForm = ({
         remoteConnectionConfig: {
             connectionMethod: { value: remoteConnectionMethod, error: '' },
             proxyConfig: {
-                proxyUrl: { value: remoteConnectionConfig.proxyConfig?.proxyUrl || '', error: '' },
+                proxyUrl: { value: remoteConnectionConfig?.proxyConfig?.proxyUrl || '', error: '' },
             },
             sshConfig: {
-                sshServerAddress: { value: remoteConnectionConfig.sshConfig?.sshServerAddress || '', error: '' },
-                sshUsername: { value: remoteConnectionConfig.sshConfig?.sshUsername || '', error: '' },
-                sshPassword: { value: remoteConnectionConfig.sshConfig?.sshPassword || '', error: '' },
-                sshAuthKey: { value: remoteConnectionConfig.sshConfig?.sshAuthKey || '', error: '' },
+                sshServerAddress: { value: remoteConnectionConfig?.sshConfig?.sshServerAddress || '', error: '' },
+                sshUsername: { value: remoteConnectionConfig?.sshConfig?.sshUsername || '', error: '' },
+                sshPassword: { value: remoteConnectionConfig?.sshConfig?.sshPassword || '', error: '' },
+                sshAuthKey: { value: remoteConnectionConfig?.sshConfig?.sshAuthKey || '', error: '' },
             },
         },
     })
@@ -1011,7 +1041,7 @@ const DockerForm = ({
                 updateWithCustomStateValidationForRemoteConnectionConfig('proxyUrl', proxyConfig.proxyUrl.value)
             ) {
                 return false
-            }``
+            }
             if (remoteConnectionMethod === RemoteConnectionType.SSHTunnel) {
                 if (
                     updateWithCustomStateValidationForRemoteConnectionConfig(
@@ -1273,14 +1303,15 @@ const DockerForm = ({
                 <>
                     <div className="dc__position-rel dc__hover mb-20">
                         <span className="form__input-header pb-20">
-                            How do you want Devtron to connect with this cluster?
+                            How do you want Devtron to connect with this registry?
                         </span>
                         <span className="pb-20">
                             {RemoteConnectionRadio && (
                                 <RemoteConnectionRadio
-                                    connectionMethod={customState.remoteConnectionConfig.connectionMethod}
-                                    proxyConfig={customState.remoteConnectionConfig.proxyConfig}
-                                    sshConfig={customState.remoteConnectionConfig.sshConfig}
+                                    resourceType={RemoteConnectionTypeRegistry}
+                                    connectionMethod={customState.remoteConnectionConfig?.connectionMethod}
+                                    proxyConfig={customState.remoteConnectionConfig?.proxyConfig}
+                                    sshConfig={customState.remoteConnectionConfig?.sshConfig}
                                     changeRemoteConnectionType={handleOnChangeForRemoteConnectionRadio}
                                     changeSSHAuthenticationType={changeSSHAuthenticationType}
                                     handleOnChange={handleOnChangeConfig}

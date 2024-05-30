@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -18,7 +34,7 @@ import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
 import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
-import { BulkResponseStatus, BULK_CD_RESPONSE_STATUS_TEXT } from '../ApplicationGroup/Constants'
+import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -337,12 +353,13 @@ export const triggerCDNode = (
 export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
     return new Promise((resolve) => {
         ApiQueuingWithBatch(
-            appIds.map((appId) =>
-                () => put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
-                    appIds: [appId],
-                    environmentId: envId,
-                    value: value,
-                }),
+            appIds.map(
+                (appId) => () =>
+                    put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                        appIds: [appId],
+                        environmentId: envId,
+                        value: value,
+                    }),
             ),
             httpProtocol,
         )
@@ -355,19 +372,19 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                         const response = {
                             appId: appIds[index],
                             status: '',
-                            message: ''
+                            message: '',
                         }
                         const errorReason = result.reason
                         switch (errorReason.code) {
                             case 403:
                             case 422:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
                                 response.status = BulkResponseStatus.UNAUTHORIZE
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                                 break
                             case 409:
                             default:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
                                 response.status = BulkResponseStatus.FAIL
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                         }
                         return response
                     }),

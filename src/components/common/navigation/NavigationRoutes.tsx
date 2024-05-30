@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
@@ -50,13 +66,14 @@ const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
+const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
+const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const Releases = importComponentFromFELibrary('Releases', null, 'function')
 
 export default function NavigationRoutes() {
@@ -264,7 +281,7 @@ export default function NavigationRoutes() {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
                 if (
-                    location.pathname !== parsedTabsData.key &&
+                    location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
                     localStorage.removeItem('persisted-tabs-data')
@@ -365,10 +382,8 @@ export default function NavigationRoutes() {
                         >
                             <ErrorBoundary>
                                 <Switch>
-                                    <Route
-                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
-                                    >
-                                        <ResourceBrowserContainer />
+                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
+                                        <ResourceBrowser />
                                     </Route>
                                     <Route
                                         path={URLS.GLOBAL_CONFIG}
@@ -409,7 +424,14 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        ...(Releases
+                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
+                                            ? [
+                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
+                                                      <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        ...(!window._env_.HIDE_RELEASES && Releases
                                             ? [
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
