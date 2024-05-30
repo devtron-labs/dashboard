@@ -385,7 +385,6 @@ const NodeDetailComponent = ({
                     msg=""
                     icon={MsgUIType.LOADING}
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                 />
             ) : (
                 <Switch>
@@ -428,6 +427,7 @@ const NodeDetailComponent = ({
                             />
                         </div>
                     </Route>
+                    {/* NOTE: this seems like an obsolete component? since it can't be reached through UI */}
                     {!isResourceBrowserView && (
                         <Route path={`${path}/${NodeDetailTab.SUMMARY}`}>
                             <SummaryComponent selectedTab={handleSelectedTab} />

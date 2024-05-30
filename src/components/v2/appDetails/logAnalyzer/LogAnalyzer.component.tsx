@@ -9,7 +9,7 @@ const LogAnalyzerComponent = ({ logSearchTerms, setLogSearchTerms, isExternalApp
     }, [])
 
     return (
-        <div className="resource-node-wrapper">
+        <div className="flexbox-col flex-grow-1">
             <LogsComponent
                 selectedTab={null}
                 isDeleted={false}

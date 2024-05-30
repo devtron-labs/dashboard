@@ -455,7 +455,7 @@ const ManifestComponent = ({
     }
 
     return isDeleted ? (
-        <div className="h-100">
+        <div className="h-100 flex-grow-1">
             <MessageUI
                 msg="This resource no longer exists"
                 size={32}
@@ -464,7 +464,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flex-grow-1 `}
+            className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ' '} manifest-container flex-grow-1`}
             data-testid="app-manifest-container"
             style={{ background: '#0B0F22' }}
         >
