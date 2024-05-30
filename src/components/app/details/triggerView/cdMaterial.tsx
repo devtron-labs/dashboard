@@ -45,6 +45,7 @@ import {
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentWithConfigType,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -93,7 +94,8 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
-import { useHistory } from 'react-router-dom'
+import { Prompt, useHistory } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -210,6 +212,9 @@ const CDMaterial = ({
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
+
+    usePrompt({shouldPrompt: deploymentLoading})
+
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -917,7 +922,7 @@ const CDMaterial = ({
         }
 
         if (isFromBulkCD) {
-            // It does'nt need any params btw
+            // It doesn't need any params btw
             triggerDeploy(stageType, appId, Number(getCDArtifactId()))
             return
         }
@@ -1787,6 +1792,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
+                        disabled={deploymentLoading || isSaveLoading}
                         className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
@@ -1922,6 +1928,7 @@ const CDMaterial = ({
                     envName={envName}
                 />
             )}
+            <Prompt when={deploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </>
     )
 

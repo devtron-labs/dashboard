@@ -36,7 +36,7 @@ import {
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { TriggerViewProps, TriggerViewState } from './types'
-import { CIMaterial } from './ciMaterial'
+import CIMaterial from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {
     URLS,

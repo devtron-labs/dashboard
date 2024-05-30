@@ -36,7 +36,7 @@ import {
     ViewType,
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
+import CIMaterial from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'

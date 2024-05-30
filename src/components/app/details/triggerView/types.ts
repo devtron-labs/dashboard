@@ -208,6 +208,7 @@ export interface CIMaterialState {
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
+    isBuildTriggeredLoading: boolean
 }
 
 export interface DownStreams {

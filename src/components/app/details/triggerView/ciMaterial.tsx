@@ -9,16 +9,17 @@ import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-medi
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
+import { Prompt } from 'react-router-dom'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
-export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
+class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
     constructor(props) {
@@ -37,6 +38,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
+            isBuildTriggeredLoading: false,
         }
     }
 
@@ -144,6 +146,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     handleStartBuildAction = (e) => {
         e.stopPropagation()
+        this.setState({isBuildTriggeredLoading: true})
         this.context.onClickTriggerCINode()
     }
 
@@ -257,6 +260,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
+
+                    <Prompt when={this.state.isBuildTriggeredLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )
         }
@@ -367,3 +372,5 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return <></>
     }
 }
+
+export default CIMaterial
