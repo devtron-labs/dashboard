@@ -2228,6 +2228,10 @@ button.anchor {
     &--b1 {
         border-right: solid 1px var(--B100);
     }
+
+    &--b5 {
+        border-right: solid 1px var(--B500);
+    }
 }
 
 .dc__border-top-n1 {
@@ -2709,6 +2713,14 @@ textarea,
             &:nth-child(2) {
                 fill: var(--O200);
             }
+        }
+    }
+}
+
+.ic-env-white {
+    g {
+        g {
+            fill: var(--N0);
         }
     }
 }
@@ -4535,6 +4547,14 @@ textarea::placeholder {
 .dc__even-child {
     &--bcn-50 {
         > :nth-child(even) {
+            background-color: var(--N50);
+        }
+    }
+}
+
+.dc__odd-child {
+    &--sibling-bcn-50 {
+        &:nth-child(odd) {
             background-color: var(--N50);
         }
     }

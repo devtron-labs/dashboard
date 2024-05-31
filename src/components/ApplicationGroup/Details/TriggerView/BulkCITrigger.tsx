@@ -14,6 +14,7 @@ import {
     KeyValueListActionType,
     HandleKeyValueChangeType,
     CIMaterialSidebarType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -43,7 +44,6 @@ import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
@@ -116,7 +116,8 @@ const BulkCITrigger = ({
 
         if (runtimeParamsServiceList.length) {
             try {
-                const responses = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
+                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
+                const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
                 const _runtimeParams: Record<string, KeyValueListType[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
@@ -235,7 +236,8 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
+                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
                 responses.forEach((res, index) => {
                     policyListMap[appList[index]?.appId] = res.value?.['result']
                         ? processConsequenceData(res.value['result'])

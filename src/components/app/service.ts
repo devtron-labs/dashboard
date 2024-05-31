@@ -10,14 +10,14 @@ import {
     DATE_TIME_FORMAT_STRING,
     DeploymentWithConfigType,
     noop,
+    ApiQueuingBatchStatusType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
-import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 const stageMap = {
@@ -347,7 +347,8 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
             ),
             httpProtocol,
         )
-            .then((results) => {
+            .then((results: any[]) => {
+                // Adding for legacy code since have move API Queueing to generics with unknown as default response
                 resolve(
                     results.map((result, index) => {
                         if (result.status === ApiQueuingBatchStatusType.FULFILLED) {

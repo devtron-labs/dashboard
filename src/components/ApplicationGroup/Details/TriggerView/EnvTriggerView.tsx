@@ -23,6 +23,7 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -49,7 +50,7 @@ import {
     sortObjectArrayAlphabetically,
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'

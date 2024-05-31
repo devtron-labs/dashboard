@@ -15,13 +15,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
 import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
-import { importComponentFromFELibrary, useAppContext } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
@@ -89,7 +89,6 @@ export default function EnvironmentOverview({
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
         Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE }>
     >({})
-    const [showClonePipelineModal, setShowClonePipelineModal] = useState<boolean>(false)
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
     // NOTE: there is a slim chance that the api is called before httpProtocol is set
     const httpProtocol = useRef('')
@@ -189,17 +188,6 @@ export default function EnvironmentOverview({
     const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { checked, value } = e.target
 
-        // if (value === 'ALL') {
-        //     if (checked) {
-        //         setSelectedAppIds(appListData.appInfoList.map((item) => item.appId))
-        //     } else {
-        //         setSelectedAppIds([])
-        //     }
-        // } else if (checked) {
-        //     setSelectedAppIds([...selectedAppIds, +value])
-        // } else {
-        //     setSelectedAppIds(selectedAppIds.filter((item) => item !== +value))
-        // }
         if (value === 'ALL') {
             if (checked) {
                 setSelectedAppDetailsList(appListData.appInfoList)
@@ -317,14 +305,6 @@ export default function EnvironmentOverview({
 
     const closeCommitInfoModal = () => {
         setCommitInfoModalConfig(null)
-    }
-
-    const handleShowClonePipelineModal = () => {
-        setShowClonePipelineModal(true)
-    }
-
-    const handleCloseClonePipelineModal = () => {
-        setShowClonePipelineModal(false)
     }
 
     if (loading) {
@@ -518,9 +498,12 @@ export default function EnvironmentOverview({
                         </span>
                         {selectedAppIds.length > 0 && (
                             <div className="flexbox dc__gap-6">
-                                {/* TODO: ask if this is the intended behavior in case of env delete */}
                                 {ClonePipelineButton && appListData.environment && (
-                                    <ClonePipelineButton onClick={handleShowClonePipelineModal} environmentName={appListData.environment} />
+                                    <ClonePipelineButton
+                                        sourceEnvironmentName={appListData.environment}
+                                        selectedAppDetailsList={selectedAppDetailsList}
+                                        httpProtocol={httpProtocol.current}
+                                    />
                                 )}
 
                                 <button
@@ -604,10 +587,6 @@ export default function EnvironmentOverview({
                     </div>
                 </div>
             </div>
-            {/* TODO: after prompt redirection fix, will move to render block */}
-            {showClonePipelineModal && (
-                <div/>
-            )}
             {openHiberateModal && (
                 <HibernateModal
                     selectedAppIds={selectedAppIds}

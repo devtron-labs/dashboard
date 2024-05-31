@@ -484,25 +484,6 @@ export interface ManageAppsResponse {
     authError?: boolean
 }
 
-export interface batchConfigType {
-    lastIndex: number
-    results: any[]
-    concurrentCount: number
-    completedCalls: number
-}
-
-export enum ApiQueuingBatchStatusType {
-    FULFILLED = 'fulfilled',
-    REJECTED = 'rejected',
-}
-
-// TODO: use T for value
-export interface ApiQueuingWithBatchResponseItem {
-    status: ApiQueuingBatchStatusType
-    value?: any
-    reason?: ServerErrors
-}
-
 export interface RestartWorkloadModalProps {
     selectedAppIds: number[]
     envName: string

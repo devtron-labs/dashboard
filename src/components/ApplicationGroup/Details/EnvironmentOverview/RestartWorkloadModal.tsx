@@ -10,6 +10,7 @@ import {
     MODAL_TYPE,
     stopPropagation,
     useSearchString,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
 import {
@@ -30,7 +31,6 @@ import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './s
 import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
 import './envOverview.scss'
 import { RestartStatusListDrawer } from './RestartStatusListDrawer'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
