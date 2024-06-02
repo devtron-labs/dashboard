@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { OptionType } from '../app/types'
 import { NodeTaintType } from '../ClusterNodes/types'
 import {
@@ -44,7 +60,6 @@ export function getClusterTerminalParamsData(
     namespaceList: OptionType[],
     nodeList: { options: OptionType[]; label: string }[],
     clusterShellList: OptionType[],
-    node: string,
 ): ClusterTerminalParamsType {
     if (!nodeList || nodeList.length === 0) {
         return emptyClusterTerminalParamsData
@@ -55,8 +70,7 @@ export function getClusterTerminalParamsData(
     nodeList?.forEach((item) => nodeOptionList.push(...item.options))
 
     const _selectedNode: OptionType =
-        nodeOptionList.find((data) => data.value === params.get('node')) ||
-        (node ? nodeOptionList.find((item) => item.value === node) : nodeList[0].options[0])
+        nodeOptionList.find((data) => data.value === params.get('node')) || nodeList[0].options[0]
 
     const _selectedShell = clusterShellList.find((shell) => shell.value === params.get('shell'))
 

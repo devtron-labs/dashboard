@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Icon/ic-medium-hibernate">
 <path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M33.7591 8.60241C33.0405 8.60241 32.4579 8.01983 32.4579 7.3012C32.4579 6.58258 33.0405 6 33.7591 6H40.6989C41.2252 6 41.6996 6.31703 41.901 6.80326C42.1024 7.28948 41.9912 7.84915 41.6191 8.2213L36.9005 12.9398H40.6989C41.4175 12.9398 42.0001 13.5223 42.0001 14.241C42.0001 14.9596 41.4175 15.5422 40.6989 15.5422H33.7591C33.2329 15.5422 32.7584 15.2251 32.557 14.7389C32.3555 14.2527 32.4669 13.693 32.8391 13.3209L37.5576 8.60241H33.7591ZM25.9519 19.012C25.2333 19.012 24.6507 18.4295 24.6507 17.7108C24.6507 16.9922 25.2333 16.4096 25.9519 16.4096H31.1567C31.6831 16.4096 32.1574 16.7267 32.3588 17.2129C32.5602 17.6991 32.449 18.2588 32.0769 18.6309L29.0933 21.6145H31.1567C31.8753 21.6145 32.4579 22.1971 32.4579 22.9157C32.4579 23.6343 31.8753 24.2169 31.1567 24.2169H25.9519C25.4257 24.2169 24.9512 23.8999 24.7497 23.4136C24.5483 22.9275 24.6597 22.3678 25.0318 21.9956L28.0154 19.012H25.9519Z" fill="#3B444C"/>

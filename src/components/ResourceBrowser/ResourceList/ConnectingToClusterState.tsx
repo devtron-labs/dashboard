@@ -1,26 +1,53 @@
-import React, { useEffect, useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { useEffect, useState, useRef } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
-import { ConnectingToClusterStateProps } from '../Types'
+import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT, CONNECTION_TIMEOUT_TIME } from '../Constants'
+import { ConnectingToClusterStateProps, URLParams } from '../Types'
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
 
-export default function ConnectingToClusterState({
+const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     loader,
     errorMsg,
-    setErrorMsg,
     selectedCluster,
-    setSelectedCluster,
     handleRetry,
-    sideDataAbortController,
-}: ConnectingToClusterStateProps) {
+    requestAbortController,
+}) => {
     const { replace } = useHistory()
-    const { clusterId } = useParams<{ clusterId: string }>()
+    const { clusterId } = useParams<URLParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)
-    let progressTimer = null
+    const progressTimerRef = useRef(null)
+
+    const resetStates = () => {
+        setInfoText(TRYING_TO_CONNECT)
+        setShowCancel(false)
+        setResetProgress(!resetProgress)
+    }
+
+    const initProgressTimer = () => {
+        progressTimerRef.current = setTimeout(() => {
+            setInfoText(TAKING_LONGER_TO_CONNECT)
+            setShowCancel(true)
+        }, CONNECTION_TIMEOUT_TIME)
+    }
 
     useEffect(() => {
         if (selectedCluster) {
@@ -32,64 +59,37 @@ export default function ConnectingToClusterState({
             initProgressTimer()
         }
 
-        return (): void => {
-            if (progressTimer) {
-                clearTimeout(progressTimer)
-            }
-        }
+        return () => clearTimeout(progressTimerRef.current)
     }, [clusterId, selectedCluster])
 
-    const initProgressTimer = () => {
-        if (progressTimer) {
-            clearTimeout(progressTimer)
-        }
-
-        progressTimer = setTimeout(() => {
-            setInfoText(TAKING_LONGER_TO_CONNECT)
-            setShowCancel(true)
-
-            if (progressTimer) {
-                clearTimeout(progressTimer)
-            }
-        }, 10000)
-    }
-
-    const renderInfo = (heading: string, infoText: string) => {
+    const renderInfo = (heading: string, _infoText: string) => {
         return (
             <>
                 <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300" data-testid="cluster_info_getting_loaded">
                     {heading}
                 </h2>
-                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{infoText}</p>
+                <p className="fs-13 fw-4 lh-20 w-300 mb-20">{_infoText}</p>
             </>
         )
     }
 
-    const resetStates = () => {
-        setInfoText(TRYING_TO_CONNECT)
-        setShowCancel(false)
-        setErrorMsg('')
-        setResetProgress(!resetProgress)
-    }
-
     const handleCancelClick = () => {
-        sideDataAbortController.new.abort()
-        sideDataAbortController.prev = sideDataAbortController.new
+        requestAbortController?.abort()
         resetStates()
-        setSelectedCluster(null)
         replace({
             pathname: URLS.RESOURCE_BROWSER,
         })
     }
 
-    const handleRetryClick = (e) => {
+    const handleRetryClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         resetStates()
         initProgressTimer()
-        handleRetry(e)
+        handleRetry(event)
     }
 
     const renderSelectionState = () => {
-        if (loader && !errorMsg) {
+        /* NOTE: should show loading irrespective of errorMsg */
+        if (loader) {
             return (
                 <>
                     <StyledProgressBar resetProgress={resetProgress} />
@@ -102,7 +102,7 @@ export default function ConnectingToClusterState({
                 <>
                     <img src={CouldNotConnectImg} width={250} height={200} alt="not reachable" />
                     {renderInfo(`‘${selectedCluster.label}’ is not reachable`, errorMsg)}
-                    <button className="flex cta h-36" onClick={handleRetryClick}>
+                    <button type="button" className="flex cta h-36" onClick={handleRetryClick}>
                         Retry
                     </button>
                 </>
@@ -140,3 +140,5 @@ export default function ConnectingToClusterState({
         </div>
     )
 }
+
+export default ConnectingToClusterState
