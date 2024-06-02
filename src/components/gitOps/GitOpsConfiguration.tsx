@@ -45,7 +45,7 @@ import GitProviderTabIcons from './GitProviderTabIcons'
 import { getProviderNameFromEnum } from './utils'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
 
-const GenericGitOpsForm = importComponentFromFELibrary('GenericGitOpsForm', null, 'function')
+const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 
 const GitProviderTab: React.FC<GitProviderTabProps> = ({
     providerTab,
@@ -57,7 +57,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
 }) => {
     const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
-    // TODO: Use GenericGitOpsForm as check instead after confirmation
+    // TODO: Use OtherGitOpsForm as check instead after bitbucket
     const displayName = getProviderNameFromEnum(provider, window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE)
 
     return (
@@ -69,7 +69,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
                 checked={providerTab === provider}
                 onChange={!saveLoading ? handleGitopsTab : noop}
             />
-            <span className={`dc__tertiary-tab sso-icons ${GenericGitOpsForm ? 'h-90' : ''}`} data-testid={datatestid}>
+            <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={datatestid}>
                 <aside className="login__icon-alignment">
                     <GitProviderTabIcons provider={provider} />
                 </aside>
@@ -790,7 +790,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 saveLoading={this.state.saveLoading}
                                 datatestid="gitops-gitlab-button"
                             />
-                            {GenericGitOpsForm && (
+                            {OtherGitOpsForm && (
                                 <GitProviderTab
                                     providerTab={this.state.providerTab}
                                     handleGitopsTab={this.handleGitopsTab}
@@ -817,7 +817,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 datatestid="gitops-bitbucket-button"
                             />
 
-                            {GenericGitOpsForm && (
+                            {OtherGitOpsForm && (
                                 <GitProviderTab
                                     providerTab={this.state.providerTab}
                                     handleGitopsTab={this.handleGitopsTab}
@@ -831,8 +831,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
                         {/* Not adding check for isAuthModeSSH since that no relation with form itself */}
                         {(this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) &&
-                        GenericGitOpsForm ? (
-                            <GenericGitOpsForm
+                        OtherGitOpsForm ? (
+                            <OtherGitOpsForm
                                 sshHost={{ value: this.state.form.sshHost, error: this.state.isError.sshHost }}
                                 sshKey={{ value: this.state.form.sshKey, error: this.state.isError.sshKey }}
                                 username={{ value: this.state.form.username, error: this.state.isError.username }}
