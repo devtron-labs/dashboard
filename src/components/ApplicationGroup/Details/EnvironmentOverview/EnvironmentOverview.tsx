@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ACTION_STATE,
     AppStatus,
@@ -11,6 +27,7 @@ import {
     useUrlFilters,
     EditableTextArea,
     useSearchString,
+    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -84,11 +101,12 @@ export default function EnvironmentOverview({
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
-        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+        Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
     // NOTE: there is a slim chance that the api is called before httpProtocol is set
     const httpProtocol = useRef('')
+    const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(({type, isActive}) => type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive || type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && !isActive)
 
     useEffect(() => {
         const observer = new PerformanceObserver((list) => {
@@ -106,7 +124,6 @@ export default function EnvironmentOverview({
             observer.disconnect()
         }
     }, [])
-
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -137,7 +154,13 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (
+            processDeploymentWindowAppGroupOverviewMap &&
+            (openHiberateModal ||
+                openUnhiberateModal ||
+                showHibernateStatusDrawer.showStatus ||
+                location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
+        ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
@@ -571,6 +594,7 @@ export default function EnvironmentOverview({
                     isDeploymentLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
                     httpProtocol={httpProtocol.current}
+                    isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
                 />
             )}
             {openUnhiberateModal && (
@@ -585,6 +609,7 @@ export default function EnvironmentOverview({
                     isDeploymentLoading={isDeploymentLoading}
                     showDefaultDrawer={showDefaultDrawer}
                     httpProtocol={httpProtocol.current}
+                    isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
                 />
             )}
             {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
@@ -596,6 +621,7 @@ export default function EnvironmentOverview({
                     restartLoader={restartLoader}
                     hibernateInfoMap={hibernateInfoMap}
                     httpProtocol={httpProtocol.current}
+                    isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
                 />
             )}
             {(showHibernateStatusDrawer.showStatus || showHibernateStatusDrawer.inProgress) && (

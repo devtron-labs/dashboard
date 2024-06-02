@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
@@ -932,10 +948,6 @@ export const DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY =
     'Enforced from Global Configurations. Go to Global Configurations to change.'
 export const DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE =
     'Enforced from Global Configurations. To change, first disable it in Global Configurations, then come back here.'
-/**
- * @deprecated - use from fe-common
- */
-export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export const API_STATUS_CODES = {
     UNAUTHORIZED: 401,

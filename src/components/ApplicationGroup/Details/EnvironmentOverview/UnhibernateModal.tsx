@@ -1,10 +1,26 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     MODAL_TYPE,
     Progressing,
     VisibleModal,
     showError,
     stopPropagation,
-    ButtonWithLoader
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
@@ -25,6 +41,7 @@ export const UnhibernateModal = ({
     showDefaultDrawer,
     isDeploymentLoading,
     httpProtocol,
+    isDeploymentBlockedViaWindow
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -57,12 +74,12 @@ export const UnhibernateModal = ({
     }
 
     const renderHibernateModalBody = () => {
-        if (showDefaultDrawer) {
+        if (showDefaultDrawer || !isDeploymentBlockedViaWindow) {
             return (
                 <>
                     <span>
                         Pods for the selected applications will be &nbsp;
-                        <span className="fw-6">scaled down to 0 on {envName} environment.</span>
+                        <span className="fw-6">scaled up to its original count on {envName} environment.</span>
                     </span>
                     <span> Are you sure you want to continue?</span>
                 </>
@@ -70,7 +87,7 @@ export const UnhibernateModal = ({
         }
         return (
             <>
-                <div>Hibernating some applications is blocked due to deployment window</div>
+                <div>Unhibernating some applications is blocked due to deployment window</div>
                 {ResistantInput && (
                     <ResistantInput type={MODAL_TYPE.UNHIBERNATE} setActionButtonDisabled={setActionButtonDisabled} />
                 )}
@@ -82,7 +99,9 @@ export const UnhibernateModal = ({
         <VisibleModal close={closeModal} onEscape={closeModal} className="generate-token-modal">
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentLoading ? (
-                     <div className="mh-320 flex"><Progressing pageLoader /></div>
+                    <div className="mh-320 flex">
+                        <Progressing pageLoader />
+                    </div>
                 ) : (
                     <>
                         <div className="flexbox-col dc__gap-12">

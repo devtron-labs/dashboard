@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect } from 'react'
 import { Drawer, GenericEmptyState, ImageType, InfoColourBar, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { HibernateStatusRow } from './HibernateStatusRow'
@@ -27,9 +43,7 @@ export default function HibernateStatusListDrawer({
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">
-                    {isHibernating
-                        ? 'Hibernate applications'
-                        : 'Unhibernate applications'}
+                    {isHibernating ? 'Hibernate applications' : 'Unhibernate applications'}
                 </h2>
                 <button
                     type="button"
@@ -47,7 +61,7 @@ export default function HibernateStatusListDrawer({
         if (showHibernateStatusDrawer.inProgress) {
             return (
                 <GenericEmptyState
-                    classname='dc__text-center'
+                    classname="dc__text-center"
                     title={`Initiating ${isHibernating ? 'hibernation' : 'unhibernation'} for selected applications on ${envName}`}
                     subTitle="It might take some time depending upon the number of applications"
                     SvgImage={MechanicalOperation}
