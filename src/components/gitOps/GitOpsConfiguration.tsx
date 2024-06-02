@@ -791,59 +791,25 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     >
                         {/* TODO: Can convert it to config based component */}
                         <div className="login__sso-flex">
-                            <GitProviderTab
-                                providerTab={this.state.providerTab}
-                                handleGitopsTab={this.handleGitopsTab}
-                                lastActiveGitOp={this.state.lastActiveGitOp}
-                                provider={GitProvider.GITHUB}
-                                saveLoading={this.state.saveLoading}
-                                datatestid="gitops-github-button"
-                            />
-                            <GitProviderTab
-                                providerTab={this.state.providerTab}
-                                handleGitopsTab={this.handleGitopsTab}
-                                lastActiveGitOp={this.state.lastActiveGitOp}
-                                provider={GitProvider.GITLAB}
-                                saveLoading={this.state.saveLoading}
-                                datatestid="gitops-gitlab-button"
-                            />
-                            {OtherGitOpsForm && (
-                                <GitProviderTab
-                                    providerTab={this.state.providerTab}
-                                    handleGitopsTab={this.handleGitopsTab}
-                                    lastActiveGitOp={this.state.lastActiveGitOp}
-                                    provider={GitProvider.AWS_CODE_COMMIT}
-                                    saveLoading={this.state.saveLoading}
-                                    datatestid="aws-code-commit-provider-tab"
-                                />
-                            )}
-                            <GitProviderTab
-                                providerTab={this.state.providerTab}
-                                handleGitopsTab={this.handleGitopsTab}
-                                lastActiveGitOp={this.state.lastActiveGitOp}
-                                provider={GitProvider.AZURE_DEVOPS}
-                                saveLoading={this.state.saveLoading}
-                                datatestid="gitops-azure-button"
-                            />
-                            <GitProviderTab
-                                providerTab={this.state.providerTab}
-                                handleGitopsTab={this.handleGitopsTab}
-                                lastActiveGitOp={this.state.lastActiveGitOp}
-                                provider={GitProvider.BITBUCKET_CLOUD}
-                                saveLoading={this.state.saveLoading}
-                                datatestid="gitops-bitbucket-button"
-                            />
+                            {Object.values(GitProvider).map((provider) => {
+                                const isOtherGitOpsFormRequired = provider === GitProvider.OTHER_GIT_OPS || provider === GitProvider.AWS_CODE_COMMIT
+                                if (isOtherGitOpsFormRequired && !OtherGitOpsForm) {
+                                    return null
+                                }
+                                // Keeping data testid backward compatible so that automation tests are not broken
+                                const dataTestId = `gitops-${provider.split('_').join('-').toLowerCase()}-button`
 
-                            {OtherGitOpsForm && (
-                                <GitProviderTab
-                                    providerTab={this.state.providerTab}
-                                    handleGitopsTab={this.handleGitopsTab}
-                                    lastActiveGitOp={this.state.lastActiveGitOp}
-                                    provider={GitProvider.OTHER_GIT_OPS}
-                                    saveLoading={this.state.saveLoading}
-                                    datatestid="generic-gitops-provider-tab"
-                                />
-                            )}
+                                return (
+                                    <GitProviderTab
+                                        providerTab={this.state.providerTab}
+                                        handleGitopsTab={this.handleGitopsTab}
+                                        lastActiveGitOp={this.state.lastActiveGitOp}
+                                        provider={provider}
+                                        saveLoading={this.state.saveLoading}
+                                        datatestid={dataTestId}
+                                    />
+                                )
+                            })}
                         </div>
 
                         {/* Not adding check for isAuthModeSSH since that no relation with form itself */}

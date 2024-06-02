@@ -25,11 +25,11 @@ export type GitOpsOrganisationIdType =
     | 'bitBucketProjectKey'
 
 export enum GitProvider {
-    GITLAB = 'GITLAB',
     GITHUB = 'GITHUB',
+    GITLAB = 'GITLAB',
+    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
     AZURE_DEVOPS = 'AZURE_DEVOPS',
     BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
     OTHER_GIT_OPS = 'OTHER_GIT_OPS',
 }
 
