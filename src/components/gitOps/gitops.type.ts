@@ -25,11 +25,12 @@ export type GitOpsOrganisationIdType =
     | 'bitBucketProjectKey'
 
 export enum GitProvider {
-    GITLAB = 'GITLAB',
     GITHUB = 'GITHUB',
+    GITLAB = 'GITLAB',
+    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
     AZURE_DEVOPS = 'AZURE_DEVOPS',
     BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
+    OTHER_GIT_OPS = 'OTHER_GIT_OPS',
 }
 
 export type GitProviderType = GitProvider | 'BITBUCKET_DC'
@@ -81,7 +82,7 @@ export interface GitOpsState {
     /**
      * Currently selected tab
      */
-    providerTab: GitProviderType
+    providerTab: GitProvider
     /**
      * API response list of all providers with their config
      */
@@ -94,10 +95,14 @@ export interface GitOpsState {
     /**
      * To show triangular check on the selected git provider
      * Will be only changed after API call
+     * Can also contain BitBucket DC as provider
      */
     lastActiveGitOp: undefined | GitOpsConfig
     saveLoading: boolean
     validateLoading: boolean
+    /**
+     * To identify which radio tab is selected in case of bitbucket
+     */
     isBitbucketCloud: boolean
     /**
      * Error states for input fields
@@ -117,6 +122,10 @@ export interface GitOpsState {
     selectedRepoType: string
     validationSkipped: boolean
     allowCustomGitRepo: boolean
+    /**
+     * To show update confirmation dialog, in case of updating git provider details
+     */
+    showUpdateConfirmationDialog: boolean
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> {
@@ -143,6 +152,9 @@ export interface BitbucketCloudAndServerToggleSectionPropsType {
 }
 
 export interface GitProviderTabProps {
+    /**
+     * Currently selected tab
+     */
     providerTab: GitProviderType
     /**
      * Acts as handleChange on radio tab
@@ -153,16 +165,25 @@ export interface GitProviderTabProps {
      */
     lastActiveGitOp: undefined | GitOpsConfig
     /**
-     * Value of current tab
+     * Value of tab to be rendered
      */
     provider: GitProvider
-    /**
-     * The name to be displayed on tab and would be using that in switch case of GitProviderTabIcons
-     */
-    gitops: string
     /**
      * If true would disable radio tab
      */
     saveLoading: boolean
     datatestid: string
+}
+
+export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'provider'> {
+    rootClassName?: string
+}
+
+export interface UpdateConfirmationDialogProps extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
+    handleUpdate: () => void
+    handleCancel: () => void
+    /**
+     * To render title provider for bitbucket
+     */
+    enableBitBucketSource: boolean
 }
