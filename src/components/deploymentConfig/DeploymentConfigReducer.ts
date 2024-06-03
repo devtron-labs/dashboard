@@ -24,7 +24,6 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedChart: null,
     template: '',
     schema: null,
-    /* NOTE: new state for the json schema for the RJSFForm */
     guiSchema: null,
     loading: false,
     chartConfig: null,
@@ -39,15 +38,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     fetchedValues: {},
     fetchedValuesManifest: {},
     yamlMode: true,
-    /* FIXME: remove */
-    isBasicLocked: false,
-    /* FIXME: remove */
-    isBasicLockedInBase: false,
     currentEditorView: '',
-    /* FIXME: remove */
-    basicFieldValues: null,
-    /* FIXME: remove */
-    basicFieldValuesErrorObj: null,
     data: null,
     duplicate: null,
     dialog: false,
@@ -127,14 +118,8 @@ export const deploymentConfigReducer = (
             return { ...state, fetchedValuesManifest: action.payload }
         case DeploymentConfigStateActionTypes.yamlMode:
             return { ...state, yamlMode: action.payload }
-        case DeploymentConfigStateActionTypes.isBasicLocked:
-            return { ...state, isBasicLocked: action.payload }
         case DeploymentConfigStateActionTypes.currentEditorView:
             return { ...state, currentEditorView: action.payload }
-        case DeploymentConfigStateActionTypes.basicFieldValues:
-            return { ...state, basicFieldValues: action.payload }
-        case DeploymentConfigStateActionTypes.basicFieldValuesErrorObj:
-            return { ...state, basicFieldValuesErrorObj: action.payload }
         case DeploymentConfigStateActionTypes.duplicate:
             return { ...state, duplicate: action.payload }
         case DeploymentConfigStateActionTypes.appMetrics:
@@ -193,6 +178,8 @@ export const deploymentConfigReducer = (
             return { ...state, convertVariables: action.payload }
         case DeploymentConfigStateActionTypes.convertVariablesOverride:
             return { ...state, convertVariablesOverride: action.payload }
+        case DeploymentConfigStateActionTypes.guiSchema:
+            return { ...state, guiSchema: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
+import guiSchema from '../deploymentConfig/basicViewSchema.json'
 
 export function getDeploymentTemplate(appId, envId, chartId) {
-    return get(`app/env/${appId}/${envId}/${chartId}`)
+    return new Promise<ResponseType>((resolve, reject) => {
+        ;(async () => {
+            const data = await get(`app/env/${appId}/${envId}/${chartId}`)
+            if (!data.result.guiSchema) {
+                data.result.guiSchema = JSON.stringify(guiSchema)
+            }
+            resolve(data)
+        })().catch((err) => reject(err))
+    })
 }
 
 export function updateDeploymentTemplate(appId, envId, payload) {

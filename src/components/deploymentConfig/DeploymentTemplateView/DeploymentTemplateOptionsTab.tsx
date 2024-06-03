@@ -75,13 +75,9 @@ export default function DeploymentTemplateOptionsTab({
             return
         }
         if (isEnvOverride) {
-            const overriddenValues = state.latestDraft
-                ? state.draftValues
-                : YAMLStringify(state.duplicate)
+            const overriddenValues = state.latestDraft ? state.draftValues : YAMLStringify(state.duplicate)
             const _envValues =
-                state.data.IsOverride || state.duplicate
-                    ? overriddenValues
-                    : YAMLStringify(state.data.globalConfig)
+                state.data.IsOverride || state.duplicate ? overriddenValues : YAMLStringify(state.data.globalConfig)
 
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
@@ -136,55 +132,43 @@ export default function DeploymentTemplateOptionsTab({
                     selectedChartRefId={currentStateValues.selectedChartRefId}
                     disableVersionSelect={disableVersionSelect}
                 />
-                {(currentStateValues.selectedChart?.name === ROLLOUT_DEPLOYMENT ||
-                    currentStateValues.selectedChart?.name === DEPLOYMENT) && (
-                    <ConditionalWrap condition={_unableToParseYaml} wrap={invalidYamlTippyWrapper}>
-                        <RadioGroup
-                            className="gui-yaml-switch"
-                            name="yaml-mode"
-                            initialTab={state.yamlMode ? 'yaml' : 'gui'}
-                            disabled={currentStateValues.isBasicLocked || _unableToParseYaml}
-                            onChange={onChangeEditorMode}
+                <ConditionalWrap condition={_unableToParseYaml} wrap={invalidYamlTippyWrapper}>
+                    <RadioGroup
+                        className="gui-yaml-switch"
+                        name="yaml-mode"
+                        initialTab={state.yamlMode ? 'yaml' : 'gui'}
+                        disabled={_unableToParseYaml}
+                        onChange={onChangeEditorMode}
+                    >
+                        <RadioGroup.Radio
+                            dataTestid="base-deployment-template-basic-button"
+                            value="gui"
+                            canSelect={!state.chartConfigLoading && codeEditorValue}
+                            showTippy={!_unableToParseYaml}
+                            tippyClass="default-white no-content-padding tippy-shadow"
+                            dataTestId="base-deployment-template-basic-button"
+                            tippyContent={
+                                <>
+                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                        <Locked className="icon-dim-20 mr-6 fcy-7" />
+                                        <span className="fs-14 fw-6 cn-9">{BASIC_VIEW_TIPPY_CONTENT.title}</span>
+                                    </div>
+                                    <div className="fs-13 fw-4 cn-9 p-12">{BASIC_VIEW_TIPPY_CONTENT.infoText}</div>
+                                </>
+                            }
                         >
-                            <RadioGroup.Radio
-                                dataTestid="base-deployment-template-basic-button"
-                                value="gui"
-                                canSelect={
-                                    !state.chartConfigLoading && !currentStateValues.isBasicLocked && codeEditorValue
-                                }
-                                isDisabled={currentStateValues.isBasicLocked}
-                                showTippy={!_unableToParseYaml && currentStateValues.isBasicLocked}
-                                tippyClass="default-white no-content-padding tippy-shadow"
-                                dataTestId="base-deployment-template-basic-button"
-                                tippyContent={
-                                    <>
-                                        <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                            <Locked className="icon-dim-20 mr-6 fcy-7" />
-                                            <span className="fs-14 fw-6 cn-9">{BASIC_VIEW_TIPPY_CONTENT.title}</span>
-                                        </div>
-                                        <div className="fs-13 fw-4 cn-9 p-12">{BASIC_VIEW_TIPPY_CONTENT.infoText}</div>
-                                    </>
-                                }
-                            >
-                                {currentStateValues.isBasicLocked && <Locked className="icon-dim-12 mr-6" />}
-                                Basic
-                            </RadioGroup.Radio>
-                            <RadioGroup.Radio
-                                value="yaml"
-                                canSelect={
-                                    disableVersionSelect &&
-                                    state.chartConfigLoading &&
-                                    codeEditorValue &&
-                                    currentStateValues.basicFieldValuesErrorObj?.isValid
-                                }
-                                dataTestId="base-deployment-template-advanced-button"
-                            >
-                                {_unableToParseYaml && <ErrorIcon className="icon-dim-12 dc__no-svg-stroke mr-6" />}
-                                Advanced (YAML)
-                            </RadioGroup.Radio>
-                        </RadioGroup>
-                    </ConditionalWrap>
-                )}
+                            Basic (GUI)
+                        </RadioGroup.Radio>
+                        <RadioGroup.Radio
+                            value="yaml"
+                            canSelect={disableVersionSelect && state.chartConfigLoading && codeEditorValue}
+                            dataTestId="base-deployment-template-advanced-button"
+                        >
+                            {_unableToParseYaml && <ErrorIcon className="icon-dim-12 dc__no-svg-stroke mr-6" />}
+                            Advanced (YAML)
+                        </RadioGroup.Radio>
+                    </RadioGroup>
+                </ConditionalWrap>
             </div>
         </div>
     )

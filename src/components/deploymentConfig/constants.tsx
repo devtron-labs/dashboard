@@ -215,3 +215,7 @@ export const getDraftOption = (selectedChartVersion: string, isValues: boolean) 
 }
 
 export const NO_SCOPED_VARIABLES_MESSAGE = 'No valid variable found on this page'
+
+export const GUI_VIEW_TEXTS = {
+    SWITCH_TO_ADVANCE_BUTTON_TEXT: 'Switch to advance',
+}

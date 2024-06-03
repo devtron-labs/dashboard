@@ -226,13 +226,12 @@ export interface DeploymentTemplateReadOnlyEditorViewProps {
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
-export interface DeploymentTemplateEditorViewProps {
+export interface DeploymentTemplateEditorViewProps extends Pick<DeploymentConfigStateWithDraft, 'guiSchema'> {
     isEnvOverride?: boolean
     environmentName?: string
     value: string
     defaultValue?: string
     editorOnChange?: (str: string, fromBasic?: boolean) => void
-    guiSchema: object
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
@@ -355,7 +354,7 @@ export interface DeploymentConfigStateType {
     selectedChart: DeploymentChartVersionType
     template: string
     schema: any
-    guiSchema: object
+    guiSchema: string
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -370,11 +369,7 @@ export interface DeploymentConfigStateType {
     fetchedValues: Record<number | string, string>
     fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
-    isBasicLocked: boolean
-    isBasicLockedInBase: boolean
     currentEditorView: string
-    basicFieldValues: Record<string, any>
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     data: any
     duplicate: any
     dialog: boolean
@@ -431,11 +426,7 @@ export enum DeploymentConfigStateActionTypes {
     fetchedValues = 'fetchedValues',
     fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
-    isBasicLocked = 'isBasicLocked',
-    isBasicLockedInBase = 'isBasicLockedInBase',
     currentEditorView = 'currentEditorView',
-    basicFieldValues = 'basicFieldValues',
-    basicFieldValuesErrorObj = 'basicFieldValuesErrorObj',
     duplicate = 'duplicate',
     appMetrics = 'appMetrics',
     data = 'data',
@@ -464,6 +455,7 @@ export enum DeploymentConfigStateActionTypes {
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
+    guiSchema = 'guiSchema',
 }
 
 export interface DeploymentConfigStateAction {
@@ -489,7 +481,8 @@ export interface SaveConfirmationDialogProps {
     closeLockedDiffDrawerWithChildModal: () => void
 }
 
-export interface DeploymentTemplateGUIViewProps extends Pick<DeploymentTemplateEditorViewProps, 'guiSchema' | 'editorOnChange'> {
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<DeploymentTemplateEditorViewProps, 'guiSchema' | 'editorOnChange'> {
     fetchingValues?: boolean
     value: string
     readOnly: boolean

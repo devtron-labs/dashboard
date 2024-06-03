@@ -1,0 +1,91 @@
+{
+  "type": "object",
+  "properties": {
+    "ingress": {
+      "type": "object",
+      "title": "HTTP Requests Routes",
+      "properties": {
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "enabled": {
+          "type": "boolean",
+          "title": "Enable HTTP Requests Routes"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "title": "Resources (CPU & RAM)",
+      "properties": {
+        "limits": {
+          "type": "object",
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          }
+        },
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "EnvVariables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "Environment Variables"
+    },
+    "ContainerPort": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer"
+          }
+        }
+      },
+      "title": "Container Port"
+    }
+  }
+}

@@ -301,7 +301,7 @@ export default function DeploymentConfig({
         })
 
         if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-            parseDataForView(isBasicViewLocked, currentViewEditor, valuesOverride, payload, false)
+            parseDataForView(currentViewEditor, valuesOverride, payload, false)
         }
     }
 
@@ -313,25 +313,13 @@ export default function DeploymentConfig({
     }
 
     const parseDataForView = async (
-        _isBasicViewLocked: boolean,
         _currentViewEditor: string,
         template,
         templateData,
         updatePublishedState: boolean,
     ): Promise<void> => {
-        const abortController = new AbortController()
-        if (_currentViewEditor === EDITOR_VIEW.UNDEFINED) {
-            const {
-                result: { defaultAppOverride },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, abortController.signal, true)
-        }
-
-        if (abortController && !abortController.signal.aborted) {
-            abortController.abort()
-        }
-
         const statesToUpdate = {}
-        if (!state.currentEditorView || !_currentViewEditor) {
+        if (!state.currentEditorView && !_currentViewEditor) {
             _currentViewEditor =
                 currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
                 state.selectedTabIndex === 2 ||
@@ -386,17 +374,17 @@ export default function DeploymentConfig({
                         readme,
                         schema,
                         isBasicViewLocked,
-                        currentViewEditor,
                     },
                     guiSchema,
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
+            const currentViewEditor = isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
             const templateData = {
                 template: defaultAppOverride,
                 schema,
                 readme,
-                guiSchema: JSON.parse(guiSchema),
+                guiSchema,
                 currentEditorView: currentViewEditor,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
@@ -432,7 +420,7 @@ export default function DeploymentConfig({
             })
 
             if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                parseDataForView(false, currentViewEditor, defaultAppOverride, payload, true)
+                parseDataForView(currentViewEditor, defaultAppOverride, payload, true)
             }
         } catch (err) {
             showError(err)
@@ -656,12 +644,7 @@ export default function DeploymentConfig({
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
-            payload:
-                ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) &&
-                state.basicFieldValuesErrorObj &&
-                !state.basicFieldValuesErrorObj.isValid
-                    ? state.selectedTabIndex
-                    : index,
+            payload: index,
         })
 
         setConvertVariables(false)
@@ -670,14 +653,10 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 setIsValues(true)
-                const _isBasicLocked =
-                    state.publishedState && index === 1 ? state.publishedState.isBasicLocked : state.isBasicLocked
                 const defaultYamlMode =
                     state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
                 toggleYamlMode(
-                    defaultYamlMode ||
-                        _isBasicLocked ||
-                        currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
+                    defaultYamlMode || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 )
                 if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
@@ -750,8 +729,7 @@ export default function DeploymentConfig({
             saveEligibleChanges: saveEligibleChangesCb,
         }
         if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-            requestData.isBasicViewLocked = false
-            requestData.currentViewEditor = EDITOR_VIEW.ADVANCED
+            requestData.currentViewEditor = isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
         }
 
         if (!skipReadmeAndSchema) {

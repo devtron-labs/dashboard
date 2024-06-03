@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import React, { useContext, useRef } from 'react'
-import { CustomInput, InfoColourBar, Progressing, Toggle, RJSFForm } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useContext, useMemo } from 'react'
+import {
+    CustomInput,
+    InfoColourBar,
+    Progressing,
+    Toggle,
+    RJSFForm,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
-import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
+import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { validateBasicView } from '../DeploymentConfig.utils'
 import {
     BasicFieldErrorObj,
@@ -27,14 +34,13 @@ import {
     DeploymentTemplateGUIViewProps,
 } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
+import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import { getRenderActionButton } from '../utils'
 
-const uiSchema = {
+const UISchema = {
     'ui:submitButtonOptions': {
         norender: true,
     },
@@ -47,25 +53,65 @@ const DeploymentTemplateGUIView = ({
     guiSchema,
     editorOnChange,
 }: DeploymentTemplateGUIViewProps) => {
-    const { isUnSet, state, dispatch, changeEditorMode } =
-        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const {
+        isUnSet,
+        state: { chartConfigLoading },
+        dispatch,
+        changeEditorMode,
+    } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+
+    const state = useMemo(() => {
+        try {
+            const parsedGUISchema = JSON.parse(guiSchema)
+            if (!Object.keys(parsedGUISchema).length) {
+                throw new Error()
+            }
+            return {
+                guiSchema: parsedGUISchema,
+            }
+        } catch {
+            return {
+                error: new Error('No GUI schema defined'),
+            }
+        }
+    }, [guiSchema])
 
     const handleFormChange = (data) => {
         editorOnChange(YAML.stringify(data.formData))
     }
 
     const renderContent = () => {
-        if (state.chartConfigLoading || !value || fetchingValues) {
+        if (chartConfigLoading || !value || fetchingValues) {
             return <Progressing pageLoader />
+        }
+
+        if (state.error) {
+            return (
+                <GenericEmptyState
+                    image={EmptyFolderImage}
+                    title={state.error.message}
+                    subTitle={'To modify configuration, switch to advanced (YAML) view'}
+                >
+                    <button
+                        type="button"
+                        className="cta cta-with-img secondary dc__gap-6"
+                        onClick={changeEditorMode}
+                        aria-label={GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}
+                    >
+                        <span>{GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}</span>
+                        <ICArrow className="icon-dim-16-imp" />
+                    </button>
+                </GenericEmptyState>
+            )
         }
 
         return (
             <RJSFForm
                 className="w-650-px"
-                schema={guiSchema}
+                schema={state.guiSchema}
                 formData={YAML.parse(value)}
                 onChange={handleFormChange}
-                uiSchema={uiSchema}
+                uiSchema={UISchema}
                 liveValidate
             />
         )
@@ -80,19 +126,21 @@ const DeploymentTemplateGUIView = ({
                 </div>
             )}
             <div
-                className={`form__row--gui-container p-20 scrollable ${
+                className={`form__row--gui-container p-20 flex-grow-1 dc__overflow-scroll ${
                     !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
-                }`}
+                } ${state.error ? 'dc__border-bottom-n1' : ''}`}
             >
                 {renderContent()}
             </div>
-            <InfoColourBar
-                message="To modify additional configurations"
-                classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
-                Icon={Help}
-                iconClass="fcv-5 icon-dim-20"
-                renderActionButton={getRenderActionButton(changeEditorMode)}
-            />
+            {!state.error && (
+                <InfoColourBar
+                    message="To modify additional configurations"
+                    classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
+                    Icon={Help}
+                    iconClass="fcv-5 icon-dim-20"
+                    renderActionButton={getRenderActionButton(changeEditorMode)}
+                />
+            )}
         </>
     )
 }

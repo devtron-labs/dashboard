@@ -207,7 +207,6 @@ export default function DeploymentTemplateOverride({
             globalConfig,
             isAppMetricsEnabled,
             currentEditorView,
-            isBasicLocked,
             chartRefId,
             status,
             manualReviewed,
@@ -233,7 +232,6 @@ export default function DeploymentTemplateOverride({
             openComparison: isApprovalPending,
             showReadme: false,
             currentEditorView,
-            isBasicLocked,
             showDraftOverriden: isDraftOverriden,
             ...{
                 ...chartRefsData,
@@ -256,9 +254,7 @@ export default function DeploymentTemplateOverride({
             payload,
         })
 
-        if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-            parseDataForView(isBasicLocked, currentEditorView, globalConfig, envOverrideValues, payload, false)
-        }
+        parseDataForView(globalConfig, envOverrideValues, payload, false)
     }
 
     async function handleAppMetrics() {
@@ -293,16 +289,12 @@ export default function DeploymentTemplateOverride({
                 readme: result.readme,
                 schema: result.schema,
                 guiSchema: JSON.parse(result.guiSchema),
-                isBasicLockedInBase:
-                    result.environmentConfig.currentViewEditor !== EDITOR_VIEW.UNDEFINED &&
-                    result.environmentConfig.isBasicViewLocked,
             }
 
             if (isProtected && state.latestDraft) {
                 payload['publishedState'] = {
                     ...state.publishedState,
                     ...result,
-                    isBasicLockedInBase: payload.isBasicLockedInBase,
                     isOverride: result.IsOverride,
                 }
             }
@@ -312,16 +304,7 @@ export default function DeploymentTemplateOverride({
                 payload,
             })
 
-            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                parseDataForView(
-                    result.environmentConfig.isBasicViewLocked,
-                    result.environmentConfig.currentViewEditor,
-                    result.globalConfig,
-                    result.environmentConfig.envOverrideValues,
-                    payload,
-                    true,
-                )
-            }
+            parseDataForView(result.globalConfig, result.environmentConfig.envOverrideValues, payload, true)
 
             setParentState(ComponentStates.loaded)
         } catch (err) {
@@ -349,7 +332,7 @@ export default function DeploymentTemplateOverride({
                         type: DeploymentConfigStateActionTypes.multipleOptions,
                         payload: { duplicate: null, isDraftOverriden: false },
                     })
-                    parseDataForView(false, EDITOR_VIEW.UNDEFINED, state.data.globalConfig, null, {}, false)
+                    parseDataForView(state.data.globalConfig, null, {}, false)
                 }
             }
         } else {
@@ -366,34 +349,15 @@ export default function DeploymentTemplateOverride({
     }
 
     const parseDataForView = async (
-        _isBasicLocked: boolean,
-        _currentViewEditor: string,
         baseTemplate,
         envOverrideValues,
         templateData,
         updatePublishedState,
     ): Promise<void> => {
-        if (_currentViewEditor === '' || _currentViewEditor === EDITOR_VIEW.UNDEFINED) {
-            if (!envOverrideValues) {
-                try {
-                    const {
-                        result: { defaultAppOverride },
-                    } = await getBaseDeploymentTemplate(
-                        +appId,
-                        state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                        baseDeploymentAbortController.current.signal,
-                        true,
-                    )
-                } catch (err) {
-                    // _isBasicLocked = true
-                }
-            }
-        }
-
         const statesToUpdate = {}
         if (!state.currentEditorView || !state.duplicate) {
-            _currentViewEditor =
-                _isBasicLocked ||
+            /* NOTE: By default we should always land on basic view unless we are superAdmin */
+            const _currentViewEditor =
                 state.openComparison ||
                 state.showReadme ||
                 currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
@@ -401,7 +365,6 @@ export default function DeploymentTemplateOverride({
                     : EDITOR_VIEW.BASIC
             statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
             statesToUpdate['currentEditorView'] = _currentViewEditor
-            statesToUpdate['isBasicLocked'] = _isBasicLocked
         }
 
         // Override yamlMode state to advanced when draft state is 4 (approval pending)

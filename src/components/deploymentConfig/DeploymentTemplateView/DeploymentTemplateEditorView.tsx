@@ -466,7 +466,7 @@ const DeploymentTemplateEditorView = ({
 
     const renderCodeEditor = (): JSX.Element => (
         <div
-            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
+            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp flex-grow-1 ${
                 isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
             }`}
         >
@@ -487,7 +487,7 @@ const DeploymentTemplateEditorView = ({
                     !rhs ||
                     (state.openComparison && !lhs)
                 }
-                height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
+                height={'100%'}
                 diffView={state.openComparison}
                 readOnly={readOnly}
                 noParsing
@@ -522,8 +522,7 @@ const DeploymentTemplateEditorView = ({
         return renderCodeEditor()
     }
 
-    return state.yamlMode ||
-        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ? (
         renderCodeEditorView()
     ) : (
         <DeploymentTemplateGUIView

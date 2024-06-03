@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
+import guiSchema from './basicViewSchema.json'
 
 export function getDeploymentTemplate(
     id: number,
@@ -24,15 +25,21 @@ export function getDeploymentTemplate(
     abortSignal: AbortSignal,
     isDefaultTemplate?: boolean,
 ) {
-    /* TODO: this option is not being used anywhere. Plus see @getDefaultDeploymentTemplate;
-     * Can we remove this ?*/
     if (isDefaultTemplate) {
         return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
             signal: abortSignal,
         })
     }
-    return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
-        signal: abortSignal,
+    return new Promise<ResponseType>((resolve, reject) => {
+        ;(async () => {
+            const data = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+                signal: abortSignal,
+            })
+            if (!data.result.guiSchema) {
+                data.result.guiSchema = JSON.stringify(guiSchema)
+            }
+            resolve(data)
+        })().catch((err) => reject(err))
     })
 }
 
