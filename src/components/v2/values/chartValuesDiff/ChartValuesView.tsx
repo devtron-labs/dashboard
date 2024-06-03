@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer } from 'react'
-import { useHistory, useRouteMatch, useParams } from 'react-router'
+import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {
@@ -43,6 +43,7 @@ import {
 } from '../../../charts/charts.service'
 import {
     ConfigurationType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
     URLS,
@@ -1415,6 +1416,7 @@ const ChartValuesView = ({
                     isCreateValueView={isCreateValueView}
                     deployOrUpdateApplication={deployOrUpdateApplication}
                 />
+                <Prompt when={commonState.isUpdateInProgress || commonState.isDeleteInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }

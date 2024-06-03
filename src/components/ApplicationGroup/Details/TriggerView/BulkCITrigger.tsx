@@ -381,7 +381,6 @@ const BulkCITrigger = ({
                         title={selectedApp.ciPipelineName}
                         isChangeBranchClicked={isChangeBranchClicked}
                         onClickNextButton={saveBranchName}
-                        onShowCIModal={noop}
                         handleRegexInputValue={handleRegexInputValueChange}
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}

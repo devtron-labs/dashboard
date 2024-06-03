@@ -358,7 +358,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     title={this.props.title}
                     isChangeBranchClicked={this.props.isChangeBranchClicked}
                     onClickNextButton={this.onClickNextButton}
-                    onShowCIModal={this.props.onShowCIModal}
                     handleRegexInputValue={this.handleRegexInputValue}
                     regexValue={this.state.regexValue}
                     onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
@@ -366,10 +365,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 />
             )
         }
-        if (this.props.showCIModal) {
-            return this.renderCIModal()
-        }
-        return <></>
+        return this.renderCIModal()
     }
 }
 

@@ -153,6 +153,7 @@ export interface MaterialInfo {
 export interface CIMaterialRouterProps {
     appId: string
     envId: string
+    ciNodeId: string
 }
 
 export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
@@ -173,8 +174,6 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onCloseBranchRegexModal?: () => void
     filteredCIPipelines: any[]
     onClickShowBranchRegexModal: () => void
-    showCIModal: boolean
-    onShowCIModal: () => void
     isChangeBranchClicked: boolean
     getWorkflows: () => void
     loader: boolean
@@ -342,6 +341,7 @@ export interface TriggerViewProps
     extends RouteComponentProps<{
         appId: string
         envId: string
+        ciNodeId: string
     }> {
     isJobView?: boolean
     filteredEnvIds?: string
@@ -366,7 +366,6 @@ export interface TriggerViewState {
     view: string
     workflows: WorkflowType[]
     showCDModal: boolean
-    showCIModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
@@ -640,7 +639,6 @@ export interface BranchRegexModalProps {
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
@@ -727,4 +725,8 @@ export interface RuntimeParamsValidatorReturnType {
     isValid: boolean
     message?: string
     validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
+}
+
+export interface CIMaterialRouteProps extends CIMaterialProps {
+    closeCIModal: () => void
 }

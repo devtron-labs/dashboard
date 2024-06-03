@@ -9,18 +9,18 @@ import {
     DetailsProgressing,
     DeploymentAppTypes,
     YAMLStringify,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { useHistory, useRouteMatch } from 'react-router'
+import { useHistory, useRouteMatch, Prompt } from 'react-router'
 import { useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE, DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
@@ -656,7 +656,9 @@ const ChartDeploymentHistory = ({
     }
 
     const RollbackConfirmationDialog = () => {
+        usePrompt({shouldPrompt: deploying})
         return (
+            <>
             <ConfirmationDialog className="rollback-confirmation-dialog">
                 <ConfirmationDialog.Body title={rollbackDialogTitle}>
                     <p className="fs-13 cn-7 lh-1-54">Are you sure you want to deploy a previous version?</p>
@@ -689,6 +691,8 @@ const ChartDeploymentHistory = ({
                     </div>
                 </ConfirmationDialog.ButtonGroup>
             </ConfirmationDialog>
+            <Prompt when={deploying} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+            </>
         )
     }
 
