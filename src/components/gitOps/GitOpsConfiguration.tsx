@@ -807,6 +807,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         provider={provider}
                                         saveLoading={this.state.saveLoading}
                                         datatestid={dataTestId}
+                                        key={provider}
                                     />
                                 )
                             })}
