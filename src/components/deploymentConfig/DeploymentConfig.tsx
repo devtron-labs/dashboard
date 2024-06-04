@@ -52,8 +52,8 @@ import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { groupDataByType, handleConfigProtectionError, validateBasicView } from './DeploymentConfig.utils'
-import { BASIC_FIELDS, EDITOR_VIEW } from './constants'
+import { groupDataByType, handleConfigProtectionError } from './DeploymentConfig.utils'
+import { EDITOR_VIEW } from './constants'
 import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
 import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
 import DeploymentTemplateOptionsTab from './DeploymentTemplateView/DeploymentTemplateOptionsTab'
@@ -256,7 +256,6 @@ export default function DeploymentConfig({
             refChartTemplateVersion,
             isAppMetricsEnabled,
             chartRefId,
-            isBasicViewLocked,
             currentViewEditor,
             readme,
             schema,
@@ -299,10 +298,6 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.multipleOptions,
             payload,
         })
-
-        if (payload.selectedChart.name === ROLLOUT_DEPLOYMENT || payload.selectedChart.name === DEPLOYMENT) {
-            parseDataForView(currentViewEditor, valuesOverride, payload, false)
-        }
     }
 
     const toggleYamlMode = (yamlMode: boolean) => {
@@ -312,39 +307,6 @@ export default function DeploymentConfig({
         })
     }
 
-    const parseDataForView = async (
-        _currentViewEditor: string,
-        template,
-        templateData,
-        updatePublishedState: boolean,
-    ): Promise<void> => {
-        const statesToUpdate = {}
-        if (!state.currentEditorView && !_currentViewEditor) {
-            _currentViewEditor =
-                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE ||
-                state.selectedTabIndex === 2 ||
-                state.showReadme
-                    ? EDITOR_VIEW.ADVANCED
-                    : EDITOR_VIEW.BASIC
-
-            statesToUpdate['currentEditorView'] = _currentViewEditor
-            statesToUpdate['yamlMode'] = _currentViewEditor !== EDITOR_VIEW.BASIC
-        }
-        if (updatePublishedState && templateData['publishedState']) {
-            dispatch({
-                type: DeploymentConfigStateActionTypes.publishedState,
-                payload: {
-                    ...templateData['publishedState'],
-                    ...statesToUpdate,
-                },
-            })
-        } else {
-            dispatch({
-                type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload: statesToUpdate,
-            })
-        }
-    }
     const reload = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
@@ -373,7 +335,6 @@ export default function DeploymentConfig({
                         chartRefId,
                         readme,
                         schema,
-                        isBasicViewLocked,
                     },
                     guiSchema,
                 },
@@ -418,10 +379,6 @@ export default function DeploymentConfig({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload,
             })
-
-            if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                parseDataForView(currentViewEditor, defaultAppOverride, payload, true)
-            }
         } catch (err) {
             showError(err)
             if (baseDeploymentAbortController && !baseDeploymentAbortController.signal.aborted) {
@@ -578,7 +535,7 @@ export default function DeploymentConfig({
     const isCompareAndApprovalState =
         state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
-    const editorOnChange = (str: string, fromBasic?: boolean): void => {
+    const editorOnChange = (str: string): void => {
         if (isCompareAndApprovalState) {
             return
         }
@@ -590,8 +547,6 @@ export default function DeploymentConfig({
             })
         }
         try {
-            const parsedValues = YAML.parse(str)
-
             // Unset unableToParseYaml flag when yaml is successfully parsed
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
@@ -653,11 +608,8 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 setIsValues(true)
-                const defaultYamlMode =
-                    state.selectedChart.name !== ROLLOUT_DEPLOYMENT && state.selectedChart.name !== DEPLOYMENT
-                toggleYamlMode(
-                    defaultYamlMode || currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
-                )
+                /* NOTE: default to ADVANCED only if superAdmin */
+                toggleYamlMode(isSuperAdmin)
                 if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
                 }
@@ -727,9 +679,7 @@ export default function DeploymentConfig({
             defaultAppOverride: state.template,
             isAppMetricsEnabled: state.isAppMetricsEnabled,
             saveEligibleChanges: saveEligibleChangesCb,
-        }
-        if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-            requestData.currentViewEditor = isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
+            currentViewEditor: isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
         }
 
         if (!skipReadmeAndSchema) {

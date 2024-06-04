@@ -16,23 +16,14 @@
 
 import React, { useContext, useMemo } from 'react'
 import {
-    CustomInput,
     InfoColourBar,
     Progressing,
-    Toggle,
     RJSFForm,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
-import { BASIC_FIELDS, DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { validateBasicView } from '../DeploymentConfig.utils'
-import {
-    BasicFieldErrorObj,
-    DeploymentConfigContextType,
-    DeploymentConfigStateActionTypes,
-    DeploymentTemplateGUIViewProps,
-} from '../types'
+import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
+import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -71,14 +62,12 @@ const DeploymentTemplateGUIView = ({
             }
         } catch {
             return {
-                error: new Error('No GUI schema defined'),
+                error: new Error('No valid GUI schema defined'),
             }
         }
     }, [guiSchema])
 
-    const handleFormChange = (data) => {
-        editorOnChange(YAML.stringify(data.formData))
-    }
+    const handleFormChange = (data) => editorOnChange(YAML.stringify(data.formData))
 
     const renderContent = () => {
         if (chartConfigLoading || !value || fetchingValues) {

@@ -212,9 +212,7 @@ export interface DeploymentTemplateOptionsTabProps {
     selectedChartRefId: number
     disableVersionSelect?: boolean
     yamlMode: boolean
-    isBasicViewLocked: boolean
     codeEditorValue: string
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     changeEditorMode?: () => void
 }
 

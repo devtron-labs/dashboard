@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
 import guiSchema from './basicViewSchema.json'
@@ -31,15 +31,14 @@ export function getDeploymentTemplate(
         })
     }
     return new Promise<ResponseType>((resolve, reject) => {
-        ;(async () => {
-            const data = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
-                signal: abortSignal,
-            })
+        get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+            signal: abortSignal,
+        }).then((data) => {
             if (!data.result.guiSchema) {
                 data.result.guiSchema = JSON.stringify(guiSchema)
             }
             resolve(data)
-        })().catch((err) => reject(err))
+        }).catch((err) => reject(err))
     })
 }
 

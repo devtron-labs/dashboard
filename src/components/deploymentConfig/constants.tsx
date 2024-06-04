@@ -59,40 +59,6 @@ export const getCommonSelectStyles = (styleOverrides = {}) => {
     }
 }
 
-export const BASIC_FIELDS = {
-    CONTAINER_PORT: 'container_port',
-    PORT: 'port',
-    INGRESS: 'ingress',
-    ENABLED: 'enabled',
-    HOSTS: 'hosts',
-    HOST: 'host',
-    PATHS: 'paths',
-    PATH: 'path',
-    RESOURCES: 'resources',
-    RESOURCES_CPU: 'resources_cpu',
-    RESOURCES_MEMORY: 'resources_memory',
-    LIMITS: 'limits',
-    REQUESTS: 'requests',
-    CPU: 'cpu',
-    MEMORY: 'memory',
-    ENV_VARIABLES: 'envVariables',
-    NAME: 'name',
-    VALUE: 'value',
-}
-
-export const BASIC_FIELD_MAPPING = {
-    [BASIC_FIELDS.PORT]: '/ContainerPort/0/port',
-    [BASIC_FIELDS.ENABLED]: '/ingress/enabled',
-    [BASIC_FIELDS.HOSTS]: '/ingress/hosts',
-    [BASIC_FIELDS.RESOURCES]: '/resources',
-    [BASIC_FIELDS.ENV_VARIABLES]: '/EnvVariables',
-}
-
-export const BASIC_FIELD_PARENT_PATH = {
-    [BASIC_FIELDS.CONTAINER_PORT]: '/ContainerPort',
-    [BASIC_FIELDS.INGRESS]: '/ingress',
-}
-
 export const EDITOR_VIEW = {
     UNDEFINED: 'UNDEFINED',
     BASIC: 'BASIC',
@@ -119,12 +85,6 @@ export const README_TIPPY_CONTENT = {
     fetching: 'Fetching...',
     showing: 'Showing README.md',
     notAvailable: 'Readme is not available for this chart version',
-}
-
-export const BASIC_VIEW_TIPPY_CONTENT = {
-    title: 'Basic view is locked',
-    infoText:
-        'Basic view is locked as some advanced configurations have been modified. Please continue editing in Advanced (YAML) view.',
 }
 
 export const DEPLOYMENT_TEMPLATE_LABELS_KEYS = {

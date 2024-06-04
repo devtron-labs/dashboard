@@ -35,7 +35,7 @@ import { getDeploymentManisfest, getIfLockedConfigProtected } from '../deploymen
 import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
-import { handleConfigProtectionError, validateBasicView } from '../deploymentConfig/DeploymentConfig.utils'
+import { handleConfigProtectionError } from '../deploymentConfig/DeploymentConfig.utils'
 import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)

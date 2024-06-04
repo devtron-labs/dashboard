@@ -14,39 +14,9 @@
  * limitations under the License.
  */
 
-import * as jsonpatch from 'fast-json-patch'
-import { getValueByPointer, applyPatch } from 'fast-json-patch'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import { BASIC_FIELDS, BASIC_FIELD_MAPPING, BASIC_FIELD_PARENT_PATH } from './constants'
-import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
-import { ValidationRules } from './validationRules'
-
-const validationRules = new ValidationRules()
-
-export const validateBasicView = (basicFieldValues: Record<string, any>): BasicFieldErrorObj => {
-    const _portValidation = validationRules.port(Number(basicFieldValues[BASIC_FIELDS.PORT]))
-    const _cpuValidation = validationRules.port(
-        basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.CPU],
-    )
-    const _memoryValidation = validationRules.port(
-        basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.MEMORY],
-    )
-    const _basicFieldErrorObj = {
-        isValid: _portValidation.isValid && _cpuValidation.isValid && _memoryValidation.isValid,
-        port: _portValidation,
-        cpu: _cpuValidation,
-        memory: _memoryValidation,
-        envVariables: [],
-    }
-    for (let index = 0; index < basicFieldValues[BASIC_FIELDS.ENV_VARIABLES]?.length; index++) {
-        const element = basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][index]
-        const _envVariableValidation = validationRules.envVariable(element)
-        _basicFieldErrorObj.envVariables.push(_envVariableValidation)
-        _basicFieldErrorObj.isValid = _basicFieldErrorObj.isValid && _envVariableValidation.isValid
-    }
-    return _basicFieldErrorObj
-}
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 
 export const handleConfigProtectionError = (
     action: number,

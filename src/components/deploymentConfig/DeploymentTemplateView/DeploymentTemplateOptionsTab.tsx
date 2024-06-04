@@ -15,14 +15,6 @@
  */
 
 import React, { useContext } from 'react'
-import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { BASIC_VIEW_TIPPY_CONTENT } from '../constants'
-import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
-import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
-import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
-import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import {
     ConditionalWrap,
     TippyCustomized,
@@ -30,6 +22,12 @@ import {
     StyledRadioGroup as RadioGroup,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
+import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
+import { DeploymentConfigContext } from '../DeploymentConfig'
+import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
+import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
@@ -144,18 +142,6 @@ export default function DeploymentTemplateOptionsTab({
                             dataTestid="base-deployment-template-basic-button"
                             value="gui"
                             canSelect={!state.chartConfigLoading && codeEditorValue}
-                            showTippy={!_unableToParseYaml}
-                            tippyClass="default-white no-content-padding tippy-shadow"
-                            dataTestId="base-deployment-template-basic-button"
-                            tippyContent={
-                                <>
-                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
-                                        <Locked className="icon-dim-20 mr-6 fcy-7" />
-                                        <span className="fs-14 fw-6 cn-9">{BASIC_VIEW_TIPPY_CONTENT.title}</span>
-                                    </div>
-                                    <div className="fs-13 fw-4 cn-9 p-12">{BASIC_VIEW_TIPPY_CONTENT.infoText}</div>
-                                </>
-                            }
                         >
                             Basic (GUI)
                         </RadioGroup.Radio>

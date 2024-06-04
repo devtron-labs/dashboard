@@ -31,8 +31,8 @@ import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentO
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { groupDataByType, validateBasicView } from '../deploymentConfig/DeploymentConfig.utils'
-import { BASIC_FIELDS, EDITOR_VIEW } from '../deploymentConfig/constants'
+import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
+import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
 
