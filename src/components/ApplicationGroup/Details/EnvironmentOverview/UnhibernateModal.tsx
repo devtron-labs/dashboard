@@ -22,7 +22,7 @@ import {
     stopPropagation,
     ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as UnhibernateModalIcon } from '../../../../assets/icons/ic-medium-unhibernate.svg'
 import { manageApps } from './service'
 import { importComponentFromFELibrary } from '../../../common'
@@ -45,6 +45,11 @@ export const UnhibernateModal = ({
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
+
+    useEffect(() => {
+        setActionButtonDisabled(isDeploymentBlockedViaWindow)
+    }, [isDeploymentBlockedViaWindow])
+
 
     const unhibernateApps = (e) => {
         e.preventDefault()
