@@ -411,6 +411,9 @@ export default function DeploymentConfig({
 
     const handleSaveChanges = (e) => {
         e.preventDefault()
+        if (state.isRequiredFieldsUnfilled) {
+            return
+        }
         if (!state.chartConfig.id) {
             // create flow
             save()

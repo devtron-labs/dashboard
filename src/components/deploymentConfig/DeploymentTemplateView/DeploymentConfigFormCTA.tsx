@@ -117,7 +117,7 @@ export default function DeploymentConfigFormCTA({
             >
                 <button
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
-                        _disabled || approveDisabled ? 'disabled' : ''
+                        _disabled || approveDisabled || (!state.yamlMode && state.isRequiredFieldsUnfilled) ? 'disabled' : ''
                     }`}
                     type="button"
                     onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
@@ -127,7 +127,7 @@ export default function DeploymentConfigFormCTA({
                             : 'base-deployment-template-save-changes-button'
                     }`}
                     disabled={
-                        loading || state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables
+                        loading || state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables || (!state.yamlMode && state.isRequiredFieldsUnfilled)
                     }
                 >
                     {loading ? (

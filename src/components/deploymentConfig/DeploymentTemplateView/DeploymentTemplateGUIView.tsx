@@ -23,7 +23,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -46,7 +46,7 @@ const DeploymentTemplateGUIView = ({
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading },
+        state: { chartConfigLoading, isRequiredFieldsUnfilled },
         dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -67,7 +67,16 @@ const DeploymentTemplateGUIView = ({
         }
     }, [guiSchema])
 
-    const handleFormChange = (data) => editorOnChange(YAML.stringify(data.formData))
+    const handleFormChange = (data) => {
+        const formHasErrors = !!data.errors.length
+        if (isRequiredFieldsUnfilled !== formHasErrors) {
+            dispatch({
+                type: DeploymentConfigStateActionTypes.isRequiredFieldsUnfilled,
+                payload: formHasErrors,
+            })
+        }
+        editorOnChange(YAML.stringify(data.formData))
+    }
 
     const renderContent = () => {
         if (chartConfigLoading || !value || fetchingValues) {

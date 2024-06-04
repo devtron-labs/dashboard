@@ -69,6 +69,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     convertVariablesOverride: false,
     showLockedTemplateDiff: false,
     lockChangesLoading: false,
+    isRequiredFieldsUnfilled: false,
 }
 
 export const deploymentConfigReducer = (
@@ -180,6 +181,8 @@ export const deploymentConfigReducer = (
             return { ...state, convertVariablesOverride: action.payload }
         case DeploymentConfigStateActionTypes.guiSchema:
             return { ...state, guiSchema: action.payload }
+        case DeploymentConfigStateActionTypes.isRequiredFieldsUnfilled:
+            return { ...state, isRequiredFieldsUnfilled: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
