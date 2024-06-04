@@ -417,7 +417,6 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        // TODO Eshank: Update flag name?
                                         ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
                                                   <Route
@@ -434,14 +433,8 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : [
-                                                  <Route
-                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                  >
-                                                      <h1>Distribution Hub</h1>
-                                                  </Route>,
-                                              ]),
+                                            : []
+                                        ),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
