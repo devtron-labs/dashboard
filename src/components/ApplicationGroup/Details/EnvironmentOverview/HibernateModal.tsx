@@ -43,7 +43,7 @@ export const HibernateModal = ({
     isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
-    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(false)
+    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
     const hibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
