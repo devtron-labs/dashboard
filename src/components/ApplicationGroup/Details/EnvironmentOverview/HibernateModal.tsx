@@ -21,7 +21,7 @@ import {
     MODAL_TYPE,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
 import { importComponentFromFELibrary } from '../../../common'
@@ -43,7 +43,7 @@ export const HibernateModal = ({
     isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
-    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
+    const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(false)
     const hibernateApps = (e) => {
         e.preventDefault()
         setLoader(true)
@@ -66,6 +66,10 @@ export const HibernateModal = ({
                 setLoader(false)
             })
     }
+
+    useEffect(() => {
+        setActionButtonDisabled(isDeploymentBlockedViaWindow)
+    }, [isDeploymentBlockedViaWindow])
 
     const closeModal = () => {
         setOpenHiberateModal(false)
