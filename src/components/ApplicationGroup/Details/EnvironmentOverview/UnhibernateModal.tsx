@@ -41,6 +41,7 @@ export const UnhibernateModal = ({
     showDefaultDrawer,
     isDeploymentLoading,
     httpProtocol,
+    isDeploymentBlockedViaWindow
 }: UnhibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -73,12 +74,12 @@ export const UnhibernateModal = ({
     }
 
     const renderHibernateModalBody = () => {
-        if (showDefaultDrawer) {
+        if (showDefaultDrawer || !isDeploymentBlockedViaWindow) {
             return (
                 <>
                     <span>
                         Pods for the selected applications will be &nbsp;
-                        <span className="fw-6">scaled down to 0 on {envName} environment.</span>
+                        <span className="fw-6">scaled up to its original count on {envName} environment.</span>
                     </span>
                     <span> Are you sure you want to continue?</span>
                 </>
@@ -86,7 +87,7 @@ export const UnhibernateModal = ({
         }
         return (
             <>
-                <div>Hibernating some applications is blocked due to deployment window</div>
+                <div>Unhibernating some applications is blocked due to deployment window</div>
                 {ResistantInput && (
                     <ResistantInput type={MODAL_TYPE.UNHIBERNATE} setActionButtonDisabled={setActionButtonDisabled} />
                 )}

@@ -16,16 +16,6 @@
 
 /* eslint-disable no-restricted-globals */
 export default () => {
-    function debounceSearch(callback: (...args: any[]) => void) {
-        let timeout
-        return (...args: any[]): void => {
-            clearTimeout(timeout)
-            timeout = setTimeout(() => {
-                callback.apply(self, args)
-            }, 300)
-        }
-    }
-
     function getFilteredList({ searchText, list }) {
         const searchTextLowerCased = searchText.toLowerCase()
         if (searchTextLowerCased === '' || !list?.length) {
@@ -52,7 +42,7 @@ export default () => {
 
         switch (e.data.type) {
             case 'start':
-                debounceSearch(getFilteredList)(e.data.payload)
+                getFilteredList(e.data.payload)
                 break
             case 'stop':
                 self.postMessage([])
