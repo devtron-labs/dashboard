@@ -33,12 +33,15 @@ export function getDeploymentTemplate(
     return new Promise<ResponseType>((resolve, reject) => {
         get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
             signal: abortSignal,
-        }).then((data) => {
-            if (!data.result.guiSchema) {
-                data.result.guiSchema = JSON.stringify(guiSchema)
-            }
-            resolve(data)
-        }).catch((err) => reject(err))
+        })
+            .then((data) => {
+                const copy = structuredClone(data)
+                if (!copy.result.guiSchema) {
+                    copy.result.guiSchema = JSON.stringify(guiSchema)
+                }
+                resolve(copy)
+            })
+            .catch((err) => reject(err))
     })
 }
 

@@ -467,6 +467,10 @@
             &.gui {
                 height: calc(100% - 210px);
 
+                &.gui--no-infobar {
+                    height: calc(100% - 174px);
+                }
+
                 &.read-only-mode {
                     height: calc(100% - 158px);
                 }

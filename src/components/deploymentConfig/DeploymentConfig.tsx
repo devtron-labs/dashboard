@@ -682,7 +682,7 @@ export default function DeploymentConfig({
             defaultAppOverride: state.template,
             isAppMetricsEnabled: state.isAppMetricsEnabled,
             saveEligibleChanges: saveEligibleChangesCb,
-            currentViewEditor: isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
+            currentViewEditor: isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC,
         }
 
         if (!skipReadmeAndSchema) {
@@ -778,7 +778,6 @@ export default function DeploymentConfig({
                 isValues={state.isValues}
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
-                guiSchema={state.guiSchema}
                 groupedData={state.groupedOptionsData}
                 hideLockedKeys={hideLockedKeys}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}

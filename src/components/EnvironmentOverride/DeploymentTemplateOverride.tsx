@@ -254,7 +254,7 @@ export default function DeploymentTemplateOverride({
             payload,
         })
 
-        parseDataForView(globalConfig, envOverrideValues, payload, false)
+        parseDataForView(payload, false)
     }
 
     async function handleAppMetrics() {
@@ -288,7 +288,7 @@ export default function DeploymentTemplateOverride({
                 duplicate: state.latestDraft ? state.duplicate : _duplicateFromResp,
                 readme: result.readme,
                 schema: result.schema,
-                guiSchema: JSON.parse(result.guiSchema),
+                guiSchema: result.guiSchema,
             }
 
             if (isProtected && state.latestDraft) {
@@ -304,7 +304,7 @@ export default function DeploymentTemplateOverride({
                 payload,
             })
 
-            parseDataForView(result.globalConfig, result.environmentConfig.envOverrideValues, payload, true)
+            parseDataForView(payload, true)
 
             setParentState(ComponentStates.loaded)
         } catch (err) {
@@ -327,13 +327,11 @@ export default function DeploymentTemplateOverride({
                 dispatch({ type: DeploymentConfigStateActionTypes.toggleDialog })
             } else {
                 // remove copy
-                if (state.selectedChart.name === ROLLOUT_DEPLOYMENT || state.selectedChart.name === DEPLOYMENT) {
-                    dispatch({
-                        type: DeploymentConfigStateActionTypes.multipleOptions,
-                        payload: { duplicate: null, isDraftOverriden: false },
-                    })
-                    parseDataForView(state.data.globalConfig, null, {}, false)
-                }
+                dispatch({
+                    type: DeploymentConfigStateActionTypes.multipleOptions,
+                    payload: { duplicate: null, isDraftOverriden: false },
+                })
+                parseDataForView({}, false)
             }
         } else {
             // create copy
@@ -348,24 +346,8 @@ export default function DeploymentTemplateOverride({
         }
     }
 
-    const parseDataForView = async (
-        baseTemplate,
-        envOverrideValues,
-        templateData,
-        updatePublishedState,
-    ): Promise<void> => {
+    const parseDataForView = async (templateData, updatePublishedState): Promise<void> => {
         const statesToUpdate = {}
-        if (!state.currentEditorView || !state.duplicate) {
-            /* NOTE: By default we should always land on basic view unless we are superAdmin */
-            const _currentViewEditor =
-                state.openComparison ||
-                state.showReadme ||
-                currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
-                    ? EDITOR_VIEW.ADVANCED
-                    : EDITOR_VIEW.BASIC
-            statesToUpdate['yamlMode'] = _currentViewEditor === EDITOR_VIEW.ADVANCED
-            statesToUpdate['currentEditorView'] = _currentViewEditor
-        }
 
         // Override yamlMode state to advanced when draft state is 4 (approval pending)
         if (templateData.latestDraft?.draftState === 4) {

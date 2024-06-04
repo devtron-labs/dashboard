@@ -224,7 +224,7 @@ export interface DeploymentTemplateReadOnlyEditorViewProps {
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
-export interface DeploymentTemplateEditorViewProps extends Pick<DeploymentConfigStateWithDraft, 'guiSchema'> {
+export interface DeploymentTemplateEditorViewProps {
     isEnvOverride?: boolean
     environmentName?: string
     value: string
@@ -481,8 +481,7 @@ export interface SaveConfirmationDialogProps {
     closeLockedDiffDrawerWithChildModal: () => void
 }
 
-export interface DeploymentTemplateGUIViewProps
-    extends Pick<DeploymentTemplateEditorViewProps, 'guiSchema' | 'editorOnChange'> {
+export interface DeploymentTemplateGUIViewProps extends Pick<DeploymentTemplateEditorViewProps, 'editorOnChange'> {
     fetchingValues?: boolean
     value: string
     readOnly: boolean

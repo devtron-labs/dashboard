@@ -20,13 +20,15 @@ import guiSchema from '../deploymentConfig/basicViewSchema.json'
 
 export function getDeploymentTemplate(appId, envId, chartId) {
     return new Promise<ResponseType>((resolve, reject) => {
-        ;(async () => {
-            const data = await get(`app/env/${appId}/${envId}/${chartId}`)
-            if (!data.result.guiSchema) {
-                data.result.guiSchema = JSON.stringify(guiSchema)
-            }
-            resolve(data)
-        })().catch((err) => reject(err))
+        get(`app/env/${appId}/${envId}/${chartId}`)
+            .then((data) => {
+                const copy = structuredClone(data)
+                if (!copy.result.guiSchema) {
+                    copy.result.guiSchema = JSON.stringify(guiSchema)
+                }
+                resolve(copy)
+            })
+            .catch((err) => reject(err))
     })
 }
 

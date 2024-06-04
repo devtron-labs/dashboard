@@ -78,6 +78,6 @@ export default function DeploymentTemplateReadOnlyEditorView({
             {renderCodeEditor()}
         </>
     ) : (
-        <DeploymentTemplateGUIView value={value} guiSchema={state.guiSchema} readOnly />
+        <DeploymentTemplateGUIView value={value} readOnly />
     )
 }

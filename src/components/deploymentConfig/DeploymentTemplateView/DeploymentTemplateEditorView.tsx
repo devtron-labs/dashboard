@@ -60,7 +60,6 @@ const DeploymentTemplateEditorView = ({
     lockedConfigKeysWithLockType,
     hideLockKeysToggled,
     removedPatches,
-    guiSchema,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -466,7 +465,7 @@ const DeploymentTemplateEditorView = ({
 
     const renderCodeEditor = (): JSX.Element => (
         <div
-            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp flex-grow-1 ${
+            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
                 isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
             }`}
         >
@@ -487,7 +486,7 @@ const DeploymentTemplateEditorView = ({
                     !rhs ||
                     (state.openComparison && !lhs)
                 }
-                height={'100%'}
+                height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}
                 noParsing
@@ -529,7 +528,6 @@ const DeploymentTemplateEditorView = ({
             fetchingValues={fetchingValues}
             value={rhs}
             readOnly={readOnly}
-            guiSchema={guiSchema}
             editorOnChange={editorOnChange}
         />
     )

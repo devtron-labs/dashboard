@@ -15,12 +15,7 @@
  */
 
 import React, { useContext, useMemo } from 'react'
-import {
-    InfoColourBar,
-    Progressing,
-    RJSFForm,
-    GenericEmptyState,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, Progressing, RJSFForm, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
@@ -41,12 +36,11 @@ const DeploymentTemplateGUIView = ({
     fetchingValues,
     value,
     readOnly,
-    guiSchema,
     editorOnChange,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading, isRequiredFieldsUnfilled },
+        state: { chartConfigLoading, isRequiredFieldsUnfilled, guiSchema },
         dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -126,7 +120,7 @@ const DeploymentTemplateGUIView = ({
             <div
                 className={`form__row--gui-container p-20 flex-grow-1 dc__overflow-scroll ${
                     !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
-                } ${state.error ? 'dc__border-bottom-n1' : ''}`}
+                } ${state.error ? 'dc__border-bottom-n1 gui--no-infobar' : ''}`}
             >
                 {renderContent()}
             </div>

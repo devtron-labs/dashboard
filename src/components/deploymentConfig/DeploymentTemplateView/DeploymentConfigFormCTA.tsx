@@ -58,7 +58,11 @@ export default function DeploymentConfigFormCTA({
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
     const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
+    const isSomeFieldsMissing = !state.yamlMode && state.isRequiredFieldsUnfilled
     const getCTATippyContent = () => {
+        if (isSomeFieldsMissing) {
+            return 'Input is required for all mandatory fields.'
+        }
         if (isApprovalPending) {
             if (!hasAccess) {
                 return 'You do not have permission to approve configuration changes for this application - environment combination.'
@@ -112,12 +116,12 @@ export default function DeploymentConfigFormCTA({
     const renderButton = () => {
         return (
             <ConditionalWrap
-                condition={(isEnvOverride && disableButton) || approveDisabled}
+                condition={(isEnvOverride && disableButton) || approveDisabled || isSomeFieldsMissing}
                 wrap={renderWrappedChildren}
             >
                 <button
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
-                        _disabled || approveDisabled || (!state.yamlMode && state.isRequiredFieldsUnfilled) ? 'disabled' : ''
+                        _disabled || approveDisabled || isSomeFieldsMissing ? 'disabled' : ''
                     }`}
                     type="button"
                     onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
@@ -127,7 +131,11 @@ export default function DeploymentConfigFormCTA({
                             : 'base-deployment-template-save-changes-button'
                     }`}
                     disabled={
-                        loading || state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables || (!state.yamlMode && state.isRequiredFieldsUnfilled)
+                        loading ||
+                        state.unableToParseYaml ||
+                        (!isValues && !isApprovalPending) ||
+                        convertVariables ||
+                        isSomeFieldsMissing
                     }
                 >
                     {loading ? (
