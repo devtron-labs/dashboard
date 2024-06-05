@@ -41,7 +41,6 @@ const ResourceFilterOptions = ({
     isOpen,
     setSearchText,
     isSearchInputDisabled,
-    runSearch,
     shortcut,
     renderRefreshBar,
     updateK8sResourceTab,
@@ -87,21 +86,9 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut, isOpen])
 
-    const handleFilterKeyUp = (e: React.KeyboardEvent): void => {
-        switch (e.key) {
-            case 'Escape':
-            case 'Esc':
-                searchInputRef.current?.blur()
-                break
-            case 'Enter':
-                runSearch(searchText)
-                break
-            case 'Backspace':
-                if (!searchText) {
-                    runSearch('')
-                }
-                break
-            default:
+    const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            searchInputRef.current?.blur()
         }
     }
 
@@ -125,7 +112,6 @@ const ResourceFilterOptions = ({
 
     const clearSearchInput = () => {
         setSearchText('')
-        runSearch('')
         searchInputRef.current?.focus()
     }
 
@@ -142,7 +128,7 @@ const ResourceFilterOptions = ({
                         value={searchText}
                         className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
                         onChange={handleOnChangeSearchText}
-                        onKeyUp={handleFilterKeyUp}
+                        onKeyUp={handleFilterKeyPress}
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
                         disabled={isSearchInputDisabled}
