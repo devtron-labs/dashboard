@@ -2,12 +2,13 @@ import React from 'react'
 
 export const getRenderActionButton = (changeEditorMode) => {
     return () => (
-        <span
-            data-testid="base-deployment-template-switchtoadvanced-button"
-            className="cb-5 cursor fw-6"
+        <button
+            type="button"
+            className="dc__unset-button-styles"
             onClick={changeEditorMode}
+            data-testid="base-deployment-template-switchtoadvanced-button"
         >
-            Switch to Advanced
-        </span>
+            <span className="cb-5 cursor fw-6">Switch to Advanced</span>
+        </button>
     )
 }

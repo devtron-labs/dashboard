@@ -28,7 +28,8 @@ export function getDeploymentTemplate(appId, envId, chartId) {
                 }
                 resolve(copy)
             })
-            .catch((err) => reject(err))
+            /* NOTE: the above call will throw @ServerErrors */
+            .catch((err: Error) => reject(err))
     })
 }
 

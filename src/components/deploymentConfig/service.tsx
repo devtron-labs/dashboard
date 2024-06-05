@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify, ResponseType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
 import guiSchema from './basicViewSchema.json'
@@ -41,7 +41,8 @@ export function getDeploymentTemplate(
                 }
                 resolve(copy)
             })
-            .catch((err) => reject(err))
+            /* NOTE: the above call will throw @ServerErrors */
+            .catch((err: Error) => reject(err))
     })
 }
 

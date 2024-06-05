@@ -19,7 +19,7 @@ import { useParams } from 'react-router'
 import YAML from 'yaml'
 import { showError, Progressing, useAsync, useMainContext, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
-import { getDeploymentTemplate as getBaseDeploymentTemplate, getOptions } from '../deploymentConfig/service'
+import { getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
 import '../deploymentConfig/deploymentConfig.scss'
 import {
@@ -29,7 +29,7 @@ import {
 } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
+import { ModuleNameMap } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
 import { EDITOR_VIEW } from '../deploymentConfig/constants'
@@ -204,7 +204,6 @@ export default function DeploymentTemplateOverride({
             envOverrideValues,
             id,
             isDraftOverriden,
-            globalConfig,
             isAppMetricsEnabled,
             currentEditorView,
             chartRefId,

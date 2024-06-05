@@ -22,8 +22,6 @@ import { Progressing, YAMLStringify, getLockedJSON, getUnlockedJSON } from '@dev
 import * as jsonpatch from 'fast-json-patch'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
-import { EDITOR_VIEW } from '../deploymentConfig/constants'
-import { DEPLOYMENT, ROLLOUT_DEPLOYMENT } from '../../config'
 import { createDeploymentTemplate, updateDeploymentTemplate } from './service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
@@ -301,7 +299,6 @@ export default function DeploymentTemplateOverrideForm({
             })
         }
         try {
-            const parsedValues = YAML.parse(str)
             // Unset unableToParseYaml flag when yaml is successfully parsed
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,

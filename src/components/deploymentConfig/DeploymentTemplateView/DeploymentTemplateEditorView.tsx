@@ -30,7 +30,7 @@ import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprov
 import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
+import { MODES } from '../../../config'
 import {
     CompareWithDropdown,
     CompareWithApprovalPendingAndDraft,

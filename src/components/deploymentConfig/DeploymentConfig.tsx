@@ -50,8 +50,8 @@ import {
 } from './types'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { DEPLOYMENT, ModuleNameMap, ROLLOUT_DEPLOYMENT } from '../../config'
-import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleNameMap } from '../../config'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType, handleConfigProtectionError } from './DeploymentConfig.utils'
 import { EDITOR_VIEW } from './constants'
 import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
@@ -81,7 +81,7 @@ export default function DeploymentConfig({
     reloadEnvironments,
 }: DeploymentConfigProps) {
     const { appId } = useParams<{ appId: string }>()
-    const { currentServerInfo, isSuperAdmin } = useMainContext()
+    const { isSuperAdmin } = useMainContext()
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
