@@ -77,7 +77,7 @@ export const K8SResourceList = ({
     updateK8sResourceTab,
 }: K8SResourceListType) => {
     const { searchParams } = useSearchString()
-    const { push } = useHistory()
+    const { push, replace } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
     const { clusterId, nodeType, group } = useParams<URLParams>()
@@ -196,7 +196,7 @@ export const K8SResourceList = ({
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         const _url = `${location.pathname}?${searchParamString}`
         updateK8sResourceTab(_url)
-        push(_url)
+        replace(_url)
         handleFilterChanges(text)
         if (text) {
             /* NOTE: if resourceListOffset is 0 setState is noop */
@@ -465,6 +465,7 @@ export const K8SResourceList = ({
             }`}
         >
             <ResourceFilterOptions
+                key={`${selectedResource.gvk.Kind}-${selectedResource.gvk.Group}`}
                 selectedResource={selectedResource}
                 selectedNamespace={selectedNamespace}
                 setSelectedNamespace={setSelectedNamespace}
