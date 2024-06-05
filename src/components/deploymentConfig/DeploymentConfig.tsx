@@ -92,7 +92,7 @@ export default function DeploymentConfig({
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
-        initDeploymentConfigState,
+        { ...initDeploymentConfigState, yamlMode: isSuperAdmin },
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
@@ -256,7 +256,6 @@ export default function DeploymentConfig({
             refChartTemplateVersion,
             isAppMetricsEnabled,
             chartRefId,
-            currentViewEditor,
             readme,
             schema,
         } = JSON.parse(latestDraft.data)
@@ -278,7 +277,6 @@ export default function DeploymentConfig({
             latestDraft,
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
-            currentEditorView: currentViewEditor,
             readme,
             schema,
             ...{
@@ -340,13 +338,12 @@ export default function DeploymentConfig({
                 },
             } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
-            const currentViewEditor = isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC
             const templateData = {
                 template: defaultAppOverride,
                 schema,
                 readme,
                 guiSchema,
-                currentEditorView: currentViewEditor,
+                yamlMode: isSuperAdmin,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
@@ -682,7 +679,6 @@ export default function DeploymentConfig({
             defaultAppOverride: state.template,
             isAppMetricsEnabled: state.isAppMetricsEnabled,
             saveEligibleChanges: saveEligibleChangesCb,
-            currentViewEditor: isSuperAdmin ? EDITOR_VIEW.ADVANCED : EDITOR_VIEW.BASIC,
         }
 
         if (!skipReadmeAndSchema) {

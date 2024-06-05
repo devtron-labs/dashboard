@@ -367,7 +367,6 @@ export interface DeploymentConfigStateType {
     fetchedValues: Record<number | string, string>
     fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
-    currentEditorView: string
     data: any
     duplicate: any
     dialog: boolean
@@ -425,7 +424,6 @@ export enum DeploymentConfigStateActionTypes {
     fetchedValues = 'fetchedValues',
     fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
-    currentEditorView = 'currentEditorView',
     duplicate = 'duplicate',
     appMetrics = 'appMetrics',
     data = 'data',

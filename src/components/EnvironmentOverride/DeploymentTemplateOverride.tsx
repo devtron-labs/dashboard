@@ -205,7 +205,6 @@ export default function DeploymentTemplateOverride({
             id,
             isDraftOverriden,
             isAppMetricsEnabled,
-            currentEditorView,
             chartRefId,
             status,
             manualReviewed,
@@ -230,7 +229,6 @@ export default function DeploymentTemplateOverride({
             selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
             showReadme: false,
-            currentEditorView,
             showDraftOverriden: isDraftOverriden,
             ...{
                 ...chartRefsData,
@@ -351,7 +349,6 @@ export default function DeploymentTemplateOverride({
         // Override yamlMode state to advanced when draft state is 4 (approval pending)
         if (templateData.latestDraft?.draftState === 4) {
             statesToUpdate['yamlMode'] = true
-            statesToUpdate['currentEditorView'] = EDITOR_VIEW.ADVANCED
         }
 
         if (updatePublishedState && templateData['publishedState']) {

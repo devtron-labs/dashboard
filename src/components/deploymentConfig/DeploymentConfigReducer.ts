@@ -37,8 +37,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     readme: '',
     fetchedValues: {},
     fetchedValuesManifest: {},
-    yamlMode: true,
-    currentEditorView: '',
+    yamlMode: false,
     data: null,
     duplicate: null,
     dialog: false,
@@ -119,8 +118,6 @@ export const deploymentConfigReducer = (
             return { ...state, fetchedValuesManifest: action.payload }
         case DeploymentConfigStateActionTypes.yamlMode:
             return { ...state, yamlMode: action.payload }
-        case DeploymentConfigStateActionTypes.currentEditorView:
-            return { ...state, currentEditorView: action.payload }
         case DeploymentConfigStateActionTypes.duplicate:
             return { ...state, duplicate: action.payload }
         case DeploymentConfigStateActionTypes.appMetrics:
