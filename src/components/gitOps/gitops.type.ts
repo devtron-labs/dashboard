@@ -56,6 +56,7 @@ export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' 
     azureProjectName: string
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
+    allowCustomRepository?: boolean
 }
 
 export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {

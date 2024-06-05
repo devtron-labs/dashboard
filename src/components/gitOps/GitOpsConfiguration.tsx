@@ -313,8 +313,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             ...DefaultShortGitOps,
             host: GitHost[newGitOps],
             provider: gitListKey,
+            allowCustomRepository: false,
         }
-        const isAuthModeSSH = form.authMode || this.getIsAuthModeSSH(form.provider)
+        const isAuthModeSSH = form.authMode === GitOpsAuthModeType.SSH || this.getIsAuthModeSSH(form.provider)
 
         this.setState({
             providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
@@ -326,11 +327,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isFormEdited: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
             isUrlValidationError: false,
-            // TODO: Sync with product if we want to reset on every tab change instead of this single
-            ...(isAuthModeSSH && {
-                allowCustomGitRepo: true,
-                selectedRepoType: repoType.CONFIGURE,
-            }),
+            ...(isAuthModeSSH
+                ? {
+                      allowCustomGitRepo: true,
+                      selectedRepoType: repoType.CONFIGURE,
+                  }
+                : {
+                      allowCustomGitRepo: form.allowCustomRepository,
+                      selectedRepoType: form.allowCustomRepository ? repoType.CONFIGURE : repoType.DEFAULT,
+                  }),
         })
     }
 
