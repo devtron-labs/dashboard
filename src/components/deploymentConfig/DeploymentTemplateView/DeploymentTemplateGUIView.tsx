@@ -104,6 +104,7 @@ const DeploymentTemplateGUIView = ({
                 formData={YAML.parse(value)}
                 onChange={handleFormChange}
                 uiSchema={UISchema}
+                disabled={readOnly}
                 liveValidate
             />
         )
