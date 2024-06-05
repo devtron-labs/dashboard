@@ -90,7 +90,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
     // TODO: Use OtherGitOpsForm as check instead after bitbucket
     const displayName = getProviderNameFromEnum(
         provider,
-        window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE && BitBucketDCCredentials,
+        !!BitBucketDCCredentials,
     )
 
     return (
@@ -902,8 +902,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         ) : (
                             <Fragment key={this.state.providerTab}>
-                                {window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE &&
-                                    BitBucketDCCredentials &&
+                                {!!BitBucketDCCredentials &&
                                     this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
                                         <BitbucketCloudAndServerToggleSection
                                             isBitbucketCloud={this.state.isBitbucketCloud}
@@ -1230,7 +1229,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         handleCancel={this.handleCloseUpdateConfirmationDialog}
                         handleUpdate={this.saveGitOps}
                         saveLoading={this.state.saveLoading}
-                        enableBitBucketSource={window._env_.ENABLE_GITOPS_BITBUCKET_SOURCE && BitBucketDCCredentials}
+                        enableBitBucketSource={!!BitBucketDCCredentials}
                     />
                 )}
             </>
