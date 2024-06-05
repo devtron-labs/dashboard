@@ -88,10 +88,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
     const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
     // TODO: Use OtherGitOpsForm as check instead after bitbucket
-    const displayName = getProviderNameFromEnum(
-        provider,
-        !!BitBucketDCCredentials,
-    )
+    const displayName = getProviderNameFromEnum(provider, !!BitBucketDCCredentials)
 
     return (
         <label className="dc__tertiary-tab__radio">
@@ -537,16 +534,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
             gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
-            ...(this.state.form.provider === 'BITBUCKET_DC'
+            ...(this.state.isBitbucketCloud
                 ? {
                       bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
-                      authMode: this.state.form.authMode,
-                      sshKey:
-                          this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD
-                              ? this.state.form.sshKey
-                              : '',
                   }
                 : {}),
+            ...(this.state.form.provider === 'BITBUCKET_DC' && {
+                authMode: this.state.form.authMode,
+                sshKey: this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD ? this.state.form.sshKey : '',
+            }),
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
@@ -902,13 +898,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         ) : (
                             <Fragment key={this.state.providerTab}>
-                                {!!BitBucketDCCredentials &&
-                                    this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                                        <BitbucketCloudAndServerToggleSection
-                                            isBitbucketCloud={this.state.isBitbucketCloud}
-                                            setIsBitbucketCloud={this.setIsBitbucketCloud}
-                                        />
-                                    )}
+                                {!!BitBucketDCCredentials && this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                                    <BitbucketCloudAndServerToggleSection
+                                        isBitbucketCloud={this.state.isBitbucketCloud}
+                                        setIsBitbucketCloud={this.setIsBitbucketCloud}
+                                    />
+                                )}
                                 {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD ||
                                     this.state.isBitbucketCloud) && (
                                     <GitInfoTab
