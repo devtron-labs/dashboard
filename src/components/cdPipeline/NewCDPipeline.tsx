@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     BuildStageVariable,
     DeploymentAppTypes,
@@ -21,11 +37,7 @@ import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'reac
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import {
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -222,7 +234,6 @@ export default function NewCDPipeline({
 
     useEffect(() => {
         getInit()
-        document.addEventListener('keydown', escFunction)
     }, [])
 
     useEffect(() => {
@@ -469,12 +480,9 @@ export default function NewCDPipeline({
                     ...pipelineConfigFromRes.strategies[i],
                     defaultConfig: allStrategies.current[pipelineConfigFromRes.strategies[i].deploymentTemplate],
                     jsonStr: JSON.stringify(pipelineConfigFromRes.strategies[i].config, null, 4),
-                    selection: YAMLStringify(
-                        allStrategies.current[pipelineConfigFromRes.strategies[i].config],
-                        {
-                            indent: 2,
-                        },
-                    ),
+                    selection: YAMLStringify(allStrategies.current[pipelineConfigFromRes.strategies[i].config], {
+                        indent: 2,
+                    }),
                     isCollapsed: true,
                 })
                 form.strategies = form.strategies.filter(
@@ -1278,7 +1286,7 @@ export default function NewCDPipeline({
         <>
             {renderFloatingVariablesWidget()}
 
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            <Drawer onEscape={closePipelineModal} position="right" width="75%" minWidth="1024px" maxWidth="1200px">
                 {renderCDPipelineModal()}
             </Drawer>
         </>

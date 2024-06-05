@@ -167,6 +167,40 @@ $color-suffix: 00;
     }
 }
 
+// For generating shades of 50, 150, ..., 850.
+@each $color in $colors {
+    @for $i from 50 through 50 {
+        .c#{to-lower-case($color)}-#{$i} {
+            color: var(--#{$color}#{$i});
+        }
+
+        .bc#{to-lower-case($color)}-#{$i} {
+            background-color: var(--#{$color}#{$i});
+        }
+
+        .e#{to-lower-case($color)}-#{$i} {
+            border-color: var(--#{$color}#{$i});
+            border-style: solid;
+        }
+
+        .sc#{to-lower-case($color)}-#{$i} {
+            stroke: var(--#{$color}#{$i});
+
+            path {
+                stroke: var(--#{$color}#{$i});
+            }
+        }
+
+        .fc#{to-lower-case($color)}-#{$i} {
+            fill: var(--#{$color}#{$i});
+
+            path {
+                fill: var(--#{$color}#{$i});
+            }
+        }
+    }
+}
+
 // border-radius
 @for $i from 0 through 16 {
     .br-#{$i} {

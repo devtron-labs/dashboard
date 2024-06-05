@@ -27,7 +27,6 @@ src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/UnhibernateModal.tsx
-src/components/ApplicationGroup/Details/EnvironmentOverview/service.ts
 src/components/ApplicationGroup/Details/TriggerView/BulkCDTrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkCITrigger.tsx
 src/components/ApplicationGroup/Details/TriggerView/BulkSourceChange.tsx
@@ -67,8 +66,6 @@ src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
 src/components/ClusterNodes/ClusterOverview.tsx
-src/components/ClusterNodes/ClusterSelectionList.tsx
-src/components/ClusterNodes/ClusterTerminal.tsx
 src/components/ClusterNodes/ColumnSelector.tsx
 src/components/ClusterNodes/NodeActions/CordonNodeModal.tsx
 src/components/ClusterNodes/NodeActions/DeleteNodeModal.tsx
@@ -108,21 +105,6 @@ src/components/Jobs/Service.ts
 src/components/Jobs/Types.ts
 src/components/Jobs/Utils.ts
 src/components/LogViewer/LogViewer.tsx
-src/components/ResourceBrowser/Constants.ts
-src/components/ResourceBrowser/ResourceList/ClusterSelector.tsx
-src/components/ResourceBrowser/ResourceList/ConnectingToClusterState.tsx
-src/components/ResourceBrowser/ResourceList/CreateResource.tsx
-src/components/ResourceBrowser/ResourceList/DeleteResourcePopup.tsx
-src/components/ResourceBrowser/ResourceList/EventList.tsx
-src/components/ResourceBrowser/ResourceList/K8SResourceList.tsx
-src/components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu.tsx
-src/components/ResourceBrowser/ResourceList/ResourceFilterOptions.tsx
-src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
-src/components/ResourceBrowser/ResourceList/ResourceList.tsx
-src/components/ResourceBrowser/ResourceList/ResourceListEmptyState.tsx
-src/components/ResourceBrowser/ResourceList/__mocks__/Sidebar.mock.ts
-src/components/ResourceBrowser/Types.ts
-src/components/ResourceBrowser/Utils.ts
 src/components/__mocks__/monaco-editor.js
 src/components/__mocks__/xterm-webfont.js
 src/components/app/EventsLogs.tsx
@@ -347,11 +329,6 @@ src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
 src/components/common/DetectBottom.tsx
-src/components/common/DynamicTabs/DynamicTabs.component.tsx
-src/components/common/DynamicTabs/DynamicTabs.tsx
-src/components/common/DynamicTabs/Types.ts
-src/components/common/DynamicTabs/Utils.ts
-src/components/common/DynamicTabs/useTabs.ts
 src/components/common/EditableTextArea/EditableTextArea.tsx
 src/components/common/ExportToCsv/ExportToCsv.tsx
 src/components/common/ExportToCsv/constants.ts
@@ -633,3 +610,4 @@ src/util/DeleteComponent.tsx
 src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
+src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx

@@ -1,3 +1,19 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Icon/ic-unhibernate">
 <path id="Vector" d="M6 1.4V1M2.74731 2.74731L2.46447 2.46447M1.4 6H1M2.74731 9.25269L2.46447 9.53553M6 10.6V11M9.25269 9.25269L9.53553 9.53553M10.6 6H11M9.25269 2.74731L9.53553 2.46447M9 6C9 7.65685 7.65685 9 6 9C4.34315 9 3 7.65685 3 6C3 4.34315 4.34315 3 6 3C7.65685 3 9 4.34315 9 6Z" stroke="#3B444C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
