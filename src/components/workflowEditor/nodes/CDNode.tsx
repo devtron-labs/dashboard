@@ -137,7 +137,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
-                    this.handleHideDeleteModal()
                     this.handleClusterNameUpdate(response.result.deleteResponse?.clusterName)
                     if (
                         cascadeDelete &&
@@ -146,6 +145,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     ) {
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNonCascadeDeleteDialog)
                     } else {
+                        this.handleHideDeleteModal()
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                         this.handleDeleteDialogUpdate(DeleteDialogType.showNormalDeleteDialog)
                         this.props.handleDisplayLoader?.()
@@ -158,8 +158,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 // 412 is for linked pipeline and 403 is for RBAC
                 if (!force && error.code != 403 && error.code != 412) {
                     this.parseErrorIntoForceDelete(error)
-                    this.handleHideDeleteModal()
                     this.handleDeleteDialogUpdate(DeleteDialogType.showForceDeleteDialog)
+                } else {
+                    this.handleHideDeleteModal()
                 }
                 showError(error)
             })
