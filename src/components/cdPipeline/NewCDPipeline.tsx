@@ -927,7 +927,6 @@ export default function NewCDPipeline({
                         !response.result.deleteResponse?.clusterReachable &&
                         !response.result.deleteResponse?.deleteInitiated
                     ) {
-                        hideDeleteModal()
                         const form = { ...formData }
                         form.clusterName = response.result.deleteResponse?.clusterName
                         setFormData(form)
@@ -959,7 +958,6 @@ export default function NewCDPipeline({
                 // 422 is for deployment window
                 if (!force && error.code != 403 && error.code != 412 && error.code != 422) {
                     setForceDeleteDialogData(error)
-                    hideDeleteModal()
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
                     showError(error)
