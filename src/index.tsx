@@ -141,9 +141,9 @@ if (!window || !window._env_) {
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
         ENABLE_RESOURCE_SCAN: false,
-        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
+        FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: true,
         ENABLE_RESOURCE_SCAN_V2: false,
-        ENABLE_GITOPS_BITBUCKET_SOURCE: false,
+        ENABLE_GITOPS_BITBUCKET_SOURCE: true,
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
     }
