@@ -87,7 +87,6 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
 }) => {
     const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
-    // TODO: Use OtherGitOpsForm as check instead after bitbucket
     const displayName = getProviderNameFromEnum(provider, !!BitBucketDCCredentials)
 
     return (
