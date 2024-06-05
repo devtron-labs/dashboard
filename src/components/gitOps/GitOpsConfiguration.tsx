@@ -243,7 +243,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     (!bitbucketCloudConfig && !bitbucketDCConfig) ||
                     (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
 
-                const isAuthModeSSH = form.authMode === GitOpsAuthModeType.SSH
+                const isAuthModeSSH = form.authMode ? form.authMode === GitOpsAuthModeType.SSH : this.getIsAuthModeSSH(form.provider)
                 const initialBitBucketDCAuthMode =
                     bitbucketDCConfig?.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD
                         ? GitOpsAuthModeType.SSH_AND_PASSWORD
