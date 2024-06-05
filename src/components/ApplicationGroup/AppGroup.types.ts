@@ -490,12 +490,14 @@ export interface HibernateModalProps extends BaseModalProps {
     setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
     isDeploymentLoading: boolean
     showDefaultDrawer: boolean
+    isDeploymentBlockedViaWindow: boolean
 }
 
 export interface UnhibernateModalProps extends BaseModalProps {
     setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
     isDeploymentLoading: boolean
     showDefaultDrawer: boolean
+    isDeploymentBlockedViaWindow: boolean
 }
 
 export interface StatusDrawer {
@@ -540,6 +542,7 @@ export interface RestartWorkloadModalProps {
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
     httpProtocol: string
+    isDeploymentBlockedViaWindow: boolean
 }
 
 export interface RestartStatusListDrawerProps {

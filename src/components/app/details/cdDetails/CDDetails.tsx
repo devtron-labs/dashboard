@@ -246,41 +246,6 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         setTriggerHistory(newTriggerHistory)
     }
 
-    // Function is passed in sidebar to sync the trigger details as trigger details is also fetched with another api
-    function syncState(triggerId: number, triggerDetail: History, triggerDetailsError: any) {
-        if (triggerDetailsError) {
-            if (deploymentHistoryResult.result?.cdWorkflows?.length) {
-                setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
-            }
-            setFetchTriggerIdData(FetchIdDataStatus.SUSPEND)
-            return
-        }
-        if (triggerId === triggerDetail?.id) {
-            const appliedFilters = triggerHistory.get(triggerId)?.appliedFilters ?? []
-            const appliedFiltersTimestamp = triggerHistory.get(triggerId)?.appliedFiltersTimestamp
-            const promotionApprovalMetadata = triggerHistory.get(triggerId)?.promotionApprovalMetadata
-            const runSource = triggerHistory.get(triggerId)?.runSource
-
-            // These changes are not subject to change after refresh, add data which will not change
-            const additionalDataObject = {
-                ...(appliedFilters.length ? { appliedFilters } : {}),
-                ...(appliedFiltersTimestamp ? { appliedFiltersTimestamp } : {}),
-                ...(promotionApprovalMetadata ? { promotionApprovalMetadata } : {}),
-                ...(runSource ? { runSource } : {}),
-                
-            }
-
-            setTriggerHistory((triggerHistory) => {
-                triggerHistory.set(triggerId, { ...triggerDetail, ...additionalDataObject })
-                return new Map(triggerHistory)
-            })
-
-            if (fetchTriggerIdData === FetchIdDataStatus.FETCHING) {
-                setFetchTriggerIdData(FetchIdDataStatus.SUCCESS)
-            }
-        }
-    }
-
     const handleViewAllHistory = () => {
         if (deploymentHistoryResult.result?.cdWorkflows?.length) {
             setTriggerHistory(mapByKey(deploymentHistoryResult.result.cdWorkflows, 'id'))
@@ -330,8 +295,9 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                     >
                         <TriggerOutput
                             fullScreenView={fullScreenView}
-                            syncState={syncState}
                             triggerHistory={triggerHistory}
+                            deploymentHistoryResult={deploymentHistoryResult ?? null}
+                            setTriggerHistory={setTriggerHistory}
                             setFullScreenView={setFullScreenView}
                             setDeploymentHistoryList={setDeploymentHistoryList}
                             deploymentHistoryList={deploymentHistoryList}
@@ -341,6 +307,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                             tagsEditable={tagsEditable}
                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                             fetchIdData={fetchTriggerIdData}
+                            setFetchTriggerIdData={setFetchTriggerIdData}
                             selectedEnvironmentName={selectedEnv?.environmentName}
                             renderRunSource={renderRunSourceInDropdown}
                             renderCIListHeader={renderCIListHeader}

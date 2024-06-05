@@ -15,9 +15,8 @@
  */
 
 import React, { Component } from 'react'
-import { statusIcon } from '../../config'
 import './appStatus.css'
-import { statusColor } from '@devtron-labs/devtron-fe-common-lib'
+import { statusColor, statusIcon } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AppStatusProps {
     status: string
