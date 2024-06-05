@@ -16,6 +16,7 @@ import {
     StyledRadioGroup as RadioGroup,
     useMainContext,
     YAMLStringify,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -179,6 +180,8 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
+
+    usePrompt({shouldPrompt: commonState.isUpdateInProgress || commonState.isDeleteInProgress})
     
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
@@ -1784,6 +1787,7 @@ const ChartValuesView = ({
                         }
                     />
                 )}
+                <Prompt when={valueName || appName || commonState.selectedProject || commonState.selectedEnvironment || commonState.chartValues !== chartValuesFromParent || commonState.selectedVersion !== selectedVersionFromParent} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }
@@ -1803,7 +1807,7 @@ const ChartValuesView = ({
         )
     }
 
-    return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>
+    return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>    
 }
 
 export default ChartValuesView
