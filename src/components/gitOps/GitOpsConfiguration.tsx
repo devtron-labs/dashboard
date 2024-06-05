@@ -315,7 +315,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             provider: gitListKey,
             allowCustomRepository: false,
         }
-        const isAuthModeSSH = form.authMode === GitOpsAuthModeType.SSH || this.getIsAuthModeSSH(form.provider)
+        const isAuthModeSSH = form.authMode ? form.authMode === GitOpsAuthModeType.SSH : this.getIsAuthModeSSH(form.provider)
 
         this.setState({
             providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
