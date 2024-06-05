@@ -585,7 +585,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
             return
         }
-        const isSwitchingOrUpdatingProvider = this.isSwitchingProvider() || this.state.form.id
+
+        const isSwitchingOrUpdatingProvider =
+            this.state.gitList.length > 0 && (this.isSwitchingProvider() || this.state.form.id)
 
         if (!this.state.showUpdateConfirmationDialog && isSwitchingOrUpdatingProvider) {
             this.handleShowUpdateConfirmationDialog()
