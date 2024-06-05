@@ -960,6 +960,7 @@ export default function NewCDPipeline({
                     setForceDeleteDialogData(error)
                     setDeleteDialog(DeleteDialogType.showForceDeleteDialog)
                 } else {
+                    hideDeleteModal()
                     showError(error)
                 }
                 setShowDeploymentConfirmationDeleteDialog(false)
