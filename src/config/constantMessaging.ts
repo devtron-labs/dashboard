@@ -322,11 +322,6 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',
     },
 
-    CLUSTER_NODE_EMPTY_STATE: {
-        TITLE: 'No matching clusters',
-        SUBTITLE: 'We couldn’t find any matching results',
-    },
-
     CHART_EMPTY_STATE: {
         TITLE: 'No matching charts',
         SUBTITLE: "We couldn't find any matching results",

@@ -5,10 +5,10 @@ import {
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useRef } from 'react'
 import { API_STATUS_CODES } from '../../../../../config'
-import FiltersEmptyState from '../../Shared/components/FilterEmptyState/FilterEmptyState.component'
 import NoUsers from './NoUsers'
 import { UserPermissionContainerProps } from './types'
 import UserPermissionListHeader from './UserPermissionListHeader'
@@ -135,7 +135,7 @@ const UserPermissionContainer = ({
                             totalCount={totalCount}
                         />
                     ) : (
-                        <FiltersEmptyState clearFilters={clearFilters} />
+                        <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
                     )}
                     {isSomeRowChecked && selectedUsersCount > 0 && (
                         <BulkSelectionActionWidget

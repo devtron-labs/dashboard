@@ -9,19 +9,10 @@ export default function ClusterNodeEmptyState({
     title?: string
     actionHandler?: () => void
 }) {
-    const renderClearSearchButton = () => {
-        return (
-            <button onClick={actionHandler} className="add-link cta flex">
-                Clear search
-            </button>
-        )
-    }
     return (
         <GenericFilterEmptyState
-            title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
-            subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
-            isButtonAvailable
-            renderButton={renderClearSearchButton}
+            title={title || 'No matching clusters'}
+            handleClearFilters={actionHandler}
             classname="dc__position-rel-imp"
         />
     )

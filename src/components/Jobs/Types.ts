@@ -99,7 +99,7 @@ export interface JobSelectorType {
 
 export interface JobsEmptyProps {
     view: string
-    clickHandler: (e) => void
+    clickHandler: () => void
 }
 
 export type JobList = ResponseType<{

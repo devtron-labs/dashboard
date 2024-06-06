@@ -37,15 +37,7 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
 
 const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedCIAppListProps) => {
     if (!isLoading && (totalCount === 0 || appList.length === 0)) {
-        const renderClearFilterButton = () => (
-            <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
-                Clear Filters
-            </button>
-        )
-
-        return (
-            <GenericFilterEmptyState classname="flex-grow-1" isButtonAvailable renderButton={renderClearFilterButton} />
-        )
+        return <GenericFilterEmptyState classname="flex-grow-1" handleClearFilters={urlFilters.clearFilters} />
     }
     const { sortOrder, handleSorting } = urlFilters
 

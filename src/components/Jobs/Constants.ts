@@ -47,8 +47,6 @@ export const JOBLIST_EMPTY_STATE_MESSAGING = {
     createJobInfoText:
         'Jobs allow manual and automated execution of developer actions. Increase productivity by automating the tedious. Get started by creating your first job.',
     createJobButtonLabel: 'Create Job',
-    noJobFoundInfoText: `We couldn't find any matching applications.`,
-    noJobsButtonLabel: 'Clear filters',
 }
 
 export const JobsFilterTypeText = {
