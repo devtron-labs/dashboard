@@ -311,8 +311,6 @@ export const ConfigMapSecretContainer = ({
                         approvalUsers={draftData.approvers}
                         reload={reload}
                         componentType={componentType === 'secret' ? 2 : 1}
-                        appId={appId}
-                        envId={envId || -1}
                     />
                     <ProtectedConfigMapSecretDetails
                         appChartRef={appChartRef}
