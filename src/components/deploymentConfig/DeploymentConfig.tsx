@@ -275,7 +275,6 @@ export default function DeploymentConfig({
             tempFormData: _codeEditorStringifyData,
             draftValues: _codeEditorStringifyData,
             latestDraft,
-            selectedTabIndex: isApprovalPending ? 2 : 3,
             openComparison: isApprovalPending,
             readme,
             schema,
@@ -285,6 +284,8 @@ export default function DeploymentConfig({
                 selectedChart: chartRefsData?.charts?.find((chart) => chart.id === chartRefId),
             },
         }
+
+        handleTabSelection(isApprovalPending ? 2 : 3)
 
         if (chartRefsData) {
             payload['publishedState'] = chartRefsData
@@ -356,6 +357,7 @@ export default function DeploymentConfig({
                     ...state.publishedState,
                     ...templateData,
                 }
+                payload['guiSchema'] = guiSchema
 
                 payload['readme'] = readme
                 payload['schema'] = schema
