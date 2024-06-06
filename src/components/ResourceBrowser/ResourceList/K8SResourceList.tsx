@@ -197,6 +197,7 @@ export const K8SResourceList = ({
         const _url = `${location.pathname}?${searchParamString}`
         updateK8sResourceTab(_url)
         replace(_url)
+        handleFilterChanges(text)
         if (text) {
             /* NOTE: if resourceListOffset is 0 setState is noop */
             setResourceListOffset(0)
@@ -351,7 +352,6 @@ export const K8SResourceList = ({
 
     const emptyStateActionHandler = () => {
         setSearchText('')
-        handleFilterChanges('')
         const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
         updateK8sResourceTab(pathname)
         push(pathname)
@@ -474,7 +474,6 @@ export const K8SResourceList = ({
                 isOpen={isOpen}
                 resourceList={resourceList}
                 setSearchText={setSearchText}
-                runSearch={handleFilterChanges}
                 isSearchInputDisabled={resourceListLoader}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
