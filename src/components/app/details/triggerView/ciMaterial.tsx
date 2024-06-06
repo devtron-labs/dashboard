@@ -38,7 +38,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
             currentSidebarTab: CIMaterialSidebarType.CODE_SOURCE,
-            isBuildTriggeredLoading: false,
         }
     }
 
@@ -146,7 +145,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
     handleStartBuildAction = (e) => {
         e.stopPropagation()
-        this.setState({isBuildTriggeredLoading: true})
         this.context.onClickTriggerCINode()
     }
 
@@ -261,7 +259,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
 
-                    <Prompt when={this.state.isBuildTriggeredLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                    <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )
         }

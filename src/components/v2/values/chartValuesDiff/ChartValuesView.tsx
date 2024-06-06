@@ -180,9 +180,14 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-
-    usePrompt({shouldPrompt: commonState.isUpdateInProgress || commonState.isDeleteInProgress})
     
+    const isCreateValueFormDirty = isCreateValueView && chartValueId && chartValueId === '0' && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id) 
+    const isUpdateValueFormDirty = isCreateValueView && chartValueId && chartValueId !== '0' && (commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
+    const isDeployChartFormDirty = isDeployChartView && (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id )
+    const isProgressing = commonState.isUpdateInProgress || commonState.isDeleteInProgress
+
+    console.log(installedConfigFromParent)
+
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
     }
@@ -1419,7 +1424,6 @@ const ChartValuesView = ({
                     isCreateValueView={isCreateValueView}
                     deployOrUpdateApplication={deployOrUpdateApplication}
                 />
-                <Prompt when={commonState.isUpdateInProgress || commonState.isDeleteInProgress} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }
@@ -1787,7 +1791,7 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt when={valueName || appName || commonState.selectedProject || commonState.selectedEnvironment || commonState.chartValues !== chartValuesFromParent || commonState.selectedVersion !== selectedVersionFromParent} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                <Prompt when={ isProgressing || !!isCreateValueFormDirty || !!isUpdateValueFormDirty || !!isDeployChartFormDirty } message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }

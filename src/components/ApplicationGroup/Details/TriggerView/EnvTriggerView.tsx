@@ -137,7 +137,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
-    const [showCDModal, setShowCDModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showBulkSourceChangeModal, setShowBulkSourceChangeModal] = useState(false)
@@ -903,7 +902,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
-        setShowCDModal(!isApprovalNode)
         preventBodyScroll(true)
 
         const newParams = new URLSearchParams(location.search)
@@ -923,7 +921,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const onClickRollbackMaterial = (cdNodeId: number) => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
 
-        setShowCDModal(true)
         let _selectedNode
 
         const _workflows = [...filteredWorkflows].map((workflow) => {
@@ -949,7 +946,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        setShowCDModal(true)
         preventBodyScroll(true)
         getWorkflowStatusData(_workflows)
 
@@ -1223,7 +1219,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         e.stopPropagation()
         abortControllerRef.current.abort()
         setCDLoading(false)
-        setShowCDModal(false)
         history.push({
             search: '',
         })
@@ -2028,7 +2023,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
-        if (showCDModal) {
+        if (location.search.includes('rollback-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {

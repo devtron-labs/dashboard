@@ -78,7 +78,7 @@ import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import CIMaterialRoute, { CIMaterialModal } from './CIMaterialRoute'
+import { CIMaterialModal } from './CIMaterialRoute'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -104,7 +104,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             nodeType: null,
             ciPipelineName: '',
             materialType: '',
-            showCDModal: false,
             isLoading: false,
             invalidateCache: false,
             hostURLConfig: undefined,
@@ -256,6 +255,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     search: '',
                                 })
                             }
+                        }
+                    }
+                    if (this.props.location.pathname.includes('build')) {
+                        const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/') 
+                        const ciNodeId = this.props.location.pathname.substring(lastIndexBeforeId + 1)
+                        const pipelineName = wf?.find((workflow) => workflow.id === ciNodeId)?.nodes?.[1]?.title
+
+                        if(!isNaN(+ciNodeId) && ciNodeId && pipelineName) {
+                            this.onClickCIMaterial(ciNodeId, pipelineName, false)
                         }
                     }
                     this.timerRef && clearInterval(this.timerRef)
@@ -709,7 +717,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     // Till then make sure that they are consistent
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ showCDModal: !isApprovalNode })
 
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
@@ -730,7 +737,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             materialType: 'inputMaterialList',
             cdNodeId,
             nodeType,
-            showCDModal: !isApprovalNode,
         })
         preventBodyScroll(true)
 
@@ -757,8 +763,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
         }
 
-        this.setState({ showCDModal: true })
-
         const workflows = [...this.state.workflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === 'CD' && +node.id == cdNodeId) {
@@ -775,7 +779,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 materialType: 'rollbackMaterialList',
                 cdNodeId,
                 nodeType: 'CD',
-                showCDModal: true,
             },
             () => {
                 preventBodyScroll(true)
@@ -875,7 +878,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
-                    this.props.history.push(this.props.match.url)
                     this.setState(
                         {
                             code: response.code,
@@ -890,6 +892,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             }
                         },
                     )
+                    this.props.history.push(this.props.match.url)
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -1024,7 +1027,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCDModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        this.setState({ showCDModal: false, searchImageTag: '' })
+        this.setState({ searchImageTag: '' })
         this.props.history.push({
             search: '',
         })
@@ -1212,7 +1215,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDMaterial() {
-        if (this.state.showCDModal) {
+        if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node') ) {
             const node: CommonNodeAttr = this.getCDNode()
             const material = node[this.state.materialType] || []
 

@@ -207,7 +207,6 @@ export interface CIMaterialState {
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
-    isBuildTriggeredLoading: boolean
 }
 
 export interface DownStreams {
@@ -365,7 +364,6 @@ export interface TriggerViewState {
     code: number
     view: string
     workflows: WorkflowType[]
-    showCDModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
