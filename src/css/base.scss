@@ -3996,6 +3996,13 @@ textarea::placeholder {
     word-break: break-all;
 }
 
+.dc__truncate--clamp-6 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+}
+
 // opacity
 .dc__opacity-0_2 {
     opacity: 0.2;
