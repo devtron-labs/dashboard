@@ -243,7 +243,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     (!bitbucketCloudConfig && !bitbucketDCConfig) ||
                     (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
 
-                const isAuthModeSSH = form.authMode ? form.authMode === GitOpsAuthModeType.SSH : this.getIsAuthModeSSH(form.provider)
+                const isAuthModeSSH = form.authMode
+                    ? form.authMode === GitOpsAuthModeType.SSH
+                    : this.getIsAuthModeSSH(form.provider)
                 const initialBitBucketDCAuthMode =
                     bitbucketDCConfig?.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD
                         ? GitOpsAuthModeType.SSH_AND_PASSWORD
@@ -315,7 +317,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             provider: gitListKey,
             allowCustomRepository: false,
         }
-        const isAuthModeSSH = form.authMode ? form.authMode === GitOpsAuthModeType.SSH : this.getIsAuthModeSSH(form.provider)
+        const isAuthModeSSH = form.authMode
+            ? form.authMode === GitOpsAuthModeType.SSH
+            : this.getIsAuthModeSSH(form.provider)
 
         this.setState({
             providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
@@ -415,23 +419,29 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        const isSSHKeyRequired =
-            this.state.form.provider === 'BITBUCKET_DC' &&
-            !!this.state.form.id &&
-            this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
-            this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD
+        const isBitBucketDC = this.state.form.provider === 'BITBUCKET_DC'
+        const isBitBucketDCCreateView =
+            !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
+        const isTokenRequired = isBitBucketDC && isBitBucketDCCreateView
+
+        const isSSHKeyOptional =
+            !isBitBucketDC ||
+            (isBitBucketDC &&
+                !!this.state.form.id &&
+                this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
+                this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD)
 
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
-            token: this.state.form.id ? '' : this.requiredFieldCheck(form.token),
+            token: this.state.form.id && !isTokenRequired ? '' : this.requiredFieldCheck(form.token),
             gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
             bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.requiredFieldCheck(form.bitBucketWorkspaceId) : '',
             bitBucketProjectKey: '',
             sshHost: '',
-            sshKey: isSSHKeyRequired ? '' : this.requiredFieldCheck(form.sshKey),
+            sshKey: isSSHKeyOptional ? '' : this.requiredFieldCheck(form.sshKey),
         }
     }
 
