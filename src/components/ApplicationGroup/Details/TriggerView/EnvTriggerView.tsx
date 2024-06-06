@@ -2023,7 +2023,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
-        if (location.search.includes('rollback-node') || location.search.includes('rollback-node')) {
+        if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
             if (selectedCDNode?.id) {
