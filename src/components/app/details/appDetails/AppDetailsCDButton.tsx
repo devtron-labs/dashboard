@@ -33,7 +33,6 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -109,7 +108,6 @@ const AppDetailsCDButton = ({
                     appId={appId}
                     pipelineId={cdModal.cdPipelineId}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={cdModal.ciPipelineId}
                     history={history}
                 />

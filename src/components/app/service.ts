@@ -25,12 +25,12 @@ import {
     put,
     DATE_TIME_FORMAT_STRING,
     DeploymentWithConfigType,
+    History,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
-import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
 import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
@@ -291,16 +291,6 @@ export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
 
 export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
-}
-
-export const cancelCiTrigger = (params, isForceAbort) => {
-    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
-    return trash(URL)
-}
-
-export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
-    const URL = `${Routes.CD_CONFIG}/${pipelineId}/workflowRunner/${workflowRunner}`
-    return trash(URL)
 }
 
 export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {

@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -174,13 +174,6 @@ interface ResourceTree {
     status: string
     podMetadata: PodMetadatum[]
     conditions?: any
-}
-
-export interface PodMetadatum {
-    name: string
-    uid: string
-    containers: string[]
-    isNew: boolean
 }
 
 interface Node {
@@ -454,6 +447,9 @@ type NodesMap = {
     [key in NodeType]?: Map<string, any>
 }
 
+/**
+ * @deprecated- Use from fe-common
+ */
 export interface AggregatedNodes {
     nodes: NodesMap
     aggregation: Aggregation

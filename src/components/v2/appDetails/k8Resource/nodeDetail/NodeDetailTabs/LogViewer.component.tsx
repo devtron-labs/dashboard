@@ -24,7 +24,7 @@ import CopyToast, { handleSelectionChange } from './CopyToast'
 import 'xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 import { Subject } from '../../../../../../util/Subject'
-import { Scroller } from '../../../../../app/details/cicdHistory/History.components'
+import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
 
 interface logViewerInterface {
     rootClassName?: string

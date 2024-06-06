@@ -19,8 +19,8 @@ import { CIMaterialType } from './MaterialHistory'
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { SourceTypeMap } from '../../../../config'
-import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import { MaterialSourceProps } from './types'
+import { CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function MaterialSource({
     material,

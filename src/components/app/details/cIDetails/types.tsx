@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { FetchIdDataStatus, History } from '../cicdHistory/types'
+import { FetchIdDataStatus, History } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CIPipeline {
     name: string
