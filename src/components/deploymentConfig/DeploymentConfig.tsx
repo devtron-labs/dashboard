@@ -53,7 +53,6 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleNameMap } from '../../config'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType, handleConfigProtectionError } from './DeploymentConfig.utils'
-import { EDITOR_VIEW } from './constants'
 import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
 import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'
 import DeploymentTemplateOptionsTab from './DeploymentTemplateView/DeploymentTemplateOptionsTab'

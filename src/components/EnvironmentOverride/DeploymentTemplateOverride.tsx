@@ -32,7 +32,6 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleNameMap } from '../../config'
 import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
-import { EDITOR_VIEW } from '../deploymentConfig/constants'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
 
