@@ -285,13 +285,21 @@
     &.gui {
         height: calc(100% - 140px);
 
+        &.gui--no-infobar {
+            height: calc(100% - 104px);
+        }
+
         &.read-only-mode {
-            height: calc(100% - 128px);
+            height: calc(100% - 90px);
         }
     }
 
     &.gui-with-warning {
         height: calc(100% - 172px);
+
+        &.gui--no-infobar {
+            height: calc(100% - 136px);
+        }
 
         &.read-only-mode {
             height: calc(100% - 160px);
@@ -466,10 +474,6 @@
         .form__row--gui-container {
             &.gui {
                 height: calc(100% - 210px);
-
-                &.gui--no-infobar {
-                    height: calc(100% - 174px);
-                }
 
                 &.read-only-mode {
                     height: calc(100% - 158px);

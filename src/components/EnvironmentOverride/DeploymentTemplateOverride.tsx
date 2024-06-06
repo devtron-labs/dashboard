@@ -52,7 +52,7 @@ export default function DeploymentTemplateOverride({
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
-        initDeploymentConfigState,
+        { ...initDeploymentConfigState, yamlMode: isSuperAdmin },
     )
     const baseDeploymentAbortController = useRef(null)
 
@@ -120,8 +120,8 @@ export default function DeploymentTemplateOverride({
 
         if (clearPublishedState) {
             payload.publishedState = null
-            payload.selectedTabIndex = 2 // to have same behaviour as when we discard draft in base deployment template
-            payload.openComparison = true // to have same behaviour as when we discard draft in base deployment template
+            payload.selectedTabIndex = 1 // to have same behaviour as when we discard draft in base deployment template
+            payload.openComparison = false // to have same behaviour as when we discard draft in base deployment template
             payload.showReadme = false
             payload.showComments = false
             payload.latestDraft = null
@@ -286,6 +286,7 @@ export default function DeploymentTemplateOverride({
                 readme: result.readme,
                 schema: result.schema,
                 guiSchema: result.guiSchema,
+                yamlMode: isSuperAdmin,
             }
 
             if (isProtected && state.latestDraft) {
