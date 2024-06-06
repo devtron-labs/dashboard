@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -30,8 +46,8 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
-const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const showSoftwareDistributionHub = !!importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
+const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
+const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 const NavigationList = [
     {
@@ -73,7 +89,7 @@ const NavigationList = [
         isAvailableInEA: false,
         markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
-        hideNav: !showSoftwareDistributionHub,
+        hideNav: hideSoftwareDistributionHub,
     },
     {
         title: 'Deployment Groups',
@@ -104,7 +120,8 @@ const NavigationList = [
         iconClass: 'nav-resource-watcher',
         icon: ResourceWatcherIcon,
         isAvailableInEA: true,
-        hideNav: !ResourceWatcherRouter,
+        forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
+        hideNav: hideResourceWatcher,
     },
     {
         title: 'Chart Store',

@@ -1,10 +1,27 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
-import { CLUSTER_PAGE_TAB } from './constants'
+import { CLUSTER_PAGE_TAB, NODE_SEARCH_TEXT } from './constants'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { ApiResourceGroupType, ClusterOptionType, K8SObjectMapType } from '../ResourceBrowser/Types'
+import { ClusterOptionType, ResourceDetailDataType } from '../ResourceBrowser/Types'
+import { useTabs } from '../common/DynamicTabs'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -116,7 +133,7 @@ export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
 
-export interface PodType {
+export interface PodType extends ResourceDetailDataType {
     name: string
     namespace: string
     cpu: ResourceDetail
@@ -174,24 +191,8 @@ export interface ColumnMetadataType {
 
 export interface ClusterListType {
     isSuperAdmin: boolean
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
-    updateNodeSelectionData: (_selected: Record<string, any>, _group?: string) => void
-    k8SObjectMapRaw: Map<string, K8SObjectMapType>
-    lastDataSync: boolean
-}
-
-export interface ClusterDetailsPropType extends ClusterListType {
-    clusterId: string
-    namespaceList: string[]
-    imageList: ClusterImageList[]
+    k8SObjectMapRaw: ApiResourceGroupType[]
+    addTab?: ReturnType<typeof useTabs>['addTab']
 }
 
 export interface ClusterAboutPropType {
@@ -213,18 +214,11 @@ export interface SelectGroupType {
 
 export interface ClusterTerminalType {
     clusterId: number
-    clusterName?: string
-    nodeList?: string[]
-    closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
-    isClusterDetailsPage?: boolean
-    isNodeDetailsPage?: boolean
     namespaceList: string[]
-    node?: string
-    setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
-    nodeGroups?: SelectGroupType[]
+    nodeGroups: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
-    showTerminal: boolean
+    updateTerminalTabUrl: (queryParams: string) => void
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -252,16 +246,7 @@ interface NodeDataPropType {
 export interface NodeActionsMenuProps extends NodeDataPropType {
     openTerminal: (clusterData: NodeDetail) => void
     isSuperAdmin: boolean
-    addTab: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-        dynamicTitle?: string,
-        showNameOnSelect?: boolean,
-    ) => boolean
+    addTab: ReturnType<typeof useTabs>['addTab']
 }
 
 export interface NodeActionRequest {
@@ -399,14 +384,7 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     isSuperAdmin: boolean
-    clusterCapacityData: ClusterCapacityType
-    setClusterErrorTitle: React.Dispatch<React.SetStateAction<string>>
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    setClusterCapacityData: React.Dispatch<React.SetStateAction<ClusterCapacityType>>
     selectedCluster: ClusterOptionType
-    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
-    sideDataAbortController: {
-        prev: AbortController
-        new: AbortController
-    }
 }
+
+export type SearchTextType = (typeof NODE_SEARCH_TEXT)[keyof typeof NODE_SEARCH_TEXT]

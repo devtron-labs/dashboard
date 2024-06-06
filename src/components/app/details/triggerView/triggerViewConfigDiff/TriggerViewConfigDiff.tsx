@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
@@ -12,9 +28,8 @@ import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle, ConditionalWrap,useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { Toggle, ConditionalWrap, useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -25,14 +40,12 @@ export default function TriggerViewConfigDiff({
     diffOptions,
     isRollbackTriggerSelected,
     isRecentConfigAvailable,
-    canReviewConfig
+    canReviewConfig,
 }: TriggerViewConfigDiffProps) {
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const [activeSideNavOption, setActiveSideNavOption] = useState(
-        searchParams.config,
-    )
+    const [activeSideNavOption, setActiveSideNavOption] = useState(searchParams.config)
     const [convertVariables, setConvertVariables] = useState<boolean>(false) // toggle to show/hide variable values
     const [isVariableAvailable, setIsVariableAvailable] = useState<boolean>(false) // check if variable snapshot is {} or not
     const [editorValues, setEditorValues] = useState<{
@@ -158,7 +171,7 @@ export default function TriggerViewConfigDiff({
         set the current(lhs) and base(rhs) config value in code editor for the selected nav option, runs every on nav option selection
     */
 
-    const setParamsValue = ( configVal: string) => {
+    const setParamsValue = (configVal: string) => {
         const newParams = {
             ...searchParams,
             config: configVal,
@@ -480,7 +493,10 @@ export default function TriggerViewConfigDiff({
     }
 
     return (
-        <div className="trigger-view-config-diff__container dc__overflow-hidden">
+        <div
+            className="trigger-view-config-diff__container dc__overflow-hidden"
+            key={`${activeSideNavOption}-${selectedConfigToDeploy?.value}`}
+        >
             {renderConfigDiffViewHeader()}
             <div className="trigger-view-config-diff__wrapper">
                 {renderAvailableDiffColumn()}

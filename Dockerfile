@@ -8,7 +8,6 @@ COPY .npmr[c] .
 RUN yarn install --network-timeout 600000
 
 COPY src/ src
-COPY types/ types
 COPY nginx.conf .
 COPY tsconfig.json .
 COPY vite.config.ts .

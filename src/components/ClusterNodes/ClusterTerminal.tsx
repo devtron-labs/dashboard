@@ -1,6 +1,31 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef } from 'react'
-import { Checkbox, CHECKBOX_VALUE, get, OptionType, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation } from 'react-router-dom'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    get,
+    OptionType,
+    ServerErrors,
+    showError,
+    noop,
+    ResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useLocation, useParams, useHistory } from 'react-router-dom'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
@@ -40,25 +65,21 @@ import {
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import { URLParams } from '../ResourceBrowser/Types'
 
 let clusterTimeOut
 
-export default function ClusterTerminal({
+const ClusterTerminal = ({
     clusterId,
-    clusterName,
     nodeGroups,
-    closeTerminal,
     clusterImageList,
-    isClusterDetailsPage,
-    isNodeDetailsPage,
     namespaceList = [],
-    node,
     taints,
-    setSelectedNode,
-    showTerminal,
-}: ClusterTerminalType) {
+    updateTerminalTabUrl,
+}: ClusterTerminalType) => {
+    const { nodeType } = useParams<URLParams>()
+    const { replace } = useHistory()
     const location = useLocation()
-    const history = useHistory()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
@@ -71,7 +92,6 @@ export default function ClusterTerminal({
         defaultNamespaceList,
         nodeGroups,
         clusterShellTypes,
-        node,
     )
     const [selectedNodeName, setSelectedNodeName] = useState<OptionType>(queryParamsData.selectedNode)
     const [selectedTerminalType, setSelectedTerminalType] = useState<OptionType>(
@@ -126,20 +146,64 @@ export default function ClusterTerminal({
     }
 
     useEffect(() => {
-        if (update) {
-            updateSelectedContainerName()
+        if (
+            nodeType !== AppDetailsTabs.terminal ||
+            queryParamsData.selectedNode.value === selectedNodeName.value ||
+            !update
+        ) {
+            return
         }
-    }, [clusterId, node])
+        /* NOTE: update selectedNodeName */
+        autoSelectNodeRef.current = null
+        if (queryParamsData.selectedNode.value && queryParamsData.selectedNode.value !== selectedNodeName.value) {
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+            setSelectedNodeName(queryParamsData.selectedNode)
+        } else {
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+            setManifestData('')
+            setReconnect(!isReconnect)
+            setNamespace(defaultNameSpace)
+            setImage(imageList[0])
+            setResourceData(null)
+            setSelectedNodeName(nodeGroups[0].options[0])
+        }
+        setDebugMode(false)
+    }, [queryParamsData.selectedNode.value])
 
     useEffect(() => {
-        if (!location.search && !isNodeDetailsPage) {
-            closeTerminal(false)
+        queryParams.set('image', selectedImage.value)
+        queryParams.set('namespace', selectedNamespace.value)
+        queryParams.set('shell', selectedTerminalType.value)
+        queryParams.set('node', selectedNodeName.value)
+        updateTerminalTabUrl(queryParams.toString())
+        if (nodeType === AppDetailsTabs.terminal) {
+            replace({ search: queryParams.toString() })
         }
-    }, [location.search])
-
-    useEffect(() => {
-        handleUrlChanges()
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
+
+    const socketDisconnecting = (): void => {
+        setSocketConnection(SocketConnectionType.DISCONNECTING)
+    }
+
+    const socketConnecting = (): void => {
+        setSocketConnection(SocketConnectionType.CONNECTING)
+    }
+
+    function sessionError(error): void {
+        showError(error)
+        if (error instanceof ServerErrors && Array.isArray(error.errors)) {
+            error.errors.forEach(({ userMessage }) => {
+                if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
+                    setRetry(true)
+                } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
+                    setUpdate(false)
+                    setPodCreated(false)
+                    setManifestData('')
+                    setConnectTerminal(false)
+                }
+            })
+        }
+    }
 
     useEffect(() => {
         if (resourceData && update && manifestData) {
@@ -152,6 +216,7 @@ export default function ClusterTerminal({
                 )
                     .then((response) => {
                         if (abortController.signal.aborted) {
+                            noop()
                         } else if (response.result?.podExists) {
                             setResourceData(response.result)
                             setShowPodExistPopup(response.result.podExists)
@@ -203,12 +268,13 @@ export default function ClusterTerminal({
                 showError(error)
             }
         }
+        return null
     }, [manifestData, forceDelete])
 
     useEffect(() => {
         if (preventUpdateCall) {
             autoSelectNodeRef.current = selectedNodeName.value
-            return
+            return noop
         }
         try {
             const abortController = new AbortController()
@@ -260,7 +326,7 @@ export default function ClusterTerminal({
                         setPodCreated(false)
                         setTerminalCleared(!terminalCleared)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
-                            error.errors.map(({ userMessage }) => {
+                            error.errors.forEach(({ userMessage }) => {
                                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
                                     setRetry(true)
                                     setConnectTerminal(true)
@@ -277,15 +343,18 @@ export default function ClusterTerminal({
                     })
             }
 
-            return () => {
-                abortController.abort()
-            }
+            return () => abortController.abort()
         } catch (error) {
             showError(error)
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
+        return noop
     }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value, debugMode])
+
+    const toggleOptionChange = (): void => {
+        settoggleOption(!toggleOption)
+    }
 
     useEffect(() => {
         try {
@@ -314,92 +383,34 @@ export default function ClusterTerminal({
         }
     }, [selectedTerminalType.value])
 
+    function closeTerminalModal(): void {
+        try {
+            setConnectTerminal(false)
+            if (isPodCreated && terminalAccessIdRef.current) {
+                clusterTerminalDisconnect(terminalAccessIdRef.current)
+                    .then(() => {
+                        socketDisconnecting()
+                        terminalAccessIdRef.current = null
+                        toggleOptionChange()
+                        setUpdate(false)
+                    })
+                    .catch((error) => {
+                        setConnectTerminal(true)
+                        showError(error)
+                    })
+            }
+        } catch (error) {
+            setConnectTerminal(true)
+            showError(error)
+        }
+    }
+
     // Disconnect terminal on unmount of the component
     useEffect(() => {
         return (): void => {
-            closeTerminalModal(null, true)
+            closeTerminalModal()
         }
     }, [])
-
-    useEffect(() => {
-        // Maintaining value in ref for setTimeout context
-        if (socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (clusterTimeOut) {
-                clearTimeout(clusterTimeOut)
-            }
-        } else if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
-            setErrorMessage({ message: '', reason: '' })
-            prevNodeRef.current = selectedNodeName.value
-            currNodeRef.current = ''
-            getNewSession()
-        }
-    }, [socketConnection, terminalAccessIdRef.current])
-
-    function getNewSession() {
-        if (!terminalAccessIdRef.current) {
-            return
-        }
-        setSocketConnection(SocketConnectionType.CONNECTING)
-        // It might be that we dont have resourceData.
-        getClusterData(
-            `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
-                selectedTerminalType.value
-            }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0].containerName || ''
-            }`,
-            terminalAccessIdRef.current,
-            window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
-        )
-    }
-
-    const getClusterData = (url: string, terminalId: number, count: number) => {
-        if (terminalId !== terminalAccessIdRef.current) {
-            return
-        }
-        if (
-            clusterTimeOut &&
-            (socketConnection === SocketConnectionType.DISCONNECTED ||
-                socketConnection === SocketConnectionType.DISCONNECTING)
-        ) {
-            clearTimeout(clusterTimeOut)
-            return
-        }
-        get(url)
-            .then((response: any) => {
-                const sessionId = response.result.userTerminalSessionId
-                const { status } = response.result
-                if (status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell) {
-                    preFetchData(status, TERMINAL_STATUS.FAILED)
-                    setErrorMessage({ message: response.result?.errorReason, reason: '' })
-                } else if (status === TERMINAL_STATUS.TERMINATED) {
-                    setErrorMessage({ message: status, reason: response.result?.errorReason })
-                } else if (!sessionId && count > 0) {
-                    preFetchData(status)
-                    clusterTimeOut = setTimeout(() => {
-                        getClusterData(url, terminalId, count - 1)
-                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
-                } else if (sessionId) {
-                    const _nodeName = response.result?.nodeName
-                    if (selectedNodeName.value === TERMINAL_STATUS.AUTO_SELECT_NODE) {
-                        setSelectedNodeName({ value: _nodeName, label: _nodeName })
-                    }
-                    if (socketConnection === SocketConnectionType.CONNECTING) {
-                        setSessionId(sessionId)
-                        currNodeRef.current = _nodeName
-                        preFetchData(status)
-                    }
-                } else {
-                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
-                    setSocketConnection(SocketConnectionType.DISCONNECTED)
-                    setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
-                }
-            })
-            .catch((err) => {
-                clearTimeout(clusterTimeOut)
-                sessionError(err)
-                clearTerminal()
-            })
-    }
 
     const preFetchData = (podState = '', status = '') => {
         const _terminal = terminalRef.current
@@ -461,49 +472,89 @@ export default function ClusterTerminal({
         }
     }
 
-    function updateSelectedContainerName() {
-        autoSelectNodeRef.current = null
-        if (node) {
-            if (node !== selectedNodeName.value) {
-                setSocketConnection(SocketConnectionType.DISCONNECTED)
-                setSelectedNodeName({ label: node, value: node })
-            }
-        } else {
-            setSocketConnection(SocketConnectionType.DISCONNECTED)
-            setManifestData('')
-            setReconnect(!isReconnect)
-            setNamespace(defaultNameSpace)
-            setImage(imageList[0])
-            setResourceData(null)
-            setSelectedNodeName(nodeGroups[0].options[0])
-        }
-        setDebugMode(false)
+    const clearTerminal = () => {
+        setTerminalCleared(!terminalCleared)
     }
 
-    function closeTerminalModal(e: any, skipRedirection?: boolean): void {
-        try {
-            if (typeof closeTerminal === 'function') {
-                closeTerminal(skipRedirection)
-            }
-            setConnectTerminal(false)
-            if (isPodCreated && terminalAccessIdRef.current) {
-                clusterTerminalDisconnect(terminalAccessIdRef.current)
-                    .then(() => {
-                        socketDisconnecting()
-                        terminalAccessIdRef.current = null
-                        toggleOptionChange()
-                        setUpdate(false)
-                    })
-                    .catch((error) => {
-                        setConnectTerminal(true)
-                        showError(error)
-                    })
-            }
-        } catch (error) {
-            setConnectTerminal(true)
-            showError(error)
+    const getClusterData = (url: string, terminalId: number, count: number) => {
+        if (terminalId !== terminalAccessIdRef.current) {
+            return
         }
+        if (
+            clusterTimeOut &&
+            (socketConnection === SocketConnectionType.DISCONNECTED ||
+                socketConnection === SocketConnectionType.DISCONNECTING)
+        ) {
+            clearTimeout(clusterTimeOut)
+            return
+        }
+        get(url)
+            .then((response: ResponseType) => {
+                const _sessionId = response.result.userTerminalSessionId
+                const { status } = response.result
+                if (status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell) {
+                    preFetchData(status, TERMINAL_STATUS.FAILED)
+                    setErrorMessage({ message: response.result?.errorReason, reason: '' })
+                } else if (status === TERMINAL_STATUS.TERMINATED) {
+                    setErrorMessage({ message: status, reason: response.result?.errorReason })
+                } else if (!_sessionId && count > 0) {
+                    preFetchData(status)
+                    clusterTimeOut = setTimeout(() => {
+                        getClusterData(url, terminalId, count - 1)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
+                } else if (_sessionId) {
+                    const _nodeName = response.result?.nodeName
+                    if (selectedNodeName.value === TERMINAL_STATUS.AUTO_SELECT_NODE) {
+                        setSelectedNodeName({ value: _nodeName, label: _nodeName })
+                    }
+                    if (socketConnection === SocketConnectionType.CONNECTING) {
+                        setSessionId(_sessionId)
+                        currNodeRef.current = _nodeName
+                        preFetchData(status)
+                    }
+                } else {
+                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
+                    setSocketConnection(SocketConnectionType.DISCONNECTED)
+                    setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
+                }
+            })
+            .catch((err) => {
+                clearTimeout(clusterTimeOut)
+                sessionError(err)
+                clearTerminal()
+            })
     }
+
+    function getNewSession() {
+        if (!terminalAccessIdRef.current) {
+            return
+        }
+        setSocketConnection(SocketConnectionType.CONNECTING)
+        // It might be that we dont have resourceData.
+        getClusterData(
+            `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
+                selectedTerminalType.value
+            }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
+                resourceData?.containers?.[0].containerName || ''
+            }`,
+            terminalAccessIdRef.current,
+            window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
+        )
+    }
+
+    useEffect(() => {
+        // Maintaining value in ref for setTimeout context
+        if (socketConnection === SocketConnectionType.DISCONNECTING) {
+            if (clusterTimeOut) {
+                clearTimeout(clusterTimeOut)
+            }
+        } else if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
+            setErrorMessage({ message: '', reason: '' })
+            prevNodeRef.current = selectedNodeName.value
+            currNodeRef.current = ''
+            getNewSession()
+        }
+    }, [socketConnection, terminalAccessIdRef.current])
 
     async function stopTerminalConnection(): Promise<void> {
         try {
@@ -532,36 +583,6 @@ export default function ClusterTerminal({
         }
     }
 
-    function sessionError(error): void {
-        showError(error)
-        if (error instanceof ServerErrors && Array.isArray(error.errors)) {
-            error.errors.map(({ userMessage }) => {
-                if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
-                    setRetry(true)
-                } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
-                    setUpdate(false)
-                    setPodCreated(false)
-                    setManifestData('')
-                    setConnectTerminal(false)
-                }
-            })
-        }
-    }
-
-    function handleUrlChanges() {
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.set('image', selectedImage.value)
-        queryParams.set('namespace', selectedNamespace.value)
-        queryParams.set('shell', selectedTerminalType.value)
-        queryParams.set('node', selectedNodeName.value)
-        if (!location.pathname.includes(AppDetailsTabs.terminal)) {
-            return
-        }
-        history.replace({
-            search: queryParams.toString(),
-        })
-    }
-
     const reconnectTerminal = (): void => {
         terminalAccessIdRef.current = null
         socketConnecting()
@@ -571,17 +592,14 @@ export default function ClusterTerminal({
         setManifestData('')
     }
 
+    const selectTerminalTab = (): void => {
+        setSelectedTabIndex(0)
+        setManifestAvailable(false)
+    }
+
     const reconnectStart = () => {
         reconnectTerminal()
         selectTerminalTab()
-    }
-
-    const socketConnecting = (): void => {
-        setSocketConnection(SocketConnectionType.CONNECTING)
-    }
-
-    const socketDisconnecting = (): void => {
-        setSocketConnection(SocketConnectionType.DISCONNECTING)
     }
 
     const resumePodConnection = (): void => {
@@ -594,9 +612,6 @@ export default function ClusterTerminal({
         autoSelectNodeRef.current = null
         if (selected.value === AUTO_SELECT.value) {
             setDebugMode(false)
-        }
-        if (setSelectedNode) {
-            setSelectedNode(selected.value)
         }
     }
 
@@ -616,15 +631,6 @@ export default function ClusterTerminal({
         setFullScreen(!isFullScreen)
     }
 
-    const toggleOptionChange = (): void => {
-        settoggleOption(!toggleOption)
-    }
-
-    const selectTerminalTab = (): void => {
-        setSelectedTabIndex(0)
-        setManifestAvailable(false)
-    }
-
     const selectEventsTab = (): void => {
         setSelectedTabIndex(1)
         setManifestAvailable(false)
@@ -632,10 +638,6 @@ export default function ClusterTerminal({
 
     const selectManifestTab = (): void => {
         setSelectedTabIndex(2)
-    }
-
-    const clearTerminal = () => {
-        setTerminalCleared(!terminalCleared)
     }
 
     const handleToggleManagedFields = () => {
@@ -690,19 +692,15 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName />
     }
 
-    const terminalClusterDetailsPageClassWrapper = isFullScreen
-        ? 'cluster-details-full-screen'
-        : 'cluster-details-node-details'
-
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (
             <div
-                className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
-                    isNodeDetailsPage ? 'node-details-full-screen' : ''
-                } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
+                className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
+node-details-full-screen
+                `}
             >
                 <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
-                    {(!isNodeDetailsPage || connectTerminal) && terminalView}
+                    {connectTerminal && terminalView}
                 </div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
@@ -735,28 +733,28 @@ export default function ClusterTerminal({
                     data-testid="cluster-terminal-button"
                     onClick={selectTerminalTab}
                 >
-                    <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
+                    <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 0 ? 'active' : ''}`}>
                         {SELECT_TITLE.TERMINAL}
                     </div>
-                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                    {selectedTabIndex === 0 && <div className="node-details__active-tab" />}
                 </li>
                 {connectTerminal && terminalAccessIdRef.current && (
                     <>
                         <li className="tab-list__tab fs-12" data-testid="pod-events-button" onClick={selectEventsTab}>
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 1 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_EVENTS}
                             </div>
-                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                            {selectedTabIndex === 1 && <div className="node-details__active-tab" />}
                         </li>
                         <li
                             className="tab-list__tab fs-12"
                             data-testid="pod-manifests-button"
                             onClick={selectManifestTab}
                         >
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex === 2 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_MANIFEST}
                             </div>
-                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                            {selectedTabIndex === 2 && <div className="node-details__active-tab" />}
                         </li>
                     </>
                 )}
@@ -830,9 +828,7 @@ export default function ClusterTerminal({
                 </div>
             )
         }
-        if (socketConnection === SocketConnectionType.CONNECTING) {
-            return <></>
-        }
+        return <div />
     }
 
     const renderHideManagedFields = () => (
@@ -861,25 +857,9 @@ export default function ClusterTerminal({
         selectedTabIndex === 2 && isManifestAvailable && manifestButtonState === EditModeType.NON_EDIT
 
     const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
-    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
 
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
-            {
-                type: TerminalWrapperType.TITLE_NAME,
-                hideTerminalStripComponent: !clusterName,
-                title: SELECT_TITLE.CLUSTER,
-                value: clusterName,
-                dataTestId: 'cluster-terminal-cluster-name',
-            },
-            {
-                type: TerminalWrapperType.CONNECTION_BUTTON,
-                hideTerminalStripComponent: true,
-                connectTerminal,
-                closeTerminalModal,
-                reconnectTerminal,
-            },
             {
                 type: TerminalWrapperType.REACT_SELECT,
                 classNamePrefix: 'cluster-terminal-node',
@@ -932,7 +912,7 @@ export default function ClusterTerminal({
             },
             {
                 type: TerminalWrapperType.CLOSE_EXPAND_VIEW,
-                hideTerminalStripComponent: isNodeDetailsPage,
+                hideTerminalStripComponent: true,
                 showExpand: true,
                 isFullScreen,
                 toggleScreenView,
@@ -1007,7 +987,7 @@ export default function ClusterTerminal({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: !selectedTabIndex,
+                isTerminalTab: selectedTabIndex === 0 && nodeType === AppDetailsTabs.terminal,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
@@ -1015,14 +995,12 @@ export default function ClusterTerminal({
     }
 
     return (
-        <div className={`${showTerminal ? '' : 'cluster-terminal-hidden'}`}>
+        <>
             <TerminalWrapper
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
-                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper} ${
-                    isNodeDetailsPage ? '' : 'dc__border-top'
-                }`}
+                className={fullScreenClassWrapper}
                 isResourceBrowserView
             />
             {showPodExistPopup && (
@@ -1033,6 +1011,8 @@ export default function ClusterTerminal({
                     forceDeletePod={setForceDelete}
                 />
             )}
-        </div>
+        </>
     )
 }
+
+export default ClusterTerminal
