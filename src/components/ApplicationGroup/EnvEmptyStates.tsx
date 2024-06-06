@@ -1,6 +1,5 @@
 import React from 'react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import emptyNoResults from '../../assets/img/empty-noresult@2x.png'
+import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { EMPTY_LIST_MESSAGING } from './Constants'
 import { EmptyEnvState } from './AppGroup.types'
 
@@ -13,8 +12,7 @@ export default function EnvEmptyStates({ title, subTitle, actionHandler }: Empty
         ) : null
     }
     return (
-        <GenericEmptyState
-            image={emptyNoResults}
+        <GenericFilterEmptyState
             title={title || EMPTY_LIST_MESSAGING.NO_MATCHING_ENV}
             subTitle={subTitle || EMPTY_LIST_MESSAGING.NO_MATCHING_RESULT}
             isButtonAvailable

@@ -1,9 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { SortableTableHeaderCell, AppStatus, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
-import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
 import { getLinkedCIAppUrl } from './utils'
@@ -45,14 +44,7 @@ const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedC
         )
 
         return (
-            <GenericEmptyState
-                image={EmptyStateImage}
-                classname="flex-grow-1"
-                title="No Results"
-                subTitle="We could not find any matching results"
-                isButtonAvailable
-                renderButton={renderClearFilterButton}
-            />
+            <GenericFilterEmptyState classname="flex-grow-1" isButtonAvailable renderButton={renderClearFilterButton} />
         )
     }
     const { sortOrder, handleSorting } = urlFilters

@@ -1,6 +1,5 @@
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import emptyCustomChart from '../../assets/img/empty-noresult@2x.png'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export default function ClusterNodeEmptyState({
@@ -18,8 +17,7 @@ export default function ClusterNodeEmptyState({
         )
     }
     return (
-        <GenericEmptyState
-            image={emptyCustomChart}
+        <GenericFilterEmptyState
             title={title || EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.TITLE}
             subTitle={EMPTY_STATE_STATUS.CLUSTER_NODE_EMPTY_STATE.SUBTITLE}
             isButtonAvailable

@@ -1,7 +1,5 @@
 import React from 'react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-// TODO (Eshank): Remove from dashboard and use GenericFilterEmptyState
-import searchNullState from '../../../../../../assets/img/empty-noresult@2x.png'
+import { GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { FilterEmptyStateProps } from './types'
 
 const FiltersEmptyState = ({ clearFilters }: FilterEmptyStateProps) => {
@@ -11,16 +9,7 @@ const FiltersEmptyState = ({ clearFilters }: FilterEmptyStateProps) => {
         </button>
     )
 
-    return (
-        <GenericEmptyState
-            image={searchNullState}
-            title="No results"
-            subTitle="We couldn’t find any matching results"
-            isButtonAvailable
-            renderButton={renderClearFilterButton}
-            classname="flex-grow-1"
-        />
-    )
+    return <GenericFilterEmptyState isButtonAvailable renderButton={renderClearFilterButton} classname="flex-grow-1" />
 }
 
 export default FiltersEmptyState

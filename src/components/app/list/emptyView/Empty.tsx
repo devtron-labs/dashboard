@@ -1,8 +1,7 @@
 import React, { Children, Component } from 'react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../../config'
 import noapps from '../../../../assets/img/empty-applist@2x.png'
-import noresult from '../../../../assets/img/empty-noresult@2x.png'
 import { EmptyProps } from './types'
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
 import { DOCUMENTATION } from '../../../../config'
@@ -59,8 +58,7 @@ export class Empty extends Component<EmptyProps> {
 
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 250px)' }}>
-                <GenericEmptyState
-                    image={noresult}
+                <GenericFilterEmptyState
                     title={this.props.title}
                     subTitle={this.props.message}
                     isButtonAvailable

@@ -322,11 +322,6 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',
     },
 
-    NO_MATCHING_RESULT: {
-        TITLE: 'No matching results',
-        SUBTITLE: "We couldn't find any matching cluster",
-    },
-
     CLUSTER_NODE_EMPTY_STATE: {
         TITLE: 'No matching clusters',
         SUBTITLE: 'We couldn’t find any matching results',
@@ -386,7 +381,6 @@ export const EMPTY_STATE_STATUS = {
 
     EXTERNAL_LINK_COMPONENT: {
         TITLE: 'Add external links',
-        SUBTITLE: "We couldn't find any matching external link configuration",
     },
     CD_MATERIAL: {
         TITLE: 'No Image Available',
