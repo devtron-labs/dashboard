@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "0.0.86",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.87",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -16,7 +16,6 @@
         "@typeform/embed-react": "2.20.0",
         "@types/marked": "4.0.8",
         "@vitejs/plugin-react": "^4.0.0",
-        "ansi_up": "^5.2.1",
         "command-line-parser": "^0.2.10",
         "compute-histogram": "^0.9.11",
         "fast-json-patch": "^3.1.1",

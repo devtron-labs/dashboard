@@ -22,47 +22,6 @@ export const Colors = {
     gray: 'rgba(128, 128, 128, 1)',
 }
 
-export const statusColor = {
-    suspended: '#ffaa00',
-    unknown: 'var(--N700)',
-    queued: 'var(--N700)',
-    degraded: 'var(--R500)',
-    healthy: 'var(--G500)',
-    notdeployed: 'var(--N500)',
-    missing: 'var(--N700)',
-    progressing: 'var(--orange)',
-    initiating: 'var(--orange)',
-    starting: '#FF7E5B',
-    succeeded: '#1dad70',
-    running: '#FF7E5B',
-    failed: '#f33e3e',
-    error: '#f33e3e',
-    cancelled: '#767d84',
-    aborted: '#767d84',
-    timedout: '#f33e3e',
-    unabletofetch: '#f33e3e',
-    hibernating: 'var(--N700)',
-}
-
-export const statusIcon = {
-    failed: 'failed',
-    queued: 'queued',
-    suspended: 'suspended',
-    starting: 'progressing',
-    initiating: 'progressing',
-    unknown: 'unknown',
-    degraded: 'degraded',
-    healthy: 'healthy',
-    notdeployed: 'not-deployed',
-    missing: 'missing',
-    progressing: 'progressing',
-    deploymentinitiated: 'progressing',
-    hibernating: 'hibernating',
-    succeeded: 'healthy',
-    timedout: 'timed-out',
-    unabletofetch: 'failed',
-}
-
 export const AppListViewType = {
     LOADING: 'LOADING',
     LIST: 'LIST',

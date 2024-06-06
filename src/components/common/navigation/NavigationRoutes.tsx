@@ -34,7 +34,6 @@ import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
-import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -436,7 +435,6 @@ export default function NavigationRoutes() {
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
                                                           value={{
-                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
                                                               getModuleInfo,
                                                           }}
                                                       >
