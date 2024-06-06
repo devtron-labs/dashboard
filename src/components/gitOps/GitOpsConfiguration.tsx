@@ -66,7 +66,7 @@ import {
     DefaultErrorFields,
 } from './constants'
 import GitProviderTabIcons from './GitProviderTabIcons'
-import { getProviderNameFromEnum } from './utils'
+import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
@@ -821,22 +821,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
-        const getGitOpsLabel = () => {
-            let label = ''
-            if (this.state.providerTab === GitProvider.AZURE_DEVOPS) {
-                label = 'Azure DevOps Organisation Url'
-            } else if (this.state.providerTab === GitProvider.BITBUCKET_CLOUD) {
-                label = 'Bitbucket Host'
-            } else {
-                label = 'Git Host'
-            }
-
-            return (
-                <span>
-                    <span className="dc__required-field">{label} </span>&nbsp;(Use https://)
-                </span>
-            )
-        }
+        const getGitOpsLabel = () => (
+            <span>
+                <span className="dc__required-field">{getGitOpsLabelText(this.state.providerTab)} </span>&nbsp;(Use
+                https://)
+            </span>
+        )
 
         const renderInputLabels = (label: string, link: string, linkText: string) => {
             return (
@@ -967,7 +957,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     name="Enter host"
                                     error={this.state.isError.host}
                                     label={getGitOpsLabel()}
-                                    placeholder={`Enter ${getGitOpsLabel()}`}
+                                    placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
                                     labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                     dataTestid={
                                         this.state.providerTab === GitProvider.AZURE_DEVOPS
