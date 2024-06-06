@@ -1,6 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { Terminal } from 'xterm'
-import { get, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { get, useThrottledEffect, Scroller } from '@devtron-labs/devtron-fe-common-lib'
 import SockJS from 'sockjs-client'
 import moment, { duration } from 'moment'
 import { AutoSizer } from 'react-virtualized'
@@ -10,7 +26,6 @@ import ReactGA from 'react-ga4'
 import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { AppDetails } from '../app/types'
 import './terminal.scss'
-import { Scroller } from '../app/details/cicdHistory/History.components'
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type'
 
 interface TerminalViewProps {

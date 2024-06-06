@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import ReactSelect from 'react-select'
 import { DOCUMENTATION } from '../../../config'
@@ -9,21 +25,15 @@ import {
     LEARN_MORE,
     SIDEBAR_KEYS,
 } from '../Constants'
-import { ClusterOptionType } from '../Types'
+import { ClusterSelectorType } from '../Types'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 
-interface ClusterSelectorType {
-    onChange: ({ label, value }) => void
-    clusterList: ClusterOptionType[]
-    clusterId: string
-}
-
-export default function ClusterSelector({ onChange, clusterList, clusterId }: ClusterSelectorType) {
+const ClusterSelector: React.FC<ClusterSelectorType> = ({ onChange, clusterList, clusterId }) => {
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
-    const defaultOption = filteredClusterList.find((item) => item.value == clusterId)
+    const defaultOption = filteredClusterList.find((item) => String(item.value) === clusterId)
 
     return (
         <ReactSelect
@@ -40,6 +50,8 @@ export default function ClusterSelector({ onChange, clusterList, clusterId }: Cl
         />
     )
 }
+
+export default ClusterSelector
 
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {

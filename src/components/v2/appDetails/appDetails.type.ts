@@ -1,9 +1,25 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { DeploymentAppTypes, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
-import { HelmReleaseStatus } from '../../external-apps/ExternalAppService'
+import { useTabs } from '../../common/DynamicTabs/useTabs'
 import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
@@ -107,11 +123,9 @@ export enum NodeType {
     Event = 'Event',
 }
 
-// export type NodeType = keyof typeof NodeType;
-
 /**
- * 
- * @param nodeType 
+ *
+ * @param nodeType
  * @returns AggregationKeys - Like Workflow for Deployment, DaemonSet, etc.
  */
 export function getAggregator(nodeType: NodeType): AggregationKeys {
@@ -162,48 +176,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
     }
 }
 
-export interface AppDetails {
-    appId?: number
-    appName: string
-    appStoreAppName?: string
-    appStoreAppVersion?: string
-    appStoreChartId?: number
-    appStoreChartName?: string
-    appStoreInstalledAppVersionId?: number
-    ciArtifactId?: number
-    deprecated?: false
-    environmentId?: number
-    environmentName: string
-    installedAppId?: number
-    instanceDetail?: null
-    k8sVersion?: string
-    lastDeployedBy?: string
-    lastDeployedTime: string
-    namespace: string
-    resourceTree: ResourceTree
-    materialInfo?: MaterialInfo[]
-    releaseVersion?: string
-    dataSource?: string
-    lastDeployedPipeline?: string
-    otherEnvironment?: OtherEnvironment[]
-    projectName?: string
-    appType?: AppType
-    helmReleaseStatus?: HelmReleaseStatus
-    clusterId: number
-    notes?: string
-    deploymentAppType?: DeploymentAppTypes
-    ipsAccessProvided?: boolean
-    externalCi?: boolean
-    clusterName?: string
-    dockerRegistryId?: string
-    deploymentAppDeleteRequest?: boolean
-    userApprovalConfig?: string
-    isVirtualEnvironment?: boolean
-    imageTag?: string
-    helmPackageName?: string
-    appStatus?: string
-    chartAvatar?: string
-}
+export type AppDetails = CommonAppDetails
 
 interface MaterialInfo {
     author: string
@@ -245,24 +218,8 @@ export interface Info {
     value: string
     name: string
 }
-export interface Node {
-    createdAt: Date
-    health: Health
-    kind: NodeType
-    name: string
-    namespace: string
-    networkingInfo: NetworkingInfo
-    resourceVersion: string
-    uid: string
-    version: string
-    parentRefs: Array<Node>
-    group: string
-    isSelected: boolean
-    info: Info[]
-    port: number
-    canBeHibernated: boolean
-    isHibernated: boolean
-}
+
+export type Node = CommonNode
 
 export interface Health {
     status: string
@@ -282,13 +239,9 @@ export interface TargetLabel {
     'app.kubernetes.io/name': string
 }
 
-export interface iNodes extends Array<iNode> {}
+export type iNode = CommoniNode
 
-export interface iNode extends Node {
-    childNodes: iNodes
-    type: NodeType
-    status: string
-}
+export interface iNodes extends Array<iNode> {}
 
 export interface AppStreamData {
     result: {
@@ -405,17 +358,11 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
-    addTab?: (
-        idPrefix: string,
-        kind: string,
-        name: string,
-        url: string,
-        positionFixed?: boolean,
-        iconPath?: string,
-    ) => boolean
+    addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: (id: string) => string
+    k8SObjectMapRaw?: ApiResourceGroupType[]
+    removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
+    updateTabUrl?: (url: string) => void
     isExternalApp?: boolean
 }
 

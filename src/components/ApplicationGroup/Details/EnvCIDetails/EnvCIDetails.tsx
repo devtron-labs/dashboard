@@ -1,20 +1,28 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, showError, sortCallback, useAsync, PipelineType } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, sortCallback, useAsync, PipelineType, Sidebar, LogResizeButton, HistoryComponentType, History, CICDSidebarFilterOptionType, FetchIdDataStatus, asyncWrap, mapByKey, useInterval } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
-import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
-import Sidebar from '../../../app/details/cicdHistory/Sidebar'
-import {
-    HistoryComponentType,
-    History,
-    CICDSidebarFilterOptionType,
-    FetchIdDataStatus,
-} from '../../../app/details/cicdHistory/types'
+import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
 import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
-import { asyncWrap, mapByKey, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'

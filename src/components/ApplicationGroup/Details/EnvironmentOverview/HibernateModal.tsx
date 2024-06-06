@@ -1,5 +1,27 @@
-import { VisibleModal, showError, stopPropagation, ButtonWithLoader, MODAL_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useState } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+    VisibleModal,
+    stopPropagation,
+    ButtonWithLoader,
+    MODAL_TYPE,
+    Progressing,
+} from '@devtron-labs/devtron-fe-common-lib'
+import React, { useEffect, useState } from 'react'
 import { ReactComponent as HibernateModalIcon } from '../../../../assets/icons/ic-medium-hibernate.svg'
 import { manageApps } from './service'
 import { importComponentFromFELibrary } from '../../../common'
@@ -18,6 +40,7 @@ export const HibernateModal = ({
     isDeploymentLoading,
     showDefaultDrawer,
     httpProtocol,
+    isDeploymentBlockedViaWindow,
 }: HibernateModalProps) => {
     const [loader, setLoader] = useState<boolean>(false)
     const [isActionButtonDisabled, setActionButtonDisabled] = useState<boolean>(true)
@@ -44,12 +67,16 @@ export const HibernateModal = ({
             })
     }
 
+    useEffect(() => {
+        setActionButtonDisabled(isDeploymentBlockedViaWindow)
+    }, [isDeploymentBlockedViaWindow])
+
     const closeModal = () => {
         setOpenHiberateModal(false)
     }
 
     const renderHibernateModalBody = () => {
-        if (showDefaultDrawer) {
+        if (showDefaultDrawer || !isDeploymentBlockedViaWindow) {
             return (
                 <>
                     <span>

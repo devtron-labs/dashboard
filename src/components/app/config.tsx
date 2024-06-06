@@ -1,50 +1,25 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 export const Colors = {
     yellow: '#FF7E5B',
     red: '#FF3E3E',
     green: '#1DAD70',
     orange: '#FF7E5B',
     gray: 'rgba(128, 128, 128, 1)',
-}
-
-export const statusColor = {
-    suspended: '#ffaa00',
-    unknown: 'var(--N700)',
-    queued: 'var(--N700)',
-    degraded: 'var(--R500)',
-    healthy: 'var(--G500)',
-    notdeployed: 'var(--N500)',
-    missing: 'var(--N700)',
-    progressing: 'var(--orange)',
-    initiating: 'var(--orange)',
-    starting: '#FF7E5B',
-    succeeded: '#1dad70',
-    running: '#FF7E5B',
-    failed: '#f33e3e',
-    error: '#f33e3e',
-    cancelled: '#767d84',
-    aborted: '#767d84',
-    timedout: '#f33e3e',
-    unabletofetch: '#f33e3e',
-    hibernating: 'var(--N700)',
-}
-
-export const statusIcon = {
-    failed: 'failed',
-    queued: 'queued',
-    suspended: 'suspended',
-    starting: 'progressing',
-    initiating: 'progressing',
-    unknown: 'unknown',
-    degraded: 'degraded',
-    healthy: 'healthy',
-    notdeployed: 'not-deployed',
-    missing: 'missing',
-    progressing: 'progressing',
-    deploymentinitiated: 'progressing',
-    hibernating: 'hibernating',
-    succeeded: 'healthy',
-    timedout: 'timed-out',
-    unabletofetch: 'failed',
 }
 
 export const AppListViewType = {

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react'
 import {
     ConditionalWrap,
@@ -9,13 +25,15 @@ import {
     YAMLStringify,
     noop,
     showError,
+    DeploymentHistoryDiffView,
+    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { followCursor } from 'tippy.js'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
+import { PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -37,7 +55,6 @@ import {
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
 import { hasApproverAccess, importComponentFromFELibrary } from '../common'
-import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
