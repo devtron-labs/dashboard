@@ -180,13 +180,13 @@ const ChartValuesView = ({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-    
-    const isCreateValueFormDirty = isCreateValueView && chartValueId && chartValueId === '0' && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id) 
-    const isUpdateValueFormDirty = isCreateValueView && chartValueId && chartValueId !== '0' && (commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
+
+    const isCreateValueFormDirty = isCreateValueView && !!chartValueId && chartValueId === '0' && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id) 
+    const isUpdateValueFormDirty = isCreateValueView && !!chartValueId && chartValueId !== '0' && (commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
     const isDeployChartFormDirty = isDeployChartView && (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id )
     const isProgressing = commonState.isUpdateInProgress || commonState.isDeleteInProgress
 
-    console.log(installedConfigFromParent)
+    usePrompt({shouldPrompt: isProgressing || !!isCreateValueFormDirty || !!isUpdateValueFormDirty || !!isDeployChartFormDirty})
 
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)

@@ -800,8 +800,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
-        history.push(`${url}${Routes.BUILD}/${selectedCINode?.id}`)
         setCILoading(true)
+        history.push(`${url}${Routes.BUILD}/${selectedCINode?.id}`)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current.abort()
