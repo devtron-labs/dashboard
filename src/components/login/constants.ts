@@ -22,6 +22,7 @@ export const AUTHORIZATION_CONFIG_TYPES = {
     GROUP_CLAIMS: 'group-claims',
 } as const
 
+// Duplicate with SSOLogin types
 export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',

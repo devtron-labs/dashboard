@@ -205,11 +205,6 @@ export const DEPLOYMENT_HISTORY_TAB = {
     ARTIFACTS: 'Artifacts',
 }
 
-export const CONFIGMAPS_SECRETS = {
-    configmaps: 'configmaps',
-    secrets: 'secrets',
-}
-
 export const API_COMPONENTS = {
     TITLE: 'API tokens ',
     QUESTION_ICON_INFO:
