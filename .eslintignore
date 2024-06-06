@@ -403,10 +403,6 @@ src/components/deploymentConfig/constants.tsx
 src/components/deploymentConfig/service.tsx
 src/components/deploymentConfig/types.tsx
 src/components/deploymentConfig/validationRules.ts
-src/components/deploymentGroups/BulkActionDetails.tsx
-src/components/deploymentGroups/BulkActionEdit.tsx
-src/components/deploymentGroups/BulkActions.tsx
-src/components/deploymentGroups/DeploymentGroupList.tsx
 src/components/dockerRegistry/Docker.tsx
 src/components/dockerRegistry/ManageRegistry.tsx
 src/components/dockerRegistry/service.tsx

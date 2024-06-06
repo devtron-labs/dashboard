@@ -64,7 +64,6 @@ const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
-const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
@@ -408,11 +407,6 @@ export default function NavigationRoutes() {
                                             key={URLS.CHARTS}
                                             path={URLS.CHARTS}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                        />,
-                                        <Route
-                                            key={URLS.DEPLOYMENT_GROUPS}
-                                            path={URLS.DEPLOYMENT_GROUPS}
-                                            render={(props) => <BulkActions {...props} />}
                                         />,
                                         <Route
                                             key={URLS.BULK_EDITS}
