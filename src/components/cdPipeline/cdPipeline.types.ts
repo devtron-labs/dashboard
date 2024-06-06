@@ -15,7 +15,6 @@
  */
 
 import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
 import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
