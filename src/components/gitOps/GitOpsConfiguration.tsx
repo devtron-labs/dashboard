@@ -432,10 +432,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const isTokenRequired = isBitBucketDC && isBitBucketDCCreateView
 
         const isSSHKeyRequired =
-            (isBitBucketDC &&
-                !this.state.form.id &&
-                this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
-                this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD)
+            isBitBucketDC &&
+            !this.state.form.id &&
+            this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
+            this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD
 
         const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
 
@@ -960,14 +960,17 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     />
                                 )}
 
-                                <ValidateForm
-                                    id={this.state.form.id}
-                                    onClickValidate={() => this.validateGitOps(this.state.providerTab)}
-                                    validationError={this.state.validationError}
-                                    validationStatus={this.state.validationStatus}
-                                    configName="gitops "
-                                    warning={this.state.deleteRepoError ? warning : ''}
-                                />
+                                {this.state.selectedRepoType === repoType.DEFAULT && (
+                                    <ValidateForm
+                                        id={this.state.form.id}
+                                        onClickValidate={() => this.validateGitOps(this.state.providerTab)}
+                                        validationError={this.state.validationError}
+                                        validationStatus={this.state.validationStatus}
+                                        configName="gitops "
+                                        warning={this.state.deleteRepoError ? warning : ''}
+                                    />
+                                )}
+
                                 <CustomInput
                                     value={this.state.form.host}
                                     onChange={(event) => this.handleChange(event, 'host')}
