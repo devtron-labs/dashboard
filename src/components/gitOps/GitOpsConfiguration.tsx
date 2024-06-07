@@ -215,7 +215,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             return authMode === GitOpsAuthModeType.SSH
         }
 
-        return this.isAWSCodeCommitTabSelected(overriddenProvider) || this.getIsOtherGitOpsTabSelected(overriddenProvider)
+        return (
+            this.isAWSCodeCommitTabSelected(overriddenProvider) || this.getIsOtherGitOpsTabSelected(overriddenProvider)
+        )
     }
 
     fetchGitOpsConfigurationList() {
@@ -434,6 +436,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
                 this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD)
 
+        const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
@@ -442,7 +446,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
             bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.requiredFieldCheck(form.bitBucketWorkspaceId) : '',
-            bitBucketProjectKey: '',
+            bitBucketProjectKey: isBitBucketProjectKeyRequired ? this.requiredFieldCheck(form.bitBucketProjectKey) : '',
             sshHost: '',
             sshKey: isSSHKeyOptional ? '' : this.requiredFieldCheck(form.sshKey),
         }
@@ -481,7 +485,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             })
         }
 
-        let _isInvalid = isError.host.length > 0 || isError.username.length > 0 || isError.token.length > 0
+        let _isInvalid =
+            isError.host.length > 0 ||
+            isError.username.length > 0 ||
+            isError.token.length > 0 ||
+            isError.sshKey.length > 0 ||
+            isError.bitBucketProjectKey.length > 0
+
         if (!_isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
                 _isInvalid = isError.gitHubOrgId.length > 0
@@ -1161,17 +1171,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         value={this.state.selectedRepoType}
                                         onChange={this.repoTypeChange}
                                     >
-                                        <div
-                                            className={
-                                                isAuthModeSSH
-                                                    ? 'dc__disabled'
-                                                    : ''
-                                            }
-                                        >
-                                            <RadioGroupItem
-                                                value={repoType.DEFAULT}
-                                                disabled={isAuthModeSSH}
-                                            >
+                                        <div className={isAuthModeSSH ? 'dc__disabled' : ''}>
+                                            <RadioGroupItem value={repoType.DEFAULT} disabled={isAuthModeSSH}>
                                                 Auto-create git repository for each application
                                             </RadioGroupItem>
                                             <div className="ml-26 cn-7">
