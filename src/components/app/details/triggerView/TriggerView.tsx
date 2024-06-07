@@ -35,7 +35,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { TriggerViewProps, TriggerViewState } from './types'
+import { CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -45,7 +45,6 @@ import {
     DEFAULT_GIT_BRANCH_VALUE,
     DOCUMENTATION,
     NO_COMMIT_SELECTED,
-    Routes,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../../services/service'
@@ -78,7 +77,7 @@ import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import { CIMaterialModal } from './CIMaterialRoute'
+import { CIMaterialModal } from './CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -91,6 +90,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     inprogressStatusTimer
 
     abortController: AbortController
+
+    abortCIBuild: AbortController
 
     constructor(props: TriggerViewProps) {
         super(props)
@@ -132,6 +133,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
         this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
         this.abortController = new AbortController()
+        this.abortCIBuild = new AbortController()
     }
 
     componentWillUnmount() {
@@ -258,12 +260,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }
                     }
                     if (this.props.location.pathname.includes('build')) {
-                        const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/') 
+                        const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/')
                         const ciNodeId = this.props.location.pathname.substring(lastIndexBeforeId + 1)
-                        const pipelineName = wf?.find((workflow) => workflow.id === ciNodeId)?.nodes?.[1]?.title
+                        const nodes = wf?.find((workflow) => workflow.id === ciNodeId)?.nodes
+                        const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI )
+                        const pipelineName = ciNode?.title
 
-                        if(!isNaN(+ciNodeId) && ciNodeId && pipelineName) {
+                        if(!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
                             this.onClickCIMaterial(ciNodeId, pipelineName, false)
+                        } else {
+                            toast.error('Invalid Node')
                         }
                     }
                     this.timerRef && clearInterval(this.timerRef)
@@ -661,7 +667,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         this.abortController.abort()
         this.abortController = new AbortController()
-        this.props.history.push(`${this.props.match.url}${Routes.BUILD}/${ciNodeId}`)
+        this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
 
         Promise.all([
             this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
@@ -874,7 +880,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 : {}),
         }
 
-        triggerCINode(payload)
+        this.abortCIBuild = new AbortController()
+        triggerCINode(payload, this.abortCIBuild.signal)
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
@@ -1151,7 +1158,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const material = nd?.[this.state.materialType] || []
         return (
             <Switch>
-                <Route path={`${this.props.match.url}${Routes.BUILD}/:ciNodeId`}>
+                <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
                     <CIMaterialModal
                         workflowId={this.state.workflowId}
                         history={this.props.history}
@@ -1190,6 +1197,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         runtimeParams={this.state.runtimeParams}
                         handleRuntimeParametersChange={this.handleRuntimeParametersChange}
                         closeCIModal={this.closeCIModal}
+                        abortController={this.abortCIBuild}
                     />
                 </Route>
             </Switch>

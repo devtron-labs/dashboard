@@ -33,13 +33,13 @@ import {
     DEFAULT_GIT_BRANCH_VALUE,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     NO_COMMIT_SELECTED,
-    Routes,
+    URLS,
     ViewType,
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
-import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -105,7 +105,7 @@ import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import CIMaterialModal from '../../../app/details/triggerView/CIMaterialRoute'
+import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -129,6 +129,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
     const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
+    const abortCIBuildRef = useRef(new AbortController())
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
     const [isCILoading, setCILoading] = useState(false)
@@ -255,6 +256,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     history.push({
                         search: '',
                     })
+                }
+            } else if (location.pathname.includes('build')) {
+                const lastIndexBeforeId = location.pathname.lastIndexOf('/')
+                const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
+                const nodes = workflows?.find((workflow) => workflow.id === ciNodeId)?.nodes
+                const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
+                const pipelineName = ciNode?.title
+
+                if(!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
+                    onClickCIMaterial(ciNodeId, pipelineName, false)
+                } else {
+                    toast.error('Invalid Node')
                 }
             }
         }
@@ -801,7 +814,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
         setCILoading(true)
-        history.push(`${url}${Routes.BUILD}/${selectedCINode?.id}`)
+        history.push(`${url}${URLS.BUILD}/${ciNodeId}`)
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         abortControllerRef.current.abort()
@@ -1035,7 +1048,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 : {}),
         }
 
-        triggerCINode(payload)
+        triggerCINode(payload, abortCIBuildRef.current.signal)
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
@@ -1907,44 +1920,45 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if(selectedCINode?.id) {
             return (
                 <Switch>
-                <Route path={`${url}${Routes.BUILD}/:ciNodeId`}>
-                <CIMaterialModal
-                    workflowId={workflowID}
-                    history={history}
-                    location={location}
-                    match={match}
-                    material={material}
-                    pipelineName={selectedCINode?.name}
-                    isLoading={isCDLoading}
-                    title={selectedCINode?.name}
-                    pipelineId={selectedCINode?.id}
-                    showWebhookModal={showWebhookModal}
-                    hideWebhookModal={hideWebhookModal}
-                    toggleWebhookModal={toggleWebhookModal}
-                    webhookPayloads={webhookPayloads}
-                    isWebhookPayloadLoading={isWebhookPayloadLoading}
-                    onClickWebhookTimeStamp={onClickWebhookTimeStamp}
-                    webhhookTimeStampOrder={webhookTimeStampOrder}
-                    showMaterialRegexModal={showMaterialRegexModal}
-                    onCloseBranchRegexModal={onCloseBranchRegexModal}
-                    filteredCIPipelines={filteredCIPipelines.get(_appID)}
-                    onClickShowBranchRegexModal={onClickShowBranchRegexModal}
-                    isChangeBranchClicked={isChangeBranchClicked}
-                    getWorkflows={getWorkflowsData}
-                    loader={isCILoading}
-                    setLoader={setCILoading}
-                    isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                    isCacheAvailable={nd?.storageConfigured}
-                    fromAppGrouping
-                    appId={_appID?.toString()}
-                    isCITriggerBlocked={nd?.isCITriggerBlocked}
-                    ciBlockState={nd?.ciBlockState}
-                    isJobCI={!!nd?.isJobCI}
-                    runtimeParams={runtimeParams[nd?.id] ?? []}
-                    handleRuntimeParametersChange={handleRuntimeParametersChange}
-                    closeCIModal={closeCIModal}
-                />
-                </Route>
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
+                        <CIMaterialModal
+                            workflowId={workflowID}
+                            history={history}
+                            location={location}
+                            match={match}
+                            material={material}
+                            pipelineName={selectedCINode?.name}
+                            isLoading={isCDLoading}
+                            title={selectedCINode?.name}
+                            pipelineId={selectedCINode?.id}
+                            showWebhookModal={showWebhookModal}
+                            hideWebhookModal={hideWebhookModal}
+                            toggleWebhookModal={toggleWebhookModal}
+                            webhookPayloads={webhookPayloads}
+                            isWebhookPayloadLoading={isWebhookPayloadLoading}
+                            onClickWebhookTimeStamp={onClickWebhookTimeStamp}
+                            webhhookTimeStampOrder={webhookTimeStampOrder}
+                            showMaterialRegexModal={showMaterialRegexModal}
+                            onCloseBranchRegexModal={onCloseBranchRegexModal}
+                            filteredCIPipelines={filteredCIPipelines.get(_appID)}
+                            onClickShowBranchRegexModal={onClickShowBranchRegexModal}
+                            isChangeBranchClicked={isChangeBranchClicked}
+                            getWorkflows={getWorkflowsData}
+                            loader={isCILoading}
+                            setLoader={setCILoading}
+                            isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                            isCacheAvailable={nd?.storageConfigured}
+                            fromAppGrouping
+                            appId={_appID?.toString()}
+                            isCITriggerBlocked={nd?.isCITriggerBlocked}
+                            ciBlockState={nd?.ciBlockState}
+                            isJobCI={!!nd?.isJobCI}
+                            runtimeParams={runtimeParams[nd?.id] ?? []}
+                            handleRuntimeParametersChange={handleRuntimeParametersChange}
+                            closeCIModal={closeCIModal}
+                            abortController={abortCIBuildRef.current}
+                        />
+                    </Route>
                 </Switch>
             )}
             return null

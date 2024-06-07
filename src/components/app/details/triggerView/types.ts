@@ -336,12 +336,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps
-    extends RouteComponentProps<{
-        appId: string
-        envId: string
-        ciNodeId: string
-    }> {
+export interface TriggerViewProps extends CIMaterialRouterProps{
     isJobView?: boolean
     filteredEnvIds?: string
 }
@@ -725,6 +720,7 @@ export interface RuntimeParamsValidatorReturnType {
     validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
 }
 
-export interface CIMaterialRouteProps extends CIMaterialProps {
+export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
+    abortController: any
 }

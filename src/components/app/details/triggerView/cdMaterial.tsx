@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
+import { Prompt, useHistory } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -46,6 +47,7 @@ import {
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentWithConfigType,
     usePrompt,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -94,7 +96,6 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
-import { Prompt, useHistory } from 'react-router-dom'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
@@ -141,7 +142,7 @@ const CDMaterial = ({
     isRedirectedFromAppDetails,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
-    // FIXME: the queryparams returned by useSearchString seems faulty
+    // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
     const { searchParams } = useSearchString()
     // Add dep here
@@ -155,6 +156,7 @@ const CDMaterial = ({
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
+    const abortDeployRef = useRef(null)
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -166,7 +168,7 @@ const CDMaterial = ({
                             ? CDMaterialServiceEnum.ROLLBACK
                             : CDMaterialServiceEnum.CD_MATERIALS,
                         pipelineId,
-                        // Dont think need to set stageType to approval in case of approval node
+                        // Don't think need to set stageType to approval in case of approval node
                         stageType ?? DeploymentNodeType.CD,
                         abortControllerRef.current.signal,
                         // It is meant to fetch the first 20 materials
@@ -370,6 +372,11 @@ const CDMaterial = ({
                 }
                 updateBulkCDMaterialsItem?.(materialsResult)
             }
+        }
+
+        abortDeployRef.current = new AbortController()
+        return () => {
+            abortDeployRef.current.abort()
         }
     }, [materialsResult, loadingMaterials])
 
@@ -880,7 +887,7 @@ const CDMaterial = ({
         setDeploymentLoading(true)
 
         if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
+            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId, abortDeployRef.current.signal)
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&
@@ -901,7 +908,7 @@ const CDMaterial = ({
                     // TODO: Ask why this was only there in TriggerView
                     isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
                         ? handleTriggerErrorMessageForHelmManifestPush(errors, pipelineId, envId)
-                        : showError(errors)
+                        : !getIsRequestAborted(errors) && showError(errors)
                     setDeploymentLoading(false)
                 })
         } else {

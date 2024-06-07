@@ -101,6 +101,7 @@ export const URLS = {
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
     RELEASES: '/releases',
+    BUILD: '/build'
 }
 
 export enum APP_COMPOSE_STAGE {

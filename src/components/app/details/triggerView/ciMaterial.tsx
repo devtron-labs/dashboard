@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { Prompt } from 'react-router-dom'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader, ModuleNameMap, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -9,13 +10,12 @@ import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-medi
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
 import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
-import { Prompt } from 'react-router-dom'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
