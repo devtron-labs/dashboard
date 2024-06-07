@@ -1059,15 +1059,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         isRequiredField
                                     />
                                 </div>
-                                {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                                    <div className="mt-4 flex left" data-testid="gitops-bitbucket-project-id">
-                                        <InfoFill className="icon-dim-16" />
-                                        <span className="ml-4 fs-11">
-                                            If the project is not provided, the repository is automatically assigned to
-                                            the oldest project in the workspace.
-                                        </span>
-                                    </div>
-                                )}
                                 <hr />
                                 <div
                                     className="fw-6 cn-9 fs-14 mb-16"
