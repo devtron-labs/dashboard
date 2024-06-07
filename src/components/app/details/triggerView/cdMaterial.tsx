@@ -61,6 +61,7 @@ import {
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentWithConfigType,
+    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -93,7 +94,6 @@ import {
     getSpecificDeploymentConfig,
     triggerCDNode,
 } from '../../service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -1229,7 +1229,6 @@ const CDMaterial = ({
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
                         <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                            {/* TODO: Move into fe-common */}
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}

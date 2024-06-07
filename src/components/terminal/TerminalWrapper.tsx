@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { Terminal } from 'xterm'
-import { get, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { get, useThrottledEffect, Scroller } from '@devtron-labs/devtron-fe-common-lib'
 import SockJS from 'sockjs-client'
 import moment, { duration } from 'moment'
 import { AutoSizer } from 'react-virtualized'
@@ -26,7 +26,6 @@ import ReactGA from 'react-ga4'
 import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast'
 import { AppDetails } from '../app/types'
 import './terminal.scss'
-import { Scroller } from '../app/details/cicdHistory/History.components'
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type'
 
 interface TerminalViewProps {

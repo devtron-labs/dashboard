@@ -985,13 +985,15 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.86-1":
-  version "0.0.86-1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.86-1.tgz#2e04d17b986adfff35f6e1311d7c90f354118bce"
-  integrity sha512-XFJX2xCArvk3cOpj93tutRdHnLl1rq3yRNaVBj8xVNTxf7+oBQa58QQpAtQ3F2TUNuv5fGCK3HEOCwcQz3c5Yg==
+"@devtron-labs/devtron-fe-common-lib@0.0.88":
+  version "0.0.88"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.88.tgz#babefa1fbb20410668bf8a0dbd01806543079a3e"
+  integrity sha512-eto7CjVdQaQqSOgzCSXsXIfDSPxdvpnW/qwlQpC7psA5J8KtnYgkZXKpG0Iq+24UZA5IuMKsVehnD/WLxccc1Q==
   dependencies:
+    ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
+    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "^2.4.1"
 
@@ -5698,6 +5700,13 @@ react-moment-proptypes@^1.6.0:
   integrity sha512-Er940DxWoObfIqPrZNfwXKugjxMIuk1LAuEzn23gytzV6hKS/sw108wibi9QubfMN4h+nrlje8eUCSbQRJo2fQ==
   dependencies:
     moment ">=1.6.0"
+
+react-monaco-editor@^0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
+  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
+  dependencies:
+    prop-types "^15.8.1"
 
 react-monaco-editor@^0.55.0:
   version "0.55.0"

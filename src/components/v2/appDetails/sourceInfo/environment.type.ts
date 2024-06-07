@@ -46,11 +46,6 @@ export interface NodeStreamMap {
     version: string
 }
 
-export interface AppStatusDetailsChartType {
-    filterRemoveHealth?: boolean
-    showFooter: boolean
-}
-
 export interface ChartUsedCardType {
     appDetails: AppDetails
     notes: string

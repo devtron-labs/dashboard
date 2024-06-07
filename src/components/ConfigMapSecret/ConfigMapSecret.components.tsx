@@ -26,13 +26,15 @@ import {
     noop,
     showError,
     useUserEmail,
+    DeploymentHistoryDiffView,
+    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { followCursor } from 'tippy.js'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
+import { PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -54,7 +56,6 @@ import {
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
 import { hasApproverAccess, importComponentFromFELibrary } from '../common'
-import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'

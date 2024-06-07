@@ -15,14 +15,14 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
+import { Route, Switch } from 'react-router-dom'
 import K8ResourceComponent from './k8Resource/K8Resource.component'
 import './appDetails.scss'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
-import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, Redirect, useParams } from 'react-router'
 import { URLS } from '../../../config'
 import AppDetailsStore from './appDetails.store'
-import { NodeType, NodeTreeDetailTabProps } from './appDetails.type'
+import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import IndexStore from './index.store'
 import NodeTreeTabList from './k8Resource/NodeTreeTabList'
