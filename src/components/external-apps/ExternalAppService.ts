@@ -136,8 +136,9 @@ export const updateAppReleaseWithoutLinking = (
     return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options)
 }
 
-export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest): Promise<any> => {
+export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest, abortSignal?: AbortSignal ): Promise<any> => {
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
     return put(Routes.UPDATE_APP_API, requestPayload, options)
 }
 

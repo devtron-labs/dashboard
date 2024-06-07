@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect, useReducer, useRef } from 'react'
 import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
@@ -17,6 +17,7 @@ import {
     useMainContext,
     YAMLStringify,
     usePrompt,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -145,6 +146,7 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
+    const chartValuesAbortRef = useRef(null)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -159,6 +161,7 @@ const ChartValuesView = ({
     const [staleData, setStaleData] = useState<boolean>(false)
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
+    const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -181,12 +184,15 @@ const ChartValuesView = ({
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
-    const isCreateValueFormDirty = isCreateValueView && !!chartValueId && chartValueId === '0' && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id) 
-    const isUpdateValueFormDirty = isCreateValueView && !!chartValueId && chartValueId !== '0' && (commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
-    const isDeployChartFormDirty = isDeployChartView && (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id )
-    const isProgressing = commonState.isUpdateInProgress || commonState.isDeleteInProgress
+    const isPresetValueView = isCreateValueView && !!chartValueId && chartValueId === '0'
+    const isUpdateAppView = !isCreateValueView && !isDeployChartView
+    const isCreateValueFormDirty = isPresetValueView && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
+    const isDeployChartFormDirty = isDeployChartView && (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues?.id !== chartValuesFromParent.id )
+    const isUpdateAppFormDirty = isUpdateAppView && (commonState.repoChartValue?.chartId !== appDetails.appStoreChartId || commonState.repoChartValue?.appStoreApplicationVersionId !== commonState.selectedVersion || appDetails.appStoreInstalledAppVersionId !== commonState.chartValues?.id)
 
-    usePrompt({shouldPrompt: isProgressing || !!isCreateValueFormDirty || !!isUpdateValueFormDirty || !!isDeployChartFormDirty})
+    const isFormDirty = !!isCreateValueFormDirty || !!isDeployChartFormDirty || !!isUpdateAppFormDirty
+
+    usePrompt({shouldPrompt: shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty) })
 
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
@@ -356,6 +362,11 @@ const ChartValuesView = ({
 
         if (!isDeployChartView && !isCreateValueView) {
             getHelmAppMetaInfoRes()
+        }
+
+        chartValuesAbortRef.current = new AbortController()
+        return () => {
+            chartValuesAbortRef.current.abort()
         }
     }, [])
 
@@ -917,7 +928,7 @@ const ChartValuesView = ({
                         : commonState.deploymentAppType,
                     gitRepoURL: commonState.gitRepoURL,
                 }
-                res = await installChart(payload)
+                res = await installChart(payload, chartValuesAbortRef.current?.signal)
             } else if (isCreateValueView) {
                 const payload = {
                     name: valueName,
@@ -934,7 +945,7 @@ const ChartValuesView = ({
                     res = await updateChartValues(payload)
                 } else {
                     toastMessage = CHART_VALUE_TOAST_MSGS.Created
-                    res = await createChartValues(payload)
+                    res = await createChartValues(payload, chartValuesAbortRef.current.signal)
                 }
             } else {
                 const payload: UpdateAppReleaseRequest = {
@@ -945,9 +956,9 @@ const ChartValuesView = ({
                     installedAppId: commonState.installedConfig.installedAppId,
                     appStoreVersion: commonState.selectedVersionUpdatePage.id,
                 }
-                res = await updateAppRelease(payload)
+                res = await updateAppRelease(payload, chartValuesAbortRef.current.signal)
             }
-
+            setShouldShowPrompt(false)
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
@@ -977,7 +988,7 @@ const ChartValuesView = ({
                 toast.error(SOME_ERROR_MSG)
             }
         } catch (err) {
-            if (err['code'] === 409) {
+            if (err['code'] === 409 && !getIsRequestAborted(err)) {
                 handleDrawerState(true)
                 toast.error('Some global configurations for GitOps has changed')
                 setStaleData(true)
@@ -986,16 +997,17 @@ const ChartValuesView = ({
                     payload: AUTO_GENERATE_GITOPS_REPO,
                 })
                 handleDrawerState(true)
-            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
+            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900' && !getIsRequestAborted(err)) {
                 setAllowedCustomBool(true)
                 handleDrawerState(true)
             } else {
-                showError(err)
+                !getIsRequestAborted(err) && showError(err)
             }
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
                 payload: false,
             })
+            setShouldShowPrompt(true)
         }
     }
 
@@ -1791,7 +1803,7 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt when={ isProgressing || !!isCreateValueFormDirty || !!isUpdateValueFormDirty || !!isDeployChartFormDirty } message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                <Prompt when={ shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty) } message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }

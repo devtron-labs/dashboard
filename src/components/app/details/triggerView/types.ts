@@ -336,7 +336,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends CIMaterialRouterProps{
+export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps>{
     isJobView?: boolean
     filteredEnvIds?: string
 }
