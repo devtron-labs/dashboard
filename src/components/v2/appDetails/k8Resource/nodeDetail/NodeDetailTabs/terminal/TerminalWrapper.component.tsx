@@ -90,7 +90,7 @@ export const RenderConnectionStrip = ({
 
     const renderStrip = () => {
         if (renderStripMessage) {
-            return renderStripMessage
+            return renderStripMessage()
         }
         return (
             <div

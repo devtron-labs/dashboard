@@ -544,7 +544,7 @@ const ManifestComponent = ({
                             cleanData={activeTab === 'Compare'}
                             diffView={activeTab === 'Compare'}
                             theme="vs-dark--dt"
-                            height={isResourceBrowserView ? 'calc(100vh - 116px)' : '100vh'}
+                            height={isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 77px)'}
                             value={trimedManifestEditorData}
                             mode={MODES.YAML}
                             readOnly={activeTab !== 'Live manifest' || !isEditmode}

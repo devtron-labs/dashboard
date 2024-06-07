@@ -76,6 +76,7 @@ export function getGrepTokens(expression) {
     return null
 }
 
+/* TODO: remove this unused component */
 const EventsLogs: React.FC<EventsLogsProps> = React.memo(function EventsLogs({
     nodeName,
     selectedLogsNode,
