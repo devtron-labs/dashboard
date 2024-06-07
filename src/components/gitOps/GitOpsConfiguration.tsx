@@ -351,7 +351,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     handleChange(event, key: GitOpsFieldKeyType): void {
         // After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must disappear
         // We do not need any https url in aws code commit tab
-        const isURLValidationRequired =
+        const isURLValidationOptional =
             key === 'host' || this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()
         const validateUserName = key === 'username' && !this.getIsOtherGitOpsTabSelected()
         const shouldValidateSSHUrl = key === 'sshHost' && this.isAWSCodeCommitTabSelected()
@@ -363,6 +363,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const areCredentialsChanging =
             isCredentialKey && (isBitBucketDC ? !isBitBucketDCCreateView : this.state.form.id)
 
+        const shouldOverrideRequiredCheck =
+            areCredentialsChanging || event.target.value.length !== 0 || key === 'bitBucketProjectKey'
+
         this.setState({
             form: {
                 ...this.state.form,
@@ -370,13 +373,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: {
                 ...this.state.isError,
-                [key]: areCredentialsChanging || event.target.value.length !== 0 ? '' : 'This is a required field',
+                [key]: shouldOverrideRequiredCheck ? '' : 'This is a required field',
                 // Since valid SSH URL will also check for required field check
                 ...(shouldValidateSSHUrl && { sshHost: this.isValidSSHUrl(event.target.value) }),
                 ...(validateUserName && { username: this.requiredFieldCheck(event.target.value) }),
             },
             isFormEdited: false,
-            isUrlValidationError: isURLValidationRequired ? false : this.state.isUrlValidationError,
+            isUrlValidationError: isURLValidationOptional ? false : this.state.isUrlValidationError,
         })
     }
 
@@ -436,8 +439,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
                 this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD)
 
-        const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
@@ -446,7 +447,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
             bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.requiredFieldCheck(form.bitBucketWorkspaceId) : '',
-            bitBucketProjectKey: isBitBucketProjectKeyRequired ? this.requiredFieldCheck(form.bitBucketProjectKey) : '',
+            bitBucketProjectKey: '',
             sshHost: '',
             sshKey: isSSHKeyOptional ? '' : this.requiredFieldCheck(form.sshKey),
         }
@@ -489,8 +490,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError.host.length > 0 ||
             isError.username.length > 0 ||
             isError.token.length > 0 ||
-            isError.sshKey.length > 0 ||
-            isError.bitBucketProjectKey.length > 0
+            isError.sshKey.length > 0
 
         if (!_isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
@@ -768,6 +768,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         this.setState({
             form: formState,
             isError: freshErrorState,
+            isFormEdited: false,
         })
     }
 
@@ -843,10 +844,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             </span>
         )
 
-        const renderInputLabels = (label: string, link: string, linkText: string) => {
+        const renderInputLabels = (label: string, link: string, linkText: string, isRequired: boolean = true) => {
             return (
                 <div className="flex">
-                    <span className="dc__required-field">{label}</span>&nbsp;
+                    <span className={`${isRequired ? 'dc__required-field' : ''}`}>{label}</span>&nbsp;
                     <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
                         {linkText}
                     </a>
@@ -1037,6 +1038,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                             LinkAndLabelSpec[this.state.providerTab].label,
                                             LinkAndLabelSpec[this.state.providerTab].link,
                                             LinkAndLabelSpec[this.state.providerTab].linkText,
+                                            key !== 'bitBucketProjectKey',
                                         )}
                                         placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
                                         value={this.state.form[key]}
@@ -1054,7 +1056,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     ? 'gitops-gitlab-group-id-textbox'
                                                     : 'gitops-github-organisation-name-textbox'
                                         }
-                                        isRequiredField
+                                        isRequiredField={key !== 'bitBucketProjectKey'}
                                     />
                                 </div>
                                 {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
