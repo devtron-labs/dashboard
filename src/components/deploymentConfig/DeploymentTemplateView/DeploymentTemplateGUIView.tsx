@@ -119,7 +119,7 @@ const DeploymentTemplateGUIView = ({
                 </div>
             )}
             <div
-                className={`form__row--gui-container p-20 dc__overflow-scroll ${
+                className={`form__row--gui-container dc__overflow-scroll ${
                     !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
                 } ${state.error ? 'dc__border-bottom-n1 gui--no-infobar' : ''}`}
             >
