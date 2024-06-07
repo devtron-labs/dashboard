@@ -985,13 +985,15 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.86-beta-17":
-  version "0.0.86-beta-17"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.86-beta-17.tgz#25d3eec0b4174b4825b0037ab9c58143c0b77aec"
-  integrity sha512-Nuo9Y2ljyHa+/ljXVxeKwnb3jOX+I3va2ZkpOwW3Hhea6ykM1X6tYovEKDhnVV8pe9YOiPLyRXQoJT9mzYXQzw==
+"@devtron-labs/devtron-fe-common-lib@0.0.87-beta-2":
+  version "0.0.87-beta-2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.87-beta-2.tgz#bfe70a8154ddbf00061efd0c5738f20a271c6391"
+  integrity sha512-BpYZhSZgkNGVXA1GyfCghaoDvJAzDMsGDrt3ZEUy2gJdVDhu8xx3AEyXjsm27sOhH4iK+dQtzWOBEuWflG7iLg==
   dependencies:
+    ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
+    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "^2.4.1"
 
@@ -2464,7 +2466,7 @@ ansi-styles@^6.0.0:
 
 ansi_up@^5.2.1:
   version "5.2.1"
-  resolved "https://registry.npmjs.org/ansi_up/-/ansi_up-5.2.1.tgz"
+  resolved "https://registry.yarnpkg.com/ansi_up/-/ansi_up-5.2.1.tgz#9437082c7ad4975c15ec57d30a6b55da295bee36"
   integrity sha512-5bz5T/7FRmlxA37zDXhG6cAwlcZtfnmNLDJra66EEIT3kYlw5aPJdbkJEhm59D6kA4Wi5ict6u6IDYHJaQlH+g==
 
 anymatch@~3.1.2:
@@ -5703,6 +5705,13 @@ react-moment-proptypes@^1.6.0:
   integrity sha512-Er940DxWoObfIqPrZNfwXKugjxMIuk1LAuEzn23gytzV6hKS/sw108wibi9QubfMN4h+nrlje8eUCSbQRJo2fQ==
   dependencies:
     moment ">=1.6.0"
+
+react-monaco-editor@^0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
+  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
+  dependencies:
+    prop-types "^15.8.1"
 
 react-monaco-editor@^0.55.0:
   version "0.55.0"

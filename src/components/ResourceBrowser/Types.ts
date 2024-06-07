@@ -147,7 +147,6 @@ export interface ResourceFilterOptionsProps {
     searchText?: string
     isOpen: boolean
     setSearchText?: (text: string) => void
-    runSearch?: (text: string) => void
     isSearchInputDisabled?: boolean
     updateK8sResourceTab: (url: string, dynamicTitle?: string) => void
     renderRefreshBar?: () => JSX.Element

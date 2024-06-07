@@ -41,7 +41,6 @@ const ResourceFilterOptions = ({
     isOpen,
     setSearchText,
     isSearchInputDisabled,
-    runSearch,
     shortcut,
     renderRefreshBar,
     updateK8sResourceTab,
@@ -49,7 +48,7 @@ const ResourceFilterOptions = ({
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, group } = useParams<URLParams>()
+    const { clusterId, namespace, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -87,21 +86,9 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut, isOpen])
 
-    const handleFilterKeyUp = (e: React.KeyboardEvent): void => {
-        switch (e.key) {
-            case 'Escape':
-            case 'Esc':
-                searchInputRef.current?.blur()
-                break
-            case 'Enter':
-                runSearch(searchText)
-                break
-            case 'Backspace':
-                if (!searchText) {
-                    runSearch('')
-                }
-                break
-            default:
+    const handleFilterKeyPress = (e: React.KeyboardEvent): void => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            searchInputRef.current?.blur()
         }
     }
 
@@ -119,13 +106,20 @@ const ResourceFilterOptions = ({
         setSelectedNamespace(selected)
     }
 
+    useEffect(() => {
+        if (!isOpen || namespace === selectedNamespace.value || namespaceOptions.length === 1) {
+            return
+        }
+        const matchedOption = namespaceOptions.find((option) => option.value === namespace)
+        handleNamespaceChange(!matchedOption ? ALL_NAMESPACE_OPTION : matchedOption)
+    }, [namespace, namespaceOptions])
+
     const handleInputBlur = () => setIsInputFocused(false)
 
     const handleInputFocus = () => setIsInputFocused(true)
 
     const clearSearchInput = () => {
         setSearchText('')
-        runSearch('')
         searchInputRef.current?.focus()
     }
 
@@ -142,7 +136,7 @@ const ResourceFilterOptions = ({
                         value={searchText}
                         className={`search__input ${isSearchInputDisabled ? 'cursor-not-allowed' : ''}`}
                         onChange={handleOnChangeSearchText}
-                        onKeyUp={handleFilterKeyUp}
+                        onKeyUp={handleFilterKeyPress}
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
                         disabled={isSearchInputDisabled}
