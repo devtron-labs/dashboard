@@ -363,8 +363,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const areCredentialsChanging =
             isCredentialKey && (isBitBucketDC ? !isBitBucketDCCreateView : this.state.form.id)
 
-        const shouldOverrideRequiredCheck =
-            areCredentialsChanging || event.target.value.length !== 0 || key === 'bitBucketProjectKey'
+        const shouldOverrideRequiredCheck = areCredentialsChanging || event.target.value.length !== 0
 
         this.setState({
             form: {
@@ -432,12 +431,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
         const isTokenRequired = isBitBucketDC && isBitBucketDCCreateView
 
-        const isSSHKeyOptional =
-            !isBitBucketDC ||
+        const isSSHKeyRequired =
             (isBitBucketDC &&
-                !!this.state.form.id &&
+                !this.state.form.id &&
                 this.state.form.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD &&
                 this.state.initialBitBucketDCAuthMode === GitOpsAuthModeType.SSH_AND_PASSWORD)
+
+        const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
 
         return {
             host: this.requiredFieldCheck(form.host),
@@ -447,9 +447,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
             bitBucketWorkspaceId: this.state.isBitbucketCloud ? this.requiredFieldCheck(form.bitBucketWorkspaceId) : '',
-            bitBucketProjectKey: '',
+            bitBucketProjectKey: isBitBucketProjectKeyRequired ? this.requiredFieldCheck(form.bitBucketProjectKey) : '',
             sshHost: '',
-            sshKey: isSSHKeyOptional ? '' : this.requiredFieldCheck(form.sshKey),
+            sshKey: isSSHKeyRequired ? this.requiredFieldCheck(form.sshKey) : '',
         }
     }
 
@@ -490,7 +490,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError.host.length > 0 ||
             isError.username.length > 0 ||
             isError.token.length > 0 ||
-            isError.sshKey.length > 0
+            isError.sshKey.length > 0 ||
+            isError.bitBucketProjectKey.length > 0
 
         if (!_isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
@@ -844,10 +845,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             </span>
         )
 
-        const renderInputLabels = (label: string, link: string, linkText: string, isRequired: boolean = true) => {
+        const renderInputLabels = (label: string, link: string, linkText: string) => {
             return (
                 <div className="flex">
-                    <span className={`${isRequired ? 'dc__required-field' : ''}`}>{label}</span>&nbsp;
+                    <span className="dc__required-field">{label}</span>&nbsp;
                     <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
                         {linkText}
                     </a>
@@ -1038,7 +1039,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                             LinkAndLabelSpec[this.state.providerTab].label,
                                             LinkAndLabelSpec[this.state.providerTab].link,
                                             LinkAndLabelSpec[this.state.providerTab].linkText,
-                                            key !== 'bitBucketProjectKey',
                                         )}
                                         placeholder={`Enter ${LinkAndLabelSpec[this.state.providerTab].label}`}
                                         value={this.state.form[key]}
@@ -1056,7 +1056,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     ? 'gitops-gitlab-group-id-textbox'
                                                     : 'gitops-github-organisation-name-textbox'
                                         }
-                                        isRequiredField={key !== 'bitBucketProjectKey'}
+                                        isRequiredField
                                     />
                                 </div>
                                 {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
