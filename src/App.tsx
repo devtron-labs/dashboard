@@ -30,6 +30,7 @@ import {
     Reload,
     DevtronProgressing,
     APPROVAL_MODAL_TYPE,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
@@ -65,6 +66,7 @@ export default function App() {
     const [errorPage, setErrorPage] = useState<boolean>(false)
     const isOnline = useOnline()
     const refreshing = useRef(false)
+    const { setEmail } = useUserEmail()
     const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
@@ -125,7 +127,8 @@ export default function App() {
 
     async function validation() {
         try {
-            await validateToken()
+            const { result: { emailId: email } } = await validateToken()
+            setEmail(email)
             defaultRedirection()
         } catch (err: any) {
             // push to login without breaking search

@@ -25,6 +25,7 @@ import {
     YAMLStringify,
     noop,
     showError,
+    useUserEmail,
     DeploymentHistoryDiffView,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -480,6 +481,7 @@ export function ProtectedConfigMapSecretDetails({
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
     const [abortController, setAbortController] = useState(new AbortController())
+    const { email } = useUserEmail()
 
     const getBaseData = async () => {
         try {
@@ -617,7 +619,7 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         }
-        const hasAccess = hasApproverAccess(draftData.approvers)
+        const hasAccess = hasApproverAccess(email, draftData.approvers)
         return (
             <div
                 className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${
