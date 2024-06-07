@@ -39,6 +39,7 @@ import {
     GitOpsOrganisationIdType,
     GitProvider,
     GitProviderTabProps,
+    GitProviderType,
 } from './gitops.type'
 import { handleOnFocus, importComponentFromFELibrary, parsePassword } from '../common'
 import Check from '../../assets/icons/ic-selected-corner.png'
@@ -192,7 +193,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         this.fetchGitOpsConfigurationList()
     }
 
-    isAWSCodeCommitTabSelected = (overriddenProvider?: GitProvider): boolean => {
+    isAWSCodeCommitTabSelected = (overriddenProvider?: GitProviderType): boolean => {
         if (overriddenProvider) {
             return overriddenProvider === GitProvider.AWS_CODE_COMMIT
         }
@@ -200,7 +201,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return this.state.providerTab === GitProvider.AWS_CODE_COMMIT
     }
 
-    getIsOtherGitOpsTabSelected = (overriddenProvider?: GitProvider): boolean => {
+    getIsOtherGitOpsTabSelected = (overriddenProvider?: GitProviderType): boolean => {
         if (overriddenProvider) {
             return overriddenProvider === GitProvider.OTHER_GIT_OPS
         }
@@ -209,8 +210,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     // Fallback in case of create view we need this
-    getIsAuthModeSSH = (overriddenProvider?: GitProvider): boolean =>
-        this.isAWSCodeCommitTabSelected(overriddenProvider) || this.getIsOtherGitOpsTabSelected(overriddenProvider)
+    getIsAuthModeSSH = (authMode: GitOpsAuthModeType, overriddenProvider?: GitProviderType): boolean => {
+        if (authMode) {
+            return authMode === GitOpsAuthModeType.SSH
+        }
+
+        return this.isAWSCodeCommitTabSelected(overriddenProvider) || this.getIsOtherGitOpsTabSelected(overriddenProvider)
+    }
 
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList()
@@ -243,9 +249,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     (!bitbucketCloudConfig && !bitbucketDCConfig) ||
                     (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
 
-                const isAuthModeSSH = form.authMode
-                    ? form.authMode === GitOpsAuthModeType.SSH
-                    : this.getIsAuthModeSSH(form.provider)
+                const isAuthModeSSH = this.getIsAuthModeSSH(form.authMode, form.provider)
+
                 const initialBitBucketDCAuthMode =
                     bitbucketDCConfig?.authMode === GitOpsAuthModeType.SSH_AND_PASSWORD
                         ? GitOpsAuthModeType.SSH_AND_PASSWORD
@@ -317,9 +322,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             provider: gitListKey,
             allowCustomRepository: false,
         }
-        const isAuthModeSSH = form.authMode
-            ? form.authMode === GitOpsAuthModeType.SSH
-            : this.getIsAuthModeSSH(form.provider)
+        const isAuthModeSSH = this.getIsAuthModeSSH(form.authMode, form.provider)
 
         this.setState({
             providerTab: form.provider === 'BITBUCKET_DC' ? GitProvider.BITBUCKET_CLOUD : form.provider,
@@ -810,6 +813,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
         const warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
+        const isAuthModeSSH = this.getIsAuthModeSSH(this.state.form.authMode, this.state.form.provider)
+
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
         }
@@ -1158,14 +1163,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     >
                                         <div
                                             className={
-                                                this.state.form.authMode === GitOpsAuthModeType.SSH
+                                                isAuthModeSSH
                                                     ? 'dc__disabled'
                                                     : ''
                                             }
                                         >
                                             <RadioGroupItem
                                                 value={repoType.DEFAULT}
-                                                disabled={this.state.form.authMode === GitOpsAuthModeType.SSH}
+                                                disabled={isAuthModeSSH}
                                             >
                                                 Auto-create git repository for each application
                                             </RadioGroupItem>

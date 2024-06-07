@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 import { DefaultShortGitOpsType, GitOpsFormErrorType, GitProvider } from './gitops.type'
 
 export const GitHost = {
@@ -52,7 +51,7 @@ export const DefaultShortGitOps: DefaultShortGitOpsType = {
     bitBucketProjectKey: '',
     sshHost: '',
     sshKey: '',
-    authMode: GitOpsAuthModeType.PASSWORD,
+    authMode: null,
 }
 
 export const DefaultErrorFields: GitOpsFormErrorType = {
