@@ -21,7 +21,7 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
-import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -116,6 +116,7 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
@@ -153,7 +154,9 @@ ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
             <BrowserRouter basename={window.__BASE_URL__}>
-                <App />
+                <UserEmailProvider>
+                    <App />
+                </UserEmailProvider>
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,

@@ -15,7 +15,7 @@
  */
 
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError, useUserEmail } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
@@ -56,7 +56,8 @@ export default function DeploymentConfigFormCTA({
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
-    const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
+    const { email } = useUserEmail()
+    const hasAccess = hasApproverAccess(email, state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
     const isSomeFieldsMissing = !state.yamlMode && state.isRequiredFieldsUnfilled
     const getCTATippyContent = () => {

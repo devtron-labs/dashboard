@@ -68,7 +68,6 @@ export const URLS = {
     APP_JOB_CI_CONFIG: 'ci-job',
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
-    DEPLOYMENT_GROUPS: '/deployment-groups',
     LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',

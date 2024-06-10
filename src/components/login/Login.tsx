@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput, withUserEmail } from '@devtron-labs/devtron-fe-common-lib'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
@@ -27,7 +27,7 @@ import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 
-export default class Login extends Component<LoginProps, LoginFormState> {
+class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -134,6 +134,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     this.setState({ loading: false })
                     const queryString = this.props.location.search.split('continue=')[1]
                     const url = queryString ? `${queryString}` : URLS.APP
+                    this.props.setEmail(data.username)
                     this.props.history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
@@ -298,3 +299,5 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         )
     }
 }
+
+export default withUserEmail(Login)

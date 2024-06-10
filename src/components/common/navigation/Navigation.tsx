@@ -17,7 +17,6 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -27,7 +26,6 @@ import {
 } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
-import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
@@ -90,16 +88,6 @@ const NavigationList = [
         markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
         hideNav: hideReleases,
-    },
-    {
-        title: 'Deployment Groups',
-        dataTestId: 'click-on-deployment-groups',
-        type: 'link',
-        iconClass: 'nav-short-bulk-actions',
-        icon: DeploymentGroupIcon,
-        href: URLS.DEPLOYMENT_GROUPS,
-        isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Resource Browser',
@@ -182,7 +170,6 @@ interface NavigationType extends RouteComponentProps<{}> {
 export default class Navigation extends Component<
     NavigationType,
     {
-        loginInfo: any
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
@@ -195,7 +182,6 @@ export default class Navigation extends Component<
     constructor(props) {
         super(props)
         this.state = {
-            loginInfo: getLoginInfo(),
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,
