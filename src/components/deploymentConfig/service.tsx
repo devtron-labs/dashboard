@@ -19,7 +19,7 @@ import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
 import guiSchema from './basicViewSchema.json'
 
-export function getDeploymentTemplate(
+export async function getDeploymentTemplate(
     id: number,
     chartRefId: number,
     abortSignal: AbortSignal,
@@ -30,20 +30,19 @@ export function getDeploymentTemplate(
             signal: abortSignal,
         })
     }
-    return new Promise<ResponseType>((resolve, reject) => {
-        get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
-            signal: abortSignal,
-        })
-            .then((data) => {
-                const copy = structuredClone(data)
-                if (!copy.result.guiSchema) {
-                    copy.result.guiSchema = JSON.stringify(guiSchema)
-                }
-                resolve(copy)
-            })
-            /* NOTE: the above call will throw @ServerErrors */
-            .catch((err: Error) => reject(err))
+    const data = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+        signal: abortSignal,
     })
+    if (!data?.result?.guiSchema) {
+        return {
+            ...data,
+            result: {
+                ...data?.result,
+                guiSchema: JSON.stringify(guiSchema),
+            },
+        }
+    }
+    return data
 }
 
 export function getDeploymentTemplateData(

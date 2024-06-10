@@ -15,7 +15,7 @@
  */
 
 import React, { useContext, useMemo } from 'react'
-import { InfoColourBar, Progressing, RJSFForm, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, Progressing, RJSFForm, FormProps, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
@@ -61,7 +61,7 @@ const DeploymentTemplateGUIView = ({
         }
     }, [guiSchema])
 
-    const handleFormChange = (data) => {
+    const handleFormChange: FormProps['onChange'] = (data) => {
         const formHasErrors = !!data.errors.length
         if (isRequiredFieldsUnfilled !== formHasErrors) {
             dispatch({
@@ -91,7 +91,7 @@ const DeploymentTemplateGUIView = ({
                         aria-label={GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}
                     >
                         <span>{GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}</span>
-                        <ICArrow className="icon-dim-16-imp" />
+                        <ICArrow className="icon-dim-16-imp dc__no-shrink" />
                     </button>
                 </GenericEmptyState>
             )

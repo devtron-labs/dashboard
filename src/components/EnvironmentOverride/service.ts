@@ -18,19 +18,18 @@ import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-co
 import { Routes } from '../../config'
 import guiSchema from '../deploymentConfig/basicViewSchema.json'
 
-export function getDeploymentTemplate(appId, envId, chartId) {
-    return new Promise<ResponseType>((resolve, reject) => {
-        get(`app/env/${appId}/${envId}/${chartId}`)
-            .then((data) => {
-                const copy = structuredClone(data)
-                if (!copy.result.guiSchema) {
-                    copy.result.guiSchema = JSON.stringify(guiSchema)
-                }
-                resolve(copy)
-            })
-            /* NOTE: the above call will throw @ServerErrors */
-            .catch((err: Error) => reject(err))
-    })
+export async function getDeploymentTemplate(appId, envId, chartId): Promise<ResponseType> {
+    const data = await get(`app/env/${appId}/${envId}/${chartId}`)
+    if (!data?.result?.guiSchema) {
+        return {
+            ...data,
+            result: {
+                ...data?.result,
+                guiSchema: JSON.stringify(guiSchema),
+            },
+        }
+    }
+    return data
 }
 
 export function updateDeploymentTemplate(appId, envId, payload) {

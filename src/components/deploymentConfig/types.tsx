@@ -229,7 +229,7 @@ export interface DeploymentTemplateEditorViewProps {
     environmentName?: string
     value: string
     defaultValue?: string
-    editorOnChange?: (str: string, fromBasic?: boolean) => void
+    editorOnChange?: (str: string) => void
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
@@ -296,25 +296,9 @@ export interface SecretFormProps {
     isJobView?: boolean
 }
 
-export interface BasicFieldDataType {
-    isUpdated: boolean
-    dataType: string
-    value: any
-    isMandatory: boolean
-    isInvalid: boolean
-}
-
 interface ErrorObj {
     isValid: boolean
     message: string | null
-}
-
-export interface BasicFieldErrorObj {
-    isValid: boolean
-    port: ErrorObj
-    cpu: ErrorObj
-    memory: ErrorObj
-    envVariables: ErrorObj[]
 }
 
 export interface ChartSelectorModalType {
