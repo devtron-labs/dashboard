@@ -722,5 +722,5 @@ export interface RuntimeParamsValidatorReturnType {
 
 export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
-    abortController: any
+    abortController: AbortController
 }

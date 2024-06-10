@@ -260,11 +260,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             } else if (location.pathname.includes('build')) {
                 const lastIndexBeforeId = location.pathname.lastIndexOf('/')
                 const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
-                const nodes = workflows?.find((workflow) => workflow.id === ciNodeId)?.nodes
+                const nodes = filteredWorkflows?.find((workflow) => workflow.id === ciNodeId)?.nodes
                 const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
                 const pipelineName = ciNode?.title
 
-                if(!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
+                if (!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
                     onClickCIMaterial(ciNodeId, pipelineName, false)
                 } else {
                     toast.error('Invalid Node')
@@ -1060,7 +1060,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
+                if (!getIsRequestAborted(errors)) showError(errors)
 
                 setCDLoading(false)
 
@@ -1886,38 +1886,38 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderCIMaterial = (): JSX.Element | null => {
-            let nd: CommonNodeAttr
-            let _appID
-            if (selectedCINode?.id) {
-                const configuredMaterialList = new Map<number, Set<number>>()
-                for (const _wf of filteredWorkflows) {
-                    nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
-                    if (nd) {
-                        if (!nd[materialType]) {
-                            nd[materialType] = []
-                        }
-
-                        const gitMaterials = new Map<number, string[]>()
-                        for (const _inputMaterial of nd.inputMaterialList) {
-                            gitMaterials[_inputMaterial.gitMaterialId] = [
-                                _inputMaterial.gitMaterialName.toLowerCase(),
-                                _inputMaterial.value,
-                            ]
-                        }
-                        configuredMaterialList[_wf.name] = new Set<number>()
-                        _appID = _wf.appId
-                        handleSourceNotConfigured(
-                            configuredMaterialList,
-                            _wf,
-                            nd[materialType],
-                            !gitMaterials[_wf.ciConfiguredGitMaterialId],
-                        )
-                        break
+        let nd: CommonNodeAttr
+        let _appID
+        if (selectedCINode?.id) {
+            const configuredMaterialList = new Map<number, Set<number>>()
+            for (const _wf of filteredWorkflows) {
+                nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
+                if (nd) {
+                    if (!nd[materialType]) {
+                        nd[materialType] = []
                     }
+
+                    const gitMaterials = new Map<number, string[]>()
+                    for (const _inputMaterial of nd.inputMaterialList) {
+                        gitMaterials[_inputMaterial.gitMaterialId] = [
+                            _inputMaterial.gitMaterialName.toLowerCase(),
+                            _inputMaterial.value,
+                        ]
+                    }
+                    configuredMaterialList[_wf.name] = new Set<number>()
+                    _appID = _wf.appId
+                    handleSourceNotConfigured(
+                        configuredMaterialList,
+                        _wf,
+                        nd[materialType],
+                        !gitMaterials[_wf.ciConfiguredGitMaterialId],
+                    )
+                    break
                 }
             }
-            const material = nd?.[materialType] || []
-            if(selectedCINode?.id) {
+        }
+        const material = nd?.[materialType] || []
+        if (selectedCINode?.id) {
             return (
                 <Switch>
                     <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
@@ -1960,8 +1960,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         />
                     </Route>
                 </Switch>
-            )}
-            return null
+            )
+        }
+        return null
     }
 
     const renderBulkCDMaterial = (): JSX.Element | null => {

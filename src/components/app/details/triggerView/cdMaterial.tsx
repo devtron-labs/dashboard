@@ -305,6 +305,13 @@ const CDMaterial = ({
 
     /* ------------ UseEffects  ------------*/
     useEffect(() => {
+        abortDeployRef.current = new AbortController()
+        return () => {
+            abortDeployRef.current.abort()
+        }
+    }, [])
+
+    useEffect(() => {
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
@@ -374,10 +381,6 @@ const CDMaterial = ({
             }
         }
 
-        abortDeployRef.current = new AbortController()
-        return () => {
-            abortDeployRef.current.abort()
-        }
     }, [materialsResult, loadingMaterials])
 
     useEffect(() => {

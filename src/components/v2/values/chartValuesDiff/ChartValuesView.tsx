@@ -18,6 +18,7 @@ import {
     YAMLStringify,
     usePrompt,
     getIsRequestAborted,
+    deepEqual,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -146,7 +147,7 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
-    const chartValuesAbortRef = useRef(null)
+    const chartValuesAbortRef = useRef<AbortController>(null)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -185,14 +186,30 @@ const ChartValuesView = ({
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
     const isPresetValueView = isCreateValueView && !!chartValueId && chartValueId === '0'
-    const isUpdateAppView = !isCreateValueView && !isDeployChartView
-    const isCreateValueFormDirty = isPresetValueView && (!!valueName || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues.id !== chartValuesFromParent.id)
-    const isDeployChartFormDirty = isDeployChartView && (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || commonState.selectedVersion !== selectedVersionFromParent || commonState.chartValues?.id !== chartValuesFromParent.id )
-    const isUpdateAppFormDirty = isUpdateAppView && (commonState.repoChartValue?.chartId !== appDetails.appStoreChartId || commonState.repoChartValue?.appStoreApplicationVersionId !== commonState.selectedVersion || appDetails.appStoreInstalledAppVersionId !== commonState.chartValues?.id)
+    const isUpdateAppView = !isCreateValueView && !isDeployChartView && !isExternalApp
+
+    const currentChartVersionValues = {
+        chartVersion: commonState.selectedVersion,
+        chartValues: commonState.chartValues?.id,
+    }
+
+    const isChartValueVersionUpdated = !deepEqual(currentChartVersionValues, commonState.initialChartVersionValues)
+
+    const isCreateValueFormDirty = isPresetValueView && (!!valueName || isChartValueVersionUpdated)
+
+    const isDeployChartFormDirty =
+        isDeployChartView &&
+        (!!appName || !!commonState.selectedProject || !!commonState.selectedEnvironment || isChartValueVersionUpdated)
+
+    const isUpdateAppFormDirty =
+        isUpdateAppView &&
+        (commonState.installedConfig.appStoreId !== commonState.repoChartValue?.chartId || isChartValueVersionUpdated)
 
     const isFormDirty = !!isCreateValueFormDirty || !!isDeployChartFormDirty || !!isUpdateAppFormDirty
 
-    usePrompt({shouldPrompt: shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty) })
+    const enablePrompt = shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty)
+
+    usePrompt({ shouldPrompt: enablePrompt })
 
     const handleDrawerState = (state: boolean) => {
         setIsDrawerOpen(state)
@@ -212,7 +229,7 @@ const ChartValuesView = ({
     }
 
     useEffect(() => {
-        if(!isExternalApp){
+        if (!isExternalApp) {
             checkGitOpsConfiguration()
         }
         if (isDeployChartView || isCreateValueView) {
@@ -295,6 +312,10 @@ const ChartValuesView = ({
                                 chartVersionsData: [_chartVersionData],
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: _valuesYaml,
+                                initialChartVersionValues: {
+                                    chartVersion: _chartVersionData.id,
+                                    chartValues: _chartValues.id,
+                                },
                             },
                         })
                     }
@@ -338,6 +359,9 @@ const ChartValuesView = ({
                         id: appDetails.appStoreInstalledAppVersionId,
                         appStoreVersionId: commonState.installedConfig.appStoreVersion,
                         kind: ChartKind.DEPLOYED,
+                    },
+                    initialChartVersionValues: {
+                        chartValues: appDetails.appStoreInstalledAppVersionId,
                     },
                 },
             })
@@ -562,6 +586,9 @@ const ChartValuesView = ({
                     },
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
+                    initialChartVersionValues: {
+                        chartValues: _installedAppInfo.installedAppVersionId,
+                    },
                 },
             })
         } catch (e: any) {
@@ -997,11 +1024,13 @@ const ChartValuesView = ({
                     payload: AUTO_GENERATE_GITOPS_REPO,
                 })
                 handleDrawerState(true)
-            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900' && !getIsRequestAborted(err)) {
+            } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
                 setAllowedCustomBool(true)
                 handleDrawerState(true)
             } else {
-                !getIsRequestAborted(err) && showError(err)
+                if (!getIsRequestAborted(err)) {
+                    showError(err)
+                }
             }
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,
@@ -1803,7 +1832,7 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt when={ shouldShowPrompt && (commonState.isUpdateInProgress || isFormDirty) } message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                <Prompt when={enablePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
             </div>
         )
     }
@@ -1823,7 +1852,7 @@ const ChartValuesView = ({
         )
     }
 
-    return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>    
+    return !isExternalApp || (commonState.releaseInfo && commonState.repoChartValue) ? renderData() : <></>
 }
 
 export default ChartValuesView

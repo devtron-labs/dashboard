@@ -215,7 +215,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     if (isFromOnMount) {
-
                         if (ApprovalMaterialModal) {
                             if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
                                 const searchParams = new URLSearchParams(this.props.location.search)
@@ -263,10 +262,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/')
                         const ciNodeId = this.props.location.pathname.substring(lastIndexBeforeId + 1)
                         const nodes = wf?.find((workflow) => workflow.id === ciNodeId)?.nodes
-                        const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI )
+                        const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
                         const pipelineName = ciNode?.title
 
-                        if(!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
+                        if (!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
                             this.onClickCIMaterial(ciNodeId, pipelineName, false)
                         } else {
                             toast.error('Invalid Node')
@@ -711,7 +710,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .catch((errors: ServerErrors) => {
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    this.props.history.push(this.props.match.url)
+                    this.closeCIModal()
                 }
             })
             .finally(() => {
@@ -1153,55 +1152,56 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCIMaterial = () => {
-        if( this.state.ciNodeId ) {
-        const nd: CommonNodeAttr = this.getCINode()
-        const material = nd?.[this.state.materialType] || []
-        return (
-            <Switch>
-                <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
-                    <CIMaterialModal
-                        workflowId={this.state.workflowId}
-                        history={this.props.history}
-                        location={this.props.location}
-                        match={this.props.match}
-                        material={material}
-                        pipelineName={this.state.ciPipelineName}
-                        isLoading={this.state.isLoading}
-                        title={this.state.ciPipelineName}
-                        pipelineId={this.state.ciNodeId}
-                        showWebhookModal={this.state.showWebhookModal}
-                        hideWebhookModal={this.hideWebhookModal}
-                        toggleWebhookModal={this.toggleWebhookModal}
-                        webhookPayloads={this.state.webhookPayloads}
-                        isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
-                        onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
-                        webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
-                        showMaterialRegexModal={this.state.showMaterialRegexModal}
-                        onCloseBranchRegexModal={this.onCloseBranchRegexModal}
-                        filteredCIPipelines={this.state.filteredCIPipelines}
-                        onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
-                        isChangeBranchClicked={this.state.isChangeBranchClicked}
-                        getWorkflows={this.getWorkflows}
-                        loader={this.state.loader}
-                        setLoader={this.setLoader}
-                        isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                        isCacheAvailable={nd?.storageConfigured}
-                        appId={this.props.match.params.appId}
-                        isJobView={this.props.isJobView}
-                        isCITriggerBlocked={nd?.isCITriggerBlocked}
-                        ciBlockState={nd?.ciBlockState}
-                        selectedEnv={this.state.selectedEnv}
-                        setSelectedEnv={this.setSelectedEnv}
-                        environmentLists={this.state.environmentLists}
-                        isJobCI={!!nd?.isJobCI}
-                        runtimeParams={this.state.runtimeParams}
-                        handleRuntimeParametersChange={this.handleRuntimeParametersChange}
-                        closeCIModal={this.closeCIModal}
-                        abortController={this.abortCIBuild}
-                    />
-                </Route>
-            </Switch>
-        )}
+        if (this.state.ciNodeId) {
+            const nd: CommonNodeAttr = this.getCINode()
+            const material = nd?.[this.state.materialType] || []
+            return (
+                <Switch>
+                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
+                        <CIMaterialModal
+                            workflowId={this.state.workflowId}
+                            history={this.props.history}
+                            location={this.props.location}
+                            match={this.props.match}
+                            material={material}
+                            pipelineName={this.state.ciPipelineName}
+                            isLoading={this.state.isLoading}
+                            title={this.state.ciPipelineName}
+                            pipelineId={this.state.ciNodeId}
+                            showWebhookModal={this.state.showWebhookModal}
+                            hideWebhookModal={this.hideWebhookModal}
+                            toggleWebhookModal={this.toggleWebhookModal}
+                            webhookPayloads={this.state.webhookPayloads}
+                            isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
+                            onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
+                            webhhookTimeStampOrder={this.state.webhhookTimeStampOrder}
+                            showMaterialRegexModal={this.state.showMaterialRegexModal}
+                            onCloseBranchRegexModal={this.onCloseBranchRegexModal}
+                            filteredCIPipelines={this.state.filteredCIPipelines}
+                            onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
+                            isChangeBranchClicked={this.state.isChangeBranchClicked}
+                            getWorkflows={this.getWorkflows}
+                            loader={this.state.loader}
+                            setLoader={this.setLoader}
+                            isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
+                            isCacheAvailable={nd?.storageConfigured}
+                            appId={this.props.match.params.appId}
+                            isJobView={this.props.isJobView}
+                            isCITriggerBlocked={nd?.isCITriggerBlocked}
+                            ciBlockState={nd?.ciBlockState}
+                            selectedEnv={this.state.selectedEnv}
+                            setSelectedEnv={this.setSelectedEnv}
+                            environmentLists={this.state.environmentLists}
+                            isJobCI={!!nd?.isJobCI}
+                            runtimeParams={this.state.runtimeParams}
+                            handleRuntimeParametersChange={this.handleRuntimeParametersChange}
+                            closeCIModal={this.closeCIModal}
+                            abortController={this.abortCIBuild}
+                        />
+                    </Route>
+                </Switch>
+            )
+        }
         return null
     }
 
@@ -1223,7 +1223,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDMaterial() {
-        if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node') ) {
+        if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node')) {
             const node: CommonNodeAttr = this.getCDNode()
             const material = node[this.state.materialType] || []
 
