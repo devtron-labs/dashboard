@@ -27,13 +27,13 @@ import {
     RadioGroupItem,
     CHECKBOX_VALUE,
     getIsRequestAborted,
+    CiPipelineSourceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
-import { channel } from 'diagnostics_channel'
 import { SESConfigModal } from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import { Select, validateEmail, ErrorBoundary } from '../common'
@@ -51,7 +51,6 @@ import {
     MultiValueContainer,
     renderPipelineTypeIcon,
 } from './notifications.util'
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'

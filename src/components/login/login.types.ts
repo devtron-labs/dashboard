@@ -15,6 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router'
+import { UseUserEmailContextType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SSOConfig {
     id: number
@@ -33,4 +34,6 @@ export interface LoginFormState {
     loading: boolean
 }
 
-export interface LoginProps extends RouteComponentProps<{}> {}
+export interface LoginProps extends RouteComponentProps<{}> {
+    setEmail: UseUserEmailContextType['setEmail']
+}

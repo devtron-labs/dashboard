@@ -18,14 +18,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import IndexStore from '../../index.store'
 import { AggregatedNodes } from '../../../../app/types'
-import { aggregateNodes } from '../../../../app/details/appDetails/utils'
 import './environmentStatus.scss'
 import { APP_STATUS_CUSTOM_MESSAGES } from '../../../../../config'
 import { AppStatusDetailType } from '../../appDetails.type'
-import ErrorBar from '../../../../common/error/ErrorBar'
 import { STATUS_SORTING_ORDER } from './constants'
-import AppStatusDetailsChart from './AppStatusDetailsChart'
-import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, AppStatusDetailsChart, ErrorBar, aggregateNodes } from '@devtron-labs/devtron-fe-common-lib'
 
 const AppStatusDetailModal = ({
     close,

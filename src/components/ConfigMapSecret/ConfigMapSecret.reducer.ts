@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { YAMLStringify, decode } from '@devtron-labs/devtron-fe-common-lib'
 import { CM_SECRET_STATE } from './Constants'
 import { getSecretInitState } from './Secret/secret.utils'
 import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
-import { decode } from '../../util/Util'
 
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data

@@ -586,43 +586,6 @@ export const APP_STATUS_CUSTOM_MESSAGES = {
     INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
 }
 
-export const DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP = {
-    DEPLOYMENT_TEMPLATE: {
-        DISPLAY_NAME: 'Deployment template',
-        VALUE: 'deployment-template',
-    },
-    PIPELINE_STRATEGY: {
-        DISPLAY_NAME: 'Pipeline configurations',
-        VALUE: 'pipeline-strategy',
-    },
-    CONFIGMAP: {
-        DISPLAY_NAME: 'ConfigMap',
-        VALUE: 'configmap',
-    },
-    SECRET: {
-        DISPLAY_NAME: 'Secret',
-        VALUE: 'secret',
-    },
-}
-
-export const EXTERNAL_TYPES = {
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.DISPLAY_NAME]: {
-        '': 'Kubernetes Secret',
-        KubernetesSecret: 'Kubernetes External Secret',
-        AWSSecretsManager: 'AWS Secrets Manager',
-        AWSSystemManager: 'AWS System Manager',
-        HashiCorpVault: 'Hashi Corp Vault',
-        ESO_HashiCorpVault: 'Hashi Corp Vault',
-        ESO_AWSSecretsManager: 'AWS Secrets Manager',
-        ESO_GoogleSecretsManager: 'Google Secrets Manager',
-        ESO_AzureSecretsManager: 'Azure Secrets Manager',
-    },
-    [DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.DISPLAY_NAME]: {
-        '': 'Kubernetes ConfigMap',
-        KubernetesConfigMap: 'Kubernetes External ConfigMap',
-    },
-}
-
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
@@ -647,28 +610,6 @@ export const ModuleNameMap = {
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
     NOT_DEPLOYED: 'not deployed',
-}
-
-export const EVENT_STREAM_EVENTS_MAP = {
-    MESSAGE: 'message',
-    START_OF_STREAM: 'START_OF_STREAM',
-    END_OF_STREAM: 'END_OF_STREAM',
-    ERROR: 'error',
-}
-
-export const TERMINAL_STATUS_MAP = {
-    SUCCEEDED: 'succeeded',
-    HEALTHY: 'healthy',
-    RUNNING: 'running',
-    PROGRESSING: 'progressing',
-    STARTING: 'starting',
-    INITIATING: 'initiating',
-    QUEUED: 'queued',
-    FAILED: 'failed',
-    ERROR: 'error',
-    CANCELLED: 'cancelled',
-    UNABLE_TO_FETCH: 'unabletofetch',
-    TIMED_OUT: 'timedout',
 }
 
 export const POD_STATUS = {
@@ -699,9 +640,7 @@ export enum KIND {
 
 export const MODULE_STATUS_RETRY_COUNT = 3
 export const MODULE_STATUS_POLLING_INTERVAL = 15000
-export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
-export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
 export const MODULE_STATUS = {
     Installed: 'Installed',
     Failed: 'Failed',
@@ -751,6 +690,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
+/** 
+* @deprecated - use from fe-common
+*/
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -774,6 +716,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
+/** 
+* @deprecated - use from fe-common
+*/
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',

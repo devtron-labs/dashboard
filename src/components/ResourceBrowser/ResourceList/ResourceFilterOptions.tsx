@@ -48,7 +48,7 @@ const ResourceFilterOptions = ({
     const { registerShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, group } = useParams<URLParams>()
+    const { clusterId, namespace, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -105,6 +105,14 @@ const ResourceFilterOptions = ({
         replace(url)
         setSelectedNamespace(selected)
     }
+
+    useEffect(() => {
+        if (!isOpen || namespace === selectedNamespace.value || namespaceOptions.length === 1) {
+            return
+        }
+        const matchedOption = namespaceOptions.find((option) => option.value === namespace)
+        handleNamespaceChange(!matchedOption ? ALL_NAMESPACE_OPTION : matchedOption)
+    }, [namespace, namespaceOptions])
 
     const handleInputBlur = () => setIsInputFocused(false)
 
