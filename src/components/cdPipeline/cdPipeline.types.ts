@@ -1,5 +1,20 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
 import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
@@ -22,21 +37,6 @@ export interface SavedDeploymentStrategy {
     defaultConfig?: any
     yamlStr?: any
     jsonStr?: any
-}
-
-export interface CDPipelineProps
-    extends RouteComponentProps<{ appId: string; ciPipelineId: string; cdPipelineId?: string; workflowId: string }> {
-    appName: string
-    downstreamNodeSize: number
-    getWorkflows: () => void
-    close: (
-        showSuccessCD?: boolean,
-        environmentId?: number,
-        environmentName?: string,
-        successTitle?: string,
-        showWebhookTippy?: boolean,
-    ) => void
-    refreshParentWorkflows: () => void
 }
 
 export interface CDStageType {
@@ -68,46 +68,6 @@ export interface CommonError {
 export enum GeneratedHelmPush {
     PUSH = 'PUSH',
     DO_NOT_PUSH = 'DO_NOT_PUSH',
-}
-export interface CDPipelineState {
-    environments: Environment[]
-    view: string
-    code: number
-    loadingData: boolean
-    strategies: DeploymentStrategy[]
-    pipelineConfig: PipelineConfig & {
-        environmentName?: string
-        deploymentAppType: string
-        deploymentAppCreated: boolean
-        isVirtualEnvironment?: boolean
-        repoName: string
-        containerRegistryName: string
-    }
-    showDeleteModal: boolean
-    shouldDeleteApp: boolean
-    showForceDeleteDialog: boolean
-    showError: boolean
-    errorForm: {
-        pipelineNameError: CommonError
-        envNameError: CommonError
-        nameSpaceError: CommonError
-        containerRegistryError: CommonError
-        repositoryError: CommonError
-    }
-    showPreStage: boolean
-    showDeploymentStage: boolean
-    showPostStage: boolean
-    requiredApprovals: string
-    isAdvanced: boolean
-    forceDeleteDialogMessage: string
-    forceDeleteDialogTitle: string
-    isVirtualEnvironmentOnEnvSelection?: boolean
-    showNonCascadeDeleteDialog: boolean
-    clusterName: string
-    allowedDeploymentTypes: DeploymentAppTypes[]
-    dockerRegistries
-    generatedHelmPushAction: string
-    selectedRegistry: any
 }
 
 export interface PipelineConfig {

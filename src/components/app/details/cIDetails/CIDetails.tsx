@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useMemo } from 'react'
 import {
     showError,
@@ -7,6 +23,21 @@ import {
     useAsync,
     PipelineType,
     ScannedByToolModal,
+    Sidebar,
+    LogResizeButton,
+    CICDSidebarFilterOptionType, 
+    History, 
+    HistoryComponentType, 
+    FetchIdDataStatus,
+    Scroller, 
+    GitChanges,
+    TriggerDetails,
+    useScrollable,
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    Artifacts,
+    LogsRenderer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -18,7 +49,6 @@ import {
     getTagDetails,
     getArtifactForJobCi,
 } from '../../service'
-import { useScrollable, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
@@ -28,15 +58,10 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
-import { TriggerDetails } from '../cicdHistory/TriggerDetails'
-import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus } from '../cicdHistory/types'
-import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
+import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -405,6 +430,7 @@ export const Details = ({
                             environmentName={triggerDetails.environmentName}
                             isJobView={isJobView}
                             workerPodName={triggerDetails.podName}
+                            renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
@@ -529,6 +555,7 @@ const HistoryLogs = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 type={HistoryComponentType.CI}
                 jobCIClass="pb-0-imp"
+                renderCIListHeader={renderCIListHeader}
             />
         )
     })
@@ -551,7 +578,7 @@ const HistoryLogs = ({
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} />
+                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} renderCIListHeader={renderCIListHeader} />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
@@ -573,6 +600,7 @@ const HistoryLogs = ({
                             appReleaseTagNames={appReleaseTags}
                             hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                             type={HistoryComponentType.CI}
+                            renderCIListHeader={renderCIListHeader}
                         />
                     )}
                 </Route>

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import * as Sentry from '@sentry/browser'
@@ -5,7 +21,7 @@ import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
 import App from './App'
-import { customEnv } from '@devtron-labs/devtron-fe-common-lib'
+import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
 
 declare global {
     interface Window {
@@ -100,6 +116,7 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
@@ -129,6 +146,8 @@ if (!window || !window._env_) {
         ENABLE_RESOURCE_SCAN_V2: false,
         ENABLE_GITOPS_BITBUCKET_SOURCE: false,
         HIDE_RELEASES: true,
+        HIDE_RESOURCE_WATCHER: true,
+        ORGANIZATION_NAME: '',
     }
 }
 
@@ -136,7 +155,9 @@ ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
             <BrowserRouter basename={window.__BASE_URL__}>
-                <App />
+                <UserEmailProvider>
+                    <App />
+                </UserEmailProvider>
             </BrowserRouter>
         ) : null}
     </React.StrictMode>,

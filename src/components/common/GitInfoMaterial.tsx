@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useContext } from 'react'
-import { not, stopPropagation, CIMaterialSidebarType } from '@devtron-labs/devtron-fe-common-lib'
+import { not, stopPropagation, CIMaterialSidebarType, CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
@@ -11,7 +27,6 @@ import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
 import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
-import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
@@ -123,7 +138,7 @@ export default function GitInfoMaterial({
 
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                {GitInfoMaterialTabs && !isJobCI && !isJobView ? (
+                {GitInfoMaterialTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
                         <GitInfoMaterialTabs
                             tabs={sidebarTabs}
@@ -386,7 +401,6 @@ export default function GitInfoMaterial({
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleKeyValueChange={handleRuntimeParametersChange}
-                    isJobCI={isJobCI}
                 />
             )
         }

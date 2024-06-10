@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -51,7 +67,11 @@ import {
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
+import {
+    CI_MATERIAL_EMPTY_STATE_MESSAGING,
+    TIME_STAMP_ORDER,
+    TRIGGER_VIEW_PARAMS,
+} from '../../../app/details/triggerView/Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getCIWebhookRes } from '../../../app/details/triggerView/ciWebhook.service'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
@@ -89,7 +109,6 @@ import {
     processWorkflowStatuses,
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
@@ -98,7 +117,11 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const processDeploymentWindowStateAppGroup = importComponentFromFELibrary('processDeploymentWindowStateAppGroup', null, 'function')
+const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'processDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -267,8 +290,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const getWorkflowsData = async (): Promise<void> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
-            if(processDeploymentWindowStateAppGroup && _workflows.length){
-              await processDeploymentWindowStateAppGroup(_workflows)
+            if (processDeploymentWindowStateAppGroup && _workflows.length) {
+                await processDeploymentWindowStateAppGroup(_workflows)
             }
             if (showCIModal) {
                 _workflows.forEach((wf) =>
@@ -893,12 +916,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
-        }
-        else {
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+        } else {
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
+            // If the current state is pending, then we should change the state to pending
+            const approvalState =
+                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                    ? TRIGGER_VIEW_PARAMS.PENDING
+                    : TRIGGER_VIEW_PARAMS.APPROVAL
+
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-
         }
         history.push({
             search: newParams.toString(),
@@ -1019,9 +1047,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             ciPipelineMaterials,
             invalidateCache,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams && !node.isJobCI
-                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
-                : {}),
+            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
         }
 
         triggerCINode(payload)
@@ -1464,7 +1490,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].internalMessage,
                             })
-                        } else if (errorReason.code === 403 || errorReason.code === 422) { // Adding 422 to handle the unauthorized state due to deployment window
+                        } else if (errorReason.code === 403 || errorReason.code === 422) {
+                            // Adding 422 to handle the unauthorized state due to deployment window
                             const statusType = filterStatusType(
                                 type,
                                 BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
@@ -1619,9 +1646,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-                ...(getRuntimeParams && !node.isJobCI
-                    ? { runtimeParams: runtimeParamsValidationResponse?.validParams }
-                    : {}),
+                ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse?.validParams } : {}),
             }
             _CITriggerPromiseFunctionList.push(() => triggerCINode(payload))
         })
@@ -2117,7 +2142,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}

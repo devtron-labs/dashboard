@@ -102,10 +102,9 @@
                         }
                     }
 
-                    .search__input {
-                        &:focus {
-                            border: none;
-                        }
+                    .search__input:focus {
+                        outline: solid 1px var(--B500);
+                        border: none;
                     }
 
                     .resource-search-shortcut-key {
@@ -196,23 +195,6 @@
             }
         }
     }
-
-    .manifest-container,
-    .events-table-container {
-        height: calc(100vh - 118px);
-    }
-
-    .log-viewer-container {
-        height: calc(100vh - 150px);
-    }
-
-    .terminal-container {
-        height: calc(100vh - 185px);
-
-        &.resource-terminal-connected {
-            height: calc(100vh - 175px);
-        }
-    }
 }
 
 .create-resource-container {
@@ -237,4 +219,16 @@
 
 .resource-details-container {
     height: calc(100vh - 84px);
+}
+
+.cluster-terminal-hidden {
+    visibility: hidden;
+    height: 0;
+    .terminal-action-strip {
+        display: none;
+      }
+}
+
+.cluster-terminal-hidden * {
+    height: 0 !important;
 }

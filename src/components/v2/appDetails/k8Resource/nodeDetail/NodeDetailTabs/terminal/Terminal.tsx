@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useRef, useState } from 'react'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
@@ -5,15 +21,13 @@ import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import moment from 'moment'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
-import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
+import { elementDidMount } from '../../../../../../common/helpers/Helpers'
 import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 import { restrictXtermAccessibilityWidth } from './terminal.utils'
 import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
-
-let clusterTimeOut
 
 export default function TerminalView({
     terminalRef,
@@ -29,6 +43,7 @@ export default function TerminalView({
     isResourceBrowserView,
 }: TerminalViewType) {
     const socket = useRef(null)
+    const termDivRef = useRef(null)
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
@@ -38,14 +53,26 @@ export default function TerminalView({
     function resizeSocket() {
         if (terminalRef.current && fitAddon.current && isTerminalTab) {
             const dim = fitAddon.current?.proposeDimensions()
-            if (dim && socket.current?.readyState === WebSocket.OPEN) {
-                socket.current?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+            if (!dim || isNaN(dim.cols) || isNaN(dim.rows)) {
+                return
+            }
+            if (socket.current?.readyState === WebSocket.OPEN) {
+                socket.current.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.current?.fit()
         }
     }
 
-    const [myDivRef] = useHeightObserver(resizeSocket)
+    useEffect(() => {
+        /* requestAnimationFrame: will defer the resizeSocket callback to the next repaint;
+         * sparing us from - ResizeObserver loop completed with undelivered notifications */
+        if (!termDivRef.current) {
+            return
+        }
+        const observer = new ResizeObserver(() => window.requestAnimationFrame(resizeSocket))
+        observer.observe(termDivRef.current)
+        return () => observer.disconnect()
+    }, [termDivRef.current])
 
     useEffect(() => {
         if (!terminalRef.current) {
@@ -70,9 +97,6 @@ export default function TerminalView({
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.DISCONNECTING) {
-            if (clusterTimeOut) {
-                clearTimeout(clusterTimeOut)
-            }
             if (socket.current) {
                 socket.current.close()
                 socket.current = undefined
@@ -228,7 +252,6 @@ export default function TerminalView({
             terminalRef.current = undefined
             terminalRef.current = undefined
             fitAddon.current = null
-            clearTimeout(clusterTimeOut)
         }
     }, [])
 
@@ -243,7 +266,7 @@ export default function TerminalView({
         <div className={`${isSuperAdmin && !isResourceBrowserView ? 'pb-28' : ''} terminal-wrapper`} data-testid={dataTestId}>
             {renderConnectionStrip()}
             <div
-                ref={myDivRef}
+                ref={termDivRef}
                 id="terminal-id"
                 data-testid="terminal-editor-container"
                 className="mt-8 mb-4 terminal-component ml-20"

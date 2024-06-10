@@ -985,13 +985,15 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.86-beta-4":
-  version "0.0.86-beta-4"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.86-beta-4.tgz#3422356c8c45dd4e5c0b8eadefac1aaed8950bcf"
-  integrity sha512-ZkyzwoDm/is16fzlR5dhaihr2vJPSZW/rs5LuBL20JGlI739MJs1UVijbvDEFBUCIuQaUPH+N0omBDYu+NHkLA==
+"@devtron-labs/devtron-fe-common-lib@0.0.90":
+  version "0.0.90"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.90.tgz#23d1512070f8a3652fa842ca022d01af009c15be"
+  integrity sha512-TIGrDWVyPH2Vq34y1YOv/QB1psduPG7ExlUzZ3Z/rxz3TWlXTou9VSdHAwUuIXhiBQadnUK9Y56TJ8gnB8Fevw==
   dependencies:
+    ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
     jsonpath-plus "^7.2.0"
+    react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "^2.4.1"
 
@@ -1508,45 +1510,45 @@
     "@sentry/utils" "7.50.0"
     tslib "^1.9.3"
 
-"@sentry/cli-darwin@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.npmjs.org/@sentry/cli-darwin/-/cli-darwin-2.31.2.tgz"
-  integrity sha512-BHA/JJXj1dlnoZQdK4efRCtHRnbBfzbIZUKAze7oRR1RfNqERI84BVUQeKateD3jWSJXQfEuclIShc61KOpbKw==
+"@sentry/cli-darwin@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.npmjs.org/@sentry/cli-darwin/-/cli-darwin-2.32.0.tgz"
+  integrity sha512-XXk3mlDVmltSnGdm4J6cIp92DNCOl6MHnipXmhHh6Ty97M92I3OvXDJsIl8nRTsXYkziMkYNQ4TFudnoxWlPuQ==
 
-"@sentry/cli-linux-arm64@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-arm64/-/cli-linux-arm64-2.31.2.tgz#669c9c3f7f9130d26f5db732f793378863d58869"
-  integrity sha512-FLVKkJ/rWvPy/ka7OrUdRW63a/z8HYI1Gt8Pr6rWs50hb7YJja8lM8IO10tYmcFE/tODICsnHO9HTeUg2g2d1w==
+"@sentry/cli-linux-arm64@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-arm64/-/cli-linux-arm64-2.32.0.tgz#a4d091a6caabcd06bad08ffb75950f82b7eeb2fc"
+  integrity sha512-y/5r4+KJ0Df1g0OpimtOUKwzm52pDfXvPj3m4VpwZ9LO1VSLdjLbgcKEh+hM3Wrdb55yVvOr0tQlQp5TQXpf2A==
 
-"@sentry/cli-linux-arm@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-arm/-/cli-linux-arm-2.31.2.tgz#3e36ed7db09e922f00221281252e58dfd8755ea5"
-  integrity sha512-W8k5mGYYZz/I/OxZH65YAK7dCkQAl+wbuoASGOQjUy5VDgqH0QJ8kGJufXvFPM+f3ZQGcKAnVsZ6tFqZXETBAw==
+"@sentry/cli-linux-arm@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-arm/-/cli-linux-arm-2.32.0.tgz#f383d4f9276e60e8486efa2ca4aca54a18d3f866"
+  integrity sha512-mZy7/Bz7YgTZbgLk4ebKwkxfLS5/Fzperob2/pideU2Vm9PSqi0pEFMwcnjVC45BK5nSdO1NnfgEysCbVFScAw==
 
-"@sentry/cli-linux-i686@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-i686/-/cli-linux-i686-2.31.2.tgz#02b7da274369b78a5676c20bb26cc37caed5244b"
-  integrity sha512-A64QtzaPi3MYFpZ+Fwmi0mrSyXgeLJ0cWr4jdeTGrzNpeowSteKgd6tRKU+LVq0k5shKE7wdnHk+jXnoajulMA==
+"@sentry/cli-linux-i686@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-i686/-/cli-linux-i686-2.32.0.tgz#54894800f6b913025d39582bc1954443411a3ebf"
+  integrity sha512-jfB5OiKL/B5lQLIlNrXZMIeh+xIVJg/sWuqlFniIeiFTAXFecrwFzjV45IgNRzrJqcAwjmKZht5lY2EqmQgMrQ==
 
-"@sentry/cli-linux-x64@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-x64/-/cli-linux-x64-2.31.2.tgz#54f74a9e5925db9ddafebc0efd4056c5377be5fd"
-  integrity sha512-YL/r+15R4mOEiU3mzn7iFQOeFEUB6KxeKGTTrtpeOGynVUGIdq4nV5rHow5JDbIzOuBS3SpOmcIMluvo1NCh0g==
+"@sentry/cli-linux-x64@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-linux-x64/-/cli-linux-x64-2.32.0.tgz#efafcd5e63afa80730964d50baa2896a45e09898"
+  integrity sha512-Fxy6jDYacApqsqPCr9dgCGs/ihR2UW9M7XWmw+RQSEKOYP5c8+6mjs4RWMylmnHZQIrWePAQKAozqgznw0Ux2w==
 
-"@sentry/cli-win32-i686@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-win32-i686/-/cli-win32-i686-2.31.2.tgz#5dab845a824be0927566171aa05f015e887fe82d"
-  integrity sha512-Az/2bmW+TFI059RE0mSBIxTBcoShIclz7BDebmIoCkZ+retrwAzpmBnBCDAHow+Yi43utOow+3/4idGa2OxcLw==
+"@sentry/cli-win32-i686@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-win32-i686/-/cli-win32-i686-2.32.0.tgz#80371864a96bb4e9700e9032a1469d0a47d0fe93"
+  integrity sha512-fbjA35jcEWTMarX8LyUkTt6nSeehIeLvGWdRcBM/z6EPFr8gPQpYvceBJj5s37Yg0/IaVhWhKIs2mgwOQ52y+A==
 
-"@sentry/cli-win32-x64@2.31.2":
-  version "2.31.2"
-  resolved "https://registry.yarnpkg.com/@sentry/cli-win32-x64/-/cli-win32-x64-2.31.2.tgz#e12fec0a54f6d9cced5235fbc68ba8f94165634b"
-  integrity sha512-XIzyRnJu539NhpFa+JYkotzVwv3NrZ/4GfHB/JWA2zReRvsk39jJG8D5HOmm0B9JA63QQT7Dt39RW8g3lkmb6w==
+"@sentry/cli-win32-x64@2.32.0":
+  version "2.32.0"
+  resolved "https://registry.yarnpkg.com/@sentry/cli-win32-x64/-/cli-win32-x64-2.32.0.tgz#3e1c3dd83b647d7f43783582de1f5d4091f3828b"
+  integrity sha512-/zr63MKCid9qvrQvUsxBGiudekdNBuw9PR+zsb24tFCUjC67RGmTXNRwzIg4/esLSMQAIyq5p6xXTk1yLXLN9w==
 
 "@sentry/cli@^2.2.0":
-  version "2.31.2"
-  resolved "https://registry.npmjs.org/@sentry/cli/-/cli-2.31.2.tgz"
-  integrity sha512-2aKyUx6La2P+pplL8+2vO67qJ+c1C79KYWAyQBE0JIT5kvKK9JpwtdNoK1F0/2mRpwhhYPADCz3sVIRqmL8cQQ==
+  version "2.32.0"
+  resolved "https://registry.npmjs.org/@sentry/cli/-/cli-2.32.0.tgz"
+  integrity sha512-wcwxIpcRSGBNWJjMQscbYveuchU9XruyzYlsKl8iW6T2neXAuM13I4CaJCUnnXmIwvxjSbfaoLZXDsQ8vUXS2A==
   dependencies:
     https-proxy-agent "^5.0.0"
     node-fetch "^2.6.7"
@@ -1554,13 +1556,13 @@
     proxy-from-env "^1.1.0"
     which "^2.0.2"
   optionalDependencies:
-    "@sentry/cli-darwin" "2.31.2"
-    "@sentry/cli-linux-arm" "2.31.2"
-    "@sentry/cli-linux-arm64" "2.31.2"
-    "@sentry/cli-linux-i686" "2.31.2"
-    "@sentry/cli-linux-x64" "2.31.2"
-    "@sentry/cli-win32-i686" "2.31.2"
-    "@sentry/cli-win32-x64" "2.31.2"
+    "@sentry/cli-darwin" "2.32.0"
+    "@sentry/cli-linux-arm" "2.32.0"
+    "@sentry/cli-linux-arm64" "2.32.0"
+    "@sentry/cli-linux-i686" "2.32.0"
+    "@sentry/cli-linux-x64" "2.32.0"
+    "@sentry/cli-win32-i686" "2.32.0"
+    "@sentry/cli-win32-x64" "2.32.0"
 
 "@sentry/core@7.50.0":
   version "7.50.0"
@@ -3169,6 +3171,11 @@ data-view-byte-offset@^1.0.0:
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
 
+dayjs@^1.11.8:
+  version "1.11.11"
+  resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.11.tgz"
+  integrity sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==
+
 debug@4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz"
@@ -3796,7 +3803,7 @@ esrecurse@^4.3.0:
 
 estraverse@^4.1.1:
   version "4.3.0"
-  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.3.0.tgz#398ad3f3c5a24948be7725e83d11a7de28cdbd1d"
+  resolved "https://registry.npmjs.org/estraverse/-/estraverse-4.3.0.tgz"
   integrity sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==
 
 estraverse@^5.1.0, estraverse@^5.2.0, estraverse@^5.3.0:
@@ -5694,6 +5701,13 @@ react-moment-proptypes@^1.6.0:
   dependencies:
     moment ">=1.6.0"
 
+react-monaco-editor@^0.54.0:
+  version "0.54.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.54.0.tgz#ec9293249a991b08264be723c1ec0ca3a6d480d8"
+  integrity sha512-9JwO69851mfpuhYLHlKbae7omQWJ/2ICE2lbL0VHyNyZR8rCOH7440u+zAtDgiOMpLwmYdY1sEZCdRefywX6GQ==
+  dependencies:
+    prop-types "^15.8.1"
+
 react-monaco-editor@^0.55.0:
   version "0.55.0"
   resolved "https://registry.npmjs.org/react-monaco-editor/-/react-monaco-editor-0.55.0.tgz"
@@ -7131,9 +7145,9 @@ workbox-broadcast-update@7.1.0:
     workbox-core "7.1.0"
 
 workbox-build@^7.0.0:
-  version "7.1.0"
-  resolved "https://registry.npmjs.org/workbox-build/-/workbox-build-7.1.0.tgz"
-  integrity sha512-F6R94XAxjB2j4ETMkP1EXKfjECOtDmyvt0vz3BzgWJMI68TNSXIVNkgatwUKBlPGOfy9n2F/4voYRNAhEvPJNg==
+  version "7.1.1"
+  resolved "https://registry.npmjs.org/workbox-build/-/workbox-build-7.1.1.tgz"
+  integrity sha512-WdkVdC70VMpf5NBCtNbiwdSZeKVuhTEd5PV3mAwpTQCGAB5XbOny1P9egEgNdetv4srAMmMKjvBk4RD58LpooA==
   dependencies:
     "@apideck/better-ajv-errors" "^0.3.1"
     "@babel/core" "^7.24.4"
