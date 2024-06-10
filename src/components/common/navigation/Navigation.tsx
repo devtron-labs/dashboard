@@ -385,7 +385,7 @@ export default class Navigation extends Component<
         const showOrganizationName = !!window._env_.ORGANIZATION_NAME
 
         return (
-            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2' : ''}`}>
+            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2 py-2' : ''}`}>
                 <img
                     src={TextLogo}
                     alt="devtron"
