@@ -24,7 +24,7 @@ export async function getDeploymentTemplate(
     chartRefId: number,
     abortSignal: AbortSignal,
     isDefaultTemplate?: boolean,
-) {
+): Promise<ResponseType> {
     if (isDefaultTemplate) {
         return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
             signal: abortSignal,
