@@ -44,11 +44,10 @@ import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.sv
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideReleases = !importComponentFromFELibrary('Releases', null, 'function')
-const OrganizationFrame = importComponentFromFELibrary('OrganizationFrame', null, 'function')
-const OrganizationTextLogo = importComponentFromFELibrary('OrganizationTextLogo', null, 'function')
 
 const NavigationList = [
     {
@@ -365,7 +364,7 @@ export default class Navigation extends Component<
     }
 
     renderSidebarLogo = () => {
-        if (window._env_.ORGANIZATION_NAME && OrganizationFrame) {
+        if (window._env_.ORGANIZATION_NAME) {
             return <OrganizationFrame />
         }
 
@@ -383,10 +382,10 @@ export default class Navigation extends Component<
     }
 
     renderOrganizationTextLogo = () => {
-        const showOrganizationName = !!window._env_.ORGANIZATION_NAME && OrganizationTextLogo
+        const showOrganizationName = !!window._env_.ORGANIZATION_NAME
 
         return (
-            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col' : ''}`}>
+            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2' : ''}`}>
                 <img
                     src={TextLogo}
                     alt="devtron"

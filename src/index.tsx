@@ -146,7 +146,7 @@ if (!window || !window._env_) {
         ENABLE_GITOPS_BITBUCKET_SOURCE: false,
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
-        ORGANIZATION_NAME: '',
+        ORGANIZATION_NAME: 'Staging',
     }
 }
 
