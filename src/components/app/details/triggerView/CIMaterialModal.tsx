@@ -19,7 +19,7 @@ export const CIMaterialModal = ({
         return () => {
             abortController.abort()
         }
-    })
+    }, [])
 
     return (
         <VisibleModal className="" close={closeCIModal}>
