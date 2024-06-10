@@ -83,7 +83,7 @@ import {
     gitOpsRepoNotConfiguredWithEnforcedEnv,
     gitOpsRepoNotConfiguredWithOptionsHidden,
 } from '../gitOps/constants'
-import { NewCDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
+import { CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
@@ -92,7 +92,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'function',
 )
 
-export default function NewCDPipeline({
+export default function CDPipeline({
     match,
     location,
     appName,
@@ -105,7 +105,7 @@ export default function NewCDPipeline({
     isGitOpsRepoNotConfigured,
     reloadAppConfig,
     handleDisplayLoader,
-}: NewCDPipelineProps) {
+}: CDPipelineProps) {
     const isCdPipeline = true
     const urlParams = new URLSearchParams(location.search)
     const validationRules = new ValidationRules()
