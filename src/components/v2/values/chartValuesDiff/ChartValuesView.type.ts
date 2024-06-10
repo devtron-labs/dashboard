@@ -296,6 +296,10 @@ export interface ChartValuesViewState {
     showNoGitOpsWarning: boolean
     deploymentAppType: string
     gitRepoURL: string
+    initialChartVersionValues: {
+        chartVersion: number
+        chartValues: number
+    }
 }
 
 export enum ChartValuesViewActionTypes {
@@ -349,6 +353,7 @@ export enum ChartValuesViewActionTypes {
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
     setGitRepoURL = 'setGitRepoURL',
+    setInitialChartVersionValues = 'setInitialChartVersionValues',
 }
 
 export interface ChartValuesViewAction {

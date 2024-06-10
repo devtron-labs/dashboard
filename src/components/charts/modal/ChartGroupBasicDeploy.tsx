@@ -8,6 +8,8 @@ import { styles, smallMenuList, menuList, DropdownIndicator, renderAdditionalErr
 import { Option } from '../../v2/common/ReactSelect.utils'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
+import { Prompt } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -222,6 +224,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     >
                         Advanced Options
                     </button>
+                    <Prompt when={this.props.loading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
                 </div>
             </DialogForm>
