@@ -26,7 +26,6 @@ import {
 } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
-import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
@@ -90,16 +89,6 @@ const NavigationList = [
         markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
         hideNav: hideReleases,
-    },
-    {
-        title: 'Deployment Groups',
-        dataTestId: 'click-on-deployment-groups',
-        type: 'link',
-        iconClass: 'nav-short-bulk-actions',
-        icon: DeploymentGroupIcon,
-        href: URLS.DEPLOYMENT_GROUPS,
-        isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Resource Browser',

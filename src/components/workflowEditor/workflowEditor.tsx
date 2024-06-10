@@ -60,7 +60,7 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
-import NewCDPipeline from '../cdPipeline/NewCDPipeline'
+import CDPipeline from '../cdPipeline/CDPipeline'
 import EmptyWorkflow from './EmptyWorkflow'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './workflowEditor.constants'
 import WorkflowOptionsModal from './WorkflowOptionsModal'
@@ -555,7 +555,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )}
                         render={({ location, match }: { location: any; match: any }) => {
                             return (
-                                <NewCDPipeline
+                                <CDPipeline
                                     match={match}
                                     location={location}
                                     appName={this.state.appName}
