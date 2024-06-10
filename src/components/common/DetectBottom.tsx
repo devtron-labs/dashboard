@@ -17,6 +17,9 @@
 import React, { useEffect, useRef } from 'react'
 import { useIntersection } from './helpers/Helpers'
 
+/**
+ * @deprecated
+ */
 export default function DetectBottom({ callback }: { callback: () => void }) {
     const target = useRef<HTMLSpanElement>(null)
     const intersected = useIntersection(target, {

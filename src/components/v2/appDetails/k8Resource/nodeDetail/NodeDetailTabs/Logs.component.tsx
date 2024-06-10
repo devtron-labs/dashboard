@@ -771,6 +771,7 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
+                            height: isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 77px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
@@ -843,7 +844,7 @@ const LogsComponent = ({
                 )}
 
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length == 0 && (
-                <div className="no-pod no-pod--container ">
+                <div className="no-pod no-pod--container flex-grow-1">
                     <MessageUI
                         icon={MsgUIType.MULTI_CONTAINER}
                         msg={`${

@@ -15,9 +15,8 @@
  */
 
 import React from 'react'
-import IndexStore from '../index.store'
-import { StatusFilterButtonComponent } from './StatusFilterButton.component'
 import { Node } from '../appDetails.type'
+import {StatusFilterButtonComponent} from '@devtron-labs/devtron-fe-common-lib'
 
 export default function FilterResource({ nodes }: { nodes: Array<Node> }) {
     {

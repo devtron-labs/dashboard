@@ -19,11 +19,11 @@ import React from 'react'
 import { Route, Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import '@testing-library/jest-dom'
-import { aggregateNodes } from '../details/appDetails/utils'
 import { nodes, podMetadata } from '../details/appDetails/__mocks__/appDetails.mock'
 import { Nodes, NodeDetailTabs, AppDetails } from '../types'
 import { NodeManifestView, EventsView, parsePipes, getGrepTokens } from '../EventsLogs'
 import { act, render } from '@testing-library/react'
+import { aggregateNodes } from '@devtron-labs/devtron-fe-common-lib'
 
 function renderWithRouter(ui, { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {}) {
     return {

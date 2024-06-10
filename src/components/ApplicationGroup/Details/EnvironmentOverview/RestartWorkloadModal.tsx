@@ -61,6 +61,7 @@ export const RestartWorkloadModal = ({
     envId,
     hibernateInfoMap,
     httpProtocol,
+    isDeploymentBlockedViaWindow,
 }: RestartWorkloadModalProps) => {
     const [bulkRotatePodsMap, setBulkRotatePodsMap] = useState<Record<number, BulkRotatePodsMetaData>>({})
     const [expandedAppIds, setExpandedAppIds] = useState<number[]>([])
@@ -633,7 +634,7 @@ export const RestartWorkloadModal = ({
                 {renderHeaderSection()}
                 {renderBodySection()}
             </div>
-            {showResistanceBox && BulkDeployResistanceTippy && (
+            {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
                 <BulkDeployResistanceTippy
                     actionHandler={onSave}
                     handleOnClose={hideResistanceBox}

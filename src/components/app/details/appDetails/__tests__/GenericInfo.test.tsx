@@ -16,7 +16,6 @@
 
 //@ts-nocheck
 import React from 'react'
-import { aggregateNodes } from '../utils'
 import ResourceTreeNodes, {
     GenericInfo,
     NestedTable,
@@ -32,6 +31,7 @@ import { Nodes, AggregationKeys } from '../../../types'
 import { createMemoryHistory } from 'history'
 import '@testing-library/jest-dom'
 import { render, fireEvent, screen } from '@testing-library/react'
+import { aggregateNodes } from '@devtron-labs/devtron-fe-common-lib'
 
 describe('generic info testsuite', () => {
     let div, aggregatedNodes
