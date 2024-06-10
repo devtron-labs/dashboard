@@ -1015,7 +1015,7 @@ const ChartValuesView = ({
                 toast.error(SOME_ERROR_MSG)
             }
         } catch (err) {
-            if (err['code'] === 409 && !getIsRequestAborted(err)) {
+            if (err['code'] === 409) {
                 handleDrawerState(true)
                 toast.error('Some global configurations for GitOps has changed')
                 setStaleData(true)
@@ -1027,10 +1027,8 @@ const ChartValuesView = ({
             } else if (err['code'] === 400 && err['errors'] && err['errors'][0].code === '3900') {
                 setAllowedCustomBool(true)
                 handleDrawerState(true)
-            } else {
-                if (!getIsRequestAborted(err)) {
-                    showError(err)
-                }
+            } else if (!getIsRequestAborted(err)) {
+                showError(err)
             }
             dispatch({
                 type: ChartValuesViewActionTypes.isUpdateInProgress,

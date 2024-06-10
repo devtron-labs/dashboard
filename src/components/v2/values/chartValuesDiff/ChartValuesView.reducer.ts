@@ -178,9 +178,9 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
         case ChartValuesViewActionTypes.setGitRepoURL:
             return { ...state, gitRepoURL: action.payload }
         case ChartValuesViewActionTypes.setInitialChartVersionValues:
-            return { ...state, ...action.payload, initialChartVersionValues: {
+            return { ...state, initialChartVersionValues: {
                 ...state.initialChartVersionValues,
-                ...action.payload.initialChartVersionValues
+                ...action.payload,
             } }
         default:
             return state
