@@ -66,9 +66,9 @@ export const initState = (
         deploymentAppType: DeploymentAppTypes.HELM,
         gitRepoURL: '',
         initialChartVersionValues: {
-            chartVersion: selectedVersionFromParent,
-            chartValues: chartValuesFromParent?.id,
-        }
+            chartVersionId: selectedVersionFromParent,
+            chartValuesId: chartValuesFromParent?.id,
+        },
     }
 }
 
@@ -167,21 +167,20 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
         case ChartValuesViewActionTypes.formValidationError:
             return { ...state, formValidationError: action.payload }
         case ChartValuesViewActionTypes.multipleOptions:
-            return { ...state, ...action.payload, initialChartVersionValues: {
-                ...state.initialChartVersionValues,
-                ...action.payload.initialChartVersionValues
-            } }
+            return {
+                ...state,
+                ...action.payload,
+                initialChartVersionValues: {
+                    ...state.initialChartVersionValues,
+                    ...action.payload.initialChartVersionValues,
+                },
+            }
         case ChartValuesViewActionTypes.showNoGitOpsWarning:
             return { ...state, showNoGitOpsWarning: action.payload }
         case ChartValuesViewActionTypes.selectedDeploymentApp:
             return { ...state, deploymentAppType: action.payload }
         case ChartValuesViewActionTypes.setGitRepoURL:
             return { ...state, gitRepoURL: action.payload }
-        case ChartValuesViewActionTypes.setInitialChartVersionValues:
-            return { ...state, initialChartVersionValues: {
-                ...state.initialChartVersionValues,
-                ...action.payload,
-            } }
         default:
             return state
     }

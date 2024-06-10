@@ -1151,6 +1151,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return nd
     }
 
+    resetAbortController =() => {
+        this.abortCIBuild = new AbortController()
+    }
+
     renderCIMaterial = () => {
         if (this.state.ciNodeId) {
             const nd: CommonNodeAttr = this.getCINode()
@@ -1197,6 +1201,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             handleRuntimeParametersChange={this.handleRuntimeParametersChange}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
+                            resetAbortController={this.resetAbortController}
                         />
                     </Route>
                 </Switch>

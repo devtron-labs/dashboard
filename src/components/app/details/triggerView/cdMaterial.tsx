@@ -878,6 +878,10 @@ const CDMaterial = ({
         }
     }
 
+    const showErrorIfNotAborted = (errors: ServerErrors) => {
+        if (!getIsRequestAborted(errors)) showError(errors)
+    }
+
     const handleDeployment = (
         nodeType: DeploymentNodeType,
         _appId: number,
@@ -911,7 +915,7 @@ const CDMaterial = ({
                     // TODO: Ask why this was only there in TriggerView
                     isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
                         ? handleTriggerErrorMessageForHelmManifestPush(errors, pipelineId, envId)
-                        : !getIsRequestAborted(errors) && showError(errors)
+                        : showErrorIfNotAborted(errors)
                     setDeploymentLoading(false)
                 })
         } else {

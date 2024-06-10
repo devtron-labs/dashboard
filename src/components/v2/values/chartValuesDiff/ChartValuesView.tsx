@@ -121,7 +121,7 @@ import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog
 import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
-import { AUTO_GENERATE_GITOPS_REPO } from './constant'
+import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -147,7 +147,7 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
-    const chartValuesAbortRef = useRef<AbortController>(null)
+    const chartValuesAbortRef = useRef<AbortController>(new AbortController)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -185,14 +185,16 @@ const ChartValuesView = ({
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
-    const isPresetValueView = isCreateValueView && !!chartValueId && chartValueId === '0'
-    const isUpdateAppView = !isCreateValueView && !isDeployChartView && !isExternalApp
+    const isPresetValueView = isCreateValueView && !!chartValueId && chartValueId === CHART_VALUE_ID.ZERO // Create a new preset value view
+    const isUpdateAppView = !isCreateValueView && !isDeployChartView && !isExternalApp // update and deploy helm app view
 
+    // Current values of chart version id and chart values id, used to compare dirty state with initial values
     const currentChartVersionValues = {
-        chartVersion: commonState.selectedVersion,
-        chartValues: commonState.chartValues?.id,
+        chartVersionId: commonState.selectedVersion,
+        chartValuesId: commonState.chartValues?.id,
     }
 
+    // detects changes in chart version and chart values from initial mount
     const isChartValueVersionUpdated = !deepEqual(currentChartVersionValues, commonState.initialChartVersionValues)
 
     const isCreateValueFormDirty = isPresetValueView && (!!valueName || isChartValueVersionUpdated)
@@ -313,8 +315,8 @@ const ChartValuesView = ({
                                 chartValues: _chartValues,
                                 modifiedValuesYaml: _valuesYaml,
                                 initialChartVersionValues: {
-                                    chartVersion: _chartVersionData.id,
-                                    chartValues: _chartValues.id,
+                                    chartVersionId: _chartVersionData.id,
+                                    chartValuesId: _chartValues.id,
                                 },
                             },
                         })
@@ -361,7 +363,7 @@ const ChartValuesView = ({
                         kind: ChartKind.DEPLOYED,
                     },
                     initialChartVersionValues: {
-                        chartValues: appDetails.appStoreInstalledAppVersionId,
+                        chartValuesId: appDetails.appStoreInstalledAppVersionId,
                     },
                 },
             })
@@ -587,7 +589,7 @@ const ChartValuesView = ({
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                     initialChartVersionValues: {
-                        chartValues: _installedAppInfo.installedAppVersionId,
+                        chartValuesId: _installedAppInfo.installedAppVersionId,
                     },
                 },
             })

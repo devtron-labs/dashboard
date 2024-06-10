@@ -10,6 +10,7 @@ export const CIMaterialModal = ({
     closeCIModal,
     isLoading,
     abortController,
+    resetAbortController,
     ...props
 }: CIMaterialModalProps) => {
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
@@ -18,6 +19,7 @@ export const CIMaterialModal = ({
     useEffect(() => {
         return () => {
             abortController.abort()
+            resetAbortController()
         }
     }, [])
 

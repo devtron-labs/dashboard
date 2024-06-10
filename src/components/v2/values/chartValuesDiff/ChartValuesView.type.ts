@@ -297,8 +297,8 @@ export interface ChartValuesViewState {
     deploymentAppType: string
     gitRepoURL: string
     initialChartVersionValues: {
-        chartVersion: number
-        chartValues: number
+        chartVersionId: number
+        chartValuesId: number
     }
 }
 

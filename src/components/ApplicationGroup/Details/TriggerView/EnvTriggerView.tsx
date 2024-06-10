@@ -1060,7 +1060,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             .catch((errors: ServerErrors) => {
-                if (!getIsRequestAborted(errors)) showError(errors)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                }
 
                 setCDLoading(false)
 
@@ -1885,6 +1887,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
+    const resetAbortController = () => {
+        abortCIBuildRef.current = new AbortController()
+    }
+
     const renderCIMaterial = (): JSX.Element | null => {
         let nd: CommonNodeAttr
         let _appID
@@ -1957,6 +1963,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             handleRuntimeParametersChange={handleRuntimeParametersChange}
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
+                            resetAbortController={resetAbortController}
                         />
                     </Route>
                 </Switch>
