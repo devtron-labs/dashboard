@@ -33,3 +33,14 @@ export const getProviderNameFromEnum = (provider: GitProvider, enableBitBucketSo
             return 'Other GitOps'
     }
 }
+
+export const getGitOpsLabelText = (providerTab: GitProvider): string => {
+    switch (providerTab) {
+        case GitProvider.AZURE_DEVOPS:
+            return 'Azure DevOps Organization Url'
+        case GitProvider.BITBUCKET_CLOUD:
+            return 'Bitbucket Host'
+        default:
+            return 'Git Host'
+    }
+}

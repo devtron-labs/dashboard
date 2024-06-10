@@ -46,28 +46,33 @@ export interface CustomGitOpsState {
     }
 }
 
-export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username'> {
+export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType
     host: string
-    token: string
     active: boolean
     gitLabGroupId: string
     gitHubOrgId: string
     azureProjectName: string
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
+    allowCustomRepository?: boolean
 }
 
-export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey'> {
+export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
     host: string
-    username: string
-    token: string
     gitHubOrgId: string
     gitLabGroupId: string
     azureProjectName: string
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
+}
+
+export interface GitOpsFormErrorType extends Omit<DefaultShortGitOpsType, 'authMode'> {}
+
+interface BitBucketDCDataStoreType {
+    [GitOpsAuthModeType.PASSWORD]: Pick<BaseGitOpsType, 'username' | 'token'>
+    [GitOpsAuthModeType.SSH_AND_PASSWORD]: Pick<BaseGitOpsType, 'username' | 'sshKey' | 'token'>
 }
 
 export interface GitOpsState {
@@ -107,7 +112,7 @@ export interface GitOpsState {
     /**
      * Error states for input fields
      */
-    isError: DefaultShortGitOpsType
+    isError: GitOpsFormErrorType
     validatedTime: string
     validationError: GitOpsConfig[]
     // TODO: Should be VALIDATION_STATUS, but can't change as of now due to service default to '', connect with @vivek
@@ -126,6 +131,11 @@ export interface GitOpsState {
      * To show update confirmation dialog, in case of updating git provider details
      */
     showUpdateConfirmationDialog: boolean
+    /**
+     * Initial value of authMode for BitBucketDC and if fresh setup, then set that as PASSWORD
+     */
+    initialBitBucketDCAuthMode: GitOpsAuthModeType
+    bitBucketDCDataStore: BitBucketDCDataStoreType
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> {
@@ -144,11 +154,6 @@ export interface UserGitRepoProps {
     selectedRepoType: string
     staleData?: boolean
     authMode: GitOpsAuthModeType
-}
-
-export interface BitbucketCloudAndServerToggleSectionPropsType {
-    isBitbucketCloud: boolean
-    setIsBitbucketCloud: (value: boolean) => void
 }
 
 export interface GitProviderTabProps {
