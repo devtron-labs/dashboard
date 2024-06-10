@@ -27,7 +27,7 @@ import {
     DeploymentWithConfigType,
     History,
     noop,
-    ApiQueuingBatchStatusType,
+    PromiseAllStatusType,
     ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
@@ -357,7 +357,7 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
                 // Adding for legacy code since have move API Queueing to generics with unknown as default response
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.apps[0]
                         }
                         const response = {

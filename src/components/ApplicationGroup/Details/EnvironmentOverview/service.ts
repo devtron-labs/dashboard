@@ -21,7 +21,7 @@ import {
     post,
     ResponseType,
     ApiQueuingWithBatch,
-    ApiQueuingBatchStatusType,
+    PromiseAllStatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
 import { Routes } from '../../../../config'
@@ -62,7 +62,7 @@ export const manageApps = async (
             .then((results: any[]) => {
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.response[0]
                         }
                         const response = {
