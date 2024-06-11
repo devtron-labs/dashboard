@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
-    getLoginInfo,
+    useUserEmail,
     showError,
     Host,
     Reload,
@@ -18,7 +34,6 @@ import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
-import GitCommitInfoGeneric from '../GitCommitInfoGeneric'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -48,11 +63,10 @@ const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
-const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
+const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
-const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
@@ -71,6 +85,7 @@ export default function NavigationRoutes() {
         serverInfo: undefined,
         fetchingServerInfo: false,
     })
+    const { email } = useUserEmail()
     const [isHelpGettingStartedClicked, setHelpGettingStartedClicked] = useState(false)
     const [loginCount, setLoginCount] = useState(0)
     const [isSuperAdmin, setSuperAdmin] = useState(false)
@@ -153,24 +168,21 @@ export default function NavigationRoutes() {
     }
 
     useEffect(() => {
-        const loginInfo = getLoginInfo()
-
-        if (!loginInfo) {
+        if (!email) {
             return
         }
 
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email: loginInfo['email'] || loginInfo['sub'] })
+                    scope.setUser({ email, })
                 })
             }
             if (window._env_.GA_ENABLED) {
-                const email = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
                 const path = location.pathname
                 ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                     gaOptions: {
-                        userId: `${email}`,
+                        userId: email,
                     },
                 })
                 ReactGA.send({ hitType: 'pageview', page: path })
@@ -211,7 +223,7 @@ export default function NavigationRoutes() {
                 })
                 .catch((errors) => {})
         }
-    }, [])
+    }, [email])
 
     async function getServerMode() {
         try {
@@ -265,7 +277,7 @@ export default function NavigationRoutes() {
             try {
                 const parsedTabsData = JSON.parse(persistedTabs)
                 if (
-                    location.pathname !== parsedTabsData.key &&
+                    location.pathname === parsedTabsData.key ||
                     !location.pathname.startsWith(`${parsedTabsData.key}/`)
                 ) {
                     localStorage.removeItem('persisted-tabs-data')
@@ -366,10 +378,8 @@ export default function NavigationRoutes() {
                         >
                             <ErrorBoundary>
                                 <Switch>
-                                    <Route
-                                        path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
-                                    >
-                                        <ResourceBrowserContainer />
+                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
+                                        <ResourceBrowser />
                                     </Route>
                                     <Route
                                         path={URLS.GLOBAL_CONFIG}
@@ -396,11 +406,6 @@ export default function NavigationRoutes() {
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
                                         />,
                                         <Route
-                                            key={URLS.DEPLOYMENT_GROUPS}
-                                            path={URLS.DEPLOYMENT_GROUPS}
-                                            render={(props) => <BulkActions {...props} />}
-                                        />,
-                                        <Route
                                             key={URLS.BULK_EDITS}
                                             path={URLS.BULK_EDITS}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
@@ -410,7 +415,7 @@ export default function NavigationRoutes() {
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
-                                        ...(ResourceWatcherRouter
+                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
                                                   <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
                                                       <ResourceWatcherRouter />
@@ -422,7 +427,6 @@ export default function NavigationRoutes() {
                                                   <Route key={URLS.RELEASES} path={URLS.RELEASES}>
                                                       <ImageSelectionUtilityProvider
                                                           value={{
-                                                              gitCommitInfoGeneric: GitCommitInfoGeneric,
                                                               getModuleInfo,
                                                           }}
                                                       >

@@ -486,6 +486,11 @@ a:focus {
     grid-column-gap: 16px;
 }
 
+.dc__grid-row-one-half {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
 // ClassName of text area
 .dc__code-textarea {
     min-width: 100%;
@@ -2329,6 +2334,10 @@ button.anchor {
     max-width: 90px;
 }
 
+.dc__mxw-100 {
+    max-width: 100px;
+}
+
 .dc__mxw-120 {
     max-width: 120px;
 }
@@ -4022,6 +4031,13 @@ textarea::placeholder {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     word-break: break-all;
+}
+
+.dc__truncate--clamp-6 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
 }
 
 // opacity

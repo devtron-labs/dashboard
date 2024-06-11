@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -309,7 +325,7 @@ export const NODE_SEARCH_TEXT = {
     LABEL: 'label',
     LABELS: 'labels',
     NODE_GROUP: 'nodeGroup',
-}
+} as const
 
 export const clusterImageSelect = {
     ...clusterSelectStyle,
@@ -327,9 +343,9 @@ export const clusterImageSelect = {
 }
 
 export const SEARCH_OPTION_LABEL = {
-    NAME: 'name',
-    LABEL: 'label',
-    NODE_GROUP: 'nodeGroup',
+    NAME: NODE_SEARCH_TEXT.NAME,
+    LABEL: NODE_SEARCH_TEXT.LABEL,
+    NODE_GROUP: NODE_SEARCH_TEXT.NODE_GROUP,
     NODE_GROUP_TEXT: 'node group',
 }
 

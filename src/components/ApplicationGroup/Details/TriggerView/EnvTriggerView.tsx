@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useRef } from 'react'
 import { Prompt, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
@@ -100,7 +116,6 @@ import {
     processWorkflowStatuses,
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
@@ -913,7 +928,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
         } else {
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
+            // If the current state is pending, then we should change the state to pending
+            const approvalState =
+                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                    ? TRIGGER_VIEW_PARAMS.PENDING
+                    : TRIGGER_VIEW_PARAMS.APPROVAL
+
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
         }
@@ -1036,9 +1058,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             ciPipelineMaterials,
             invalidateCache,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams && !node.isJobCI
-                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
-                : {}),
+            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
         }
 
         triggerCINode(payload)
@@ -1641,9 +1661,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-                ...(getRuntimeParams && !node.isJobCI
-                    ? { runtimeParams: runtimeParamsValidationResponse?.validParams }
-                    : {}),
+                ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse?.validParams } : {}),
             }
             _CITriggerPromiseFunctionList.push(() => triggerCINode(payload))
         })
@@ -2139,7 +2157,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}

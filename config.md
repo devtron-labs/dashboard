@@ -29,8 +29,9 @@
 | GLOBAL_API_TIMEOUT                  |  60000  | Default timeout for all API requests in DASHBOARD  |
 | TRIGGER_API_TIMEOUT                 |  60000  | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD  |
 | LOGIN_DT_LOGO                      | ""         | Devtron logo for login page     |
-| SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar        |
+| SIDEBAR_DT_LOGO                    | ""         | Devtron logo for sidebar (would work if ORGANIZATION_NAME is not given)       |
 | SERVICE_WORKER_TIMEOUT                    | "1"         | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle       |
 | ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
 | ENABLE_RESOURCE_SCAN_V2            | true      | Enable image scan for resources (v2)          |
+| ORGANIZATION_NAME                      | ""         | Name of the organization     |
 # DASHBOARD CONFIG SECRET
