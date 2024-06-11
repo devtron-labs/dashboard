@@ -188,6 +188,7 @@
     </script>
     <script>
         let title_el = document.querySelector('title')
+        if (window._env_?.ORGANIZATION_NAME) title_el.innerHTML = window._env_.ORGANIZATION_NAME
         if (window.location.origin === 'https://preview.devtron.ai') title_el.innerHTML = 'Devtron Sandbox'
     </script>
 </html>

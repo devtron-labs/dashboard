@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
-import { UseUserEmailContextType } from '@devtron-labs/devtron-fe-common-lib'
+import React from 'react'
 
-export interface SSOConfig {
-    id: number
-    name: string
-    label: string
-    active: boolean
-}
+const OrganizationTextLogo = () => (
+    <span className="cn-0 fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
+        {window._env_.ORGANIZATION_NAME}
+    </span>
+)
 
-export interface LoginFormState {
-    continueUrl: string
-    loginList: SSOConfig[]
-    form: {
-        username: string
-        password: string
-    }
-    loading: boolean
-}
-
-export interface LoginProps extends RouteComponentProps<{}> {
-    setEmail: UseUserEmailContextType['setEmail']
-}
+export default OrganizationTextLogo

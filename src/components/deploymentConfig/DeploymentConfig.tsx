@@ -1033,6 +1033,8 @@ export default function DeploymentConfig({
                         lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                         hideLockKeysToggled={hideLockKeysToggled}
                         inValidYaml={state.unableToParseYaml}
+                        appId={appId}
+                        envId={-1}
                     />
                     {renderValuesView()}
                     {state.showConfirmation && (
@@ -1054,6 +1056,8 @@ export default function DeploymentConfig({
                             lockedOverride={lockedOverride}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}
                             setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                            appId={appId}
+                            envId={-1}
                         />
                     )}
                     {SaveChangesModal && state.showSaveChangesModal && (

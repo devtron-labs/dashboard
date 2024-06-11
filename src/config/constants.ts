@@ -93,11 +93,6 @@ export const Routes = {
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
 
-    DEPLOYMENT_GROUP_LIST: 'deployment-group/dg/fetch/all',
-    DEPLOYMENT_GROUP_DEPLOY: 'deployment-group/release/trigger',
-    DEPLOYMENT_GROUP_MATERIAL: 'deployment-group/dg/material',
-    DEPLOYMENT_GROUP_DELETE: 'deployment-group/dg/delete',
-    LINKED_CI_PIPELINES: 'deployment-group/dg/fetch/ci',
     LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
     HOST_URL: 'attributes',
@@ -910,3 +905,8 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  * Value for select all identifier
  */
 export const SELECT_ALL_VALUE = '*'
+
+export const SwitchItemValues = {
+    Sample: 'sample',
+    Configuration: 'configuration',
+}

@@ -22,11 +22,6 @@ export const AUTHORIZATION_CONFIG_TYPES = {
     GROUP_CLAIMS: 'group-claims',
 } as const
 
-export const SwitchItemValues = {
-    Sample: 'sample',
-    Configuration: 'configuration',
-}
-
 export enum SSOProvider {
     google = 'google',
     github = 'github',

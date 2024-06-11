@@ -106,9 +106,6 @@ const ResourceList = () => {
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
 
-    /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
-    const dynamicActiveTab = tabs.find((tab) => tab.position === Number.MAX_SAFE_INTEGER && tab.isSelected)
-
     const getDynamicTabData = () => {
         const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
         const isNodeTypeNode = nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
@@ -123,6 +120,12 @@ const ResourceList = () => {
             position: Number.MAX_SAFE_INTEGER,
         }
     }
+
+    /* NOTE: dynamic tabs must have position as Number.MAX_SAFE_INTEGER */
+    const dynamicActiveTab = tabs.find((tab) => {
+        const { idPrefix, kind, name } = getDynamicTabData()
+        return tab.position === Number.MAX_SAFE_INTEGER && tab.id === getTabId(idPrefix, name, kind)
+    })
 
     const initTabsBasedOnRole = (reInit: boolean) => {
         /* NOTE: selectedCluster is not in useEffect dep list since it arrives with isSuperAdmin (Promise.all) */
