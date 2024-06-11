@@ -255,7 +255,7 @@ export interface ChartGroupPermissionsFilter extends Omit<RoleFilter, 'action'>,
 export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     entity: EntityTypes
     cluster: OptionType
-    namespace: OptionType
+    namespace: OptionType[]
     group: OptionType
     action: OptionType
     kind: OptionType

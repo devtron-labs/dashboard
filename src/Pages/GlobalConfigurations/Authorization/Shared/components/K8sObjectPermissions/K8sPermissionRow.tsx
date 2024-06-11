@@ -70,7 +70,7 @@ const K8sPermissionRow = ({
                 {kind.label}
             </span>
             <span data-testid={`k8s-permission-list-${index}-namespace`} className="dc__truncate-text">
-                {namespace.label}
+                {namespace.map((el) => el.label).join(',')}
             </span>
             <span data-testid={`k8s-permission-list-${index}-resource`} className="dc__truncate-text">
                 {resource.length > 1 ? `${resource.length} objects` : resource[0].label}
