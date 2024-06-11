@@ -108,7 +108,6 @@ import {
     processWorkflowStatuses,
 } from '../../AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
@@ -2142,7 +2141,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     appId={_appID}
                     pipelineId={selectedCDNode?.id}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node?.connectingCiPipelineId}
                     configs={isConfigPresent}
                     isDefaultConfigPresent={isDefaultConfigPresent}

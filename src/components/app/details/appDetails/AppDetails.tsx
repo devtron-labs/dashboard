@@ -28,6 +28,8 @@ import {
     useAsync,
     MODAL_TYPE,
     ACTION_STATE,
+    processDeploymentStatusDetailsData,
+    aggregateNodes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -65,10 +67,8 @@ import { ReactComponent as ForwardArrow } from '../../../../assets/icons/ic-arro
 import { SourceInfo } from './SourceInfo'
 import { Application, Nodes, AggregatedNodes, NodeDetailTabs } from '../../types'
 import {
-    aggregateNodes,
     getSelectedNodeItems,
     getPodNameSuffix,
-    processDeploymentStatusDetailsData,
     ValueContainer,
     NoParamsNoEnvContext,
     NoParamsWithEnvContext,

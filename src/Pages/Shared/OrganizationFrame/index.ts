@@ -14,24 +14,5 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react'
-import { useIntersection } from './helpers/Helpers'
-
-/**
- * @deprecated
- */
-export default function DetectBottom({ callback }: { callback: () => void }) {
-    const target = useRef<HTMLSpanElement>(null)
-    const intersected = useIntersection(target, {
-        rootMargin: '0px',
-        once: false,
-    })
-
-    useEffect(() => {
-        if (intersected) {
-            callback()
-        }
-    }, [intersected])
-
-    return <span className="pb-5" ref={target} />
-}
+export { default as OrganizationFrame } from './OrganizationFrame.component'
+export { default as OrganizationTextLogo } from './OrganizationTextLogo'

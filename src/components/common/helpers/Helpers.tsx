@@ -20,7 +20,6 @@ import {
     useThrottledEffect,
     OptionType,
     DeploymentAppTypes,
-    getLoginInfo,
     APIOptions,
     useWindowSize,
     APPROVAL_MODAL_TYPE,
@@ -167,6 +166,9 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
     return { state, disable, handleOnChange, handleOnSubmit }
 }
 
+/**
+ * @deprecated
+ */
 export function mapByKey<T = Map<any, any>>(arr: any[], id: string): T {
     if (!Array.isArray(arr)) {
         console.error(arr, 'is not array')
@@ -281,6 +283,9 @@ export const useIntersection = (
     return intersecting
 }
 
+/**
+ * @deprecated
+ */
 export function useInterval(callback, delay) {
     const savedCallback = useRef(null)
     // Remember the latest callback.
@@ -300,6 +305,9 @@ export function useInterval(callback, delay) {
     }, [delay])
 }
 
+/**
+ * @deprecated
+ */
 export function shallowEqual(objA, objB) {
     if (objA === objB) {
         return true
@@ -395,6 +403,9 @@ interface scrollableInterface {
     autoBottomScroll: boolean
 }
 
+/**
+ * @deprecated
+ */
 export function useScrollable(options: scrollableInterface) {
     const targetRef = useRef(null)
     const raf_id = useRef(0)
@@ -497,6 +508,9 @@ export function useScrollable(options: scrollableInterface) {
     return [target, topScrollable ? scrollToTop : null, bottomScrollable ? scrollToBottom : null]
 }
 
+/**
+ * @deprecated
+ */
 export function useKeyDown() {
     const [keys, setKeys] = useState([])
     useEffect(() => {
@@ -527,6 +541,9 @@ export function useKeyDown() {
     return keys
 }
 
+/**
+ * @deprecated
+ */
 function useDelayedEffect(callback, delay, deps = []) {
     const timeoutRef = useRef(null)
     useEffect(() => {
@@ -728,6 +745,9 @@ export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string)
     return arr.sort((a, b) => a[compareKey].localeCompare(b[compareKey]))
 }
 
+/**
+ * @deprecated
+ */
 export function asyncWrap(promise): any[] {
     return promise.then((result) => [null, result]).catch((err) => [err])
 }
@@ -1174,12 +1194,11 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-export const hasApproverAccess = (approverList: string[]): boolean => {
-    const loginInfo = getLoginInfo()
+export const hasApproverAccess = (email: string, approverList: string[]): boolean => {
     let hasAccess = false
     if (approverList?.length > 0) {
         for (const approver of approverList) {
-            if (approver === loginInfo['email'] || approver === loginInfo['sub']) {
+            if (approver === email) {
                 hasAccess = true
                 break
             }

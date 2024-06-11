@@ -765,6 +765,8 @@ export default function DeploymentTemplateOverrideForm({
                 hideLockedKeys={hideLockedKeys}
                 hideLockKeysToggled={hideLockKeysToggled}
                 inValidYaml={state.unableToParseYaml}
+                appId={appId}
+                envId={envId}
             />
             {state.selectedTabIndex !== 2 && !state.showReadme && renderOverrideInfoStrip()}
             {renderValuesView()}
@@ -808,6 +810,8 @@ export default function DeploymentTemplateOverrideForm({
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
                     setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
+                    appId={appId}
+                    envId={envId}
                 />
             )}
         </DeploymentConfigContext.Provider>

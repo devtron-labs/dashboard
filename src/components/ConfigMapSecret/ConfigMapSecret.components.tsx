@@ -25,13 +25,16 @@ import {
     YAMLStringify,
     noop,
     showError,
+    useUserEmail,
+    DeploymentHistoryDiffView,
+    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { followCursor } from 'tippy.js'
-import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, PATTERNS } from '../../config'
+import { PATTERNS } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '../../assets/icons/ic-shield-protect-fill.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
@@ -53,7 +56,6 @@ import {
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { CM_SECRET_STATE } from './Constants'
 import { hasApproverAccess, importComponentFromFELibrary } from '../common'
-import DeploymentHistoryDiffView from '../app/details/cdDetails/deploymentHistoryDiff/DeploymentHistoryDiffView'
 import { DeploymentHistoryDetail } from '../app/details/cdDetails/cd.type'
 import { prepareHistoryData } from '../app/details/cdDetails/service'
 import './ConfigMapSecret.scss'
@@ -479,6 +481,7 @@ export function ProtectedConfigMapSecretDetails({
     const [isLoader, setLoader] = useState<boolean>(false)
     const [baseData, setBaseData] = useState(null)
     const [abortController, setAbortController] = useState(new AbortController())
+    const { email } = useUserEmail()
 
     const getBaseData = async () => {
         try {
@@ -616,7 +619,7 @@ export function ProtectedConfigMapSecretDetails({
         if (draftData.draftState !== 4 || !ApproveRequestTippy) {
             return null
         }
-        const hasAccess = hasApproverAccess(draftData.approvers)
+        const hasAccess = hasApproverAccess(email, draftData.approvers)
         return (
             <div
                 className={`flex right pr-16 pb-16 pl-16 dc__position-rel ${

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { AppDetails } from '../../v2/appDetails/appDetails.type'
+import React from 'react'
 
-export interface ErrorBarType {
-    appDetails: AppDetails
-}
+const OrganizationTextLogo = () => (
+    <span className="cn-0 fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
+        {window._env_.ORGANIZATION_NAME}
+    </span>
+)
+
+export default OrganizationTextLogo

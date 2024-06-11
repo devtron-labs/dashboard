@@ -21,7 +21,7 @@ import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropd
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
 import { useSharedState } from '../../../utils/useSharedState'
-import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type'
+import { AggregationKeys, getAggregator, NodeType, iNode, iNodes, NodeStatus } from '../../appDetails.type'
 import { URLS } from '../../../../../config'
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg'
 
