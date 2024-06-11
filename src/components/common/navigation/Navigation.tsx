@@ -17,7 +17,6 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -27,7 +26,6 @@ import {
 } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
-import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
@@ -45,6 +43,7 @@ import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.sv
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideReleases = !importComponentFromFELibrary('Releases', null, 'function')
@@ -90,16 +89,6 @@ const NavigationList = [
         markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
         hideNav: hideReleases,
-    },
-    {
-        title: 'Deployment Groups',
-        dataTestId: 'click-on-deployment-groups',
-        type: 'link',
-        iconClass: 'nav-short-bulk-actions',
-        icon: DeploymentGroupIcon,
-        href: URLS.DEPLOYMENT_GROUPS,
-        isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
         title: 'Resource Browser',
@@ -182,7 +171,6 @@ interface NavigationType extends RouteComponentProps<{}> {
 export default class Navigation extends Component<
     NavigationType,
     {
-        loginInfo: any
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
@@ -195,7 +183,6 @@ export default class Navigation extends Component<
     constructor(props) {
         super(props)
         this.state = {
-            loginInfo: getLoginInfo(),
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,
@@ -365,6 +352,39 @@ export default class Navigation extends Component<
         }
     }
 
+    renderSidebarLogo = () => {
+        if (window._env_.ORGANIZATION_NAME) {
+            return <OrganizationFrame />
+        }
+
+        if (window._env_.SIDEBAR_DT_LOGO) {
+            return (
+                <img src={window._env_.SIDEBAR_DT_LOGO} alt="devtron" className="icon-dim-40" width={40} height={40} />
+            )
+        }
+
+        return (
+            <svg className="devtron-logo" data-testid="click-on-devtron-app-logo" viewBox="0 0 40 40">
+                <use href={`${NavSprite}#nav-short-devtron-logo`} />
+            </svg>
+        )
+    }
+
+    renderOrganizationTextLogo = () => {
+        const showOrganizationName = !!window._env_.ORGANIZATION_NAME
+
+        return (
+            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2 py-2' : ''}`}>
+                <img
+                    src={TextLogo}
+                    alt="devtron"
+                    className={`devtron-logo devtron-logo--text ${showOrganizationName ? 'h-20' : ''}`}
+                />
+                {showOrganizationName && <OrganizationTextLogo />}
+            </div>
+        )
+    }
+
     render() {
         return (
             <>
@@ -380,26 +400,8 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                {window._env_.SIDEBAR_DT_LOGO ? (
-                                    <img
-                                        src={window._env_.SIDEBAR_DT_LOGO}
-                                        alt="devtron"
-                                        className="icon-dim-40"
-                                        width={40}
-                                        height={40}
-                                    />
-                                ) : (
-                                    <svg
-                                        className="devtron-logo"
-                                        data-testid="click-on-devtron-app-logo"
-                                        viewBox="0 0 40 40"
-                                    >
-                                        <use href={`${NavSprite}#nav-short-devtron-logo`} />
-                                    </svg>
-                                )}
-                                <div className="pl-12">
-                                    <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
-                                </div>
+                                {this.renderSidebarLogo()}
+                                {this.renderOrganizationTextLogo()}
                             </div>
                         </NavLink>
                         {NavigationList.map((item) => {

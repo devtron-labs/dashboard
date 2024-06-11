@@ -15,10 +15,8 @@
  */
 
 import React, { Component } from 'react'
-import Tippy from '@tippyjs/react'
-import branch from '../../../assets/icons/misc/branch.svg'
-import { CiPipelineSourceConfig } from '../../ciPipeline/CiPipelineSourceConfig'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
+import { CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface StaticNodeProps {
     x: number

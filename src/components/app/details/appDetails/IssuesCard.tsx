@@ -23,6 +23,7 @@ import {
     ResponseType,
     ServerErrors,
     ForceDeleteDialog,
+    renderErrorHeaderMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
@@ -31,11 +32,9 @@ import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from './app
 import { ClusterConnectionResponse, ErrorItem, IssuesCardType } from './appDetails.type'
 import { TOAST_INFO } from '../../../../config/constantMessaging'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
-import { renderErrorHeaderMessage } from '../../../common/error/error.utils'
 import LoadingCard from './LoadingCard'
 
 const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {

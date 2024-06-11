@@ -17,13 +17,11 @@
 import React, { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
-import { DeploymentAppTypes, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, DeploymentNodeType, triggerStatus, statusColor, statusIcon } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
-import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
-import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,

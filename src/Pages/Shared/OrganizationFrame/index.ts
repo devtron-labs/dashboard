@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export = index;
-declare const index: any;
+export { default as OrganizationFrame } from './OrganizationFrame.component'
+export { default as OrganizationTextLogo } from './OrganizationTextLogo'

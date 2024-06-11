@@ -25,6 +25,7 @@ import {
     DetailsProgressing,
     DeploymentAppTypes,
     YAMLStringify,
+    DeploymentDetailSteps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -53,9 +54,9 @@ import {
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
+import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -500,6 +501,8 @@ const ChartDeploymentHistory = ({
                         }
                         installedAppVersionHistoryId={deployment.version}
                         isVirtualEnvironment={isVirtualEnvironment}
+                        renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                        processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     />
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (

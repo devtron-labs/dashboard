@@ -259,8 +259,8 @@ export function stopStartApp(AppId, EnvironmentId, RequestType) {
     return post(`app/stop-start-app`, { AppId, EnvironmentId, RequestType })
 }
 
-export function validateToken() {
-    return get(`devtron/auth/verify`, { preventAutoLogout: true })
+export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {
+    return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
 function getLastExecution(queryString: number | string): Promise<ResponseType> {

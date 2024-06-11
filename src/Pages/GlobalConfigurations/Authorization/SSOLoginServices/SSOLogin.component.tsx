@@ -39,7 +39,7 @@ import yamlJsParser from 'yaml'
 import CodeEditor from '../../../../components/CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, DOCUMENTATION, URLS } from '../../../../config'
+import { ViewType, DOCUMENTATION, URLS, SwitchItemValues } from '../../../../config'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -67,7 +67,6 @@ import { ReactComponent as Warn } from '../../../../assets/icons/ic-info-warn.sv
 import {
     AUTHORIZATION_CONFIG_TYPES,
     SSOProvider,
-    SwitchItemValues,
     autoAssignPermissionsFlowActiveProviders,
     ssoDocumentationMap,
     ssoProviderToDisplayNameMap,

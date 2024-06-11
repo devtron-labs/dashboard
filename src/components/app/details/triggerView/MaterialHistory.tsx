@@ -15,7 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { GitCommitInfoGeneric } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../../../config'
 
 export interface WebhookData {

@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-import { test, expect } from '@playwright/test';
+import React from 'react'
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+const OrganizationTextLogo = () => (
+    <span className="cn-0 fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
+        {window._env_.ORGANIZATION_NAME}
+    </span>
+)
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
-
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects the URL to contain intro.
-  await expect(page).toHaveURL(/.*intro/);
-});
+export default OrganizationTextLogo
