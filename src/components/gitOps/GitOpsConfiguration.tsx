@@ -44,7 +44,6 @@ import {
 import { handleOnFocus, importComponentFromFELibrary, parsePassword } from '../common'
 import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
-import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
 import {
     updateGitOpsConfiguration,
     saveGitOpsConfiguration,
