@@ -459,7 +459,7 @@ export interface HibernateResponseRowType {
 }
 
 export interface BaseModalProps {
-    selectedAppIds: number[]
+    selectedAppDetailsList: AppInfoListType[]
     appDetailsList: AppGroupListType['apps']
     envName: string
     envId: string
@@ -503,7 +503,7 @@ export interface ManageAppsResponse {
 }
 
 export interface RestartWorkloadModalProps {
-    selectedAppIds: number[]
+    selectedAppDetailsList: AppInfoListType[]
     envName: string
     envId: string
     restartLoader: boolean
