@@ -549,6 +549,7 @@ export default function DeploymentConfig({
         }
         try {
             // Unset unableToParseYaml flag when yaml is successfully parsed
+            const _ = YAML.parse(str)
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: false,
