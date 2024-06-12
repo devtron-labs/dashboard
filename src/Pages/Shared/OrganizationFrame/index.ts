@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export interface FilterEmptyStateProps {
-    /**
-     * Click handler for clearing the applied filters
-     */
-    clearFilters: () => void
-}
+export { default as OrganizationFrame } from './OrganizationFrame.component'
+export { default as OrganizationTextLogo } from './OrganizationTextLogo'

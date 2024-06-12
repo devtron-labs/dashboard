@@ -63,7 +63,6 @@ const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
 const V2Details = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
-const BulkActions = lazy(() => import('../../deploymentGroups/BulkActions'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
 const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide'))
@@ -73,7 +72,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const Releases = importComponentFromFELibrary('Releases', null, 'function')
+const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -407,11 +406,6 @@ export default function NavigationRoutes() {
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
                                         />,
                                         <Route
-                                            key={URLS.DEPLOYMENT_GROUPS}
-                                            path={URLS.DEPLOYMENT_GROUPS}
-                                            render={(props) => <BulkActions {...props} />}
-                                        />,
-                                        <Route
                                             key={URLS.BULK_EDITS}
                                             path={URLS.BULK_EDITS}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
@@ -428,19 +422,23 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_RELEASES && Releases
+                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
-                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                  <Route
+                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                  >
                                                       <ImageSelectionUtilityProvider
                                                           value={{
                                                               getModuleInfo,
                                                           }}
                                                       >
-                                                          <Releases />
+                                                          <SoftwareDistributionHub />
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []),
+                                            : []
+                                        ),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

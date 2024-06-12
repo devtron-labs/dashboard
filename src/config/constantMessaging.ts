@@ -205,11 +205,6 @@ export const DEPLOYMENT_HISTORY_TAB = {
     ARTIFACTS: 'Artifacts',
 }
 
-export const CONFIGMAPS_SECRETS = {
-    configmaps: 'configmaps',
-    secrets: 'secrets',
-}
-
 export const API_COMPONENTS = {
     TITLE: 'API tokens ',
     QUESTION_ICON_INFO:
@@ -341,16 +336,6 @@ export const EMPTY_STATE_STATUS = {
         SUBTITLE: 'Please wait while the kubeconfig is verified and cluster details are fetched.',
     },
 
-    NO_MATCHING_RESULT: {
-        TITLE: 'No matching results',
-        SUBTITLE: "We couldn't find any matching cluster",
-    },
-
-    CLUSTER_NODE_EMPTY_STATE: {
-        TITLE: 'No matching clusters',
-        SUBTITLE: 'We couldn’t find any matching results',
-    },
-
     CHART_EMPTY_STATE: {
         TITLE: 'No matching charts',
         SUBTITLE: "We couldn't find any matching results",
@@ -405,7 +390,6 @@ export const EMPTY_STATE_STATUS = {
 
     EXTERNAL_LINK_COMPONENT: {
         TITLE: 'Add external links',
-        SUBTITLE: "We couldn't find any matching external link configuration",
     },
     CD_MATERIAL: {
         TITLE: 'No Image Available',

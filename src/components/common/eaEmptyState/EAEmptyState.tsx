@@ -24,7 +24,6 @@ import { NavLink } from 'react-router-dom'
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
     SECURITY = 'security',
-    DEPLOYMENTGROUPS = 'deployment_groups',
     BULKEDIT = 'bulk_edit',
 }
 
@@ -40,11 +39,8 @@ export default function EAEmptyState({ title, msg, stateType, knowMoreLink, head
     const getImage = () => {
         switch (stateType) {
             case EAEmptyStateType.DEVTRONAPPS:
-                return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
             case EAEmptyStateType.BULKEDIT:
                 return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
-            case EAEmptyStateType.DEPLOYMENTGROUPS:
-                return <img src={appDetailEmpty} alt="no apps found" width="800" />
             case EAEmptyStateType.SECURITY:
                 return <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
             default:

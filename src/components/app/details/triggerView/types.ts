@@ -593,6 +593,9 @@ export interface PrePostDeployStageType {
 }
 
 // Remove this and use from fe-common
+/**
+ * @deprecated
+ */
 export interface CdPipeline {
     id: number
     environmentId: number

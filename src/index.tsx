@@ -116,6 +116,7 @@ if (!window || !window._env_) {
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        // Remove this in next sprint, have'nt removed yet for backward compatibility
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
@@ -146,6 +147,7 @@ if (!window || !window._env_) {
         ENABLE_GITOPS_BITBUCKET_SOURCE: false,
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
+        ORGANIZATION_NAME: '',
     }
 }
 

@@ -68,7 +68,6 @@ export const URLS = {
     APP_JOB_CI_CONFIG: 'ci-job',
     AUTHENTICATE: '/auth/login',
     BULK_EDITS: '/bulk-edits',
-    DEPLOYMENT_GROUPS: '/deployment-groups',
     LINKED_CD: 'linked-cd',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
@@ -117,7 +116,7 @@ export const URLS = {
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
-    RELEASES: '/releases',
+    SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
 }
 
 export enum APP_COMPOSE_STAGE {

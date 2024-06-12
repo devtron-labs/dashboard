@@ -30,6 +30,7 @@ import {
     useAsync,
     CustomInput,
     noop,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -38,7 +39,6 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { useForm, CustomPassword, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
@@ -1043,11 +1043,7 @@ export default function ClusterForm({
 
     const NoMatchingResults = (): JSX.Element => {
         return (
-            <GenericEmptyState
-                image={NoResults}
-                title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-                subTitle={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.SUBTITLE}
-            />
+            <GenericFilterEmptyState />
         )
     }
 
