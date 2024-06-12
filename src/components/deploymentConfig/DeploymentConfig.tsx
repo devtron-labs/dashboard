@@ -26,6 +26,8 @@ import {
     getUnlockedJSON,
     useMainContext,
     YAMLStringify,
+    ModuleNameMap,
+    ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
@@ -50,8 +52,6 @@ import {
 } from './types'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType, handleConfigProtectionError } from './DeploymentConfig.utils'
 import DeploymentConfigFormCTA from './DeploymentTemplateView/DeploymentConfigFormCTA'
 import DeploymentTemplateEditorView from './DeploymentTemplateView/DeploymentTemplateEditorView'

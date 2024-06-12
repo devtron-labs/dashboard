@@ -16,8 +16,15 @@
 
 import React, { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router'
-import YAML from 'yaml'
-import { showError, Progressing, useAsync, useMainContext, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    useAsync,
+    useMainContext,
+    YAMLStringify,
+    ModuleNameMap,
+    ModuleStatus,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from './service'
 import { getOptions } from '../deploymentConfig/service'
 import { importComponentFromFELibrary } from '../common'
@@ -29,8 +36,7 @@ import {
 } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../config'
-import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
