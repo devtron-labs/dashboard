@@ -677,7 +677,7 @@ const DockerForm = ({
 
         if (!customState.repositoryList.value.length) {
             errorMessage = 'Registry List is required'
-            setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, error: errorMessage } }))
+            setCustomState({ ...customState, repositoryList: { ...customState.repositoryList, error: errorMessage } })
         }
 
         return !!errorMessage
@@ -1460,14 +1460,14 @@ const DockerForm = ({
      * @param value value to set in the repository list state.
      */
     const setRepoListValue = (value: string) => {
-        setCustomState((prev) => ({
-            ...prev,
+        setCustomState({
+            ...customState,
             repositoryList: {
                 error: '',
                 inputValue: '',
-                value: [...prev.repositoryList.value, { label: value.trim(), value: value.trim() }],
+                value: [...customState.repositoryList.value, { label: value.trim(), value: value.trim() }],
             },
-        }))
+        })
     }
 
     /**
@@ -1475,7 +1475,7 @@ const DockerForm = ({
      * @param value value of the creatable select.
      */
     const handleCreatableChange = (value: OptionType[]) => {
-        setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, value } }))
+        setCustomState({ ...customState, repositoryList: { ...customState.repositoryList, value } })
     }
 
     /**
@@ -1483,10 +1483,10 @@ const DockerForm = ({
      * @param inputValue inputValue tof the creatable select.
      */
     const handleCreatableInputChange = (inputValue: string) => {
-        setCustomState((prev) => ({
-            ...prev,
-            repositoryList: { ...prev.repositoryList, inputValue },
-        }))
+        setCustomState({
+            ...customState,
+            repositoryList: { ...customState.repositoryList, inputValue },
+        })
     }
 
     /**
@@ -1530,7 +1530,7 @@ const DockerForm = ({
                         isMulti
                         isClearable
                         autoFocus
-                        value={customState.repositoryList?.value}
+                        value={customState.repositoryList.value}
                         inputValue={customState.repositoryList.inputValue}
                         tabIndex={3}
                         menuIsOpen={false}
