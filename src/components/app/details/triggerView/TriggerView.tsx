@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import {
     ServerErrors,
@@ -71,7 +87,6 @@ import {
     processConsequenceData,
     processWorkflowStatuses,
 } from '../../../ApplicationGroup/AppGroup.utils'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
@@ -677,7 +692,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                       getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
                   )
                 : { result: null },
-            getRuntimeParams && !this.props.isJobView ? getRuntimeParams(ciNodeId) : null,
+            getRuntimeParams?.(ciNodeId) ?? null,
         ])
             .then((resp) => {
                 // For updateCIMaterialList, it's already being set inside the same function so not setting that
@@ -753,7 +768,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (!isApprovalNode) {
             newParams.set('node-type', nodeType)
         } else {
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL)
+            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
+            const approvalState =
+                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
+                    ? TRIGGER_VIEW_PARAMS.PENDING
+                    : TRIGGER_VIEW_PARAMS.APPROVAL
+
+            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
             newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
             newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
         }
@@ -874,9 +895,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams && !node.isJobCI && !this.props.isJobView
-                ? { runtimeParams: runtimeParamsValidationResponse.validParams }
-                : {}),
+            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
         }
 
         this.abortCIBuild = new AbortController()
@@ -1290,7 +1309,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     appId={Number(this.props.match.params.appId)}
                     pipelineId={this.state.cdNodeId}
                     getModuleInfo={getModuleInfo}
-                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                     ciPipelineId={node.connectingCiPipelineId}
                     history={this.props.history}
                 />
@@ -1422,7 +1440,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         basePath={this.props.match.path}
                         baseURL={this.props.match.url}
                         workflows={this.state.workflows}
-                        gitCommitInfoGeneric={GitCommitInfoGeneric}
                         getModuleInfo={getModuleInfo}
                     />
                 )}

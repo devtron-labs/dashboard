@@ -80,7 +80,6 @@
     }
 }
 .log-viewer-container {
-    height: 100%;
     width: 100%;
     align-items: flex-start;
     position: relative;
@@ -176,7 +175,6 @@
 
 .manifest-tabs-row {
     height: 32px;
-    border-top: 1px solid var(--N200);
 }
 
 .edit-icon {

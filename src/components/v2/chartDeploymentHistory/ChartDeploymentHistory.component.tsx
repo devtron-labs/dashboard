@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react'
 import {
     showError,
@@ -8,6 +24,7 @@ import {
     DetailsProgressing,
     DeploymentAppTypes,
     YAMLStringify,
+    DeploymentDetailSteps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -35,10 +52,10 @@ import {
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
+import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -483,6 +500,8 @@ const ChartDeploymentHistory = ({
                         }
                         installedAppVersionHistoryId={deployment.version}
                         isVirtualEnvironment={isVirtualEnvironment}
+                        renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                        processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     />
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
