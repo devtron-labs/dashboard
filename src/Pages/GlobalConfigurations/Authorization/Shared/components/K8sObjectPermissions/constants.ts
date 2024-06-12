@@ -47,12 +47,16 @@ export const resourceSelectStyles = {
         ...authorizationSelectStyles.control(base, state),
         height: 'auto',
         minHeight: '36px',
+        maxHeight: '300px',
     }),
     valueContainer: (base) => ({
         ...authorizationSelectStyles.valueContainer(base),
         display: 'flex',
         columnGap: '8px',
         rowGap: '4px',
+        overflow: 'scroll',
+        maxHeight: '290px',
+        padding: '4px',
     }),
     multiValue: (base) => ({
         ...base,
