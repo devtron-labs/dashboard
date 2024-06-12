@@ -1456,16 +1456,21 @@ const DockerForm = ({
 
     // CREATABLE METHODS
     /**
-     * Sets the provided value in the repository list state.
-     * @param value value to set in the repository list state.
+     * Sets the input value of creatable select as repository list value.
      */
-    const setRepoListValue = (value: string) => {
+    const setRepoListValue = () => {
+        const { inputValue, value } = customState.repositoryList
+
+        if (!inputValue.trim()) {
+            return
+        }
+
         setCustomState({
             ...customState,
             repositoryList: {
                 error: '',
                 inputValue: '',
-                value: [...customState.repositoryList.value, { label: value.trim(), value: value.trim() }],
+                value: [...value, { label: inputValue.trim(), value: inputValue.trim() }],
             },
         })
     }
@@ -1483,39 +1488,24 @@ const DockerForm = ({
      * @param inputValue inputValue tof the creatable select.
      */
     const handleCreatableInputChange = (inputValue: string) => {
-        setCustomState({
-            ...customState,
-            repositoryList: { ...customState.repositoryList, inputValue },
-        })
+        setCustomState((prev) => ({
+            ...prev,
+            repositoryList: { ...prev.repositoryList, inputValue },
+        }))
     }
 
     /**
      * Handles the key down event of the creatable select.
      */
     const handleCreatableKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
-        if (!customState.repositoryList.inputValue) {
-            return
-        }
-
         switch (event.key) {
             case 'Enter':
             case 'Tab':
             case ' ': // Space
             case ',':
-                setRepoListValue(customState.repositoryList.inputValue)
+                setRepoListValue()
                 event.preventDefault()
         }
-    }
-
-    /**
-     * Handles the blur event of the creatable select.
-     */
-    const handleCreatableBlur: FocusEventHandler<HTMLInputElement> = (e) => {
-        const { inputValue } = customState.repositoryList
-        if (!inputValue.trim()) {
-            return
-        }
-        setRepoListValue(e.target.value)
     }
 
     const renderRepositoryList = () => {
@@ -1538,7 +1528,7 @@ const DockerForm = ({
                         components={creatableComponents}
                         onChange={handleCreatableChange}
                         onInputChange={handleCreatableInputChange}
-                        onBlur={handleCreatableBlur}
+                        onBlur={setRepoListValue}
                         onKeyDown={handleCreatableKeyDown}
                         placeholder="Enter repository name and press enter"
                     />
