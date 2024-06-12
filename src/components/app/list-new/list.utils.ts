@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AppListConstants, URLS } from '../../../config'
+import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../../config'
 
 export const buildDevtronAppListUrl = (): string => {
     return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}`
@@ -28,12 +29,19 @@ export const buildArgoAppListUrl = (): string => {
     return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
 }
 
-export const getCurrentTabName = (appType: string, isExternalArgo: boolean): string => {
+export const buildFluxAppListUrl = (): string => {
+    return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_FLUX}`
+}
+
+export const getCurrentTabName = (appType: string): string => {
     if (appType === AppListConstants.AppType.DEVTRON_APPS) {
         return AppListConstants.AppTabs.DEVTRON_APPS
     }
-    if (isExternalArgo) {
+    if (appType === AppListConstants.AppType.ARGO_APPS) {
         return AppListConstants.AppTabs.ARGO_APPS
+    }
+    if (appType === AppListConstants.AppType.FLUX_APPS) {
+        return AppListConstants.AppTabs.FLUX_APPS
     }
     return AppListConstants.AppTabs.HELM_APPS
 }
@@ -45,5 +53,8 @@ export const getChangeAppTabURL = (appTabType) => {
     if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
         return buildArgoAppListUrl()
     }
-    return buildHelmAppListUrl()
+    if (appTabType === AppListConstants.AppTabs.HELM_APPS) {
+        return buildHelmAppListUrl()
+    }
+    return buildFluxAppListUrl()
 }

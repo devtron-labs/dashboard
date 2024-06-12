@@ -36,6 +36,7 @@ export const URLS = {
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',
     APP_LIST_ARGO: 'a',
+    APP_LIST_FLUX: 'f',
     APPS: '/devtron-apps', // for V2 router
     HELM_CHARTS: 'helm-apps', // for V2 router
     APP_VALUES: 'values', // for V2 router

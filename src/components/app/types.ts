@@ -631,8 +631,8 @@ export interface ExternalArgoListType {
     updateDataSyncing
     setShowPulsatingDotState
     masterFilters
-    syncListData
     isArgoInstalled: boolean
+    appType,
 }
 export interface EditDescRequest {
     id: number

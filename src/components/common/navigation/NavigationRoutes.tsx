@@ -26,6 +26,7 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -33,7 +34,7 @@ import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
-import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,

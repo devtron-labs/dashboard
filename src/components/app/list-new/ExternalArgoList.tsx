@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -22,6 +22,7 @@ import {
     ServerErrors,
     GenericEmptyState,
     AppStatus,
+    AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -43,7 +44,8 @@ import {
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
+import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
+import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import { ExternalArgoListType } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
@@ -57,12 +59,12 @@ export default function ExternalArgoList({
     updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
-    syncListData,
     isArgoInstalled,
+    appType,
 }: ExternalArgoListType) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [argoAppsList, setArgoAppsList] = useState<ArgoAppListResult[]>([])
+    const [appsList, setAppsList] = useState<ArgoAppListResult[]>([])
     const [filteredArgoAppsList, setFilteredArgoAppsList] = useState<ArgoAppListResult[]>([])
     const [sortBy, setSortBy] = useState(SortBy.APP_NAME)
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
@@ -93,15 +95,15 @@ export default function ExternalArgoList({
         if (dataStateType == AppListViewType.LIST) {
             handleFilteration()
         }
-    }, [argoAppsList])
+    }, [appsList])
 
     useEffect(() => {
         // fetch external apps list
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
-        getArgoInstalledExternalApps(clusterIdsCsv, appStatus)
-            .then((argoAppsListResponse) => {
-                setArgoAppsList(argoAppsListResponse.result)
+        getArgoInstalledExternalApps(clusterIdsCsv, appType)
+            .then((appsListResponse) => {
+                setAppsList(appsListResponse.result)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -113,12 +115,12 @@ export default function ExternalArgoList({
                 setFetchingExternalAppsState(false)
                 setDataStateType(AppListViewType.LIST)
             })
-    }, [clusterIdsCsv])
+    }, [clusterIdsCsv, appType])
 
     // reset data
     function init() {
         setDataStateType(AppListViewType.LOADING)
-        setArgoAppsList([])
+        setAppsList([])
         setFilteredArgoAppsList([])
         setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
         setAppStatus(_getAppStatusFromRequestUrl() ?? '')
@@ -137,7 +139,7 @@ export default function ExternalArgoList({
         const _search = payloadParsedFromUrl.appNameSearch
         const _sortBy = payloadParsedFromUrl.sortBy
         const _sortOrder = payloadParsedFromUrl.sortOrder
-        let _filteredArgoAppsList = [...(argoAppsList || [])]
+        let _filteredArgoAppsList = [...(appsList || [])]
 
         // handle search
         if (_search?.length) {
@@ -194,16 +196,12 @@ export default function ExternalArgoList({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header">
+            <div className="app-list__header dc__position-sticky dc__top-47">
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
                         {APP_LIST_HEADERS.AppName}
-                        {sortBy == SortBy.APP_NAME ? (
-                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`} />
-                        ) : (
-                            <span className="sort-col dc__opacity-0_5 ml-4" />
-                        )}
+                        <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                     </button>
                 </div>
                 {isArgoInstalled && (
@@ -230,13 +228,18 @@ export default function ExternalArgoList({
         )
     }
 
+    const renderArgoOrFluxIcon = () => {
+        if (appType === AppListConstants.AppType.ARGO_APPS) return ArgoCDAppIcon
+        return FluxCDAppIcon
+    }
+
     const renderArgoListRow = (app: ArgoAppListResult): JSX.Element => {
         return (
             <Link to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
-                        src={DevtronAppIcon}
+                        src={renderArgoOrFluxIcon()}
                         onError={handleImageError}
                     />
                 </div>
@@ -377,7 +380,7 @@ export default function ExternalArgoList({
         params.set('pageSize', size.toString())
         params.set('offset', '0')
         params.set('hOffset', '0')
-        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}?${params.toString()}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${appType}?${params.toString()}`)
     }
 
     function changePage(pageNo: number): void {
@@ -385,7 +388,7 @@ export default function ExternalArgoList({
 
         params.set('hOffset', newOffset.toString())
 
-        history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}?${params.toString()}`)
+        history.push(`${URLS.APP}/${URLS.APP_LIST}/${appType}?${params.toString()}`)
     }
 
     function renderPagination(): JSX.Element {

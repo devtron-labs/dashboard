@@ -20,6 +20,7 @@ import {
     EnvironmentHelmResult,
     getNamespaceListMin as getNamespaceList,
     EnvironmentListHelmResponse,
+    AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppFilters } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
@@ -205,13 +206,10 @@ export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?:
     return get(url)
 }
 
-export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appStatuses?: string) => {
-    let url = Routes.ARGO_APPS
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appType: string) => {
+    let url = appType === AppListConstants.AppType.ARGO_APPS ? Routes.ARGO_APPS : Routes.FLUX_APPS
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
-    }
-    if (appStatuses) {
-        url = `${url}${clusterIdsCsv ? '&' : '?'}appStatuses=${appStatuses}`
     }
     return get(url)
 }

@@ -89,6 +89,12 @@ const EnvironmentSelectorComponent = ({
         }
     }, [params.appId])
 
+    const getDeployedUsing = () => {
+        if (isGitops) return DeploymentAppTypeNameMapping.GitOps
+        else if (isExternalArgoApp) return DeploymentAppTypeNameMapping.ArgoCD
+        return DeploymentAppTypeNameMapping.Helm
+    }
+
     useEffect(() => {
         if (!params.envId && appDetails.environmentId) {
             handleEnvironmentChange(appDetails.environmentId)
@@ -268,7 +274,7 @@ const EnvironmentSelectorComponent = ({
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
+                                    {isExternalArgoApp ? `${appDetails.clusterName}__${appDetails.namespace}` : appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
                                 </div>
                             )}
                         </div>
@@ -279,9 +285,7 @@ const EnvironmentSelectorComponent = ({
                             arrow={false}
                             disabled={isVirtualEnvironment}
                             placement="top"
-                            content={`Deployed using ${
-                                isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-                            }`}
+                            content={`Deployed using ${getDeployedUsing()}`}
                         >
                             <div className="flex">
                                 <DeploymentTypeIcon
