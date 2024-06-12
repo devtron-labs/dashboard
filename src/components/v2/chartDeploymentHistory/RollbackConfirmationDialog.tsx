@@ -4,7 +4,7 @@ import { Prompt } from 'react-router-dom'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
-export interface RollbackConfirmationDialogProps {
+interface RollbackConfirmationDialogProps {
     deploying: boolean
     rollbackDialogTitle: string
     setShowRollbackConfirmation: React.Dispatch<React.SetStateAction<boolean>>

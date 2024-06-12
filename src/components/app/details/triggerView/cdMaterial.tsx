@@ -231,7 +231,7 @@ const CDMaterial = ({
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
 
-    usePrompt({shouldPrompt: deploymentLoading})
+    usePrompt({ shouldPrompt: deploymentLoading })
 
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
@@ -396,7 +396,6 @@ const CDMaterial = ({
                 updateBulkCDMaterialsItem?.(materialsResult)
             }
         }
-
     }, [materialsResult, loadingMaterials])
 
     useEffect(() => {
@@ -895,7 +894,9 @@ const CDMaterial = ({
     }
 
     const showErrorIfNotAborted = (errors: ServerErrors) => {
-        if (!getIsRequestAborted(errors)) showError(errors)
+        if (!getIsRequestAborted(errors)) {
+            showError(errors)
+        }
     }
 
     const handleDeployment = (
@@ -910,7 +911,15 @@ const CDMaterial = ({
         setDeploymentLoading(true)
 
         if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId, abortDeployRef.current.signal)
+            triggerCDNode(
+                pipelineId,
+                ciArtifactId,
+                _appId.toString(),
+                nodeType,
+                deploymentWithConfig,
+                wfrId,
+                abortDeployRef.current.signal,
+            )
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&

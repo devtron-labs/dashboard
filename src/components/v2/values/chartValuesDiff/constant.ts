@@ -24,5 +24,5 @@ export const GITOPS_REPO_REQUIRED_FOR_ENV = 'GitOps repository is required to de
 export const AUTO_GENERATE_GITOPS_REPO = 'Default'
 
 export enum CHART_VALUE_ID {
-    ZERO = '0',
+    CREATE_CHART_VALUE_VIEW = '0',
 }

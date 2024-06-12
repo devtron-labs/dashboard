@@ -163,7 +163,7 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
-    const chartValuesAbortRef = useRef<AbortController>(new AbortController)
+    const chartValuesAbortRef = useRef<AbortController>(new AbortController())
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
     const [valueName, setValueName] = useState('')
@@ -201,7 +201,8 @@ const ChartValuesView = ({
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
 
-    const isPresetValueView = isCreateValueView && !!chartValueId && chartValueId === CHART_VALUE_ID.ZERO // Create a new preset value view
+    const isPresetValueView =
+        isCreateValueView && !!chartValueId && chartValueId === CHART_VALUE_ID.CREATE_CHART_VALUE_VIEW // Create a new preset value view
     const isUpdateAppView = !isCreateValueView && !isDeployChartView && !isExternalApp // update and deploy helm app view
 
     // Current values of chart version id and chart values id, used to compare dirty state with initial values
