@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { FocusEventHandler, KeyboardEventHandler, useEffect, useMemo, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -38,10 +38,14 @@ import {
     CustomInput,
     noop,
     InfoIconTippy,
+    ClearIndicator,
+    MultiValueRemove,
+    MultiValueChipContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
@@ -84,11 +88,11 @@ import {
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as ErrorInfo } from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { creatableSelectStyles } from './creatableStyles'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
@@ -431,8 +435,9 @@ const DockerForm = ({
             error: '',
         },
         repositoryList: {
-            value: repositoryList.join(', ') || '',
+            value: repositoryList.map((item) => ({ label: item, value: item })) || [],
             error: '',
+            inputValue: '',
         },
         remoteConnectionConfig: {
             connectionMethod: { value: remoteConnectionMethod, error: '' },
@@ -457,16 +462,6 @@ const DockerForm = ({
             { error: 'Minimum 3 and Maximum 30 characters required', regex: /^.{3,30}$/ },
         ],
         registryUrl: [{ error: "Registry URL is required; Do not use 'spaces'", regex: /^(?=.*).+$/ }],
-        repositoryList: [
-            { error: 'Registry List is required', regex: /^(?=.*).+$/ },
-            {
-                error: "Do not use 'spaces' or ',' at the start or at the end; new lines are not allowed",
-                regex: /^(?!.*[\s,]$)(?!^[\s,]).*?(?<!\s)$/,
-            },
-            { error: "Use only one 'space' after ','", regex: /^(?!.*,\s{2,}).*/ },
-            { error: "Consecutive ',' are not allowed", regex: /^(?!.*,{2,}).*/ },
-            { error: "Repository name cannot be empty and must be separated by ','", regex: /^(?!.*,\s+,).*/ },
-        ],
         proxyUrl: [
             {
                 error: 'Please provide a valid URL. URL must start with http:// or https://',
@@ -669,8 +664,15 @@ const DockerForm = ({
         }
     }
 
-    const handleRepositoryListChange = (e) => {
-        updateWithCustomStateValidation('repositoryList', e.target.value)
+    const handleRepositoryListError = () => {
+        let errorMessage = ''
+
+        if (!customState.repositoryList.value.length) {
+            errorMessage = 'Registry List is required'
+            setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, error: errorMessage } }))
+        }
+
+        return !!errorMessage
     }
 
     const onECRAuthTypeChange = (e) => {
@@ -760,7 +762,7 @@ const DockerForm = ({
                 (registryStorageType === RegistryStorageType.OCI_PUBLIC ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
-                    ? customState.repositoryList?.value.trim().replace(', ', ',').split(',') || []
+                    ? customState.repositoryList?.value.map((item) => item.value) || []
                     : null,
             registryUrl: customState.registryUrl.value
                 ?.trim()
@@ -1022,7 +1024,7 @@ const DockerForm = ({
         // Default validation for OCI registries
         if (selectedDockerRegistryType.value !== RegistryType.GCR) {
             if (showHelmPull || registryStorageType === RegistryStorageType.OCI_PUBLIC) {
-                if (updateWithCustomStateValidation('repositoryList', customState.repositoryList.value)) {
+                if (handleRepositoryListError()) {
                     return false
                 }
             }
@@ -1444,6 +1446,59 @@ const DockerForm = ({
         return renderRegistryCredentialsAutoInjectToClustersComponent()
     }
 
+    const CreatableComponents = useMemo(
+        () => ({
+            DropdownIndicator: null,
+            ClearIndicator,
+            MultiValueRemove,
+            MultiValueContainer: (props) => <MultiValueChipContainer {...props} />,
+        }),
+        [],
+    )
+
+    const handleCreatableKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+        if (!customState.repositoryList.inputValue) {
+            return
+        }
+
+        switch (event.key) {
+            case 'Enter':
+            case 'Tab':
+            case ' ': // Space
+            case ',':
+                setCustomState((prev) => ({
+                    ...prev,
+                    repositoryList: {
+                        error: '',
+                        inputValue: '',
+                        value: [
+                            ...prev.repositoryList.value,
+                            {
+                                label: customState.repositoryList.inputValue,
+                                value: customState.repositoryList.inputValue,
+                            },
+                        ],
+                    },
+                }))
+                event.preventDefault()
+        }
+    }
+
+    const handleCreatableBlur: FocusEventHandler<HTMLInputElement> = (e) => {
+        const { value, inputValue } = customState.repositoryList
+        if (!inputValue.trim()) {
+            return
+        }
+        setCustomState((prev) => ({
+            ...prev,
+            repositoryList: {
+                inputValue: '',
+                value: [...value, { label: e.target.value, value: e.target.value }],
+                error: '',
+            },
+        }))
+    }
+
     const renderRepositoryList = () => {
         if (selectedDockerRegistryType.value === RegistryType.GCR) {
             return
@@ -1452,15 +1507,28 @@ const DockerForm = ({
             <>
                 <div className="mb-12">
                     <div className="dc__required-field fs-13 cn-9 mb-6">List of repositories</div>
-                    <textarea
-                        className="form__textarea"
-                        name="repositoryList"
+                    <CreatableSelect
+                        isMulti
+                        isClearable
                         autoFocus
                         value={customState.repositoryList?.value}
-                        autoComplete="off"
+                        inputValue={customState.repositoryList.inputValue}
                         tabIndex={3}
-                        onChange={handleRepositoryListChange}
-                        placeholder="Enter repository names separated by comma (eg. prometheus, nginx)"
+                        menuIsOpen={false}
+                        styles={creatableSelectStyles}
+                        components={CreatableComponents}
+                        onChange={(value) => {
+                            setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, value } }))
+                        }}
+                        onInputChange={(inputValue) => {
+                            setCustomState((prev) => ({
+                                ...prev,
+                                repositoryList: { ...prev.repositoryList, inputValue },
+                            }))
+                        }}
+                        onBlur={handleCreatableBlur}
+                        onKeyDown={handleCreatableKeyDown}
+                        placeholder="Enter repository name and press enter"
                     />
                     {repositoryError.length > 0 && (
                         <div className="error-label flex left dc__align-start fs-11 fw-4 mt-6">
