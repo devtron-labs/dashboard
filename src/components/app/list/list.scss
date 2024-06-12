@@ -94,6 +94,10 @@
     padding-left: 20px;
     background: white;
     z-index: var(--app-list-header-index);
+
+    &--fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(3, 150px) ;
+    }
 }
 
 
@@ -119,6 +123,10 @@
     cursor: pointer;
     background-color: white;
     border-bottom: 1px solid var(--N100);
+
+    &--fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(3, 150px) ;
+    }
 }
 
 .app-list__cell {

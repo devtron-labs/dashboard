@@ -207,7 +207,8 @@ export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?:
 }
 
 export const getArgoInstalledExternalApps = (clusterIdsCsv: string, appType: string) => {
-    let url = appType === AppListConstants.AppType.ARGO_APPS ? Routes.ARGO_APPS : Routes.FLUX_APPS
+    // let url = appType === AppListConstants.AppType.ARGO_APPS ? Routes.ARGO_APPS : Routes.FLUX_APPS
+    let url = Routes.ARGO_APPS
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
     }

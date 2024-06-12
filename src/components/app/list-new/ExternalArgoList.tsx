@@ -66,13 +66,15 @@ export default function ExternalArgoList({
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<ArgoAppListResult[]>([])
     const [filteredArgoAppsList, setFilteredArgoAppsList] = useState<ArgoAppListResult[]>([])
-    const [sortBy, setSortBy] = useState(SortBy.APP_NAME)
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
     const [appStatus, setAppStatus] = useState('')
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
+
+    const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
+    const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
 
     // component load
     useEffect(() => {
@@ -137,7 +139,6 @@ export default function ExternalArgoList({
 
     function handleFilteration() {
         const _search = payloadParsedFromUrl.appNameSearch
-        const _sortBy = payloadParsedFromUrl.sortBy
         const _sortOrder = payloadParsedFromUrl.sortOrder
         let _filteredArgoAppsList = [...(appsList || [])]
 
@@ -155,7 +156,6 @@ export default function ExternalArgoList({
             _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
         }
 
-        setSortBy(_sortBy)
         setSortOrder(_sortOrder)
         setFilteredArgoAppsList(_filteredArgoAppsList)
         setShowPulsatingDotState(_filteredArgoAppsList.length == 0 && !clusterIdsCsv)
@@ -196,7 +196,7 @@ export default function ExternalArgoList({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header dc__position-sticky dc__top-47">
+            <div className={`app-list__header app-list__header${isFluxCDAppList ? '--fluxcd' : ''} dc__position-sticky dc__top-47`}>
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
@@ -206,7 +206,14 @@ export default function ExternalArgoList({
                 </div>
                 {isArgoInstalled && (
                     <div className="app-list__cell app-list__cell--app_status">
-                        <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
+                        <span className="app-list__cell-header">
+                            {appType === AppListConstants.AppType.ARGO_APPS ? APP_LIST_HEADERS.AppStatus : 'STATUS'}
+                        </span>
+                    </div>
+                )}
+                {isFluxCDAppList && (
+                    <div className='app-list__cell'>
+                        <span>DEPLOYMENT TYPE</span>
                     </div>
                 )}
                 <div className="app-list__cell app-list__cell--env">
@@ -224,6 +231,11 @@ export default function ExternalArgoList({
                 <div className="app-list__cell app-list__cell--namespace">
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
+                {isFluxCDAppList && (
+                    <div className='app-list__cell'>
+                        <span>LAST DEPLOYED AT</span>
+                    </div>
+                )}
             </div>
         )
     }
@@ -235,7 +247,7 @@ export default function ExternalArgoList({
 
     const renderArgoListRow = (app: ArgoAppListResult): JSX.Element => {
         return (
-            <Link to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
+            <Link to={_buildAppDetailUrl(app)} className={`app-list__row ${isFluxCDAppList ? 'app-list__row--fluxcd' : ''}`} data-testid="app-list-row">
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
@@ -251,6 +263,12 @@ export default function ExternalArgoList({
                         <AppStatus appStatus={app.appStatus} />
                     </div>
                 )}
+                {isFluxCDAppList && (
+                    <div>
+                        Kustomization
+                    </div>
+                )
+                }
                 <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
@@ -269,6 +287,10 @@ export default function ExternalArgoList({
                         {app.namespace}
                     </p>
                 </div>
+                {isFluxCDAppList && (
+                    <div>4 hours ago</div>
+                )
+                }
             </Link>
         )
     }

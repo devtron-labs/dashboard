@@ -23,6 +23,7 @@ export const APP_LIST_HEADERS = {
     Namespace: 'Namespace',
     LastDeployedAt: 'Last deployed at',
     SearchAppStatus: 'Search app status',
+    FluxCDStatus: 'Status',
 }
 export const appListLoading = Array.from(Array(3).keys()).map((index) => ({
     id: index,
