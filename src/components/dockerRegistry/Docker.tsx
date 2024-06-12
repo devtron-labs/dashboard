@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FocusEventHandler, KeyboardEventHandler, useEffect, useMemo, useState } from 'react'
+import React, { FocusEventHandler, KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -41,6 +41,7 @@ import {
     ClearIndicator,
     MultiValueRemove,
     MultiValueChipContainer,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -102,6 +103,13 @@ enum CERTTYPE {
     SECURE = 'secure',
     INSECURE = 'insecure',
     SECURE_WITH_CERT = 'secure-with-cert',
+}
+
+const creatableComponents = {
+    DropdownIndicator: null,
+    ClearIndicator,
+    MultiValueRemove,
+    MultiValueContainer: (props) => <MultiValueChipContainer {...props} />,
 }
 
 const getInitialSSHAuthenticationType = (remoteConnectionConfig: any): SSHAuthenticationType => {
@@ -435,7 +443,7 @@ const DockerForm = ({
             error: '',
         },
         repositoryList: {
-            value: repositoryList.map((item) => ({ label: item, value: item })) || [],
+            value: repositoryList.map((item) => ({ label: item, value: item })),
             error: '',
             inputValue: '',
         },
@@ -762,7 +770,7 @@ const DockerForm = ({
                 (registryStorageType === RegistryStorageType.OCI_PUBLIC ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL_PUSH ||
                     OCIRegistryStorageConfig?.CHART === OCIRegistryConfigConstants.PULL)
-                    ? customState.repositoryList?.value.map((item) => item.value) || []
+                    ? customState.repositoryList.value.map((item) => item.value)
                     : null,
             registryUrl: customState.registryUrl.value
                 ?.trim()
@@ -1446,16 +1454,44 @@ const DockerForm = ({
         return renderRegistryCredentialsAutoInjectToClustersComponent()
     }
 
-    const CreatableComponents = useMemo(
-        () => ({
-            DropdownIndicator: null,
-            ClearIndicator,
-            MultiValueRemove,
-            MultiValueContainer: (props) => <MultiValueChipContainer {...props} />,
-        }),
-        [],
-    )
+    // CREATABLE METHODS
+    /**
+     * Sets the provided value in the repository list state.
+     * @param value value to set in the repository list state.
+     */
+    const setRepoListValue = (value: string) => {
+        setCustomState((prev) => ({
+            ...prev,
+            repositoryList: {
+                error: '',
+                inputValue: '',
+                value: [...prev.repositoryList.value, { label: value.trim(), value: value.trim() }],
+            },
+        }))
+    }
 
+    /**
+     * Handles the creatable value change.
+     * @param value value of the creatable select.
+     */
+    const handleCreatableChange = (value: OptionType[]) => {
+        setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, value } }))
+    }
+
+    /**
+     * Handles the creatable input change.
+     * @param inputValue inputValue tof the creatable select.
+     */
+    const handleCreatableInputChange = (inputValue: string) => {
+        setCustomState((prev) => ({
+            ...prev,
+            repositoryList: { ...prev.repositoryList, inputValue },
+        }))
+    }
+
+    /**
+     * Handles the key down event of the creatable select.
+     */
     const handleCreatableKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
         if (!customState.repositoryList.inputValue) {
             return
@@ -1466,37 +1502,20 @@ const DockerForm = ({
             case 'Tab':
             case ' ': // Space
             case ',':
-                setCustomState((prev) => ({
-                    ...prev,
-                    repositoryList: {
-                        error: '',
-                        inputValue: '',
-                        value: [
-                            ...prev.repositoryList.value,
-                            {
-                                label: customState.repositoryList.inputValue,
-                                value: customState.repositoryList.inputValue,
-                            },
-                        ],
-                    },
-                }))
+                setRepoListValue(customState.repositoryList.inputValue)
                 event.preventDefault()
         }
     }
 
+    /**
+     * Handles the blur event of the creatable select.
+     */
     const handleCreatableBlur: FocusEventHandler<HTMLInputElement> = (e) => {
-        const { value, inputValue } = customState.repositoryList
+        const { inputValue } = customState.repositoryList
         if (!inputValue.trim()) {
             return
         }
-        setCustomState((prev) => ({
-            ...prev,
-            repositoryList: {
-                inputValue: '',
-                value: [...value, { label: e.target.value, value: e.target.value }],
-                error: '',
-            },
-        }))
+        setRepoListValue(e.target.value)
     }
 
     const renderRepositoryList = () => {
@@ -1516,16 +1535,9 @@ const DockerForm = ({
                         tabIndex={3}
                         menuIsOpen={false}
                         styles={creatableSelectStyles}
-                        components={CreatableComponents}
-                        onChange={(value) => {
-                            setCustomState((prev) => ({ ...prev, repositoryList: { ...prev.repositoryList, value } }))
-                        }}
-                        onInputChange={(inputValue) => {
-                            setCustomState((prev) => ({
-                                ...prev,
-                                repositoryList: { ...prev.repositoryList, inputValue },
-                            }))
-                        }}
+                        components={creatableComponents}
+                        onChange={handleCreatableChange}
+                        onInputChange={handleCreatableInputChange}
                         onBlur={handleCreatableBlur}
                         onKeyDown={handleCreatableKeyDown}
                         placeholder="Enter repository name and press enter"
