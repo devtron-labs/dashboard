@@ -633,6 +633,10 @@ const GitForm = ({
                             value: payload,
                             error: '',
                         },
+                        keyData: {
+                            ...tlsInput.tlsConfig.keyData,
+                            error: '',
+                        },
                     },
                 })
                 break
@@ -643,6 +647,10 @@ const GitForm = ({
                         ...tlsInput.tlsConfig,
                         keyData: {
                             value: payload,
+                            error: '',
+                        },
+                        certData: {
+                            ...tlsInput.tlsConfig.certData,
                             error: '',
                         },
                     },

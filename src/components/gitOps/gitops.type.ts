@@ -16,6 +16,7 @@
 
 import { RouteComponentProps } from 'react-router'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
+import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 
 export type GitOpsFieldKeyType =
     | 'host'
@@ -52,7 +53,7 @@ export enum GitProvider {
     BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
 }
 
-export interface GitOpsConfig {
+export interface GitOpsConfig extends TLSConfigDTO, Pick<TLSConnectionDTO, 'insecureSkipTLSVerify'> {
     id: number
     provider: GitProviderType
     host: string
@@ -86,6 +87,9 @@ export interface GitOpsState {
         azureProjectName: string
         bitBucketWorkspaceId: string
         bitBucketProjectKey: string
+        keyData: string
+        certData: string
+        caData: string
     }
     validatedTime: string
     validationError: GitOpsConfig[]

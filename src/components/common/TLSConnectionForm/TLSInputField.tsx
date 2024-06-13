@@ -47,7 +47,7 @@ const TLSInputField = ({
     const sanitizedValue = !isSensitive || isFocussed || value?.length > 0 ? value : DEFAULT_SECRET_PLACEHOLDER
     return (
         <div className="flexbox-col dc__gap-6">
-            <label className="m-0 cn-7 fs-13 fw-4 lh-20 dc__required-field" htmlFor={id}>
+            <label className="m-0 cn-7 fs-13 fw-4 lh-20" htmlFor={id}>
                 {label}
             </label>
 
