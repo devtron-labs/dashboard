@@ -45,6 +45,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
+import { getChartGroupDeploymentToastMessage } from './charts.helper'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
@@ -126,8 +127,15 @@ export default function ChartGroupDetails() {
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
-            await deployChartGroup(projectId, deployableCharts, Number(groupId))
-            toast.success('Deployment initiated')
+            const { result } = await deployChartGroup(projectId, deployableCharts, Number(groupId))
+            // TODO: Proper error handling in case of deployment is failed.
+            const {status, title, description} = getChartGroupDeploymentToastMessage(result);
+            toast[status](
+                <>
+                    {title}
+                    {!!description && <p className="m-0 cr-5">{description}</p>}
+                </>,
+            )
             toggleDeployModal(false)
             reloadChartGroupDetails()
         } catch (err) {

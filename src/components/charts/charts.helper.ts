@@ -15,7 +15,7 @@
  */
 
 import { URLS } from '../../config'
-import { ChartValuesType } from './charts.types'
+import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
 
 export const MultiChartSummaryView = {
     SELECT_CHART: 'SELECT-CHART',
@@ -90,4 +90,40 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
     // last element not required
     crumbs.pop()
     return crumbs
+}
+
+/**
+ * Checks if deployment of the apps of group chart are initiated based on the api response and returns toast message.
+ * @param payload Response of group chart deployment api.
+ * @returns An object containing the status, title and description for the toast message.
+ */
+export const getChartGroupDeploymentToastMessage = ({
+    chartGroupInstallMetadata,
+}: ChartGroupDeployResponse): { status: 'error' | 'warn' | 'success'; title: string; description?: string } => {
+    const failedDeployments = chartGroupInstallMetadata.reduce((acc, metadata) => {
+        if (metadata.triggerStatus === 'failed') {
+            return acc + 1
+        }
+        return acc
+    }, 0)
+
+    if (failedDeployments === 0) {
+        return {
+            status: 'success',
+            title: 'Deployment initiated',
+        }
+    }
+
+    if (failedDeployments === chartGroupInstallMetadata.length) {
+        return {
+            status: 'error',
+            title: 'Deployment failed',
+        }
+    }
+
+    return {
+        status: 'warn',
+        title: 'Deployment initiated partially',
+        description: `Deployment could not be initiated for ${failedDeployments}/${chartGroupInstallMetadata.length} applications`,
+    }
 }
