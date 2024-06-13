@@ -77,7 +77,7 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
     arr = arr.filter((str) => str.length)
     let crumbs = arr.map((ele, itemIndex) => {
         let subArr = arr.slice(0, itemIndex + 1)
-        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1]))) {
+        if ((arr[itemIndex + 1], parseInt(arr[itemIndex + 1], 10))) {
             subArr = subArr.concat([arr[itemIndex + 1]])
         }
         return {
@@ -86,7 +86,7 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
         }
     })
     // filter if label is a number
-    crumbs = crumbs.filter((crumb) => !parseInt(crumb.label))
+    crumbs = crumbs.filter((crumb) => !parseInt(crumb.label, 10))
     // last element not required
     crumbs.pop()
     return crumbs
