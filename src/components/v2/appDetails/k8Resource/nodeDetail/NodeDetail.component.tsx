@@ -343,9 +343,12 @@ const NodeDetailComponent = ({
                                             tab.toLowerCase() === selectedTabName.toLowerCase()
                                                 ? 'default-tab-row cb-5'
                                                 : 'cn-7'
-                                        } pt-6 pb-6 cursor pl-8 pr-8 top`}
+                                        } py-6 px-8 top`}
                                     >
-                                        <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
+                                        <NavLink
+                                            to={`${url}/${tab.toLowerCase()}`}
+                                            className=" dc__no-decor flex left cursor"
+                                        >
                                             <span
                                                 data-testid={`${tab.toLowerCase()}-nav-link`}
                                                 className={`${
