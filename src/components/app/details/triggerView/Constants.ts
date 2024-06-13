@@ -112,11 +112,6 @@ export const NO_VULNERABILITY_TEXT = {
  */
 export const DEFAULT_ENV = 'devtron-ci'
 
-export const EMPTY_STATE = {
-    title: 'No matching results',
-    subtitle: 'We couldn’t find any matching images',
-}
-
 export const DO_NOT_DEPLOY = 'DO NOT DEPLOY'
 
 export const TRIGGER_VIEW_PARAMS = {

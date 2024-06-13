@@ -22,6 +22,7 @@ import {
     getRandomColor,
     InfoIconTippy,
     EditableTextArea,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterErrorType,
@@ -455,7 +456,7 @@ function ClusterOverview({ isSuperAdmin, selectedCluster }: ClusterOverviewProps
                 <div className="dc__mxw-1068 flex-grow-1 mw-none">
                     {renderCardDetails()}
                     {renderClusterError()}
-                    {Catalog && <Catalog resourceId={clusterId} resourceType="cluster" />}
+                    {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
