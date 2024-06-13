@@ -380,6 +380,7 @@ const ChartValuesView = ({
                         kind: ChartKind.DEPLOYED,
                     },
                     initialChartVersionValues: {
+                        ...commonState.initialChartVersionValues,
                         chartValuesId: appDetails.appStoreInstalledAppVersionId,
                     },
                 },
@@ -606,6 +607,7 @@ const ChartValuesView = ({
                     installedConfig: result,
                     modifiedValuesYaml: result?.valuesOverrideYaml,
                     initialChartVersionValues: {
+                        ...commonState.initialChartVersionValues,
                         chartValuesId: _installedAppInfo.installedAppVersionId,
                     },
                 },

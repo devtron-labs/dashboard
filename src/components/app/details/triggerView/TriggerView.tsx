@@ -280,7 +280,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
                         const pipelineName = ciNode?.title
 
-                        if (!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
+                        if (!isNaN(+ciNodeId) && !!pipelineName) {
                             this.onClickCIMaterial(ciNodeId, pipelineName, false)
                         } else {
                             toast.error('Invalid Node')

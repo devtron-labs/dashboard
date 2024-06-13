@@ -183,14 +183,7 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
         case ChartValuesViewActionTypes.formValidationError:
             return { ...state, formValidationError: action.payload }
         case ChartValuesViewActionTypes.multipleOptions:
-            return {
-                ...state,
-                ...action.payload,
-                initialChartVersionValues: {
-                    ...state.initialChartVersionValues,
-                    ...action.payload.initialChartVersionValues,
-                },
-            }
+            return { ...state, ...action.payload }
         case ChartValuesViewActionTypes.showNoGitOpsWarning:
             return { ...state, showNoGitOpsWarning: action.payload }
         case ChartValuesViewActionTypes.selectedDeploymentApp:

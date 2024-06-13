@@ -279,7 +279,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
                 const pipelineName = ciNode?.title
 
-                if (!isNaN(+ciNodeId) && !!ciNodeId && !!pipelineName) {
+                if (!isNaN(+ciNodeId) && !!pipelineName) {
                     onClickCIMaterial(ciNodeId, pipelineName, false)
                 } else {
                     toast.error('Invalid Node')
@@ -888,6 +888,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
                 }
+                closeCIModal()
             })
             .finally(() => {
                 setCILoading(false)
@@ -1072,6 +1073,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
+                    closeCIModal()
                     setCDLoading(false)
                     setErrorCode(response.code)
                     setInvalidateCache(false)
