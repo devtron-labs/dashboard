@@ -328,7 +328,9 @@ const NodeDetailComponent = ({
 
     return (
         <>
-            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
+            <div
+                className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+            >
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
                         {tabs &&
@@ -397,11 +399,7 @@ const NodeDetailComponent = ({
             {renderPodTerminal()}
 
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
-                <MessageUI
-                    msg=""
-                    icon={MsgUIType.LOADING}
-                    size={24}
-                />
+                <MessageUI msg="" icon={MsgUIType.LOADING} size={24} />
             ) : (
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>
