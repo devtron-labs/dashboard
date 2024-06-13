@@ -87,7 +87,7 @@ export interface GitOpsState {
         azureProjectName: string
         bitBucketWorkspaceId: string
         bitBucketProjectKey: string
-        keyData: string
+        tlsKeyData: string
         tlsCertData: string
         caData: string
     }

@@ -2,9 +2,9 @@ import { GetCertificateAndKeyDependencyErrorReturnType, TLSConfigDTO, TLSConnect
 
 export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): TLSConnectionDTO => {
     const { enableTLSVerification, tlsConfig } = tlsConnection
-    const { caData, tlsCertData, keyData } = tlsConfig
+    const { caData, tlsCertData, tlsKeyData } = tlsConfig
 
-    const areAllFieldsEmpty = !caData && !tlsCertData && !keyData
+    const areAllFieldsEmpty = !caData && !tlsCertData && !tlsKeyData
 
     if (!enableTLSVerification || areAllFieldsEmpty) {
         return { enableTLSVerification: false, tlsConfig: null }
@@ -15,26 +15,26 @@ export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): 
 
 export const getCertificateAndKeyDependencyError = (
     tlsCertData: TLSConfigDTO['tlsCertData'],
-    keyData: TLSConfigDTO['keyData'],
+    tlsKeyData: TLSConfigDTO['tlsKeyData'],
 ): GetCertificateAndKeyDependencyErrorReturnType => {
-    if (keyData && !tlsCertData) {
+    if (tlsKeyData && !tlsCertData) {
         return {
-            isKeyDataEmpty: false,
+            isTLSKeyDataEmpty: false,
             isTLSCertDataEmpty: true,
             message: 'TLS Certificate is required along with TLS Key',
         }
     }
 
-    if (tlsCertData && !keyData) {
+    if (tlsCertData && !tlsKeyData) {
         return {
-            isKeyDataEmpty: true,
+            isTLSKeyDataEmpty: true,
             isTLSCertDataEmpty: false,
             message: 'TLS Key is required along with TLS Certificate',
         }
     }
 
     return {
-        isKeyDataEmpty: false,
+        isTLSKeyDataEmpty: false,
         isTLSCertDataEmpty: false,
         message: '',
     }

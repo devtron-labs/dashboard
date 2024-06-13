@@ -23,7 +23,7 @@ const TLSConnectionForm = ({
     enableTLSVerification,
     caData,
     tlsCertData,
-    keyData,
+    tlsKeyData,
     handleChange,
     isTLSInitiallyConfigured,
     rootClassName,
@@ -64,8 +64,8 @@ const TLSConnectionForm = ({
                         label="TLS Key"
                         id="tls-key"
                         placeholder="Enter TLS key"
-                        error={keyData.error}
-                        value={keyData.value}
+                        error={tlsKeyData.error}
+                        value={tlsKeyData.value}
                         isSensitive={isTLSInitiallyConfigured}
                         handleChange={handleChange}
                         updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}

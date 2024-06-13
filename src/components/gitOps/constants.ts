@@ -52,7 +52,7 @@ export const DefaultShortGitOps = {
     bitBucketProjectKey: '',
     caData: '',
     tlsCertData: '',
-    keyData: '',
+    tlsKeyData: '',
 }
 
 export const LinkAndLabelSpec = {

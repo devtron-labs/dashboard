@@ -147,7 +147,7 @@ export default function GitProvider({ ...props }) {
             tlsConfig: {
                 caData: '',
                 tlsCertData: '',
-                keyData: '',
+                tlsKeyData: '',
             },
         },
     ].concat(providerList)
@@ -428,7 +428,7 @@ const GitForm = ({
         tlsConfig: {
             caData: { value: tlsConfig?.caData || '', error: '' },
             tlsCertData: { value: tlsConfig?.tlsCertData || '', error: '' },
-            keyData: { value: tlsConfig?.keyData || '', error: '' },
+            tlsKeyData: { value: tlsConfig?.tlsKeyData || '', error: '' },
         },
     })
 
@@ -453,9 +453,9 @@ const GitForm = ({
     }
 
     async function onSave() {
-        const { isKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
             tlsInput.tlsConfig.tlsCertData.value,
-            tlsInput.tlsConfig.keyData.value,
+            tlsInput.tlsConfig.tlsKeyData.value,
         )
 
         if (message) {
@@ -464,7 +464,7 @@ const GitForm = ({
                 tlsConfig: {
                     ...tlsInput.tlsConfig,
                     tlsCertData: { value: tlsInput.tlsConfig.tlsCertData.value, error: isTLSCertDataEmpty ? message : '' },
-                    keyData: { value: tlsInput.tlsConfig.keyData.value, error: isKeyDataEmpty ? message : '' },
+                    tlsKeyData: { value: tlsInput.tlsConfig.tlsKeyData.value, error: isTLSKeyDataEmpty ? message : '' },
                 },
             })
             return
@@ -482,7 +482,7 @@ const GitForm = ({
                 tlsConfig: {
                     caData: tlsInput.tlsConfig.caData.value,
                     tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
-                    keyData: tlsInput.tlsConfig.keyData.value,
+                    tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
                 },
             }),
             ...(state.auth.value === 'USERNAME_PASSWORD'
@@ -637,8 +637,8 @@ const GitForm = ({
                             value: payload,
                             error: '',
                         },
-                        keyData: {
-                            ...tlsInput.tlsConfig.keyData,
+                        tlsKeyData: {
+                            ...tlsInput.tlsConfig.tlsKeyData,
                             error: '',
                         },
                     },
@@ -649,7 +649,7 @@ const GitForm = ({
                     ...tlsInput,
                     tlsConfig: {
                         ...tlsInput.tlsConfig,
-                        keyData: {
+                        tlsKeyData: {
                             value: payload,
                             error: '',
                         },
@@ -832,7 +832,7 @@ const GitForm = ({
                 enableTLSVerification={tlsInput.enableTLSVerification}
                 caData={tlsInput.tlsConfig.caData}
                 tlsCertData={tlsInput.tlsConfig.tlsCertData}
-                keyData={tlsInput.tlsConfig.keyData}
+                tlsKeyData={tlsInput.tlsConfig.tlsKeyData}
                 handleChange={handleTLSConfigChange}
                 isTLSInitiallyConfigured={id && enableTLSVerification}
                 rootClassName="mb-16"

@@ -216,9 +216,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         const { tlsConfig, ...rest } = gitOpsConfig
                         return {
                             ...rest,
-                            caData: tlsConfig.caData,
-                            tlsCertData: tlsConfig.tlsCertData,
-                            keyData: tlsConfig.keyData,
+                            caData: tlsConfig?.caData ?? '',
+                            tlsCertData: tlsConfig?.tlsCertData ?? '',
+                            tlsKeyData: tlsConfig?.tlsKeyData ?? '',
                         }
                     }) || []
 
@@ -357,12 +357,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        const { isKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
             this.state.form.tlsCertData,
-            this.state.form.keyData,
+            this.state.form.tlsKeyData,
         )
-        if (isKeyDataEmpty) {
-            isError.keyData = message
+        if (isTLSKeyDataEmpty) {
+            isError.tlsKeyData = message
         }
 
         if (isTLSCertDataEmpty) {
@@ -370,7 +370,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         this.setState({ isError })
-        return _isInvalid || isKeyDataEmpty || isTLSCertDataEmpty
+        return _isInvalid || isTLSKeyDataEmpty || isTLSCertDataEmpty
     }
 
     suggestedValidGitOpsUrl() {
@@ -410,7 +410,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             tlsConfig: {
                 caData: this.state.form.caData,
                 tlsCertData: this.state.form.tlsCertData,
-                keyData: this.state.form.keyData,
+                tlsKeyData: this.state.form.tlsKeyData,
             },
         })
 
@@ -643,7 +643,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     isError: {
                         ...prevState.isError,
                         tlsCertData: '',
-                        keyData: '',
+                        tlsKeyData: '',
                     },
                     isFormEdited: true,
                 }))
@@ -653,11 +653,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
-                        keyData: payload,
+                        tlsKeyData: payload,
                     },
                     isError: {
                         ...prevState.isError,
-                        keyData: '',
+                        tlsKeyData: '',
                         tlsCertData: '',
                     },
                     isFormEdited: true,
@@ -991,9 +991,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             value: this.state.form.tlsCertData,
                             error: this.state.isError.tlsCertData,
                         }}
-                        keyData={{
-                            value: this.state.form.keyData,
-                            error: this.state.isError.keyData,
+                        tlsKeyData={{
+                            value: this.state.form.tlsKeyData,
+                            error: this.state.isError.tlsKeyData,
                         }}
                         handleChange={this.handleTLSConfigChange}
                         isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
