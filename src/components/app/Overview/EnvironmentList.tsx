@@ -26,6 +26,7 @@ import {
     SortingOrder,
     useAsync,
     useUrlFilters,
+    CommitChipCell,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
@@ -38,7 +39,6 @@ import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import CommitChipCell from '../../../Pages/Shared/CommitChipCell'
 import { getAppOtherEnvironment } from '../../../services/service'
 import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'

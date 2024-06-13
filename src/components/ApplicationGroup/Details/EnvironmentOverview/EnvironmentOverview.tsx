@@ -28,13 +28,13 @@ import {
     EditableTextArea,
     useSearchString,
     DEPLOYMENT_WINDOW_TYPE,
+    CommitChipCell
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { Moment12HourFormat } from '../../../../config'
-import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
 import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
 import { importComponentFromFELibrary } from '../../../common'
