@@ -109,8 +109,6 @@ export default function EnvironmentOverview({
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
     // NOTE: there is a slim chance that the api is called before httpProtocol is set
     const httpProtocol = useRef('')
-    // FIXME: Will replace with selectedAppDetailsList later
-    const selectedAppIds = selectedAppDetailsList.map((item) => item.appId)
     const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(
         ({ type, isActive }) =>
             (type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive) ||
@@ -150,12 +148,10 @@ export default function EnvironmentOverview({
     }, [])
 
     async function getDeploymentWindowEnvOverrideMetaData() {
-        const appEnvTuples = selectedAppIds.map((appId) => {
-            return {
-                appId: +appId,
-                envId: +envId,
-            }
-        })
+        const appEnvTuples = selectedAppDetailsList.map((appDetail) => ({
+            appId: +appDetail.appId,
+            envId: +appDetail.envId,
+        }))
         setIsDeploymentLoading(true)
         const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
         setHibernateInfoMap(_hibernate)
@@ -338,7 +334,7 @@ export default function EnvironmentOverview({
     }
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
-        const isSelected = selectedAppIds.includes(item.appId)
+        const isSelected = selectedAppDetailsList.some((appDetail) => appDetail.appId === item.appId)
 
         const openCommitInfoModal = (e) => {
             e.stopPropagation()
@@ -518,7 +514,7 @@ export default function EnvironmentOverview({
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                         </span>
-                        {selectedAppIds.length > 0 && (
+                        {selectedAppDetailsList.length > 0 && (
                             <div className="flexbox dc__gap-6">
                                 {ClonePipelineButton && appListData.environment && (
                                     <ClonePipelineButton
@@ -563,13 +559,13 @@ export default function EnvironmentOverview({
                                         className="form__checkbox"
                                         value="ALL"
                                         onChange={handleSelect}
-                                        checked={selectedAppIds.length === appListData.appInfoList.length}
+                                        checked={selectedAppDetailsList.length === appListData.appInfoList.length}
                                     />
                                     <span
                                         className={`form__checkbox-container ${
-                                            selectedAppIds.length === appListData.appInfoList.length
+                                            selectedAppDetailsList.length === appListData.appInfoList.length
                                                 ? 'tick-icon'
-                                                : selectedAppIds.length > 0
+                                                : selectedAppDetailsList.length > 0
                                                   ? 'any-selected'
                                                   : ''
                                         }`}
@@ -611,7 +607,7 @@ export default function EnvironmentOverview({
             </div>
             {openHiberateModal && (
                 <HibernateModal
-                    selectedAppIds={selectedAppIds}
+                    selectedAppDetailsList={selectedAppDetailsList}
                     appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
@@ -626,7 +622,7 @@ export default function EnvironmentOverview({
             )}
             {openUnhiberateModal && (
                 <UnhibernateModal
-                    selectedAppIds={selectedAppIds}
+                    selectedAppDetailsList={selectedAppDetailsList}
                     appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
@@ -641,7 +637,7 @@ export default function EnvironmentOverview({
             )}
             {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
                 <RestartWorkloadModal
-                    selectedAppIds={selectedAppIds}
+                    selectedAppDetailsList={selectedAppDetailsList}
                     envName={appListData.environment}
                     envId={envId}
                     setRestartLoader={setRestartLoader}

@@ -56,7 +56,7 @@ const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResist
 export const RestartWorkloadModal = ({
     restartLoader,
     setRestartLoader,
-    selectedAppIds,
+    selectedAppDetailsList,
     envName,
     envId,
     hibernateInfoMap,
@@ -111,6 +111,8 @@ export const RestartWorkloadModal = ({
     const getPodsToRotate = async () => {
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
+        const selectedAppIds = selectedAppDetailsList.map((appDetail) => appDetail.appId)
+
         return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
                 if (response.result) {
@@ -415,7 +417,7 @@ export const RestartWorkloadModal = ({
             return (
                 <div className="drawer-section__empty flex">
                     <GenericEmptyState
-                        title={`Fetching workload for ${selectedAppIds.length} Applications`}
+                        title={`Fetching workload for ${selectedAppDetailsList.length} Applications`}
                         subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                         SvgImage={MechanicalIcon}
                     />

@@ -31,7 +31,7 @@ import { UnhibernateModalProps } from '../../AppGroup.types'
 const ResistantInput = importComponentFromFELibrary('ResistantInput')
 
 export const UnhibernateModal = ({
-    selectedAppIds,
+    selectedAppDetailsList,
     appDetailsList,
     envName,
     envId,
@@ -60,6 +60,7 @@ export const UnhibernateModal = ({
             showStatus: false,
             inProgress: true,
         })
+        const selectedAppIds = selectedAppDetailsList.map((appDetails) => appDetails.appId)
         manageApps(selectedAppIds, appDetailsList, Number(envId), envName, 'unhibernate', httpProtocol)
             .then((res) => {
                 setAppStatusResponseList(res)
@@ -112,7 +113,7 @@ export const UnhibernateModal = ({
                         <div className="flexbox-col dc__gap-12">
                             <UnhibernateModalIcon className="dc__align-left" />
                             <span className="fs-16 fw-6">
-                                Unhibernate '{selectedAppIds.length} applications' on '{envName}'
+                                Unhibernate '{selectedAppDetailsList.length} applications' on '{envName}'
                             </span>
                             {renderHibernateModalBody()}
                         </div>
