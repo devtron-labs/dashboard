@@ -24,10 +24,22 @@ import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
 const {
     OVERVIEW: { APP_DESCRIPTION, JOB_DESCRIPTION },
 } = EMPTY_STATE_STATUS
+
+export const getResourceKindFromAppType = (appType: AppOverviewProps['appType']) => {
+    switch (appType) {
+        case 'app':
+            return ResourceKindType.devtronApplication
+        case 'job':
+            return ResourceKindType.job
+        case 'helm-chart':
+            return ResourceKindType.helmChart
+    }
+}
 
 export const getAppConfig = (appType: AppOverviewProps['appType']) => {
     switch (appType) {
