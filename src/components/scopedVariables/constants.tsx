@@ -93,11 +93,6 @@ export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
 export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'
 export const GET_SCOPED_VARIABLES_ERROR = 'Error while fetching scoped variables'
 
-export const NO_VARIABLES_MESSAGE = {
-    TITLE: 'No matching results found',
-    SUBTITLE: "We couldn't find any matching variable",
-}
-
 export const NO_DESCRIPTION_MESSAGE = 'No description'
 export const SENSITIVE_VARIABLE_DESCRIPTION = 'Value is sensitive & will be hidden while using this variable'
 export const IN_SENSITIVE_VARIABLE_DESCRIPTION = 'Value is not sensitive & will be visible while using this variable'
