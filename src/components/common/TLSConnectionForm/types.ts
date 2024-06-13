@@ -27,8 +27,9 @@ export interface TLSConnectionFormProps extends Pick<TLSConnectionDTO, 'insecure
     caData: InputFieldState<TLSConfigDTO['caData']>
     certData: InputFieldState<TLSConfigDTO['certData']>
     keyData: InputFieldState<TLSConfigDTO['keyData']>
-    isCreateView: boolean
+    isTLSInitiallyConfigured: boolean
     handleChange: ({ action, payload }: TLSConnectionHandleChangeParamsType) => void
+    rootClassName?: string
 }
 
 export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handleChange'> {
@@ -42,4 +43,10 @@ export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handle
         | TLSConnectionFormActionType.UPDATE_CA_DATA
         | TLSConnectionFormActionType.UPDATE_CERT_DATA
         | TLSConnectionFormActionType.UPDATE_KEY_DATA
+}
+
+export interface GetCertificateAndKeyDependencyErrorReturnType {
+    isKeyDataEmpty: boolean
+    isCertDataEmpty: boolean
+    message: string
 }

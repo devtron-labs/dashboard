@@ -33,7 +33,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword, TLSConnectionForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { DEFAULT_SECRET_PLACEHOLDER, DOCUMENTATION } from '../../config'
 import { DropdownIndicator } from './gitProvider.util'
@@ -51,6 +51,8 @@ import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../.
 import { AuthenticationType } from '../cluster/cluster.type'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
+import { getCertificateAndKeyDependencyError, getTLSConnectionPayloadValues } from '../common/TLSConnectionForm/utils'
+import { TLSConnectionFormActionType, TLSConnectionFormProps } from '../common/TLSConnectionForm/types'
 
 export default function GitProvider({ ...props }) {
     const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
@@ -140,6 +142,12 @@ export default function GitProvider({ ...props }) {
             userName: '',
             password: '',
             sshPrivateKey: '',
+            insecureSkipTLSVerify: true,
+            tlsConfig: {
+                caData: '',
+                certData: '',
+                keyData: '',
+            },
         },
     ].concat(providerList)
 
@@ -157,7 +165,7 @@ export default function GitProvider({ ...props }) {
                     Learn more about git accounts
                 </a>
             </div>
-            {allProviders.map((provider, index) => {
+            {allProviders.map((provider) => {
                 return (
                     <>
                         <CollapsedList
@@ -178,6 +186,8 @@ export default function GitProvider({ ...props }) {
                             getProviderList={getProviderList}
                             reload={getInitData}
                             sshPrivateKey={provider.sshPrivateKey}
+                            insecureSkipTLSVerify={provider.insecureSkipTLSVerify}
+                            tlsConfig={provider.tlsConfig}
                         />
                         {showGitProviderConfigModal && (
                             <VisibleModal className="app-status__material-modal">
@@ -213,6 +223,8 @@ const CollapsedList = ({
     showGitProviderConfigModal,
     setGitProviderConfigModal,
     sshPrivateKey,
+    insecureSkipTLSVerify,
+    tlsConfig,
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -223,6 +235,7 @@ const CollapsedList = ({
 
     useEffectAfterMount(() => {
         async function update() {
+            // FIXME: Duplicate
             const payload = {
                 id: id || 0,
                 name,
@@ -230,6 +243,8 @@ const CollapsedList = ({
                 authMode,
                 active: enabled,
                 gitHostId: +gitHostId,
+                insecureSkipTLSVerify,
+                tlsConfig,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey } : {}),
@@ -339,6 +354,8 @@ const CollapsedList = ({
                         gitHost,
                         setGithost,
                         sshPrivateKey,
+                        insecureSkipTLSVerify,
+                        tlsConfig,
                     }}
                 />
             )}
@@ -368,6 +385,8 @@ const GitForm = ({
     gitHost,
     setGithost,
     sshPrivateKey = '',
+    insecureSkipTLSVerify,
+    tlsConfig,
     ...props
 }) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
@@ -401,6 +420,17 @@ const GitForm = ({
         hostName: { value: gitHost.value, error: '' },
         sshInput: { value: !sshPrivateKey && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
     })
+
+    // Need to merge all the input states to a single state
+    const [tlsInput, setTLSInput] = useState({
+        insecureSkipTLSVerify: insecureSkipTLSVerify ?? true,
+        tlsConfig: {
+            caData: { value: tlsConfig?.caData || '', error: '' },
+            certData: { value: tlsConfig?.certData || '', error: '' },
+            keyData: { value: tlsConfig?.keyData || '', error: '' },
+        },
+    })
+
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
 
@@ -422,6 +452,23 @@ const GitForm = ({
     }
 
     async function onSave() {
+        const { isKeyDataEmpty, isCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            tlsInput.tlsConfig.certData.value,
+            tlsInput.tlsConfig.keyData.value,
+        )
+
+        if (message) {
+            setTLSInput({
+                ...tlsInput,
+                tlsConfig: {
+                    ...tlsInput.tlsConfig,
+                    certData: { value: tlsInput.tlsConfig.certData.value, error: isCertDataEmpty ? message : '' },
+                    keyData: { value: tlsInput.tlsConfig.keyData.value, error: isKeyDataEmpty ? message : '' },
+                },
+            })
+            return
+        }
+
         const payload = {
             id: id || 0,
             name: state.name.value,
@@ -429,6 +476,14 @@ const GitForm = ({
             url: state.url.value,
             authMode: state.auth.value,
             active,
+            ...getTLSConnectionPayloadValues({
+                insecureSkipTLSVerify: tlsInput.insecureSkipTLSVerify.value,
+                tlsConfig: {
+                    caData: tlsInput.tlsConfig.caData.value,
+                    certData: tlsInput.tlsConfig.certData.value,
+                    keyData: tlsInput.tlsConfig.keyData.value,
+                },
+            }),
             ...(state.auth.value === 'USERNAME_PASSWORD'
                 ? {
                       username: customState.username.value,
@@ -549,7 +604,54 @@ const GitForm = ({
         return true
     }
 
-    const payload = {
+    const handleTLSConfigChange: TLSConnectionFormProps['handleChange'] = ({ action, payload }) => {
+        switch (action) {
+            case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
+                setTLSInput({
+                    ...tlsInput,
+                    insecureSkipTLSVerify: !tlsInput.insecureSkipTLSVerify,
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_CA_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        caData: {
+                            value: payload,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_CERT_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        certData: {
+                            value: payload,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.UPDATE_KEY_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        keyData: {
+                            value: payload,
+                            error: '',
+                        },
+                    },
+                })
+                break
+        }
+    }
+
+    const deletePayload = {
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
@@ -560,6 +662,9 @@ const GitForm = ({
         password: customState.password.value || '',
         accessToken: customState.accessToken.value || '',
         sshPrivateKey: customState.sshInput.value || '',
+        // TODO: Verify
+        // insecureSkipTLSVerify,
+        // tlsConfig,
     }
 
     return (
@@ -657,7 +762,7 @@ const GitForm = ({
             {state.auth.value === AuthenticationType.ANONYMOUS && (
                 <InfoColourBar
                     message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
-                    classname="info_bar cn-9 mb-40 lh-20"
+                    classname="info_bar cn-9 mb-16 lh-20"
                     Icon={Info}
                     iconClass="icon-dim-20"
                 />
@@ -710,6 +815,17 @@ const GitForm = ({
                     {customState.sshInput.error && <div className="form__error">{customState.sshInput.error}</div>}
                 </div>
             )}
+
+            <TLSConnectionForm
+                insecureSkipTLSVerify={tlsInput.insecureSkipTLSVerify}
+                caData={tlsInput.tlsConfig.caData}
+                certData={tlsInput.tlsConfig.certData}
+                keyData={tlsInput.tlsConfig.keyData}
+                handleChange={handleTLSConfigChange}
+                isTLSInitiallyConfigured={id && insecureSkipTLSVerify === false}
+                rootClassName="mb-16"
+            />
+
             <div className="form__row form__buttons">
                 {id && (
                     <button
@@ -737,7 +853,7 @@ const GitForm = ({
                 <DeleteComponent
                     setDeleting={setDeleting}
                     deleteComponent={deleteGitProvider}
-                    payload={payload}
+                    payload={deletePayload}
                     title={state.name.value}
                     toggleConfirmation={toggleConfirmation}
                     component={DeleteComponentsName.GitProvider}

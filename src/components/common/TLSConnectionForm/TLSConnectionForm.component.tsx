@@ -25,56 +25,63 @@ const TLSConnectionForm = ({
     certData,
     keyData,
     handleChange,
-    isCreateView,
+    isTLSInitiallyConfigured,
+    rootClassName,
 }: TLSConnectionFormProps) => {
     const handleToggle = () => {
         handleChange({ action: TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY })
     }
 
     return (
-        <div className="pt-16 pb-16 flexbox-col dc__gap-16 dc__border-top-n1 dc__border-bottom-n1">
+        <div className={`pt-16 pb-16 flexbox-col dc__gap-16 dc__border-top-n1 dc__border-bottom-n1 ${rootClassName}`}>
             {/* TOGGLE HEADER */}
             <div className="flexbox dc__gap-20 dc__content-space">
-                <div className="flexbox-col dc__gap-4">
+                <div className="flexbox-col dc__gap-4 w-100">
                     <h2 className="m-0 cn-9 fs-14 fw-6 lh-20">Secure TLS connection</h2>
                     <p className="m-0 cn-7 fs-12 fw-4">
                         Enable a secure TLS connection for encrypted communication and authentication
                     </p>
                 </div>
 
-                <Toggle selected={!insecureSkipTLSVerify} onSelect={handleToggle} />
+                <div className="h-20 w-32">
+                    <Toggle selected={!insecureSkipTLSVerify} onSelect={handleToggle} />
+                </div>
             </div>
 
-            <TLSInputField
-                label="Certificate Authority Data"
-                id="certificate-authority-data"
-                placeholder="Enter CA data"
-                error={caData.error}
-                value={caData.value}
-                isSensitive={!isCreateView}
-                handleChange={handleChange}
-                updateAction={TLSConnectionFormActionType.UPDATE_CA_DATA}
-            />
-            <TLSInputField
-                label="TLS Key"
-                id="tls-key"
-                placeholder="Enter TLS key"
-                error={keyData.error}
-                value={keyData.value}
-                isSensitive={!isCreateView}
-                handleChange={handleChange}
-                updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}
-            />
-            <TLSInputField
-                label="TLS Certificate"
-                id="tsl-certificate"
-                placeholder="Enter TLS certificate"
-                error={certData.error}
-                value={certData.value}
-                isSensitive={!isCreateView}
-                handleChange={handleChange}
-                updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}
-            />
+            {!insecureSkipTLSVerify && (
+                <>
+                    <TLSInputField
+                        label="Certificate Authority Data"
+                        id="certificate-authority-data"
+                        placeholder="Enter CA data"
+                        error={caData.error}
+                        value={caData.value}
+                        isSensitive={isTLSInitiallyConfigured}
+                        handleChange={handleChange}
+                        updateAction={TLSConnectionFormActionType.UPDATE_CA_DATA}
+                    />
+                    <TLSInputField
+                        label="TLS Key"
+                        id="tls-key"
+                        placeholder="Enter TLS key"
+                        error={keyData.error}
+                        value={keyData.value}
+                        isSensitive={isTLSInitiallyConfigured}
+                        handleChange={handleChange}
+                        updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}
+                    />
+                    <TLSInputField
+                        label="TLS Certificate"
+                        id="tsl-certificate"
+                        placeholder="Enter TLS certificate"
+                        error={certData.error}
+                        value={certData.value}
+                        isSensitive={isTLSInitiallyConfigured}
+                        handleChange={handleChange}
+                        updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}
+                    />
+                </>
+            )}
         </div>
     )
 }
