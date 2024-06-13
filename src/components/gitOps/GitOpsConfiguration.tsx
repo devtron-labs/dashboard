@@ -406,7 +406,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     getPayload = () => {
         const tlsValues = getTLSConnectionPayloadValues({
-            insecureSkipTLSVerify: this.state.form.insecureSkipTLSVerify,
+            enableTLSVerification: this.state.form.enableTLSVerification,
             tlsConfig: {
                 caData: this.state.form.caData,
                 certData: this.state.form.certData,
@@ -614,7 +614,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
-                        insecureSkipTLSVerify: !prevState.form.insecureSkipTLSVerify,
+                        enableTLSVerification: !prevState.form.enableTLSVerification,
                     },
                     isFormEdited: true,
                 }))
@@ -982,7 +982,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     </div>
 
                     <TLSConnectionForm
-                        insecureSkipTLSVerify={this.state.form.insecureSkipTLSVerify}
+                        enableTLSVerification={this.state.form.enableTLSVerification}
                         caData={{
                             value: this.state.form.caData,
                             error: this.state.isError.caData,
@@ -996,7 +996,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             error: this.state.isError.keyData,
                         }}
                         handleChange={this.handleTLSConfigChange}
-                        isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.insecureSkipTLSVerify === false}
+                        isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
                         rootClassName="mb-16"
                     />
 

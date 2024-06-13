@@ -53,7 +53,7 @@ export enum GitProvider {
     BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
 }
 
-export interface GitOpsConfig extends TLSConfigDTO, Pick<TLSConnectionDTO, 'insecureSkipTLSVerify'> {
+export interface GitOpsConfig extends TLSConfigDTO, Pick<TLSConnectionDTO, 'enableTLSVerification'> {
     id: number
     provider: GitProviderType
     host: string

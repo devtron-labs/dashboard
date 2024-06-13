@@ -20,7 +20,7 @@ import TLSInputField from './TLSInputField'
 import { TLSConnectionFormActionType, TLSConnectionFormProps } from './types'
 
 const TLSConnectionForm = ({
-    insecureSkipTLSVerify,
+    enableTLSVerification,
     caData,
     certData,
     keyData,
@@ -44,11 +44,11 @@ const TLSConnectionForm = ({
                 </div>
 
                 <div className="h-20 w-32">
-                    <Toggle selected={!insecureSkipTLSVerify} onSelect={handleToggle} />
+                    <Toggle selected={enableTLSVerification} onSelect={handleToggle} />
                 </div>
             </div>
 
-            {!insecureSkipTLSVerify && (
+            {enableTLSVerification && (
                 <>
                     <TLSInputField
                         label="Certificate Authority Data"

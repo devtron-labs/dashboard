@@ -1,13 +1,13 @@
 import { GetCertificateAndKeyDependencyErrorReturnType, TLSConfigDTO, TLSConnectionDTO } from './types'
 
 export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): TLSConnectionDTO => {
-    const { insecureSkipTLSVerify, tlsConfig } = tlsConnection
+    const { enableTLSVerification, tlsConfig } = tlsConnection
     const { caData, certData, keyData } = tlsConfig
 
     const areAllFieldsEmpty = !caData && !certData && !keyData
 
-    if (insecureSkipTLSVerify || areAllFieldsEmpty) {
-        return { insecureSkipTLSVerify: true, tlsConfig: null }
+    if (!enableTLSVerification || areAllFieldsEmpty) {
+        return { enableTLSVerification: false, tlsConfig: null }
     }
 
     return tlsConnection

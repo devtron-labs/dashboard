@@ -38,7 +38,7 @@ export const DefaultGitOpsConfig = {
     id: null,
     provider: GitProvider.GITHUB,
     active: true,
-    insecureSkipTLSVerify: true,
+    enableTLSVerification: false,
 }
 
 export const DefaultShortGitOps = {

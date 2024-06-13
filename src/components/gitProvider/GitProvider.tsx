@@ -53,6 +53,7 @@ import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { getCertificateAndKeyDependencyError, getTLSConnectionPayloadValues } from '../common/TLSConnectionForm/utils'
 import { TLSConnectionFormActionType, TLSConnectionFormProps } from '../common/TLSConnectionForm/types'
+import { TLSInputType } from './types'
 
 export default function GitProvider({ ...props }) {
     const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
@@ -142,7 +143,7 @@ export default function GitProvider({ ...props }) {
             userName: '',
             password: '',
             sshPrivateKey: '',
-            insecureSkipTLSVerify: true,
+            enableTLSVerification: false,
             tlsConfig: {
                 caData: '',
                 certData: '',
@@ -186,7 +187,7 @@ export default function GitProvider({ ...props }) {
                             getProviderList={getProviderList}
                             reload={getInitData}
                             sshPrivateKey={provider.sshPrivateKey}
-                            insecureSkipTLSVerify={provider.insecureSkipTLSVerify}
+                            enableTLSVerification={provider.enableTLSVerification}
                             tlsConfig={provider.tlsConfig}
                         />
                         {showGitProviderConfigModal && (
@@ -223,7 +224,7 @@ const CollapsedList = ({
     showGitProviderConfigModal,
     setGitProviderConfigModal,
     sshPrivateKey,
-    insecureSkipTLSVerify,
+    enableTLSVerification,
     tlsConfig,
     ...props
 }) => {
@@ -243,7 +244,7 @@ const CollapsedList = ({
                 authMode,
                 active: enabled,
                 gitHostId: +gitHostId,
-                insecureSkipTLSVerify,
+                enableTLSVerification,
                 tlsConfig,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
@@ -354,7 +355,7 @@ const CollapsedList = ({
                         gitHost,
                         setGithost,
                         sshPrivateKey,
-                        insecureSkipTLSVerify,
+                        enableTLSVerification,
                         tlsConfig,
                     }}
                 />
@@ -385,7 +386,7 @@ const GitForm = ({
     gitHost,
     setGithost,
     sshPrivateKey = '',
-    insecureSkipTLSVerify,
+    enableTLSVerification,
     tlsConfig,
     ...props
 }) => {
@@ -422,8 +423,8 @@ const GitForm = ({
     })
 
     // Need to merge all the input states to a single state
-    const [tlsInput, setTLSInput] = useState({
-        insecureSkipTLSVerify: insecureSkipTLSVerify ?? true,
+    const [tlsInput, setTLSInput] = useState<TLSInputType>({
+        enableTLSVerification: enableTLSVerification ?? false,
         tlsConfig: {
             caData: { value: tlsConfig?.caData || '', error: '' },
             certData: { value: tlsConfig?.certData || '', error: '' },
@@ -477,7 +478,7 @@ const GitForm = ({
             authMode: state.auth.value,
             active,
             ...getTLSConnectionPayloadValues({
-                insecureSkipTLSVerify: tlsInput.insecureSkipTLSVerify.value,
+                enableTLSVerification: tlsInput.enableTLSVerification,
                 tlsConfig: {
                     caData: tlsInput.tlsConfig.caData.value,
                     certData: tlsInput.tlsConfig.certData.value,
@@ -609,7 +610,10 @@ const GitForm = ({
             case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
                 setTLSInput({
                     ...tlsInput,
-                    insecureSkipTLSVerify: !tlsInput.insecureSkipTLSVerify,
+                    enableTLSVerification: !tlsInput.enableTLSVerification,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                    },
                 })
                 break
             case TLSConnectionFormActionType.UPDATE_CA_DATA:
@@ -825,12 +829,12 @@ const GitForm = ({
             )}
 
             <TLSConnectionForm
-                insecureSkipTLSVerify={tlsInput.insecureSkipTLSVerify}
+                enableTLSVerification={tlsInput.enableTLSVerification}
                 caData={tlsInput.tlsConfig.caData}
                 certData={tlsInput.tlsConfig.certData}
                 keyData={tlsInput.tlsConfig.keyData}
                 handleChange={handleTLSConfigChange}
-                isTLSInitiallyConfigured={id && insecureSkipTLSVerify === false}
+                isTLSInitiallyConfigured={id && enableTLSVerification}
                 rootClassName="mb-16"
             />
 

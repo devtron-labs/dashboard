@@ -7,7 +7,7 @@ export interface TLSConfigDTO {
 }
 
 export interface TLSConnectionDTO {
-    insecureSkipTLSVerify: boolean
+    enableTLSVerification: boolean
     tlsConfig: TLSConfigDTO
 }
 
@@ -23,7 +23,7 @@ interface TLSConnectionHandleChangeParamsType {
     payload?: string
 }
 
-export interface TLSConnectionFormProps extends Pick<TLSConnectionDTO, 'insecureSkipTLSVerify'> {
+export interface TLSConnectionFormProps extends Pick<TLSConnectionDTO, 'enableTLSVerification'> {
     caData: InputFieldState<TLSConfigDTO['caData']>
     certData: InputFieldState<TLSConfigDTO['certData']>
     keyData: InputFieldState<TLSConfigDTO['keyData']>
