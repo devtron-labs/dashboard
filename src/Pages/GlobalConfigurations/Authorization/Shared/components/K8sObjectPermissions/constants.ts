@@ -56,7 +56,7 @@ export const resourceSelectStyles = {
         rowGap: '4px',
         overflow: 'scroll',
         maxHeight: '290px',
-        padding: '4px',
+        padding: '0 8px',
     }),
     multiValue: (base) => ({
         ...base,

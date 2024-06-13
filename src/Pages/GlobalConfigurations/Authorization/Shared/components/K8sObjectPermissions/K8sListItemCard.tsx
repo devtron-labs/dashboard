@@ -27,6 +27,7 @@ import {
     MultiValueChipContainer,
     OptionType,
     LoadingIndicator,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -43,7 +44,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
-import { GVKType, K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
+import { K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
 import {
     CustomValueContainer,
     formatOptionLabel,
@@ -83,8 +84,6 @@ const K8sListItemCard = ({
     const { showStatus, userStatus } = usePermissionConfiguration()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
-    const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
-    const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>([])
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
     const [
         { isClusterListLoading, isNamespaceListLoading, isApiGroupListLoading, isResourceListLoading },
@@ -109,13 +108,10 @@ const K8sListItemCard = ({
         })
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            if (result) {
-                setNamespaceMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [clusterId]: [ALL_NAMESPACE, ...convertToOptionsList(result.sort())],
-                }))
-            } else {
-                setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: [ALL_NAMESPACE] }))
+            const options = [ALL_NAMESPACE, ...(result ? convertToOptionsList(result.sort()) : [])]
+            setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: options }))
+            if (k8sPermission.namespace?.some((el) => el.value === SELECT_ALL_VALUE)) {
+                handleK8sPermission(K8sPermissionActionType.onNamespaceChange, index, options)
             }
         } catch (err) {
             showError(err)
@@ -229,15 +225,16 @@ const K8sListItemCard = ({
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
-                const _k8SObjectList: OptionType[] = [..._k8SObjectMap.keys()].map((key) => ({
-                    label: key,
-                    value: key,
-                }))
+                const _k8SObjectList: OptionType[] = [..._k8SObjectMap.keys()]
+                    .filter((key) => !!key)
+                    .map((key) => ({
+                        label: key,
+                        value: key,
+                    }))
                 setProcessedData(_k8SObjectMap)
 
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
-                setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
 
                 const _allApiGroupMapping = []
                 const _allKindMapping = []
@@ -248,7 +245,6 @@ const K8sListItemCard = ({
                     )
                     _allKindMapping.push({ label: 'All kind', value: SELECT_ALL_VALUE })
                 }
-                setAllInApiGroupMapping(_allApiGroupMapping)
                 setAllInKindMapping(_allKindMapping)
                 setApiGroupMapping((prevMapping) => ({
                     ...prevMapping,
@@ -315,7 +311,6 @@ const K8sListItemCard = ({
     const onClusterChange = (selected) => {
         if (selected.value !== k8sPermission?.cluster?.value) {
             setProcessedData(null)
-            setProcessedGvkData(null)
             setApiGroupMapping((prevMapping) => ({
                 ...prevMapping,
                 [k8sPermission.key]: [{ label: 'All API groups', value: SELECT_ALL_VALUE }],
@@ -329,27 +324,13 @@ const K8sListItemCard = ({
     const setK8sPermission = (actionType) => (options) =>
         handleK8sPermission(K8sPermissionActionType[actionType], index, options)
 
-    const onNameSpaceSelection = (selected, actionMeta) => {
+    const onNameSpaceSelection = (selected, actionMeta) =>
         multiSelectAllState(
             selected,
             actionMeta,
             setK8sPermission('onNamespaceChange'),
             namespaceMapping?.[k8sPermission?.cluster?.value],
         )
-        const _GvkObjectList: OptionType[] = []
-        if (processedGvkData) {
-            // eslint-disable-next-line no-restricted-syntax
-            for (const [key] of processedGvkData.entries()) {
-                if (key) {
-                    _GvkObjectList.push({ label: key, value: key })
-                }
-            }
-            setApiGroupMapping((prevMapping) => ({
-                ...prevMapping,
-                [k8sPermission.key]: [...allInApiGroupMapping, ..._GvkObjectList.sort(sortOptionsByLabel)],
-            }))
-        }
-    }
 
     const onApiGroupSelect = (selected) => {
         if (selected.value !== k8sPermission?.group?.value) {
@@ -497,7 +478,7 @@ const K8sListItemCard = ({
                                     placeholder="Select API group"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
-                                    isDisabled={!k8sPermission.namespace || isApiGroupListLoading}
+                                    isDisabled={!k8sPermission.namespace?.length || isApiGroupListLoading}
                                     value={k8sPermission.group}
                                     onChange={onApiGroupSelect}
                                     components={{
@@ -545,7 +526,9 @@ const K8sListItemCard = ({
                             name="Resource name"
                             onChange={onResourceObjectChange}
                             components={{
-                                IndicatorSeparator: () => null,
+                                IndicatorSeparator: null,
+                                // FIXME: creating new chips when All Resource, fails (UI doesn't show chip)
+                                // but the update went through
                                 // eslint-disable-next-line react/no-unstable-nested-components
                                 MultiValueContainer: ({ ...props }) => (
                                     <MultiValueChipContainer
