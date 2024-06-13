@@ -51,7 +51,7 @@ export const DefaultShortGitOps = {
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
     caData: '',
-    certData: '',
+    tlsCertData: '',
     keyData: '',
 }
 

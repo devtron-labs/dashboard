@@ -2,7 +2,7 @@ import { InputFieldState } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface TLSConfigDTO {
     caData: string
-    certData: string
+    tlsCertData: string
     keyData: string
 }
 
@@ -25,7 +25,7 @@ interface TLSConnectionHandleChangeParamsType {
 
 export interface TLSConnectionFormProps extends Pick<TLSConnectionDTO, 'enableTLSVerification'> {
     caData: InputFieldState<TLSConfigDTO['caData']>
-    certData: InputFieldState<TLSConfigDTO['certData']>
+    tlsCertData: InputFieldState<TLSConfigDTO['tlsCertData']>
     keyData: InputFieldState<TLSConfigDTO['keyData']>
     isTLSInitiallyConfigured: boolean
     handleChange: ({ action, payload }: TLSConnectionHandleChangeParamsType) => void
@@ -47,6 +47,6 @@ export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handle
 
 export interface GetCertificateAndKeyDependencyErrorReturnType {
     isKeyDataEmpty: boolean
-    isCertDataEmpty: boolean
+    isTLSCertDataEmpty: boolean
     message: string
 }

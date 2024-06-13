@@ -146,7 +146,7 @@ export default function GitProvider({ ...props }) {
             enableTLSVerification: false,
             tlsConfig: {
                 caData: '',
-                certData: '',
+                tlsCertData: '',
                 keyData: '',
             },
         },
@@ -427,7 +427,7 @@ const GitForm = ({
         enableTLSVerification: enableTLSVerification ?? false,
         tlsConfig: {
             caData: { value: tlsConfig?.caData || '', error: '' },
-            certData: { value: tlsConfig?.certData || '', error: '' },
+            tlsCertData: { value: tlsConfig?.tlsCertData || '', error: '' },
             keyData: { value: tlsConfig?.keyData || '', error: '' },
         },
     })
@@ -453,8 +453,8 @@ const GitForm = ({
     }
 
     async function onSave() {
-        const { isKeyDataEmpty, isCertDataEmpty, message } = getCertificateAndKeyDependencyError(
-            tlsInput.tlsConfig.certData.value,
+        const { isKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            tlsInput.tlsConfig.tlsCertData.value,
             tlsInput.tlsConfig.keyData.value,
         )
 
@@ -463,7 +463,7 @@ const GitForm = ({
                 ...tlsInput,
                 tlsConfig: {
                     ...tlsInput.tlsConfig,
-                    certData: { value: tlsInput.tlsConfig.certData.value, error: isCertDataEmpty ? message : '' },
+                    tlsCertData: { value: tlsInput.tlsConfig.tlsCertData.value, error: isTLSCertDataEmpty ? message : '' },
                     keyData: { value: tlsInput.tlsConfig.keyData.value, error: isKeyDataEmpty ? message : '' },
                 },
             })
@@ -481,7 +481,7 @@ const GitForm = ({
                 enableTLSVerification: tlsInput.enableTLSVerification,
                 tlsConfig: {
                     caData: tlsInput.tlsConfig.caData.value,
-                    certData: tlsInput.tlsConfig.certData.value,
+                    tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
                     keyData: tlsInput.tlsConfig.keyData.value,
                 },
             }),
@@ -633,7 +633,7 @@ const GitForm = ({
                     ...tlsInput,
                     tlsConfig: {
                         ...tlsInput.tlsConfig,
-                        certData: {
+                        tlsCertData: {
                             value: payload,
                             error: '',
                         },
@@ -653,8 +653,8 @@ const GitForm = ({
                             value: payload,
                             error: '',
                         },
-                        certData: {
-                            ...tlsInput.tlsConfig.certData,
+                        tlsCertData: {
+                            ...tlsInput.tlsConfig.tlsCertData,
                             error: '',
                         },
                     },
@@ -831,7 +831,7 @@ const GitForm = ({
             <TLSConnectionForm
                 enableTLSVerification={tlsInput.enableTLSVerification}
                 caData={tlsInput.tlsConfig.caData}
-                certData={tlsInput.tlsConfig.certData}
+                tlsCertData={tlsInput.tlsConfig.tlsCertData}
                 keyData={tlsInput.tlsConfig.keyData}
                 handleChange={handleTLSConfigChange}
                 isTLSInitiallyConfigured={id && enableTLSVerification}

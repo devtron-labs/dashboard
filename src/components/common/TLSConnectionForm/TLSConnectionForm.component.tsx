@@ -22,7 +22,7 @@ import { TLSConnectionFormActionType, TLSConnectionFormProps } from './types'
 const TLSConnectionForm = ({
     enableTLSVerification,
     caData,
-    certData,
+    tlsCertData,
     keyData,
     handleChange,
     isTLSInitiallyConfigured,
@@ -74,8 +74,8 @@ const TLSConnectionForm = ({
                         label="TLS Certificate"
                         id="tsl-certificate"
                         placeholder="Enter TLS certificate"
-                        error={certData.error}
-                        value={certData.value}
+                        error={tlsCertData.error}
+                        value={tlsCertData.value}
                         isSensitive={isTLSInitiallyConfigured}
                         handleChange={handleChange}
                         updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}

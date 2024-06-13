@@ -217,7 +217,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         return {
                             ...rest,
                             caData: tlsConfig.caData,
-                            certData: tlsConfig.certData,
+                            tlsCertData: tlsConfig.tlsCertData,
                             keyData: tlsConfig.keyData,
                         }
                     }) || []
@@ -357,20 +357,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        const { isKeyDataEmpty, isCertDataEmpty, message } = getCertificateAndKeyDependencyError(
-            this.state.form.certData,
+        const { isKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            this.state.form.tlsCertData,
             this.state.form.keyData,
         )
         if (isKeyDataEmpty) {
             isError.keyData = message
         }
 
-        if (isCertDataEmpty) {
-            isError.certData = message
+        if (isTLSCertDataEmpty) {
+            isError.tlsCertData = message
         }
 
         this.setState({ isError })
-        return _isInvalid || isKeyDataEmpty || isCertDataEmpty
+        return _isInvalid || isKeyDataEmpty || isTLSCertDataEmpty
     }
 
     suggestedValidGitOpsUrl() {
@@ -409,7 +409,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             enableTLSVerification: this.state.form.enableTLSVerification,
             tlsConfig: {
                 caData: this.state.form.caData,
-                certData: this.state.form.certData,
+                tlsCertData: this.state.form.tlsCertData,
                 keyData: this.state.form.keyData,
             },
         })
@@ -638,12 +638,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
-                        certData: payload,
+                        tlsCertData: payload,
                     },
                     isError: {
                         ...prevState.isError,
-                        certData: '',
-                        caData: '',
+                        tlsCertData: '',
+                        keyData: '',
                     },
                     isFormEdited: true,
                 }))
@@ -658,7 +658,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     isError: {
                         ...prevState.isError,
                         keyData: '',
-                        certData: '',
+                        tlsCertData: '',
                     },
                     isFormEdited: true,
                 }))
@@ -987,9 +987,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             value: this.state.form.caData,
                             error: this.state.isError.caData,
                         }}
-                        certData={{
-                            value: this.state.form.certData,
-                            error: this.state.isError.certData,
+                        tlsCertData={{
+                            value: this.state.form.tlsCertData,
+                            error: this.state.isError.tlsCertData,
                         }}
                         keyData={{
                             value: this.state.form.keyData,

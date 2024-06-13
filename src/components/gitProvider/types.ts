@@ -3,7 +3,7 @@ import { TLSConfigDTO } from '../common/TLSConnectionForm/types'
 
 interface TLSConfigInputType {
     caData: InputFieldState<TLSConfigDTO['caData']>
-    certData: InputFieldState<TLSConfigDTO['certData']>
+    tlsCertData: InputFieldState<TLSConfigDTO['tlsCertData']>
     keyData: InputFieldState<TLSConfigDTO['keyData']>
 }
 

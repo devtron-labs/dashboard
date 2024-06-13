@@ -88,7 +88,7 @@ export interface GitOpsState {
         bitBucketWorkspaceId: string
         bitBucketProjectKey: string
         keyData: string
-        certData: string
+        tlsCertData: string
         caData: string
     }
     validatedTime: string
