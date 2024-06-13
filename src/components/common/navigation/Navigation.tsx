@@ -43,9 +43,10 @@ import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.sv
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
-const hideReleases = !importComponentFromFELibrary('Releases', null, 'function')
+const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 const NavigationList = [
     {
@@ -78,16 +79,16 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
-        title: 'Releases',
+        title: 'Software Distribution Hub',
         dataTestId: 'click-on-releases',
         type: 'link',
         iconClass: 'nav-short-env',
         icon: ReleasesIcon,
-        href: URLS.RELEASES,
+        href: URLS.SOFTWARE_DISTRIBUTION_HUB,
         isAvailableInEA: false,
         markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
-        hideNav: hideReleases,
+        hideNav: hideSoftwareDistributionHub,
     },
     {
         title: 'Resource Browser',
@@ -351,6 +352,39 @@ export default class Navigation extends Component<
         }
     }
 
+    renderSidebarLogo = () => {
+        if (window._env_.ORGANIZATION_NAME) {
+            return <OrganizationFrame />
+        }
+
+        if (window._env_.SIDEBAR_DT_LOGO) {
+            return (
+                <img src={window._env_.SIDEBAR_DT_LOGO} alt="devtron" className="icon-dim-40" width={40} height={40} />
+            )
+        }
+
+        return (
+            <svg className="devtron-logo" data-testid="click-on-devtron-app-logo" viewBox="0 0 40 40">
+                <use href={`${NavSprite}#nav-short-devtron-logo`} />
+            </svg>
+        )
+    }
+
+    renderOrganizationTextLogo = () => {
+        const showOrganizationName = !!window._env_.ORGANIZATION_NAME
+
+        return (
+            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2 py-2' : ''}`}>
+                <img
+                    src={TextLogo}
+                    alt="devtron"
+                    className={`devtron-logo devtron-logo--text ${showOrganizationName ? 'h-20' : ''}`}
+                />
+                {showOrganizationName && <OrganizationTextLogo />}
+            </div>
+        )
+    }
+
     render() {
         return (
             <>
@@ -366,26 +400,8 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                {window._env_.SIDEBAR_DT_LOGO ? (
-                                    <img
-                                        src={window._env_.SIDEBAR_DT_LOGO}
-                                        alt="devtron"
-                                        className="icon-dim-40"
-                                        width={40}
-                                        height={40}
-                                    />
-                                ) : (
-                                    <svg
-                                        className="devtron-logo"
-                                        data-testid="click-on-devtron-app-logo"
-                                        viewBox="0 0 40 40"
-                                    >
-                                        <use href={`${NavSprite}#nav-short-devtron-logo`} />
-                                    </svg>
-                                )}
-                                <div className="pl-12">
-                                    <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
-                                </div>
+                                {this.renderSidebarLogo()}
+                                {this.renderOrganizationTextLogo()}
                             </div>
                         </NavLink>
                         {NavigationList.map((item) => {
