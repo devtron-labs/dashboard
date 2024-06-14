@@ -16,6 +16,49 @@
 
 /* eslint-disable no-restricted-globals */
 export default () => {
+    /**
+     * Compares two values for sorting.
+     * @param  a - The first value to compare.
+     * @param  b - The second value to compare.
+     * @returns  The comparison result (-1 if a < b, 0 if a = b, 1 if a > b).
+     */
+    const comparator = (a: string | number | object, b: string | number | object) => {
+        let result = 0
+        if (a < b) {
+            result = -1
+        } else if (a > b) {
+            result = 1
+        }
+        return result
+    }
+
+    /**
+     * Dynamically sorts an array of objects based on a specified property and sorting order.
+     * @param  property - The property by which to sort the objects.
+     * @param  sortOrder - The sorting order ('ASC' for ascending, 'DESC' for descending).
+     * @returns A sorting function.
+     */
+    const dynamicSort = (property: string, sortOrder: 'ASC' | 'DESC') => {
+        const sortingOrder = sortOrder === 'ASC' ? 1 : -1
+
+        /**
+         * Sorting function for comparing two objects based on a specified property.
+         * @param a - The first object to compare.
+         * @param b - The second object to compare.
+         * @returns The comparison result (-1 if a < b, 0 if a = b, 1 if a > b).
+         */
+        return (a: Record<string, string | number | object>, b: Record<string, string | number | object>) => {
+            const valueA = a[property]
+            const valueB = b[property]
+
+            if (!Number.isNaN(Number(valueA)) && !Number.isNaN(Number(valueB))) {
+                return comparator(Number(valueA), Number(valueB)) * sortingOrder
+            }
+
+            return comparator(valueA, valueB) * sortingOrder
+        }
+    }
+
     function debounceSearch(callback: (...args: any[]) => void) {
         let timeout
         return (...args: any[]): void => {
@@ -26,19 +69,23 @@ export default () => {
         }
     }
 
-    function getFilteredList({ searchText, list }) {
+    function getFilteredList({ searchText, list, sortBy, sortOrder }) {
         const searchTextLowerCased = searchText.toLowerCase()
-        if (searchTextLowerCased === '' || !list?.length) {
-            self.postMessage(list)
-            return
-        }
-        self.postMessage(
-            list.filter((item) =>
+        let filteredList = [...list];
+
+        if (searchTextLowerCased !== '' && list?.length) {
+            filteredList = list.filter((item) =>
                 Object.entries(item).some(
                     ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
                 ),
-            ),
-        )
+            )
+        }
+
+        if (sortBy && sortOrder) {
+            filteredList.sort(dynamicSort(sortBy, sortOrder))
+        }
+
+        self.postMessage(filteredList)
     }
 
     self.addEventListener('message', (e) => {
@@ -52,7 +99,9 @@ export default () => {
 
         switch (e.data.type) {
             case 'start':
-                debounceSearch(getFilteredList)(e.data.payload)
+                e.data.payload.viaSearch
+                    ? debounceSearch(getFilteredList)(e.data.payload)
+                    : getFilteredList(e.data.payload)
                 break
             case 'stop':
                 self.postMessage([])
