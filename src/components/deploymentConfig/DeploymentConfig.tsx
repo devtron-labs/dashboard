@@ -96,6 +96,7 @@ export default function DeploymentConfig({
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
 
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
@@ -343,7 +344,6 @@ export default function DeploymentConfig({
                 schema,
                 readme,
                 guiSchema,
-                yamlMode: isSuperAdmin,
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
@@ -409,9 +409,6 @@ export default function DeploymentConfig({
 
     const handleSaveChanges = (e) => {
         e.preventDefault()
-        if (state.isRequiredFieldsUnfilled) {
-            return
-        }
         if (!state.chartConfig.id) {
             // create flow
             save()
@@ -610,13 +607,13 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 setIsValues(true)
-                /* NOTE: default to ADVANCED only if superAdmin */
-                toggleYamlMode(isSuperAdmin)
+                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
                 }
                 break
             case 2:
+                isGuiModeRef.current = state.yamlMode
                 if (!state.openComparison) {
                     if (!state.yamlMode) {
                         if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {

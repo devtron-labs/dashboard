@@ -369,7 +369,6 @@ export interface DeploymentConfigStateType {
     loadingManifestOverride: boolean
     convertVariables: boolean
     convertVariablesOverride: boolean
-    isRequiredFieldsUnfilled: boolean
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {
@@ -437,7 +436,6 @@ export enum DeploymentConfigStateActionTypes {
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
     guiSchema = 'guiSchema',
-    isRequiredFieldsUnfilled = 'isRequiredFieldsUnfilled',
 }
 
 export interface DeploymentConfigStateAction {
@@ -463,8 +461,18 @@ export interface SaveConfirmationDialogProps {
     closeLockedDiffDrawerWithChildModal: () => void
 }
 
-export interface DeploymentTemplateGUIViewProps extends Pick<DeploymentTemplateEditorViewProps, 'editorOnChange'> {
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<
+        DeploymentTemplateEditorViewProps,
+        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys'
+    > {
     fetchingValues?: boolean
     value: string
     readOnly: boolean
+}
+
+export interface Schema {
+    type: string
+    items: Schema
+    properties: Schema
 }

@@ -18,7 +18,7 @@ import React, { useContext, useMemo } from 'react'
 import { InfoColourBar, Progressing, RJSFForm, FormProps, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentConfigContextType, Schema, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -37,17 +37,42 @@ const DeploymentTemplateGUIView = ({
     value,
     readOnly,
     editorOnChange,
+    hideLockedKeys,
+    lockedConfigKeysWithLockType,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading, isRequiredFieldsUnfilled, guiSchema },
-        dispatch,
+        state: { chartConfigLoading, guiSchema },
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+
+    const recursiveDeleteKey = (i: number, obj: Schema, parts: string[]) => {
+        if (obj.type === 'array' && obj.items?.type === 'object') {
+            recursiveDeleteKey(i, obj.items, parts)
+            return
+        }
+        if (obj.type !== 'object' || i > parts.length - 1) {
+            return
+        }
+        const key = parts[i].split(/\[|\]/, 2)[0]
+        if (i === parts.length - 1) {
+            if (key in obj.properties) {
+                delete obj.properties[key]
+            }
+        }
+        if (key in obj.properties) {
+            recursiveDeleteKey(i + 1, obj.properties[key], parts)
+        }
+    }
 
     const state = useMemo(() => {
         try {
             const parsedGUISchema = JSON.parse(guiSchema)
+            if (hideLockedKeys) {
+                lockedConfigKeysWithLockType.config.forEach((key) =>
+                    recursiveDeleteKey(0, parsedGUISchema, key.split('.')),
+                )
+            }
             if (!Object.keys(parsedGUISchema).length) {
                 throw new Error()
             }
@@ -59,21 +84,14 @@ const DeploymentTemplateGUIView = ({
                 error: new Error('No valid GUI schema defined'),
             }
         }
-    }, [guiSchema])
+    }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        const formHasErrors = !!data.errors.length
-        if (isRequiredFieldsUnfilled !== formHasErrors) {
-            dispatch({
-                type: DeploymentConfigStateActionTypes.isRequiredFieldsUnfilled,
-                payload: formHasErrors,
-            })
-        }
         editorOnChange(YAML.stringify(data.formData))
     }
 
     const renderContent = () => {
-        if (chartConfigLoading || !value || fetchingValues) {
+        if (chartConfigLoading || fetchingValues) {
             return <Progressing pageLoader />
         }
 

@@ -291,7 +291,6 @@ export default function DeploymentTemplateOverride({
                 readme: result.readme,
                 schema: result.schema,
                 guiSchema: result.guiSchema,
-                yamlMode: isSuperAdmin,
             }
 
             if (isProtected && state.latestDraft) {

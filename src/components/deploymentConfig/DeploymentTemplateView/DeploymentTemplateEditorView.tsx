@@ -478,12 +478,9 @@ const DeploymentTemplateEditorView = ({
                 validatorSchema={state.schema}
                 loading={
                     state.chartConfigLoading ||
-                    value === undefined ||
-                    value === null ||
                     fetchingValues ||
                     draftLoading ||
                     resolveLoading ||
-                    !rhs ||
                     (state.openComparison && !lhs)
                 }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
@@ -528,7 +525,9 @@ const DeploymentTemplateEditorView = ({
             fetchingValues={fetchingValues}
             value={rhs}
             readOnly={readOnly}
+            hideLockedKeys={hideLockedKeys}
             editorOnChange={editorOnChange}
+            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
         />
     )
 }

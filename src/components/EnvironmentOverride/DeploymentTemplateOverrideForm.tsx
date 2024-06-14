@@ -77,6 +77,7 @@ export default function DeploymentTemplateOverrideForm({
     })
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
     const removedPatches = useRef<Array<jsonpatch.Operation>>([])
 
@@ -358,12 +359,13 @@ export default function DeploymentTemplateOverrideForm({
             case 1:
             case 3:
                 setIsValuesOverride(true)
-                toggleYamlMode(isSuperAdmin)
+                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
                 }
                 break
             case 2:
+                isGuiModeRef.current = state.yamlMode
                 if (!state.openComparison) {
                     if (!state.yamlMode) {
                         if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {

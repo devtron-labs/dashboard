@@ -15,7 +15,14 @@
  */
 
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError, useUserEmail } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CHECKBOX_VALUE,
+    Checkbox,
+    ConditionalWrap,
+    Progressing,
+    showError,
+    useUserEmail,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
@@ -59,11 +66,7 @@ export default function DeploymentConfigFormCTA({
     const { email } = useUserEmail()
     const hasAccess = hasApproverAccess(email, state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
-    const isSomeFieldsMissing = !state.yamlMode && state.isRequiredFieldsUnfilled
     const getCTATippyContent = () => {
-        if (isSomeFieldsMissing) {
-            return 'Input is required for all mandatory fields.'
-        }
         if (isApprovalPending) {
             if (!hasAccess) {
                 return 'You do not have permission to approve configuration changes for this application - environment combination.'
@@ -117,12 +120,12 @@ export default function DeploymentConfigFormCTA({
     const renderButton = () => {
         return (
             <ConditionalWrap
-                condition={(isEnvOverride && disableButton) || approveDisabled || isSomeFieldsMissing}
+                condition={(isEnvOverride && disableButton) || approveDisabled}
                 wrap={renderWrappedChildren}
             >
                 <button
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
-                        _disabled || approveDisabled || isSomeFieldsMissing ? 'disabled' : ''
+                        _disabled || approveDisabled ? 'disabled' : ''
                     }`}
                     type="button"
                     onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
@@ -132,11 +135,7 @@ export default function DeploymentConfigFormCTA({
                             : 'base-deployment-template-save-changes-button'
                     }`}
                     disabled={
-                        loading ||
-                        state.unableToParseYaml ||
-                        (!isValues && !isApprovalPending) ||
-                        convertVariables ||
-                        isSomeFieldsMissing
+                        loading || state.unableToParseYaml || (!isValues && !isApprovalPending) || convertVariables
                     }
                 >
                     {loading ? (
