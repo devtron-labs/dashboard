@@ -985,10 +985,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.91":
-  version "0.0.91"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.91.tgz#623b874ab67bc44d162d21558f1dbef632704dbb"
-  integrity sha512-em5DlBmN3I3gA9ulf7+kpahBQ4B+g48xpvCpFAdKr+iVwB4/4WOyfKnrM2vcg6/l/RWEFUapHhMMQYqYfPn4OQ==
+"@devtron-labs/devtron-fe-common-lib@0.0.92":
+  version "0.0.92"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.92.tgz#10618322d7160b3e54be8bab7e14d29a73bce489"
+  integrity sha512-56uoNQAwmyB9v9Y86BaldmH4ek2uRPgkFZAHRqctXcKu0NiSNqgrD0aqEtrsVjeOC8o6Qp5ien70kbIOWDXdPw==
   dependencies:
     ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
