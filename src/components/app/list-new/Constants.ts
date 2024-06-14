@@ -54,6 +54,8 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     connectClusterLabel: 'Connect a cluster',
     noAppsFound: 'No apps found',
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
+    noFluxCDApps: 'No FluxCD applications',
+    noArgoCDApps: 'No ArgoCD applications',
 }
 export const ClearFiltersLabel = 'Clear filters'
 export const DefaultAppNote = `## Describe this application\n\nDescribe this application in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this application and how it works. Keep it concise and informative!\n`

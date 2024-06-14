@@ -1084,14 +1084,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             )}
             {isExternalArgoOrFlux && (
                 <>
+                    // TODO: Rename as GenericAppList
                     <ExternalArgoList
                         key={params.appType}
-                        serverMode={serverMode}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
                         updateDataSyncing={updateDataSyncing}
                         setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}

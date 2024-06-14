@@ -622,12 +622,9 @@ export interface PayloadParsedFromURL {
 }
 
 export interface ExternalArgoListType {
-    serverMode?: string
     payloadParsedFromUrl: PayloadParsedFromURL
     sortApplicationList
     clearAllFilters
-    fetchingExternalApps
-    setFetchingExternalAppsState
     updateDataSyncing
     setShowPulsatingDotState
     masterFilters
