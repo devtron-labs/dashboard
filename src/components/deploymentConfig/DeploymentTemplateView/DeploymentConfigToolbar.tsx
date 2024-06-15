@@ -49,6 +49,8 @@ export default function DeploymentConfigToolbar({
 
     const handleOptionClick = (newValue) => {
         setIsValues(newValue)
+        /* NOTE: switch to compare tab */
+        handleTabSelection(2)
         setConvertVariables(false)
     }
 
