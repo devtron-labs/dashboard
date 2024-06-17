@@ -32,7 +32,6 @@ export default function ExternalApps() {
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                appType={AppListConstants.AppType.HELM_APPS}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

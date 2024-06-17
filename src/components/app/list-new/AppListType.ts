@@ -69,7 +69,6 @@ export enum FLUX_CD_DEPLOYMENT_TYPE {
 export interface FluxCDApp {
     appName: string
     appStatus: string
-    syncStatus: string
     isKustomizeApp: boolean
     clusterName: string
     namespace: string

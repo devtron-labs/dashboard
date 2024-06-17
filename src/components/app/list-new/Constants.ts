@@ -92,4 +92,8 @@ export const StatusConstants = {
     NOT_AVILABLE: {
         normalCase: 'Not available',
     },
+    DEPLOYMENT_TYPE: {
+        normalCase: 'Deployment Type',
+        noSpaceLower: 'deploymentType',
+    },
 } as const

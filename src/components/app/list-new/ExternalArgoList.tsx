@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -28,12 +28,11 @@ import {
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { OrderBy, SortBy } from '../list/types'
+import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
-import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { Empty } from '../list/emptyView/Empty'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
@@ -56,9 +55,7 @@ export default function ExternalArgoList({
     sortApplicationList,
     clearAllFilters,
     updateDataSyncing,
-    setShowPulsatingDotState,
     masterFilters,
-    isArgoInstalled,
     appType,
 }: ExternalArgoListType) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
@@ -82,24 +79,24 @@ export default function ExternalArgoList({
     }
 
     const getExternalInstalledFluxApps = () => {
-       return new Promise((resolve, reject) => {
-        const _sseConnection = new EventSource(`${Host}/flux-application`, {
-            withCredentials: true,
+        return new Promise((resolve, reject) => {
+            const _sseConnection = new EventSource(`${Host}/flux-application`, {
+                withCredentials: true,
+            })
+
+            _sseConnection.onmessage = function (message) {
+                const externalAppData: FluxCDAppListResponse = JSON.parse(message.data)
+                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+
+                setAppsList([...recievedExternalFluxApps])
+                resolve(null)
+            }
+            _sseConnection.onerror = function (err) {
+                closeSseConnection(_sseConnection)
+                reject(err)
+            }
+            setSseConnection(_sseConnection)
         })
-
-        _sseConnection.onmessage = function (message) {
-            const externalAppData: FluxCDAppListResponse = JSON.parse(message.data)
-            const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-
-            setAppsList([...recievedExternalFluxApps])
-            resolve(null)
-        }
-        _sseConnection.onerror = function (err) {
-            closeSseConnection(_sseConnection)
-            reject(err)
-        }
-        setSseConnection(_sseConnection)
-       })
     }
 
     // component load
@@ -144,17 +141,20 @@ export default function ExternalArgoList({
                     setDataStateType(AppListViewType.LIST)
                 })
         } else if (isFluxCDAppList) {
-            getExternalInstalledFluxApps().then(() => {
-                setDataStateType(AppListViewType.LIST)
-            updateDataSyncing(false)
-            }).catch((error) => {
-                showError(error)
-                setDataStateType(AppListViewType.ERROR)
-                setErrorResponseCode(error.code)
-            }).finally(() => {
-                updateDataSyncing(false)
-                setDataStateType(AppListViewType.LIST)
-            })
+            getExternalInstalledFluxApps()
+                .then(() => {
+                    setDataStateType(AppListViewType.LIST)
+                    updateDataSyncing(false)
+                })
+                .catch((error) => {
+                    showError(error)
+                    setDataStateType(AppListViewType.ERROR)
+                    setErrorResponseCode(error.code)
+                })
+                .finally(() => {
+                    updateDataSyncing(false)
+                    setDataStateType(AppListViewType.LIST)
+                })
         }
     }, [clusterIdsCsv])
 
@@ -182,6 +182,7 @@ export default function ExternalArgoList({
     function handleFilteration() {
         const _search = payloadParsedFromUrl.appNameSearch
         const _sortOrder = payloadParsedFromUrl.sortOrder
+        const selectedDeploymentTypes = payloadParsedFromUrl.deploymentType || []
         let _filteredAppsList = [...(appsList || [])]
 
         // handle search
@@ -197,6 +198,16 @@ export default function ExternalArgoList({
         } else {
             _filteredAppsList = _filteredAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
         }
+
+        // handle deployment type
+        // if (selectedDeploymentTypes.length === 1) {
+        //     if (selectedDeploymentTypes.includes('Helm Release')) {
+        //         _filteredAppsList = _filteredAppsList.filter((app) => !app.isKustomizeApp)
+        //     }
+        //     if (selectedDeploymentTypes.includes('Kustomization')) {
+        //         _filteredAppsList = _filteredAppsList.filter((app) => app.isKustomizeApp)
+        //     }
+        // }
 
         setSortOrder(_sortOrder)
         setFilteredAppsList(_filteredAppsList)
@@ -247,13 +258,11 @@ export default function ExternalArgoList({
                         <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                     </button>
                 </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--app_status">
-                        <span className="app-list__cell-header">
-                            {isFluxCDAppList ? APP_LIST_HEADERS.FluxCDStatus  : APP_LIST_HEADERS.AppStatus }
-                        </span>
-                    </div>
-                )}
+                <div className="app-list__cell app-list__cell--app_status">
+                    <span className="app-list__cell-header">
+                        {isFluxCDAppList ? APP_LIST_HEADERS.FluxCDStatus : APP_LIST_HEADERS.AppStatus}
+                    </span>
+                </div>
                 {isFluxCDAppList && (
                     <div className="app-list__cell">
                         <span>DEPLOYMENT TYPE</span>
@@ -300,12 +309,19 @@ export default function ExternalArgoList({
                 <div className="app-list__cell app-list__cell--name flex column left">
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                 </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--namespace">
-                        <AppStatus appStatus={app.appStatus} />
+                <div className="app-list__cell app-list__cell--namespace">
+                    <AppStatus
+                        appStatus={isArgoCDAppList ? app.appStatus : app.appStatus === 'True' ? 'Ready' : 'Not Ready'}
+                    />
+                </div>
+                {isFluxCDAppList && (
+                    <div>
+                        {/* {app.isKustomizeApp
+                            ? FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION
+                            : FLUX_CD_DEPLOYMENT_TYPE.HELM_RELEASE} */}
+                        {FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION}
                     </div>
                 )}
-                {isFluxCDAppList && <div>{FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION}</div>}
                 <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
@@ -346,7 +362,11 @@ export default function ExternalArgoList({
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={noChartInClusterImage}
-                    title={isArgoCDAppList ? APPLIST_EMPTY_STATE_MESSAGING.noArgoCDApps : APPLIST_EMPTY_STATE_MESSAGING.noFluxCDApps}
+                    title={
+                        isArgoCDAppList
+                            ? APPLIST_EMPTY_STATE_MESSAGING.noArgoCDApps
+                            : APPLIST_EMPTY_STATE_MESSAGING.noFluxCDApps
+                    }
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
                 />
             </div>
@@ -448,8 +468,7 @@ export default function ExternalArgoList({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredAppsList.length > 20 &&
-            (
+            filteredAppsList.length > 20 && (
                 <Pagination
                     size={filteredAppsList.length}
                     pageSize={payloadParsedFromUrl.size}

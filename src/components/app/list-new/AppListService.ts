@@ -25,7 +25,7 @@ import {
 import { getAppFilters } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
 import { Cluster } from '../../../services/service.types'
-import { APP_STATUS } from '../config'
+import { APP_STATUS, FLUX_CD_DEPLOYMENT_TYPE } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
 import { AppListResponse } from './AppListType'
@@ -61,12 +61,13 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             })
         }
 
-        /// /// set master filters data starts (check/uncheck)
+        // set master filters data starts (check/uncheck)
         const filterApplied = {
             teams: new Set(payloadParsedFromUrl.teams),
             environments: new Set(payloadParsedFromUrl.environments),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
             appStatus: new Set(payloadParsedFromUrl.appStatuses),
+            deploymentType: new Set(payloadParsedFromUrl.deploymentType)
         }
 
         const filters = {
@@ -75,6 +76,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             clusters: [],
             namespaces: [],
             appStatus: [],
+            deploymentType: [],
         }
 
         // set filter projects starts
@@ -146,7 +148,22 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             }
         })
 
-        /// /// set master filters data ends (check/uncheck)
+        // set filter appStatus ends
+
+        // set filter deploymentType starts
+
+        filters.deploymentType = Object.entries(FLUX_CD_DEPLOYMENT_TYPE).map(([keys, values]) => {
+            return {
+                key: values,
+                label: keys,
+                isSaved: true,
+                isChecked: filterApplied.deploymentType.has(values)
+            }
+        })
+
+        // set filter deploymentType ends
+
+        // set master filters data ends (check/uncheck)
 
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
