@@ -125,6 +125,7 @@ export interface DeploymentConfigFormCTAProps {
     loading: boolean
     showAppMetricsToggle: boolean
     isAppMetricsEnabled: boolean
+    handleSaveChanges: React.MouseEventHandler<HTMLButtonElement>
     isEnvOverride?: boolean
     isCiPipeline?: boolean
     disableCheckbox?: boolean
@@ -211,9 +212,7 @@ export interface DeploymentTemplateOptionsTabProps {
     selectedChartRefId: number
     disableVersionSelect?: boolean
     yamlMode: boolean
-    isBasicViewLocked: boolean
     codeEditorValue: string
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     changeEditorMode?: () => void
 }
 
@@ -230,7 +229,7 @@ export interface DeploymentTemplateEditorViewProps {
     environmentName?: string
     value: string
     defaultValue?: string
-    editorOnChange: (str: string, fromBasic?: boolean) => void
+    editorOnChange?: (str: string) => void
     readOnly?: boolean
     globalChartRefId?: number
     handleOverride?: (e: any) => Promise<void>
@@ -297,25 +296,9 @@ export interface SecretFormProps {
     isJobView?: boolean
 }
 
-export interface BasicFieldDataType {
-    isUpdated: boolean
-    dataType: string
-    value: any
-    isMandatory: boolean
-    isInvalid: boolean
-}
-
 interface ErrorObj {
     isValid: boolean
     message: string | null
-}
-
-export interface BasicFieldErrorObj {
-    isValid: boolean
-    port: ErrorObj
-    cpu: ErrorObj
-    memory: ErrorObj
-    envVariables: ErrorObj[]
 }
 
 export interface ChartSelectorModalType {
@@ -353,6 +336,7 @@ export interface DeploymentConfigStateType {
     selectedChart: DeploymentChartVersionType
     template: string
     schema: any
+    guiSchema: string
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -367,11 +351,6 @@ export interface DeploymentConfigStateType {
     fetchedValues: Record<number | string, string>
     fetchedValuesManifest: Record<number | string, string>
     yamlMode: boolean
-    isBasicLocked: boolean
-    isBasicLockedInBase: boolean
-    currentEditorView: string
-    basicFieldValues: Record<string, any>
-    basicFieldValuesErrorObj: BasicFieldErrorObj
     data: any
     duplicate: any
     dialog: boolean
@@ -428,11 +407,6 @@ export enum DeploymentConfigStateActionTypes {
     fetchedValues = 'fetchedValues',
     fetchedValuesManifest = 'fetchedValuesManifest',
     yamlMode = 'yamlMode',
-    isBasicLocked = 'isBasicLocked',
-    isBasicLockedInBase = 'isBasicLockedInBase',
-    currentEditorView = 'currentEditorView',
-    basicFieldValues = 'basicFieldValues',
-    basicFieldValuesErrorObj = 'basicFieldValuesErrorObj',
     duplicate = 'duplicate',
     appMetrics = 'appMetrics',
     data = 'data',
@@ -461,6 +435,7 @@ export enum DeploymentConfigStateActionTypes {
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
+    guiSchema = 'guiSchema',
 }
 
 export interface DeploymentConfigStateAction {
@@ -484,4 +459,20 @@ export interface SaveConfirmationDialogProps {
     onSave: () => void
     showAsModal: boolean
     closeLockedDiffDrawerWithChildModal: () => void
+}
+
+export interface DeploymentTemplateGUIViewProps
+    extends Pick<
+        DeploymentTemplateEditorViewProps,
+        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys'
+    > {
+    fetchingValues?: boolean
+    value: string
+    readOnly: boolean
+}
+
+export interface Schema {
+    type: string
+    items: Schema
+    properties: Schema
 }
