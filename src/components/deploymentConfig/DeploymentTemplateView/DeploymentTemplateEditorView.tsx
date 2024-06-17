@@ -16,7 +16,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
-import { Progressing, showError, SortingOrder, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, SortingOrder, YAMLStringify, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -37,7 +37,6 @@ import {
     getCodeEditorHeight,
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 
