@@ -59,9 +59,9 @@ export default () => {
         }
     }
 
-    function debounceSearch(callback: (...args: any[]) => void) {
-        let timeout
-        return (...args: any[]): void => {
+    const debounceSearch = <T extends unknown[]>(callback: (...args: T) => void) => {
+        let timeout: NodeJS.Timeout
+        return (...args: T) => {
             clearTimeout(timeout)
             timeout = setTimeout(() => {
                 callback.apply(self, args)
@@ -69,9 +69,19 @@ export default () => {
         }
     }
 
-    function getFilteredList({ searchText, list, sortBy, sortOrder }) {
+    const getFilteredList = ({
+        searchText,
+        list,
+        sortBy,
+        sortOrder,
+    }: {
+        searchText: string
+        list: unknown[]
+        sortBy: string
+        sortOrder: 'ASC' | 'DESC'
+    }) => {
         const searchTextLowerCased = searchText.toLowerCase()
-        let filteredList = [...list];
+        let filteredList = [...list]
 
         if (searchTextLowerCased !== '' && list?.length) {
             filteredList = list.filter((item) =>
@@ -99,9 +109,11 @@ export default () => {
 
         switch (e.data.type) {
             case 'start':
-                e.data.payload.viaSearch
-                    ? debounceSearch(getFilteredList)(e.data.payload)
-                    : getFilteredList(e.data.payload)
+                if (e.data.payload.debounceResult) {
+                    debounceSearch(getFilteredList)(e.data.payload)
+                } else {
+                    getFilteredList(e.data.payload)
+                }
                 break
             case 'stop':
                 self.postMessage([])

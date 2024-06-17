@@ -202,7 +202,12 @@ export const K8SResourceList = ({
         setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
-    const handleFilterChanges = (_searchText: string, _sortBy: string, _sortOrder: string, viaSearch = false): void => {
+    const handleFilterChanges = (
+        _searchText: string,
+        _sortBy: string,
+        _sortOrder: string,
+        debounceResult = false,
+    ): void => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
             searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
@@ -215,7 +220,7 @@ export const K8SResourceList = ({
                 list: resourceList?.data || [],
                 sortBy: _sortBy,
                 sortOrder: _sortOrder,
-                viaSearch,
+                debounceResult,
                 origin: new URL(window.__BASE_URL__, window.location.href).origin,
             },
         })
