@@ -17,7 +17,7 @@
 import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
-import guiSchema from './basicViewSchema.json'
+import { addGUISchemaIfAbsent } from './utils'
 
 export async function getDeploymentTemplate(
     id: number,
@@ -25,24 +25,10 @@ export async function getDeploymentTemplate(
     abortSignal: AbortSignal,
     isDefaultTemplate?: boolean,
 ): Promise<ResponseType> {
-    if (isDefaultTemplate) {
-        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
-            signal: abortSignal,
-        })
-    }
-    const data = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
         signal: abortSignal,
     })
-    if (!data?.result?.guiSchema) {
-        return {
-            ...data,
-            result: {
-                ...data?.result,
-                guiSchema: JSON.stringify(guiSchema),
-            },
-        }
-    }
-    return data
+    return addGUISchemaIfAbsent(response)
 }
 
 export function getDeploymentTemplateData(

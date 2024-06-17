@@ -265,10 +265,10 @@ export const getCodeEditorHeight = (
     if (openComparison || showReadme) {
         return 'calc(100vh - 220px)'
     }
-    if (isEnvOverride) {
+    if (isEnvOverride || isUnSet) {
         return 'calc(100vh - 272px)'
     }
-    return isUnSet ? 'calc(100vh - 272px)' : 'calc(100vh - 240px)'
+    return 'calc(100vh - 240px)'
 }
 
 export const renderEditorHeading = (

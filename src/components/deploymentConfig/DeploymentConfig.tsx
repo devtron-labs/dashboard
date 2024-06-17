@@ -260,6 +260,7 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
+        // FIXME: send sortMapKeys option to strigify for consistency?
         const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {

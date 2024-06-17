@@ -16,20 +16,11 @@
 
 import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import guiSchema from '../deploymentConfig/basicViewSchema.json'
+import { addGUISchemaIfAbsent } from '../deploymentConfig/utils'
 
 export async function getDeploymentTemplate(appId, envId, chartId): Promise<ResponseType> {
     const data = await get(`app/env/${appId}/${envId}/${chartId}`)
-    if (!data?.result?.guiSchema) {
-        return {
-            ...data,
-            result: {
-                ...data?.result,
-                guiSchema: JSON.stringify(guiSchema),
-            },
-        }
-    }
-    return data
+    return addGUISchemaIfAbsent(data)
 }
 
 export function updateDeploymentTemplate(appId, envId, payload) {

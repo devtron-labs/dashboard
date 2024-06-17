@@ -15,7 +15,9 @@
  */
 
 import React from 'react'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateOptionsTabProps } from './types'
+import guiSchema from './basicViewSchema.json'
 
 export const getRenderActionButton =
     (changeEditorMode: DeploymentTemplateOptionsTabProps['changeEditorMode']) => () => (
@@ -28,3 +30,16 @@ export const getRenderActionButton =
             <span className="cb-5 cursor fw-6">Switch to Advanced</span>
         </button>
     )
+
+export const addGUISchemaIfAbsent = (response: ResponseType) => {
+    if (response && response.result && !response.result.guiSchema) {
+        return {
+            ...response,
+            result: {
+                ...response.result,
+                guiSchema: JSON.stringify(guiSchema),
+            },
+        }
+    }
+    return response
+}
