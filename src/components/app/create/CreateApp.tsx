@@ -414,7 +414,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 onChange={this.handleCloneAppChange}
                                 styles={this._multiSelectStyles}
                                 components={{
-                                    IndicatorSeparator: null,
+                                             IndicatorSeparator: null,
                                     LoadingIndicator: null,
                                     Option,
                                 }}

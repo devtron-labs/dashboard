@@ -172,10 +172,11 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
 
     function reloadWorkflows() {
         getWorkflowList(appId).then((response) => {
+        
             setState((prevState) => {
                 return {
                     ...prevState,
-                    canDeleteApp: response.result.workflows.length === 0,
+                    canDeleteApp: response.result.workflows?.length === 0,//# here is the fix
                     workflowsRes: response.result,
                 }
             })
