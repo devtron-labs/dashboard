@@ -34,7 +34,7 @@ import AdvancedConfig from './AdvancedConfig'
 import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
-import { getChartGroupDeploymentToastMessage } from './charts.helper'
+import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()
@@ -138,13 +138,7 @@ export default function ChartGroupAdvanceDeploy() {
             const { result } = await deployChartGroup(project.id, deployableCharts, Number(groupId))
             setDeployed(true)
             // TODO: Proper error handling in case of deployment is failed.
-            const {status, title, description} = getChartGroupDeploymentToastMessage(result);
-            toast[status](
-                <>
-                    {title}
-                    {!!description && <p className="m-0 cr-5">{description}</p>}
-                </>,
-            )
+            renderChartGroupDeploymentToastMessage(result)
         } catch (err) {
             showError(err)
         } finally {

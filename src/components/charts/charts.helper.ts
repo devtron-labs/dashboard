@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { toast } from 'react-toastify'
+
 import { URLS } from '../../config'
 import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
+import { renderToastMessage } from './charts.util'
 
 export const MultiChartSummaryView = {
     SELECT_CHART: 'SELECT-CHART',
@@ -93,13 +96,10 @@ export function breadCrumbsChartValue(URL: string): Array<{ label: string; url: 
 }
 
 /**
- * Checks if deployment of the apps of group chart are initiated based on the api response and returns toast message.
+ * Checks if deployment of the apps of group chart are initiated based on the api response and renders toast message.
  * @param payload Response of group chart deployment api.
- * @returns An object containing the status, title and description for the toast message.
  */
-export const getChartGroupDeploymentToastMessage = ({
-    chartGroupInstallMetadata,
-}: ChartGroupDeployResponse): { status: 'error' | 'warn' | 'success'; title: string; description?: string } => {
+export const renderChartGroupDeploymentToastMessage = ({ chartGroupInstallMetadata }: ChartGroupDeployResponse) => {
     const failedDeployments = chartGroupInstallMetadata.reduce((acc, metadata) => {
         if (metadata.triggerStatus === 'failed') {
             return acc + 1
@@ -107,23 +107,21 @@ export const getChartGroupDeploymentToastMessage = ({
         return acc
     }, 0)
 
+    let status = ''
+    let title = ''
+    let description = ''
+
     if (failedDeployments === 0) {
-        return {
-            status: 'success',
-            title: 'Deployment initiated',
-        }
+        status = 'success'
+        title = 'Deployment initiated'
+    } else if (failedDeployments === chartGroupInstallMetadata.length) {
+        status = 'error'
+        title = 'Deployment failed'
+    } else {
+        status = 'warn'
+        title = 'Deployment initiated partially'
+        description = `Deployment could not be initiated for ${failedDeployments}/${chartGroupInstallMetadata.length} applications`
     }
 
-    if (failedDeployments === chartGroupInstallMetadata.length) {
-        return {
-            status: 'error',
-            title: 'Deployment failed',
-        }
-    }
-
-    return {
-        status: 'warn',
-        title: 'Deployment initiated partially',
-        description: `Deployment could not be initiated for ${failedDeployments}/${chartGroupInstallMetadata.length} applications`,
-    }
+    toast[status](renderToastMessage(title, description))
 }
