@@ -77,9 +77,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [projectMap, setProjectMap] = useState(new Map())
 
     // check for external argoCD app
-    const isExternalArgoOrFlux =
-        (window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS) ||
-        (window._env_?.ENABLE_EXTERNAL_FLUX_CD && params.appType === AppListConstants.AppType.FLUX_APPS)
+    const isExternalArgo =
+        window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS
+    const isExternalFlux =
+        window._env_?.ENABLE_EXTERNAL_FLUX_CD && params.appType === AppListConstants.AppType.FLUX_APPS
 
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
@@ -95,6 +96,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         environments: [],
         clusters: [],
         namespaces: [],
+        deploymentType: [],
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
@@ -163,7 +165,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     useEffect(() => {
         setParsedPayloadOnUrlChange(onRequestUrlChange())
-    }, [location.search])
+    }, [location.search, currentTab])
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
         // return if not single cluster
@@ -200,6 +202,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         const appStatus = params.appStatus || ''
         const teams = params.team || ''
         const clustersAndNamespaces = params.namespace || ''
+        const deploymentType = params.deploymentType || ''
 
         const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
         const environmentsArr = environments
@@ -217,6 +220,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             .split(',')
             .filter((status) => status != '')
             .map((status) => status)
+        const deploymentTypesArr = deploymentType
+            .toString()
+            .split(',')
+            .filter((type) => type != '')
+            .map((type) => type)
 
         // update master filters data (check/uncheck)
         const filterApplied = {
@@ -224,9 +232,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             teams: new Set<number>(teamsArr),
             appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
+            deploymentType: new Set(deploymentTypesArr)
         }
 
-        const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
+        const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [], deploymentType: [] }
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -286,8 +295,17 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.environments.has(env.key),
             }
         })
+
+        _masterFilters.deploymentType = masterFilters.deploymentType.map((deploymentType) => {
+            return {
+                key: deploymentType.key,
+                label: deploymentType.label,
+                isSaved: true,
+                isChecked: filterApplied.deploymentType.has(deploymentType.key)
+            }
+        })
         setMasterFilters(_masterFilters)
-        /// /// update master filters data ends (check/uncheck)
+        /// update master filters data ends (check/uncheck)
 
         const sortBy = params.orderBy || SortBy.APP_NAME
         const sortOrder = params.sortOrder || OrderBy.ASC
@@ -318,6 +336,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 .filter((item) => item != ''),
             appNameSearch: search,
             appStatuses: appStatusArr,
+            deploymentType: deploymentTypesArr,
             sortBy,
             sortOrder,
             offset,
@@ -513,6 +532,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['offset'] = 0
         query['hOffset'] = 0
         const queryStr = queryString.stringify(query)
+        console.log(query)
         updateAppListURL(queryStr, selectedAppTab)
     }
 
@@ -576,6 +596,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         delete query['namespace']
         delete query['appStatus']
         delete query['search']
+        delete query['deploymentType']
 
         // delete search string
         setSearchApplied(false)
@@ -602,7 +623,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
+        history.push(`${getChangeAppTabURL(appTabType)}`)
         setCurrentTab(appTabType)
     }
 
@@ -736,7 +757,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {!isExternalArgoOrFlux && (
+                    {!(isExternalArgo || isExternalFlux) && (
                         <>
                             {isArgoInstalled && (
                                 <>
@@ -791,6 +812,20 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span className="filter-divider" />
                         </>
                     )}
+                    {isExternalFlux && (
+                        <Filter
+                            labelKey="label"
+                            buttonText="Deployment Type"
+                            multi
+                            isDisabled={dataStateType === AppListViewType.LOADING}
+                            list={masterFilters.deploymentType}
+                            placeholder="Search Deployment Type"
+                            type={AppListConstants.FilterType.DEPLOYMENT_TYPE}
+                            applyFilter={applyFilter}
+                            searchable
+                            isFirstLetterCapitalize
+                        />
+                    )}
                     <Filter
                         list={masterFilters.clusters}
                         labelKey="label"
@@ -806,7 +841,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         dataTestId="cluster-filter"
                         appType={params.appType}
                     />
-                    {!isExternalArgoOrFlux && (
+                    {!(isExternalArgo || isExternalFlux) && (
                         <Filter
                             rootClassName="ml-0-imp"
                             position={showExportCsvButton ? 'left' : 'right'}
@@ -869,6 +904,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
                         _filterKey = StatusConstants.APP_STATUS.normalText
+                    } else if (key == StatusConstants.DEPLOYMENT_TYPE.noSpaceLower ) {
+                        filterType = AppListConstants.FilterType.DEPLOYMENT_TYPE
+                        _filterKey = StatusConstants.DEPLOYMENT_TYPE.normalCase
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
@@ -1082,18 +1120,15 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )}
-            {isExternalArgoOrFlux && (
+            {(isExternalArgo || isExternalFlux) && (
                 <>
+                    {/* TODO: Rename as GenericAppList */}
                     <ExternalArgoList
                         key={params.appType}
-                        serverMode={serverMode}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
                         updateDataSyncing={updateDataSyncing}
-                        setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}
                         isArgoInstalled={isArgoInstalled}
                         appType={params.appType}

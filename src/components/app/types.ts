@@ -612,6 +612,7 @@ export interface PayloadParsedFromURL {
     appNameSearch?: string
     appStatuses?
     environments?
+    deploymentType?: string[]
     hOffset?: number
     namespaces?
     offset?: number
@@ -622,14 +623,10 @@ export interface PayloadParsedFromURL {
 }
 
 export interface ExternalArgoListType {
-    serverMode?: string
     payloadParsedFromUrl: PayloadParsedFromURL
     sortApplicationList
     clearAllFilters
-    fetchingExternalApps
-    setFetchingExternalAppsState
     updateDataSyncing
-    setShowPulsatingDotState
     masterFilters
     isArgoInstalled: boolean
     appType,

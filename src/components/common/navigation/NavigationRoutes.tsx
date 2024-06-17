@@ -56,6 +56,7 @@ import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/a
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { AppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
+import ExternalFluxAppDetailsRoute from '../../app/list-new/ExternalFluxAppDetailsRoute'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -498,6 +499,9 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
                         render={() => <ExternalArgoApps />}
                     />
+                    <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace`}>
+                        <ExternalFluxAppDetailsRoute />
+                    </Route>
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}

@@ -31,7 +31,7 @@ export default function ExternalArgoApp() {
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.ARGO_APPS}
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.ARGO_APPS}`}
-                appType={AppListConstants.AppType.ARGO_APPS}
+                showAppDetailsOnly
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

@@ -24,7 +24,7 @@ import './header.scss'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EAHeaderComponentType } from './appHeader.type'
 
-const EAHeaderComponent = ({ title, redirectURL, appType }: EAHeaderComponentType) => {
+const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: EAHeaderComponentType) => {
     const match = useRouteMatch()
     const params = useParams<{ appId: string; appName: string }>()
 
@@ -57,7 +57,7 @@ const EAHeaderComponent = ({ title, redirectURL, appType }: EAHeaderComponentTyp
                         App details
                     </NavLink>
                 </li>
-                {appType !== AppListConstants.AppType.ARGO_APPS && (
+                {!showAppDetailsOnly && (
                     <>
                         <li className="tab-list__tab">
                             <NavLink

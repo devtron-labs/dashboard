@@ -61,3 +61,23 @@ interface AppsListResult {
 export interface AppListResponse extends ResponseType {
     result?: AppsListResult
 }
+
+export enum FLUX_CD_DEPLOYMENT_TYPE {
+    KUSTOMIZATION = 'Kustomization',
+    HELM_RELEASE = 'Helm Release',
+}
+export interface FluxCDApp {
+    appName: string
+    appStatus: string
+    isKustomizeApp: boolean
+    clusterName: string
+    namespace: string
+    clusterId: number
+}
+
+export interface FluxCDAppListResult {
+    fluxApplication: FluxCDApp[]
+}
+export interface FluxCDAppListResponse extends ResponseType {
+    result?: FluxCDAppListResult
+}

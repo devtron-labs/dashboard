@@ -32,6 +32,7 @@ export const URLS = {
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
+    EXTERNAL_FLUX_APP: 'external-flux',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',

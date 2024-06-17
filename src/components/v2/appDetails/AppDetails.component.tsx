@@ -45,10 +45,10 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 
-// This is being used in case of helm app detail page
+// This is being used in case of devtron helm, external helm, argoCD and fluxCD app detail page
 const AppDetailsComponent = ({
-    externalLinks,
-    monitoringTools,
+    externalLinks = [],
+    monitoringTools = [],
     isExternalApp,
     _init,
     loadingDetails,

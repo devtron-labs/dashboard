@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,16 +23,16 @@ import {
     GenericEmptyState,
     AppStatus,
     AppListConstants,
+    Host,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { OrderBy, SortBy } from '../list/types'
+import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
 import { Pagination, LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
-import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { Empty } from '../list/emptyView/Empty'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
@@ -48,33 +48,56 @@ import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import { ExternalArgoListType } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { ArgoAppListResult } from './AppListType'
+import { ArgoAppListResult, FLUX_CD_DEPLOYMENT_TYPE, FluxCDApp, FluxCDAppListResponse } from './AppListType'
 
 export default function ExternalArgoList({
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
-    fetchingExternalApps,
-    setFetchingExternalAppsState,
     updateDataSyncing,
-    setShowPulsatingDotState,
     masterFilters,
-    isArgoInstalled,
     appType,
 }: ExternalArgoListType) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [appsList, setAppsList] = useState<ArgoAppListResult[]>([])
-    const [filteredArgoAppsList, setFilteredArgoAppsList] = useState<ArgoAppListResult[]>([])
+    const [appsList, setAppsList] = useState<(ArgoAppListResult | FluxCDApp)[]>([])
+    const [filteredAppsList, setFilteredAppsList] = useState<(ArgoAppListResult | FluxCDApp)[]>([])
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
     const [appStatus, setAppStatus] = useState('')
+    const [sseConnection, setSseConnection] = useState<EventSource>(null)
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
 
     const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
     const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
+
+    const closeSseConnection = (sseConnection: EventSource) => {
+        sseConnection.close()
+        setSseConnection(null)
+    }
+
+    const getExternalInstalledFluxApps = () => {
+        return new Promise((resolve, reject) => {
+            const _sseConnection = new EventSource(`${Host}/flux-application`, {
+                withCredentials: true,
+            })
+
+            _sseConnection.onmessage = function (message) {
+                const externalAppData: FluxCDAppListResponse = JSON.parse(message.data)
+                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+
+                setAppsList([...recievedExternalFluxApps])
+                resolve(null)
+            }
+            _sseConnection.onerror = function (err) {
+                closeSseConnection(_sseConnection)
+                reject(err)
+            }
+            setSseConnection(_sseConnection)
+        })
+    }
 
     // component load
     useEffect(() => {
@@ -103,30 +126,49 @@ export default function ExternalArgoList({
         // fetch external apps list
         updateDataSyncing(true)
         setDataStateType(AppListViewType.LOADING)
-        getArgoInstalledExternalApps(clusterIdsCsv, appType)
-            .then((appsListResponse) => {
-                setAppsList(appsListResponse.result)
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                setDataStateType(AppListViewType.ERROR)
-                setErrorResponseCode(errors.code)
-            })
-            .finally(() => {
-                updateDataSyncing(false)
-                setFetchingExternalAppsState(false)
-                setDataStateType(AppListViewType.LIST)
-            })
-    }, [clusterIdsCsv, appType])
+        if (isArgoCDAppList) {
+            getArgoInstalledExternalApps(clusterIdsCsv)
+                .then((appsListResponse) => {
+                    setAppsList(appsListResponse.result)
+                })
+                .catch((errors: ServerErrors) => {
+                    showError(errors)
+                    setDataStateType(AppListViewType.ERROR)
+                    setErrorResponseCode(errors.code)
+                })
+                .finally(() => {
+                    updateDataSyncing(false)
+                    setDataStateType(AppListViewType.LIST)
+                })
+        } else if (isFluxCDAppList) {
+            getExternalInstalledFluxApps()
+                .then(() => {
+                    setDataStateType(AppListViewType.LIST)
+                    updateDataSyncing(false)
+                })
+                .catch((error) => {
+                    showError(error)
+                    setDataStateType(AppListViewType.ERROR)
+                    setErrorResponseCode(error.code)
+                })
+                .finally(() => {
+                    updateDataSyncing(false)
+                    setDataStateType(AppListViewType.LIST)
+                })
+        }
+    }, [clusterIdsCsv])
 
     // reset data
     function init() {
         setDataStateType(AppListViewType.LOADING)
         setAppsList([])
-        setFilteredArgoAppsList([])
+        setFilteredAppsList([])
         setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
         setAppStatus(_getAppStatusFromRequestUrl() ?? '')
-        setFetchingExternalAppsState(false)
+        if (sseConnection) {
+            sseConnection.close()
+        }
+        setSseConnection(null)
     }
 
     function _getClusterIdsFromRequestUrl() {
@@ -140,25 +182,35 @@ export default function ExternalArgoList({
     function handleFilteration() {
         const _search = payloadParsedFromUrl.appNameSearch
         const _sortOrder = payloadParsedFromUrl.sortOrder
-        let _filteredArgoAppsList = [...(appsList || [])]
+        const selectedDeploymentTypes = payloadParsedFromUrl.deploymentType || []
+        let _filteredAppsList = [...(appsList || [])]
 
         // handle search
         if (_search?.length) {
-            _filteredArgoAppsList = _filteredArgoAppsList.filter((app) =>
+            _filteredAppsList = _filteredAppsList.filter((app) =>
                 app.appName.toLowerCase().includes(_search.toLowerCase()),
             )
         }
 
         // handle sorting by ascending/descending order
         if (_sortOrder == OrderBy.ASC) {
-            _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
+            _filteredAppsList = _filteredAppsList.sort((a, b) => a.appName.localeCompare(b.appName))
         } else {
-            _filteredArgoAppsList = _filteredArgoAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
+            _filteredAppsList = _filteredAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
         }
 
+        // handle deployment type
+        // if (selectedDeploymentTypes.length === 1) {
+        //     if (selectedDeploymentTypes.includes('Helm Release')) {
+        //         _filteredAppsList = _filteredAppsList.filter((app) => !app.isKustomizeApp)
+        //     }
+        //     if (selectedDeploymentTypes.includes('Kustomization')) {
+        //         _filteredAppsList = _filteredAppsList.filter((app) => app.isKustomizeApp)
+        //     }
+        // }
+
         setSortOrder(_sortOrder)
-        setFilteredArgoAppsList(_filteredArgoAppsList)
-        setShowPulsatingDotState(_filteredArgoAppsList.length == 0 && !clusterIdsCsv)
+        setFilteredAppsList(_filteredAppsList)
     }
 
     function _isAnyFilterationAppliedExceptClusterAndNs() {
@@ -185,8 +237,8 @@ export default function ExternalArgoList({
         target.src = defaultChartImage
     }
 
-    function _buildAppDetailUrl(app: ArgoAppListResult) {
-        return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+    function _buildAppDetailUrl(app: ArgoAppListResult | FluxCDApp) {
+        return `${URLS.APP}/${isArgoCDAppList ? URLS.EXTERNAL_ARGO_APP : URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
     }
 
     function sortByAppName(e) {
@@ -196,7 +248,9 @@ export default function ExternalArgoList({
 
     function renderHeaders() {
         return (
-            <div className={`app-list__header app-list__header${isFluxCDAppList ? '--fluxcd' : ''} dc__position-sticky dc__top-47`}>
+            <div
+                className={`app-list__header app-list__header${isFluxCDAppList ? '--fluxcd' : ''} dc__position-sticky dc__top-47`}
+            >
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
@@ -204,15 +258,13 @@ export default function ExternalArgoList({
                         <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                     </button>
                 </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--app_status">
-                        <span className="app-list__cell-header">
-                            {appType === AppListConstants.AppType.ARGO_APPS ? APP_LIST_HEADERS.AppStatus : 'STATUS'}
-                        </span>
-                    </div>
-                )}
+                <div className="app-list__cell app-list__cell--app_status">
+                    <span className="app-list__cell-header">
+                        {isFluxCDAppList ? APP_LIST_HEADERS.FluxCDStatus : APP_LIST_HEADERS.AppStatus}
+                    </span>
+                </div>
                 {isFluxCDAppList && (
-                    <div className='app-list__cell'>
+                    <div className="app-list__cell">
                         <span>DEPLOYMENT TYPE</span>
                     </div>
                 )}
@@ -231,44 +283,45 @@ export default function ExternalArgoList({
                 <div className="app-list__cell app-list__cell--namespace">
                     <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                 </div>
-                {isFluxCDAppList && (
-                    <div className='app-list__cell'>
-                        <span>LAST DEPLOYED AT</span>
-                    </div>
-                )}
             </div>
         )
     }
 
-    const renderArgoOrFluxIcon = () => {
-        if (appType === AppListConstants.AppType.ARGO_APPS) return ArgoCDAppIcon
+    const renderIcon = () => {
+        if (isArgoCDAppList) return ArgoCDAppIcon
         return FluxCDAppIcon
     }
 
-    const renderArgoListRow = (app: ArgoAppListResult): JSX.Element => {
+    const renderAppRow = (app: FluxCDApp | ArgoAppListResult): JSX.Element => {
         return (
-            <Link to={_buildAppDetailUrl(app)} className={`app-list__row ${isFluxCDAppList ? 'app-list__row--fluxcd' : ''}`} data-testid="app-list-row">
+            <Link
+                to={_buildAppDetailUrl(app)}
+                className={`app-list__row ${isFluxCDAppList ? 'app-list__row--fluxcd' : ''}`}
+                data-testid="app-list-row"
+            >
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
-                        src={renderArgoOrFluxIcon()}
+                        src={renderIcon()}
                         onError={handleImageError}
                     />
                 </div>
                 <div className="app-list__cell app-list__cell--name flex column left">
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                 </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--namespace">
-                        <AppStatus appStatus={app.appStatus} />
-                    </div>
-                )}
+                <div className="app-list__cell app-list__cell--namespace">
+                    <AppStatus
+                        appStatus={isArgoCDAppList ? app.appStatus : app.appStatus === 'True' ? 'Ready' : 'Not Ready'}
+                    />
+                </div>
                 {isFluxCDAppList && (
                     <div>
-                        Kustomization
+                        {/* {app.isKustomizeApp
+                            ? FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION
+                            : FLUX_CD_DEPLOYMENT_TYPE.HELM_RELEASE} */}
+                        {FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION}
                     </div>
-                )
-                }
+                )}
                 <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
@@ -287,10 +340,6 @@ export default function ExternalArgoList({
                         {app.namespace}
                     </p>
                 </div>
-                {isFluxCDAppList && (
-                    <div>4 hours ago</div>
-                )
-                }
             </Link>
         )
     }
@@ -299,22 +348,26 @@ export default function ExternalArgoList({
         return (
             <div data-testid="external-argo-list-container">
                 {renderHeaders()}
-                {filteredArgoAppsList
+                {filteredAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
                     .map((app, index) => (
-                        <div key={`${app.appName}-${index}`}>{renderArgoListRow(app)} </div>
+                        <div key={`${app.appName}-${index}`}>{renderAppRow(app)} </div>
                     ))}
             </div>
         )
     }
 
-    function askToSelectClusterId() {
+    function renderEmptyState() {
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
-                    image={NoClusterSelectImage}
-                    title={APPLIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.infoText}
+                    image={noChartInClusterImage}
+                    title={
+                        isArgoCDAppList
+                            ? APPLIST_EMPTY_STATE_MESSAGING.noArgoCDApps
+                            : APPLIST_EMPTY_STATE_MESSAGING.noFluxCDApps
+                    }
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
                 />
             </div>
         )
@@ -387,12 +440,12 @@ export default function ExternalArgoList({
             return askToClearFilters()
         }
         if (!clusterIdsCsv) {
-            return askToSelectClusterId()
+            return renderEmptyState()
         }
     }
 
     function renderFullModeApplicationListContainer() {
-        if (filteredArgoAppsList.length === 0) {
+        if (filteredAppsList.length === 0) {
             return renderNoApplicationState()
         }
         return renderApplicationList()
@@ -415,10 +468,9 @@ export default function ExternalArgoList({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredArgoAppsList.length > 20 &&
-            !fetchingExternalApps && (
+            filteredAppsList.length > 20 && (
                 <Pagination
-                    size={filteredArgoAppsList.length}
+                    size={filteredAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}
                     changePage={changePage}

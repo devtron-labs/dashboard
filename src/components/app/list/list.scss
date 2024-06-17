@@ -96,7 +96,7 @@
     z-index: var(--app-list-header-index);
 
     &--fluxcd {
-        grid-template-columns: 24px 250px 150px 120px 200px repeat(3, 150px) ;
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px) ;
     }
 }
 
@@ -125,7 +125,7 @@
     border-bottom: 1px solid var(--N100);
 
     &--fluxcd {
-        grid-template-columns: 24px 250px 150px 120px 200px repeat(3, 150px) ;
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px) ;
     }
 }
 
@@ -133,7 +133,6 @@
     min-width: 0px;
     display: flex;
     align-items: center;
-    justify-content: center;
     height: 100%;
     background-color: inherit;
 }
