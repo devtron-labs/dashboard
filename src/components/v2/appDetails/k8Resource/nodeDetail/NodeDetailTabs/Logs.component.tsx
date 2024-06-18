@@ -477,7 +477,7 @@ const LogsComponent = ({
         if (isLogAnalyzer) {
             return 'calc(100vh - 120px)'
         } else {
-            return isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 155px)'
+            return isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 187px)'
         }
     }
 
