@@ -16,20 +16,67 @@
 
 /* eslint-disable no-restricted-globals */
 export default () => {
-    /**
-     * Compares two values for sorting.
-     * @param  a - The first value to compare.
-     * @param  b - The second value to compare.
-     * @returns  The comparison result (-1 if a < b, 0 if a = b, 1 if a > b).
-     */
-    const comparator = (a: string | number | object, b: string | number | object) => {
-        let result = 0
-        if (a < b) {
-            result = -1
-        } else if (a > b) {
-            result = 1
+    enum SortingOrder {
+        ASC = 'ASC',
+        DESC = 'DESC',
+    }
+
+    const stringComparatorBySortOrder = (a: string, b: string, sortOrder: SortingOrder = SortingOrder.ASC) => {
+        return sortOrder === SortingOrder.ASC ? a.localeCompare(b) : b.localeCompare(a)
+    }
+
+    const numberComparatorBySortOrder = (a: number, b: number, sortOrder: SortingOrder = SortingOrder.ASC) =>
+        sortOrder === SortingOrder.ASC ? a - b : b - a
+
+    const numberInStringComparator = <T extends string>(a: T, b: T, sortOrder: SortingOrder) =>
+        numberComparatorBySortOrder(
+            a ? parseInt(a.match(/^\d+/)[0], 10) : 0,
+            b ? parseInt(b.match(/^\d+/)[0], 10) : 0,
+            sortOrder,
+        )
+
+    const k8sStyledAgeToSeconds = (duration: string) => {
+        let totalTimeInSec: number = 0
+        if (!duration || duration === '<none>') {
+            return totalTimeInSec
         }
-        return result
+        // Parses time(format:- ex. 4h20m) in second
+        const matchesNumber = duration.match(/[-+]?\d*\.?\d+/g)
+        const matchesChar = duration.match(/[dhms]/g)
+        for (let i = 0; i < matchesNumber.length; i++) {
+            const _unit = matchesChar[i]
+            const _unitVal = +matchesNumber[i]
+            switch (_unit) {
+                case 'd':
+                    totalTimeInSec += _unitVal * 24 * 60 * 60
+                    break
+                case 'h':
+                    totalTimeInSec += _unitVal * 60 * 60
+                    break
+                case 'm':
+                    totalTimeInSec += _unitVal * 60
+                    break
+                default:
+                    totalTimeInSec += _unitVal
+                    break
+            }
+        }
+        return totalTimeInSec
+    }
+
+    const durationComparator = <T extends string>(a: T, b: T, sortOrder: SortingOrder) =>
+        sortOrder === SortingOrder.DESC
+            ? k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
+            : k8sStyledAgeToSeconds(a) - k8sStyledAgeToSeconds(b)
+
+    const propertyComparatorMap = {
+        age: durationComparator,
+        duration: durationComparator,
+        'last schedule': durationComparator,
+        capacity: numberInStringComparator,
+        cpu: numberInStringComparator,
+        memory: numberInStringComparator,
+        window: durationComparator,
     }
 
     /**
@@ -38,24 +85,38 @@ export default () => {
      * @param  sortOrder - The sorting order ('ASC' for ascending, 'DESC' for descending).
      * @returns A sorting function.
      */
-    const dynamicSort = (property: string, sortOrder: 'ASC' | 'DESC') => {
-        const sortingOrder = sortOrder === 'ASC' ? 1 : -1
-
-        /**
-         * Sorting function for comparing two objects based on a specified property.
-         * @param a - The first object to compare.
-         * @param b - The second object to compare.
-         * @returns The comparison result (-1 if a < b, 0 if a = b, 1 if a > b).
-         */
-        return (a: Record<string, string | number | object>, b: Record<string, string | number | object>) => {
+    const dynamicSort = (property: string, sortOrder: SortingOrder) => {
+        return (a: Record<string, string | number>, b: Record<string, string | number>) => {
             const valueA = a[property]
             const valueB = b[property]
 
-            if (!Number.isNaN(Number(valueA)) && !Number.isNaN(Number(valueB))) {
-                return comparator(Number(valueA), Number(valueB)) * sortingOrder
+            // Special cases handling where the property is not in sortable format.
+            if (Object.keys(propertyComparatorMap).includes(property)) {
+                return propertyComparatorMap[property](valueA, valueB, sortOrder)
             }
 
-            return comparator(valueA, valueB) * sortingOrder
+            // Handling of numbers and if one property is number and the other is string.
+            if (typeof valueA === 'number' || typeof valueB === 'number') {
+                return numberComparatorBySortOrder(
+                    typeof valueA === 'number' ? valueA : 0,
+                    typeof valueB === 'number' ? valueB : 0,
+                    sortOrder,
+                )
+            }
+
+            // Handling of strings and numbers in string type.
+            if (typeof valueA === 'string' && typeof valueB === 'string') {
+                if (!Number.isNaN(Number(valueA)) || !Number.isNaN(Number(valueB))) {
+                    return numberComparatorBySortOrder(
+                        !Number.isNaN(Number(valueA)) ? Number(valueA) : 0,
+                        !Number.isNaN(Number(valueB)) ? Number(valueB) : 0,
+                        sortOrder,
+                    )
+                }
+                return stringComparatorBySortOrder(valueA, valueB, sortOrder)
+            }
+
+            return 0
         }
     }
 
@@ -78,9 +139,9 @@ export default () => {
         searchText: string
         list: unknown[]
         sortBy: string
-        sortOrder: 'ASC' | 'DESC'
+        sortOrder: SortingOrder
     }) => {
-        const searchTextLowerCased = searchText.toLowerCase()
+        const searchTextLowerCased = searchText.trim().toLowerCase()
         let filteredList = [...list]
 
         if (searchTextLowerCased !== '' && list?.length) {

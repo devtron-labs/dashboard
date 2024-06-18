@@ -157,8 +157,8 @@ export const K8SResourceList = ({
      */
     const initialSortKey = useMemo(() => {
         if (resourceList) {
-            const isNameSpaceColumnPresent = resourceList.headers.findIndex((header) => header === 'namespace')
-            return isNameSpaceColumnPresent < 0 ? 'name' : 'namespace'
+            const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
+            return isNameSpaceColumnPresent ? 'namespace' : 'name'
         }
         return ''
     }, [resourceList])
@@ -351,7 +351,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
+                            className={`flexbox dc__align-items-center pt-12 pb-12 w-180 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
@@ -434,6 +434,10 @@ export const K8SResourceList = ({
         showError(resourceListDataError)
     }
 
+    const triggerSorting = (columnName: string) => {
+        resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+        handleSorting(columnName)
+    }
     const renderResourceList = (): JSX.Element => {
         return (
             <div
@@ -455,12 +459,12 @@ export const K8SResourceList = ({
                                               ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
                                               : ''
                                       } w-350 pl-20`
-                                    : 'w-150'
+                                    : 'w-180'
                             }`}
                         >
                             <SortableTableHeaderCell
                                 title={columnName}
-                                triggerSorting={() => handleSorting(columnName)}
+                                triggerSorting={() => triggerSorting(columnName)}
                                 isSorted={sortBy === columnName}
                                 sortOrder={sortOrder}
                                 disabled={false}
