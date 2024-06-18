@@ -58,6 +58,7 @@ import {
     getRenderNodeButton,
 } from '../Utils'
 import { URLS } from '../../../config'
+import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -483,7 +484,7 @@ export const K8SResourceList = ({
             ) : (
                 renderList()
             )}
-            {PodRestart && <PodRestart />}
+            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </div>
     )
 }
