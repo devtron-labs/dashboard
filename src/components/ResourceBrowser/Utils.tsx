@@ -18,7 +18,8 @@ import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ApiResourceGroupType, GVKType } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
+import dayjs from 'dayjs'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
@@ -333,7 +334,8 @@ export const getRenderNodeButton =
         </Tippy>
     )
 
-export const checkStringIsUTCDate = (dateString: string) => {
-    const dateReg = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?Z)$/
-    return dateReg.test(dateString)
+export const renderResourceValue = (value: string) => {
+    const isDateValue = dayjs(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
+
+    return isDateValue ? dayjs(value).format(DATE_TIME_FORMAT_STRING) : value
 }

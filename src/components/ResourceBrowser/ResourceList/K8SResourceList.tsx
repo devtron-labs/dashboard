@@ -32,9 +32,7 @@ import {
     noop,
     SortableTableHeaderCell,
     useStateFilters,
-    DATE_TIME_FORMAT_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import dayjs from 'dayjs'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
@@ -60,7 +58,7 @@ import {
     removeDefaultForStorageClass,
     updateQueryString,
     getRenderNodeButton,
-    checkStringIsUTCDate,
+    renderResourceValue,
 } from '../Utils'
 import { URLS } from '../../../config'
 import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
@@ -371,11 +369,7 @@ export const K8SResourceList = ({
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
                                                 searchText,
-                                                text: checkStringIsUTCDate(resourceData[columnName]?.toString())
-                                                    ? dayjs(resourceData[columnName]?.toString()).format(
-                                                          DATE_TIME_FORMAT_STRING,
-                                                      )
-                                                    : resourceData[columnName]?.toString(),
+                                                text: renderResourceValue(resourceData[columnName]?.toString()),
                                                 highlightClasses: 'p-0 fw-6 bcy-2',
                                             }),
                                         ),
