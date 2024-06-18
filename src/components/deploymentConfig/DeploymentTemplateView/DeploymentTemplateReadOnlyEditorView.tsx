@@ -62,8 +62,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         )
     }
 
-    return state.yamlMode ||
-        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ? (
         <>
             {state.showReadme && (
                 <div className="dt-readme dc__border-right dc__border-bottom-imp">
