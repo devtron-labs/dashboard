@@ -22,6 +22,7 @@ import {
     ServerErrors,
     GenericEmptyState,
     AppStatus,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -71,6 +72,7 @@ export default function ExternalArgoList({
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
+    const { isSuperAdmin } = useMainContext()
 
     // component load
     useEffect(() => {
@@ -194,13 +196,13 @@ export default function ExternalArgoList({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header">
+            <div className="app-list__header dc__position-sticky dc__top-47">
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
                         {APP_LIST_HEADERS.AppName}
                         {sortBy == SortBy.APP_NAME ? (
-                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`} />
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                         ) : (
                             <span className="sort-col dc__opacity-0_5 ml-4" />
                         )}
@@ -402,6 +404,15 @@ export default function ExternalArgoList({
             )
         )
     }
+
+    if (!isSuperAdmin) {
+        return (
+            <div className="flex-grow-1">
+                <ErrorScreenManager code={403} />
+            </div>
+        )
+    }
+
     return (
         <>
             {dataStateType === AppListViewType.LOADING && (
