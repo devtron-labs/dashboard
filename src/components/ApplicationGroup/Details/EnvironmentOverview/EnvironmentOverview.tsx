@@ -31,6 +31,8 @@ import {
     CommitChipCell,
     ArtifactInfoModal,
     ArtifactInfoModalProps,
+    ImageChipCell,
+    RegistryType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -368,28 +370,12 @@ export default function EnvironmentOverview({
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
-                    <div className="cn-7 fs-14 lh-20 flexbox">
-                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                            <div
-                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor max-w-100"
-                                onClick={openCommitInfoModal}
-                            >
-                                <DockerIcon className="icon-dim-14 mw-14" />
-                                {isLastDeployedExpanded ? (
-                                    <div className="mono dc__ellipsis-left direction-left">
-                                        {item.lastDeployedImage}
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div>…</div>
-                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                            {item.lastDeployedImage.split(':').at(-1)}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </Tippy>
-                    </div>
+                    <ImageChipCell
+                        handleClick={openCommitInfoModal}
+                        imagePath={item.lastDeployedImage}
+                        isExpanded={isLastDeployedExpanded}
+                        registryType={RegistryType.DOCKER}
+                    />
                 )}
                 <CommitChipCell handleClick={openCommitInfoModal} commits={item?.commits} />
                 {item?.lastDeployedBy && (
