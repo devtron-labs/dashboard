@@ -33,7 +33,9 @@ import {
     noop,
     SortableTableHeaderCell,
     useStateFilters,
+    DATE_TIME_FORMAT_STRING,
 } from '@devtron-labs/devtron-fe-common-lib'
+import dayjs from 'dayjs'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
@@ -369,7 +371,13 @@ export const K8SResourceList = ({
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
                                                 searchText,
-                                                text: resourceData[columnName]?.toString(),
+                                                text: /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?Z)$/.test(
+                                                    resourceData[columnName]?.toString(),
+                                                )
+                                                    ? dayjs(resourceData[columnName]?.toString()).format(
+                                                          DATE_TIME_FORMAT_STRING,
+                                                      )
+                                                    : resourceData[columnName]?.toString(),
                                                 highlightClasses: 'p-0 fw-6 bcy-2',
                                             }),
                                         ),
