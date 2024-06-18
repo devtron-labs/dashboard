@@ -56,7 +56,7 @@ import {
     getChangeAppTabURL,
     getCurrentTabName,
 } from './list.utils'
-import ExternalArgoList from './ExternalArgoList'
+import GenericAppList from './GenericAppList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -79,6 +79,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     // check for external argoCD app
     const isExternalArgo =
         window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS
+
+    // check for external fluxCD app
     const isExternalFlux =
         window._env_?.ENABLE_EXTERNAL_FLUX_CD && params.appType === AppListConstants.AppType.FLUX_APPS
 
@@ -232,10 +234,17 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             teams: new Set<number>(teamsArr),
             appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
-            deploymentType: new Set(deploymentTypesArr)
+            deploymentType: new Set(deploymentTypesArr),
         }
 
-        const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [], deploymentType: [] }
+        const _masterFilters = {
+            appStatus: [],
+            projects: [],
+            environments: [],
+            clusters: [],
+            namespaces: [],
+            deploymentType: [],
+        }
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -301,7 +310,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 key: deploymentType.key,
                 label: deploymentType.label,
                 isSaved: true,
-                isChecked: filterApplied.deploymentType.has(deploymentType.key)
+                isChecked: filterApplied.deploymentType.has(deploymentType.key),
             }
         })
         setMasterFilters(_masterFilters)
@@ -904,7 +913,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
                         _filterKey = StatusConstants.APP_STATUS.normalText
-                    } else if (key == StatusConstants.DEPLOYMENT_TYPE.noSpaceLower ) {
+                    } else if (key == StatusConstants.DEPLOYMENT_TYPE.noSpaceLower) {
                         filterType = AppListConstants.FilterType.DEPLOYMENT_TYPE
                         _filterKey = StatusConstants.DEPLOYMENT_TYPE.normalCase
                     }
@@ -1120,16 +1129,21 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )}
+            {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used 
+                for further app lists too  */}
             {(isExternalArgo || isExternalFlux) && (
                 <>
-                    {/* TODO: Rename as GenericAppList */}
-                    <ExternalArgoList
+                    <GenericAppList
                         key={params.appType}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
+                        fetchingExternalApps={fetchingExternalApps}
+                        setFetchingExternalAppsState={setFetchingExternalAppsState}
                         updateDataSyncing={updateDataSyncing}
+                        setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}
+                        syncListData={syncListData}
                         isArgoInstalled={isArgoInstalled}
                         appType={params.appType}
                     />

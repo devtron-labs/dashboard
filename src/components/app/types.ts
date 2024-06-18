@@ -622,12 +622,16 @@ export interface PayloadParsedFromURL {
     teams?
 }
 
-export interface ExternalArgoListType {
+export interface GenericAppListType {
     payloadParsedFromUrl: PayloadParsedFromURL
     sortApplicationList
     clearAllFilters
+    fetchingExternalApps
+    setFetchingExternalAppsState
     updateDataSyncing
+    setShowPulsatingDotState
     masterFilters
+    syncListData
     isArgoInstalled: boolean
     appType,
 }

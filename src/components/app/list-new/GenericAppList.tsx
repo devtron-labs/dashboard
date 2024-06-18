@@ -24,13 +24,15 @@ import {
     AppStatus,
     AppListConstants,
     Host,
+    useMainContext,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
-import { Pagination, LazyImage } from '../../common'
+import { LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
@@ -46,18 +48,23 @@ import {
 } from './Constants'
 import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
-import { ExternalArgoListType } from '../types'
+import { GenericAppListType } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult, FLUX_CD_DEPLOYMENT_TYPE, FluxCDApp, FluxCDAppListResponse } from './AppListType'
 
-export default function ExternalArgoList({
+// This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
+const GenericAppList = ({
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
+    fetchingExternalApps,
+    setFetchingExternalAppsState,
     updateDataSyncing,
+    setShowPulsatingDotState,
     masterFilters,
+    syncListData,
     appType,
-}: ExternalArgoListType) {
+}: GenericAppListType) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<(ArgoAppListResult | FluxCDApp)[]>([])
@@ -69,6 +76,7 @@ export default function ExternalArgoList({
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
+    const { isSuperAdmin } = useMainContext()
 
     const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
     const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
@@ -78,7 +86,7 @@ export default function ExternalArgoList({
         setSseConnection(null)
     }
 
-    const getExternalInstalledFluxApps = () => {
+    const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
         return new Promise((resolve, reject) => {
             const _sseConnection = new EventSource(`${Host}/flux-application`, {
                 withCredentials: true,
@@ -141,9 +149,10 @@ export default function ExternalArgoList({
                     setDataStateType(AppListViewType.LIST)
                 })
         } else if (isFluxCDAppList) {
-            getExternalInstalledFluxApps()
+            getExternalInstalledFluxApps(clusterIdsCsv)
                 .then(() => {
                     setDataStateType(AppListViewType.LIST)
+                    setFetchingExternalAppsState(true)
                     updateDataSyncing(false)
                 })
                 .catch((error) => {
@@ -153,6 +162,7 @@ export default function ExternalArgoList({
                 })
                 .finally(() => {
                     updateDataSyncing(false)
+                    setFetchingExternalAppsState(false)
                     setDataStateType(AppListViewType.LIST)
                 })
         }
@@ -288,7 +298,9 @@ export default function ExternalArgoList({
     }
 
     const renderIcon = () => {
-        if (isArgoCDAppList) return ArgoCDAppIcon
+        if (isArgoCDAppList) {
+            return ArgoCDAppIcon
+        }
         return FluxCDAppIcon
     }
 
@@ -319,7 +331,6 @@ export default function ExternalArgoList({
                         {/* {app.isKustomizeApp
                             ? FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION
                             : FLUX_CD_DEPLOYMENT_TYPE.HELM_RELEASE} */}
-                        {FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION}
                     </div>
                 )}
                 <div className="app-list__cell app-list__cell--env">
@@ -479,6 +490,15 @@ export default function ExternalArgoList({
             )
         )
     }
+
+    // if (!isSuperAdmin) {
+    //     return (
+    //         <div className="flex-grow-1">
+    //             <ErrorScreenManager code={403} />
+    //         </div>
+    //     )
+    // }
+
     return (
         <>
             {dataStateType === AppListViewType.LOADING && (
@@ -500,3 +520,5 @@ export default function ExternalArgoList({
         </>
     )
 }
+
+export default GenericAppList
