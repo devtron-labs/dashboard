@@ -18,9 +18,9 @@ import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-co
 import { Routes } from '../../config'
 import { addGUISchemaIfAbsent } from '../deploymentConfig/utils'
 
-export async function getDeploymentTemplate(appId, envId, chartId): Promise<ResponseType> {
+export async function getDeploymentTemplate(appId, envId, chartId, chartName: string): Promise<ResponseType> {
     const data = await get(`app/env/${appId}/${envId}/${chartId}`)
-    return addGUISchemaIfAbsent(data)
+    return addGUISchemaIfAbsent(data, chartName)
 }
 
 export function updateDeploymentTemplate(appId, envId, payload) {
