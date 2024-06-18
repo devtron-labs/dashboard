@@ -37,6 +37,7 @@ const DeploymentTemplateGUIView = ({
     value,
     readOnly,
     editorOnChange,
+    /* TODO: either keep lock or remove inputs */
     hideLockedKeys,
     lockedConfigKeysWithLockType,
 }: DeploymentTemplateGUIViewProps) => {
