@@ -405,6 +405,7 @@ export default function ExternalArgoList({
         )
     }
 
+    // RBAC for SuperAdmin
     if (!isSuperAdmin) {
         return (
             <div className="flex-grow-1">
