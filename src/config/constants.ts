@@ -323,7 +323,7 @@ export const repoType = {
 }
 
 /**
- * @deprecated - use from fe-common
+ * @deprecated use from fe-common
  */
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',

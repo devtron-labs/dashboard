@@ -38,10 +38,10 @@ import {
     RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { CIMaterialType } from './MaterialHistory'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 

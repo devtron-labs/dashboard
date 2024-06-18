@@ -27,6 +27,8 @@ import {
     useAsync,
     useUrlFilters,
     CommitChipCell,
+    ArtifactInfoModal,
+    ArtifactInfoModalProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
@@ -44,9 +46,9 @@ import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { StatusConstants } from '../list-new/Constants'
-import { TriggerInfoModal, TriggerInfoModalProps } from '../list/TriggerInfo'
 import { AppMetaInfo, AppOverviewProps } from '../types'
 import { EnvironmentListSortableKeys, loadingEnvironmentList } from './constants'
+import { renderCIListHeader } from '../details/cdDetails/utils'
 
 const {
     OVERVIEW: { DEPLOYMENT_TITLE, DEPLOYMENT_SUB_TITLE },
@@ -68,7 +70,7 @@ export const EnvironmentList = ({
     )
     const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
-        TriggerInfoModalProps,
+        ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
     > | null>(null)
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
@@ -298,7 +300,13 @@ export const EnvironmentList = ({
                     />
                 </div>
             )}
-            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
+            {commitInfoModalConfig && (
+                <ArtifactInfoModal
+                    {...commitInfoModalConfig}
+                    handleClose={closeCommitInfoModal}
+                    renderCIListHeader={renderCIListHeader}
+                />
+            )}
         </div>
     )
 }

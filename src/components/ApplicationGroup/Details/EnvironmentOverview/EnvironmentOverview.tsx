@@ -28,7 +28,9 @@ import {
     EditableTextArea,
     useSearchString,
     DEPLOYMENT_WINDOW_TYPE,
-    CommitChipCell
+    CommitChipCell,
+    ArtifactInfoModal,
+    ArtifactInfoModalProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -36,7 +38,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import { Moment12HourFormat } from '../../../../config'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
 import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
@@ -69,6 +70,7 @@ import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { UnhibernateModal } from './UnhibernateModal'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
+import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -94,7 +96,7 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
-        TriggerInfoModalProps,
+        ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
     > | null>(null)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
@@ -636,7 +638,13 @@ export default function EnvironmentOverview({
                     isDeploymentLoading={isDeploymentLoading}
                 />
             )}
-            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
+            {commitInfoModalConfig && (
+                <ArtifactInfoModal
+                    {...commitInfoModalConfig}
+                    handleClose={closeCommitInfoModal}
+                    renderCIListHeader={renderCIListHeader}
+                />
+            )}
         </div>
     ) : null
 }

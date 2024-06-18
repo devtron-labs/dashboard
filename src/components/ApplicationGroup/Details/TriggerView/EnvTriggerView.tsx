@@ -39,6 +39,9 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    handleUTCTime,
+    createGitCommitUrl,
+    CIMaterialType
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -46,7 +49,6 @@ import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeM
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
@@ -58,9 +60,7 @@ import {
     triggerBranchChange,
 } from '../../../app/service'
 import {
-    createGitCommitUrl,
     importComponentFromFELibrary,
-    ISTTimeModal,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
 } from '../../../common'
@@ -511,7 +511,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 : '',
                             commit: _result.Commit || '',
                             author: _result.Author || '',
-                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
                             message: _result.Message || '',
                             changes: _result.Changes || [],
                             showChanges: true,

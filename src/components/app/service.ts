@@ -27,10 +27,12 @@ import {
     DeploymentWithConfigType,
     History,
     noop,
+    handleUTCTime,
+    createGitCommitUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
-import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
+import { getAPIOptionsWithTriggerTimeout } from '../common'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
 import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
@@ -46,12 +48,12 @@ const stageMap = {
 export const getAppList = (request, options?) => {
     return post(Routes.APP_LIST, request, options)
 }
-
+//
 export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
     const URL = `${Routes.APP}/material-info/${params.envId}/${params.ciArtifactId}`
     return get(URL)
 }
-
+//
 export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
     return getCITriggerInfo(params).then((response) => {
         let materials = response?.result?.ciMaterials || []
@@ -69,7 +71,7 @@ export function getCITriggerInfoModal(params: { envId: number | string; ciArtifa
                         commitURL: mat.url ? createGitCommitUrl(mat.url, hist.Commit) : '',
                         commit: hist.Commit || '',
                         author: hist.Author || '',
-                        date: hist.Date ? ISTTimeModal(hist.Date, false) : '',
+                        date: hist.Date ? handleUTCTime(hist.Date, false) : '',
                         message: hist.Message || '',
                         changes: hist.Changes || [],
                         showChanges: index === 0,
@@ -208,7 +210,7 @@ const gitTriggersModal = (triggers, materials) => {
             author: triggers[key].Author,
             message: triggers[key].Message,
             url: material?.url || '',
-            date: triggers[key].Date ? ISTTimeModal(triggers[key].Date) : '',
+            date: triggers[key].Date ? handleUTCTime(triggers[key].Date) : '',
         }
     })
 }
@@ -261,7 +263,7 @@ const processCIMaterialResponse = (response) => {
                 ...material,
                 isSelected: index == 0,
                 gitURL: material.gitMaterialUrl || '',
-                lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
                 showAllCommits: false,
                 ...processMaterialHistoryAndSelectionError(material),
