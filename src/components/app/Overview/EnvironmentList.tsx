@@ -302,7 +302,8 @@ export const EnvironmentList = ({
             )}
             {commitInfoModalConfig && (
                 <ArtifactInfoModal
-                    {...commitInfoModalConfig}
+                    ciArtifactId={commitInfoModalConfig.ciArtifactId}
+                    envId={commitInfoModalConfig.envId}
                     handleClose={closeCommitInfoModal}
                     renderCIListHeader={renderCIListHeader}
                 />
