@@ -180,41 +180,49 @@ export default function App() {
         }
     }, [])
 
-    const serviceWorkerTimeout = (()=> {
-        const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
-
+    const serviceWorkerTimeout = (() => {
+        const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10);
+      
         if (parsedTimeout) {
-            return parsedTimeout
+          return parsedTimeout;
         }
-
-        return 1
-    })()
-
-    const {
+      
+        return 1;
+      })();
+      
+      const {
         needRefresh: [needRefresh],
         updateServiceWorker,
-    } = useRegisterSW({
+      } = useRegisterSW({
         onRegisteredSW(swUrl, r) {
-            console.log(`Service Worker at: ${swUrl}`)
-            r &&
-                setInterval(async () => {
-                    if (!(!r.installing && navigator)) return
-                    if ('connection' in navigator && !navigator.onLine) return
-                    const resp = await fetch(swUrl, {
-                        cache: 'no-store',
-                        headers: {
-                            cache: 'no-store',
-                            'cache-control': 'no-cache',
-                        },
-                    })
-
-                    if (resp?.status === 200) await r.update()
-                }, serviceWorkerTimeout * 1000 * 60)
+          console.log(`Service Worker at: ${swUrl}`);
+          if (r) {
+            setInterval(async () => {
+              if (!r.installing && navigator) {
+                if ('connection' in navigator && !navigator.onLine) return;
+      
+                try {                                                                   //added try and catch for error handling
+                  const resp = await fetch(swUrl, {
+                    cache: 'no-store',
+                    headers: {
+                      cache: 'no-store',
+                      'cache-control': 'no-cache',
+                    },
+                  });
+      
+                  if (resp?.status === 200) await r.update();
+                } catch (error) {
+                  console.error('Error updating service worker:', error);
+                }
+              }
+            }, serviceWorkerTimeout * 1000 * 60);
+          }
         },
         onRegisterError(error) {
-            console.log('SW registration error', error)
+          console.log('SW registration error', error);
         },
-    })
+      });
+      
 
     function update() {
         updateServiceWorker(true)

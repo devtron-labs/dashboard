@@ -88,65 +88,88 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }, [appId])
 
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
-        setSelectedAppList([])
-        setAppListLoading(true)
-        setGroupFilterOptions([])
-        const { result } = await getEnvGroupList(+appId, FilterParentType.app)
-        if (result) {
-            const _groupFilterOption = []
-            let _selectedGroup
+        setSelectedAppList([]);
+        setAppListLoading(true);
+        setGroupFilterOptions([]);
+      
+        try {
+          const { result } = await getEnvGroupList(+appId, FilterParentType.app);
+      
+          if (result) {
+            const _groupFilterOption = [];
+            let _selectedGroup;
+      
             for (const group of result) {
-                const processedGroupData = {
-                    value: group.id.toString(),
-                    label: group.name,
-                    // @ts-ignore
-                    appIds: group.resourceIds,
-                    description: group.description,
-                }
-                _groupFilterOption.push(processedGroupData)
-                if (groupId && groupId === group.id) {
-                    _selectedGroup = processedGroupData
-                }
+              const processedGroupData = {
+                value: group.id.toString(),
+                label: group.name,
+                // @ts-ignore
+                appIds: group.resourceIds,
+                description: group.description,
+              };
+      
+              _groupFilterOption.push(processedGroupData);
+      
+              if (groupId && groupId === group.id) {
+                _selectedGroup = processedGroupData;
+              }
             }
+      
             if (_selectedGroup) {
-                const selectedAppsMap: Record<string, boolean> = {}
-                const groupAppIds = _selectedGroup?.appIds || []
-                for (const appId of groupAppIds) {
-                    selectedAppsMap[appId] = true
-                }
-                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
-                setSelectedGroupFilter([_selectedGroup])
+              const selectedAppsMap: Record<string, boolean> = {};
+              const groupAppIds = _selectedGroup?.appIds || [];
+      
+              for (const appId of groupAppIds) {
+                selectedAppsMap[appId] = true;
+              }
+      
+              setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]));
+              setSelectedGroupFilter([_selectedGroup]);
             } else {
-                setSelectedAppList([])
-                setSelectedGroupFilter([])
+              setSelectedAppList([]);
+              setSelectedGroupFilter([]);
             }
-            _groupFilterOption.sort(sortOptionsByLabel)
-            setGroupFilterOptions(_groupFilterOption)
+      
+            _groupFilterOption.sort(sortOptionsByLabel);
+            setGroupFilterOptions(_groupFilterOption);
+          }
+        } catch (error) {
+          console.error('Error fetching environment group list:', error);
+          // Handle the error appropriately, e.g., show an error message to the user
+        } finally {
+          setAppListLoading(false);
         }
-        setAppListLoading(false)
-    }
+      };
+      
 
-    const getAppListData = async (): Promise<void> => {
-        setSelectedAppList([])
-        setAppListLoading(true)
-        const { result } = await getAppOtherEnvironmentMin(appId)
-        if (result?.length) {
+      const getAppListData = async (): Promise<void> => {
+        setSelectedAppList([]);
+        setAppListLoading(true);                                                            
+        try {                                                   //added try and catch block for error handling
+          const { result } = await getAppOtherEnvironmentMin(appId);
+      
+          if (result?.length) {
             setAppListOptions(
-                result
-                    .map((app): OptionType => {
-                        return {
-                            value: `${app.environmentId}`,
-                            label: app.environmentName,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
-            )
+              result
+                .map((app): OptionType => {
+                  return {
+                    value: `${app.environmentId}`,
+                    label: app.environmentName,
+                  };
+                })
+                .sort(sortOptionsByLabel)
+            );
+          }
+        } catch (error) {
+          console.error('Error fetching app list data:', error);
+          // You can also display an error message to the user or take any other necessary action
+        } finally {
+          setAppListLoading(false);
         }
-        setAppListLoading(false)
-    }
+      };
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
-        try {
+        try {                                                     //added try and catch block
             const { result } = await getAppMetaInfo(Number(appId))
             if (result) {
                 setAppName(result.appName)

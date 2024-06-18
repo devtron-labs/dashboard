@@ -306,7 +306,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {appType === 'app' && gitMaterials.length > 0 && (
+                    {appType === 'app' && gitMaterials && gitMaterials.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="flexbox-col dc__gap-4">

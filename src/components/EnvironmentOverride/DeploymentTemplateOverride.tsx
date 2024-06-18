@@ -92,12 +92,18 @@ export default function DeploymentTemplateOverride({
 
     useEffect(() => {
         const fetchOptionsList = async () => {
-            const { result } = await getOptions(+appId, +envId)
-            const _groupedData = groupDataByType(result)
-            setGroupedOptionsDataOverride(_groupedData)
-        }
-        fetchOptionsList()
-    }, [environments])
+          try {                                                     //adding try and catch block to handle error 
+            const { result } = await getOptions(+appId, +envId);
+            const _groupedData = groupDataByType(result);
+            setGroupedOptionsDataOverride(_groupedData);
+          } catch (error) {
+            console.error('Error fetching options:', error);
+            // You can also display an error message to the user or take any other necessary action
+          }
+        };
+      
+        fetchOptionsList();
+      }, [environments]);
 
     useEffect(() => {
         dispatch({ type: DeploymentConfigStateActionTypes.reset })

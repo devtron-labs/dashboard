@@ -1194,7 +1194,10 @@ export const getDeploymentAppType = (
     return allowedDeploymentTypes[0]
 }
 
-export const hasApproverAccess = (email: string, approverList: string[]): boolean => {
+export const hasApproverAccess = (email: string = '', approverList: string[]= []): boolean => {// added null check for email and approverList
+    if(!email ||!approverList) {
+        return false
+    }
     let hasAccess = false
     if (approverList?.length > 0) {
         for (const approver of approverList) {

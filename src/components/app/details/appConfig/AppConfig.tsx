@@ -175,7 +175,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             setState((prevState) => {
                 return {
                     ...prevState,
-                    canDeleteApp: response.result.workflows?.length === 0,//# here is the fix
+                    canDeleteApp: response.result.workflows?.length === 0,//# here is the extra check
                     workflowsRes: response.result,
                 }
             })

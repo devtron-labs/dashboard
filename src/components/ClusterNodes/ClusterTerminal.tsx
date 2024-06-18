@@ -535,7 +535,7 @@ const ClusterTerminal = ({
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
             }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0]?.containerName || ''
+                resourceData?.containers?.[0]?.containerName || '' //  this is the extra check for the case when we have no containers in the pod
             }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
