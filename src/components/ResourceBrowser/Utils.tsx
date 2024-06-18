@@ -332,3 +332,8 @@ export const getRenderNodeButton =
             </button>
         </Tippy>
     )
+
+export const checkStringIsUTCDate = (dateString: string) => {
+    const dateReg = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?Z)$/
+    return dateReg.test(dateString)
+}

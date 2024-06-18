@@ -1,6 +1,5 @@
 /*
- *
- Copyright (c) 2024. Devtron Inc.
+ * Copyright (c) 2024. Devtron Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +60,7 @@ import {
     removeDefaultForStorageClass,
     updateQueryString,
     getRenderNodeButton,
+    checkStringIsUTCDate,
 } from '../Utils'
 import { URLS } from '../../../config'
 import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
@@ -371,9 +371,7 @@ export const K8SResourceList = ({
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
                                                 searchText,
-                                                text: /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}):(\d{2})(\.\d{1,3})?Z)$/.test(
-                                                    resourceData[columnName]?.toString(),
-                                                )
+                                                text: checkStringIsUTCDate(resourceData[columnName]?.toString())
                                                     ? dayjs(resourceData[columnName]?.toString()).format(
                                                           DATE_TIME_FORMAT_STRING,
                                                       )
@@ -442,10 +440,11 @@ export const K8SResourceList = ({
         showError(resourceListDataError)
     }
 
-    const triggerSorting = (columnName: string) => {
+    const triggerSortingHandler = (columnName: string) => () => {
         resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
         handleSorting(columnName)
     }
+
     const renderResourceList = (): JSX.Element => {
         return (
             <div
@@ -472,7 +471,7 @@ export const K8SResourceList = ({
                         >
                             <SortableTableHeaderCell
                                 title={columnName}
-                                triggerSorting={() => triggerSorting(columnName)}
+                                triggerSorting={triggerSortingHandler(columnName)}
                                 isSorted={sortBy === columnName}
                                 sortOrder={sortOrder}
                                 disabled={false}
