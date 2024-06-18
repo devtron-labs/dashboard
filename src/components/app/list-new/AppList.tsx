@@ -718,9 +718,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             autoComplete="off"
                             value={searchString}
                             placeholder={`${
-                                currentTab === AppListConstants.AppTabs.DEVTRON_APPS
-                                    ? 'Search by app name'
-                                    : 'Search by app or chart name'
+                                currentTab === AppListConstants.AppTabs.HELM_APPS
+                                    ? 'Search by app or chart name'
+                                    : 'Search by app name'
                             }`}
                             className="search__input bcn-1"
                             onChange={onChangeSearchString}
