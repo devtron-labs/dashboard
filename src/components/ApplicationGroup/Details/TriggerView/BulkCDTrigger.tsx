@@ -608,9 +608,9 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            {app.warningMessage ||
+                            {(app.warningMessage ||
                                 tagNotFoundWarningsMap.has(app.appId) ||
-                                (appDeploymentWindowMap[app.appId]?.warningMessage && (
+                                appDeploymentWindowMap[app.appId]?.warningMessage) && (
                                     <span
                                         className={`flex left top fw-4 m-0 fs-12 ${
                                             tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
@@ -625,11 +625,11 @@ export default function BulkCDTrigger({
                                         />
                                         <p className="m-0">
                                             {app.warningMessage ||
-                                                appDeploymentWindowMap[app.appId].warningMessage ||
+                                                appDeploymentWindowMap[app.appId]?.warningMessage ||
                                                 tagNotFoundWarningsMap.get(app.appId)}
                                         </p>
                                     </span>
-                                ))}
+                                )}
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
