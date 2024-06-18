@@ -44,7 +44,7 @@ import {
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
+import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import { ExternalArgoListType } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
@@ -238,7 +238,7 @@ export default function ExternalArgoList({
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
-                        src={DevtronAppIcon}
+                        src={ArgoCDAppIcon}
                         onError={handleImageError}
                     />
                 </div>
