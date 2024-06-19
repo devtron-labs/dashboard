@@ -49,6 +49,8 @@ export default function DeploymentConfigToolbar({
 
     const handleOptionClick = (newValue) => {
         setIsValues(newValue)
+        /* NOTE: switch to compare tab */
+        handleTabSelection(2)
         setConvertVariables(false)
     }
 
@@ -121,7 +123,7 @@ export default function DeploymentConfigToolbar({
                 {!noReadme && !showReadme && (
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
                 )}
-                {isValues && !noReadme && (
+                {isValues && (
                     <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
                         <li className="flex left dc_width-max-content cursor">
                             <div className="w-40 h-20">
