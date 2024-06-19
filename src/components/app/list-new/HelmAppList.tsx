@@ -66,7 +66,6 @@ import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
 import { HelmAppListResponse, HelmApp } from './AppListType'
-import { onRequestUrlChange } from '../../Jobs/Utils'
 
 export default function HelmAppList({
     serverMode,
@@ -99,8 +98,6 @@ export default function HelmAppList({
 
     // component load
     useEffect(() => {
-
-    console.log('payload in helm list', payloadParsedFromUrl);
         init()
     }, [])
 
