@@ -470,10 +470,9 @@ const ChartForm = ({
             />
 
             <div className="form__row--two-third mb-16">
-                {renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
-                {renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
-                {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
-                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
+                {renderModifiedChartInputElement(ChartFormFields.NAME,isEditable)}
+                {renderModifiedChartInputElement(ChartFormFields.URL,isEditable)}
+                {(id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) && (
                     <>
                         <CustomInput
                             dataTestid="add-chart-repo-username"
