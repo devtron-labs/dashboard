@@ -24,6 +24,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     selectedChart: null,
     template: '',
     schema: null,
+    guiSchema: null,
     loading: false,
     chartConfig: null,
     isAppMetricsEnabled: false,
@@ -36,12 +37,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     readme: '',
     fetchedValues: {},
     fetchedValuesManifest: {},
-    yamlMode: true,
-    isBasicLocked: false,
-    isBasicLockedInBase: false,
-    currentEditorView: '',
-    basicFieldValues: null,
-    basicFieldValuesErrorObj: null,
+    yamlMode: false,
     data: null,
     duplicate: null,
     dialog: false,
@@ -121,14 +117,6 @@ export const deploymentConfigReducer = (
             return { ...state, fetchedValuesManifest: action.payload }
         case DeploymentConfigStateActionTypes.yamlMode:
             return { ...state, yamlMode: action.payload }
-        case DeploymentConfigStateActionTypes.isBasicLocked:
-            return { ...state, isBasicLocked: action.payload }
-        case DeploymentConfigStateActionTypes.currentEditorView:
-            return { ...state, currentEditorView: action.payload }
-        case DeploymentConfigStateActionTypes.basicFieldValues:
-            return { ...state, basicFieldValues: action.payload }
-        case DeploymentConfigStateActionTypes.basicFieldValuesErrorObj:
-            return { ...state, basicFieldValuesErrorObj: action.payload }
         case DeploymentConfigStateActionTypes.duplicate:
             return { ...state, duplicate: action.payload }
         case DeploymentConfigStateActionTypes.appMetrics:
@@ -187,6 +175,8 @@ export const deploymentConfigReducer = (
             return { ...state, convertVariables: action.payload }
         case DeploymentConfigStateActionTypes.convertVariablesOverride:
             return { ...state, convertVariablesOverride: action.payload }
+        case DeploymentConfigStateActionTypes.guiSchema:
+            return { ...state, guiSchema: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

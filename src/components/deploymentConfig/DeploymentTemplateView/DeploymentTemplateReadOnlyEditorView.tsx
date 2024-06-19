@@ -78,6 +78,11 @@ export default function DeploymentTemplateReadOnlyEditorView({
             {renderCodeEditor()}
         </>
     ) : (
-        <DeploymentTemplateGUIView value={value} readOnly />
+        <DeploymentTemplateGUIView
+            value={value}
+            hideLockedKeys={hideLockedKeys}
+            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+            readOnly
+        />
     )
 }
