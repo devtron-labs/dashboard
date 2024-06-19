@@ -38,7 +38,7 @@ import {
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { handleOnFocus, parsePassword } from '../common'
+import { handleOnFocus, parsePassword, TLSConnectionForm } from '../common'
 import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -55,6 +55,8 @@ import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
+import { getCertificateAndKeyDependencyError, getTLSConnectionPayloadValues } from '../common/TLSConnectionForm/utils'
+import { TLSConnectionFormActionType, TLSConnectionFormProps } from '../common/TLSConnectionForm/types'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -209,17 +211,31 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     fetchGitOpsConfigurationList() {
         getGitOpsConfigurationList()
             .then((response) => {
-                const form = response.result?.find((item) => item.active) ?? {
+                const parsedGitList =
+                    response.result?.map((gitOpsConfig) => {
+                        const { tlsConfig, ...rest } = gitOpsConfig
+                        return {
+                            ...rest,
+                            caData: tlsConfig?.caData ?? '',
+                            tlsCertData: tlsConfig?.tlsCertData ?? '',
+                            tlsKeyData: tlsConfig?.tlsKeyData ?? '',
+                        }
+                    }) || []
+
+                const form = parsedGitList.find((item) => item.active) ?? {
                     ...DefaultGitOpsConfig,
                     ...DefaultShortGitOps,
                     host: GitHost[this.state.providerTab],
                     provider: GitProvider.GITHUB,
                 }
-                const bitbucketCloudConfig = response.result?.find((item) => item.provider === 'BITBUCKET_CLOUD')
-                const bitbucketDCConfig = response.result?.find((item) => item.provider === 'BITBUCKET_DC')
-                const isBitbucketCloud = (!bitbucketCloudConfig && !bitbucketDCConfig) || (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
+                const bitbucketCloudConfig = parsedGitList.find((item) => item.provider === 'BITBUCKET_CLOUD')
+                const bitbucketDCConfig = parsedGitList.find((item) => item.provider === 'BITBUCKET_DC')
+                const isBitbucketCloud =
+                    (!bitbucketCloudConfig && !bitbucketDCConfig) ||
+                    (!bitbucketDCConfig?.active && !!bitbucketCloudConfig)
+
                 this.setState({
-                    gitList: response.result || [],
+                    gitList: parsedGitList,
                     saveLoading: false,
                     view: ViewType.FORM,
                     lastActiveGitOp: form,
@@ -317,6 +333,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
     }
 
+    // Used in case of validation before submit or clicking on validate button
     isInvalid() {
         let { isError } = this.state
         if (!this.state.isFormEdited) {
@@ -340,7 +357,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        return _isInvalid
+        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            this.state.form.tlsCertData,
+            this.state.form.tlsKeyData,
+        )
+        if (isTLSKeyDataEmpty) {
+            isError.tlsKeyData = message
+        }
+
+        if (isTLSCertDataEmpty) {
+            isError.tlsCertData = message
+        }
+
+        this.setState({ isError })
+        return _isInvalid || isTLSKeyDataEmpty || isTLSCertDataEmpty
     }
 
     suggestedValidGitOpsUrl() {
@@ -375,6 +405,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getPayload = () => {
+        const tlsValues = getTLSConnectionPayloadValues({
+            enableTLSVerification: this.state.form.enableTLSVerification,
+            tlsConfig: {
+                caData: this.state.form.caData,
+                tlsCertData: this.state.form.tlsCertData,
+                tlsKeyData: this.state.form.tlsKeyData,
+            },
+        })
+
         const payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
@@ -390,6 +429,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
+            ...tlsValues,
         }
         return payload
     }
@@ -567,6 +607,65 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
     }
 
+    handleTLSConfigChange: TLSConnectionFormProps['handleChange'] = ({ action, payload }) => {
+        switch (action) {
+            case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        enableTLSVerification: !prevState.form.enableTLSVerification,
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.UPDATE_CA_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        caData: payload,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        caData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.UPDATE_CERT_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        tlsCertData: payload,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        tlsCertData: '',
+                        tlsKeyData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.UPDATE_KEY_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        tlsKeyData: payload,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        tlsKeyData: '',
+                        tlsCertData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+        }
+    }
+
     render() {
         const suggestedURL = this.suggestedValidGitOpsUrl()
         const key: GitOpsOrganisationIdType = this.getGitOpsOrgId()
@@ -599,6 +698,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 </span>
             )
         }
+
+        const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
 
         const renderInputLabels = (label: string, link: string, linkText: string) => {
             return (
@@ -851,9 +952,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 label={renderInputLabels(
                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                         ? 'Azure DevOps Access Token '
-                                        : this.state.form.provider === 'BITBUCKET_DC' ? 'Password ' : 'Personal Access Token ',
+                                        : this.state.form.provider === 'BITBUCKET_DC'
+                                          ? 'Password '
+                                          : 'Personal Access Token ',
                                     DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
-                                    this.state.form.provider !== 'BITBUCKET_DC' ? '(Check permissions required for PAT)' : '',
+                                    this.state.form.provider !== 'BITBUCKET_DC'
+                                        ? '(Check permissions required for PAT)'
+                                        : '',
                                 )}
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
@@ -875,7 +980,26 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                     </div>
-                    <hr />
+
+                    <TLSConnectionForm
+                        enableTLSVerification={this.state.form.enableTLSVerification}
+                        caData={{
+                            value: this.state.form.caData,
+                            error: this.state.isError.caData,
+                        }}
+                        tlsCertData={{
+                            value: this.state.form.tlsCertData,
+                            error: this.state.isError.tlsCertData,
+                        }}
+                        tlsKeyData={{
+                            value: this.state.form.tlsKeyData,
+                            error: this.state.isError.tlsKeyData,
+                        }}
+                        handleChange={this.handleTLSConfigChange}
+                        isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
+                        rootClassName="mb-16"
+                    />
+
                     {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE && (
                         <div>
                             <div className="form__row flex left">

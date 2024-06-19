@@ -38,6 +38,7 @@ export const DefaultGitOpsConfig = {
     id: null,
     provider: GitProvider.GITHUB,
     active: true,
+    enableTLSVerification: false,
 }
 
 export const DefaultShortGitOps = {
@@ -49,6 +50,9 @@ export const DefaultShortGitOps = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    caData: '',
+    tlsCertData: '',
+    tlsKeyData: '',
 }
 
 export const LinkAndLabelSpec = {
