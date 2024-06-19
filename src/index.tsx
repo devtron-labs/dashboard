@@ -138,17 +138,17 @@ if (!window || !window._env_) {
         TRIGGER_API_TIMEOUT: 60000,
         LOGIN_DT_LOGO: '',
         SIDEBAR_DT_LOGO: '',
-        ENABLE_EXTERNAL_ARGO_CD: false,
+        ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
         SERVICE_WORKER_TIMEOUT: '1',
-        ENABLE_RESOURCE_SCAN: false,
+        ENABLE_RESOURCE_SCAN: true,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: false,
-        ENABLE_RESOURCE_SCAN_V2: false,
+        ENABLE_RESOURCE_SCAN_V2: true,
         ENABLE_GITOPS_BITBUCKET_SOURCE: false,
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
-        ENABLE_EXTERNAL_FLUX_CD: false,
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: true,
     }
 }
 
