@@ -291,10 +291,7 @@ const ChartForm = ({
               ? CHART_REPO_AUTH_TYPE.ANONYMOUS
               : CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD,
         active: true,
-        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
-        authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
-            ? { allow_insecure_connection: allowInsecure }
-            : {}),
+        allow_insecure_connection: allowInsecure,
         ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
         authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
             ? { username: customState.username.value, password: customState.password.value }
