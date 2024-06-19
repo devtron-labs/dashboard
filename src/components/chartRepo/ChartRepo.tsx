@@ -104,6 +104,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 key={getRandomInt().toString()}
                 reload={reload}
                 isEditable
+                allowInsecureConnection={false}
             />
             <div className="chartRepo_form__subtitle dc__float-left dc__bold">
                 Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
@@ -113,7 +114,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map(
                     (chart) =>
-                        chart.id != 1 && <CollapsedList {...chart} key={chart.id || getRandomInt()} reload={reload} />,
+                        chart.id != 1 && <CollapsedList {...chart} allowInsecureConnection={chart.allow_insecure_connection} key={chart.id || getRandomInt()} reload={reload} />,
                 )}
         </section>
     )
@@ -130,6 +131,7 @@ const CollapsedList = ({
     userName = '',
     password = '',
     reload,
+    allowInsecureConnection,
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -200,6 +202,7 @@ const CollapsedList = ({
                         toggleCollapse,
                         collapsed,
                         isEditable,
+                        allowInsecureConnection,
                     }}
                 />
             )}
@@ -220,6 +223,7 @@ const ChartForm = ({
     toggleCollapse,
     collapsed,
     isEditable,
+    allowInsecureConnection,
     ...props
 }) => {
     const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
@@ -232,7 +236,7 @@ const ChartForm = ({
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
     })
-    const [secureWithTls, setSecureWithTls] = useState(false)
+    const [allowInsecure,setAllowInsecure] = useState(allowInsecureConnection)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
@@ -289,7 +293,7 @@ const ChartForm = ({
         active: true,
         ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
         authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
-            ? { allow_insecure_connection: !secureWithTls }
+            ? { allow_insecure_connection: allowInsecure }
             : {}),
         ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ||
         authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
@@ -404,8 +408,8 @@ const ChartForm = ({
         }
     }
 
-    function toggleSkipTLSVerification(e) {
-        setSecureWithTls(!secureWithTls)
+    function allowInsecureConnectionHandler(e) {
+        setAllowInsecure(!allowInsecure)
     }
     const handleDeleteClick = () => toggleConfirmation(true)
     const handleCancelClick = () => toggleCollapse((t) => !t)
@@ -470,9 +474,10 @@ const ChartForm = ({
             />
 
             <div className="form__row--two-third mb-16">
-                {renderModifiedChartInputElement(ChartFormFields.NAME,isEditable)}
-                {renderModifiedChartInputElement(ChartFormFields.URL,isEditable)}
-                {(id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) && (
+                {renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
+                {renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
+                {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
+                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
                         <CustomInput
                             dataTestid="add-chart-repo-username"
@@ -494,16 +499,17 @@ const ChartForm = ({
                             labelClassName="mt-12"
                             isRequiredField
                         />
-                        <Checkbox
-                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
-                            isChecked={secureWithTls}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={toggleSkipTLSVerification}
-                        >
-                            <div className="ml-1">Secure With TLS</div>
-                        </Checkbox>
                     </>
                 )}
+
+                        <Checkbox
+                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                            isChecked={allowInsecure}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={allowInsecureConnectionHandler}
+                        >
+                            <div className="ml-1">Allow Insecure Connection</div>
+                        </Checkbox>
             </div>
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (
