@@ -143,12 +143,9 @@ const CollapsedList = ({
     }
 
     const handleCollapse = (e) => {
-        if (isEditable || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) {
             e.stopPropagation()
             toggleCollapse((t) => !t)
-        } else {
-            toast.info(getNonEditableChartRepoText(name))
-        }
+       
     }
 
     return (
