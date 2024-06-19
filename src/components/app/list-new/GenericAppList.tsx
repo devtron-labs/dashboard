@@ -25,16 +25,16 @@ import {
     AppListConstants,
     Host,
     useMainContext,
-    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
-import { LazyImage } from '../../common'
-import { URLS } from '../../../config'
+import { LazyImage, Pagination } from '../../common'
+import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
+import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { Empty } from '../list/emptyView/Empty'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
@@ -48,27 +48,24 @@ import {
 } from './Constants'
 import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
-import { GenericAppListType } from '../types'
+import { GenericAppListProps } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { ArgoAppListResult, FLUX_CD_DEPLOYMENT_TYPE, FluxCDApp, FluxCDAppListResponse } from './AppListType'
+import { GenericAppListResponse, GenericAppType, FLUX_CD_TEMPLATE_TYPE } from './AppListType'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
     payloadParsedFromUrl,
     sortApplicationList,
     clearAllFilters,
-    fetchingExternalApps,
-    setFetchingExternalAppsState,
-    updateDataSyncing,
     setShowPulsatingDotState,
     masterFilters,
-    syncListData,
     appType,
-}: GenericAppListType) => {
-    const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
+    isSSE = false,
+}: GenericAppListProps) => {
+    const [dataStateType, setDataStateType] = useState(null)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [appsList, setAppsList] = useState<(ArgoAppListResult | FluxCDApp)[]>([])
-    const [filteredAppsList, setFilteredAppsList] = useState<(ArgoAppListResult | FluxCDApp)[]>([])
+    const [appsList, setAppsList] = useState<GenericAppType[]>([])
+    const [filteredAppsList, setFilteredAppsList] = useState<GenericAppType[]>([])
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
     const [appStatus, setAppStatus] = useState('')
@@ -87,16 +84,19 @@ const GenericAppList = ({
     }
 
     const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
+        const fluxAppListURL = `${Host}/${Routes.FLUX_APPS}?clusterIds=${clusterIdsCsv}`
+
         return new Promise((resolve, reject) => {
-            const _sseConnection = new EventSource(`${Host}/flux-application`, {
+            const _sseConnection = new EventSource(fluxAppListURL, {
                 withCredentials: true,
             })
 
             _sseConnection.onmessage = function (message) {
-                const externalAppData: FluxCDAppListResponse = JSON.parse(message.data)
+                const externalAppData: GenericAppListResponse = JSON.parse(message.data)
                 const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-
-                setAppsList([...recievedExternalFluxApps])
+                setAppsList((currAppList) => {
+                    return [...currAppList, ...recievedExternalFluxApps]
+                })
                 resolve(null)
             }
             _sseConnection.onerror = function (err) {
@@ -132,9 +132,8 @@ const GenericAppList = ({
 
     useEffect(() => {
         // fetch external apps list
-        updateDataSyncing(true)
-        setDataStateType(AppListViewType.LOADING)
         if (isArgoCDAppList) {
+            setDataStateType(AppListViewType.LOADING)
             getArgoInstalledExternalApps(clusterIdsCsv)
                 .then((appsListResponse) => {
                     setAppsList(appsListResponse.result)
@@ -145,24 +144,17 @@ const GenericAppList = ({
                     setErrorResponseCode(errors.code)
                 })
                 .finally(() => {
-                    updateDataSyncing(false)
                     setDataStateType(AppListViewType.LIST)
                 })
-        } else if (isFluxCDAppList) {
+        } else if (isFluxCDAppList && clusterIdsCsv) {
+            setDataStateType(AppListViewType.LOADING)
             getExternalInstalledFluxApps(clusterIdsCsv)
-                .then(() => {
-                    setDataStateType(AppListViewType.LIST)
-                    setFetchingExternalAppsState(true)
-                    updateDataSyncing(false)
-                })
                 .catch((error) => {
                     showError(error)
                     setDataStateType(AppListViewType.ERROR)
                     setErrorResponseCode(error.code)
                 })
                 .finally(() => {
-                    updateDataSyncing(false)
-                    setFetchingExternalAppsState(false)
                     setDataStateType(AppListViewType.LIST)
                 })
         }
@@ -170,7 +162,11 @@ const GenericAppList = ({
 
     // reset data
     function init() {
-        setDataStateType(AppListViewType.LOADING)
+        if (!isSSE) {
+            setDataStateType(AppListViewType.LOADING)
+        } else {
+            setDataStateType(AppListViewType.LIST)
+        }
         setAppsList([])
         setFilteredAppsList([])
         setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
@@ -192,7 +188,7 @@ const GenericAppList = ({
     function handleFilteration() {
         const _search = payloadParsedFromUrl.appNameSearch
         const _sortOrder = payloadParsedFromUrl.sortOrder
-        const selectedDeploymentTypes = payloadParsedFromUrl.deploymentType || []
+        const selectedTemplateTypes = payloadParsedFromUrl.templateType || []
         let _filteredAppsList = [...(appsList || [])]
 
         // handle search
@@ -210,24 +206,29 @@ const GenericAppList = ({
         }
 
         // handle deployment type
-        // if (selectedDeploymentTypes.length === 1) {
-        //     if (selectedDeploymentTypes.includes('Helm Release')) {
-        //         _filteredAppsList = _filteredAppsList.filter((app) => !app.isKustomizeApp)
-        //     }
-        //     if (selectedDeploymentTypes.includes('Kustomization')) {
-        //         _filteredAppsList = _filteredAppsList.filter((app) => app.isKustomizeApp)
-        //     }
-        // }
+        if (selectedTemplateTypes.length === 1) {
+            if (selectedTemplateTypes.includes(FLUX_CD_TEMPLATE_TYPE.HELM_RELEASE)) {
+                _filteredAppsList = _filteredAppsList.filter(
+                    (app) => app.fluxAppDeploymentType === FLUX_CD_TEMPLATE_TYPE.HELM_RELEASE,
+                )
+            } else if (selectedTemplateTypes.includes(FLUX_CD_TEMPLATE_TYPE.KUSTOMIZATION)) {
+                _filteredAppsList = _filteredAppsList.filter(
+                    (app) => app.fluxAppDeploymentType === FLUX_CD_TEMPLATE_TYPE.KUSTOMIZATION,
+                )
+            }
+        }
 
         setSortOrder(_sortOrder)
         setFilteredAppsList(_filteredAppsList)
+        setShowPulsatingDotState(_filteredAppsList.length == 0 && !clusterIdsCsv)
     }
 
     function _isAnyFilterationAppliedExceptClusterAndNs() {
         return (
             payloadParsedFromUrl.teams?.length ||
             payloadParsedFromUrl.appNameSearch?.length ||
-            payloadParsedFromUrl.environments?.length
+            payloadParsedFromUrl.environments?.length ||
+            payloadParsedFromUrl.templateType?.length
         )
     }
 
@@ -236,9 +237,9 @@ const GenericAppList = ({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        const _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
+        const _isAllClusterSelected = masterFilters?.clusters?.length && !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
         const _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
-        return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
+        return _isAllClusterSelected && !_isAnyFilterationAppliedExceptClusterAndNs() && !_isAnyNamespaceSelected
     }
 
     function handleImageError(e) {
@@ -247,7 +248,7 @@ const GenericAppList = ({
         target.src = defaultChartImage
     }
 
-    function _buildAppDetailUrl(app: ArgoAppListResult | FluxCDApp) {
+    function _buildAppDetailUrl(app: GenericAppType) {
         return `${URLS.APP}/${isArgoCDAppList ? URLS.EXTERNAL_ARGO_APP : URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
     }
 
@@ -256,7 +257,7 @@ const GenericAppList = ({
         sortApplicationList('appNameSort')
     }
 
-    function renderHeaders() {
+    function renderAppListHeader() {
         return (
             <div
                 className={`app-list__header app-list__header${isFluxCDAppList ? '--fluxcd' : ''} dc__position-sticky dc__top-47`}
@@ -270,12 +271,14 @@ const GenericAppList = ({
                 </div>
                 <div className="app-list__cell app-list__cell--app_status">
                     <span className="app-list__cell-header">
+                        {/* In case of FluxCD AppStatus is shown as Status */}
                         {isFluxCDAppList ? APP_LIST_HEADERS.FluxCDStatus : APP_LIST_HEADERS.AppStatus}
                     </span>
                 </div>
+                {/* Template Tyoe is only shown in FluxCD */}
                 {isFluxCDAppList && (
                     <div className="app-list__cell">
-                        <span>DEPLOYMENT TYPE</span>
+                        <span>{APP_LIST_HEADERS.FluxCDTemplateType}</span>
                     </div>
                 )}
                 <div className="app-list__cell app-list__cell--env">
@@ -300,11 +303,12 @@ const GenericAppList = ({
     const renderIcon = () => {
         if (isArgoCDAppList) {
             return ArgoCDAppIcon
+        } else if (isFluxCDAppList) {
+            return FluxCDAppIcon
         }
-        return FluxCDAppIcon
     }
 
-    const renderAppRow = (app: FluxCDApp | ArgoAppListResult): JSX.Element => {
+    const renderAppRow = (app: GenericAppType): JSX.Element => {
         return (
             <Link
                 to={_buildAppDetailUrl(app)}
@@ -326,13 +330,8 @@ const GenericAppList = ({
                         appStatus={isArgoCDAppList ? app.appStatus : app.appStatus === 'True' ? 'Ready' : 'Not Ready'}
                     />
                 </div>
-                {isFluxCDAppList && (
-                    <div>
-                        {/* {app.isKustomizeApp
-                            ? FLUX_CD_DEPLOYMENT_TYPE.KUSTOMIZATION
-                            : FLUX_CD_DEPLOYMENT_TYPE.HELM_RELEASE} */}
-                    </div>
-                )}
+                {/* Template Tyoe is only shown in FluxCD */}
+                {isFluxCDAppList && <div>{app.fluxAppDeploymentType}</div>}
                 <div className="app-list__cell app-list__cell--env">
                     <p
                         className="dc__truncate-text  m-0"
@@ -358,7 +357,7 @@ const GenericAppList = ({
     function renderApplicationList() {
         return (
             <div data-testid="external-argo-list-container">
-                {renderHeaders()}
+                {renderAppListHeader()}
                 {filteredAppsList
                     .slice(payloadParsedFromUrl.hOffset, payloadParsedFromUrl.hOffset + payloadParsedFromUrl.size)
                     .map((app, index) => (
@@ -368,17 +367,13 @@ const GenericAppList = ({
         )
     }
 
-    function renderEmptyState() {
+    function askToSelectClusterId() {
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
-                    image={noChartInClusterImage}
-                    title={
-                        isArgoCDAppList
-                            ? APPLIST_EMPTY_STATE_MESSAGING.noArgoCDApps
-                            : APPLIST_EMPTY_STATE_MESSAGING.noFluxCDApps
-                    }
-                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
+                    image={NoClusterSelectImage}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.heading}
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
                 />
             </div>
         )
@@ -451,7 +446,7 @@ const GenericAppList = ({
             return askToClearFilters()
         }
         if (!clusterIdsCsv) {
-            return renderEmptyState()
+            return askToSelectClusterId()
         }
     }
 
@@ -491,13 +486,13 @@ const GenericAppList = ({
         )
     }
 
-    // if (!isSuperAdmin) {
-    //     return (
-    //         <div className="flex-grow-1">
-    //             <ErrorScreenManager code={403} />
-    //         </div>
-    //     )
-    // }
+    if (!isSuperAdmin) {
+        return (
+            <div className="flex-grow-1">
+                <ErrorScreenManager code={403} />
+            </div>
+        )
+    }
 
     return (
         <>

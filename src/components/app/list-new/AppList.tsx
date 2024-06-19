@@ -52,6 +52,7 @@ import { createAppListPayload } from '../list/appList.modal'
 import {
     buildArgoAppListUrl,
     buildDevtronAppListUrl,
+    buildFluxAppListUrl,
     buildHelmAppListUrl,
     getChangeAppTabURL,
     getCurrentTabName,
@@ -82,7 +83,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     // check for external fluxCD app
     const isExternalFlux =
-        window._env_?.ENABLE_EXTERNAL_FLUX_CD && params.appType === AppListConstants.AppType.FLUX_APPS
+        window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && params.appType === AppListConstants.AppType.FLUX_APPS
 
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
@@ -98,7 +99,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         environments: [],
         clusters: [],
         namespaces: [],
-        deploymentType: [],
+        templateType: [],
     })
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
@@ -167,7 +168,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     useEffect(() => {
         setParsedPayloadOnUrlChange(onRequestUrlChange())
-    }, [location.search, currentTab])
+    }, [location.search])
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
         // return if not single cluster
@@ -204,7 +205,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         const appStatus = params.appStatus || ''
         const teams = params.team || ''
         const clustersAndNamespaces = params.namespace || ''
-        const deploymentType = params.deploymentType || ''
+        const templateType = params.templateType || ''
 
         const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
         const environmentsArr = environments
@@ -222,7 +223,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             .split(',')
             .filter((status) => status != '')
             .map((status) => status)
-        const deploymentTypesArr = deploymentType
+        const templateTypesArr = templateType
             .toString()
             .split(',')
             .filter((type) => type != '')
@@ -234,7 +235,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             teams: new Set<number>(teamsArr),
             appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
-            deploymentType: new Set(deploymentTypesArr),
+            templateType: new Set(templateTypesArr),
         }
 
         const _masterFilters = {
@@ -243,7 +244,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             environments: [],
             clusters: [],
             namespaces: [],
-            deploymentType: [],
+            templateType: [],
         }
 
         // set projects (check/uncheck)
@@ -255,7 +256,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.teams.has(project.key),
             }
         })
-
         // set clusters (check/uncheck)
         _masterFilters.clusters = masterFilters.clusters.map((cluster) => {
             return {
@@ -263,6 +263,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 label: cluster.label,
                 isSaved: true,
                 isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString()),
+                optionMetadata: cluster.optionMetadata
             }
         })
 
@@ -305,12 +306,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             }
         })
 
-        _masterFilters.deploymentType = masterFilters.deploymentType.map((deploymentType) => {
+        _masterFilters.templateType = masterFilters.templateType.map((templateType) => {
             return {
-                key: deploymentType.key,
-                label: deploymentType.label,
+                key: templateType.key,
+                label: templateType.label,
                 isSaved: true,
-                isChecked: filterApplied.deploymentType.has(deploymentType.key),
+                isChecked: filterApplied.templateType.has(templateType.key),
             }
         })
         setMasterFilters(_masterFilters)
@@ -345,7 +346,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 .filter((item) => item != ''),
             appNameSearch: search,
             appStatuses: appStatusArr,
-            deploymentType: deploymentTypesArr,
+            templateType: templateTypesArr,
             sortBy,
             sortOrder,
             offset,
@@ -421,6 +422,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             url = buildArgoAppListUrl()
         } else if (_currentTab === AppListConstants.AppTabs.HELM_APPS) {
             url = buildHelmAppListUrl()
+        } else if (_currentTab === AppListConstants.AppTabs.FLUX_APPS) {
+            url = buildFluxAppListUrl()
         }
 
         history.push(`${url}${queryStr ? `?${queryStr}` : ''}`)
@@ -541,7 +544,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         query['offset'] = 0
         query['hOffset'] = 0
         const queryStr = queryString.stringify(query)
-        console.log(query)
         updateAppListURL(queryStr, selectedAppTab)
     }
 
@@ -605,7 +607,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         delete query['namespace']
         delete query['appStatus']
         delete query['search']
-        delete query['deploymentType']
+        delete query['templateType']
 
         // delete search string
         setSearchApplied(false)
@@ -632,7 +634,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        history.push(`${getChangeAppTabURL(appTabType)}`)
+        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
         setCurrentTab(appTabType)
     }
 
@@ -739,6 +741,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
             serverMode !== SERVER_MODE.EA_ONLY
 
+        const clusterFilters =
+            params.appType === AppListConstants.AppType.DEVTRON_APPS
+                ? masterFilters.clusters
+                : masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
+
         return (
             <div className="search-filter-section">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
@@ -824,19 +831,20 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     {isExternalFlux && (
                         <Filter
                             labelKey="label"
-                            buttonText="Deployment Type"
+                            buttonText="Template Type"
                             multi
                             isDisabled={dataStateType === AppListViewType.LOADING}
-                            list={masterFilters.deploymentType}
-                            placeholder="Search Deployment Type"
-                            type={AppListConstants.FilterType.DEPLOYMENT_TYPE}
+                            list={masterFilters.templateType}
+                            placeholder="Search Template Type"
+                            type={AppListConstants.FilterType.TEMPLATE_TYPE}
                             applyFilter={applyFilter}
                             searchable
                             isFirstLetterCapitalize
                         />
                     )}
                     <Filter
-                        list={masterFilters.clusters}
+                        list={clusterFilters}
+                        position={isExternalArgo || isExternalFlux ? 'right' : 'left'}
                         labelKey="label"
                         buttonText="Cluster"
                         searchable
@@ -913,9 +921,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
                         _filterKey = StatusConstants.APP_STATUS.normalText
-                    } else if (key == StatusConstants.DEPLOYMENT_TYPE.noSpaceLower) {
-                        filterType = AppListConstants.FilterType.DEPLOYMENT_TYPE
-                        _filterKey = StatusConstants.DEPLOYMENT_TYPE.normalCase
+                    } else if (key == StatusConstants.TEMPLATE_TYPE.noSpaceLower) {
+                        filterType = AppListConstants.FilterType.TEMPLATE_TYPE
+                        _filterKey = StatusConstants.TEMPLATE_TYPE.normalCase
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
@@ -996,7 +1004,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             </a>
                         </li>
                     )}
-                    {window._env_?.ENABLE_EXTERNAL_FLUX_CD && (
+                    {window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
                         <li className="tab-list__tab">
                             <a
                                 className={`tab-list__tab-link ${
@@ -1138,13 +1146,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                        updateDataSyncing={updateDataSyncing}
                         setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}
-                        syncListData={syncListData}
-                        isArgoInstalled={isArgoInstalled}
+                        isSSE={isExternalFlux}
                         appType={params.appType}
                     />
                     {fetchingExternalApps && (

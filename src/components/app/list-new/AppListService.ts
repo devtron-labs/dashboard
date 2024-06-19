@@ -20,15 +20,14 @@ import {
     EnvironmentHelmResult,
     getNamespaceListMin as getNamespaceList,
     EnvironmentListHelmResponse,
-    AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppFilters } from '../../../services/service'
 import { Routes, SERVER_MODE } from '../../../config'
 import { Cluster } from '../../../services/service.types'
-import { APP_STATUS, FLUX_CD_DEPLOYMENT_TYPE } from '../config'
+import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
-import { AppListResponse } from './AppListType'
+import { HelmAppListResponse, FLUX_CD_TEMPLATE_TYPE } from './AppListType'
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
@@ -67,7 +66,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             environments: new Set(payloadParsedFromUrl.environments),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
             appStatus: new Set(payloadParsedFromUrl.appStatuses),
-            deploymentType: new Set(payloadParsedFromUrl.deploymentType)
+            templateType: new Set(payloadParsedFromUrl.templateType),
         }
 
         const filters = {
@@ -76,7 +75,8 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             clusters: [],
             namespaces: [],
             appStatus: [],
-            deploymentType: [],
+            templateType: [],
+            filteredClusters:[],
         }
 
         // set filter projects starts
@@ -119,13 +119,15 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
                     label: cluster.cluster_name.toLocaleLowerCase(),
                     isSaved: true,
                     isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.id.toString()),
+                    optionMetadata: {
+                        isVirtualCluster : cluster.isVirtualCluster
+                    }
                 })
             })
         }
         filters.clusters = filters.clusters.sort((a, b) => {
             return sortByLabel(a, b)
         })
-        // set filter clusters ends
 
         // set filter namespace starts
         const _namespaces = _buildNamespaces(
@@ -150,18 +152,18 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
 
         // set filter appStatus ends
 
-        // set filter deploymentType starts
+        // set filter templateType starts
 
-        filters.deploymentType = Object.entries(FLUX_CD_DEPLOYMENT_TYPE).map(([keys, values]) => {
+        filters.templateType = Object.entries(FLUX_CD_TEMPLATE_TYPE).map(([keys, values]) => {
             return {
                 key: values,
-                label: keys,
+                label: values,
                 isSaved: true,
-                isChecked: filterApplied.deploymentType.has(values)
+                isChecked: filterApplied.templateType.has(values),
             }
         })
 
-        // set filter deploymentType ends
+        // set filter templateType ends
 
         // set master filters data ends (check/uncheck)
 
@@ -212,7 +214,10 @@ export const getNamespaces = (
     })
 }
 
-export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?: string): Promise<AppListResponse> => {
+export const getDevtronInstalledHelmApps = (
+    clusterIdsCsv: string,
+    appStatuses?: string,
+): Promise<HelmAppListResponse> => {
     let url = Routes.CHART_INSTALLED
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
@@ -224,10 +229,7 @@ export const getDevtronInstalledHelmApps = (clusterIdsCsv: string, appStatuses?:
 }
 
 export const getArgoInstalledExternalApps = (clusterIdsCsv: string) => {
-    let url = Routes.ARGO_APPS
-    if (clusterIdsCsv) {
-        url = `${url}?clusterIds=${clusterIdsCsv}`
-    }
+    const url = `${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`
     return get(url)
 }
 

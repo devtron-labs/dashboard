@@ -54,7 +54,7 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { AppListResponse } from '../../app/list-new/AppListType'
+import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
 import ExternalFluxAppDetailsRoute from '../../app/list-new/ExternalFluxAppDetailsRoute'
 
@@ -152,7 +152,7 @@ export default function NavigationRoutes() {
                         withCredentials: true,
                     })
                     _sseConnection.onmessage = (message) => {
-                        const externalAppData: AppListResponse = JSON.parse(message.data)
+                        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
                         if (externalAppData.result?.helmApps?.length <= 1) {
                             history.push(`/${URLS.GETTING_STARTED}`)
                         }

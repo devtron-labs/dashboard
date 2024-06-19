@@ -65,7 +65,8 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
-import { AppListResponse, HelmApp } from './AppListType'
+import { HelmAppListResponse, HelmApp } from './AppListType'
+import { onRequestUrlChange } from '../../Jobs/Utils'
 
 export default function HelmAppList({
     serverMode,
@@ -98,6 +99,8 @@ export default function HelmAppList({
 
     // component load
     useEffect(() => {
+
+    console.log('payload in helm list', payloadParsedFromUrl);
         init()
     }, [])
 
@@ -137,7 +140,7 @@ export default function HelmAppList({
             }
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv, appStatus)
-                .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
+                .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
                             ? devtronInstalledHelmAppsListResponse.result.helmApps
@@ -217,7 +220,7 @@ export default function HelmAppList({
         _externalAppFetchErrors: string[],
         _sseConnection: EventSource,
     ) {
-        const externalAppData: AppListResponse = JSON.parse(message.data)
+        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
         if (!externalAppData.result.clusterIds?.length) {
             return
         }

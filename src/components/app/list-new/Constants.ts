@@ -24,6 +24,7 @@ export const APP_LIST_HEADERS = {
     LastDeployedAt: 'Last deployed at',
     SearchAppStatus: 'Search app status',
     FluxCDStatus: 'Status',
+    FluxCDTemplateType: 'TEMPLATE TYPE',
 }
 export const appListLoading = Array.from(Array(3).keys()).map((index) => ({
     id: index,
@@ -54,8 +55,7 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     connectClusterLabel: 'Connect a cluster',
     noAppsFound: 'No apps found',
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
-    noFluxCDApps: 'No FluxCD applications',
-    noArgoCDApps: 'No ArgoCD applications',
+    fluxCDInfoText: 'FluxCD based applications deployed in your cluster will be shown here',
 }
 export const ClearFiltersLabel = 'Clear filters'
 export const DefaultAppNote = `## Describe this application\n\nDescribe this application in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this application and how it works. Keep it concise and informative!\n`
@@ -92,8 +92,8 @@ export const StatusConstants = {
     NOT_AVILABLE: {
         normalCase: 'Not available',
     },
-    DEPLOYMENT_TYPE: {
-        normalCase: 'Deployment Type',
-        noSpaceLower: 'deploymentType',
+    TEMPLATE_TYPE: {
+        normalCase: 'Template type',
+        noSpaceLower: 'templateType',
     },
 } as const

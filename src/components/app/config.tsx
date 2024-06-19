@@ -54,8 +54,3 @@ export const APP_STATUS = {
     Progressing: 'Progressing',
     'Not Deployed': 'NOT DEPLOYED',
 }
-
-export const FLUX_CD_DEPLOYMENT_TYPE = {
-    'Helm Release': 'Helm Release',
-    Kustomization: 'Kustomization',
-}

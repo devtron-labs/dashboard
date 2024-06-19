@@ -16,16 +16,24 @@
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ArgoAppListResult {
+export enum FLUX_CD_TEMPLATE_TYPE {
+    KUSTOMIZATION = 'Kustomization',
+    HELM_RELEASE = 'HelmRelease',
+}
+export interface GenericAppType {
     appName: string
+    appStatus: string
     clusterName: string
     namespace: string
-    appStatus: string
     syncStatus?: string
     clusterId?: string
+    fluxAppDeploymentType?: FLUX_CD_TEMPLATE_TYPE
 }
-export interface ArgoAppListResponse extends ArgoAppListResult {
-    result?: ArgoAppListResult
+export interface GenericAppListResponse extends ResponseType {
+    result: {
+        clusterIds?: string
+        fluxApplication?: GenericAppType[]
+    }
 }
 
 export interface AppEnvironmentDetail {
@@ -50,7 +58,7 @@ export interface HelmApp {
     appStatus: string
 }
 
-interface AppsListResult {
+interface HelmAppsListResult {
     clusterIds: number[]
     applicationType: string // DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
     errored: boolean
@@ -58,26 +66,6 @@ interface AppsListResult {
     helmApps: HelmApp[]
 }
 
-export interface AppListResponse extends ResponseType {
-    result?: AppsListResult
-}
-
-export enum FLUX_CD_DEPLOYMENT_TYPE {
-    KUSTOMIZATION = 'Kustomization',
-    HELM_RELEASE = 'Helm Release',
-}
-export interface FluxCDApp {
-    appName: string
-    appStatus: string
-    isKustomizeApp: boolean
-    clusterName: string
-    namespace: string
-    clusterId: number
-}
-
-export interface FluxCDAppListResult {
-    fluxApplication: FluxCDApp[]
-}
-export interface FluxCDAppListResponse extends ResponseType {
-    result?: FluxCDAppListResult
+export interface HelmAppListResponse extends ResponseType {
+    result?: HelmAppsListResult
 }

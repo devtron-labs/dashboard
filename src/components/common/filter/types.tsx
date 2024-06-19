@@ -19,6 +19,7 @@ export interface FilterOption {
     label: string
     isSaved: boolean
     isChecked: boolean
+    optionMetadata?: object
 }
 
 export interface FilterProps {
