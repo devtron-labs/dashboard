@@ -209,6 +209,13 @@ const blockToday = (day: Moment): boolean => {
     return day.isSame(moment(), 'day')
 }
 
+/**
+ * 
+ * @param param0 date, handleDatesChange, readOnly, isTodayBlocked
+ *  @deprecated it  is replaced with DatePicker in common
+ * @returns 
+ */
+
 export const SingleDatePickerComponent = ({
     date,
     handleDatesChange,
