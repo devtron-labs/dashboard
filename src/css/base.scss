@@ -1186,6 +1186,7 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.not-ready,
     &.failed,
     &.error {
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
@@ -1198,6 +1199,7 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.ready,
     &.healthy,
     &.synced,
     &.sync.ok,

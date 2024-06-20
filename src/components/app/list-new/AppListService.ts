@@ -28,6 +28,7 @@ import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
 import { HelmAppListResponse, FluxCDTemplateType } from './AppListType'
+import { InitialEmptyMasterFilters } from './Constants'
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
@@ -69,15 +70,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             templateType: new Set(payloadParsedFromUrl.templateType),
         }
 
-        const filters = {
-            projects: [],
-            environments: [],
-            clusters: [],
-            namespaces: [],
-            appStatus: [],
-            templateType: [],
-            filteredClusters: [],
-        }
+        const filters = InitialEmptyMasterFilters
 
         // set filter projects starts
         filters.projects = projectList
@@ -153,16 +146,12 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
         // set filter appStatus ends
 
         // set filter templateType starts
-
-        filters.templateType = Object.entries(FluxCDTemplateType).map(([keys, values]) => {
-            return {
-                key: values,
-                label: values,
-                isSaved: true,
-                isChecked: filterApplied.templateType.has(values),
-            }
-        })
-
+        filters.templateType = Object.entries(FluxCDTemplateType).map(([, values]) => ({
+            key: values,
+            label: values,
+            isSaved: true,
+            isChecked: filterApplied.templateType.has(values),
+        }))
         // set filter templateType ends
 
         // set master filters data ends (check/uncheck)

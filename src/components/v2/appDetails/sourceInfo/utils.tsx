@@ -1,4 +1,3 @@
-import React from 'react'
 import { AppType } from '../appDetails.type'
 
 export const getEnvironmentName = (
@@ -6,4 +5,9 @@ export const getEnvironmentName = (
     clusterName: string,
     namespace: string,
     environmentName: string,
-) => (appType === AppType.EXTERNAL_ARGO_APP ? `${clusterName}__${namespace}` : environmentName || <span>&nbsp;</span>)
+): string => {
+    if (appType === AppType.EXTERNAL_ARGO_APP) {
+        return `${clusterName}__${namespace}`
+    }
+    return environmentName || ' '
+}

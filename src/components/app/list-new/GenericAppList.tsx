@@ -25,6 +25,7 @@ import {
     AppListConstants,
     Host,
     useMainContext,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -48,7 +49,7 @@ import {
 } from './Constants'
 import { GenericAppListProps } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { GenericAppListResponse, GenericAppType, FluxCDTemplateType } from './AppListType'
+import { GenericAppListResponse, GenericAppType } from './AppListType'
 import { renderIcon } from './list.utils'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
@@ -91,16 +92,25 @@ const GenericAppList = ({
                 withCredentials: true,
             })
 
-            _sseConnection.onmessage = function (message) {
-                const externalAppData: GenericAppListResponse = JSON.parse(message.data)
-                externalAppData.result.fluxApplication.forEach((fluxApp) => {
-                    fluxApp.appStatus === 'True' ? (fluxApp.appStatus = 'Ready') : (fluxApp.appStatus = 'Not Ready')
-                })
-                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-                setAppsList((currAppList) => [...currAppList, ...recievedExternalFluxApps])
-                resolve(null)
+            _sseConnection.onmessage = (message) => {
+                try {
+                    const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
+                    externalAppData.result.fluxApplication.forEach((fluxApp) => {
+                        if (fluxApp.appStatus === 'True') {
+                            fluxApp.appStatus = 'Ready'
+                        } else if (fluxApp.appStatus === 'False') {
+                            fluxApp.appStatus = 'Not Ready'
+                        }
+                    })
+
+                    const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+                    setAppsList((currAppList) => [...currAppList, ...recievedExternalFluxApps])
+                    resolve(null)
+                } catch (err) {
+                    showError
+                }
             }
-            _sseConnection.onerror = function (err) {
+            _sseConnection.onerror = (err) => {
                 closeSseConnection(_sseConnection)
                 reject(err)
             }
@@ -131,33 +141,43 @@ const GenericAppList = ({
         }
     }, [appsList])
 
+    const handleArgoAppListing = () => {
+        setDataStateType(AppListViewType.LOADING)
+        getArgoInstalledExternalApps(clusterIdsCsv)
+            .then((appsListResponse) => {
+                setAppsList(appsListResponse.result)
+            })
+            .catch((errors: ServerErrors) => {
+                showError(errors)
+                setDataStateType(AppListViewType.ERROR)
+                setErrorResponseCode(errors.code)
+            })
+            .finally(() => {
+                setDataStateType(AppListViewType.LIST)
+            })
+    }
+
+    const handleFluxAppListing = () => {
+        setDataStateType(AppListViewType.LOADING)
+        getExternalInstalledFluxApps(clusterIdsCsv)
+            .catch((error) => {
+                showError(error)
+                setDataStateType(AppListViewType.ERROR)
+                setErrorResponseCode(error.code)
+            })
+            .finally(() => {
+                setDataStateType(AppListViewType.LIST)
+            })
+    }
+
     useEffect(() => {
         // fetch external apps list
         if (isArgoCDAppList) {
-            setDataStateType(AppListViewType.LOADING)
-            getArgoInstalledExternalApps(clusterIdsCsv)
-                .then((appsListResponse) => {
-                    setAppsList(appsListResponse.result)
-                })
-                .catch((errors: ServerErrors) => {
-                    showError(errors)
-                    setDataStateType(AppListViewType.ERROR)
-                    setErrorResponseCode(errors.code)
-                })
-                .finally(() => {
-                    setDataStateType(AppListViewType.LIST)
-                })
-        } else if (isFluxCDAppList && clusterIdsCsv) {
-            setDataStateType(AppListViewType.LOADING)
-            getExternalInstalledFluxApps(clusterIdsCsv)
-                .catch((error) => {
-                    showError(error)
-                    setDataStateType(AppListViewType.ERROR)
-                    setErrorResponseCode(error.code)
-                })
-                .finally(() => {
-                    setDataStateType(AppListViewType.LIST)
-                })
+            handleArgoAppListing()
+            return
+        }
+        if (isFluxCDAppList && clusterIdsCsv) {
+            handleFluxAppListing()
         }
     }, [clusterIdsCsv])
 
@@ -205,15 +225,11 @@ const GenericAppList = ({
             _filteredAppsList = _filteredAppsList.sort((a, b) => b.appName.localeCompare(a.appName))
         }
 
-        // handle deployment type
-        if (selectedTemplateTypes.length === 1) {
-            selectedTemplateTypes.includes(FluxCDTemplateType.HELM_RELEASE)
-                ? (_filteredAppsList = _filteredAppsList.filter(
-                      (app) => app.fluxAppDeploymentType === FluxCDTemplateType.HELM_RELEASE,
-                  ))
-                : (_filteredAppsList = _filteredAppsList.filter(
-                      (app) => app.fluxAppDeploymentType === FluxCDTemplateType.KUSTOMIZATION,
-                  ))
+        // handle template type filter
+        if (selectedTemplateTypes.length > 0) {
+            _filteredAppsList = _filteredAppsList.filter((app) =>
+                selectedTemplateTypes.includes(app.fluxAppDeploymentType),
+            )
         }
 
         setSortOrder(_sortOrder)
