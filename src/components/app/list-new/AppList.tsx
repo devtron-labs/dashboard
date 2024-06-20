@@ -52,7 +52,6 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { createAppListPayload } from '../list/appList.modal'
 import { getChangeAppTabURL, getCurrentTabName } from './list.utils'
 import GenericAppList from './GenericAppList'
-import { MasterFilters } from './AppListType'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -228,14 +227,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             templateType: new Set<string>(templateTypesArr),
         }
 
-        const _masterFilters = {
-            appStatus: [],
-            projects: [],
-            environments: [],
-            clusters: [],
-            namespaces: [],
-            templateType: [],
-        }
+        const _masterFilters = InitialEmptyMasterFilters
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {

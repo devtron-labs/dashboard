@@ -15,7 +15,6 @@
  */
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { FilterOption } from '../../common'
 
 export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',
@@ -67,13 +66,4 @@ interface HelmAppsListResult {
 
 export interface HelmAppListResponse extends ResponseType {
     result?: HelmAppsListResult
-}
-
-export interface MasterFilters {
-    appStatus: FilterOption[]
-    projects: FilterOption[]
-    environments: FilterOption[]
-    clusters: FilterOption[]
-    namespaces: FilterOption[]
-    templateType: FilterOption[]
 }
