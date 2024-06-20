@@ -553,7 +553,7 @@ export default function EnvironmentOverview({
                             >
                                 <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                                 <ArrowLineDown
-                                    className="icon-dim-14 scn-5 rotate"
+                                    className="icon-dim-14 scn-7 rotate"
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>
