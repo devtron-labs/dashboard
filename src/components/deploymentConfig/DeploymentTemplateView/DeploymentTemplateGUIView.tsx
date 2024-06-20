@@ -37,6 +37,7 @@ const DeploymentTemplateGUIView = ({
     value,
     readOnly,
     editorOnChange,
+    /* TODO: either keep lock or remove inputs */
     hideLockedKeys,
     lockedConfigKeysWithLockType,
 }: DeploymentTemplateGUIViewProps) => {
@@ -87,7 +88,7 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        editorOnChange(YAML.stringify(data.formData, { sortMapEntries: true }))
+        editorOnChange?.(YAML.stringify(data.formData, { sortMapEntries: true }))
     }
 
     const renderContent = () => {
