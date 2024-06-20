@@ -95,8 +95,8 @@
     background: white;
     z-index: var(--app-list-header-index);
 
-    &--fluxcd {
-        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px) ;
+    &__fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
     }
 }
 
@@ -124,8 +124,8 @@
     background-color: white;
     border-bottom: 1px solid var(--N100);
 
-    &--fluxcd {
-        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px) ;
+    &__fluxcd {
+        grid-template-columns: 24px 250px 150px 120px 200px repeat(2, 150px);
     }
 }
 

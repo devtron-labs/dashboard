@@ -46,11 +46,10 @@ import {
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
-import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import { GenericAppListProps } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { GenericAppListResponse, GenericAppType, FLUX_CD_TEMPLATE_TYPE } from './AppListType'
+import { GenericAppListResponse, GenericAppType, FluxCDTemplateType } from './AppListType'
+import { renderIcon } from './list.utils'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
@@ -65,6 +64,7 @@ const GenericAppList = ({
     const [dataStateType, setDataStateType] = useState(null)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [appsList, setAppsList] = useState<GenericAppType[]>([])
+    // TODO: Remove filteredAppsList state as it is derived from appsList state only
     const [filteredAppsList, setFilteredAppsList] = useState<GenericAppType[]>([])
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
@@ -93,10 +93,11 @@ const GenericAppList = ({
 
             _sseConnection.onmessage = function (message) {
                 const externalAppData: GenericAppListResponse = JSON.parse(message.data)
-                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-                setAppsList((currAppList) => {
-                    return [...currAppList, ...recievedExternalFluxApps]
+                externalAppData.result.fluxApplication.forEach((fluxApp) => {
+                    fluxApp.appStatus === 'True' ? (fluxApp.appStatus = 'Ready') : (fluxApp.appStatus = 'Not Ready')
                 })
+                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+                setAppsList((currAppList) => [...currAppList, ...recievedExternalFluxApps])
                 resolve(null)
             }
             _sseConnection.onerror = function (err) {
@@ -193,9 +194,8 @@ const GenericAppList = ({
 
         // handle search
         if (_search?.length) {
-            _filteredAppsList = _filteredAppsList.filter((app) =>
-                app.appName.toLowerCase().includes(_search.toLowerCase()),
-            )
+            const searchLowerCase = _search.toLowerCase()
+            _filteredAppsList = _filteredAppsList.filter((app) => app.appName.toLowerCase().includes(searchLowerCase))
         }
 
         // handle sorting by ascending/descending order
@@ -207,15 +207,13 @@ const GenericAppList = ({
 
         // handle deployment type
         if (selectedTemplateTypes.length === 1) {
-            if (selectedTemplateTypes.includes(FLUX_CD_TEMPLATE_TYPE.HELM_RELEASE)) {
-                _filteredAppsList = _filteredAppsList.filter(
-                    (app) => app.fluxAppDeploymentType === FLUX_CD_TEMPLATE_TYPE.HELM_RELEASE,
-                )
-            } else if (selectedTemplateTypes.includes(FLUX_CD_TEMPLATE_TYPE.KUSTOMIZATION)) {
-                _filteredAppsList = _filteredAppsList.filter(
-                    (app) => app.fluxAppDeploymentType === FLUX_CD_TEMPLATE_TYPE.KUSTOMIZATION,
-                )
-            }
+            selectedTemplateTypes.includes(FluxCDTemplateType.HELM_RELEASE)
+                ? (_filteredAppsList = _filteredAppsList.filter(
+                      (app) => app.fluxAppDeploymentType === FluxCDTemplateType.HELM_RELEASE,
+                  ))
+                : (_filteredAppsList = _filteredAppsList.filter(
+                      (app) => app.fluxAppDeploymentType === FluxCDTemplateType.KUSTOMIZATION,
+                  ))
         }
 
         setSortOrder(_sortOrder)
@@ -237,7 +235,7 @@ const GenericAppList = ({
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        const _isAllClusterSelected = masterFilters?.clusters?.length && !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
+        const _isAllClusterSelected = !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
         const _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
         return _isAllClusterSelected && !_isAnyFilterationAppliedExceptClusterAndNs() && !_isAnyNamespaceSelected
     }
@@ -260,7 +258,7 @@ const GenericAppList = ({
     function renderAppListHeader() {
         return (
             <div
-                className={`app-list__header app-list__header${isFluxCDAppList ? '--fluxcd' : ''} dc__position-sticky dc__top-47`}
+                className={`app-list__header app-list__header${isFluxCDAppList ? '__fluxcd' : ''} dc__position-sticky dc__top-47`}
             >
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
@@ -300,25 +298,17 @@ const GenericAppList = ({
         )
     }
 
-    const renderIcon = () => {
-        if (isArgoCDAppList) {
-            return ArgoCDAppIcon
-        } else if (isFluxCDAppList) {
-            return FluxCDAppIcon
-        }
-    }
-
     const renderAppRow = (app: GenericAppType): JSX.Element => {
         return (
             <Link
                 to={_buildAppDetailUrl(app)}
-                className={`app-list__row ${isFluxCDAppList ? 'app-list__row--fluxcd' : ''}`}
+                className={`app-list__row ${isFluxCDAppList ? 'app-list__row__fluxcd' : ''}`}
                 data-testid="app-list-row"
             >
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
-                        src={renderIcon()}
+                        src={renderIcon(appType)}
                         onError={handleImageError}
                     />
                 </div>
@@ -326,11 +316,9 @@ const GenericAppList = ({
                     <div className="dc__truncate-text  m-0 value">{app.appName}</div>
                 </div>
                 <div className="app-list__cell app-list__cell--namespace">
-                    <AppStatus
-                        appStatus={isArgoCDAppList ? app.appStatus : app.appStatus === 'True' ? 'Ready' : 'Not Ready'}
-                    />
+                    <AppStatus appStatus={app.appStatus} />
                 </div>
-                {/* Template Tyoe is only shown in FluxCD */}
+                {/* Template Type is only shown in FluxCD */}
                 {isFluxCDAppList && <div>{app.fluxAppDeploymentType}</div>}
                 <div className="app-list__cell app-list__cell--env">
                     <p

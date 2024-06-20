@@ -118,6 +118,10 @@ export const URLS = {
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
     RELEASES: '/releases',
+    DEVTRON_APP_LIST: '/app/list/d',
+    HELM_APP_LIST: '/app/list/h',
+    ARGO_APP_LIST: '/app/list/a',
+    FLUX_APP_LIST: '/app/list/f',
 }
 
 export enum APP_COMPOSE_STAGE {

@@ -27,6 +27,7 @@ import {
     useMainContext,
     HeaderWithCreateButton,
     AppListConstants,
+    ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
@@ -34,7 +35,7 @@ import { Filter, FilterOption, handleUTCTime, useAppContext } from '../../common
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
-import { SERVER_MODE, DOCUMENTATION, Moment12HourFormat, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -49,14 +50,7 @@ import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/a
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import {
-    buildArgoAppListUrl,
-    buildDevtronAppListUrl,
-    buildFluxAppListUrl,
-    buildHelmAppListUrl,
-    getChangeAppTabURL,
-    getCurrentTabName,
-} from './list.utils'
+import { getChangeAppTabURL, getCurrentTabName } from './list.utils'
 import GenericAppList from './GenericAppList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
@@ -84,6 +78,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     // check for external fluxCD app
     const isExternalFlux =
         window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && params.appType === AppListConstants.AppType.FLUX_APPS
+
+    // view other than devtron or helm app list
+    const isGenericAppListView = isExternalArgo || isExternalFlux
 
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
@@ -226,8 +223,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         const templateTypesArr = templateType
             .toString()
             .split(',')
-            .filter((type) => type != '')
-            .map((type) => type)
+            .filter((type) => !!type)
 
         // update master filters data (check/uncheck)
         const filterApplied = {
@@ -235,7 +231,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             teams: new Set<number>(teamsArr),
             appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
-            templateType: new Set(templateTypesArr),
+            templateType: new Set<string>(templateTypesArr),
         }
 
         const _masterFilters = {
@@ -263,7 +259,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 label: cluster.label,
                 isSaved: true,
                 isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString()),
-                optionMetadata: cluster.optionMetadata
+                optionMetadata: cluster.optionMetadata,
             }
         })
 
@@ -306,16 +302,14 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             }
         })
 
-        _masterFilters.templateType = masterFilters.templateType.map((templateType) => {
-            return {
-                key: templateType.key,
-                label: templateType.label,
-                isSaved: true,
-                isChecked: filterApplied.templateType.has(templateType.key),
-            }
-        })
+        _masterFilters.templateType = masterFilters.templateType.map((templateType) => ({
+            key: templateType.key,
+            label: templateType.label,
+            isSaved: true,
+            isChecked: filterApplied.templateType.has(templateType.key),
+        }))
         setMasterFilters(_masterFilters)
-        /// update master filters data ends (check/uncheck)
+        // update master filters data ends (check/uncheck)
 
         const sortBy = params.orderBy || SortBy.APP_NAME
         const sortOrder = params.sortOrder || OrderBy.ASC
@@ -405,7 +399,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function openDevtronAppCreateModel() {
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
 
@@ -417,13 +411,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         let url = ''
         const _currentTab = selectedAppTab || currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
-            url = buildDevtronAppListUrl()
+            url = URLS.DEVTRON_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
-            url = buildArgoAppListUrl()
+            url = URLS.ARGO_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.HELM_APPS) {
-            url = buildHelmAppListUrl()
+            url = URLS.HELM_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.FLUX_APPS) {
-            url = buildFluxAppListUrl()
+            url = URLS.FLUX_APP_LIST
         }
 
         history.push(`${url}${queryStr ? `?${queryStr}` : ''}`)
@@ -741,6 +735,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
             serverMode !== SERVER_MODE.EA_ONLY
 
+        // In case of apps other than devtron apps, we are hiding virtual clusters from filters
         const clusterFilters =
             params.appType === AppListConstants.AppType.DEVTRON_APPS
                 ? masterFilters.clusters
@@ -773,7 +768,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {!(isExternalArgo || isExternalFlux) && (
+                    {!isGenericAppListView && (
                         <>
                             {isArgoInstalled && (
                                 <>
@@ -844,7 +839,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                     <Filter
                         list={clusterFilters}
-                        position={isExternalArgo || isExternalFlux ? 'right' : 'left'}
+                        position={isGenericAppListView ? 'right' : 'left'}
                         labelKey="label"
                         buttonText="Cluster"
                         searchable
@@ -858,7 +853,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         dataTestId="cluster-filter"
                         appType={params.appType}
                     />
-                    {!(isExternalArgo || isExternalFlux) && (
+                    {!(isGenericAppListView) && (
                         <Filter
                             rootClassName="ml-0-imp"
                             position={showExportCsvButton ? 'left' : 'right'}
@@ -1046,7 +1041,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}${location.search}`)
     }
 
@@ -1054,7 +1049,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return (
             <Switch>
                 <Route
-                    path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.DEVTRON_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -1065,7 +1060,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 />
                 <Route
-                    path={`${buildHelmAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.HELM_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -1137,9 +1132,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )}
-            {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used 
+            {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used
                 for further app lists too  */}
-            {(isExternalArgo || isExternalFlux) && (
+            {isGenericAppListView && (
                 <>
                     <GenericAppList
                         key={params.appType}
