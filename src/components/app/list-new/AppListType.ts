@@ -29,11 +29,9 @@ export interface GenericAppType {
     clusterId?: string
     fluxAppDeploymentType?: FluxCDTemplateType
 }
-export interface GenericAppListResponse extends ResponseType {
-    result: {
-        clusterIds?: string
-        fluxApplication?: GenericAppType[]
-    }
+export interface GenericAppListResponse {
+    clusterIds?: string
+    fluxApplication?: GenericAppType[]
 }
 
 export interface AppEnvironmentDetail {

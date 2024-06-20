@@ -97,3 +97,12 @@ export const StatusConstants = {
         noSpaceLower: 'templateType',
     },
 } as const
+
+export const InitialEmptyMasterFilters = {
+    projects: [],
+    environments: [],
+    clusters: [],
+    namespaces: [],
+    appStatus: [],
+    templateType: [],
+}
