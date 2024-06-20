@@ -27,7 +27,7 @@ import { Cluster } from '../../../services/service.types'
 import { APP_STATUS } from '../config'
 import { getProjectList } from '../../project/service'
 import { getClusterList } from '../../cluster/cluster.service'
-import { HelmAppListResponse, FLUX_CD_TEMPLATE_TYPE } from './AppListType'
+import { HelmAppListResponse, FluxCDTemplateType } from './AppListType'
 
 async function commonAppFilters(serverMode) {
     if (serverMode === SERVER_MODE.FULL) {
@@ -76,7 +76,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             namespaces: [],
             appStatus: [],
             templateType: [],
-            filteredClusters:[],
+            filteredClusters: [],
         }
 
         // set filter projects starts
@@ -120,8 +120,8 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
                     isSaved: true,
                     isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.id.toString()),
                     optionMetadata: {
-                        isVirtualCluster : cluster.isVirtualCluster
-                    }
+                        isVirtualCluster: cluster.isVirtualCluster,
+                    },
                 })
             })
         }
@@ -154,7 +154,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
 
         // set filter templateType starts
 
-        filters.templateType = Object.entries(FLUX_CD_TEMPLATE_TYPE).map(([keys, values]) => {
+        filters.templateType = Object.entries(FluxCDTemplateType).map(([keys, values]) => {
             return {
                 key: values,
                 label: values,
@@ -228,10 +228,8 @@ export const getDevtronInstalledHelmApps = (
     return get(url)
 }
 
-export const getArgoInstalledExternalApps = (clusterIdsCsv: string) => {
-    const url = `${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`
-    return get(url)
-}
+export const getArgoInstalledExternalApps = (clusterIdsCsv: string) =>
+    get(`${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`)
 
 const sortByLabel = (a, b) => {
     if (a.label < b.label) {

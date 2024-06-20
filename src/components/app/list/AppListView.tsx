@@ -15,7 +15,12 @@
  */
 
 import React, { Component } from 'react'
-import { AppStatus, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    ErrorScreenManager,
+    DEFAULT_BASE_PAGE_SIZE,
+    AppListConstants,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'

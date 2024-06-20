@@ -16,7 +16,7 @@
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export enum FLUX_CD_TEMPLATE_TYPE {
+export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',
     HELM_RELEASE = 'HelmRelease',
 }
@@ -27,7 +27,7 @@ export interface GenericAppType {
     namespace: string
     syncStatus?: string
     clusterId?: string
-    fluxAppDeploymentType?: FLUX_CD_TEMPLATE_TYPE
+    fluxAppDeploymentType?: FluxCDTemplateType
 }
 export interface GenericAppListResponse extends ResponseType {
     result: {

@@ -47,6 +47,7 @@ import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { getEnvironmentName } from './utils'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -90,8 +91,12 @@ const EnvironmentSelectorComponent = ({
     }, [params.appId])
 
     const getDeployedUsing = () => {
-        if (isGitops) return DeploymentAppTypeNameMapping.GitOps
-        else if (isExternalArgoApp) return DeploymentAppTypeNameMapping.ArgoCD
+        if (isGitops) {
+            return DeploymentAppTypeNameMapping.GitOps
+        }
+        if (isExternalArgoApp) {
+            return DeploymentAppTypeNameMapping.ArgoCD
+        }
         return DeploymentAppTypeNameMapping.Helm
     }
 
@@ -274,7 +279,12 @@ const EnvironmentSelectorComponent = ({
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {isExternalArgoApp ? `${appDetails.clusterName}__${appDetails.namespace}` : appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
+                                    {getEnvironmentName(
+                                        appDetails.appType,
+                                        appDetails.clusterName,
+                                        appDetails.namespace,
+                                        appDetails.environmentName,
+                                    )}
                                 </div>
                             )}
                         </div>

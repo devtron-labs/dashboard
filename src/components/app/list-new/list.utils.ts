@@ -16,22 +16,8 @@
 
 import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-
-export const buildDevtronAppListUrl = (): string => {
-    return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}`
-}
-
-export const buildHelmAppListUrl = (): string => {
-    return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
-}
-
-export const buildArgoAppListUrl = (): string => {
-    return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
-}
-
-export const buildFluxAppListUrl = (): string => {
-    return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_FLUX}`
-}
+import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
+import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 
 export const getCurrentTabName = (appType: string): string => {
     if (appType === AppListConstants.AppType.DEVTRON_APPS) {
@@ -47,14 +33,21 @@ export const getCurrentTabName = (appType: string): string => {
 }
 
 export const getChangeAppTabURL = (appTabType) => {
-    if (appTabType === AppListConstants.AppTabs.DEVTRON_APPS) {
-        return buildDevtronAppListUrl()
+    switch (appTabType) {
+        case AppListConstants.AppTabs.HELM_APPS:
+            return URLS.HELM_APP_LIST
+        case AppListConstants.AppTabs.ARGO_APPS:
+            return URLS.ARGO_APP_LIST
+        case AppListConstants.AppTabs.FLUX_APPS:
+            return URLS.FLUX_APP_LIST
+        default:
+            return URLS.DEVTRON_APP_LIST
     }
-    if (appTabType === AppListConstants.AppTabs.ARGO_APPS) {
-        return buildArgoAppListUrl()
+}
+
+export const renderIcon = (appType: string) => {
+    if (appType === AppListConstants.AppType.FLUX_APPS) {
+        return FluxCDAppIcon
     }
-    if (appTabType === AppListConstants.AppTabs.HELM_APPS) {
-        return buildHelmAppListUrl()
-    }
-    return buildFluxAppListUrl()
+    return ArgoCDAppIcon
 }

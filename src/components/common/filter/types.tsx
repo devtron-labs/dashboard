@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+interface FilterOptionMetadata {
+    isVirtualCluster?: boolean
+}
+
 export interface FilterOption {
     key: number | string
     label: string
     isSaved: boolean
     isChecked: boolean
-    optionMetadata?: object
+    optionMetadata?: FilterOptionMetadata
 }
 
 export interface FilterProps {
