@@ -1,5 +1,28 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CHECKBOX_VALUE,
+    Checkbox,
+    ConditionalWrap,
+    Progressing,
+    showError,
+    useUserEmail,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
@@ -31,6 +54,7 @@ export default function DeploymentConfigFormCTA({
     showLockedDiffForApproval,
     checkForProtectedLockedChanges,
     setLockedOverride,
+    handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -39,7 +63,8 @@ export default function DeploymentConfigFormCTA({
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
     const isApprovalPending = compareTab && state.latestDraft?.draftState === 4
-    const hasAccess = hasApproverAccess(state.latestDraft?.approvers ?? [])
+    const { email } = useUserEmail()
+    const hasAccess = hasApproverAccess(email, state.latestDraft?.approvers ?? [])
     const approveDisabled = isApprovalPending && state.latestDraft && (!state.latestDraft.canApprove || !hasAccess)
     const getCTATippyContent = () => {
         if (isApprovalPending) {
@@ -102,8 +127,8 @@ export default function DeploymentConfigFormCTA({
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
-                    type={_disabled || isApprovalPending ? 'button' : 'submit'}
-                    onClick={checkForLockedChangesForApproval}
+                    type="button"
+                    onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'

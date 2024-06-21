@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState } from 'react'
 import { useParams, useHistory, useRouteMatch } from 'react-router'
 import {
@@ -29,6 +45,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
+import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
@@ -110,8 +127,9 @@ export default function ChartGroupDetails() {
                 return
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
-            await deployChartGroup(projectId, deployableCharts, Number(groupId))
-            toast.success('Deployment initiated')
+            const { result } = await deployChartGroup(projectId, deployableCharts, Number(groupId))
+            // TODO: Proper error handling in case of deployment is failed.
+            renderChartGroupDeploymentToastMessage(result)
             toggleDeployModal(false)
             reloadChartGroupDetails()
         } catch (err) {

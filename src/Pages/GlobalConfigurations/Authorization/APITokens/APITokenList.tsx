@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { GenericEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericFilterEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
@@ -9,9 +25,7 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-inte
 import { APITokenListType, TokenListType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
-import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
     const history = useHistory()
@@ -54,13 +68,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     }
 
     const noMatchingResults = () => {
-        return (
-            <GenericEmptyState
-                image={NoResults}
-                title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
-                subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
-            />
-        )
+        return <GenericFilterEmptyState />
     }
 
     return (

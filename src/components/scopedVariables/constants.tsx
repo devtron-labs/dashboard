@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { FileReaderStatus } from '../common/hooks/types'
 
 export const DEFAULT_TITLE = 'Scoped variables'
@@ -76,11 +92,6 @@ export const SAVE_SUCCESS_TOAST_MESSAGE = 'File saved successfully'
 export const SAVE_ERROR_TOAST_MESSAGE = 'Error while saving scoped variables'
 export const PARSE_ERROR_TOAST_MESSAGE = 'Error while parsing file'
 export const GET_SCOPED_VARIABLES_ERROR = 'Error while fetching scoped variables'
-
-export const NO_VARIABLES_MESSAGE = {
-    TITLE: 'No matching results found',
-    SUBTITLE: "We couldn't find any matching variable",
-}
 
 export const NO_DESCRIPTION_MESSAGE = 'No description'
 export const SENSITIVE_VARIABLE_DESCRIPTION = 'Value is sensitive & will be hidden while using this variable'

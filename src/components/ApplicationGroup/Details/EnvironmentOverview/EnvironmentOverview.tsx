@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ACTION_STATE,
     AppStatus,
@@ -11,11 +27,16 @@ import {
     useUrlFilters,
     EditableTextArea,
     useSearchString,
+    MODAL_TYPE,
+    DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { HibernateModal } from './HibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { RestartWorkloadModal } from './RestartWorkloadModal'
 import { Moment12HourFormat } from '../../../../config'
 import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
@@ -27,6 +48,7 @@ import {
     AppGroupListType,
     AppInfoListType,
     AppListDataType,
+    HibernateModalProps,
     ManageAppsResponse,
     StatusDrawer,
 } from '../../AppGroup.types'
@@ -41,17 +63,13 @@ import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-vie
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import './envOverview.scss'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
     null,
     'function',
 )
-import './envOverview.scss'
-import { HibernateModal } from './HibernateModal'
-import HibernateStatusListDrawer from './HibernateStatusListDrawer'
-import { UnhibernateModal } from './UnhibernateModal'
-import { RestartWorkloadModal } from './RestartWorkloadModal'
 
 export default function EnvironmentOverview({
     appGroupListData,
@@ -67,12 +85,13 @@ export default function EnvironmentOverview({
     const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
         hibernationOperation: true,
         showStatus: false,
+        inProgress: false,
     })
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
     const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
-    const [openHiberateModal, setOpenHiberateModal] = useState<boolean>(false)
-    const [openUnhiberateModal, setOpenUnhiberateModal] = useState<boolean>(false)
+    const [openedHibernateModalType, setOpenedHibernateModalType] =
+        useState<HibernateModalProps['openedHibernateModalType']>(null)
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
@@ -83,9 +102,33 @@ export default function EnvironmentOverview({
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
-        Record<string, { type: string; excludedUserEmails: string[], userActionState: ACTION_STATE }>
+        Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    // NOTE: there is a slim chance that the api is called before httpProtocol is set
+    const httpProtocol = useRef('')
+    const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(
+        ({ type, isActive }) =>
+            (type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive) ||
+            (type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && !isActive),
+    )
+
+    useEffect(() => {
+        const observer = new PerformanceObserver((list) => {
+            list.getEntries().forEach((entry) => {
+                const protocol = entry.nextHopProtocol
+                if (protocol && entry.initiatorType === 'fetch') {
+                    httpProtocol.current = protocol
+                    observer.disconnect()
+                }
+            })
+        })
+
+        observer.observe({ type: 'resource', buffered: true })
+        return () => {
+            observer.disconnect()
+        }
+    }, [])
 
     const { sortBy, sortOrder, handleSorting } = useUrlFilters({
         initialSortKey: EnvironmentOverviewSortableKeys.application,
@@ -116,10 +159,16 @@ export default function EnvironmentOverview({
     }
 
     useEffect(() => {
-        if (processDeploymentWindowAppGroupOverviewMap && (openHiberateModal || openUnhiberateModal ||  showHibernateStatusDrawer.showStatus || location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))) {
+        if (
+            processDeploymentWindowAppGroupOverviewMap &&
+            (openedHibernateModalType ||
+                showHibernateStatusDrawer.showStatus ||
+                location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
+        ) {
             getDeploymentWindowEnvOverrideMetaData()
         }
-    }, [openHiberateModal, openUnhiberateModal, showHibernateStatusDrawer.showStatus, location.search])
+    }, [openedHibernateModalType, showHibernateStatusDrawer.showStatus, location.search])
+
     useEffect(() => {
         setLoading(true)
         fetchDeployments()
@@ -242,15 +291,16 @@ export default function EnvironmentOverview({
         setShowHibernateStatusDrawer({
             ...showHibernateStatusDrawer,
             showStatus: false,
+            inProgress: false,
         })
     }
 
-    const openHiberateModalPopup = () => {
-        setOpenHiberateModal(true)
+    const openHibernateModalPopup = () => {
+        setOpenedHibernateModalType(MODAL_TYPE.HIBERNATE)
     }
 
-    const openUnhiberateModalPopup = () => {
-        setOpenUnhiberateModal(true)
+    const openUnHibernateModalPopup = () => {
+        setOpenedHibernateModalType(MODAL_TYPE.UNHIBERNATE)
     }
 
     const onClickShowBulkRestartModal = () => {
@@ -445,6 +495,62 @@ export default function EnvironmentOverview({
         )
     }
 
+    const renderOverviewModal = () => {
+        if (location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
+            return (
+                <RestartWorkloadModal
+                    selectedAppIds={selectedAppIds}
+                    envName={appListData.environment}
+                    envId={envId}
+                    setRestartLoader={setRestartLoader}
+                    restartLoader={restartLoader}
+                    hibernateInfoMap={hibernateInfoMap}
+                    httpProtocol={httpProtocol.current}
+                    isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
+                />
+            )
+        }
+
+        if (openedHibernateModalType) {
+            return (
+                <HibernateModal
+                    selectedAppIds={selectedAppIds}
+                    appDetailsList={appGroupListData.apps}
+                    envId={envId}
+                    envName={appListData.environment}
+                    setOpenedHibernateModalType={setOpenedHibernateModalType}
+                    setAppStatusResponseList={setAppStatusResponseList}
+                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
+                    isDeploymentWindowLoading={isDeploymentLoading}
+                    showDefaultDrawer={showDefaultDrawer}
+                    httpProtocol={httpProtocol.current}
+                    openedHibernateModalType={openedHibernateModalType}
+                    isDeploymentBlockedViaWindow={isDeploymentBlockedViaWindow}
+                />
+            )
+        }
+
+        if (showHibernateStatusDrawer.showStatus || showHibernateStatusDrawer.inProgress) {
+            return (
+                <HibernateStatusListDrawer
+                    closePopup={closePopup}
+                    envName={appListData.environment}
+                    responseList={appStatusResponseList}
+                    getAppListData={getAppListData}
+                    showHibernateStatusDrawer={showHibernateStatusDrawer}
+                    hibernateInfoMap={hibernateInfoMap}
+                    isDeploymentWindowLoading={isDeploymentLoading}
+                />
+            )
+        }
+
+        if (commitInfoModalConfig) {
+            return <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />
+        }
+
+        return null
+    }
+
     return appListData?.appInfoList?.length > 0 ? (
         <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
             <div>{renderSideInfoColumn()}</div>
@@ -457,14 +563,14 @@ export default function EnvironmentOverview({
                         {selectedAppIds.length > 0 && (
                             <div className="flexbox dc__gap-6">
                                 <button
-                                    onClick={openHiberateModalPopup}
+                                    onClick={openHibernateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <HibernateIcon className="icon-dim-12 mr-4" />
                                     Hibernate
                                 </button>
                                 <button
-                                    onClick={openUnhiberateModalPopup}
+                                    onClick={openUnHibernateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
                                     <UnhibernateIcon className="icon-dim-12 mr-4" />
@@ -474,7 +580,7 @@ export default function EnvironmentOverview({
                                     onClick={onClickShowBulkRestartModal}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
                                 >
-                                     <RotateIcon className="icon-dim-12 mr-4 scn-9" />
+                                    <RotateIcon className="icon-dim-12 mr-4 scn-9" />
                                     Restart Workload
                                 </button>
                             </div>
@@ -537,52 +643,8 @@ export default function EnvironmentOverview({
                     </div>
                 </div>
             </div>
-            {openHiberateModal && (
-                <HibernateModal
-                    selectedAppIds={selectedAppIds}
-                    envId={envId}
-                    envName={appListData.environment}
-                    setOpenHiberateModal={setOpenHiberateModal}
-                    setAppStatusResponseList={setAppStatusResponseList}
-                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
-                    isDeploymentLoading={isDeploymentLoading}
-                    showDefaultDrawer={showDefaultDrawer}
-                />
-            )}
-            {openUnhiberateModal && (
-                <UnhibernateModal
-                    selectedAppIds={selectedAppIds}
-                    envId={envId}
-                    envName={appListData.environment}
-                    setOpenUnhiberateModal={setOpenUnhiberateModal}
-                    setAppStatusResponseList={setAppStatusResponseList}
-                    setShowHibernateStatusDrawer={setShowHibernateStatusDrawer}
-                    isDeploymentLoading={isDeploymentLoading}
-                    showDefaultDrawer={showDefaultDrawer}
-                />
-            )}
-            {location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD) && (
-                <RestartWorkloadModal
-                    selectedAppIds={selectedAppIds}
-                    envName={appListData.environment}
-                    envId={envId}
-                    setRestartLoader={setRestartLoader}
-                    restartLoader={restartLoader}
-                    hibernateInfoMap={hibernateInfoMap}
-                />
-            )}
-            {showHibernateStatusDrawer.showStatus && (
-                <HibernateStatusListDrawer
-                    closePopup={closePopup}
-                    isLoading={false}
-                    responseList={appStatusResponseList}
-                    getAppListData={getAppListData}
-                    isHibernateOperation={showHibernateStatusDrawer.hibernationOperation}
-                    hibernateInfoMap={hibernateInfoMap}
-                    isDeploymentLoading={isDeploymentLoading}
-                />
-            )}
-            {commitInfoModalConfig && <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />}
+
+            {renderOverviewModal()}
         </div>
     ) : null
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
@@ -17,11 +33,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import {
-    FloatingVariablesSuggestions,
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-} from '../common'
+import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -602,11 +614,14 @@ export default function CIPipeline({
         if (!isJobView) {
             let ciPipelineType: CIPipelineBuildType = CIPipelineBuildType.CI_BUILD
             if (ciPipeline.isExternal) {
-                ciPipelineType = CIPipelineBuildType.CI_EXTERNAL
+                ciPipelineType = CIPipelineBuildType.CI_LINKED
             } else if (isJobCI) {
                 ciPipelineType = CIPipelineBuildType.CI_JOB
             }
             _ciPipeline.pipelineType = ciPipeline.id ? ciPipeline.pipelineType : ciPipelineType
+        }
+        if (isJobView) {
+            _ciPipeline.pipelineType = CIPipelineBuildType.CI_BUILD
         }
         saveCIPipeline(
             {

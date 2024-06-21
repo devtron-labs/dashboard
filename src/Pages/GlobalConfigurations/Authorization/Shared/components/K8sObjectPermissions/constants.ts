@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Nodes } from '../../../../../../components/app/types'
 import { authorizationSelectStyles } from '../../../constants'
 
@@ -13,6 +29,7 @@ export enum K8sPermissionActionType {
     onObjectChange = 'onObjectChange',
     onRoleChange = 'onRoleChange',
     onStatusChange = 'onStatusChange',
+    setNamespace = 'setNamespace',
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {
@@ -31,12 +48,16 @@ export const resourceSelectStyles = {
         ...authorizationSelectStyles.control(base, state),
         height: 'auto',
         minHeight: '36px',
+        maxHeight: '300px',
     }),
     valueContainer: (base) => ({
         ...authorizationSelectStyles.valueContainer(base),
         display: 'flex',
         columnGap: '8px',
         rowGap: '4px',
+        overflow: 'scroll',
+        maxHeight: '290px',
+        padding: '0 8px',
     }),
     multiValue: (base) => ({
         ...base,

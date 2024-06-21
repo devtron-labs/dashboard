@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useEffect, useState } from 'react'
 import {
     showError,
@@ -6,6 +22,7 @@ import {
     ServerErrors,
     GenericEmptyState,
     AppStatus,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -27,7 +44,7 @@ import {
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
 } from './Constants'
-import DevtronAppIcon from '../../../assets/icons/ic-devtron-app.svg'
+import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import { ExternalArgoListType } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ArgoAppListResult } from './AppListType'
@@ -55,6 +72,7 @@ export default function ExternalArgoList({
     const location = useLocation()
     const history = useHistory()
     const params = new URLSearchParams(location.search)
+    const { isSuperAdmin } = useMainContext()
 
     // component load
     useEffect(() => {
@@ -178,13 +196,13 @@ export default function ExternalArgoList({
 
     function renderHeaders() {
         return (
-            <div className="app-list__header">
+            <div className="app-list__header dc__position-sticky dc__top-47">
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     <button className="app-list__cell-header flex" onClick={sortByAppName}>
                         {APP_LIST_HEADERS.AppName}
                         {sortBy == SortBy.APP_NAME ? (
-                            <span className={`sort ${sortOrder == OrderBy.ASC ? 'sort-up' : ''} ml-4`} />
+                            <span className={`sort ${sortOrder == OrderBy.ASC ? '' : 'sort-up'} ml-4`} />
                         ) : (
                             <span className="sort-col dc__opacity-0_5 ml-4" />
                         )}
@@ -220,7 +238,7 @@ export default function ExternalArgoList({
                 <div className="app-list__cell--icon">
                     <LazyImage
                         className="dc__chart-grid-item__icon icon-dim-24"
-                        src={DevtronAppIcon}
+                        src={ArgoCDAppIcon}
                         onError={handleImageError}
                     />
                 </div>
@@ -386,6 +404,16 @@ export default function ExternalArgoList({
             )
         )
     }
+
+    // RBAC for SuperAdmin
+    if (!isSuperAdmin) {
+        return (
+            <div className="flex-grow-1">
+                <ErrorScreenManager code={403} />
+            </div>
+        )
+    }
+
     return (
         <>
             {dataStateType === AppListViewType.LOADING && (

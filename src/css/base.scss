@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import './modal.scss';
 @import './whiteCard.scss';
 @import './workflow.scss';
@@ -165,7 +181,7 @@ a:focus {
 
 .tab-list__tab {
     user-select: none;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: normal;
     line-height: 1.43;
     letter-spacing: normal;
@@ -362,6 +378,10 @@ a:focus {
     top: 49px;
 }
 
+.dc__top-77 {
+    top: 77px;
+}
+
 .dc__top-88 {
     top: 88px;
 }
@@ -480,6 +500,11 @@ a:focus {
     display: grid;
     grid-template-columns: 2fr 1fr;
     grid-column-gap: 16px;
+}
+
+.dc__grid-row-one-half {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 // ClassName of text area
@@ -743,6 +768,7 @@ button.anchor {
     &.f-completed,
     &.f-bound,
     &.f-active,
+    &.f-created,
     &.f-scalingreplicasetdown {
         color: var(--G500);
     }
@@ -768,6 +794,7 @@ button.anchor {
     &.f-terminating,
     &.f-crashloopbackoff,
     &.f-init__crashloopbackoff,
+    &.f-deleted,
     &.f-evicted {
         color: var(--R500);
     }
@@ -777,6 +804,10 @@ button.anchor {
     &.f-unknown,
     &.initiated {
         color: var(--yellow);
+    }
+
+    &.f-updated {
+        color: var(--Y700);
     }
 }
 
@@ -2211,6 +2242,10 @@ button.anchor {
 .dc__border-right {
     border-right: solid 1px var(--N200);
 
+    &--n1 {
+        border-right: solid 1px var(--N100);
+    }
+
     &--b1 {
         border-right: solid 1px var(--B100);
     }
@@ -2315,6 +2350,10 @@ button.anchor {
     max-width: 90px;
 }
 
+.dc__mxw-100 {
+    max-width: 100px;
+}
+
 .dc__mxw-120 {
     max-width: 120px;
 }
@@ -2389,6 +2428,10 @@ button.anchor {
 
 .dc__mxw-1068 {
     max-width: 1068px;
+}
+
+.dc__mxw-1400 {
+    max-width: 1400px;
 }
 
 .dc__mxw-180 {
@@ -2889,6 +2932,10 @@ textarea,
     min-width: 24px !important;
 }
 
+.mw-32 {
+    min-width: 32px !important;
+}
+
 .mw-36 {
     min-width: 36px !important;
 }
@@ -2926,7 +2973,7 @@ textarea,
 }
 
 .w-10 {
-    width: 10px;   
+    width: 10px;
 }
 
 .w-16 {
@@ -3043,6 +3090,10 @@ textarea,
 
 .w-204 {
     width: 204px;
+}
+
+.w-214 {
+    width: 214px;
 }
 
 .w-216 {
@@ -3796,6 +3847,10 @@ textarea,
     margin-left: 36px !important;
 }
 
+.ml-45 {
+    margin-left: 45px;
+}
+
 .ml-54 {
     margin-left: 54px;
 }
@@ -3858,8 +3913,16 @@ textarea,
     }
 }
 
+.dc__row-gap-8 {
+    row-gap: 8px;
+}
+
 .dc__column-gap-8 {
     column-gap: 8px;
+}
+
+.dc__column-gap-12 {
+    column-gap: 12px;
 }
 
 .dc__column-gap-16 {
@@ -3914,6 +3977,10 @@ textarea,
 
 .dc__gap-32 {
     gap: 32px;
+}
+
+.dc__flip-y {
+    transform: scaleY(-1);
 }
 
 .dc__flip-180 {
@@ -3982,6 +4049,13 @@ textarea::placeholder {
     word-break: break-all;
 }
 
+.dc__truncate--clamp-6 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+}
+
 // opacity
 .dc__opacity-0_2 {
     opacity: 0.2;
@@ -4008,6 +4082,10 @@ textarea::placeholder {
     filter: blur(1.5px);
 }
 
+.dc__blur-12 {
+    filter: blur(12px);
+}
+
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
@@ -4015,6 +4093,10 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__hover-n0:hover {
+    background-color: var(--N0);
 }
 
 .dc__hover-b500:hover {
@@ -4463,6 +4545,12 @@ textarea::placeholder {
 }
 
 .last-child {
+    &__display-none {
+        &:last-child {
+            display: none;
+        }
+    }
+
     &__no-border {
         &:last-child {
             border: none;
@@ -4523,3 +4611,18 @@ textarea::placeholder {
     outline: 1px solid var(--N100);
 }
 
+.dc__info-card {
+    box-shadow: 0px 1px 2px 0px rgba(1, 87, 173, 0.10);
+    border: 1px solid rgba(0, 102, 204, 0.12);
+
+    &:not(&--no-hover) {
+        &:hover {
+            text-decoration: none;
+            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.10), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+.dc__modal-gradient {
+    background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
+}

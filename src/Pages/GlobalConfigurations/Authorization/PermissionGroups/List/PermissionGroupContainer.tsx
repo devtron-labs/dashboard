@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     DEFAULT_BASE_PAGE_SIZE,
     ErrorScreenNotAuthorized,
@@ -5,12 +21,12 @@ import {
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useRef } from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
-import FiltersEmptyState from '../../Shared/components/FilterEmptyState/FilterEmptyState.component'
 import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
 import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
 import NoPermissionGroups from './NoPermissionGroups'
@@ -114,7 +130,7 @@ const PermissionGroupContainer = ({
                         totalCount={totalCount}
                     />
                 ) : (
-                    <FiltersEmptyState clearFilters={clearFilters} />
+                    <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
                 )}
                 {isSomeRowChecked && selectedUsersCount > 0 && (
                     <BulkSelectionActionWidget

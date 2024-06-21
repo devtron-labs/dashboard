@@ -1,97 +1,22 @@
-import * as jsonpatch from 'fast-json-patch'
-import { getValueByPointer, applyPatch } from 'fast-json-patch'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import moment from 'moment'
-import { BASIC_FIELDS, BASIC_FIELD_MAPPING, BASIC_FIELD_PARENT_PATH } from './constants'
-import { BasicFieldErrorObj, DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
-import { ValidationRules } from './validationRules'
-
-const basicFieldArray = Object.keys(BASIC_FIELD_MAPPING)
-let templateFromBasicValue
-const validationRules = new ValidationRules()
-
-export const updateTemplateFromBasicValue = (template): void => {
-    templateFromBasicValue = template
-}
-
-export const isBasicValueChanged = (modifiedTemplate, defaultTemplate?): boolean => {
-    if (templateFromBasicValue || defaultTemplate) {
-        const _patchData = jsonpatch.compare(defaultTemplate || templateFromBasicValue, modifiedTemplate)
-        for (let index = 0; index < _patchData.length; index++) {
-            const { path } = _patchData[index]
-            for (let index = 0; index < basicFieldArray.length; index++) {
-                if (
-                    (path.indexOf(BASIC_FIELD_MAPPING[basicFieldArray[index]]) === 0 && !path.includes('pathType')) ||
-                    path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.INGRESS] ||
-                    path === BASIC_FIELD_PARENT_PATH[BASIC_FIELDS.CONTAINER_PORT]
-                ) {
-                    return true
-                }
-            }
-        }
-    }
-    return false
-}
-
-export const getBasicFieldValue = (template) => {
-    templateFromBasicValue = { ...template }
-    const _basicFieldValues: Record<string, any> = {}
-    for (let index = 0; index < basicFieldArray.length; index++) {
-        const key = basicFieldArray[index]
-        try {
-            if (key === BASIC_FIELDS.RESOURCES) {
-                const resources = getValueByPointer(template, BASIC_FIELD_MAPPING[BASIC_FIELDS.RESOURCES])
-                _basicFieldValues[BASIC_FIELDS.RESOURCES] = {
-                    [BASIC_FIELDS.LIMITS]: resources[BASIC_FIELDS.LIMITS],
-                    [BASIC_FIELDS.REQUESTS]: resources[BASIC_FIELDS.LIMITS],
-                }
-            }
-            _basicFieldValues[key] = getValueByPointer(template, BASIC_FIELD_MAPPING[key])
-        } catch (error) {}
-    }
-    _basicFieldValues[BASIC_FIELDS.HOSTS] = _basicFieldValues[BASIC_FIELDS.HOSTS]
-        ? [_basicFieldValues[BASIC_FIELDS.HOSTS][0]]
-        : []
-    return _basicFieldValues
-}
-
-export const validateBasicView = (basicFieldValues: Record<string, any>): BasicFieldErrorObj => {
-    const _portValidation = validationRules.port(Number(basicFieldValues[BASIC_FIELDS.PORT]))
-    const _cpuValidation = validationRules.port(
-        basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.CPU],
-    )
-    const _memoryValidation = validationRules.port(
-        basicFieldValues[BASIC_FIELDS.RESOURCES]?.[BASIC_FIELDS.LIMITS]?.[BASIC_FIELDS.MEMORY],
-    )
-    const _basicFieldErrorObj = {
-        isValid: _portValidation.isValid && _cpuValidation.isValid && _memoryValidation.isValid,
-        port: _portValidation,
-        cpu: _cpuValidation,
-        memory: _memoryValidation,
-        envVariables: [],
-    }
-    for (let index = 0; index < basicFieldValues[BASIC_FIELDS.ENV_VARIABLES]?.length; index++) {
-        const element = basicFieldValues[BASIC_FIELDS.ENV_VARIABLES][index]
-        const _envVariableValidation = validationRules.envVariable(element)
-        _basicFieldErrorObj.envVariables.push(_envVariableValidation)
-        _basicFieldErrorObj.isValid = _basicFieldErrorObj.isValid && _envVariableValidation.isValid
-    }
-    return _basicFieldErrorObj
-}
-
-export const patchBasicData = (_template, basicFieldValues: Record<string, any>) => {
-    const basicFieldPatchData = []
-    const basicFieldValuesKey = Object.keys(basicFieldValues)
-    for (let index = 0; index < basicFieldValuesKey.length; index++) {
-        const key = basicFieldArray[index]
-        basicFieldPatchData.push({
-            op: 'replace',
-            path: BASIC_FIELD_MAPPING[key],
-            value: basicFieldValues[key],
-        })
-    }
-    return applyPatch(_template, basicFieldPatchData).newDocument
-}
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 
 export const handleConfigProtectionError = (
     action: number,

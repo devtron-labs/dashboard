@@ -1,12 +1,27 @@
-import { Drawer, GenericEmptyState, Progressing, ReleaseTag, Reload, showError } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Drawer, GenericEmptyState, Progressing, ReleaseTag, Reload, showError, Artifacts, HistoryComponentType } from '@devtron-labs/devtron-fe-common-lib'
 import React, { Component, SyntheticEvent } from 'react'
 import { ReactComponent as Down } from '../../../assets/icons/ic-arrow-down.svg'
 import close from '../../../assets/icons/ic-close.svg'
 import { API_STATUS_CODES, ViewType } from '../../../config'
-import Artifacts from '../details/cicdHistory/Artifacts'
-import { HistoryComponentType, ImageComment } from '../details/cicdHistory/types'
+import { ImageComment } from '../details/cicdHistory/types'
 import { CIMaterialType, MaterialHistory } from '../details/triggerView/MaterialHistory'
 import { getCITriggerInfoModal } from '../service'
+import { renderCIListHeader } from '../details/cdDetails/utils'
 
 interface TriggerInfoModalState {
     statusCode: number
@@ -222,6 +237,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             appReleaseTagNames={this.state.appReleaseTags}
                             tagsEditable={this.state.tagsEditable}
                             hideImageTaggingHardDelete={this.state.hideImageTaggingHardDelete}
+                            renderCIListHeader={renderCIListHeader}
                         />
                     </div>
                 </div>

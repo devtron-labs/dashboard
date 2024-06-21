@@ -1,4 +1,31 @@
-import { get, post, ResponseType, APIOptions, sortCallback, TeamList, trash, LastExecutionResponseType, DATE_TIME_FORMAT_STRING } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+    get,
+    post,
+    ResponseType,
+    APIOptions,
+    sortCallback,
+    TeamList,
+    trash,
+    LastExecutionResponseType,
+    DATE_TIME_FORMAT_STRING,
+    EnvironmentListHelmResponse,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import {
@@ -8,7 +35,6 @@ import {
     AppOtherEnvironment,
     LastExecutionMinResponseType,
     ClusterEnvironmentDetailList,
-    EnvironmentListHelmResponse,
     ClusterListResponse,
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
@@ -145,15 +171,13 @@ export function getAppFilters() {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
+/**
+ * @deprecated Use getEnvironmentListMinPublic form common lib instead
+ */
 export function getEnvironmentListMinPublic(includeAllowedDeploymentTypes?: boolean) {
     return get(
         `${Routes.ENVIRONMENT_LIST_MIN}?auth=false${includeAllowedDeploymentTypes ? '&showDeploymentOptions=true' : ''}`,
     )
-}
-
-export function getClusterListMin() {
-    const URL = `${Routes.CLUSTER}/autocomplete`
-    return get(URL)
 }
 
 export function getDockerRegistryStatus(isStorageActionPush?: boolean): Promise<ResponseType> {
@@ -235,8 +259,8 @@ export function stopStartApp(AppId, EnvironmentId, RequestType) {
     return post(`app/stop-start-app`, { AppId, EnvironmentId, RequestType })
 }
 
-export function validateToken() {
-    return get(`devtron/auth/verify`, { preventAutoLogout: true })
+export const validateToken = (): Promise<ResponseType<Record<'emailId' | 'isVerified' | 'isSuperAdmin', string>>> => {
+    return get(`devtron/auth/verify/v2`, { preventAutoLogout: true })
 }
 
 function getLastExecution(queryString: number | string): Promise<ResponseType> {
@@ -486,11 +510,6 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
 
 export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
-    return get(URL)
-}
-
-export function getNamespaceListMin(clusterIdsCsv: string): Promise<EnvironmentListHelmResponse> {
-    const URL = `${Routes.NAMESPACE}/autocomplete?ids=${clusterIdsCsv}`
     return get(URL)
 }
 

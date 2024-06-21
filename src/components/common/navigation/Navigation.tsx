@@ -1,7 +1,22 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -11,7 +26,6 @@ import {
 } from '../../../config'
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
-import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
@@ -27,9 +41,12 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ReactComponent as ResourceWatcherIcon } from '../../../assets/icons/ic-monitoring.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
+import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
-const showReleases = !!importComponentFromFELibrary('Releases', null, 'function')
+const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
+const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 const NavigationList = [
     {
@@ -61,29 +78,17 @@ const NavigationList = [
         isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
-    ...(showReleases
-        ? [
-              {
-                  title: 'Releases',
-                  dataTestId: 'click-on-releases',
-                  type: 'link',
-                  iconClass: 'nav-short-env',
-                  icon: ReleasesIcon,
-                  href: URLS.RELEASES,
-                  isAvailableInEA: false,
-                  markOnlyForSuperAdmin: true,
-              },
-          ]
-        : []),
     {
-        title: 'Deployment Groups',
-        dataTestId: 'click-on-deployment-groups',
+        title: 'Software Distribution Hub',
+        dataTestId: 'click-on-releases',
         type: 'link',
-        iconClass: 'nav-short-bulk-actions',
-        icon: DeploymentGroupIcon,
-        href: URLS.DEPLOYMENT_GROUPS,
+        iconClass: 'nav-short-env',
+        icon: ReleasesIcon,
+        href: URLS.SOFTWARE_DISTRIBUTION_HUB,
         isAvailableInEA: false,
-        forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
+        markOnlyForSuperAdmin: true,
+        forceHideEnvKey: 'HIDE_RELEASES',
+        hideNav: hideSoftwareDistributionHub,
     },
     {
         title: 'Resource Browser',
@@ -95,6 +100,17 @@ const NavigationList = [
         isAvailableInEA: true,
         markAsBeta: false,
         isAvailableInDesktop: true,
+    },
+    {
+        title: 'Resource Watcher',
+        dataTestId: 'click-on-resource-watcher',
+        type: 'link',
+        href: URLS.RESOURCE_WATCHER,
+        iconClass: 'nav-resource-watcher',
+        icon: ResourceWatcherIcon,
+        isAvailableInEA: true,
+        forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
+        hideNav: hideResourceWatcher,
     },
     {
         title: 'Chart Store',
@@ -155,7 +171,6 @@ interface NavigationType extends RouteComponentProps<{}> {
 export default class Navigation extends Component<
     NavigationType,
     {
-        loginInfo: any
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
@@ -168,7 +183,6 @@ export default class Navigation extends Component<
     constructor(props) {
         super(props)
         this.state = {
-            loginInfo: getLoginInfo(),
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,
@@ -322,6 +336,9 @@ export default class Navigation extends Component<
         if (window._env_.K8S_CLIENT) {
             return item.isAvailableInDesktop
         }
+        if (item.hideNav) {
+            return false
+        }
         if (
             allowedUser &&
             (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
@@ -333,6 +350,39 @@ export default class Navigation extends Component<
                 this.props.installedModuleMap.current?.[item.moduleNameTrivy]
             )
         }
+    }
+
+    renderSidebarLogo = () => {
+        if (window._env_.ORGANIZATION_NAME) {
+            return <OrganizationFrame />
+        }
+
+        if (window._env_.SIDEBAR_DT_LOGO) {
+            return (
+                <img src={window._env_.SIDEBAR_DT_LOGO} alt="devtron" className="icon-dim-40" width={40} height={40} />
+            )
+        }
+
+        return (
+            <svg className="devtron-logo" data-testid="click-on-devtron-app-logo" viewBox="0 0 40 40">
+                <use href={`${NavSprite}#nav-short-devtron-logo`} />
+            </svg>
+        )
+    }
+
+    renderOrganizationTextLogo = () => {
+        const showOrganizationName = !!window._env_.ORGANIZATION_NAME
+
+        return (
+            <div className={`pl-12 ${showOrganizationName ? 'flexbox-col dc__gap-2 py-2' : ''}`}>
+                <img
+                    src={TextLogo}
+                    alt="devtron"
+                    className={`devtron-logo devtron-logo--text ${showOrganizationName ? 'h-20' : ''}`}
+                />
+                {showOrganizationName && <OrganizationTextLogo />}
+            </div>
+        )
     }
 
     render() {
@@ -350,26 +400,8 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                {window._env_.SIDEBAR_DT_LOGO ? (
-                                    <img
-                                        src={window._env_.SIDEBAR_DT_LOGO}
-                                        alt="devtron"
-                                        className="icon-dim-40"
-                                        width={40}
-                                        height={40}
-                                    />
-                                ) : (
-                                    <svg
-                                        className="devtron-logo"
-                                        data-testid="click-on-devtron-app-logo"
-                                        viewBox="0 0 40 40"
-                                    >
-                                        <use href={`${NavSprite}#nav-short-devtron-logo`} />
-                                    </svg>
-                                )}
-                                <div className="pl-12">
-                                    <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
-                                </div>
+                                {this.renderSidebarLogo()}
+                                {this.renderOrganizationTextLogo()}
                             </div>
                         </NavLink>
                         {NavigationList.map((item) => {
