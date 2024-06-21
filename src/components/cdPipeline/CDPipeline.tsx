@@ -614,7 +614,7 @@ export default function CDPipeline({
 
         const pipeline = {
             name: formData.name,
-            appWorkflowId: +workflowId,
+            appWorkflowId: changeCIPayload?.appWorkflowId ? +changeCIPayload.appWorkflowId : +workflowId,
             ciPipelineId: +ciPipelineId,
             environmentId: formData.environmentId,
             namespace: formData.namespace,
@@ -661,7 +661,7 @@ export default function CDPipeline({
 
         // Its not allowed to switch from external to external
         if (changeCIPayload?.switchFromCiPipelineId) {
-            pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
+            pipeline['switchFromCiPipelineId'] = +changeCIPayload.switchFromCiPipelineId
         }
         if (childPipelineId) {
             pipeline['childPipelineId'] = +childPipelineId
