@@ -276,8 +276,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     if (this.props.location.pathname.includes('build')) {
                         const lastIndexBeforeId = this.props.location.pathname.lastIndexOf('/')
                         const ciNodeId = this.props.location.pathname.substring(lastIndexBeforeId + 1)
-                        const nodes = wf?.find((workflow) => workflow.id === ciNodeId)?.nodes
-                        const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
+                        const ciNode = wf
+                            .flatMap((workflow) => workflow.nodes)
+                            .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
                         const pipelineName = ciNode?.title
 
                         if (!isNaN(+ciNodeId) && !!pipelineName) {
@@ -1170,7 +1171,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return nd
     }
 
-    resetAbortController =() => {
+    resetAbortController = () => {
         this.abortCIBuild = new AbortController()
     }
 
