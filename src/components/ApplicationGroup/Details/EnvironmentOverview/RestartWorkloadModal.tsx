@@ -25,10 +25,11 @@ import {
     InfoColourBar,
     MODAL_TYPE,
     stopPropagation,
+    usePrompt,
     useSearchString,
     ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useLocation } from 'react-router-dom'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
     AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
@@ -50,6 +51,7 @@ import { RestartStatusListDrawer } from './RestartStatusListDrawer'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 
@@ -78,6 +80,8 @@ export const RestartWorkloadModal = ({
     const history = useHistory()
     const [showStatusModal, setShowStatusModal] = useState(false)
     const location = useLocation()
+
+    usePrompt({ shouldPrompt: statusModalLoading })
 
     const handleAllAppsCheckboxValue = (_bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData>) => {
         const _selectAllApps = { ...selectAllApps }
@@ -631,18 +635,25 @@ export const RestartWorkloadModal = ({
         setShowResistanceBox(false)
     }
     return (
-        <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
-            <div onClick={stopPropagation} className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100 fs-13 lh-20">
-                {renderHeaderSection()}
-                {renderBodySection()}
-            </div>
-            {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
-                <BulkDeployResistanceTippy
-                    actionHandler={onSave}
-                    handleOnClose={hideResistanceBox}
-                    modalType={MODAL_TYPE.RESTART}
-                />
-            )}
-        </Drawer>
+        <>
+            <Drawer onEscape={closeDrawer} position="right" width="800" parentClassName="h-100">
+                <div
+                    onClick={stopPropagation}
+                    className="bulk-restart-workload-wrapper bcn-0 cn-9 w-800 h-100 fs-13 lh-20"
+                >
+                    {renderHeaderSection()}
+                    {renderBodySection()}
+                </div>
+                {isDeploymentBlockedViaWindow && showResistanceBox && BulkDeployResistanceTippy && (
+                    <BulkDeployResistanceTippy
+                        actionHandler={onSave}
+                        handleOnClose={hideResistanceBox}
+                        modalType={MODAL_TYPE.RESTART}
+                    />
+                )}
+            </Drawer>
+
+            <Prompt when={statusModalLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+        </>
     )
 }

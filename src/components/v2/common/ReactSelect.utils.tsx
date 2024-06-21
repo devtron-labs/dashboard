@@ -217,7 +217,9 @@ export const menuComponentForImage = (props) => {
     )
 }
 
-export const menuComponent = (props, text) => {
+export const menuComponent = (props) => {
+    /* FIXME: not good practice but can be solved once & for all by unifying react-select */
+    const { text } = props.selectProps
     return (
         <components.MenuList {...props}>
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">

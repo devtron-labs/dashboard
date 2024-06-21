@@ -17,10 +17,10 @@
 import {
     ACTION_STATE,
     CDModalTabType,
-    CHECKBOX_VALUE,
     DeploymentNodeType,
     FilterConditionsListType,
     KeyValueListType,
+    MODAL_TYPE,
     ResponseType,
     ServerErrors,
     UserApprovalConfigType,
@@ -458,7 +458,16 @@ export interface HibernateResponseRowType {
     skipped?: string
 }
 
-export interface BaseModalProps {
+export interface HibernateInfoMapProps {
+    type: string
+    excludedUserEmails: string[]
+    userActionState: ACTION_STATE
+}
+
+type HibernateModalType = MODAL_TYPE.HIBERNATE | MODAL_TYPE.UNHIBERNATE
+
+export interface HibernateModalProps {
+    setOpenedHibernateModalType: React.Dispatch<React.SetStateAction<HibernateModalType>>
     selectedAppDetailsList: AppInfoListType[]
     appDetailsList: AppGroupListType['apps']
     envName: string
@@ -466,24 +475,9 @@ export interface BaseModalProps {
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
     httpProtocol: string
-}
-
-export interface HibernateInfoMapProps {
-    type: string
-    excludedUserEmails: string[]
-    userActionState: ACTION_STATE
-}
-export interface HibernateModalProps extends BaseModalProps {
-    setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
-    isDeploymentLoading: boolean
+    isDeploymentWindowLoading: boolean
     showDefaultDrawer: boolean
-    isDeploymentBlockedViaWindow: boolean
-}
-
-export interface UnhibernateModalProps extends BaseModalProps {
-    setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
-    isDeploymentLoading: boolean
-    showDefaultDrawer: boolean
+    openedHibernateModalType: HibernateModalType
     isDeploymentBlockedViaWindow: boolean
 }
 

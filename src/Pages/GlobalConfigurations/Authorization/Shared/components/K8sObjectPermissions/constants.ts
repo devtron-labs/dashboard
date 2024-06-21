@@ -29,6 +29,7 @@ export enum K8sPermissionActionType {
     onObjectChange = 'onObjectChange',
     onRoleChange = 'onRoleChange',
     onStatusChange = 'onStatusChange',
+    setNamespace = 'setNamespace',
 }
 
 export const K8S_PERMISSION_INFO_MESSAGE = {
@@ -47,12 +48,16 @@ export const resourceSelectStyles = {
         ...authorizationSelectStyles.control(base, state),
         height: 'auto',
         minHeight: '36px',
+        maxHeight: '300px',
     }),
     valueContainer: (base) => ({
         ...authorizationSelectStyles.valueContainer(base),
         display: 'flex',
         columnGap: '8px',
         rowGap: '4px',
+        overflow: 'scroll',
+        maxHeight: '290px',
+        padding: '0 8px',
     }),
     multiValue: (base) => ({
         ...base,

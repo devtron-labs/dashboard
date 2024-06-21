@@ -305,9 +305,12 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
     return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
 }
 
-export const triggerCINode = (request) => {
+export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
-    return post(URL, request)
+    const options = {
+        signal: abortSignal
+    }
+    return post(URL, request, options)
 }
 
 export const triggerCDNode = (
@@ -317,6 +320,7 @@ export const triggerCDNode = (
     stageType: DeploymentNodeType,
     deploymentWithConfig?: string,
     wfrId?: number,
+    abortSignal?: AbortSignal
 ) => {
     const request = {
         pipelineId: parseInt(pipelineId),
@@ -336,6 +340,7 @@ export const triggerCDNode = (
         }
     }
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
 
     return post(Routes.CD_TRIGGER_POST, request, options)
 }

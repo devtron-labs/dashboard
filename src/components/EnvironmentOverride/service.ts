@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
+import { addGUISchemaIfAbsent } from '../deploymentConfig/utils'
 
-export function getDeploymentTemplate(appId, envId, chartId) {
-    return get(`app/env/${appId}/${envId}/${chartId}`)
+export async function getDeploymentTemplate(appId, envId, chartId, chartName: string): Promise<ResponseType> {
+    const data = await get(`app/env/${appId}/${envId}/${chartId}`)
+    return addGUISchemaIfAbsent(data, chartName)
 }
 
 export function updateDeploymentTemplate(appId, envId, payload) {
