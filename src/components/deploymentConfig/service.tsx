@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
+import { addGUISchemaIfAbsent } from './utils'
 
-export function getDeploymentTemplate(
+export async function getDeploymentTemplate(
     id: number,
     chartRefId: number,
     abortSignal: AbortSignal,
-    isDefaultTemplate?: boolean,
-) {
-    if (isDefaultTemplate) {
-        return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/default/${chartRefId}`, {
-            signal: abortSignal,
-        })
-    }
-    return get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+    chartName: string,
+): Promise<ResponseType> {
+    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
         signal: abortSignal,
     })
+    return addGUISchemaIfAbsent(response, chartName)
 }
 
 export function getDeploymentTemplateData(

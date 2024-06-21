@@ -163,7 +163,6 @@ export class DatePicker extends Component<DatePickerProps> {
     render() {
         return (
             <DateRangePicker
-                focused
                 startDate={this.props.startDate} // momentPropTypes.momentObj or null,
                 startDateId="unique_start_date_id" // PropTypes.string.isRequired,
                 endDate={this.props.endDate} // momentPropTypes.momentObj or null,

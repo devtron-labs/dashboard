@@ -116,6 +116,8 @@ export const URLS = {
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
+    RELEASES: '/releases',
+    BUILD: '/build',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
 }
 
