@@ -387,8 +387,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 ...this.state.isError,
                 [key]: shouldOverrideRequiredCheck ? '' : 'This is a required field',
                 // Since valid SSH URL will also check for required field check
-                ...(shouldValidateSSHUrl && { sshHost: this.isValidSSHUrl(event.target.value) }),
-                ...(validateUserName && { username: this.requiredFieldCheck(event.target.value) }),
+                ...(shouldValidateSSHUrl ? { sshHost: this.isValidSSHUrl(event.target.value) } : { sshHost: '' }),
+                ...(validateUserName ? { username: this.requiredFieldCheck(event.target.value) } : { username: '' }),
             },
             isFormEdited: false,
             isUrlValidationError: isURLValidationOptional ? false : this.state.isUrlValidationError,
