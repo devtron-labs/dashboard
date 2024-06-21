@@ -15,7 +15,8 @@
  */
 
 import React, { Component } from 'react'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { Prompt } from 'react-router-dom'
+import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader, ModuleNameMap, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
@@ -25,7 +26,7 @@ import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-medi
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
@@ -34,7 +35,7 @@ import { EnvironmentList } from '../../../CIPipelineN/EnvironmentList'
 
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
 
-export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
+class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     static contextType: React.Context<any> = TriggerViewContext
 
     constructor(props) {
@@ -273,6 +274,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal
                         ? null
                         : this.renderMaterialStartBuild(canTrigger)}
+
+                    <Prompt when={this.props.isLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </>
             )
         }
@@ -369,7 +372,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     title={this.props.title}
                     isChangeBranchClicked={this.props.isChangeBranchClicked}
                     onClickNextButton={this.onClickNextButton}
-                    onShowCIModal={this.props.onShowCIModal}
                     handleRegexInputValue={this.handleRegexInputValue}
                     regexValue={this.state.regexValue}
                     onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
@@ -377,9 +379,8 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 />
             )
         }
-        if (this.props.showCIModal) {
-            return this.renderCIModal()
-        }
-        return <></>
+        return this.renderCIModal()
     }
 }
+
+export default CIMaterial
