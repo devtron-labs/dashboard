@@ -19,7 +19,7 @@ import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
-import dayjs from 'dayjs'
+import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
@@ -335,7 +335,7 @@ export const getRenderNodeButton =
     )
 
 export const renderResourceValue = (value: string) => {
-    const isDateValue = dayjs(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
+    const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 
-    return isDateValue ? dayjs(value).format(DATE_TIME_FORMAT_STRING) : value
+    return isDateValue ? moment(value).format(DATE_TIME_FORMAT_STRING) : value
 }

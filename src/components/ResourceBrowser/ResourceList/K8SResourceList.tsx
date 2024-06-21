@@ -202,12 +202,7 @@ export const K8SResourceList = ({
         setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
-    const handleFilterChanges = (
-        _searchText: string,
-        _sortBy: string,
-        _sortOrder: string,
-        debounceResult = false,
-    ): void => {
+    const handleFilterChanges = (_searchText: string, debounceResult = false) => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
             searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
@@ -218,8 +213,8 @@ export const K8SResourceList = ({
             payload: {
                 searchText: _searchText,
                 list: resourceList?.data || [],
-                sortBy: _sortBy,
-                sortOrder: _sortOrder,
+                sortBy,
+                sortOrder,
                 debounceResult,
                 origin: new URL(window.__BASE_URL__, window.location.href).origin,
             },
@@ -232,7 +227,7 @@ export const K8SResourceList = ({
             return
         }
 
-        handleFilterChanges(searchText, sortBy, sortOrder)
+        handleFilterChanges(searchText)
         setResourceListOffset(0)
     }, [resourceList, sortBy, sortOrder])
 
@@ -241,7 +236,7 @@ export const K8SResourceList = ({
         const _url = `${location.pathname}?${searchParamString}`
         updateK8sResourceTab(_url)
         replace(_url)
-        handleFilterChanges(text, sortBy, sortOrder, true)
+        handleFilterChanges(text, true)
         if (text) {
             /* NOTE: if resourceListOffset is 0 setState is noop */
             setResourceListOffset(0)
