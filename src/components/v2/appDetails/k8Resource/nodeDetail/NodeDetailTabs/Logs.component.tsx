@@ -473,14 +473,6 @@ const LogsComponent = ({
         ]
     }
 
-    const getLogsContainerHeight = () => {
-        if (isLogAnalyzer) {
-            return 'calc(100vh - 120px)'
-        } else {
-            return isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 187px)'
-        }
-    }
-
     return isDeleted ? (
         <MessageUI
             msg="This resource no longer exists"
@@ -779,7 +771,7 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            height: getLogsContainerHeight(),
+                            height: isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
