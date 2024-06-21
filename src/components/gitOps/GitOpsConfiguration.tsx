@@ -677,7 +677,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.ERROR, statusCode: error.code, saveLoading: false })
+                this.setState({ saveLoading: false })
             })
     }
 
@@ -731,7 +731,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 })
                 .catch((error) => {
                     showError(error)
-                    this.setState({ view: ViewType.ERROR, statusCode: error.code })
+                    this.setState({
+                        saveLoading: false,
+                        validateLoading: false,
+                        isFormEdited: false,
+                        validationStatus: VALIDATION_STATUS.DRY_RUN,
+                    })
                 })
         }
     }
@@ -935,12 +940,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         ) : (
                             <Fragment key={this.state.providerTab}>
-                                {!!BitBucketDCCredentials && this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                                    <BitbucketCloudAndServerToggleSection
-                                        isBitbucketCloud={this.state.isBitbucketCloud}
-                                        setIsBitbucketCloud={this.setIsBitbucketCloud}
-                                    />
-                                )}
+                                {!!BitbucketCloudAndServerToggleSection &&
+                                    this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
+                                        <BitbucketCloudAndServerToggleSection
+                                            isBitbucketCloud={this.state.isBitbucketCloud}
+                                            setIsBitbucketCloud={this.setIsBitbucketCloud}
+                                        />
+                                    )}
                                 {(this.state.providerTab !== GitProvider.BITBUCKET_CLOUD ||
                                     this.state.isBitbucketCloud) && (
                                     <GitInfoTab
