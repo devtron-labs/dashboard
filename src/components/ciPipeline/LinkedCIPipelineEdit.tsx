@@ -89,6 +89,10 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         }
     }
 
+    getIsChangingToSamePipeline = () =>
+        this.props?.changeCIPayload?.switchFromCiPipelineId &&
+        this.state.form.parentCIPipelineId === this.props.changeCIPayload.switchFromCiPipelineId
+
     selectApp({ value }): void {
         const { form, isValid } = { ...this.state }
         form.parentAppId = value
@@ -275,9 +279,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         }
                     })()}
                 </Typeahead>
-                {this.props?.changeCIPayload?.switchFromCiPipelineId &&
-                    this.state.form.parentCIPipelineId === this.props?.changeCIPayload?.switchFromCiPipelineId && (
-                        <span className="flex left">
+                {this.getIsChangingToSamePipeline() && (
+                        <span className="flex left form__error">
                             <Warning className="icon-dim-14 mr-4 form__icon form__icon--error" />
                             Source CI Pipeline cannot belong to the same workflow
                         </span>
@@ -388,7 +391,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 rootClassName="cta cta--workflow flex-1"
                                 onClick={this.savePipeline}
                                 isLoading={this.state.loadingData}
-                                disabled={this.state.loadingData}
+                                disabled={this.state.loadingData || this.getIsChangingToSamePipeline()}
                             >
                                 Create Linked CI Pipeline
                             </ButtonWithLoader>

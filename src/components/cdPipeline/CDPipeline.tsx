@@ -614,7 +614,7 @@ export default function CDPipeline({
 
         const pipeline = {
             name: formData.name,
-            appWorkflowId: changeCIPayload?.appWorkflowId ? +changeCIPayload.appWorkflowId : +workflowId,
+            appWorkflowId: +workflowId,
             ciPipelineId: +ciPipelineId,
             environmentId: formData.environmentId,
             namespace: formData.namespace,

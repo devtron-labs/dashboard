@@ -341,6 +341,7 @@ export interface WorkflowOptionsModalProps {
     addWebhookCD: (workflowId?: number | string) => void
     addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
     showLinkedCDSource: boolean
+    resetChangeCIPayload: () => void
     // ------------------ Optional types ------------------
     changeCIPayload?: ChangeCIPayloadType
     workflows?: WorkflowType[]

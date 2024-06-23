@@ -52,6 +52,7 @@ const WorkflowOptionsModal = ({
     changeCIPayload,
     workflows,
     getWorkflows,
+    resetChangeCIPayload,
 }: Readonly<WorkflowOptionsModalProps>) => {
     const [currentCIPipelineType, setCurrentCIPipelineType] = useState<CIPipelineNodeType | WorkflowNodeType.WEBHOOK>(
         null,
@@ -92,6 +93,15 @@ const WorkflowOptionsModal = ({
         }
     }, [workflows, changeCIPayload])
 
+    /**
+     * Would be called in case user flow is completed like closing modal, changing CI to webhook with some cd pipelines
+     * In other cases this would be done via closePipeline method in workflowEditor
+     */
+    const handleFlowCompletion = () => {
+        handleCloseWorkflowOptionsModal()
+        resetChangeCIPayload()
+    }
+
     const handleChangeToWebhook = () => {
         if (changeCIPayload) {
             const currentWorkflow = workflows.find((workflow) => +workflow.id === changeCIPayload.appWorkflowId)
@@ -105,7 +115,7 @@ const WorkflowOptionsModal = ({
                         if (response.result) {
                             toast.success(TOAST_MESSAGES.SUCCESS_CHANGE_TO_WEBHOOK)
                             getWorkflows()
-                            handleCloseWorkflowOptionsModal()
+                            handleFlowCompletion()
                         }
                     })
                     .catch((error) => {
@@ -114,10 +124,8 @@ const WorkflowOptionsModal = ({
                     })
                 return
             }
-
-            addWebhookCD(changeCIPayload.appWorkflowId)
         }
-        addWebhookCD(0)
+        addWebhookCD(changeCIPayload?.appWorkflowId || 0)
         handleCloseWorkflowOptionsModal()
     }
 
@@ -167,8 +175,8 @@ const WorkflowOptionsModal = ({
     return (
         <VisibleModal
             className=""
-            onEscape={loadingWebhook ? null : handleCloseWorkflowOptionsModal}
-            close={loadingWebhook ? null : handleCloseWorkflowOptionsModal}
+            onEscape={loadingWebhook ? null : handleFlowCompletion}
+            close={loadingWebhook ? null : handleFlowCompletion}
         >
             <div className="workflow-options-modal br-8 flexbox h-500 dc__overflow-scroll" onClick={stopPropagation}>
                 {/* Sidebar */}
