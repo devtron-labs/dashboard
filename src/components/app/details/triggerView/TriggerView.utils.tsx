@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { KeyValueListType, showError, DeploymentWithConfigType, DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    KeyValueListType,
+    showError,
+    DeploymentWithConfigType,
+    DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
@@ -77,6 +82,7 @@ export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRec
 }
 
 export const processResolvedPromise = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resp: { status: string; value?: any; reason?: any },
     isRecentDeployConfig?: boolean,
 ) => {
@@ -160,22 +166,24 @@ const checkForDiffInArray = (
 
     if (Array.isArray(configValueA)) {
         configValueA.forEach((navOption) => {
-            configOptions.push(navOption['componentName'])
+            configOptions.push(navOption.componentName)
         })
     }
 
     if (Array.isArray(configValueB)) {
         configValueB.forEach((navOption) => {
-            if (!configOptions.includes(navOption['componentName'])) {
-                configOptions.push(navOption['componentName'])
+            if (!configOptions.includes(navOption.componentName)) {
+                configOptions.push(navOption.componentName)
             }
         })
     }
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const _cm of configOptions) {
         const _valueA = configValueA?.find((_config) => _config.componentName === _cm)
         const _valueB = configValueB?.find((_config) => _config.componentName === _cm)
 
+        // eslint-disable-next-line no-param-reassign
         diffForOptions[_cm] = compareConfigValues(_valueA, _valueB)
     }
 
@@ -210,7 +218,7 @@ export const validateAndGetValidRuntimeParams = (
     const keysFrequencyMap = {}
     runtimeParams.forEach((param) => {
         if (keysFrequencyMap[param.key]) {
-            keysFrequencyMap[param.key]++
+            keysFrequencyMap[param.key] += 1
         } else {
             keysFrequencyMap[param.key] = 1
         }

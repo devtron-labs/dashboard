@@ -25,14 +25,17 @@ import {
 import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
 import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
 import { DeploymentConfigContext } from '../DeploymentConfig'
+import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
+import { BASIC_VIEW_TIPPY_CONTENT } from '../constants'
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
     codeEditorValue: string
     disableVersionSelect?: boolean
     isValues?: boolean
+    hideLockedKeys?: boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
@@ -40,6 +43,7 @@ export default function DeploymentTemplateOptionsTab({
     codeEditorValue,
     disableVersionSelect,
     isValues,
+    hideLockedKeys,
 }: DeploymentTemplateOptionsTabProps) {
     const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -134,14 +138,26 @@ export default function DeploymentTemplateOptionsTab({
                         className="gui-yaml-switch"
                         name="yaml-mode"
                         initialTab={state.yamlMode ? 'yaml' : 'gui'}
-                        disabled={_unableToParseYaml}
+                        disabled={hideLockedKeys || _unableToParseYaml}
                         onChange={onChangeEditorMode}
                     >
                         <RadioGroup.Radio
-                            dataTestid="base-deployment-template-basic-button"
                             value="gui"
-                            canSelect={!state.chartConfigLoading && codeEditorValue}
+                            canSelect={!state.chartConfigLoading && !hideLockedKeys && codeEditorValue}
+                            isDisabled={hideLockedKeys}
+                            showTippy={!_unableToParseYaml && hideLockedKeys}
+                            tippyClass="default-white no-content-padding tippy-shadow"
+                            tippyContent={
+                                <>
+                                    <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
+                                        <Locked className="icon-dim-20 mr-6 fcy-7" />
+                                        <span className="fs-14 fw-6 cn-9">{BASIC_VIEW_TIPPY_CONTENT.title}</span>
+                                    </div>
+                                    <div className="fs-13 fw-4 cn-9 p-12">{BASIC_VIEW_TIPPY_CONTENT.infoText}</div>
+                                </>
+                            }
                         >
+                            {hideLockedKeys && <Locked className="icon-dim-12 mr-6" />}
                             Basic (GUI)
                         </RadioGroup.Radio>
                         <RadioGroup.Radio

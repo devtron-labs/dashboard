@@ -34,8 +34,8 @@ import {
     DeploymentWindowProfileMetaData,
     ACTION_STATE,
     DEPLOYMENT_WINDOW_TYPE,
-    noop,
     MODAL_TYPE,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -54,7 +54,6 @@ import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, 
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 
@@ -608,9 +607,9 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
-                            {app.warningMessage ||
+                            {(app.warningMessage ||
                                 tagNotFoundWarningsMap.has(app.appId) ||
-                                (appDeploymentWindowMap[app.appId]?.warningMessage && (
+                                appDeploymentWindowMap[app.appId]?.warningMessage) && (
                                     <span
                                         className={`flex left top fw-4 m-0 fs-12 ${
                                             tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
@@ -625,11 +624,11 @@ export default function BulkCDTrigger({
                                         />
                                         <p className="m-0">
                                             {app.warningMessage ||
-                                                appDeploymentWindowMap[app.appId].warningMessage ||
+                                                appDeploymentWindowMap[app.appId]?.warningMessage ||
                                                 tagNotFoundWarningsMap.get(app.appId)}
                                         </p>
                                     </span>
-                                ))}
+                                )}
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
