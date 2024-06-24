@@ -225,7 +225,6 @@ src/components/charts/Charts.tsx
 src/components/charts/MultiChartSummary.tsx
 src/components/charts/SavedValues/SavedValuesList.tsx
 src/components/charts/chartValues/ChartValues.tsx
-src/components/charts/charts.helper.ts
 src/components/charts/charts.service.ts
 src/components/charts/charts.types.tsx
 src/components/charts/charts.util.tsx

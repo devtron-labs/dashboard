@@ -612,6 +612,7 @@ export default function DeploymentTemplateOverrideForm({
                 isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
+                hideLockedKeys={hideLockedKeys}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA

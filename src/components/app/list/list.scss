@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-.search-filter-section {
+ .search-filter-section {
     padding: 12px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     border: solid 1px rgba(255, 255, 255, 0);
     background-color: white;
-    z-index: 1;
+    z-index: var(--filter-menu-index);
+}
+
+.create-button-container {
+  z-index: var(--page-header-index);
 }
 
 .app-list-filters.filters .filter {
