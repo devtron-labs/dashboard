@@ -35,9 +35,15 @@ export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
                 <Route path={`${path}/${URLS.APP_LIST}`}>
                     <EnvironmentsList isSuperAdmin={isSuperAdmin} />
                 </Route>
-                <Route path={`${path}/:envId`}>
-                    <AppGroupDetailsRoute isSuperAdmin={isSuperAdmin} />
-                </Route>
+                <Route
+                    path={`${path}/:envId`}
+                    render={({ match }) => (
+                        <AppGroupDetailsRoute
+                            isSuperAdmin={isSuperAdmin}
+                            key={`environment-${match.params.envId}-route`}
+                        />
+                    )}
+                />
                 <Redirect to={`${path}/${URLS.APP_LIST}`} />
             </Switch>
         </AppContext.Provider>
