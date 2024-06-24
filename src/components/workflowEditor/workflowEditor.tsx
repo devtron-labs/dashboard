@@ -664,6 +664,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       blackListedIds={this.state.blackListedCI ?? {}}
                                       deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
+                                      workflows={this.state.workflows}
                                   />
                               </Route>,
                           ]
