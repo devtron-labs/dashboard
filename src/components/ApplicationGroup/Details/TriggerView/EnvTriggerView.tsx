@@ -39,6 +39,7 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -73,7 +74,7 @@ import {
     sortObjectArrayAlphabetically,
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
     CI_MATERIAL_EMPTY_STATE_MESSAGING,
     TIME_STAMP_ORDER,

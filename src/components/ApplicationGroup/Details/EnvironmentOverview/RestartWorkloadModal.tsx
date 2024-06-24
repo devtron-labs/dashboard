@@ -27,6 +27,7 @@ import {
     stopPropagation,
     usePrompt,
     useSearchString,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
@@ -47,7 +48,6 @@ import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './s
 import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
 import './envOverview.scss'
 import { RestartStatusListDrawer } from './RestartStatusListDrawer'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
@@ -58,7 +58,7 @@ const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResist
 export const RestartWorkloadModal = ({
     restartLoader,
     setRestartLoader,
-    selectedAppIds,
+    selectedAppDetailsList,
     envName,
     envId,
     hibernateInfoMap,
@@ -115,6 +115,8 @@ export const RestartWorkloadModal = ({
     const getPodsToRotate = async () => {
         setRestartLoader(true)
         const _bulkRotatePodsMap: Record<number, BulkRotatePodsMetaData> = {}
+        const selectedAppIds = selectedAppDetailsList.map((appDetail) => appDetail.appId)
+
         return getRestartWorkloadRotatePods(selectedAppIds.join(','), envId, abortControllerRef.current.signal)
             .then((response) => {
                 if (response.result) {
@@ -419,7 +421,7 @@ export const RestartWorkloadModal = ({
             return (
                 <div className="drawer-section__empty flex">
                     <GenericEmptyState
-                        title={`Fetching workload for ${selectedAppIds.length} Applications`}
+                        title={`Fetching workload for ${selectedAppDetailsList.length} Applications`}
                         subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                         SvgImage={MechanicalIcon}
                     />
