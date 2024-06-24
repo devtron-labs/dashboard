@@ -313,6 +313,10 @@ export interface ChartValuesViewState {
     deploymentAppType: string
     gitRepoURL: string
     authMode: GitOpsAuthModeType
+    initialChartVersionValues: {
+        chartVersionId: number
+        chartValuesId: number
+    }
 }
 
 export enum ChartValuesViewActionTypes {
@@ -366,7 +370,8 @@ export enum ChartValuesViewActionTypes {
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
     setGitRepoURL = 'setGitRepoURL',
-    updateGitOpsConfiguration = 'updateGitOpsConfiguration'
+    updateGitOpsConfiguration = 'updateGitOpsConfiguration',
+    setInitialChartVersionValues = 'setInitialChartVersionValues',
 }
 
 export interface ChartValuesViewAction {

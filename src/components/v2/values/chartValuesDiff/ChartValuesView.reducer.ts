@@ -82,6 +82,10 @@ export const initState = (
         deploymentAppType: DeploymentAppTypes.HELM,
         gitRepoURL: '',
         authMode: null,
+        initialChartVersionValues: {
+            chartVersionId: selectedVersionFromParent,
+            chartValuesId: chartValuesFromParent?.id,
+        },
     }
 }
 
