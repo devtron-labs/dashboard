@@ -23,7 +23,6 @@ export async function getDeploymentTemplate(
     id: number,
     chartRefId: number,
     abortSignal: AbortSignal,
-    isDefaultTemplate?: boolean,
 ): Promise<ResponseType> {
     const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
         signal: abortSignal,

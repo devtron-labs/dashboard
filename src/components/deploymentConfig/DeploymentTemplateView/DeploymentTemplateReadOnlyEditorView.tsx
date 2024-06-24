@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
-import { Progressing, YAMLStringify, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
+import React, { useContext, useMemo } from 'react'
+import { Progressing, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
 
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
@@ -36,25 +34,26 @@ export default function DeploymentTemplateReadOnlyEditorView({
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
 
-    // filtereing the locked keys from the yaml
-    if (applyPatches) {
-        if (hideLockedKeys) {
-            const filteredValue = getUnlockedJSON(YAML.parse(value), lockedConfigKeysWithLockType.config ?? [], false)
-            removedPatches.current = filteredValue.removedPatches
-            value = YAMLStringify(filteredValue.newDocument)
-        } else {
-            value = YAMLStringify(applyPatches(YAML.parse(value), removedPatches.current))
-        }
-    }
+    const data = useMemo(() => {
+        const { updatedRHS: RHS } = getLockFilteredTemplate({
+            rhs: value,
+            lockedConfigKeysWithLockType,
+            removedPatches,
+            hideLockedKeys,
+            readOnly: true,
+            unableToParseYaml: state.unableToParseYaml,
+        })
+        return RHS
+    }, [hideLockedKeys])
 
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div className="form__row--code-editor-container dc__border-top-n1 dc__border-bottom read-only-mode">
                 <CodeEditor
-                    value={value}
+                    value={data}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
-                    loading={state.chartConfigLoading || value === undefined || value === null}
+                    loading={state.chartConfigLoading || data === undefined || data === null}
                     height={isEnvOverride ? 'calc(100vh - 251px)' : 'calc(100vh - 218px)'}
                     readOnly
                 />
@@ -79,7 +78,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         </>
     ) : (
         <DeploymentTemplateGUIView
-            value={value}
+            value={data}
             hideLockedKeys={hideLockedKeys}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
             readOnly

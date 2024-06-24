@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
 import YAML from 'yaml'
 import { Progressing, showError, SortingOrder, YAMLStringify, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
@@ -341,7 +341,10 @@ const DeploymentTemplateEditorView = ({
 
     // final value for RHS
     let rhs = (convertVariables ? resolvedValuesRHS : valueRHS) ?? ''
-    if (getLockFilteredTemplate && isValues) {
+    useMemo(() => {
+        if (!getLockFilteredTemplate || !isValues) {
+            return
+        }
         try {
             const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
                 hideLockedKeys,
@@ -358,7 +361,7 @@ const DeploymentTemplateEditorView = ({
         } catch (err) {
             showError(err)
         }
-    }
+    }, [hideLockedKeys])
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header

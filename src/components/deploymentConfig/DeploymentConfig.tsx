@@ -22,15 +22,13 @@ import {
     useEffectAfterMount,
     useAsync,
     Progressing,
-    getLockedJSON,
-    getUnlockedJSON,
     useMainContext,
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import * as jsonpatch from 'fast-json-patch'
+import { Operation, applyPatch, compare as jsonpatchCompare } from 'fast-json-patch'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -67,7 +65,8 @@ const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentCo
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
+const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
@@ -87,7 +86,6 @@ export default function DeploymentConfig({
         config: [],
         allowed: false,
     })
-    const [lockedOverride, setLockedOverride] = useState({})
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
@@ -101,7 +99,7 @@ export default function DeploymentConfig({
 
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
     const baseDeploymentAbortController = new AbortController()
-    const removedPatches = useRef<Array<jsonpatch.Operation>>([])
+    const removedPatches = useRef<Array<Operation>>([])
 
     const setIsValues = (value: boolean) => {
         dispatch({
@@ -348,6 +346,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
+                // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
             }
 
@@ -444,7 +443,6 @@ export default function DeploymentConfig({
                 : await getIfLockedConfigNonProtected(requestBody)
             if (deploymentTemplateResp.result.isLockConfigError) {
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -492,7 +490,6 @@ export default function DeploymentConfig({
             const deploymentTemplateResp = await api(requestBody, baseDeploymentAbortController.signal)
             if (deploymentTemplateResp.result.isLockConfigError) {
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -658,19 +655,23 @@ export default function DeploymentConfig({
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         let valuesOverride = obj
 
-        if (applyPatches && hideLockedKeys) {
-            valuesOverride = applyPatches(valuesOverride, removedPatches.current)
-        }
-
+        // NOTE: toggleLockedTemplateDiff in the reducer will trigger this
         if (state.showLockedTemplateDiff) {
-            // if locked keys
+            const edited = YAML.parse(state.tempFormData)
+            const unedited = YAML.parse(state.data)
+            const documentsNPatches = {
+                edited,
+                unedited,
+                patches: jsonpatchCompare(unedited, edited)
+            }
             if (!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config, true).newDocument
+                // NOTE: need to send only the changed parts from the yaml as json
+                valuesOverride = getUnlockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             } else {
-                // if allowed keys
-                valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
+                valuesOverride = getLockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             }
         }
+
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
@@ -730,9 +731,10 @@ export default function DeploymentConfig({
         let result = null
         if (isCompareAndApprovalState) {
             result = await fetchManifestData(state.draftValues)
-        } else if (applyPatches && hideLockedKeys) {
+        } else if (hideLockedKeys) {
+            const parsed = YAML.parse(state.tempFormData)
             result = fetchManifestData(
-                YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
+                YAMLStringify(applyPatch(parsed, removedPatches.current).newDocument, { sortMapEntries: true }),
             )
         } else {
             result = await fetchManifestData(state.tempFormData)
@@ -824,7 +826,6 @@ export default function DeploymentConfig({
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
-                setLockedOverride={setLockedOverride}
                 handleSaveChanges={handleSaveChanges}
             />
         </div>
@@ -896,7 +897,10 @@ export default function DeploymentConfig({
                             showLockedDiffForApproval={showLockedDiffForApproval}
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                            lockedOverride={lockedOverride}
+                            documents={{
+                                edited: YAML.parse(state.tempFormData),
+                                unedited: YAML.parse(state.data),
+                            }}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}
                             setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                             appId={appId}
