@@ -275,8 +275,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             } else if (location.pathname.includes('build')) {
                 const lastIndexBeforeId = location.pathname.lastIndexOf('/')
                 const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
-                const nodes = filteredWorkflows?.find((workflow) => workflow.id === ciNodeId)?.nodes
-                const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
+                const ciNode = filteredWorkflows
+                    .flatMap((workflow) => workflow.nodes)
+                    .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
                 const pipelineName = ciNode?.title
 
                 if (!isNaN(+ciNodeId) && !!pipelineName) {
