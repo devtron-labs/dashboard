@@ -1,13 +1,7 @@
-import { AppType } from '../appDetails.type'
+import React from 'react'
 
 export const getEnvironmentName = (
-    appType: AppType,
     clusterName: string,
     namespace: string,
     environmentName: string,
-): string => {
-    if (appType === AppType.EXTERNAL_ARGO_APP) {
-        return `${clusterName}__${namespace}`
-    }
-    return environmentName || ' '
-}
+): string | JSX.Element => environmentName || `${clusterName}__${namespace}` || <span>&nbsp;</span>

@@ -56,7 +56,7 @@ import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/a
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
-import ExternalFluxAppDetailsRoute from '../../app/list-new/ExternalFluxAppDetailsRoute'
+import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))

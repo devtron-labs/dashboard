@@ -17,7 +17,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
@@ -25,6 +25,7 @@ import './appDetails.scss'
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
     const displayMessage = message && appDetails?.deploymentAppType === DeploymentAppTypes.HELM
 
     const showApplicationDetailedModal = (): void => {
@@ -69,15 +70,16 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
                     <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5">Application Status</div>
+                        {/* In case of flux apps Application Status is shown as Status */}
+                        <div className="fs-12 fw-4 cn-7 mr-5">{isFluxCDApp ? 'Status' : 'Application Status'}</div>
                         <Tippy
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content="The health status of your app"
+                            content={`The ${isFluxCDApp ? '' : 'health'} status of your app`}
                         >
                             <div className="flex">
-                                <ICHelpOutline className="icon-dim-16 mt-2" />
+                                <ICHelpOutline className="icon-dim-16" />
                             </div>
                         </Tippy>
                     </div>

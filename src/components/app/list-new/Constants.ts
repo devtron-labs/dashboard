@@ -106,3 +106,17 @@ export const InitialEmptyMasterFilters = {
     appStatus: [],
     templateType: [],
 }
+
+export const InitialEmptyUrlFilters = {
+    environments: [],
+    teams: [],
+    namespaces: [],
+    appNameSearch: '',
+    appStatuses: [],
+    templateType: [],
+    sortBy: 'appNameSort',
+    sortOrder: 'ASC',
+    offset: 0,
+    hOffset: 0,
+    size: 20,
+}

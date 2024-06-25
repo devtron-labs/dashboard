@@ -47,7 +47,7 @@ import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { APP_LIST_HEADERS, InitialEmptyMasterFilters, StatusConstants } from './Constants'
+import { APP_LIST_HEADERS, InitialEmptyMasterFilters, InitialEmptyUrlFilters, StatusConstants } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
 import { getChangeAppTabURL, getCurrentTabName } from './list.utils'
@@ -90,7 +90,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [searchApplied, setSearchApplied] = useState(false)
 
     // filters
-    const [masterFilters, setMasterFilters] = useState(InitialEmptyMasterFilters)
+    const [masterFilters, setMasterFilters] = useState(structuredClone(InitialEmptyMasterFilters))
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
@@ -227,7 +227,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             templateType: new Set<string>(templateTypesArr),
         }
 
-        const _masterFilters = InitialEmptyMasterFilters
+        const _masterFilters = structuredClone(InitialEmptyMasterFilters)
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -614,7 +614,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
+        setParsedPayloadOnUrlChange(InitialEmptyUrlFilters)
+        history.push(`${getChangeAppTabURL(appTabType)}`)
         setCurrentTab(appTabType)
     }
 

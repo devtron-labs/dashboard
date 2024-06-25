@@ -45,7 +45,6 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'function',
 )
 
-// This is being used in case of devtron helm, external helm, argoCD and fluxCD app detail page
 const AppDetailsComponent = ({
     externalLinks = [],
     monitoringTools = [],
@@ -183,9 +182,9 @@ const AppDetailsComponent = ({
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}
                     _init={_init}
+                    loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                     isVirtualEnvironment={isVirtualEnv.current}
-                    appType={appDetails?.appType}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
@@ -199,7 +198,7 @@ const AppDetailsComponent = ({
                 )}
             </div>
 
-            {!appDetails.deploymentAppDeleteRequest && !isExternalArgoApp && (
+            {(
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}

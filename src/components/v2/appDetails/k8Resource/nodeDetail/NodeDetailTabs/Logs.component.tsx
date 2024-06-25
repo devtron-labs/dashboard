@@ -107,7 +107,7 @@ const LogsComponent = ({
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
     const [downloadInProgress, setDownloadInProgress] = useState(false)
-    const {isSuperAdmin} = useMainContext()
+    const { isSuperAdmin } = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
     }
@@ -689,29 +689,27 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
-
-                        {!isExternalApp &&
-                            (downloadInProgress ? (
-                                <Progressing
-                                    size={16}
-                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                                />
-                            ) : (
-                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                    <span>
-                                        <Download
-                                            className={`icon-dim-16 mr-8 cursor ${
-                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                                (prevContainer && showNoPrevContainer != '')
-                                                    ? 'cursor-not-allowed dc__opacity-0_5'
-                                                    : ''
-                                            }`}
-                                            onClick={handleDownloadLogs}
-                                        />
-                                    </span>
-                                </Tippy>
-                            ))}
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
+                        {downloadInProgress ? (
+                            <Progressing
+                                size={16}
+                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                            />
+                        ) : (
+                            <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
+                                <span>
+                                    <Download
+                                        className={`icon-dim-16 mr-8 cursor ${
+                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                            (prevContainer && showNoPrevContainer != '')
+                                                ? 'cursor-not-allowed dc__opacity-0_5'
+                                                : ''
+                                        }`}
+                                        onClick={handleDownloadLogs}
+                                    />
+                                </span>
+                            </Tippy>
+                        )}
                     </div>
                     <div className="dc__border-right " />
                     <form
