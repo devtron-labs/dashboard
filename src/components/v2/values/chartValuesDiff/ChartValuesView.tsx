@@ -139,6 +139,7 @@ import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
+import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
@@ -180,6 +181,8 @@ const ChartValuesView = ({
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
     const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
+    const [scanChartImages, setScanChartImages] = useState(false)
+    const [scanKubernetesManifest, setScanKubernetesManifest] = useState(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -1314,6 +1317,14 @@ const ChartValuesView = ({
         )
     }
 
+    const handleToggleScanChart = () => {
+        setScanChartImages(!scanChartImages)
+    }
+
+    const handleToggleScanManifest = () => {
+        setScanKubernetesManifest(!scanKubernetesManifest)
+    }
+
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedProject, payload: selected })
         if (commonState.invalidProject) {
@@ -1753,7 +1764,27 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-
+                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && (
+                            <div className="flexbox-col dc__gap-16">
+                                <div className="dc__border-bottom-n1" />
+                                <div className="flexbox dc__content-space dc__align-items-center">
+                                    <span className="fs-13 fw-6 lh-20 dc__border-bottom-dashed--n3">
+                                        Scan images in chart
+                                    </span>
+                                    <div className="w-28 h-18">
+                                        <Toggle selected={scanChartImages} onSelect={handleToggleScanChart} />
+                                    </div>
+                                </div>
+                                <div className="flexbox dc__content-space dc__align-items-center">
+                                    <span className="fs-13 fw-6 lh-20 dc__border-bottom-dashed--n3">
+                                        Scan kubernetes manifest
+                                    </span>
+                                    <div className="w-28 h-18">
+                                        <Toggle selected={scanKubernetesManifest} onSelect={handleToggleScanManifest} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
