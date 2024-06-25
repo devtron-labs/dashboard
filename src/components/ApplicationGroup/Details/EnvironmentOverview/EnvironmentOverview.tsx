@@ -27,6 +27,7 @@ import {
     useUrlFilters,
     EditableTextArea,
     useSearchString,
+    AppInfoListType,
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -46,7 +47,6 @@ import { getDeploymentStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
     AppGroupListType,
-    AppInfoListType,
     AppListDataType,
     HibernateModalProps,
     ManageAppsResponse,
@@ -71,6 +71,9 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'function',
 )
 
+// Adding here since in prompt re-direction PR have organized above imports to send them above
+const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
+
 export default function EnvironmentOverview({
     appGroupListData,
     filteredAppIds,
@@ -89,7 +92,7 @@ export default function EnvironmentOverview({
     })
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const timerId = useRef(null)
-    const [selectedAppIds, setSelectedAppIds] = useState<number[]>([])
+    const [selectedAppDetailsList, setSelectedAppDetailsList] = useState<AppInfoListType[]>([])
     const [openedHibernateModalType, setOpenedHibernateModalType] =
         useState<HibernateModalProps['openedHibernateModalType']>(null)
     const [isHovered, setIsHovered] = useState<number>(null)
@@ -146,12 +149,10 @@ export default function EnvironmentOverview({
     }, [])
 
     async function getDeploymentWindowEnvOverrideMetaData() {
-        const appEnvTuples = selectedAppIds.map((appId) => {
-            return {
-                appId: +appId,
-                envId: +envId,
-            }
-        })
+        const appEnvTuples = selectedAppDetailsList.map((appDetail) => ({
+            appId: +appDetail.appId,
+            envId: +appDetail.envId,
+        }))
         setIsDeploymentLoading(true)
         const _hibernate = await processDeploymentWindowAppGroupOverviewMap(appEnvTuples, setShowDefaultDrawer, envId)
         setHibernateInfoMap(_hibernate)
@@ -208,15 +209,25 @@ export default function EnvironmentOverview({
 
         if (value === 'ALL') {
             if (checked) {
-                setSelectedAppIds(appListData.appInfoList.map((item) => item.appId))
-            } else {
-                setSelectedAppIds([])
+                setSelectedAppDetailsList(appListData.appInfoList)
+                return
             }
-        } else if (checked) {
-            setSelectedAppIds([...selectedAppIds, +value])
-        } else {
-            setSelectedAppIds(selectedAppIds.filter((item) => item !== +value))
+
+            setSelectedAppDetailsList([])
+            return
         }
+
+        const targetApp = appListData.appInfoList.find((appInfo) => appInfo.appId === +value)
+        if (!targetApp) {
+            return
+        }
+
+        if (checked) {
+            setSelectedAppDetailsList([...selectedAppDetailsList, targetApp])
+            return
+        }
+
+        setSelectedAppDetailsList(selectedAppDetailsList.filter((app) => app.appId !== targetApp.appId))
     }
 
     const toggleIsLastDeployedExpanded = () => {
@@ -324,7 +335,7 @@ export default function EnvironmentOverview({
     }
 
     const renderAppInfoRow = (item: AppInfoListType, index: number) => {
-        const isSelected = selectedAppIds.includes(item.appId)
+        const isSelected = selectedAppDetailsList.some((appDetail) => appDetail.appId === item.appId)
 
         const openCommitInfoModal = (e) => {
             e.stopPropagation()
@@ -499,7 +510,7 @@ export default function EnvironmentOverview({
         if (location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return (
                 <RestartWorkloadModal
-                    selectedAppIds={selectedAppIds}
+                    selectedAppDetailsList={selectedAppDetailsList}
                     envName={appListData.environment}
                     envId={envId}
                     setRestartLoader={setRestartLoader}
@@ -514,7 +525,7 @@ export default function EnvironmentOverview({
         if (openedHibernateModalType) {
             return (
                 <HibernateModal
-                    selectedAppIds={selectedAppIds}
+                    selectedAppDetailsList={selectedAppDetailsList}
                     appDetailsList={appGroupListData.apps}
                     envId={envId}
                     envName={appListData.environment}
@@ -560,8 +571,16 @@ export default function EnvironmentOverview({
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                         </span>
-                        {selectedAppIds.length > 0 && (
+                        {selectedAppDetailsList.length > 0 && (
                             <div className="flexbox dc__gap-6">
+                                {ClonePipelineButton && appListData.environment && (
+                                    <ClonePipelineButton
+                                        sourceEnvironmentName={appListData.environment}
+                                        selectedAppDetailsList={selectedAppDetailsList}
+                                        httpProtocol={httpProtocol.current}
+                                    />
+                                )}
+
                                 <button
                                     onClick={openHibernateModalPopup}
                                     className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
@@ -597,13 +616,13 @@ export default function EnvironmentOverview({
                                         className="form__checkbox"
                                         value="ALL"
                                         onChange={handleSelect}
-                                        checked={selectedAppIds.length === appListData.appInfoList.length}
+                                        checked={selectedAppDetailsList.length === appListData.appInfoList.length}
                                     />
                                     <span
                                         className={`form__checkbox-container ${
-                                            selectedAppIds.length === appListData.appInfoList.length
+                                            selectedAppDetailsList.length === appListData.appInfoList.length
                                                 ? 'tick-icon'
-                                                : selectedAppIds.length > 0
+                                                : selectedAppDetailsList.length > 0
                                                   ? 'any-selected'
                                                   : ''
                                         }`}

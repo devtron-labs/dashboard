@@ -65,6 +65,7 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DELETE_ACTION,
     SERVER_MODE,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     URLS,
     checkIfDevtronOperatorHelmRelease,
 } from '../../../../config'
@@ -1851,7 +1852,10 @@ const ChartValuesView = ({
                         }
                     />
                 )}
-                <Prompt when={enablePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+                <Prompt
+                    when={enablePrompt}
+                    message={isFormDirty ? UNSAVED_CHANGES_PROMPT_MESSAGE : DEFAULT_ROUTE_PROMPT_MESSAGE}
+                />
             </div>
         )
     }

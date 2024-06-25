@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, noop, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    noop,
+    post,
+    ResponseType,
+    ApiQueuingWithBatch,
+    PromiseAllStatusType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RotatePodsRequest } from '../../../v2/appDetails/sourceInfo/rotatePods/rotatePodsModal.type'
 import { Routes } from '../../../../config'
-import {
-    ApiQueuingBatchStatusType,
-    AppGroupListType,
-    ManageAppsResponseType,
-    WorkloadListResultDTO,
-} from '../../AppGroup.types'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
+import { AppGroupListType, ManageAppsResponseType, WorkloadListResultDTO } from '../../AppGroup.types'
 import { BULK_HIBERNATE_ERROR_MESSAGE, BULK_UNHIBERNATE_ERROR_MESSAGE, BulkResponseStatus } from '../../Constants'
 
 export const manageApps = async (
@@ -55,10 +57,12 @@ export const manageApps = async (
             ),
             httpProtocol,
         )
-            .then((results) => {
+            // Disabling this rule as this is earlier implementation of APIQueueing when it did not had generics
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .then((results: any[]) => {
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.response[0]
                         }
                         const response = {
