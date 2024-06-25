@@ -54,6 +54,7 @@ export const TaskList = ({
         setFormDataErrorObj,
         validateTask,
         validateStage,
+        pluginDataStore,
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -146,15 +147,20 @@ export const TaskList = ({
         const _taskDetail = newList.splice(taskIndex, 1)
         let isMandatoryMissing = false
         if (_taskDetail[0].pluginRefStepDetail) {
+            const pluginId = _taskDetail[0].pluginRefStepDetail.pluginId
+            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
             const isPluginRequired =
                 !isJobView &&
                 isRequired &&
                 !isCdPipeline &&
-                isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
+                // TODO: Test this change to shift newList to formData
+                isRequired(_formData, mandatoryPluginsMap, moveToStage, parentPluginId, pluginDataStore, true)
             if (_taskDetail[0].isMandatory && !isPluginRequired) {
                 isMandatoryMissing = true
+                // FIXME: Fix this check and refactor this code
                 for (const task of newList) {
-                    if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                    const taskParentPluginId = pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
+                    if (taskParentPluginId === parentPluginId && !!taskParentPluginId) {
                         task.isMandatory = true
                         isMandatoryMissing = false
                         break
@@ -167,7 +173,7 @@ export const TaskList = ({
 
             _taskDetail[0].pluginRefStepDetail = {
                 id: 0,
-                pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
+                pluginId,
                 conditionDetails: [],
                 inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
                 outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
@@ -374,7 +380,7 @@ export const TaskList = ({
                                         MandatoryPluginMenuOptionTippy && (
                                             <MandatoryPluginMenuOptionTippy
                                                 pluginDetail={
-                                                    mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]
+                                                    mandatoryPluginsMap[pluginDataStore.pluginVersionStore[taskDetail.pluginRefStepDetail.pluginId].parentPluginId]
                                                 }
                                             />
                                         )}

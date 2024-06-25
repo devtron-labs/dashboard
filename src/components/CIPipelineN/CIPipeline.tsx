@@ -30,10 +30,21 @@ import {
     MandatoryPluginDetailType,
     PluginDetailType,
     ButtonWithLoader,
+    PluginListFiltersType,
+    PluginDataStoreType,
+    ProcessPluginDataReturnType,
+    PluginDetailPayloadType,
+    DEFAULT_PLUGIN_DATA_STORE,
+    DEFAULT_PLUGIN_LIST_FILTERS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import {
+    FloatingVariablesSuggestions,
+    getRequiredPluginIdsFromBuildStage,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -49,7 +60,6 @@ import {
     getGlobalVariable,
     getInitData,
     getInitDataWithCIPipeline,
-    getPluginsData,
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -65,12 +75,13 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
+// TODO: On methods send data store as well
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 export default function CIPipeline({
@@ -117,8 +128,6 @@ export default function CIPipeline({
         preBuildStage: Map<string, VariableType>[]
         postBuildStage: Map<string, VariableType>[]
     }>({ preBuildStage: [], postBuildStage: [] })
-    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
-    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [isSecurityModuleInstalled, setSecurityModuleInstalled] = useState<boolean>(false)
     const [selectedEnv, setSelectedEnv] = useState<Environment>()
     const [environments, setEnvironments] = useState([])
@@ -191,17 +200,28 @@ export default function CIPipeline({
     })
     const validationRules = new ValidationRules()
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    /**
+     * Used to show plugin list in pre/post build stage
+     */
+    const [pluginList, setPluginList] = useState<PluginDetailType[]>([])
+    const [pluginListFilters, setPluginListFilters] = useState<PluginListFiltersType>(structuredClone(DEFAULT_PLUGIN_LIST_FILTERS))
+    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(structuredClone(DEFAULT_PLUGIN_DATA_STORE))
+
     const selectedBranchRef = useRef(null)
 
     const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
         const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
         if (mandatoryPluginData?.pluginData.length) {
             for (const plugin of mandatoryPluginData.pluginData) {
-                _mandatoryPluginsMap[plugin.id] = plugin
+                _mandatoryPluginsMap[plugin.parentPluginId] = plugin
             }
         }
         return _mandatoryPluginsMap
     }, [mandatoryPluginData])
+
+    const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
+        setPluginDataStore(updatedPluginDataStore)
+    }
 
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
@@ -216,9 +236,12 @@ export default function CIPipeline({
 
     const getMandatoryPluginData = async (
         _formData: PipelineFormType,
-        pluginList: PluginDetailType[],
+        /**
+         * ids required to fetch in case we have a plugin in step
+         */
+        requiredPluginIds?: PluginDetailPayloadType['pluginId'],
     ): Promise<void> => {
-        if (!isJobCard && processPluginData && prepareFormData && pluginList.length) {
+        if (!isJobCard && processPluginData && prepareFormData) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -230,15 +253,22 @@ export default function CIPipeline({
             if (selectedBranchRef.current !== branchName) {
                 selectedBranchRef.current = branchName
                 try {
-                    const processedPluginData = await processPluginData(
+                    const {
+                        mandatoryPluginData: processedPluginData,
+                        pluginDataStore: updatedPluginDataStore,
+                    }: ProcessPluginDataReturnType = await processPluginData(
                         _formData,
-                        pluginList,
+                        pluginDataStore,
                         appId,
                         ciPipelineId,
                         branchName,
+                        requiredPluginIds,
                     )
                     setMandatoryPluginData(processedPluginData)
-                    setFormData((prevForm) => prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? []))
+                    setPluginDataStore(updatedPluginDataStore)
+                    setFormData((prevForm) =>
+                        prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
+                    )
                 } catch (error) {
                     showError(error)
                 }
@@ -246,15 +276,11 @@ export default function CIPipeline({
         }
     }
 
-    const getAvailablePlugins = async (_formData: PipelineFormType): Promise<void> => {
+    const getInitialPlugins = async (_formData: PipelineFormType): Promise<void> => {
         try {
-            const pluginsResponse = await getPluginsData(Number(appId))
-            const _presetPlugin = pluginsResponse.result?.filter((plugin) => plugin.type === 'PRESET') ?? []
-            // Logically the check should be SHARED enum
-            const _sharedPlugin = pluginsResponse.result?.filter((plugin) => plugin.type !== 'PRESET') ?? []
-            setPresetPlugins(_presetPlugin)
-            setSharedPlugins(_sharedPlugin)
-            await getMandatoryPluginData(_formData, [..._presetPlugin, ..._sharedPlugin])
+            const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.preBuildStage)
+            const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.postBuildStage)
+            await getMandatoryPluginData(_formData, [...preBuildPluginIds, ...postBuildPluginIds])
         } catch (error) {
             showError(error)
         }
@@ -318,7 +344,7 @@ export default function CIPipeline({
     }
 
     const getPluginData = async (_formData?: PipelineFormType): Promise<void> => {
-        await getMandatoryPluginData(_formData ?? formData, [...presetPlugins, ...sharedPlugins])
+        await getMandatoryPluginData(_formData ?? formData)
     }
 
     const calculateLastStepDetail = (
@@ -383,21 +409,14 @@ export default function CIPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
-            if (
-                mandatoryPluginData?.pluginData?.length &&
-                (sharedPlugins.length || presetPlugins.length) &&
-                validatePlugins
-            ) {
-                setMandatoryPluginData(
-                    validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins]),
-                )
+            if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
+                setMandatoryPluginData(validatePlugins(formData, mandatoryPluginData.pluginData, pluginDataStore))
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    // TODO: Test the API Errors as well
     const handleOnMountAPICalls = async () => {
         try {
             setPageState(ViewType.LOADING)
@@ -424,7 +443,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.PostBuild, ciPipelineResponse.form)
                     setFormData(ciPipelineResponse.form)
                     setCIPipeline(ciPipelineResponse.ciPipeline)
-                    await getAvailablePlugins(ciPipelineResponse.form)
+                    await getInitialPlugins(ciPipelineResponse.form)
                     await getEnvironments(ciPipelineResponse.ciPipeline.environmentId)
                     setIsAdvanced(true)
                 }
@@ -432,7 +451,7 @@ export default function CIPipeline({
                 const ciPipelineResponse = await getInitData(appId, true, !isJobCard)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
-                    await getAvailablePlugins(ciPipelineResponse.result.form)
+                    await getInitialPlugins(ciPipelineResponse.result.form)
                     await getEnvironments(0)
                     setPageState(ViewType.FORM)
                 }
@@ -726,6 +745,8 @@ export default function CIPipeline({
             validateTask,
             validateStage,
             globalVariables,
+            pluginDataStore,
+            handlePluginDataStoreUpdate,
         }
     }, [
         formData,
@@ -737,6 +758,7 @@ export default function CIPipeline({
         configurationType,
         pageState,
         globalVariables,
+        pluginDataStore,
     ])
 
     const renderCIPipelineModal = () => {
@@ -787,7 +809,6 @@ export default function CIPipeline({
                                     isJobView={isJobView}
                                     isJobCI={isJobCI}
                                     mandatoryPluginData={mandatoryPluginData}
-                                    pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                     mandatoryPluginsMap={mandatoryPluginsMap}
                                     environments={environments}
@@ -800,8 +821,7 @@ export default function CIPipeline({
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
                                     <PreBuild
-                                        presetPlugins={presetPlugins}
-                                        sharedPlugins={sharedPlugins}
+                                        pluginList={pluginList}
                                         isJobView={isJobCard}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
@@ -810,8 +830,7 @@ export default function CIPipeline({
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
                                     <PreBuild
-                                        presetPlugins={presetPlugins}
-                                        sharedPlugins={sharedPlugins}
+                                        pluginList={pluginList}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
