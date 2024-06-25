@@ -390,6 +390,7 @@ export const DOCUMENTATION = {
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/jobs/workflow-editor-job`,
     GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
     MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
+    SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
