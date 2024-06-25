@@ -31,6 +31,10 @@ import {
     MODAL_TYPE,
     ACTION_STATE,
     YAMLStringify,
+    PluginListFiltersType,
+    PluginDataStoreType,
+    DEFAULT_PLUGIN_LIST_FILTERS,
+    DEFAULT_PLUGIN_DATA_STORE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -53,7 +57,7 @@ import { getEnvironmentListMinPublic } from '../../services/service'
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
-import { getGlobalVariable, getPluginsData } from '../ciPipeline/ciPipeline.service'
+import { getGlobalVariable } from '../ciPipeline/ciPipeline.service'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import './cdPipeline.scss'
@@ -72,7 +76,7 @@ import {
     validateTask,
 } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
 import NoGitOpsRepoConfiguredWarning, {
@@ -179,8 +183,6 @@ export default function CDPipeline({
     })
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
-    const [presetPlugins, setPresetPlugins] = useState<PluginDetailType[]>([])
-    const [sharedPlugins, setSharedPlugins] = useState<PluginDetailType[]>([])
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [globalVariables, setGlobalVariables] = useState<
@@ -232,6 +234,17 @@ export default function CDPipeline({
     const [showDeploymentConfirmationDeleteDialog, setShowDeploymentConfirmationDeleteDialog] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
+    /**
+     * Used to show plugin list in pre/post build stage
+     */
+    const [pluginList, setPluginList] = useState<PluginDetailType[]>([])
+    const [pluginListFilters, setPluginListFilters] = useState<PluginListFiltersType>(structuredClone(DEFAULT_PLUGIN_LIST_FILTERS))
+    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(structuredClone(DEFAULT_PLUGIN_DATA_STORE))
+
+    const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
+        setPluginDataStore(updatedPluginDataStore)
+    }
+
     useEffect(() => {
         getInit()
     }, [])
@@ -241,12 +254,6 @@ export default function CDPipeline({
             getConfigMapSecrets()
         }
     }, [formData.environmentId])
-
-    const escFunction = (event) => {
-        if ((event.keyCode === 27 || event.key === 'Escape') && typeof close === 'function') {
-            close()
-        }
-    }
 
     const getInit = () => {
         Promise.all([
@@ -270,7 +277,6 @@ export default function CDPipeline({
 
                 const _form = { ...formData }
                 _form.strategies = strategies
-                getAvailablePlugins()
                 if (cdPipelineId) {
                     getCDPipeline(_form, dockerRegistries)
                 } else {
@@ -363,6 +369,7 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
+    // TODO: Populate plugin details for steps after result
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then(async (result) => {
@@ -407,28 +414,6 @@ export default function CDPipeline({
         getConfigMapAndSecrets(appId, formData.environmentId)
             .then((response) => {
                 setConfigMapAndSecrets(response.list)
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
-    const getAvailablePlugins = (): void => {
-        getPluginsData(Number(appId))
-            .then((response) => {
-                const _presetPlugin = []
-                const _sharedPlugin = []
-                const pluginListLength = response?.result?.length || 0
-                for (let i = 0; i < pluginListLength; i++) {
-                    const pluginData = response.result[i]
-                    if (pluginData.type === 'PRESET') {
-                        _presetPlugin.push(pluginData)
-                    } else {
-                        _sharedPlugin.push(pluginData)
-                    }
-                }
-                setPresetPlugins(_presetPlugin)
-                setSharedPlugins(_sharedPlugin)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -1086,6 +1071,8 @@ export default function CDPipeline({
             selectedCDStageTypeValue,
             setSelectedCDStageTypeValue,
             setReloadNoGitOpsRepoConfiguredModal,
+            pluginDataStore,
+            handlePluginDataStoreUpdate,
         }
     }, [
         formData,
@@ -1098,6 +1085,7 @@ export default function CDPipeline({
         globalVariables,
         configMapAndSecrets,
         isVirtualEnvironment,
+        pluginDataStore,
     ])
 
     const renderCDPipelineBody = () => {
@@ -1131,7 +1119,6 @@ export default function CDPipeline({
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
                                 <Sidebar
-                                    pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                 />
                             </div>
@@ -1139,12 +1126,12 @@ export default function CDPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild pluginList={pluginList} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild pluginList={pluginList} />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

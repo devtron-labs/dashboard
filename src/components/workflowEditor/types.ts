@@ -24,6 +24,7 @@ import {
     VariableType,
     SelectedNode,
     WorkflowType,
+    PluginDataStoreType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -326,6 +327,8 @@ export interface PipelineContext {
     selectedCDStageTypeValue?: OptionType
     setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
     setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
+    pluginDataStore: PluginDataStoreType
+    handlePluginDataStoreUpdate: (pluginDataStore: PluginDataStoreType) => void
 }
 
 export interface SourceTypeCardProps {

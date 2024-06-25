@@ -45,7 +45,6 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    pluginList,
     mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     environments,
@@ -66,6 +65,7 @@ export const Sidebar = ({
         configMapAndSecrets,
         isVirtualEnvironment,
         getPrePostStageInEnv,
+        pluginDataStore,
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
@@ -352,7 +352,7 @@ export const Sidebar = ({
                                     setFormData={setFormData}
                                     formDataErrorObj={formDataErrorObj}
                                     setFormDataErrorObj={setFormDataErrorObj}
-                                    allPluginList={pluginList}
+                                    pluginDataStore={pluginDataStore}
                                     handleApplyPlugin={handleApplyPlugin}
                                 />
                             )}

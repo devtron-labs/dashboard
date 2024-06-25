@@ -34,7 +34,7 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }) => {
+export const PreBuild: React.FC<PreBuildType> = ({ pluginList, mandatoryPluginsMap, isJobView }) => {
     const {
         formData,
         isCdPipeline,
@@ -50,6 +50,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins,
         calculateLastStepDetail,
         validateStage,
         pageState,
+        pluginDataStore,
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAMLStringify(formData[activeStageName]))
     useEffect(() => {
@@ -107,11 +108,12 @@ export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins,
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
+            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
             isPluginRequired =
                 !isJobView &&
                 isRequired &&
                 !isCdPipeline &&
-                isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                isRequired(formData, mandatoryPluginsMap, activeStageName, parentPluginId, pluginDataStore, false)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
@@ -161,13 +163,8 @@ export const PreBuild: React.FC<PreBuildType> = ({ presetPlugins, sharedPlugins,
                 </div>
                 <PluginCardListContainer
                     setPluginType={setPluginType}
-                    pluginListTitle="PRESET PLUGINS"
-                    pluginList={presetPlugins}
-                />
-                <PluginCardListContainer
-                    setPluginType={setPluginType}
-                    pluginListTitle="SHARED PLUGINS"
-                    pluginList={sharedPlugins}
+                    pluginListTitle="PLUGIN LIST"
+                    pluginList={pluginList}
                 />
             </>
         )

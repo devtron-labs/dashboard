@@ -25,6 +25,7 @@ import {
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
     ACTION_STATE,
+    PluginDetailPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -43,6 +44,7 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { PATTERNS } from '../../../config/constants'
+import { PipelineBuildStageType } from '../../workflowEditor/types'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -215,6 +217,9 @@ export function useWhyDidYouUpdate(name, props) {
     })
 }
 
+/**
+ * @deprecated - Use from fe-common-lib
+ */
 export const useIntersection = (
     target: React.RefObject<Element> | Element | null,
     options: IntersectionOptions = {},
@@ -1249,4 +1254,19 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
         className += ' warning'
     }
     return className
+}
+
+export const getRequiredPluginIdsFromBuildStage = (stage?: PipelineBuildStageType): PluginDetailPayloadType['pluginId'] => {
+    if (!stage?.steps?.length) {
+        return []
+    }
+
+    const pluginIds = []
+    stage.steps.forEach((step) => {
+        if (step.pluginRefStepDetail?.pluginId) {
+            pluginIds.push(step.pluginRefStepDetail.pluginId)
+        }
+    })
+
+    return pluginIds
 }

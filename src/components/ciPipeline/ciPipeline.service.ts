@@ -586,10 +586,6 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginsData(appId: number, isCD: boolean = false): Promise<any> {
-    return get(`${Routes.PLUGIN_LIST}?appId=${appId}${isCD ? '&stage=cd' : ''}`)
-}
-
 export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
     return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
 }

@@ -21,6 +21,9 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import { yamlEditorSelectStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 
+/**
+ * @deprecated - Not getting used anywhere
+ */
 export const YAMLScriptComponent = ({
     editorValue,
     handleEditorValueChange,
