@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -13,7 +29,6 @@ import {
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import {
     getMonitoringToolIcon,
     getParsedURL,
@@ -27,6 +42,7 @@ import {
     InfoColourBar,
     GenericEmptyState,
     ConditionalWrap,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -103,11 +119,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 
 export const NoMatchingResults = (): JSX.Element => {
     return (
-        <GenericEmptyState
-            image={NoResults}
-            title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-            subTitle={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.SUBTITLE}
-        />
+        <GenericFilterEmptyState />
     )
 }
 

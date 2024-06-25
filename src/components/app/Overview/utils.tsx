@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import { AppOverviewProps } from '../types'
 import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
@@ -8,10 +24,22 @@ import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../../assets/icons/git/bitbucket.svg'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
 const {
     OVERVIEW: { APP_DESCRIPTION, JOB_DESCRIPTION },
 } = EMPTY_STATE_STATUS
+
+export const getResourceKindFromAppType = (appType: AppOverviewProps['appType']) => {
+    switch (appType) {
+        case 'app':
+            return ResourceKindType.devtronApplication
+        case 'job':
+            return ResourceKindType.job
+        case 'helm-chart':
+            return ResourceKindType.helmChart
+    }
+}
 
 export const getAppConfig = (appType: AppOverviewProps['appType']) => {
     switch (appType) {

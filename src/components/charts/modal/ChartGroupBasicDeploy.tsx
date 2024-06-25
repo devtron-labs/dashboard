@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { CustomInput, DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
@@ -8,6 +24,8 @@ import { styles, smallMenuList, menuList, DropdownIndicator, renderAdditionalErr
 import { Option } from '../../v2/common/ReactSelect.utils'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import { getEnvironmentListMin } from '../../../services/service'
+import { Prompt } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../config'
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[]
@@ -222,6 +240,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     >
                         Advanced Options
                     </button>
+                    <Prompt when={this.props.loading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
                 </div>
             </DialogForm>

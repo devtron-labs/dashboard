@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 :root {
     --V700: #4934B3;
     --V500: #664bee;
@@ -30,6 +46,7 @@
     --G300: #83d5b2;
     --G200: #b6e9d3;
     --G100: #e9fbf4;
+    --G50: #f2fffa;
     --Y700: #8c6324;
     --Y600: #c58d36;
     --Y500: #ffb549;
@@ -44,10 +61,12 @@
     --R300: #f99292;
     --R200: #fcbcbc;
     --R100: #fde7e7;
+    --R50: #fdf0f0;
     --O700: #B23412;
     --O500: #ff7e5b;
     --O200: #FFBEAD;
     --O100: #FFE5DE;
+    --O50: #fcf3f0;
     --yellow: #ff8300;
     --red: rgba(240, 96, 96, 1);
     --green: rgba(23, 170, 86, 1);

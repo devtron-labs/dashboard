@@ -7,12 +7,11 @@ on:
       - synchronize
       - edited
       - reopened
+      - ready_for_review
 
 jobs:
   ci:
-    permissions:
-      contents: read
-      packages: read
+    if: ${{ !github.event.pull_request.draft }}
 
     runs-on: ubuntu-latest
     steps:
@@ -24,12 +23,9 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-        registry-url: https://npm.pkg.github.com/
 
     - name: Install dependencies
       run: yarn install
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check linting issues
       run: yarn lint

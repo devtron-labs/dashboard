@@ -1,15 +1,32 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     ACTION_STATE,
     CDModalTabType,
-    CHECKBOX_VALUE,
     DeploymentNodeType,
     FilterConditionsListType,
     KeyValueListType,
+    MODAL_TYPE,
     ResponseType,
     ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
+    AppInfoListType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
@@ -213,20 +230,6 @@ export interface EmptyEnvState {
     title?: string
     subTitle?: string
     actionHandler?: () => void
-}
-
-export interface AppInfoListType {
-    application: string
-    appStatus: string
-    deploymentStatus: string
-    lastDeployed: string
-    lastDeployedImage?: string
-    lastDeployedBy?: string
-    appId: number
-    envId: number
-    pipelineId?: number
-    commits?: string[]
-    ciArtifactId?: number
 }
 
 export interface AppListDataType {
@@ -455,31 +458,27 @@ export interface HibernateResponseRowType {
     skipped?: string
 }
 
-export interface BaseModalProps {
-    selectedAppIds: number[]
+export interface HibernateInfoMapProps {
+    type: string
+    excludedUserEmails: string[]
+    userActionState: ACTION_STATE
+}
+
+type HibernateModalType = MODAL_TYPE.HIBERNATE | MODAL_TYPE.UNHIBERNATE
+
+export interface HibernateModalProps {
+    setOpenedHibernateModalType: React.Dispatch<React.SetStateAction<HibernateModalType>>
+    selectedAppDetailsList: AppInfoListType[]
     appDetailsList: AppGroupListType['apps']
     envName: string
     envId: string
     setAppStatusResponseList: React.Dispatch<React.SetStateAction<any[]>>
     setShowHibernateStatusDrawer: React.Dispatch<React.SetStateAction<StatusDrawer>>
     httpProtocol: string
-}
-
-export interface HibernateInfoMapProps {
-    type: string
-    excludedUserEmails: string[]
-    userActionState: ACTION_STATE
-}
-export interface HibernateModalProps extends BaseModalProps {
-    setOpenHiberateModal: React.Dispatch<React.SetStateAction<boolean>>
-    isDeploymentLoading: boolean
+    isDeploymentWindowLoading: boolean
     showDefaultDrawer: boolean
-}
-
-export interface UnhibernateModalProps extends BaseModalProps {
-    setOpenUnhiberateModal: React.Dispatch<React.SetStateAction<boolean>>
-    isDeploymentLoading: boolean
-    showDefaultDrawer: boolean
+    openedHibernateModalType: HibernateModalType
+    isDeploymentBlockedViaWindow: boolean
 }
 
 export interface StatusDrawer {
@@ -497,33 +496,15 @@ export interface ManageAppsResponse {
     authError?: boolean
 }
 
-export interface batchConfigType {
-    lastIndex: number
-    results: any[]
-    concurrentCount: number
-    completedCalls: number
-}
-
-export enum ApiQueuingBatchStatusType {
-    FULFILLED = 'fulfilled',
-    REJECTED = 'rejected',
-}
-
-// TODO: use T for value
-export interface ApiQueuingWithBatchResponseItem {
-    status: ApiQueuingBatchStatusType
-    value?: any
-    reason?: ServerErrors
-}
-
 export interface RestartWorkloadModalProps {
-    selectedAppIds: number[]
+    selectedAppDetailsList: AppInfoListType[]
     envName: string
     envId: string
     restartLoader: boolean
     setRestartLoader: React.Dispatch<React.SetStateAction<boolean>>
     hibernateInfoMap: Record<number, HibernateInfoMapProps>
-    httpProtocol: string,
+    httpProtocol: string
+    isDeploymentBlockedViaWindow: boolean
 }
 
 export interface RestartStatusListDrawerProps {
@@ -543,7 +524,7 @@ export interface ResourceIdentifierDTO extends ResourceErrorMetaData {
 
 export interface AppInfoMetaDataDTO {
     resourceMetaData: ResourceIdentifierDTO[]
-    appName: string,
+    appName: string
     errorResponse?: string
 }
 
@@ -605,4 +586,3 @@ export interface ManageAppsResponseType {
     id: string
     error: string
 }
-

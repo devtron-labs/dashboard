@@ -1,7 +1,24 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
+import { Prompt, useHistory } from 'react-router-dom'
 import {
     CDMaterialType,
     showError,
@@ -45,6 +62,9 @@ import {
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentWithConfigType,
+    usePrompt,
+    getIsRequestAborted,
+    GitCommitInfoGeneric,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -77,7 +97,6 @@ import {
     getSpecificDeploymentConfig,
     triggerCDNode,
 } from '../../service'
-import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -93,7 +112,7 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
-import { useHistory } from 'react-router-dom'
+import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -139,7 +158,7 @@ const CDMaterial = ({
     isRedirectedFromAppDetails,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
-    // FIXME: the queryparams returned by useSearchString seems faulty
+    // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
     const { searchParams } = useSearchString()
     // Add dep here
@@ -153,6 +172,7 @@ const CDMaterial = ({
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
+    const abortDeployRef = useRef(null)
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -164,7 +184,7 @@ const CDMaterial = ({
                             ? CDMaterialServiceEnum.ROLLBACK
                             : CDMaterialServiceEnum.CD_MATERIALS,
                         pipelineId,
-                        // Dont think need to set stageType to approval in case of approval node
+                        // Don't think need to set stageType to approval in case of approval node
                         stageType ?? DeploymentNodeType.CD,
                         abortControllerRef.current.signal,
                         // It is meant to fetch the first 20 materials
@@ -210,6 +230,9 @@ const CDMaterial = ({
     const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
+
+    usePrompt({ shouldPrompt: deploymentLoading })
+
     /* ------------ Utils required in useEffect  ------------*/
     const getSecurityModuleStatus = async () => {
         try {
@@ -297,6 +320,13 @@ const CDMaterial = ({
     }
 
     /* ------------ UseEffects  ------------*/
+    useEffect(() => {
+        abortDeployRef.current = new AbortController()
+        return () => {
+            abortDeployRef.current.abort()
+        }
+    }, [])
+
     useEffect(() => {
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
@@ -863,6 +893,12 @@ const CDMaterial = ({
         }
     }
 
+    const showErrorIfNotAborted = (errors: ServerErrors) => {
+        if (!getIsRequestAborted(errors)) {
+            showError(errors)
+        }
+    }
+
     const handleDeployment = (
         nodeType: DeploymentNodeType,
         _appId: number,
@@ -875,7 +911,15 @@ const CDMaterial = ({
         setDeploymentLoading(true)
 
         if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(pipelineId, ciArtifactId, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
+            triggerCDNode(
+                pipelineId,
+                ciArtifactId,
+                _appId.toString(),
+                nodeType,
+                deploymentWithConfig,
+                wfrId,
+                abortDeployRef.current.signal,
+            )
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&
@@ -896,7 +940,7 @@ const CDMaterial = ({
                     // TODO: Ask why this was only there in TriggerView
                     isVirtualEnvironment && deploymentAppType == DeploymentAppTypes.MANIFEST_PUSH
                         ? handleTriggerErrorMessageForHelmManifestPush(errors, pipelineId, envId)
-                        : showError(errors)
+                        : showErrorIfNotAborted(errors)
                     setDeploymentLoading(false)
                 })
         } else {
@@ -917,7 +961,7 @@ const CDMaterial = ({
         }
 
         if (isFromBulkCD) {
-            // It does'nt need any params btw
+            // It doesn't need any params btw
             triggerDeploy(stageType, appId, Number(getCDArtifactId()))
             return
         }
@@ -1213,7 +1257,6 @@ const CDMaterial = ({
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
                         <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                            {/* TODO: Move into fe-common */}
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1787,6 +1830,7 @@ const CDMaterial = ({
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
+                        disabled={deploymentLoading || isSaveLoading}
                         className={`${getCTAClass(deploymentWindowMetadata.userActionState, disableDeployButton)} h-36`}
                         onClick={(e) => onClickDeploy(e, disableDeployButton)}
                         type="button"
@@ -1922,6 +1966,7 @@ const CDMaterial = ({
                     envName={envName}
                 />
             )}
+            <Prompt when={deploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </>
     )
 

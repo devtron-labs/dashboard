@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useEffect, useState } from 'react'
@@ -11,6 +27,7 @@ import {
     MultiValueChipContainer,
     OptionType,
     LoadingIndicator,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
@@ -27,7 +44,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../../../../../../components/ResourceBrowser/ResourceBrowser.service'
-import { GVKType, K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
+import { K8SObjectType, ResourceListPayloadType } from '../../../../../../components/ResourceBrowser/Types'
 import {
     CustomValueContainer,
     formatOptionLabel,
@@ -67,8 +84,6 @@ const K8sListItemCard = ({
     const { showStatus, userStatus } = usePermissionConfiguration()
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
-    const [processedGvkData, setProcessedGvkData] = useState<Map<string, K8SObjectType>>()
-    const [allInApiGroupMapping, setAllInApiGroupMapping] = useState<OptionType[]>([])
     const [allInKindMapping, setAllInKindMapping] = useState<OptionType[]>([])
     const [
         { isClusterListLoading, isNamespaceListLoading, isApiGroupListLoading, isResourceListLoading },
@@ -93,13 +108,10 @@ const K8sListItemCard = ({
         })
         try {
             const { result } = await namespaceListByClusterId(clusterId)
-            if (result) {
-                setNamespaceMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [clusterId]: [ALL_NAMESPACE, ...convertToOptionsList(result.sort())],
-                }))
-            } else {
-                setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: [ALL_NAMESPACE] }))
+            const options = [ALL_NAMESPACE, ...(result ? convertToOptionsList(result.sort()) : [])]
+            setNamespaceMapping((prevMapping) => ({ ...prevMapping, [clusterId]: options }))
+            if (k8sPermission.namespace?.some((el) => el.value === SELECT_ALL_VALUE)) {
+                handleK8sPermission(K8sPermissionActionType.setNamespace, index, options)
             }
         } catch (err) {
             showError(err)
@@ -110,18 +122,32 @@ const K8sListItemCard = ({
         }
     }
 
+    const populateResourceListWithAllOption = () =>
+        setObjectMapping((prevMapping) => ({
+            ...prevMapping,
+            [k8sPermission.key]: [{ label: 'All resources', value: SELECT_ALL_VALUE }],
+        }))
+
     const getResourceListData = async (selected): Promise<void> => {
         handleLoadingStateChange({
             isResourceListLoading: true,
         })
         try {
+            /* NOTE: namespace is of type OptionType[];
+             * if multiple namespaces are selected only show 'All Resource' option */
+            if (k8sPermission.namespace.length > 1) {
+                populateResourceListWithAllOption()
+                return
+            }
             const resourceListPayload: ResourceListPayloadType = {
                 clusterId: Number(k8sPermission?.cluster?.value),
                 k8sRequest: {
                     resourceIdentifier: {
                         groupVersionKind: selected?.gvk,
                         namespace:
-                            k8sPermission?.namespace?.value === SELECT_ALL_VALUE ? '' : k8sPermission?.namespace.value,
+                            k8sPermission.namespace[0].value === SELECT_ALL_VALUE
+                                ? ''
+                                : k8sPermission.namespace[0].value,
                     },
                 },
             }
@@ -132,7 +158,7 @@ const K8sListItemCard = ({
                 const _optionList = [{ label: 'All resources', value: SELECT_ALL_VALUE }, ..._data]
                 setObjectMapping((prevMapping) => ({
                     ...prevMapping,
-                    [k8sPermission.key]: _optionList,
+                    [k8sPermission.key]: _optionList as OptionType[],
                 }))
                 if (k8sPermission.resource?.[0]?.value === SELECT_ALL_VALUE) {
                     handleK8sPermission(K8sPermissionActionType.onObjectChange, index, _optionList)
@@ -185,10 +211,7 @@ const K8sListItemCard = ({
             if (k8sPermission.kind.value !== SELECT_ALL_VALUE && k8sPermission.kind.value !== 'Event') {
                 getResourceListData({ ...k8sPermission.kind, gvk: selectedGvk })
             } else {
-                setObjectMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [k8sPermission.key]: [{ label: 'All resources', value: SELECT_ALL_VALUE }],
-                }))
+                populateResourceListWithAllOption()
             }
         }
     }
@@ -202,15 +225,16 @@ const K8sListItemCard = ({
             if (resourceGroupList.apiResources) {
                 const _processedData = processK8SObjects(resourceGroupList.apiResources, '', true)
                 const _k8SObjectMap = _processedData.k8SObjectMap
-                const _k8SObjectList: OptionType[] = [..._k8SObjectMap.keys()].map((key) => ({
-                    label: key,
-                    value: key,
-                }))
+                const _k8SObjectList: OptionType[] = [..._k8SObjectMap.keys()]
+                    .filter((key) => !!key)
+                    .map((key) => ({
+                        label: key,
+                        value: key,
+                    }))
                 setProcessedData(_k8SObjectMap)
 
                 const namespacedGvkList = resourceGroupList.apiResources.filter((item) => item.namespaced)
                 const _processedNamespacedGvk = processK8SObjects(namespacedGvkList, '', true)
-                setProcessedGvkData(_processedNamespacedGvk.k8SObjectMap)
 
                 const _allApiGroupMapping = []
                 const _allKindMapping = []
@@ -221,7 +245,6 @@ const K8sListItemCard = ({
                     )
                     _allKindMapping.push({ label: 'All kind', value: SELECT_ALL_VALUE })
                 }
-                setAllInApiGroupMapping(_allApiGroupMapping)
                 setAllInKindMapping(_allKindMapping)
                 setApiGroupMapping((prevMapping) => ({
                     ...prevMapping,
@@ -232,7 +255,7 @@ const K8sListItemCard = ({
                     createKindData(
                         k8sPermission.group,
                         _allKindMapping,
-                        k8sPermission?.namespace.value === SELECT_ALL_VALUE
+                        k8sPermission?.namespace.some((el) => el.value === SELECT_ALL_VALUE)
                             ? _k8SObjectMap
                             : _processedNamespacedGvk.k8SObjectMap,
                     )
@@ -288,7 +311,6 @@ const K8sListItemCard = ({
     const onClusterChange = (selected) => {
         if (selected.value !== k8sPermission?.cluster?.value) {
             setProcessedData(null)
-            setProcessedGvkData(null)
             setApiGroupMapping((prevMapping) => ({
                 ...prevMapping,
                 [k8sPermission.key]: [{ label: 'All API groups', value: SELECT_ALL_VALUE }],
@@ -299,24 +321,16 @@ const K8sListItemCard = ({
         }
     }
 
-    const onNameSpaceSelection = (selected) => {
-        if (selected.value !== k8sPermission?.namespace?.value) {
-            handleK8sPermission(K8sPermissionActionType.onNamespaceChange, index, selected)
-            const _GvkObjectList: OptionType[] = []
-            if (processedGvkData) {
-                // eslint-disable-next-line no-restricted-syntax
-                for (const [key] of processedGvkData.entries()) {
-                    if (key) {
-                        _GvkObjectList.push({ label: key, value: key })
-                    }
-                }
-                setApiGroupMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [k8sPermission.key]: [...allInApiGroupMapping, ..._GvkObjectList.sort(sortOptionsByLabel)],
-                }))
-            }
-        }
-    }
+    const setK8sPermission = (actionType) => (options) =>
+        handleK8sPermission(K8sPermissionActionType[actionType], index, options)
+
+    const onNameSpaceSelection = (selected, actionMeta) =>
+        multiSelectAllState(
+            selected,
+            actionMeta,
+            setK8sPermission('onNamespaceChange'),
+            namespaceMapping?.[k8sPermission?.cluster?.value],
+        )
 
     const onApiGroupSelect = (selected) => {
         if (selected.value !== k8sPermission?.group?.value) {
@@ -331,20 +345,18 @@ const K8sListItemCard = ({
             if (selected.value !== SELECT_ALL_VALUE && selected.value !== 'Event') {
                 getResourceListData(selected)
             } else {
-                setObjectMapping((prevMapping) => ({
-                    ...prevMapping,
-                    [k8sPermission.key]: [{ label: 'All resources', value: SELECT_ALL_VALUE }],
-                }))
+                populateResourceListWithAllOption()
             }
         }
     }
-    const setK8sPermission = (options): void => {
-        handleK8sPermission(K8sPermissionActionType.onObjectChange, index, options)
-    }
 
-    const onResourceObjectChange = (selected, actionMeta) => {
-        multiSelectAllState(selected, actionMeta, setK8sPermission, objectMapping?.[k8sPermission.key])
-    }
+    const onResourceObjectChange = (selected, actionMeta) =>
+        multiSelectAllState(
+            selected,
+            actionMeta,
+            setK8sPermission('onObjectChange'),
+            objectMapping?.[k8sPermission.key],
+        )
 
     const setRoleSelection = (selected) => {
         if (selected.value !== k8sPermission.action?.value) {
@@ -356,7 +368,8 @@ const K8sListItemCard = ({
         handleK8sPermission(action, index)
     }
 
-    const getIsK8sMultiValueContainer = () => k8sPermission.resource.some((item) => item.value === SELECT_ALL_VALUE)
+    const getIsK8sMultiValueContainer = (type: string) =>
+        k8sPermission[type].some((item) => item.value === SELECT_ALL_VALUE)
 
     const k8sOptions = parseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => ({
         label: role.roleDisplayName,
@@ -434,13 +447,29 @@ const K8sListItemCard = ({
                             onChange={onNameSpaceSelection}
                             components={{
                                 IndicatorSeparator: null,
-                                MenuList: (props) => menuComponent(props, 'namespaces'),
+                                // eslint-disable-next-line react/no-unstable-nested-components
+                                MultiValueContainer: ({ ...props }) => (
+                                    <MultiValueChipContainer
+                                        {...props}
+                                        validator={null}
+                                        isAllSelected={getIsK8sMultiValueContainer('namespace')}
+                                    />
+                                ),
+                                ClearIndicator,
+                                MultiValueRemove,
+                                Option,
+                                MenuList: menuComponent,
                                 LoadingIndicator,
                             }}
-                            styles={authorizationSelectStyles}
                             isLoading={isNamespaceListLoading}
                             menuPlacement="auto"
                             menuPosition="fixed"
+                            closeMenuOnSelect={false}
+                            isMulti
+                            hideSelectedOptions={false}
+                            styles={resourceSelectStyles}
+                            // @ts-expect-error fix this with custom typing or custom select
+                            text="namespace"
                         />
                     </div>
                     <div className="flexbox w-100">
@@ -452,7 +481,7 @@ const K8sListItemCard = ({
                                     classNamePrefix="k8s-permission-select-api-group-dropdown"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
-                                    isDisabled={!k8sPermission.namespace || isApiGroupListLoading}
+                                    isDisabled={!k8sPermission.namespace?.length || isApiGroupListLoading}
                                     value={k8sPermission.group}
                                     onChange={onApiGroupSelect}
                                     components={{
@@ -501,19 +530,21 @@ const K8sListItemCard = ({
                             name="Resource name"
                             onChange={onResourceObjectChange}
                             components={{
-                                IndicatorSeparator: () => null,
+                                IndicatorSeparator: null,
+                                // FIXME: creating new chips when All Resource, fails (UI doesn't show chip)
+                                // but the update went through
                                 // eslint-disable-next-line react/no-unstable-nested-components
                                 MultiValueContainer: ({ ...props }) => (
                                     <MultiValueChipContainer
                                         {...props}
                                         validator={null}
-                                        isAllSelected={getIsK8sMultiValueContainer()}
+                                        isAllSelected={getIsK8sMultiValueContainer('resource')}
                                     />
                                 ),
                                 ClearIndicator,
                                 MultiValueRemove,
                                 Option,
-                                MenuList: (props) => menuComponent(props, 'resource name'),
+                                MenuList: menuComponent,
                                 LoadingIndicator,
                             }}
                             closeMenuOnSelect={false}
@@ -523,6 +554,8 @@ const K8sListItemCard = ({
                             isLoading={isResourceListLoading}
                             menuPlacement="auto"
                             menuPosition="fixed"
+                            // @ts-expect-error fix this with custom typing or custom select
+                            text="resource name"
                         />
                     </div>
                     {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (

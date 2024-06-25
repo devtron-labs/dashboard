@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { RouteComponentProps } from 'react-router'
 import {
     CDMaterialType,
@@ -153,6 +169,7 @@ export interface MaterialInfo {
 export interface CIMaterialRouterProps {
     appId: string
     envId: string
+    ciNodeId: string
 }
 
 export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterProps> {
@@ -173,8 +190,6 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     onCloseBranchRegexModal?: () => void
     filteredCIPipelines: any[]
     onClickShowBranchRegexModal: () => void
-    showCIModal: boolean
-    onShowCIModal: () => void
     isChangeBranchClicked: boolean
     getWorkflows: () => void
     loader: boolean
@@ -337,11 +352,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps
-    extends RouteComponentProps<{
-        appId: string
-        envId: string
-    }> {
+export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps>{
     isJobView?: boolean
     filteredEnvIds?: string
 }
@@ -364,8 +375,6 @@ export interface TriggerViewState {
     code: number
     view: string
     workflows: WorkflowType[]
-    showCDModal: boolean
-    showCIModal: boolean
     nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
@@ -577,6 +586,9 @@ export interface PrePostDeployStageType {
 }
 
 // Remove this and use from fe-common
+/**
+ * @deprecated
+ */
 export interface CdPipeline {
     id: number
     environmentId: number
@@ -639,7 +651,6 @@ export interface BranchRegexModalProps {
     title: string
     isChangeBranchClicked: boolean
     onClickNextButton: () => void
-    onShowCIModal: () => void
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
@@ -726,4 +737,10 @@ export interface RuntimeParamsValidatorReturnType {
     isValid: boolean
     message?: string
     validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
+}
+
+export interface CIMaterialModalProps extends CIMaterialProps {
+    closeCIModal: () => void
+    abortController: AbortController
+    resetAbortController: () => void
 }

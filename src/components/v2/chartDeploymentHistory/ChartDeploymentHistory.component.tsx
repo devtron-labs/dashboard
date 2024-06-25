@@ -1,18 +1,33 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useState, useEffect } from 'react'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
-    ConfirmationDialog,
     ServerErrors,
     GenericEmptyState,
     DetailsProgressing,
     DeploymentAppTypes,
     YAMLStringify,
+    DeploymentDetailSteps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch } from 'react-router'
 import { useParams } from 'react-router-dom'
@@ -37,9 +52,10 @@ import {
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
+import RollbackConfirmationDialog from './RollbackConfirmationDialog'
+import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
@@ -484,6 +500,8 @@ const ChartDeploymentHistory = ({
                         }
                         installedAppVersionHistoryId={deployment.version}
                         isVirtualEnvironment={isVirtualEnvironment}
+                        renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                        processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     />
                 )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
@@ -655,43 +673,6 @@ const ChartDeploymentHistory = ({
         }
     }
 
-    const RollbackConfirmationDialog = () => {
-        return (
-            <ConfirmationDialog className="rollback-confirmation-dialog">
-                <ConfirmationDialog.Body title={rollbackDialogTitle}>
-                    <p className="fs-13 cn-7 lh-1-54">Are you sure you want to deploy a previous version?</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <div className="flex right">
-                        <button
-                            type="button"
-                            className="flex cta cancel"
-                            onClick={() => setShowRollbackConfirmation(false)}
-                            disabled={deploying}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="flex cta deploy-button"
-                            onClick={handleDeployClick}
-                            disabled={deploying}
-                            data-testid="re-deployment-dialog-box-button"
-                        >
-                            {deploying ? (
-                                <Progressing />
-                            ) : (
-                                <>
-                                    <DeployButton className="deploy-button-icon" />
-                                    <span className="ml-8">Deploy</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
-        )
-    }
-
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
@@ -724,7 +705,14 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
-                {showRollbackConfirmation && <RollbackConfirmationDialog />}
+                {showRollbackConfirmation && (
+                    <RollbackConfirmationDialog
+                        deploying={deploying}
+                        rollbackDialogTitle={rollbackDialogTitle}
+                        setShowRollbackConfirmation={setShowRollbackConfirmation}
+                        handleDeployClick={handleDeployClick}
+                    />
+                )}
             </div>
         )
     }

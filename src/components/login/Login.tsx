@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Component } from 'react'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput, withUserEmail } from '@devtron-labs/devtron-fe-common-lib'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
@@ -11,7 +27,7 @@ import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 
-export default class Login extends Component<LoginProps, LoginFormState> {
+class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -118,6 +134,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     this.setState({ loading: false })
                     const queryString = this.props.location.search.split('continue=')[1]
                     const url = queryString ? `${queryString}` : URLS.APP
+                    this.props.setEmail(data.username)
                     this.props.history.push(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
@@ -282,3 +299,5 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         )
     }
 }
+
+export default withUserEmail(Login)

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {
     get,
     post,
@@ -9,16 +25,16 @@ import {
     put,
     DATE_TIME_FORMAT_STRING,
     DeploymentWithConfigType,
+    History,
     noop,
+    PromiseAllStatusType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
-import { History } from './details/cicdHistory/types'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
-import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
-import { BulkResponseStatus, BULK_CD_RESPONSE_STATUS_TEXT } from '../ApplicationGroup/Constants'
+import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 const stageMap = {
     PRECD: 'PRE',
@@ -277,16 +293,6 @@ export function extractImage(image: string): string {
     return image ? image.split(':').pop() : ''
 }
 
-export const cancelCiTrigger = (params, isForceAbort) => {
-    const URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/workflow/${params.workflowId}?forceAbort=${isForceAbort}`
-    return trash(URL)
-}
-
-export const cancelPrePostCdTrigger = (pipelineId, workflowRunner) => {
-    const URL = `${Routes.CD_CONFIG}/${pipelineId}/workflowRunner/${workflowRunner}`
-    return trash(URL)
-}
-
 export const getRecentDeploymentConfig = (appId: number, pipelineId: number) => {
     return get(`${Routes.RECENT_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}`)
 }
@@ -299,9 +305,12 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
     return get(`${Routes.SPECIFIC_DEPLOYMENT_CONFIG}/${appId}/${pipelineId}/${wfrId}`)
 }
 
-export const triggerCINode = (request) => {
+export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
-    return post(URL, request)
+    const options = {
+        signal: abortSignal
+    }
+    return post(URL, request, options)
 }
 
 export const triggerCDNode = (
@@ -311,6 +320,7 @@ export const triggerCDNode = (
     stageType: DeploymentNodeType,
     deploymentWithConfig?: string,
     wfrId?: number,
+    abortSignal?: AbortSignal
 ) => {
     const request = {
         pipelineId: parseInt(pipelineId),
@@ -330,6 +340,7 @@ export const triggerCDNode = (
         }
     }
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
 
     return post(Routes.CD_TRIGGER_POST, request, options)
 }
@@ -337,37 +348,39 @@ export const triggerCDNode = (
 export const triggerBranchChange = (appIds: number[], envId: number, value: string, httpProtocol: string) => {
     return new Promise((resolve) => {
         ApiQueuingWithBatch(
-            appIds.map((appId) =>
-                () => put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
-                    appIds: [appId],
-                    environmentId: envId,
-                    value: value,
-                }),
+            appIds.map(
+                (appId) => () =>
+                    put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
+                        appIds: [appId],
+                        environmentId: envId,
+                        value: value,
+                    }),
             ),
             httpProtocol,
         )
-            .then((results) => {
+            .then((results: any[]) => {
+                // Adding for legacy code since have move API Queueing to generics with unknown as default response
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.apps[0]
                         }
                         const response = {
                             appId: appIds[index],
                             status: '',
-                            message: ''
+                            message: '',
                         }
                         const errorReason = result.reason
                         switch (errorReason.code) {
                             case 403:
                             case 422:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
                                 response.status = BulkResponseStatus.UNAUTHORIZE
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                                 break
                             case 409:
                             default:
-                                response.message = BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
                                 response.status = BulkResponseStatus.FAIL
+                                response.message = BULK_VIRTUAL_RESPONSE_STATUS[response.status]
                         }
                         return response
                     }),

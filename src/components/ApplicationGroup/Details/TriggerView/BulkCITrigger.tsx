@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import {
     ServerErrors,
@@ -14,6 +30,7 @@ import {
     KeyValueListActionType,
     HandleKeyValueChangeType,
     CIMaterialSidebarType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -43,7 +60,6 @@ import TriggerResponseModal from './TriggerResponseModal'
 import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from '../../Constants'
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
-import { ApiQueuingWithBatch } from '../../AppGroup.service'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
@@ -116,7 +132,8 @@ const BulkCITrigger = ({
 
         if (runtimeParamsServiceList.length) {
             try {
-                const responses = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
+                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
+                const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
                 const _runtimeParams: Record<string, KeyValueListType[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
@@ -235,7 +252,8 @@ const BulkCITrigger = ({
         if (policyPromiseFunctionList?.length) {
             const policyListMap: Record<string, ConsequenceType> = {}
             try {
-                const responses = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
+                // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
+                const responses: any[] = await ApiQueuingWithBatch(policyPromiseFunctionList, httpProtocol, true)
                 responses.forEach((res, index) => {
                     policyListMap[appList[index]?.appId] = res.value?.['result']
                         ? processConsequenceData(res.value['result'])
@@ -381,7 +399,6 @@ const BulkCITrigger = ({
                         title={selectedApp.ciPipelineName}
                         isChangeBranchClicked={isChangeBranchClicked}
                         onClickNextButton={saveBranchName}
-                        onShowCIModal={noop}
                         handleRegexInputValue={handleRegexInputValueChange}
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}

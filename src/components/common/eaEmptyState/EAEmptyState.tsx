@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react'
 import appDetailEmpty from '../../../assets/img/ic-empty-ea-app-detail.png'
 import securityEmpty from '../../../assets/img/ic-empty-ea--security.png'
@@ -8,7 +24,6 @@ import { NavLink } from 'react-router-dom'
 export enum EAEmptyStateType {
     DEVTRONAPPS = 'devtron_apps',
     SECURITY = 'security',
-    DEPLOYMENTGROUPS = 'deployment_groups',
     BULKEDIT = 'bulk_edit',
 }
 
@@ -24,11 +39,8 @@ export default function EAEmptyState({ title, msg, stateType, knowMoreLink, head
     const getImage = () => {
         switch (stateType) {
             case EAEmptyStateType.DEVTRONAPPS:
-                return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
             case EAEmptyStateType.BULKEDIT:
                 return <img className="ea-empty-img" src={appDetailEmpty} width="800" alt="no apps found" />
-            case EAEmptyStateType.DEPLOYMENTGROUPS:
-                return <img src={appDetailEmpty} alt="no apps found" width="800" />
             case EAEmptyStateType.SECURITY:
                 return <img className="ea-empty-img" src={securityEmpty} width="800" alt="no apps found" />
             default:
