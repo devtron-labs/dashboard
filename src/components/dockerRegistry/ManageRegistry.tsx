@@ -36,6 +36,8 @@ import {
     ReactSelectInputAction,
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
+    DOCUMENTATION_HOME_PAGE,
+    DOCUMENTATION_VERSION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -324,7 +326,7 @@ const ManageRegistry = ({
                 Use the&nbsp;
                 <a
                     className="dc__link"
-                    href="https://docs.devtron.ai/v/v0.7/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
+                    href={`${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/docker-registries#specify-image-pull-secret`}
                     target="_blank"
                     rel="noreferrer"
                 >
