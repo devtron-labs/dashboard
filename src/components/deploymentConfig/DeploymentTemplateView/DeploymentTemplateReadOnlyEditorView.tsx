@@ -14,46 +14,50 @@
  * limitations under the License.
  */
 
-import React, { useContext, useMemo } from 'react'
-import { Progressing, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useContext, useRef } from 'react'
+import { applyPatch } from 'fast-json-patch'
+import { Progressing, YAMLStringify, MarkDown, showError } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
+import { MODES } from '../../../config'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
 
-const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
+const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
     isEnvOverride,
     lockedConfigKeysWithLockType,
     hideLockedKeys,
-    removedPatches,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const addOperationsRef = useRef([])
 
-    const data = useMemo(() => {
-        const { updatedRHS: RHS } = getLockFilteredTemplate({
-            rhs: value,
-            lockedConfigKeysWithLockType,
-            removedPatches,
-            hideLockedKeys,
-            readOnly: true,
-            unableToParseYaml: state.unableToParseYaml,
-        })
-        return RHS
-    }, [hideLockedKeys])
+    // NOTE: the following can throw error but not putting it in try block
+    // in order for it to not fail silently
+    if (removeLockedKeysFromYaml) {
+        if (hideLockedKeys) {
+            const { document, addOperations } = removeLockedKeysFromYaml(value, lockedConfigKeysWithLockType.config)
+            value = YAML.stringify(document, { sortMapEntries: true, simpleKeys: true })
+            if (addOperations.length) {
+                addOperationsRef.current = addOperations
+            }
+        } else {
+            value = YAMLStringify(applyPatch(YAML.parse(value), addOperationsRef.current).newDocument, { sortOrderEntries: true, simpleKeys: true })
+        }
+    }
 
     const renderCodeEditor = (): JSX.Element => {
         return (
             <div className="form__row--code-editor-container dc__border-top-n1 dc__border-bottom read-only-mode">
                 <CodeEditor
-                    value={data}
+                    value={value}
                     mode={MODES.YAML}
                     validatorSchema={state.schema}
-                    loading={state.chartConfigLoading || data === undefined || data === null}
+                    loading={state.chartConfigLoading || value === undefined || value === null}
                     height={isEnvOverride ? 'calc(100vh - 251px)' : 'calc(100vh - 218px)'}
                     readOnly
                 />
@@ -61,8 +65,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         )
     }
 
-    return state.yamlMode ||
-        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ? (
         <>
             {state.showReadme && (
                 <div className="dt-readme dc__border-right dc__border-bottom-imp">
@@ -78,7 +81,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         </>
     ) : (
         <DeploymentTemplateGUIView
-            value={data}
+            value={value}
             hideLockedKeys={hideLockedKeys}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
             readOnly

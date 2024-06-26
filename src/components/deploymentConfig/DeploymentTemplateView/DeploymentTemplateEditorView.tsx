@@ -341,10 +341,7 @@ const DeploymentTemplateEditorView = ({
 
     // final value for RHS
     let rhs = (convertVariables ? resolvedValuesRHS : valueRHS) ?? ''
-    useMemo(() => {
-        if (!getLockFilteredTemplate || !isValues) {
-            return
-        }
+    if (getLockFilteredTemplate && isValues) {
         try {
             const { updatedLHS, updatedRHS } = getLockFilteredTemplate({
                 hideLockedKeys,
@@ -361,7 +358,7 @@ const DeploymentTemplateEditorView = ({
         } catch (err) {
             showError(err)
         }
-    }, [hideLockedKeys])
+    }
 
     const renderCodeEditorHeading = () => (
         <CodeEditor.Header

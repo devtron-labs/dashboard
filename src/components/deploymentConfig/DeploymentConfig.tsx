@@ -751,7 +751,6 @@ export default function DeploymentConfig({
                     value={state.publishedState?.tempFormData}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
-                    removedPatches={removedPatches}
                 />
             )
         }

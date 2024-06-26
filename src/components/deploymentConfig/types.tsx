@@ -220,7 +220,6 @@ export interface DeploymentTemplateReadOnlyEditorViewProps {
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
-    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentTemplateEditorViewProps {
