@@ -181,7 +181,6 @@ const ChartValuesView = ({
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
     const [showRepoSelector, setShowRepoSelector] = useState<boolean>(false)
     const [shouldShowPrompt, setShouldShowPrompt] = useState<boolean>(true)
-    const [securityScan, setSecurityScan] = useState(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -978,6 +977,7 @@ const ChartValuesView = ({
                         ? DeploymentAppTypes.MANIFEST_DOWNLOAD
                         : commonState.deploymentAppType,
                     gitRepoURL: commonState.gitRepoURL,
+                    isManifestScanEnabled: commonState.isManifestScanEnabled,
                 }
                 res = await installChart(payload, chartValuesAbortRef.current?.signal)
             } else if (isCreateValueView) {
@@ -1006,6 +1006,7 @@ const ChartValuesView = ({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     installedAppId: commonState.installedConfig.installedAppId,
                     appStoreVersion: commonState.selectedVersionUpdatePage.id,
+                    isManifestScanEnabled: commonState.isManifestScanEnabled,
                 }
                 res = await updateAppRelease(payload, chartValuesAbortRef.current.signal)
             }
@@ -1317,7 +1318,10 @@ const ChartValuesView = ({
     }
 
     const handleToggleSecurityScan = () => {
-        setSecurityScan(!securityScan)
+        dispatch({
+            type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
+            payload: !commonState.isManifestScanEnabled,
+        })
     }
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
@@ -1763,11 +1767,9 @@ const ChartValuesView = ({
                             <div className="flexbox-col dc__gap-16">
                                 <div className="dc__border-bottom-n1" />
                                 <div className="flexbox dc__content-space dc__align-items-center">
-                                    <span className="fs-13 fw-6 lh-20 dc__border-bottom-dashed--n3">
-                                        Security scan
-                                    </span>
+                                    <span className="fs-13 fw-6 lh-20 dc__border-bottom-dashed--n3">Security scan</span>
                                     <div className="w-28 h-18">
-                                        <Toggle selected={securityScan} onSelect={handleToggleSecurityScan} />
+                                        <Toggle selected={commonState.isManifestScanEnabled} onSelect={handleToggleSecurityScan} />
                                     </div>
                                 </div>
                             </div>

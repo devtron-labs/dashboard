@@ -85,6 +85,7 @@ export const initState = (
             chartVersionId: selectedVersionFromParent,
             chartValuesId: chartValuesFromParent?.id,
         },
+        isManifestScanEnabled: installedConfigFromParent.isManifestScanEnabled ?? false
     }
 }
 
@@ -190,6 +191,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, deploymentAppType: action.payload }
         case ChartValuesViewActionTypes.setGitRepoURL:
             return { ...state, gitRepoURL: action.payload }
+        case ChartValuesViewActionTypes.setIsManifestScanEnabled:
+            return { ...state, isManifestScanEnabled: action.payload}
         default:
             return state
     }

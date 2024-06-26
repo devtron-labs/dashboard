@@ -124,6 +124,7 @@ export interface UpdateAppReleaseRequest {
     appStoreVersion: number
     referenceValueId: number
     referenceValueKind: string
+    isManifestScanEnabled: boolean
 }
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
