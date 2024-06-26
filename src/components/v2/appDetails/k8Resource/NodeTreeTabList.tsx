@@ -116,8 +116,8 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
     return (
         <div
             data-testid="resource-tree-wrapper"
-            className="resource-tree-wrapper flexbox pl-20 pr-20"
-            style={{ outline: 'none' }}
+            className="resource-tree-wrapper flexbox pl-20 pr-20 dc__position-sticky dc__zi-10"
+            style={{ outline: 'none', top: '77px' }}
             tabIndex={0}
             ref={tabRef}
         >

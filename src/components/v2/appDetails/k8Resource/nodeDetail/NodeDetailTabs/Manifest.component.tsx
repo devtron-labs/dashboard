@@ -497,7 +497,7 @@ const ManifestComponent = ({
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                             appDetails.deploymentAppDeleteRequest)) && (
-                        <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
+                        <div className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky': ''}`}>
                             {tabs.map((tab: iLink, index) => {
                                 return (!showDesiredAndCompareManifest &&
                                     (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
