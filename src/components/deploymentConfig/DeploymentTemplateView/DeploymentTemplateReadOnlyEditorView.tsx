@@ -16,7 +16,7 @@
 
 import React, { useContext, useRef } from 'react'
 import { applyPatch } from 'fast-json-patch'
-import { Progressing, YAMLStringify, MarkDown, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, YAMLStringify, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
