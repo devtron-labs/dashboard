@@ -351,6 +351,7 @@ const DirectPermission = ({
     return (
         <>
             <Select
+                classNamePrefix="dropdown-for-project"
                 value={permission.team}
                 name={DirectPermissionFieldName.team}
                 isMulti={false}
@@ -382,6 +383,7 @@ const DirectPermission = ({
             {permission.accessType === ACCESS_TYPE_MAP.HELM_APPS ? (
                 <div>
                     <Select
+                        classNamePrefix="dropdown-for-environment"
                         value={permission.environment}
                         isMulti
                         closeMenuOnSelect={false}
@@ -420,6 +422,7 @@ const DirectPermission = ({
             ) : (
                 <div style={{ order: isAccessTypeJob ? 3 : 0 }}>
                     <Select
+                        classNamePrefix="dropdown-for-environment"
                         value={permission.environment}
                         isMulti
                         closeMenuOnSelect={false}
@@ -455,6 +458,7 @@ const DirectPermission = ({
             )}
             <div style={{ order: isAccessTypeJob ? 1 : 0 }}>
                 <Select
+                    classNamePrefix="dropdown-for-appOrJob"
                     value={permission.entityName}
                     isMulti
                     components={{
@@ -499,6 +503,7 @@ const DirectPermission = ({
             {permission.entity === EntityTypes.JOB && (
                 <div style={{ order: 2 }}>
                     <Select
+                        classNamePrefix="dropdown-for-workflow-for-job"
                         value={permission.workflow}
                         isMulti
                         closeMenuOnSelect={false}
@@ -542,6 +547,7 @@ const DirectPermission = ({
             )}
             <div style={{ order: isAccessTypeJob ? 4 : 0 }}>
                 <Select
+                    classNamePrefix="dropdown-for-role"
                     value={primaryActionRole}
                     name="action"
                     placeholder="Select role"

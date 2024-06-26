@@ -25,7 +25,7 @@ import { HibernateModalProps } from '../../AppGroup.types'
 const ResistantInput = importComponentFromFELibrary('ResistantInput')
 
 export const HibernateModal = ({
-    selectedAppIds,
+    selectedAppDetailsList,
     appDetailsList,
     envName,
     envId,
@@ -48,6 +48,7 @@ export const HibernateModal = ({
             showStatus: false,
             inProgress: true,
         })
+        const selectedAppIds = selectedAppDetailsList.map((appDetails) => appDetails.appId)
         manageApps(
             selectedAppIds,
             appDetailsList,
@@ -119,7 +120,7 @@ export const HibernateModal = ({
                             )}
                             <span className="fs-16 fw-6">
                                 {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'} '
-                                {selectedAppIds.length}
+                                {selectedAppDetailsList.length}
                                 &nbsp;applications' on '{envName}'
                             </span>
                             {renderHibernateModalBody()}

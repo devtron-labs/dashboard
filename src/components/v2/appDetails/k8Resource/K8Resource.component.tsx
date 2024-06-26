@@ -64,7 +64,7 @@ export default function K8ResourceComponent({
                             isDevtronApp={isDevtronApp}
                         />
                     </div>
-                    <div className="flex-grow-1-imp dc__overflow-y-auto p-0" data-testid="k8-resources-node-details">
+                    <div className="flex-grow-1-imp p-0" data-testid="k8-resources-node-details">
                         <NodeComponent
                             handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}
