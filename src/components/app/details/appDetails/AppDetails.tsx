@@ -850,7 +850,7 @@ export const EnvSelector = ({
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '280px', zIndex: 10, }),
+        menu: (base) => ({ ...base, width: '280px', zIndex: 12, }),
     }
 
     const sortedEnvironments =
