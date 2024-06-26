@@ -33,6 +33,7 @@ import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.u
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -549,7 +550,7 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
-            {PodRestart && <PodRestart />}
+            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload(appDetails)} />}
         </>
     )
 }
