@@ -26,6 +26,7 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { VitePWA } from 'vite-plugin-pwa'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
+const TARGET_URL = 'https://preview.devtron.ai/'
 
 function reactVirtualized(): PluginOption {
     return {
@@ -148,10 +149,10 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: 'https://preview.devtron.ai/',
+                    target: TARGET_URL,
                     changeOrigin: true,
                 },
-                '/grafana': 'https://preview.devtron.ai/',
+                '/grafana': TARGET_URL,
             },
         },
     }
