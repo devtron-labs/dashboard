@@ -3,8 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
-# Copy .npmrc if it exists, otherwise don't fail
-COPY .npmr[c] .
+
 RUN yarn install --network-timeout 600000
 
 COPY src/ src
@@ -12,11 +11,9 @@ COPY nginx.conf .
 COPY tsconfig.json .
 COPY vite.config.ts .
 COPY . .
-#RUN echo REACT_APP_GIT_SHA=`git rev-parse --short HEAD` >> .env.production
+
 RUN echo `git rev-parse --short HEAD` > health.html
 RUN yarn build
-#RUN apt update -y && apt install jq -y
-#RUN python linter.py | jq -C --tab .
 
 FROM nginx:stable
 
