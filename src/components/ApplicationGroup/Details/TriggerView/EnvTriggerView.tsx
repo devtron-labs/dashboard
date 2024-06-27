@@ -39,6 +39,10 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    handleUTCTime,
+    createGitCommitUrl,
+    CIMaterialType,
+    ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -54,7 +58,6 @@ import {
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import { CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
@@ -66,14 +69,12 @@ import {
     triggerBranchChange,
 } from '../../../app/service'
 import {
-    createGitCommitUrl,
     importComponentFromFELibrary,
-    ISTTimeModal,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
 } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
-import { ApiQueuingWithBatch, getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
     CI_MATERIAL_EMPTY_STATE_MESSAGING,
     TIME_STAMP_ORDER,
@@ -275,8 +276,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             } else if (location.pathname.includes('build')) {
                 const lastIndexBeforeId = location.pathname.lastIndexOf('/')
                 const ciNodeId = location.pathname.substring(lastIndexBeforeId + 1)
-                const nodes = filteredWorkflows?.find((workflow) => workflow.id === ciNodeId)?.nodes
-                const ciNode = nodes?.find((node) => node.type === CIPipelineNodeType.CI)
+                const ciNode = filteredWorkflows
+                    .flatMap((workflow) => workflow.nodes)
+                    .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
                 const pipelineName = ciNode?.title
 
                 if (!isNaN(+ciNodeId) && !!pipelineName) {
@@ -536,7 +538,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 : '',
                             commit: _result.Commit || '',
                             author: _result.Author || '',
-                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
                             message: _result.Message || '',
                             changes: _result.Changes || [],
                             showChanges: true,

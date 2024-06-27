@@ -27,13 +27,15 @@ import {
     DeploymentWithConfigType,
     History,
     noop,
+    handleUTCTime,
+    createGitCommitUrl,
+    PromiseAllStatusType,
+    ApiQueuingWithBatch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
-import { createGitCommitUrl, getAPIOptionsWithTriggerTimeout, handleUTCTime, ISTTimeModal } from '../common'
+import { getAPIOptionsWithTriggerTimeout } from '../common'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { ApiQueuingWithBatch } from '../ApplicationGroup/AppGroup.service'
-import { ApiQueuingBatchStatusType } from '../ApplicationGroup/AppGroup.types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 const stageMap = {
@@ -45,62 +47,6 @@ const stageMap = {
 
 export const getAppList = (request, options?) => {
     return post(Routes.APP_LIST, request, options)
-}
-
-export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
-    const URL = `${Routes.APP}/material-info/${params.envId}/${params.ciArtifactId}`
-    return get(URL)
-}
-
-export function getCITriggerInfoModal(params: { envId: number | string; ciArtifactId: number | string }) {
-    return getCITriggerInfo(params).then((response) => {
-        let materials = response?.result?.ciMaterials || []
-        materials = materials.map((mat) => {
-            return {
-                id: mat.id,
-                gitMaterialName: mat.gitMaterialName || '',
-                gitMaterialId: mat.gitMaterialId || 0,
-                gitURL: mat.url || '',
-                type: mat.type || '',
-                value: mat.value || '',
-                active: mat.active || false,
-                history: mat.history.map((hist, index) => {
-                    return {
-                        commitURL: mat.url ? createGitCommitUrl(mat.url, hist.Commit) : '',
-                        commit: hist.Commit || '',
-                        author: hist.Author || '',
-                        date: hist.Date ? ISTTimeModal(hist.Date, false) : '',
-                        message: hist.Message || '',
-                        changes: hist.Changes || [],
-                        showChanges: index === 0,
-                        webhookData: hist.WebhookData,
-                    }
-                }),
-                lastFetchTime: mat.lastFetchTime || '',
-            }
-        })
-        if (materials.length > 0 && !materials.find((mat) => mat.isSelected)) {
-            materials[0].isSelected = true
-        }
-        return {
-            code: response.code,
-            result: {
-                materials,
-                triggeredByEmail: response.result.triggeredByEmail || '',
-                lastDeployedTime: response.result.lastDeployedTime
-                    ? handleUTCTime(response.result.lastDeployedTime, false)
-                    : '',
-                environmentName: response.result.environmentName || '',
-                environmentId: response.result.environmentId || 0,
-                appName: response.result.appName || '',
-                appReleaseTags: response?.result?.imageTaggingData?.appReleaseTags,
-                imageComment: response?.result?.imageTaggingData?.imageComment,
-                imageReleaseTags: response?.result?.imageTaggingData?.imageReleaseTags,
-                image: response?.result?.image,
-                tagsEditable: response?.result?.imageTaggingData?.tagsEditable,
-            },
-        }
-    })
 }
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
@@ -208,7 +154,7 @@ const gitTriggersModal = (triggers, materials) => {
             author: triggers[key].Author,
             message: triggers[key].Message,
             url: material?.url || '',
-            date: triggers[key].Date ? ISTTimeModal(triggers[key].Date) : '',
+            date: triggers[key].Date ? handleUTCTime(triggers[key].Date) : '',
         }
     })
 }
@@ -261,7 +207,7 @@ const processCIMaterialResponse = (response) => {
                 ...material,
                 isSelected: index == 0,
                 gitURL: material.gitMaterialUrl || '',
-                lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
                 showAllCommits: false,
                 ...processMaterialHistoryAndSelectionError(material),
@@ -358,10 +304,11 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
             ),
             httpProtocol,
         )
-            .then((results) => {
+            .then((results: any[]) => {
+                // Adding for legacy code since have move API Queueing to generics with unknown as default response
                 resolve(
                     results.map((result, index) => {
-                        if (result.status === ApiQueuingBatchStatusType.FULFILLED) {
+                        if (result.status === PromiseAllStatusType.FULFILLED) {
                             return result.value?.result.apps[0]
                         }
                         const response = {
