@@ -19,7 +19,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
 import { Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
-import { applyPatch, compare as jsonpatchCompare, Operation } from 'fast-json-patch'
+import { compare as jsonpatchCompare, Operation } from 'fast-json-patch'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { createDeploymentTemplate, updateDeploymentTemplate } from './service'
@@ -487,10 +487,8 @@ export default function DeploymentTemplateOverrideForm({
                     : YAMLStringify(state.data.globalConfig)
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
-            if (hideLockedKeys && removedPatches.current.length) {
-                codeEditorValue = YAMLStringify(applyPatch(YAML.parse(state.tempFormData), removedPatches.current), {
-                    sortMapEntries: true,
-                })
+            if (hideLockedKeys) {
+                codeEditorValue = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current))
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -728,7 +726,6 @@ export default function DeploymentTemplateOverrideForm({
             )}
             {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                 <DeploymentTemplateLockedDiff
-                    CodeEditor={CodeEditor}
                     closeModal={closeLockedDiffDrawerWithChildModal}
                     handleChangeCheckbox={handleChangeCheckbox}
                     saveEligibleChangesCb={saveEligibleChangesCb}

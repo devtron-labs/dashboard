@@ -28,7 +28,7 @@ import {
     ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { Operation, applyPatch, compare as jsonpatchCompare } from 'fast-json-patch'
+import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -739,7 +739,7 @@ export default function DeploymentConfig({
         } else if (hideLockedKeys) {
             const parsed = YAML.parse(state.tempFormData)
             result = fetchManifestData(
-                YAMLStringify(applyPatch(parsed, removedPatches.current).newDocument, { sortMapEntries: true }),
+                YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)),
             )
         } else {
             result = await fetchManifestData(state.tempFormData)
@@ -894,7 +894,6 @@ export default function DeploymentConfig({
                     )}
                     {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                         <DeploymentTemplateLockedDiff
-                            CodeEditor={CodeEditor}
                             closeModal={closeLockedDiffDrawerWithChildModal}
                             handleChangeCheckbox={handleChangeCheckbox}
                             saveEligibleChangesCb={saveEligibleChangesCb}
