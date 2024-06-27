@@ -2988,6 +2988,10 @@ textarea,
     width: 10px;
 }
 
+.w-14 {
+    width: 14px;
+}
+
 .w-16 {
     width: 16px;
 }
@@ -3600,6 +3604,10 @@ textarea,
 
 .mxh-350 {
     max-height: 350px;
+}
+
+.mxh-400 {
+    max-height: 400px;
 }
 
 .mxh-504 {
@@ -4644,6 +4652,10 @@ textarea::placeholder {
             text-decoration: none;
             box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.10), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
         }
+    }
+
+    &--no-box-shadow {
+        box-shadow: none;
     }
 }
 

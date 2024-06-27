@@ -15,12 +15,18 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react'
-import { not, stopPropagation, CIMaterialSidebarType, CiPipelineSourceConfig } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    not,
+    stopPropagation,
+    CIMaterialSidebarType,
+    CiPipelineSourceConfig,
+    MaterialHistory,
+    CIMaterialType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { SourceTypeMap } from '../../config'
-import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
@@ -431,7 +437,6 @@ export default function GitInfoMaterial({
                     pipelineName={pipelineName}
                     ciPipelineId={pipelineId}
                     selectCommit={triggerViewContext.selectCommit}
-                    toggleChanges={triggerViewContext.toggleChanges}
                 />
             </div>
         )
