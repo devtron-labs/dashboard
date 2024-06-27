@@ -90,7 +90,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     }
 
     getIsChangingToSamePipeline = () =>
-        this.props?.changeCIPayload?.switchFromCiPipelineId &&
+        this.props.changeCIPayload?.switchFromCiPipelineId &&
         this.state.form.parentCIPipelineId === this.props.changeCIPayload.switchFromCiPipelineId
 
     selectApp({ value }): void {

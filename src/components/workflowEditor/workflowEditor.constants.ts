@@ -85,6 +85,7 @@ export const REQUEST_IN_PROGRESS = 'Request in progress'
 
 export const TOAST_MESSAGES = {
     SUCCESS_CHANGE_TO_WEBHOOK: 'Successfully changed CI to webhook',
+    WORKFLOW_NOT_AVAILABLE: 'Selected workflow not available',
 }
 
 export const CHANGE_CI_TOOLTIP = {

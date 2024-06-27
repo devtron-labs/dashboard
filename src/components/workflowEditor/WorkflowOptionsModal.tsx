@@ -59,11 +59,26 @@ const WorkflowOptionsModal = ({
     )
     const [loadingWebhook, setLoadingWebhook] = useState<boolean>(false)
 
+    /**
+     * Would be called in case user flow is completed like closing modal, changing CI to webhook with some cd pipelines
+     * In other cases this would be done via closePipeline method in workflowEditor
+     */
+    const handleFlowCompletion = () => {
+        handleCloseWorkflowOptionsModal()
+        resetChangeCIPayload()
+    }
+
     useEffect(() => {
         if (changeCIPayload && workflows) {
             const currentWorkflow = workflows.find((workflow) => +workflow.id === changeCIPayload?.appWorkflowId)
-            const currentCIPipeline = currentWorkflow?.nodes.find((node) => node.type === WorkflowNodeType.CI)
-            const isWebhook = currentWorkflow?.nodes.some((node) => node.type === WorkflowNodeType.WEBHOOK)
+            if (!currentWorkflow) {
+                handleFlowCompletion()
+                toast.error(TOAST_MESSAGES.WORKFLOW_NOT_AVAILABLE)
+                return
+            }
+
+            const currentCIPipeline = currentWorkflow.nodes.find((node) => node.type === WorkflowNodeType.CI)
+            const isWebhook = currentWorkflow.nodes.some((node) => node.type === WorkflowNodeType.WEBHOOK)
 
             if (isWebhook) {
                 setCurrentCIPipelineType(WorkflowNodeType.WEBHOOK)
@@ -92,15 +107,6 @@ const WorkflowOptionsModal = ({
             setCurrentCIPipelineType(CIPipelineNodeType.CI)
         }
     }, [workflows, changeCIPayload])
-
-    /**
-     * Would be called in case user flow is completed like closing modal, changing CI to webhook with some cd pipelines
-     * In other cases this would be done via closePipeline method in workflowEditor
-     */
-    const handleFlowCompletion = () => {
-        handleCloseWorkflowOptionsModal()
-        resetChangeCIPayload()
-    }
 
     const handleChangeToWebhook = () => {
         if (changeCIPayload) {
