@@ -805,7 +805,6 @@ export default function DeploymentConfig({
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
                 isValues={state.isValues}
-                hideLockedKeys={hideLockedKeys}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
