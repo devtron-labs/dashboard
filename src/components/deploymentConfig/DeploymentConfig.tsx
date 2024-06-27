@@ -67,6 +67,7 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
 const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
@@ -655,6 +656,10 @@ export default function DeploymentConfig({
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         let valuesOverride = obj
 
+        if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
+            valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
+        }
+
         // NOTE: toggleLockedTemplateDiff in the reducer will trigger this
         if (state.showLockedTemplateDiff) {
             const edited = YAML.parse(state.tempFormData)
@@ -897,7 +902,7 @@ export default function DeploymentConfig({
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                             documents={{
-                                edited: YAML.parse(state.tempFormData),
+                                edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
                                 unedited: YAML.parse(state.data),
                             }}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}

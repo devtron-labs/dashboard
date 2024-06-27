@@ -42,6 +42,7 @@ const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDra
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
 const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export default function DeploymentTemplateOverrideForm({
     state,
@@ -117,12 +118,11 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
+        // FIXME: duplicate is of type string while obj is of type object. Bad!!
         let valuesOverride = obj || state.duplicate
 
-        if (hideLockedKeys) {
-            const parsed = YAML.parse(valuesOverride)
-            // TODO: verify how expensive the sortMapEntries is if everything is already sorted
-            valuesOverride = YAMLStringify(applyPatch(parsed, removedPatches.current), { sortMapEntries: true })
+        if (hideLockedKeys && valuesOverride === obj) {
+            valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
 
         if (state.showLockedTemplateDiff) {
@@ -735,7 +735,7 @@ export default function DeploymentTemplateOverrideForm({
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
                     documents={{
-                        edited: YAML.parse(state.tempFormData),
+                        edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
                         unedited: YAML.parse(getCodeEditorValue(false, true)),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
