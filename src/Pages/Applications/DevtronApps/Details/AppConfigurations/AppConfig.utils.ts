@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { URLS, DOCUMENTATION } from '../../../../config'
+import { URLS, DOCUMENTATION } from '../../../../../config'
+import { AppConfigStatusResponseItem } from '../../service.types'
 import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
 
 // stage: last configured stage
@@ -64,25 +65,25 @@ export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolea
 }
 
 export const getCompletedStep = (
-    isUnlocked: AppStageUnlockedType,
+    _isUnlocked: AppStageUnlockedType,
     isJobView: boolean,
     isGitOpsConfigurationRequired: boolean,
 ): number => {
     if (isJobView) {
-        if (isUnlocked.workflowEditor) {
+        if (_isUnlocked.workflowEditor) {
             return 1
         }
     } else {
-        if (isUnlocked.workflowEditor) {
+        if (_isUnlocked.workflowEditor) {
             return isGitOpsConfigurationRequired ? 4 : 3
         }
-        if (isUnlocked.gitOpsConfig) {
+        if (_isUnlocked.gitOpsConfig) {
             return 3
         }
-        if (isUnlocked.deploymentTemplate) {
+        if (_isUnlocked.deploymentTemplate) {
             return 2
         }
-        if (isUnlocked.dockerBuildConfig) {
+        if (_isUnlocked.dockerBuildConfig) {
             return 1
         }
     }
@@ -91,7 +92,7 @@ export const getCompletedStep = (
 }
 
 export const getNavItems = (
-    isUnlocked: AppStageUnlockedType,
+    _isUnlocked: AppStageUnlockedType,
     appId: string,
     isJobView: boolean,
     configStatus,
@@ -99,7 +100,7 @@ export const getNavItems = (
     const isGitOpsConfigurationRequired = configStatus.find(
         (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
     )?.required
-    const completedSteps = getCompletedStep(isUnlocked, isJobView, isGitOpsConfigurationRequired)
+    const completedSteps = getCompletedStep(_isUnlocked, isJobView, isGitOpsConfigurationRequired)
     let navItems = []
     if (isJobView) {
         const completedPercent = completedSteps * 50
@@ -109,7 +110,7 @@ export const getNavItems = (
                 title: 'Source code',
                 href: `/job/${appId}/edit/materials`,
                 stage: STAGE_NAME.GIT_MATERIAL,
-                isLocked: !isUnlocked.material,
+                isLocked: !_isUnlocked.material,
                 supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -119,7 +120,7 @@ export const getNavItems = (
                 title: 'Workflow Editor',
                 href: `/job/${appId}/edit/workflow`,
                 stage: 'WORKFLOW',
-                isLocked: !isUnlocked.workflowEditor,
+                isLocked: !_isUnlocked.workflowEditor,
                 supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -129,7 +130,7 @@ export const getNavItems = (
                 title: 'ConfigMaps',
                 href: `/job/${appId}/edit/configmap`,
                 stage: 'CONFIGMAP',
-                isLocked: !isUnlocked.configmap,
+                isLocked: !_isUnlocked.configmap,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -140,7 +141,7 @@ export const getNavItems = (
                 title: 'Secrets',
                 href: `/job/${appId}/edit/secrets`,
                 stage: 'SECRETS',
-                isLocked: !isUnlocked.secret,
+                isLocked: !_isUnlocked.secret,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -151,7 +152,7 @@ export const getNavItems = (
                 title: 'Environment Override',
                 href: `/job/${appId}/edit/env-override`,
                 stage: 'ENV_OVERRIDE',
-                isLocked: !isUnlocked.envOverride,
+                isLocked: !_isUnlocked.envOverride,
             },
         ]
     } else {
@@ -161,7 +162,7 @@ export const getNavItems = (
                 title: 'Git Repository',
                 href: `/app/${appId}/edit/materials`,
                 stage: STAGE_NAME.GIT_MATERIAL,
-                isLocked: !isUnlocked.material,
+                isLocked: !_isUnlocked.material,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -171,7 +172,7 @@ export const getNavItems = (
                 title: 'Build Configuration',
                 href: `/app/${appId}/edit/docker-build-config`,
                 stage: STAGE_NAME.CI_CONFIG,
-                isLocked: !isUnlocked.dockerBuildConfig,
+                isLocked: !_isUnlocked.dockerBuildConfig,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -181,7 +182,7 @@ export const getNavItems = (
                 title: 'Base Deployment Template',
                 href: `/app/${appId}/edit/deployment-template`,
                 stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
-                isLocked: !isUnlocked.deploymentTemplate,
+                isLocked: !_isUnlocked.deploymentTemplate,
                 supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -192,7 +193,7 @@ export const getNavItems = (
                 title: 'GitOps Configuration',
                 href: `/app/${appId}/edit/gitops-config`,
                 stage: STAGE_NAME.GITOPS_CONFIG,
-                isLocked: !isUnlocked.gitOpsConfig,
+                isLocked: !_isUnlocked.gitOpsConfig,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
                 required: isGitOpsConfigurationRequired,
@@ -201,7 +202,7 @@ export const getNavItems = (
                 title: 'Workflow Editor',
                 href: `/app/${appId}/edit/workflow`,
                 stage: 'WORKFLOW',
-                isLocked: !isUnlocked.workflowEditor,
+                isLocked: !_isUnlocked.workflowEditor,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -211,7 +212,7 @@ export const getNavItems = (
                 title: 'ConfigMaps',
                 href: `/app/${appId}/edit/configmap`,
                 stage: 'CONFIGMAP',
-                isLocked: !isUnlocked.configmap,
+                isLocked: !_isUnlocked.configmap,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -222,7 +223,7 @@ export const getNavItems = (
                 title: 'Secrets',
                 href: `/app/${appId}/edit/secrets`,
                 stage: 'SECRETS',
-                isLocked: !isUnlocked.secret,
+                isLocked: !_isUnlocked.secret,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
@@ -248,10 +249,20 @@ export const getNavItems = (
                 title: 'Environment Override',
                 href: `/app/${appId}/edit/env-override`,
                 stage: 'ENV_OVERRIDE',
-                isLocked: !isUnlocked.envOverride,
+                isLocked: !_isUnlocked.envOverride,
             },
         ]
     }
 
     return { navItems }
+}
+
+export function isCIPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
+    const ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
+    return ciPipeline.status
+}
+
+export function isCDPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
+    const cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
+    return cdPipeline.status
 }

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { CustomNavItemsType } from './appConfig.type'
+import { CustomNavItemsType } from '../appConfig.type'
 
 interface HelpBoxType {
     selectedNav: CustomNavItemsType
@@ -23,7 +23,7 @@ interface HelpBoxType {
     totalSteps?: number
 }
 
-export default function HelpBox({ selectedNav, isJobView, totalSteps }: HelpBoxType) {
+const HelpBox = ({ selectedNav, isJobView, totalSteps }: HelpBoxType) => {
     return (
         <div className="help-container">
             <div>
@@ -46,3 +46,5 @@ export default function HelpBox({ selectedNav, isJobView, totalSteps }: HelpBoxT
         </div>
     )
 }
+
+export default HelpBox
