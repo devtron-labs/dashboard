@@ -179,3 +179,11 @@ export const NO_SCOPED_VARIABLES_MESSAGE = 'No valid variable found on this page
 export const GUI_VIEW_TEXTS = {
     SWITCH_TO_ADVANCE_BUTTON_TEXT: 'Switch to advance',
 }
+
+export const JOB_AND_CRONJOB_CHART_NAME = 'Job & CronJob'
+
+export const BASIC_VIEW_TIPPY_CONTENT = {
+    title: 'Basic view is locked',
+    infoText:
+        'Basic view is locked as hide locked keys is active. Please uncheck hide locked keys to switch views.',
+}

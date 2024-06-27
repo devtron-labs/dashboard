@@ -985,10 +985,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.94":
-  version "0.0.94"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.94.tgz#f8f91b57cb271bbcc6638bef90f76db28bf13eb6"
-  integrity sha512-J2bNK3LIuYo2pcjJ/W74rMMdNAwtB3euH4yxvG/j0tEi2QsSlzEHZYgZx6Ozmvke82w9Oq3CKUhvUKasI4QSSQ==
+"@devtron-labs/devtron-fe-common-lib@0.0.98":
+  version "0.0.98"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.98.tgz#1e686f7b8afebd7a92d6a19374c4610089b73dc3"
+  integrity sha512-G/VJiMJJ8L5u7l0DIc8ysCmW1cwPh58m6RGCPMjwxeeAbgghqWFEN5+fK4x9xnFMJLqHyGh4Y87GMoe6yjkPHw==
   dependencies:
     ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
@@ -3803,7 +3803,7 @@ esrecurse@^4.3.0:
 
 estraverse@^4.1.1:
   version "4.3.0"
-  resolved "https://registry.npmjs.org/estraverse/-/estraverse-4.3.0.tgz"
+  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.3.0.tgz#398ad3f3c5a24948be7725e83d11a7de28cdbd1d"
   integrity sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==
 
 estraverse@^5.1.0, estraverse@^5.2.0, estraverse@^5.3.0:

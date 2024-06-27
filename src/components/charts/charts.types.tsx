@@ -375,3 +375,16 @@ export interface ChartListType {
     registryProvider?: string
     isOCIRegistry?: boolean
 }
+
+export interface ChartGroupDeployResponse {
+    chartGroupInstallMetadata: ChartGroupInstallMetadaum[]
+    summary: string
+  }
+  
+  export interface ChartGroupInstallMetadaum {
+    appName: string
+    environmentId: number
+    triggerStatus: 'success' | 'failed'
+    reason: string
+  }
+  

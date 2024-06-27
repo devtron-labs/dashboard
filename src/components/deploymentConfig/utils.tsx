@@ -17,7 +17,9 @@
 import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateOptionsTabProps } from './types'
-import guiSchema from './basicViewSchema.json'
+import fallbackGuiSchema from './basicViewSchema.json'
+import fallbackJobsNCronJobGuiSchema from './fallbackJobsNCronJobGuiSchema.json'
+import { JOB_AND_CRONJOB_CHART_NAME } from './constants'
 
 export const getRenderActionButton =
     (changeEditorMode: DeploymentTemplateOptionsTabProps['changeEditorMode']) => () => (
@@ -31,13 +33,22 @@ export const getRenderActionButton =
         </button>
     )
 
-export const addGUISchemaIfAbsent = (response: ResponseType) => {
+const getGuiSchemaFromChartName = (chartName: string) => {
+    switch (chartName) {
+        case JOB_AND_CRONJOB_CHART_NAME:
+            return fallbackJobsNCronJobGuiSchema
+        default:
+            return fallbackGuiSchema
+    }
+}
+
+export const addGUISchemaIfAbsent = (response: ResponseType, chartName: string) => {
     if (response && response.result && !response.result.guiSchema) {
         return {
             ...response,
             result: {
                 ...response.result,
-                guiSchema: JSON.stringify(guiSchema),
+                guiSchema: JSON.stringify(getGuiSchemaFromChartName(chartName)),
             },
         }
     }

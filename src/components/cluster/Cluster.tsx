@@ -23,6 +23,7 @@ import {
     Drawer,
     sortCallback,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -53,7 +54,6 @@ import {
     URLS,
     CONFIGURATION_TYPES,
     AppCreationType,
-    DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'

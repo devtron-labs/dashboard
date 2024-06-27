@@ -15,12 +15,11 @@
  */
 
 import React, { useContext } from 'react'
-import { Progressing, YAMLStringify, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, YAMLStringify, getUnlockedJSON, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
+import { MODES } from '../../../config'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'

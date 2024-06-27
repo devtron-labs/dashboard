@@ -38,6 +38,7 @@ import {
     CustomInput,
     noop,
     InfoIconTippy,
+    DEFAULT_SECRET_PLACEHOLDER,
     ClearIndicator,
     MultiValueRemove,
     MultiValueChipContainer,
@@ -70,7 +71,6 @@ import {
     URLS,
     PATTERNS,
     OCIRegistryStorageActionType,
-    DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'

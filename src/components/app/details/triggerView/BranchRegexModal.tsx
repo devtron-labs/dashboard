@@ -35,7 +35,6 @@ export default function BranchRegexModal({
     title,
     isChangeBranchClicked,
     onClickNextButton,
-    onShowCIModal,
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
@@ -112,7 +111,6 @@ export default function BranchRegexModal({
 
     const onClickBackArrow = (): void => {
         onCloseBranchRegexModal()
-        onShowCIModal()
     }
 
     const getErrorMessage = (regexValue) => {

@@ -81,6 +81,11 @@ export const initState = (
         showNoGitOpsWarning: false,
         deploymentAppType: DeploymentAppTypes.HELM,
         gitRepoURL: '',
+        authMode: null,
+        initialChartVersionValues: {
+            chartVersionId: selectedVersionFromParent,
+            chartValuesId: chartValuesFromParent?.id,
+        },
     }
 }
 
@@ -186,6 +191,12 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, deploymentAppType: action.payload }
         case ChartValuesViewActionTypes.setGitRepoURL:
             return { ...state, gitRepoURL: action.payload }
+        case ChartValuesViewActionTypes.updateGitOpsConfiguration: 
+            return {
+                ...state,
+                showNoGitOpsWarning: action.payload.showNoGitOpsWarning,
+                authMode: action.payload.authMode,
+            }
         default:
             return state
     }
