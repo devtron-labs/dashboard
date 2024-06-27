@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext } from 'react'
-import YAML from 'yaml'
-import { ConfigurationType, BuildStageVariable } from '../../config'
+import React, { useContext } from 'react'
+import { BuildStageVariable } from '../../config'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
@@ -25,9 +24,7 @@ import {
     PluginType,
     ScriptType,
     StyledRadioGroup as RadioGroup,
-    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { YAMLScriptComponent } from './YAMLScriptComponent'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -44,8 +41,6 @@ export const TaskDetailComponent = () => {
         isCdPipeline,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
-    const [configurationType, setConfigurationType] = useState<string>('GUI')
-    const [editorValue, setEditorValue] = useState<string>('')
 
     const currentStepTypeVariable =
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -74,38 +69,6 @@ export const TaskDetailComponent = () => {
         _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail =
             !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
-    }
-
-    const handleEditorValueChange = (editorValue: string): void => {
-        try {
-            setEditorValue(editorValue)
-            const _formData = { ...formData }
-            _formData[activeStageName].steps[selectedTaskIndex] = {
-                ..._formData[activeStageName].steps[selectedTaskIndex],
-                ...YAML.parse(editorValue),
-            }
-            setFormData(_formData)
-        } catch (error) {}
-    }
-
-    const handleConfigurationChange = (ev: any): void => {
-        setConfigurationType(ev.target.value)
-        if (ev.target.value === ConfigurationType.YAML) {
-            if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE) {
-                setEditorValue(
-                    YAMLStringify({
-                        outputDirectoryPath: formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath,
-                        inlineStepDetail: formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail,
-                    }),
-                )
-            } else {
-                setEditorValue(
-                    YAMLStringify({
-                        pluginRefStepDetail: formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
-                    }),
-                )
-            }
-        }
     }
 
     const handleTaskScriptTypeChange = (ev: any): void => {
@@ -193,53 +156,39 @@ export const TaskDetailComponent = () => {
                     </div>
                 )}
             </div>
-            {configurationType === ConfigurationType.GUI ? (
+            <hr />
+            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                <CustomInputOutputVariables type={PluginVariableType.INPUT} />
+            ) : (
+                <VariableContainer type={PluginVariableType.INPUT} />
+            )}{' '}
+            <hr />
+            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables?.length >
+                0 && (
                 <>
+                    <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
                     <hr />
-                    {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables type={PluginVariableType.INPUT} />
-                    ) : (
-                        <VariableContainer type={PluginVariableType.INPUT} />
-                    )}{' '}
-                    <hr />
-                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables
-                        ?.length > 0 && (
-                        <>
-                            <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
-                            <hr />
-                        </>
-                    )}
-                    {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <>
-                            <TaskTypeDetailComponent />
-                            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
-                                ScriptType.CONTAINERIMAGE && (
-                                <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
-                            )}
-                        </>
-                    ) : (
-                        <VariableContainer type={PluginVariableType.OUTPUT} />
-                    )}
-                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables
-                        ?.length > 0 &&
-                        (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
-                            formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
-                                ScriptType.CONTAINERIMAGE) && (
-                            <>
-                                <hr />
-                                <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
-                                <hr />
-                            </>
-                        )}
+                </>
+            )}
+            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                <>
+                    <TaskTypeDetailComponent />
+                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                        ScriptType.CONTAINERIMAGE && <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />}
                 </>
             ) : (
-                <YAMLScriptComponent
-                    editorValue={editorValue}
-                    handleEditorValueChange={handleEditorValueChange}
-                    height="calc(100vh - 320px)"
-                    showSample
-                />
+                <VariableContainer type={PluginVariableType.OUTPUT} />
             )}
+            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables?.length > 0 &&
+                (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
+                    formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                        ScriptType.CONTAINERIMAGE) && (
+                    <>
+                        <hr />
+                        <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
+                        <hr />
+                    </>
+                )}
         </div>
     )
 }
