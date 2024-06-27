@@ -328,7 +328,9 @@ const NodeDetailComponent = ({
 
     return (
         <>
-            <div className="w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space">
+            <div
+                className={`w-100 pr-20 pl-20 bcn-0 flex dc__border-bottom dc__content-space ${!isResourceBrowserView ? 'node-detail__sticky' : ''}`}
+            >
                 <div className="flex left">
                     <div data-testid="app-resource-containor-header" className="flex left">
                         {tabs &&
@@ -341,9 +343,12 @@ const NodeDetailComponent = ({
                                             tab.toLowerCase() === selectedTabName.toLowerCase()
                                                 ? 'default-tab-row cb-5'
                                                 : 'cn-7'
-                                        } pt-6 pb-6 cursor pl-8 pr-8 top`}
+                                        } py-6 px-8 top`}
                                     >
-                                        <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
+                                        <NavLink
+                                            to={`${url}/${tab.toLowerCase()}`}
+                                            className=" dc__no-decor flex left cursor"
+                                        >
                                             <span
                                                 data-testid={`${tab.toLowerCase()}-nav-link`}
                                                 className={`${
@@ -397,11 +402,7 @@ const NodeDetailComponent = ({
             {renderPodTerminal()}
 
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
-                <MessageUI
-                    msg=""
-                    icon={MsgUIType.LOADING}
-                    size={24}
-                />
+                <MessageUI msg="" icon={MsgUIType.LOADING} size={24} />
             ) : (
                 <Switch>
                     <Route path={`${path}/${NodeDetailTab.MANIFEST}`}>

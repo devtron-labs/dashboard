@@ -39,6 +39,9 @@ import {
     KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
+    handleUTCTime,
+    createGitCommitUrl,
+    CIMaterialType,
     ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
@@ -55,7 +58,6 @@ import {
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import { CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
@@ -67,9 +69,7 @@ import {
     triggerBranchChange,
 } from '../../../app/service'
 import {
-    createGitCommitUrl,
     importComponentFromFELibrary,
-    ISTTimeModal,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
 } from '../../../common'
@@ -538,7 +538,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 : '',
                             commit: _result.Commit || '',
                             author: _result.Author || '',
-                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
                             message: _result.Message || '',
                             changes: _result.Changes || [],
                             showChanges: true,

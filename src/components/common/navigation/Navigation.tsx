@@ -86,7 +86,6 @@ const NavigationList = [
         icon: ReleasesIcon,
         href: URLS.SOFTWARE_DISTRIBUTION_HUB,
         isAvailableInEA: false,
-        markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
         hideNav: hideSoftwareDistributionHub,
     },
