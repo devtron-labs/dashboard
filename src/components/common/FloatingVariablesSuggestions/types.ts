@@ -20,7 +20,7 @@ export interface ScopedVariableType {
     variableName: string
     shortDescription: string | null
     variableValue?: {
-        value: string | number | boolean | object
+        value: string | number | boolean | Record<string | number, unknown>
     } | null
     isRedacted: boolean
 }
