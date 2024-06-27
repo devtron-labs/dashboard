@@ -28,14 +28,11 @@ import {
     VariableType,
     MandatoryPluginDataType,
     MandatoryPluginDetailType,
-    PluginDetailType,
     ButtonWithLoader,
-    PluginListFiltersType,
     PluginDataStoreType,
     ProcessPluginDataReturnType,
     PluginDetailPayloadType,
     DEFAULT_PLUGIN_DATA_STORE,
-    DEFAULT_PLUGIN_LIST_FILTERS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -200,12 +197,10 @@ export default function CIPipeline({
     })
     const validationRules = new ValidationRules()
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
-    /**
-     * Used to show plugin list in pre/post build stage
-     */
-    const [pluginList, setPluginList] = useState<PluginDetailType[]>([])
-    const [pluginListFilters, setPluginListFilters] = useState<PluginListFiltersType>(structuredClone(DEFAULT_PLUGIN_LIST_FILTERS))
-    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(structuredClone(DEFAULT_PLUGIN_DATA_STORE))
+    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(
+        structuredClone(DEFAULT_PLUGIN_DATA_STORE),
+    )
+    const [availableTags, setAvailableTags] = useState<string[]>([])
 
     const selectedBranchRef = useRef(null)
 
@@ -220,7 +215,11 @@ export default function CIPipeline({
     }, [mandatoryPluginData])
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
-        setPluginDataStore(updatedPluginDataStore)
+        setPluginDataStore((prevPluginDataStore) => ({ ...prevPluginDataStore, ...updatedPluginDataStore }))
+    }
+
+    const handleUpdateAvailableTags = (tags: string[]) => {
+        setAvailableTags(tags)
     }
 
     const getSecurityModuleStatus = async (): Promise<void> => {
@@ -265,7 +264,7 @@ export default function CIPipeline({
                         requiredPluginIds,
                     )
                     setMandatoryPluginData(processedPluginData)
-                    setPluginDataStore(updatedPluginDataStore)
+                    handlePluginDataStoreUpdate(updatedPluginDataStore)
                     setFormData((prevForm) =>
                         prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
                     )
@@ -821,7 +820,8 @@ export default function CIPipeline({
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
                                     <PreBuild
-                                        pluginList={pluginList}
+                                        availableTags={availableTags}
+                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
                                         isJobView={isJobCard}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
@@ -830,7 +830,8 @@ export default function CIPipeline({
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
                                     <PreBuild
-                                        pluginList={pluginList}
+                                        availableTags={availableTags}
+                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
                                         mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>

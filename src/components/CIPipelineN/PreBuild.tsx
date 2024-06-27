@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify, CDEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify, CDEmptyState, PluginListContainer } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -24,7 +24,6 @@ import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
-import { PluginCardListContainer } from './PluginCardListContainer'
 import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -34,7 +33,7 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export const PreBuild: React.FC<PreBuildType> = ({ pluginList, mandatoryPluginsMap, isJobView }) => {
+export const PreBuild: React.FC<PreBuildType> = ({ mandatoryPluginsMap, isJobView, availableTags, handleUpdateAvailableTags }) => {
     const {
         formData,
         isCdPipeline,
@@ -51,6 +50,7 @@ export const PreBuild: React.FC<PreBuildType> = ({ pluginList, mandatoryPluginsM
         validateStage,
         pageState,
         pluginDataStore,
+        handlePluginDataStoreUpdate,
     } = useContext(pipelineContext)
     const [editorValue, setEditorValue] = useState<string>(YAMLStringify(formData[activeStageName]))
     useEffect(() => {
@@ -149,6 +149,19 @@ export const PreBuild: React.FC<PreBuildType> = ({ pluginList, mandatoryPluginsM
         } catch (error) {}
     }
 
+    const handlePluginSelection = (parentPluginId: number) => {
+        const latestVersionPluginId = pluginDataStore.parentPluginStore[parentPluginId].latestVersionId
+        const pluginDetails = pluginDataStore.pluginVersionStore[latestVersionPluginId]
+        setPluginType(
+            PluginType.PLUGIN_REF,
+            pluginDetails.id,
+            pluginDetails.name,
+            pluginDetails.description,
+            pluginDetails.inputVariables ?? [],
+            pluginDetails.outputVariables ?? [],
+        )
+    }
+
     function renderPluginList(): JSX.Element {
         return (
             <>
@@ -161,10 +174,14 @@ export const PreBuild: React.FC<PreBuildType> = ({ pluginList, mandatoryPluginsM
                         subTitle="Write a script to perform custom tasks."
                     />
                 </div>
-                <PluginCardListContainer
-                    setPluginType={setPluginType}
-                    pluginListTitle="PLUGIN LIST"
-                    pluginList={pluginList}
+                <PluginListContainer
+                    availableTags={availableTags}
+                    handleUpdateAvailableTags={handleUpdateAvailableTags}
+                    pluginDataStore={pluginDataStore}
+                    handlePluginDataStoreUpdate={handlePluginDataStoreUpdate}
+                    handlePluginSelection={handlePluginSelection}
+                    isSelectable={false}
+                    persistFilters={false}
                 />
             </>
         )

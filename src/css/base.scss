@@ -4068,6 +4068,13 @@ textarea::placeholder {
     -webkit-line-clamp: 6;
 }
 
+.dc__truncate--clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
 // opacity
 .dc__opacity-0_2 {
     opacity: 0.2;

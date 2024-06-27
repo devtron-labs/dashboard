@@ -20,7 +20,6 @@ import {
     Drawer,
     ErrorScreenManager,
     OptionType,
-    PluginDetailType,
     RefVariableType,
     ServerErrors,
     showError,
@@ -31,17 +30,17 @@ import {
     MODAL_TYPE,
     ACTION_STATE,
     YAMLStringify,
-    PluginListFiltersType,
     PluginDataStoreType,
-    DEFAULT_PLUGIN_LIST_FILTERS,
     DEFAULT_PLUGIN_DATA_STORE,
+    getPluginsDetail,
+    parsePluginDetailsDTOIntoPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { FloatingVariablesSuggestions, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import { FloatingVariablesSuggestions, getRequiredPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -234,15 +233,15 @@ export default function CDPipeline({
     const [showDeploymentConfirmationDeleteDialog, setShowDeploymentConfirmationDeleteDialog] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
-    /**
-     * Used to show plugin list in pre/post build stage
-     */
-    const [pluginList, setPluginList] = useState<PluginDetailType[]>([])
-    const [pluginListFilters, setPluginListFilters] = useState<PluginListFiltersType>(structuredClone(DEFAULT_PLUGIN_LIST_FILTERS))
+    const [availableTags, setAvailableTags] = useState<string[]>([])
     const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(structuredClone(DEFAULT_PLUGIN_DATA_STORE))
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
-        setPluginDataStore(updatedPluginDataStore)
+        setPluginDataStore((prevPluginDataStore) => ({ ...prevPluginDataStore, ...updatedPluginDataStore }))
+    }
+
+    const handleUpdateAvailableTags = (tags: string[]) => {
+        setAvailableTags(tags)
     }
 
     useEffect(() => {
@@ -369,7 +368,47 @@ export default function CDPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    // TODO: Populate plugin details for steps after result
+    const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
+        const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.preBuildStage)
+        const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.postBuildStage)
+        const pluginIds = [...preBuildPluginIds, ...postBuildPluginIds]
+        if (pluginIds.length === 0) {
+            return
+        }
+
+        try {
+            const clonedPluginDataStore = structuredClone(pluginDataStore)
+            // TODO: Can directly return as promise
+            const pluginDetailResponse = await getPluginsDetail({
+                appId: +appId,
+                parentPluginId: [],
+                pluginId: pluginIds,
+                fetchLatestVersionDetails: true,
+            })
+
+            const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
+                pluginDetailResponse.parentPlugins,
+            )
+    
+            Object.keys(parentPluginStore).forEach((key) => {
+                if (!clonedPluginDataStore.parentPluginStore[key]) {
+                    clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
+                }
+            })
+    
+            Object.keys(pluginVersionStore).forEach((key) => {
+                if (!clonedPluginDataStore.pluginVersionStore[key]) {
+                    clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
+                }
+            })
+
+            handlePluginDataStoreUpdate(clonedPluginDataStore)
+        } catch (error) {
+            setPageState(ViewType.ERROR)
+            setErrorCode(error.code)
+        }
+    }
+
     const getCDPipeline = (form, dockerRegistries): void => {
         getCDPipelineConfig(appId, cdPipelineId)
             .then(async (result) => {
@@ -394,6 +433,7 @@ export default function CDPipeline({
                 validateStage(BuildStageVariable.PostBuild, result.form)
                 setIsAdvanced(true)
                 setIsVirtualEnvironment(pipelineConfigFromRes.isVirtualEnvironment)
+                await handlePopulatePluginDataStore(result.form)
                 setFormData({
                     ...form,
                     clusterId: result.form?.clusterId,
@@ -1126,12 +1166,12 @@ export default function CDPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild pluginList={pluginList} />
+                                    <PreBuild availableTags={availableTags} handleUpdateAvailableTags={handleUpdateAvailableTags} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild pluginList={pluginList} />
+                                    <PreBuild availableTags={availableTags} handleUpdateAvailableTags={handleUpdateAvailableTags} />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>
