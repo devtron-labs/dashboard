@@ -1,0 +1,99 @@
+/*
+ *   Copyright (c) 2024 Devtron Inc.
+ *   All rights reserved.
+
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+
+ *   http://www.apache.org/licenses/LICENSE-2.0
+
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+ .collapsible-list {
+    min-width: 0;
+    background: white;
+
+    &__header-button {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        padding: 0;
+        color: var(--N900);
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 600;
+        gap: 4px;
+        border: none;
+        background-color: inherit;
+        cursor: pointer;
+    }
+
+    &__icon {
+        min-width: 16px;
+        max-width: 16px;
+        height: 16px;
+        cursor: pointer;
+
+        & .fill-color {
+            fill: var(--N700);
+        }
+    }
+
+ }
+
+.collapsible {
+    margin-left: 16px;
+    padding-left: 4px;
+    border-left: 1px solid var(--N200);
+
+    &__item {
+        display: flex;
+        gap: 8px;
+        color: var(--N700);
+        text-decoration: none;
+        border-radius: 4px;
+        padding: 6px 8px;
+        
+        &.active {
+            color: var(--B500);
+            font-weight: 600;
+            background: var(--B100);
+
+            &:hover:not(.no-hover) {
+                color: var(--B500);
+                background: var(--B100);
+            }
+        }
+
+        &:hover:not(.no-hover) {
+            color: var(--N700);
+            text-decoration: none;
+            background: var(--N50);
+        }
+
+        &__text-container{
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        &__title {
+            color: var(--N900);
+            font-size: 13px;
+            line-height: 20px;
+        }
+
+        &__subtitle {
+            color: var(--N700);
+            font-weight: 400;
+            line-height: 18px;
+        }
+    }
+}
