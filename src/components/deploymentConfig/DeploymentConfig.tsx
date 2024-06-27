@@ -337,7 +337,7 @@ export default function DeploymentConfig({
                     },
                     guiSchema,
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal)
+            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal, state.selectedChart.name)
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
@@ -805,6 +805,7 @@ export default function DeploymentConfig({
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
                 isValues={state.isValues}
+                hideLockedKeys={hideLockedKeys}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA

@@ -15,7 +15,6 @@
  */
 
 import React, { useContext, useRef } from 'react'
-import { applyPatch } from 'fast-json-patch'
 import { Progressing, YAMLStringify, MarkDown, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
@@ -25,6 +24,7 @@ import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
@@ -45,7 +45,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
                 addOperationsRef.current = addOperations
             }
         } else {
-            value = YAMLStringify(applyPatch(YAML.parse(value), addOperationsRef.current).newDocument, { sortOrderEntries: true, simpleKeys: true })
+            value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), { sortOrderEntries: true, simpleKeys: true })
         }
     }
 

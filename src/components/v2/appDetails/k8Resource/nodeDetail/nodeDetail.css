@@ -56,3 +56,9 @@
     border-top-right-radius: 4px;
     margin: 0;
 }
+
+.node-detail__sticky {
+    position: sticky;
+    top: 120px;
+    z-index: 10;
+}

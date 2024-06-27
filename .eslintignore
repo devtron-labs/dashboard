@@ -225,7 +225,6 @@ src/components/charts/Charts.tsx
 src/components/charts/MultiChartSummary.tsx
 src/components/charts/SavedValues/SavedValuesList.tsx
 src/components/charts/chartValues/ChartValues.tsx
-src/components/charts/charts.helper.ts
 src/components/charts/charts.service.ts
 src/components/charts/charts.types.tsx
 src/components/charts/charts.util.tsx
@@ -573,7 +572,6 @@ src/components/workflowEditor/types.ts
 src/components/workflowEditor/workflowEditor.tsx
 src/config/constants.ts
 src/config/routes.ts
-src/config/searchWorker.ts
 src/config/utils.ts
 src/index.tsx
 src/services/fetchWithFullRoute.ts
