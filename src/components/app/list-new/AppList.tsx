@@ -811,6 +811,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         </>
                     )}
                     {isExternalFlux && (
+                        <>
                         <Filter
                             labelKey="label"
                             buttonText="Template Type"
@@ -823,6 +824,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             searchable
                             isFirstLetterCapitalize
                         />
+                        <span className="filter-divider" />
+                        </>
                     )}
                     <Filter
                         list={clusterFilters}
