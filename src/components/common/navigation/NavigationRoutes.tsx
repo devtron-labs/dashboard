@@ -499,7 +499,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
                         render={() => <ExternalArgoApps />}
                     />
-                    <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace`}>
+                    <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
                         <ExternalFluxAppDetailsRoute />
                     </Route>
                     <Route

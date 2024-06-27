@@ -182,12 +182,14 @@ const GenericAppList = ({
 
     // reset data
     function init() {
-        if (isSSE) {
+        if (isSSE && !payloadParsedFromUrl?.namespaces?.length) {
             setDataStateType(AppListViewType.LIST)
+        } else {
+            setDataStateType(AppListViewType.LOADING)
         }
+        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
         setAppsList([])
         setFilteredAppsList([])
-        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
         if (sseConnection) {
             sseConnection.close()
         }
@@ -255,7 +257,10 @@ const GenericAppList = ({
     }
 
     function _buildAppDetailUrl(app: GenericAppType) {
-        return `${URLS.APP}/${isArgoCDAppList ? URLS.EXTERNAL_ARGO_APP : URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+        if (isArgoCDAppList) {
+            return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+        }
+        return `${URLS.APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
     }
 
     function sortByAppName(e) {

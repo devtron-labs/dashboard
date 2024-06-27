@@ -18,48 +18,51 @@ import {
     AppType,
     ErrorScreenManager,
     IndexStore,
-    noop,
     useAsync,
-    useInterval,
     useMainContext,
+    noop,
+    useInterval,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { ExternalFluxAppDetailParams } from './types'
 import { getExternalFluxCDAppDetails } from './service'
 import { FluxCDTemplateType } from '../../../../components/app/list-new/AppListType'
 import AppDetailsComponent from '../../../../components/v2/appDetails/AppDetails.component'
+import { getAppStatus } from './utils'
+import { AppDetails } from '../../../../components/v2/appDetails/appDetails.type'
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
 
+    useEffect(() => {
+        return () => {
+            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_FLUX_APP)
+        }
+    }, [])
+
     const [isAppDetailsLoading, appDetailsResult, appDetailsError, reloadAppDetails] = useAsync(
         () => getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization),
         [],
         isSuperAdmin,
+        {
+            resetOnChange: false,
+        },
     )
 
-    const setAppDetails = () => {
-        if (!isAppDetailsLoading && appDetailsResult) {
-            const genericAppDetail = {
-                ...appDetailsResult.result,
-                appStatus: appDetailsResult.result.appStatus === 'True' ? 'Ready' : 'Not Ready',
-                resourceTree: {
-                    ...appDetailsResult.result.resourceTreeArray,
-                },
-            }
-            IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+    useInterval(reloadAppDetails, 30000)
+
+    const isLoading = isAppDetailsLoading && (!appDetailsResult || appDetailsError)
+
+    if (!isAppDetailsLoading && appDetailsResult) {
+        const genericAppDetail = {
+            ...appDetailsResult.result,
+            appStatus: getAppStatus(appDetailsResult.result.appStatus),
         }
+        IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
     }
-
-    const pollDetails = async () => {
-        reloadAppDetails()
-        setAppDetails()
-    }
-
-    useInterval(pollDetails, 30000)
 
     if (!isSuperAdmin) {
         return <ErrorScreenManager code={403} />
@@ -69,14 +72,7 @@ const ExternalFluxAppDetails = () => {
         return <ErrorScreenManager code={appDetailsError.code} reload={reloadAppDetails} />
     }
 
-    return (
-        <AppDetailsComponent
-            isExternalApp
-            _init={noop}
-            loadingDetails={isAppDetailsLoading}
-            loadingResourceTree={isAppDetailsLoading}
-        />
-    )
+    return <AppDetailsComponent isExternalApp _init={noop} loadingDetails={isLoading} loadingResourceTree={isLoading} />
 }
 
 export default ExternalFluxAppDetails
