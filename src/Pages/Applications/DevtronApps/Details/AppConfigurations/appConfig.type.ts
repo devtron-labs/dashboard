@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/constants'
-import { AppEnvironment, AppOtherEnvironment } from '../../../../services/service.types'
-import { WorkflowResult } from '../triggerView/types'
+import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ViewType } from '../../../../../config'
+import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
+import { AppEnvironment, AppOtherEnvironment } from '../../../../../services/service.types'
+import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -44,25 +47,42 @@ export enum DEFAULT_LANDING_STAGE {
 
 export interface AppConfigProps {
     appName: string
+    resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
     isJobView?: boolean
     filteredEnvIds?: string
 }
+
 export interface AppConfigState {
-    view: string
+    /** The current view type of the application. */
+    view: keyof typeof ViewType
+    /** The status code. */
     statusCode: number
-    stageName: StageNames
-    isUnlocked: any
+    /** The name of the current stage. */
+    stageName: STAGE_NAME
+    /** Boolean indicating if the current stage is unlocked, determined by `isUnlocked(stageName)`. */
+    isUnlocked: AppStageUnlockedType
+    /** The name of the application. */
     appName: string
+    /** Boolean indicating if the application has a CI pipeline. */
     isCiPipeline: boolean
+    /** Boolean indicating if the application has a CD pipeline */
     isCDPipeline: boolean
+    /** Boolean indicating if the delete confirmation will be shown. */
     showDeleteConfirm: boolean
+    /** Array of navigation items. */
     navItems: CustomNavItemsType[]
-    maximumAllowedUrl: string
+    /** Redirection URL. */
+    redirectionUrl: string
+    /** Boolean indicating if the application can be deleted. */
     canDeleteApp: boolean
+    /** The workflow response. */
     workflowsRes?: WorkflowResult
-    environmentList?: any[]
+    /** Array containing environments data. */
+    environmentList?: AppEnvironment[]
+    /** Boolean indicating if the base configuration is protected. */
     isBaseConfigProtected?: boolean
-    configProtectionData?: any[]
+    /** Array of configuration protection data which denotes which env is in protected state. */
+    configProtectionData?: ConfigProtection[]
 }
 
 export interface AppStageUnlockedType {
@@ -86,27 +106,56 @@ export interface CustomNavItemsType {
     currentStep: number
     required?: boolean
     isProtectionAllowed?: boolean
+    altNavKey?: string
 }
 
-export interface AppConfigNavigationProps {
-    navItems: CustomNavItemsType[]
-    deleteApp: () => void
-    canShowExternalLinks: boolean
-    showCannotDeleteTooltip: boolean
-    isWorkflowEditorUnlocked: boolean
-    toggleRepoSelectionTippy: () => void
-    getRepo: string
-    isJobView: boolean
-    hideConfigHelp: boolean
+export interface EnvironmentOverridesProps {
+    environmentResult: AppOtherEnvironment
+    environmentsLoading: boolean
+    environmentList?: AppEnvironment[]
+    isJobView?: boolean
+    // TODO: add proper types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ciPipelines?: any[]
+    reload?: () => void
+    appId?: string
+    workflowsRes?: WorkflowResult
+}
+
+export interface EnvironmentOverrideRouteProps {
+    envOverride: AppEnvironment
+    isJobView?: boolean
+    // TODO: add proper types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ciPipelines?: any[]
+    reload?: () => void
+    appId?: string
+    workflowsRes?: WorkflowResult
+    isEnvProtected?: boolean
+}
+
+export interface EnvironmentOverrideRouterProps {
+    isJobView?: boolean
     workflowsRes?: WorkflowResult
     getWorkflows: () => void
-    environmentList?: any[]
-    isBaseConfigProtected?: boolean
+    allEnvs?: AppEnvironment[]
     reloadEnvironments: () => void
-    isGitOpsConfigurationRequired: boolean
 }
 
-export interface AppComposeRouterProps {
+export interface NextButtonProps {
+    isCiPipeline: boolean
+    navItems: CustomNavItemsType[]
+    currentStageName: STAGE_NAME
+    isDisabled: boolean
+}
+
+export type ConfigProtection = {
+    appId: number
+    envId: number
+    state: 1 | 2
+}
+
+export interface AppConfigurationContextType {
     appId: string
     isUnlocked: AppStageUnlockedType
     navItems: CustomNavItemsType[]
@@ -121,47 +170,16 @@ export interface AppComposeRouterProps {
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
     isJobView: boolean
-    isBaseConfigProtected?: boolean
+    isBaseConfigProtected: boolean
     reloadEnvironments: () => void
-    configProtectionData: any[]
-    filteredEnvIds?: string
-    isGitOpsConfigurationRequired?: boolean
+    configProtectionData: ConfigProtection[]
+    filteredEnvIds: string
+    isGitOpsConfigurationRequired: boolean
     reloadAppConfig: () => void
     lastUnlockedStage: string
-}
-
-export interface EnvironmentOverridesProps {
-    environmentResult: AppOtherEnvironment
-    environmentsLoading: boolean
-    environmentList?: any[]
-    isJobView?: boolean
-    ciPipelines?: any[]
-    reload?: () => void
-    appId?: string
-    workflowsRes?: WorkflowResult
-}
-
-export interface EnvironmentOverrideRouteProps {
-    envOverride: AppEnvironment
-    isJobView?: boolean
-    ciPipelines?: any[]
-    reload?: () => void
-    appId?: string
-    workflowsRes?: WorkflowResult
-    isEnvProtected?: boolean
-}
-
-export interface EnvironmentOverrideRouterProps {
-    isJobView?: boolean
-    workflowsRes?: WorkflowResult
-    getWorkflows: () => void
-    allEnvs?: any[]
-    reloadEnvironments: () => void
-}
-
-export interface NextButtonProps {
-    isCiPipeline: boolean
-    navItems: CustomNavItemsType[]
-    currentStageName: STAGE_NAME
-    isDisabled: boolean
+    deleteApp: () => void
+    showCannotDeleteTooltip: boolean
+    isWorkflowEditorUnlocked: boolean
+    getRepo: string
+    hideConfigHelp: boolean
 }
