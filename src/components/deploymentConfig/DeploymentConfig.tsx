@@ -791,7 +791,7 @@ export default function DeploymentConfig({
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
-                    <FloatingVariablesSuggestions zIndex={100} appId={appId} />
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} hideObjectVariables={false} />
                 </div>
             )}
 

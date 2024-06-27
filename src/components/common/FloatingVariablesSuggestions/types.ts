@@ -16,11 +16,11 @@
 
 import { DraggableBounds } from 'react-draggable'
 
-export interface SuggestionType {
+export interface ScopedVariableType {
     variableName: string
     shortDescription: string | null
     variableValue?: {
-        value: string
+        value: string | number | boolean | object
     } | null
     isRedacted: boolean
 }
@@ -31,12 +31,17 @@ export interface FloatingVariablesSuggestionsProps {
     envId?: string
     clusterId?: string
     bounds?: DraggableBounds | string | false
+    /**
+     * This will hide the variables with object/array values if set to true
+     * @default - true
+     */
+    hideObjectVariables?: boolean
 }
 
 export interface SuggestionsItemProps {
     variableName: string
     description: string
-    variableValue: string
+    variableValue: Required<ScopedVariableType['variableValue']['value']>
     isRedacted: boolean
     highlightText: string
 }
@@ -44,7 +49,7 @@ export interface SuggestionsItemProps {
 export interface SuggestionsProps {
     handleDeActivation: (e: React.MouseEvent<HTMLOrSVGElement>) => void
     loading: boolean
-    variables: SuggestionType[]
+    variables: ScopedVariableType[]
     reloadVariables: () => void
     error: boolean
 }
