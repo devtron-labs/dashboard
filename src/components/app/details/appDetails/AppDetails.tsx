@@ -30,6 +30,7 @@ import {
     ACTION_STATE,
     processDeploymentStatusDetailsData,
     aggregateNodes,
+    ArtifactInfoModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -77,7 +78,6 @@ import {
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
-import { TriggerInfoModal } from '../../list/TriggerInfo'
 import {
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
@@ -109,6 +109,7 @@ import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8R
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import IssuesListingModal from './IssuesListingModal'
 import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
+import { renderCIListHeader } from '../cdDetails/utils'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
@@ -774,10 +775,11 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
-                <TriggerInfoModal
+                <ArtifactInfoModal
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
-                    close={() => showCommitInfo(false)}
+                    handleClose={() => showCommitInfo(false)}
+                    renderCIListHeader={renderCIListHeader}
                 />
             )}
             {hibernateConfirmationModal && renderHibernateModal()}
