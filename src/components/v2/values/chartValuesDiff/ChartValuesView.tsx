@@ -211,7 +211,6 @@ const ChartValuesView = ({
         chartVersionId: commonState.selectedVersion,
         chartValuesId: commonState.chartValues?.id,
     }
-
     // detects changes in chart version and chart values from initial mount
     const isChartValueVersionUpdated = !deepEqual(currentChartVersionValues, commonState.initialChartVersionValues)
 
@@ -359,7 +358,12 @@ const ChartValuesView = ({
                 dispatch,
             )
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
+            fetchChartVersionsData(
+                appDetails.appStoreChartId,
+                dispatch,
+                appDetails.appStoreAppVersion,
+                appDetails.appStoreInstalledAppVersionId,
+            )
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -380,10 +384,6 @@ const ChartValuesView = ({
                         id: appDetails.appStoreInstalledAppVersionId,
                         appStoreVersionId: commonState.installedConfig.appStoreVersion,
                         kind: ChartKind.DEPLOYED,
-                    },
-                    initialChartVersionValues: {
-                        ...commonState.initialChartVersionValues,
-                        chartValuesId: appDetails.appStoreInstalledAppVersionId,
                     },
                 },
             })
@@ -594,7 +594,6 @@ const ChartValuesView = ({
                 convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                 dispatch,
             )
-
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
