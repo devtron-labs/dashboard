@@ -15,5 +15,5 @@
  *   limitations under the License.
  */
 
-export * from './OrganizationFrame'
-export * from './CollapsibleList'
+export * from './CollapsibleList.component'
+export * from './CollapsibleList.types'
