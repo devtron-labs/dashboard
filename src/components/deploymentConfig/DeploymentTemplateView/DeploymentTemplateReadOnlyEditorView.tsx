@@ -37,7 +37,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
 
     // NOTE: the following can throw error but not putting it in try block
     // in order for it to not fail silently
-    if (removeLockedKeysFromYaml) {
+    if (removeLockedKeysFromYaml && reapplyRemovedLockedKeysToYaml) {
         if (hideLockedKeys) {
             const { document, addOperations } = removeLockedKeysFromYaml(value, lockedConfigKeysWithLockType.config)
             value = YAML.stringify(document, { sortMapEntries: true, simpleKeys: true })
@@ -45,7 +45,10 @@ export default function DeploymentTemplateReadOnlyEditorView({
                 addOperationsRef.current = addOperations
             }
         } else {
-            value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), { sortOrderEntries: true, simpleKeys: true })
+            value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), {
+                sortOrderEntries: true,
+                simpleKeys: true,
+            })
         }
     }
 
