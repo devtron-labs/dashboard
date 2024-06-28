@@ -30,6 +30,8 @@ import {
     showError,
     getIsRequestAborted,
     noop,
+    SortableTableHeaderCell,
+    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -56,8 +58,10 @@ import {
     removeDefaultForStorageClass,
     updateQueryString,
     getRenderNodeButton,
+    renderResourceValue,
 } from '../Utils'
 import { URLS } from '../../../config'
+import { getPodRestartRBACPayload } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
@@ -76,16 +80,21 @@ export const K8SResourceList = ({
     showStaleDataWarning,
     updateK8sResourceTab,
 }: K8SResourceListType) => {
+    // HOOKS
     const { searchParams } = useSearchString()
     const { push, replace } = useHistory()
     const { url } = useRouteMatch()
     const location = useLocation()
     const { clusterId, nodeType, group } = useParams<URLParams>()
+
+    // STATES
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
+
+    // REFS
     const resourceListRef = useRef<HTMLDivElement>(null)
     const searchWorkerRef = useRef(null)
     const abortControllerRef = useRef(new AbortController())
@@ -139,6 +148,31 @@ export const K8SResourceList = ({
 
     const showPaginatedView = resourceList?.data?.length >= pageSize
 
+    /**
+     * Initial Sort Key
+     *
+     * This constant holds the value for the initial sort key. \
+     * Since our headers are dynamic and the default key 'namespace' might or might not be present,
+     * we switch to the key 'name', which will always be present.
+     */
+    const initialSortKey = useMemo(() => {
+        if (resourceList) {
+            const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
+            return isNameSpaceColumnPresent ? 'namespace' : 'name'
+        }
+        return ''
+    }, [resourceList])
+
+    // SORTING HOOK
+    const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })
+
+    useEffect(() => {
+        /** Reset the sort filters when initial sort key is updated after api response. */
+        if (initialSortKey) {
+            clearFilters()
+        }
+    }, [initialSortKey])
+
     useEffect(() => {
         if (resourceList?.headers.length) {
             /**
@@ -168,7 +202,7 @@ export const K8SResourceList = ({
         setPageSize(DEFAULT_K8SLIST_PAGE_SIZE)
     }, [nodeType])
 
-    const handleFilterChanges = (_searchText: string): void => {
+    const handleFilterChanges = (_searchText: string, debounceResult = false) => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
             searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
@@ -179,6 +213,9 @@ export const K8SResourceList = ({
             payload: {
                 searchText: _searchText,
                 list: resourceList?.data || [],
+                sortBy,
+                sortOrder,
+                debounceResult,
                 origin: new URL(window.__BASE_URL__, window.location.href).origin,
             },
         })
@@ -189,15 +226,17 @@ export const K8SResourceList = ({
             setFilteredResourceList(null)
             return
         }
+
         handleFilterChanges(searchText)
-    }, [resourceList])
+        setResourceListOffset(0)
+    }, [resourceList, sortBy, sortOrder])
 
     const setSearchText = (text: string) => {
         const searchParamString = updateQueryString(location, [[SEARCH_QUERY_PARAM_KEY, text]])
         const _url = `${location.pathname}?${searchParamString}`
         updateK8sResourceTab(_url)
         replace(_url)
-        handleFilterChanges(text)
+        handleFilterChanges(text, true)
         if (text) {
             /* NOTE: if resourceListOffset is 0 setState is noop */
             setResourceListOffset(0)
@@ -307,7 +346,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center pt-12 pb-12 w-150 ${
+                            className={`flexbox dc__align-items-center pt-12 pb-12 w-180 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
@@ -325,7 +364,7 @@ export const K8SResourceList = ({
                                         __html: DOMPurify.sanitize(
                                             highlightSearchText({
                                                 searchText,
-                                                text: resourceData[columnName]?.toString(),
+                                                text: renderResourceValue(resourceData[columnName]?.toString()),
                                                 highlightClasses: 'p-0 fw-6 bcy-2',
                                             }),
                                         ),
@@ -390,6 +429,11 @@ export const K8SResourceList = ({
         showError(resourceListDataError)
     }
 
+    const triggerSortingHandler = (columnName: string) => () => {
+        resourceListRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+        handleSorting(columnName)
+    }
+
     const renderResourceList = (): JSX.Element => {
         return (
             <div
@@ -411,10 +455,16 @@ export const K8SResourceList = ({
                                               ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
                                               : ''
                                       } w-350 pl-20`
-                                    : 'w-150'
+                                    : 'w-180'
                             }`}
                         >
-                            {columnName}
+                            <SortableTableHeaderCell
+                                title={columnName}
+                                triggerSorting={triggerSortingHandler(columnName)}
+                                isSorted={sortBy === columnName}
+                                sortOrder={sortOrder}
+                                disabled={false}
+                            />
                         </div>
                     ))}
                 </div>
@@ -483,7 +533,7 @@ export const K8SResourceList = ({
             ) : (
                 renderList()
             )}
-            {PodRestart && <PodRestart />}
+            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </div>
     )
 }

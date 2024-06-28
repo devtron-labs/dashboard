@@ -74,7 +74,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const Releases = importComponentFromFELibrary('Releases', null, 'function')
+const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -424,19 +424,23 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_RELEASES && Releases
+                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
-                                                  <Route key={URLS.RELEASES} path={URLS.RELEASES}>
+                                                  <Route
+                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                  >
                                                       <ImageSelectionUtilityProvider
                                                           value={{
                                                               getModuleInfo,
                                                           }}
                                                       >
-                                                          <Releases />
+                                                          <SoftwareDistributionHub />
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []),
+                                            : []
+                                        ),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}

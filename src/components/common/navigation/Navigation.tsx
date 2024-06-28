@@ -46,7 +46,7 @@ import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
-const hideReleases = !importComponentFromFELibrary('Releases', null, 'function')
+const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 
 const NavigationList = [
     {
@@ -79,16 +79,15 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
-        title: 'Releases',
+        title: 'Software Distribution Hub',
         dataTestId: 'click-on-releases',
         type: 'link',
         iconClass: 'nav-short-env',
         icon: ReleasesIcon,
-        href: URLS.RELEASES,
+        href: URLS.SOFTWARE_DISTRIBUTION_HUB,
         isAvailableInEA: false,
-        markOnlyForSuperAdmin: true,
         forceHideEnvKey: 'HIDE_RELEASES',
-        hideNav: hideReleases,
+        hideNav: hideSoftwareDistributionHub,
     },
     {
         title: 'Resource Browser',

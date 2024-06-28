@@ -15,12 +15,11 @@
  */
 
 import React, { useContext } from 'react'
-import { Progressing, YAMLStringify, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, YAMLStringify, getUnlockedJSON, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { DEPLOYMENT, MODES, ROLLOUT_DEPLOYMENT } from '../../../config'
-import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
+import { MODES } from '../../../config'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
@@ -62,8 +61,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
         )
     }
 
-    return state.yamlMode ||
-        (state.selectedChart?.name !== ROLLOUT_DEPLOYMENT && state.selectedChart?.name !== DEPLOYMENT) ? (
+    return state.yamlMode ? (
         <>
             {state.showReadme && (
                 <div className="dt-readme dc__border-right dc__border-bottom-imp">
@@ -78,6 +76,11 @@ export default function DeploymentTemplateReadOnlyEditorView({
             {renderCodeEditor()}
         </>
     ) : (
-        <DeploymentTemplateGUIView value={value} readOnly />
+        <DeploymentTemplateGUIView
+            value={value}
+            hideLockedKeys={hideLockedKeys}
+            lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+            readOnly
+        />
     )
 }

@@ -92,6 +92,9 @@ const K8sPermissionModal = ({
             case K8sPermissionActionType.onRoleChange:
                 _k8sPermissionList[key].action = data
                 break
+            case K8sPermissionActionType.setNamespace:
+                _k8sPermissionList[key].namespace = data
+                break
             case K8sPermissionActionType.onStatusChange: {
                 const { status, timeToLive } = data
                 _k8sPermissionList[key] = {

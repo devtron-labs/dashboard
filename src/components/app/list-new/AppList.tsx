@@ -1065,7 +1065,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
+        <div className='flexbox-col h-100'>
             <HeaderWithCreateButton headerName="Applications" />
             {renderMasterFilters()}
             {renderAppliedFilters()}

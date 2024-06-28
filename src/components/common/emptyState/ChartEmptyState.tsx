@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
 interface EmptyChartType {
@@ -41,8 +40,7 @@ const ChartEmptyState = ({ title, subTitle, onClickViewChartButton, buttonText, 
             className="empty-height"
             {...(heightToDeduct >= 0 && { style: { height: `calc(100vh - ${heightToDeduct}px)` } })}
         >
-            <GenericEmptyState
-                image={emptyImage}
+            <GenericFilterEmptyState
                 title={title || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.TITLE}
                 subTitle={subTitle || EMPTY_STATE_STATUS.CHART_EMPTY_STATE.SUBTITLE}
                 isButtonAvailable

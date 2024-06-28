@@ -41,8 +41,9 @@ export function getInstalledAppDetail(installedAppId, envId) {
     return get(`app-store/installed-app/detail?installed-app-id=${installedAppId}&env-id=${envId}`)
 }
 
-export function installChart(request) {
+export function installChart(request, abortSignal?: AbortSignal) {
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
     return post(`app-store/deployment/application/install`, request, options)
 }
 
@@ -145,8 +146,9 @@ interface ChartValuesCreate {
     values: string
 }
 
-export function createChartValues(request: ChartValuesCreate) {
+export function createChartValues(request: ChartValuesCreate, abortSignal?: AbortSignal) {
     const options = getAPIOptionsWithTriggerTimeout()
+    options.signal = abortSignal
     const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES}`
     return post(URL, request, options)
 }

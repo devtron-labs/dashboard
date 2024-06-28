@@ -22,6 +22,7 @@ import {
     ErrorScreenManager as ErrorScreen,
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
@@ -34,7 +35,6 @@ import { ScanDetailsModal, Pagination } from '../common'
 import { ViewType } from '../../config'
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types'
 import AppNotDeployed from '../../assets/img/app-not-deployed.png'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export class SecurityScansTab extends Component<RouteComponentProps<{}>, SecurityScansTabState> {
@@ -474,12 +474,8 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             }
             return (
                 <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
-                    <GenericEmptyState
-                        image={NoResults}
-                        title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-                        subTitle={EMPTY_STATE_STATUS.SECURITY_SCANS.SUBTITLE}
-                        isButtonAvailable
-                        renderButton={handleButton}
+                    <GenericFilterEmptyState
+                        handleClearFilters={this.removeFiltersAndSearch}
                     />
                 </div>
             )

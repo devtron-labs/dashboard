@@ -16,16 +16,14 @@
 
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { GenericEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, GenericFilterEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableType, VariablesListItemProps } from './types'
 import {
     TABLE_LIST_HEADINGS,
-    NO_VARIABLES_MESSAGE,
     NO_DESCRIPTION_MESSAGE,
     SENSITIVE_VARIABLE_DESCRIPTION,
     IN_SENSITIVE_VARIABLE_DESCRIPTION,
 } from './constants'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as ICVisibilityOn } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ICVisibilityOff } from '../../assets/icons/ic-visibility-off.svg'
 
@@ -54,11 +52,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
 
     if (!variablesList?.length) {
         return (
-            <GenericEmptyState
-                image={NoResults}
-                title={NO_VARIABLES_MESSAGE.TITLE}
-                subTitle={NO_VARIABLES_MESSAGE.SUBTITLE}
-            />
+            <GenericFilterEmptyState />
         )
     }
 

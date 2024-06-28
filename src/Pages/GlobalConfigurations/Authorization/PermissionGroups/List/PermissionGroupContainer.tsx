@@ -21,12 +21,12 @@ import {
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useRef } from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
-import FiltersEmptyState from '../../Shared/components/FilterEmptyState/FilterEmptyState.component'
 import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
 import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
 import NoPermissionGroups from './NoPermissionGroups'
@@ -130,7 +130,7 @@ const PermissionGroupContainer = ({
                         totalCount={totalCount}
                     />
                 ) : (
-                    <FiltersEmptyState clearFilters={clearFilters} />
+                    <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
                 )}
                 {isSomeRowChecked && selectedUsersCount > 0 && (
                     <BulkSelectionActionWidget

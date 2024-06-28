@@ -16,11 +16,10 @@
 
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getCITriggerInfo, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { DeployedCommitCardType } from './appDetails.type'
-import { getCITriggerInfoModal } from '../../service'
 import LoadingCard from './LoadingCard'
 
 const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {
@@ -35,9 +34,9 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                 ciArtifactId,
             }
 
-            getCITriggerInfoModal(params)
-                .then((response) => {
-                    const materials = response.result?.materials
+            getCITriggerInfo(params)
+                .then((result) => {
+                    const materials = result?.materials
                     if (materials && materials.length > 0) {
                         const lastCommit = materials[0]?.history[0]
                         const shortenCommitId = lastCommit?.commit?.slice(0, 8)

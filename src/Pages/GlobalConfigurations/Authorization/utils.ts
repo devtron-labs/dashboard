@@ -274,6 +274,13 @@ const getPermissionActionValue = (permission: DirectPermissionsRoleFilter) => {
     return labels.join(',')
 }
 
+const getCommaSeperatedNamespaceList = (namespaces: OptionType[]) => {
+    if (namespaces.some((el) => el.value === SELECT_ALL_VALUE)) {
+        return ''
+    }
+    return namespaces.map((el) => el.value).join(',')
+}
+
 export const getRoleFilters = ({
     directPermission,
     k8sPermission,
@@ -306,7 +313,7 @@ export const getRoleFilters = ({
             cluster: permission.cluster.label,
             group: permission.group.value === SELECT_ALL_VALUE ? '' : permission.group.value,
             kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
-            namespace: permission.namespace.value === SELECT_ALL_VALUE ? '' : permission.namespace.value,
+            namespace: getCommaSeperatedNamespaceList(permission.namespace),
             resource: getSelectedPermissionValues(permission.resource),
         })),
     ]

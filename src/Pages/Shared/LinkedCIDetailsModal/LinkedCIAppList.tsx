@@ -16,10 +16,9 @@
 
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { SortableTableHeaderCell, AppStatus, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { SortableTableHeaderCell, AppStatus, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { LinkedCIApp, LinkedCIAppListProps } from './types'
-import EmptyStateImage from '../../../assets/img/empty-noresult@2x.png'
 import { StatusConstants } from '../../../components/app/list-new/Constants'
 import { SortableKeys, appListLoading } from './constants'
 import { getLinkedCIAppUrl } from './utils'
@@ -54,22 +53,7 @@ const AppListRow = ({ appId, appName, deploymentStatus, environmentName, trigger
 
 const LinkedCIAppList = ({ appList, totalCount, isLoading, urlFilters }: LinkedCIAppListProps) => {
     if (!isLoading && (totalCount === 0 || appList.length === 0)) {
-        const renderClearFilterButton = () => (
-            <button type="button" onClick={urlFilters.clearFilters} className="cta secondary flex h-32">
-                Clear Filters
-            </button>
-        )
-
-        return (
-            <GenericEmptyState
-                image={EmptyStateImage}
-                classname="flex-grow-1"
-                title="No Results"
-                subTitle="We could not find any matching results"
-                isButtonAvailable
-                renderButton={renderClearFilterButton}
-            />
-        )
+        return <GenericFilterEmptyState classname="flex-grow-1" handleClearFilters={urlFilters.clearFilters} />
     }
     const { sortOrder, handleSorting } = urlFilters
 
