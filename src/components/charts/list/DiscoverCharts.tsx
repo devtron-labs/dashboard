@@ -234,9 +234,10 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             }
             const deployableCharts = getDeployableChartsFromConfiguredCharts(state.charts)
             await deployChartGroup(project.id, deployableCharts)
+            toast.success('Deployment initiated')
+            setInstalling(false)
             const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
             history.push(url)
-            toast.success('Deployment initiated')
         } catch (err) {
             showError(err)
         } finally {

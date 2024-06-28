@@ -122,6 +122,8 @@ export const URLS = {
     HELM_APP_LIST: '/app/list/h',
     ARGO_APP_LIST: '/app/list/a',
     FLUX_APP_LIST: '/app/list/f',
+    BUILD: '/build',
+    SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
 }
 
 export enum APP_COMPOSE_STAGE {

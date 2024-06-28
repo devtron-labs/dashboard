@@ -325,6 +325,32 @@ export const getLogsURL = (
     return `${logsURL}&follow=true${filter}`
 }
 
+export const getPodRestartRBACPayload = (appDetails?: AppDetails) => {
+    if (!appDetails) {
+        return {}
+    }
+
+    const applicationObject =
+        appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
+
+    const appId =
+        appDetails.appType === AppType.DEVTRON_APP
+            ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
+
+    const appType = getK8sResourcePayloadAppType(appDetails.appType)
+    const deploymentType =
+        appDetails.deploymentAppType === DeploymentAppTypes.HELM
+            ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
+            : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+
+    return {
+        appId,
+        appType,
+        deploymentType,
+    }
+}
+
 export const createResource = (
     ad: AppDetails,
     podName: string,

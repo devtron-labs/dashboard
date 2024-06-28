@@ -29,7 +29,6 @@ import {
     OptionTypeWithIcon,
     RoleBasedInfoNoteProps,
 } from './ExternalLinks.type'
-import NoResults from '../../assets/img/empty-noresult@2x.png'
 import {
     getMonitoringToolIcon,
     getParsedURL,
@@ -43,6 +42,7 @@ import {
     InfoColourBar,
     GenericEmptyState,
     ConditionalWrap,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
@@ -119,11 +119,7 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 
 export const NoMatchingResults = (): JSX.Element => {
     return (
-        <GenericEmptyState
-            image={NoResults}
-            title={EMPTY_STATE_STATUS.NO_MATCHING_RESULT.TITLE}
-            subTitle={EMPTY_STATE_STATUS.EXTERNAL_LINK_COMPONENT.SUBTITLE}
-        />
+        <GenericFilterEmptyState />
     )
 }
 

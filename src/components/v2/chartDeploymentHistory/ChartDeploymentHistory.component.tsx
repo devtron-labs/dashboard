@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    ConfirmationDialog,
     ServerErrors,
     GenericEmptyState,
     DetailsProgressing,
@@ -29,7 +28,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch } from 'react-router'
 import { useParams } from 'react-router-dom'
@@ -56,6 +54,7 @@ import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
+import RollbackConfirmationDialog from './RollbackConfirmationDialog'
 import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
@@ -674,43 +673,6 @@ const ChartDeploymentHistory = ({
         }
     }
 
-    const RollbackConfirmationDialog = () => {
-        return (
-            <ConfirmationDialog className="rollback-confirmation-dialog">
-                <ConfirmationDialog.Body title={rollbackDialogTitle}>
-                    <p className="fs-13 cn-7 lh-1-54">Are you sure you want to deploy a previous version?</p>
-                </ConfirmationDialog.Body>
-                <ConfirmationDialog.ButtonGroup>
-                    <div className="flex right">
-                        <button
-                            type="button"
-                            className="flex cta cancel"
-                            onClick={() => setShowRollbackConfirmation(false)}
-                            disabled={deploying}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            className="flex cta deploy-button"
-                            onClick={handleDeployClick}
-                            disabled={deploying}
-                            data-testid="re-deployment-dialog-box-button"
-                        >
-                            {deploying ? (
-                                <Progressing />
-                            ) : (
-                                <>
-                                    <DeployButton className="deploy-button-icon" />
-                                    <span className="ml-8">Deploy</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
-        )
-    }
-
     function renderData() {
         if (errorResponseCode && errorResponseCode !== 404) {
             return (
@@ -743,7 +705,14 @@ const ChartDeploymentHistory = ({
                     </div>
                 </div>
                 <div className="ci-details__body">{renderSelectedDeploymentDetail()}</div>
-                {showRollbackConfirmation && <RollbackConfirmationDialog />}
+                {showRollbackConfirmation && (
+                    <RollbackConfirmationDialog
+                        deploying={deploying}
+                        rollbackDialogTitle={rollbackDialogTitle}
+                        setShowRollbackConfirmation={setShowRollbackConfirmation}
+                        handleDeployClick={handleDeployClick}
+                    />
+                )}
             </div>
         )
     }

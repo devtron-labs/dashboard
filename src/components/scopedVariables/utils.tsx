@@ -81,7 +81,6 @@ export const validator: ValidatorType = ({ data, type }) => {
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
-                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:

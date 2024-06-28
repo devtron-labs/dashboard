@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import './modal.scss';
 @import './whiteCard.scss';
 @import './workflow.scss';
@@ -2239,6 +2255,10 @@ button.anchor {
     &--b1 {
         border-right: solid 1px var(--B100);
     }
+
+    &--b5 {
+        border-right: solid 1px var(--B500);
+    }
 }
 
 .dc__border-top-n1 {
@@ -2728,6 +2748,14 @@ textarea,
     }
 }
 
+.ic-env-white {
+    g {
+        g {
+            fill: var(--N0);
+        }
+    }
+}
+
 .alert-icon-r5-imp {
     path {
         &:nth-child(1) {
@@ -2964,6 +2992,10 @@ textarea,
 
 .w-10 {
     width: 10px;
+}
+
+.w-14 {
+    width: 14px;
 }
 
 .w-16 {
@@ -3411,6 +3443,10 @@ textarea,
     height: 80px !important;
 }
 
+.h-90 {
+    height: 90px !important;
+}
+
 .h-96 {
     height: 96px !important;
 }
@@ -3574,6 +3610,10 @@ textarea,
 
 .mxh-350 {
     max-height: 350px;
+}
+
+.mxh-400 {
+    max-height: 400px;
 }
 
 .mxh-504 {
@@ -4562,6 +4602,14 @@ textarea::placeholder {
     }
 }
 
+.dc__odd-child {
+    &--sibling-bcn-50 {
+        &:nth-child(odd) {
+            background-color: var(--N50);
+        }
+    }
+}
+
 .dc__transition {
     &--transform {
         transition: transform 0.3s;
@@ -4599,4 +4647,24 @@ textarea::placeholder {
 
 .dc__outline-n1 {
     outline: 1px solid var(--N100);
+}
+
+.dc__info-card {
+    box-shadow: 0px 1px 2px 0px rgba(1, 87, 173, 0.10);
+    border: 1px solid rgba(0, 102, 204, 0.12);
+
+    &:not(&--no-hover) {
+        &:hover {
+            text-decoration: none;
+            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.10), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    &--no-box-shadow {
+        box-shadow: none;
+    }
+}
+
+.dc__modal-gradient {
+    background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
 }

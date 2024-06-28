@@ -769,7 +769,7 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            height: isResourceBrowserView ? 'calc(100vh - 151px)' : 'calc(100vh - 77px)',
+                            height: isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >

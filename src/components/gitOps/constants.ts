@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GitProvider } from './gitops.type'
+import { DefaultShortGitOpsType, GitOpsFormErrorType, GitProvider } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -40,7 +40,7 @@ export const DefaultGitOpsConfig = {
     active: true,
 }
 
-export const DefaultShortGitOps = {
+export const DefaultShortGitOps: DefaultShortGitOpsType = {
     host: '',
     username: '',
     token: '',
@@ -49,6 +49,22 @@ export const DefaultShortGitOps = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
+    authMode: null,
+}
+
+export const DefaultErrorFields: GitOpsFormErrorType = {
+    host: '',
+    username: '',
+    token: '',
+    gitHubOrgId: '',
+    gitLabGroupId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
 }
 
 export const LinkAndLabelSpec = {

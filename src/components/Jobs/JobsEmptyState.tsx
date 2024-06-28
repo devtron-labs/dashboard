@@ -15,11 +15,10 @@
  */
 
 import React from 'react'
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { JobListViewType, JOBLIST_EMPTY_STATE_MESSAGING } from './Constants'
 import { JobsEmptyProps } from './Types'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
-import noresult from '../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export default function JobsEmptyState(props: JobsEmptyProps) {
@@ -44,24 +43,9 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
     }
 
     const renderNoResultsView = () => {
-        const handleButton = () => {
-            return (
-                <button
-                    type="button"
-                    className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark"
-                    onClick={props.clickHandler}
-                >
-                    {JOBLIST_EMPTY_STATE_MESSAGING.noJobsButtonLabel}
-                </button>
-            )
-        }
         return (
-            <GenericEmptyState
-                image={noresult}
-                title={JOBLIST_EMPTY_STATE_MESSAGING.noJobsFound}
-                subTitle={JOBLIST_EMPTY_STATE_MESSAGING.noJobFoundInfoText}
-                isButtonAvailable
-                renderButton={handleButton}
+            <GenericFilterEmptyState
+                handleClearFilters={props.clickHandler}
             />
         )
     }
