@@ -139,11 +139,10 @@ import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
-const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan')
+const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -1764,14 +1763,12 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {!isExternalApp &&
-                            (isDeployChartView || isUpdateAppView) &&
-                            ToggleSecurityScan(
-                                <ToggleSecurityScan
-                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                    handleToggleSecurityScan={handleToggleSecurityScan}
-                                />,
-                            )}
+                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                            <ToggleSecurityScan
+                                isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                handleToggleSecurityScan={handleToggleSecurityScan}
+                            />
+                        )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
