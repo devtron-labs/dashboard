@@ -177,7 +177,7 @@ export default function NavigationRoutes() {
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email, })
+                    scope.setUser({ email })
                 })
             }
             if (window._env_.GA_ENABLED) {
@@ -439,8 +439,7 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []
-                                        ),
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -503,9 +502,11 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
                         render={() => <ExternalArgoApps />}
                     />
-                    <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
-                        <ExternalFluxAppDetailsRoute />
-                    </Route>
+                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
+                            <ExternalFluxAppDetailsRoute />
+                        </Route>
+                    )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
