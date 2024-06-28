@@ -401,9 +401,6 @@ export default function DeploymentTemplateOverride({
                         handleAppMetrics={handleAppMetrics}
                         toggleDraftComments={toggleDraftComments}
                         isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
-                        isEnterpriseInstallation={
-                            currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
-                        }
                         isValuesOverride={state.isValuesOverride}
                         setIsValuesOverride={setIsValuesOverride}
                         groupedData={state.groupedOptionsDataOverride}

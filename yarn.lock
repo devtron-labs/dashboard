@@ -985,14 +985,13 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.0.98":
-  version "0.0.98"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.98.tgz#1e686f7b8afebd7a92d6a19374c4610089b73dc3"
-  integrity sha512-G/VJiMJJ8L5u7l0DIc8ysCmW1cwPh58m6RGCPMjwxeeAbgghqWFEN5+fK4x9xnFMJLqHyGh4Y87GMoe6yjkPHw==
+"@devtron-labs/devtron-fe-common-lib@0.0.97-beta-2":
+  version "0.0.97-beta-2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.97-beta-2.tgz#b6e637c8f415985e4b7c1751f8894742f7ce37b7"
+  integrity sha512-rzCKTD1L68ksm/0kBhjALXKM2hvxlFwMAKBwDkCszxB0XitjEEcvnCertTOul2LMdJwVYMHp0kQcfeODnF6SEg==
   dependencies:
     ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
-    jsonpath-plus "^7.2.0"
     react-monaco-editor "^0.54.0"
     sass "^1.69.7"
     tslib "^2.4.1"
@@ -4819,11 +4818,6 @@ jsonfile@^6.0.1:
     universalify "^2.0.0"
   optionalDependencies:
     graceful-fs "^4.1.6"
-
-jsonpath-plus@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-7.2.0.tgz#7ad94e147b3ed42f7939c315d2b9ce490c5a3899"
-  integrity sha512-zBfiUPM5nD0YZSBT/o/fbCUlCcepMIdP0CJZxM1+KgA4f2T206f6VAg9e7mX35+KlMaIc5qXW34f3BnwJ3w+RA==
 
 jsonpointer@^5.0.0, jsonpointer@^5.0.1:
   version "5.0.1"
