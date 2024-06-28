@@ -1763,7 +1763,7 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                        {window._env_.ENABLE_RESOURCE_SCAN_V2 && !isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
                             <ToggleSecurityScan
                                 isManifestScanEnabled={commonState.isManifestScanEnabled}
                                 handleToggleSecurityScan={handleToggleSecurityScan}
