@@ -39,6 +39,7 @@ export async function fetchChartVersionsData(
     id: number,
     dispatch: (action: ChartValuesViewAction) => void,
     currentChartVersion?: string,
+    currentChartValueId?: number,
 ) {
     try {
         const { result } = await getChartVersionsMin(id)
@@ -53,7 +54,8 @@ export async function fetchChartVersionsData(
                     selectedVersion: _currentVersion.id,
                     selectedVersionUpdatePage: _currentVersion,
                     initialChartVersionValues: {
-                        chartVersionId: _currentVersion.id
+                        chartVersionId: _currentVersion.id,
+                        chartValuesId: currentChartValueId
                     }
                 },
             })

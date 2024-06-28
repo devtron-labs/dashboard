@@ -1075,8 +1075,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             .then((response: any) => {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
-                    closeCIModal()
                     setCDLoading(false)
+                    closeCIModal()
                     setErrorCode(response.code)
                     setInvalidateCache(false)
                     preventBodyScroll(false)
