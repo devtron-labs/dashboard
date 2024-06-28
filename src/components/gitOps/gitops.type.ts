@@ -15,7 +15,6 @@
  */
 
 import { RouteComponentProps } from 'react-router'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 
 export type GitOpsFieldKeyType =
     | 'host'
