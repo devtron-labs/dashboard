@@ -586,10 +586,6 @@ function createCurlRequest(externalCiConfig): string {
     return curl
 }
 
-export function getPluginDetail(pluginID: number, appId: number): Promise<any> {
-    return get(`${Routes.PLUGIN_DETAIL}/${pluginID}?appId=${appId}`)
-}
-
 export async function getGlobalVariable(appId: number, isCD?: boolean): Promise<any> {
     let variableList = []
     await get(`${Routes.GLOBAL_VARIABLES}?appId=${appId}`).then((response) => {

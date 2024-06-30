@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { BuildStageVariable } from '../../config'
-import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
+import { ConditionContainerType, PluginVariableType, VariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import {
@@ -24,11 +24,17 @@ import {
     PluginType,
     ScriptType,
     StyledRadioGroup as RadioGroup,
+    Progressing,
+    getPluginsDetail,
+    parsePluginDetailsDTOIntoPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { PluginDetailHeaderProps } from './types'
+import { useParams } from 'react-router-dom'
+import PluginDetailHeader from './PluginDetailHeader'
 
 export const TaskDetailComponent = () => {
     const {
@@ -39,8 +45,17 @@ export const TaskDetailComponent = () => {
         formDataErrorObj,
         setFormDataErrorObj,
         isCdPipeline,
+        pluginDataStore,
+        handlePluginDataStoreUpdate,
+        calculateLastStepDetail,
+        validateStage,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
+
+    // TODO: Derive from ciPipeline modal
+    const { appId } = useParams<{ appId: string }>()
+
+    const [isLoadingPluginVersionDetails, setIsLoadingPluginVersionDetails] = useState<boolean>(false)
 
     const currentStepTypeVariable =
         formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
@@ -86,109 +101,221 @@ export const TaskDetailComponent = () => {
         }
     }
 
-    return (
-        <div>
-            <div>
-                <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
-                    <CustomInput
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                        data-testid="preBuild-task-name-textbox"
-                        type="text"
-                        onChange={(e) => handleNameChange(e)}
-                        value={formData[activeStageName].steps[selectedTaskIndex].name}
-                        name="task-name"
-                        error={renderTaskNameError()}
-                    />
-                </div>
-                <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
-                    <CustomInput
-                        rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
-                        data-testid="preBuild-task-description-textbox"
-                        type="text"
-                        onChange={(e) => handleDescriptionChange(e)}
-                        value={formData[activeStageName].steps[selectedTaskIndex].description}
-                        placeholder="Enter task description"
-                        name="task-description"
-                    />
-                </div>
+    const handlePluginVersionChange: PluginDetailHeaderProps['handlePluginVersionChange'] = async (pluginId) => {
+        const _formData = structuredClone(formData)
 
-                {!isCdPipeline && activeStageName === BuildStageVariable.PostBuild && (
+        // TODO: Map and remove duplication
+        const oldPluginInputVariables: VariableType[] =
+            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables
+
+        if (pluginDataStore.pluginVersionStore[pluginId]) {
+            // In inputVariables we are going to traverse, the inputVariables of newPluginVersion and if in older one it is present we would keep its struct else we would remove it
+            const newPluginVersionData = pluginDataStore.pluginVersionStore[pluginId]
+            const newInputVariables = newPluginVersionData.inputVariables.map((inputVariable) => {
+                const oldInputVariable = oldPluginInputVariables.find(
+                    (oldInputVariable) => oldInputVariable.name === inputVariable.name,
+                )
+                if (oldInputVariable) {
+                    return {
+                        ...inputVariable,
+                        value: oldInputVariable.value,
+                        variableType: oldInputVariable.variableType,
+                        refVariableStepIndex: oldInputVariable.refVariableStepIndex,
+                        refVariableName: oldInputVariable.refVariableName,
+                        refVariableStage: oldInputVariable.refVariableStage,
+                        variableStepIndexInPlugin: oldInputVariable.variableStepIndexInPlugin,
+                    }
+                }
+
+                return inputVariable
+            })
+
+            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
+                ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
+                pluginId,
+                inputVariables: newInputVariables,
+                outputVariables: newPluginVersionData.outputVariables,
+            }
+
+            calculateLastStepDetail(false, _formData, activeStageName)
+            validateStage(BuildStageVariable.PreBuild, _formData)
+            validateStage(BuildStageVariable.PostBuild, _formData)
+
+            setFormData(_formData)
+            return
+        }
+
+        setIsLoadingPluginVersionDetails(true)
+        try {
+            const pluginDetailResponse = await getPluginsDetail({
+                appId: +appId,
+                pluginId: [pluginId],
+            })
+            const { pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(pluginDetailResponse.parentPlugins)
+            const clonedPluginDataStore = structuredClone(pluginDataStore)
+
+            Object.keys(pluginVersionStore).forEach((key) => {
+                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
+            })
+
+            const newPluginVersionData = clonedPluginDataStore.pluginVersionStore[pluginId]
+            const newInputVariables = newPluginVersionData.inputVariables.map((inputVariable) => {
+                const oldInputVariable = oldPluginInputVariables.find(
+                    (oldInputVariable) => oldInputVariable.name === inputVariable.name,
+                )
+                if (oldInputVariable) {
+                    return {
+                        ...inputVariable,
+                        value: oldInputVariable.value,
+                        variableType: oldInputVariable.variableType,
+                        refVariableStepIndex: oldInputVariable.refVariableStepIndex,
+                        refVariableName: oldInputVariable.refVariableName,
+                        refVariableStage: oldInputVariable.refVariableStage,
+                        variableStepIndexInPlugin: oldInputVariable.variableStepIndexInPlugin,
+                    }
+                }
+
+                return inputVariable
+            })
+            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
+                ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
+                pluginId,
+                inputVariables: newInputVariables,
+                outputVariables: newPluginVersionData.outputVariables,
+            }
+
+            calculateLastStepDetail(false, _formData, activeStageName)
+            validateStage(BuildStageVariable.PreBuild, _formData)
+            validateStage(BuildStageVariable.PostBuild, _formData)
+
+
+            handlePluginDataStoreUpdate(clonedPluginDataStore)
+            setFormData(_formData)
+        } catch (error) {
+            // Do nothing
+        } finally {
+            setIsLoadingPluginVersionDetails(false)
+        }
+    }
+
+    if (isLoadingPluginVersionDetails) {
+        return <Progressing />
+    }
+
+    // TODO: Add check if not inline only then show plugin version heading
+    return (
+        <>
+            {/* TODO: Can be const */}
+            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF && (
+                <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
+            )}
+            <div className="p-20 dc__overflow-scroll">
+                <div>
                     <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
-                        <input
-                            type="checkbox"
-                            className="cursor icon-dim-16"
-                            checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
-                            onChange={handleTriggerIfParentStageFailChange}
+                        <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
+                        <CustomInput
+                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                            data-testid="preBuild-task-name-textbox"
+                            type="text"
+                            onChange={(e) => handleNameChange(e)}
+                            value={formData[activeStageName].steps[selectedTaskIndex].name}
+                            name="task-name"
+                            error={renderTaskNameError()}
                         />
                     </div>
-                )}
-
-                {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 ">Task type</div>
-                        <RadioGroup
-                            className="configuration-container justify-start"
-                            disabled={false}
-                            initialTab={
-                                formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType
-                            }
-                            name="task-type"
-                            onChange={handleTaskScriptTypeChange}
-                        >
-                            <RadioGroup.Radio
-                                className="left-radius"
-                                value={ScriptType.SHELL}
-                                dataTestId="custom-script-task-name-shell"
-                            >
-                                Shell
-                            </RadioGroup.Radio>
-                            <RadioGroup.Radio
-                                className="right-radius dc__no-left-border"
-                                value={ScriptType.CONTAINERIMAGE}
-                                dataTestId="custom-script-task-name-container-image"
-                            >
-                                Container Image
-                            </RadioGroup.Radio>
-                        </RadioGroup>
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>
+                        <CustomInput
+                            rootClassName="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5-imp pb-5-imp"
+                            data-testid="preBuild-task-description-textbox"
+                            type="text"
+                            onChange={(e) => handleDescriptionChange(e)}
+                            value={formData[activeStageName].steps[selectedTaskIndex].description}
+                            placeholder="Enter task description"
+                            name="task-description"
+                        />
                     </div>
-                )}
-            </div>
-            <hr />
-            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                <CustomInputOutputVariables type={PluginVariableType.INPUT} />
-            ) : (
-                <VariableContainer type={PluginVariableType.INPUT} />
-            )}{' '}
-            <hr />
-            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables?.length >
-                0 && (
-                <>
-                    <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
-                    <hr />
-                </>
-            )}
-            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                <>
-                    <TaskTypeDetailComponent />
-                    {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
-                        ScriptType.CONTAINERIMAGE && <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />}
-                </>
-            ) : (
-                <VariableContainer type={PluginVariableType.OUTPUT} />
-            )}
-            {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables?.length > 0 &&
-                (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
-                    formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
-                        ScriptType.CONTAINERIMAGE) && (
+
+                    {!isCdPipeline && activeStageName === BuildStageVariable.PostBuild && (
+                        <div className="row-container mb-12">
+                            <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
+                            <input
+                                type="checkbox"
+                                className="cursor icon-dim-16"
+                                checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
+                                onChange={handleTriggerIfParentStageFailChange}
+                            />
+                        </div>
+                    )}
+
+                    {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
+                        <div className="row-container mb-12">
+                            <div className="fw-6 fs-13 lh-32 cn-7 ">Task type</div>
+                            <RadioGroup
+                                className="configuration-container justify-start"
+                                disabled={false}
+                                initialTab={
+                                    formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+                                        .scriptType
+                                }
+                                name="task-type"
+                                onChange={handleTaskScriptTypeChange}
+                            >
+                                <RadioGroup.Radio
+                                    className="left-radius"
+                                    value={ScriptType.SHELL}
+                                    dataTestId="custom-script-task-name-shell"
+                                >
+                                    Shell
+                                </RadioGroup.Radio>
+                                <RadioGroup.Radio
+                                    className="right-radius dc__no-left-border"
+                                    value={ScriptType.CONTAINERIMAGE}
+                                    dataTestId="custom-script-task-name-container-image"
+                                >
+                                    Container Image
+                                </RadioGroup.Radio>
+                            </RadioGroup>
+                        </div>
+                    )}
+                </div>
+                <hr />
+                {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                    <CustomInputOutputVariables type={PluginVariableType.INPUT} />
+                ) : (
+                    <VariableContainer type={PluginVariableType.INPUT} />
+                )}{' '}
+                <hr />
+                {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables?.length >
+                    0 && (
                     <>
-                        <hr />
-                        <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
+                        <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
                         <hr />
                     </>
                 )}
-        </div>
+                {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                    <>
+                        <TaskTypeDetailComponent />
+                        {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                            ScriptType.CONTAINERIMAGE && (
+                            <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
+                        )}
+                    </>
+                ) : (
+                    <VariableContainer type={PluginVariableType.OUTPUT} />
+                )}
+                {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables?.length >
+                    0 &&
+                    (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
+                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
+                            ScriptType.CONTAINERIMAGE) && (
+                        <>
+                            <hr />
+                            <ConditionContainer type={ConditionContainerType.PASS_FAILURE} />
+                            <hr />
+                        </>
+                    )}
+            </div>
+        </>
     )
 }

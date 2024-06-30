@@ -21,6 +21,8 @@ import {
     PluginType,
     RefVariableStageType,
     RefVariableType,
+    StepType,
+    ActivityIndicator,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
@@ -32,6 +34,7 @@ import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormType } from '../workflowEditor/types'
+import Tippy from '@tippyjs/react'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -105,8 +108,15 @@ export const TaskList = ({
         let isMandatoryMissing = false
         if (_taskDetail[0].isMandatory) {
             isMandatoryMissing = true
+            const deletedTaskPluginId = _taskDetail[0].pluginRefStepDetail.pluginId
+            const parentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
+
             for (const task of newList) {
-                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                const currentTaskPluginId = task.pluginRefStepDetail?.pluginId
+                const currentTaskParentPluginId =
+                    pluginDataStore.pluginVersionStore[currentTaskPluginId]?.parentPluginId
+
+                if (currentTaskParentPluginId === parentPluginId) {
                     task.isMandatory = true
                     isMandatoryMissing = false
                     break
@@ -159,8 +169,9 @@ export const TaskList = ({
                 isMandatoryMissing = true
                 // FIXME: Fix this check and refactor this code
                 for (const task of newList) {
-                    const taskParentPluginId = pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
-                    if (taskParentPluginId === parentPluginId && !!taskParentPluginId) {
+                    const taskParentPluginId =
+                        pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
+                    if (!!parentPluginId && !!taskParentPluginId && taskParentPluginId === parentPluginId) {
                         task.isMandatory = true
                         isMandatoryMissing = false
                         break
@@ -304,6 +315,60 @@ export const TaskList = ({
         setSelectedTaskIndex(index)
     }
 
+    // TODO: A component would be better
+    const renderTaskTitleTippyContent = (
+        isLatest: boolean,
+        pluginVersion: string,
+        pluginName: string,
+        displayName: string,
+    ) => {
+        return (
+            <div className="flexbox-col dc__gap-6">
+                <div className="flexbox-col dc__gap-4">
+                    <h4 className="m-0 cn-0 fs-12 fw-6 lh-18 dc__truncate">{displayName}</h4>
+
+                    <p className="m-0 dc__truncate c-n50">
+                        {pluginName}({pluginVersion})
+                    </p>
+                </div>
+
+                {!isLatest && (
+                    <>
+                        <div className="dc__border-bottom--n7" />
+
+                        <div className="px-2 flexbox dc__align-items-center dc__gap-4">
+                            <ActivityIndicator
+                                rootClassName="dc__no-shrink"
+                                backgroundColorClass="bcg-5"
+                                iconSizeClass="icon-dim-8"
+                            />
+                            <span className="cg-5 fs-12 fw-6 lh-16">New version available </span>
+                        </div>
+                    </>
+                )}
+            </div>
+        )
+    }
+
+    const renderTaskTitle = (taskDetail: StepType) => {
+        const pluginId = taskDetail.pluginRefStepDetail?.pluginId
+        const { isLatest, pluginVersion, name: pluginName } = pluginDataStore.pluginVersionStore[pluginId] || {}
+
+        if (!pluginId) {
+            return <span className="dc__ellipsis-right">{taskDetail.name}</span>
+        }
+
+        return (
+            <Tippy
+                arrow={false}
+                className="default-tt w-200"
+                content={renderTaskTitleTippyContent(isLatest, pluginVersion, pluginName, taskDetail.name)}
+            >
+                <span className="w-100 dc__ellipsis-right">{taskDetail.name}</span>
+            </Tippy>
+        )
+    }
+
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -329,7 +394,8 @@ export const TaskList = ({
                                         : 'w-80'
                                 }`}
                             >
-                                <span className="dc__ellipsis-right">{taskDetail.name}</span>
+                                {/* TODO: Add icon here and convert this segment to a component */}
+                                {renderTaskTitle(taskDetail)}
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
@@ -380,7 +446,11 @@ export const TaskList = ({
                                         MandatoryPluginMenuOptionTippy && (
                                             <MandatoryPluginMenuOptionTippy
                                                 pluginDetail={
-                                                    mandatoryPluginsMap[pluginDataStore.pluginVersionStore[taskDetail.pluginRefStepDetail.pluginId].parentPluginId]
+                                                    mandatoryPluginsMap[
+                                                        pluginDataStore.pluginVersionStore[
+                                                            taskDetail.pluginRefStepDetail.pluginId
+                                                        ].parentPluginId
+                                                    ]
                                                 }
                                             />
                                         )}

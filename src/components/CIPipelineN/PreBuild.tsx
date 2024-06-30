@@ -15,7 +15,16 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react'
-import { PluginType, ScriptType, VariableType, RefVariableType, Progressing, YAMLStringify, CDEmptyState, PluginListContainer } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    PluginType,
+    ScriptType,
+    VariableType,
+    RefVariableType,
+    Progressing,
+    YAMLStringify,
+    CDEmptyState,
+    PluginListContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -33,7 +42,12 @@ import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
-export const PreBuild: React.FC<PreBuildType> = ({ mandatoryPluginsMap, isJobView, availableTags, handleUpdateAvailableTags }) => {
+export const PreBuild: React.FC<PreBuildType> = ({
+    mandatoryPluginsMap,
+    isJobView,
+    availableTags,
+    handleUpdateAvailableTags,
+}) => {
     const {
         formData,
         isCdPipeline,
@@ -164,8 +178,8 @@ export const PreBuild: React.FC<PreBuildType> = ({ mandatoryPluginsMap, isJobVie
 
     function renderPluginList(): JSX.Element {
         return (
-            <>
-                <div className="cn-9 fw-6 fs-14 pb-10">What do you want this task to do?</div>
+            <div className="px-20 dc__overflow-scroll">
+                <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <PluginCard
                         dataTestId="execute-custom-script-button"
@@ -182,8 +196,9 @@ export const PreBuild: React.FC<PreBuildType> = ({ mandatoryPluginsMap, isJobVie
                     handlePluginSelection={handlePluginSelection}
                     isSelectable={false}
                     persistFilters={false}
+                    rootClassName="pt-8 pre-build-plugin-list-container dc__gap-4 pb-4"
                 />
-            </>
+            </div>
         )
     }
 
@@ -221,19 +236,20 @@ export const PreBuild: React.FC<PreBuildType> = ({ mandatoryPluginsMap, isJobVie
                 />
             )
         }
+
+        if (!formData[activeStageName].steps[selectedTaskIndex]?.stepType) {
+            return renderPluginList()
+        }
+
         return (
-            <div className="p-20 ci-scrollable-content">
-                {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
-                    renderPluginList()
-                ) : (
-                    <TaskDetailComponent />
-                )}
+            <div className="h-100 dc__overflow-scroll">
+                <TaskDetailComponent />
             </div>
         )
     }
 
     const renderComponent = () => {
-        if (pageState === ViewType.LOADING.toString()) {
+        if (pageState === ViewType.LOADING) {
             return (
                 <div style={{ minHeight: '200px' }} className="flex">
                     <Progressing pageLoader />

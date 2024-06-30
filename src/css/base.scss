@@ -2197,6 +2197,10 @@ button.anchor {
     &--b2 {
         border-bottom: solid 1px var(--B200);
     }
+
+    &--n7 {
+        border-bottom: solid 1px var(--N700);
+    }
 }
 
 .dc__border-bottom-v2 {
@@ -2958,6 +2962,10 @@ textarea,
 
 .mw-56 {
     min-width: 56px;
+}
+
+.mw-84 {
+    min-width: 84px;
 }
 
 .mw-116 {

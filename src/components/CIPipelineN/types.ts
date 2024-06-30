@@ -47,3 +47,8 @@ export interface DockerArgsItemProps extends DockerArgsCommonType {
     arg: PipelineFormType['args'][number]
     index: number
 }
+
+export interface PluginDetailHeaderProps {
+    // TODO: Can reuse type
+    handlePluginVersionChange: (pluginId: number) => Promise<void>
+}

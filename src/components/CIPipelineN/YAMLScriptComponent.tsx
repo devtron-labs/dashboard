@@ -23,6 +23,7 @@ import { OptionType } from '../app/types'
 
 /**
  * @deprecated - Not getting used anywhere
+ * Check in review if it can be removed
  */
 export const YAMLScriptComponent = ({
     editorValue,

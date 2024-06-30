@@ -40,7 +40,12 @@ import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'reac
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { FloatingVariablesSuggestions, getRequiredPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
+import {
+    FloatingVariablesSuggestions,
+    getRequiredPluginIdsFromBuildStage,
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+} from '../common'
 import BuildCD from './BuildCD'
 import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import {
@@ -234,7 +239,9 @@ export default function CDPipeline({
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
     const [availableTags, setAvailableTags] = useState<string[]>([])
-    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(structuredClone(DEFAULT_PLUGIN_DATA_STORE))
+    const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(
+        structuredClone(DEFAULT_PLUGIN_DATA_STORE),
+    )
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
         setPluginDataStore((prevPluginDataStore) => ({ ...prevPluginDataStore, ...updatedPluginDataStore }))
@@ -376,37 +383,31 @@ export default function CDPipeline({
             return
         }
 
-        try {
-            const clonedPluginDataStore = structuredClone(pluginDataStore)
-            // TODO: Can directly return as promise
-            const pluginDetailResponse = await getPluginsDetail({
-                appId: +appId,
-                parentPluginId: [],
-                pluginId: pluginIds,
-                fetchLatestVersionDetails: true,
-            })
+        const clonedPluginDataStore = structuredClone(pluginDataStore)
+        // TODO: Can directly return as promise
+        const pluginDetailResponse = await getPluginsDetail({
+            appId: +appId,
+            parentPluginId: [],
+            pluginId: pluginIds,
+        })
 
-            const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
-                pluginDetailResponse.parentPlugins,
-            )
-    
-            Object.keys(parentPluginStore).forEach((key) => {
-                if (!clonedPluginDataStore.parentPluginStore[key]) {
-                    clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
-                }
-            })
-    
-            Object.keys(pluginVersionStore).forEach((key) => {
-                if (!clonedPluginDataStore.pluginVersionStore[key]) {
-                    clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
-                }
-            })
+        const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
+            pluginDetailResponse.parentPlugins,
+        )
 
-            handlePluginDataStoreUpdate(clonedPluginDataStore)
-        } catch (error) {
-            setPageState(ViewType.ERROR)
-            setErrorCode(error.code)
-        }
+        Object.keys(parentPluginStore).forEach((key) => {
+            if (!clonedPluginDataStore.parentPluginStore[key]) {
+                clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
+            }
+        })
+
+        Object.keys(pluginVersionStore).forEach((key) => {
+            if (!clonedPluginDataStore.pluginVersionStore[key]) {
+                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
+            }
+        })
+
+        handlePluginDataStoreUpdate(clonedPluginDataStore)
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
@@ -1158,20 +1159,24 @@ export default function CDPipeline({
                     >
                         {!(isCdPipeline && activeStageName === BuildStageVariable.Build) && isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                />
+                                <Sidebar setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep} />
                             </div>
                         )}
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild availableTags={availableTags} handleUpdateAvailableTags={handleUpdateAvailableTags} />
+                                    <PreBuild
+                                        availableTags={availableTags}
+                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
+                                    />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild availableTags={availableTags} handleUpdateAvailableTags={handleUpdateAvailableTags} />
+                                    <PreBuild
+                                        availableTags={availableTags}
+                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
+                                    />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

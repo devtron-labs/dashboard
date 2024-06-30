@@ -33,6 +33,9 @@ import {
     ProcessPluginDataReturnType,
     PluginDetailPayloadType,
     DEFAULT_PLUGIN_DATA_STORE,
+    getPluginsDetail,
+    parsePluginDetailsDTOIntoPluginStore,
+    ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -105,6 +108,7 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
+    const [errorCode, setErrorCode] = useState<number>(0)
     const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
@@ -263,26 +267,61 @@ export default function CIPipeline({
                         branchName,
                         requiredPluginIds,
                     )
+
+                    const areRequiredIdsPresent =
+                        !requiredPluginIds?.length ||
+                        requiredPluginIds.every((id) => !!updatedPluginDataStore.pluginVersionStore[id])
+
+                    if (!areRequiredIdsPresent) {
+                        // TODO: uncomment
+                        // throw new Error('Required plugin details not found')
+                    }
+
                     setMandatoryPluginData(processedPluginData)
                     handlePluginDataStoreUpdate(updatedPluginDataStore)
                     setFormData((prevForm) =>
                         prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
                     )
                 } catch (error) {
-                    showError(error)
+                    throw error
                 }
             }
         }
     }
 
     const getInitialPlugins = async (_formData: PipelineFormType): Promise<void> => {
-        try {
-            const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.preBuildStage)
-            const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.postBuildStage)
-            await getMandatoryPluginData(_formData, [...preBuildPluginIds, ...postBuildPluginIds])
-        } catch (error) {
-            showError(error)
+        const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.preBuildStage)
+        const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.postBuildStage)
+
+        const uniquePluginIds = [...new Set([...preBuildPluginIds, ...postBuildPluginIds])]
+
+        if (processPluginData && prepareFormData) {
+            await getMandatoryPluginData(_formData, uniquePluginIds)
+            return
         }
+
+        if (!uniquePluginIds?.length) {
+            return
+        }
+
+        const clonedPluginDataStore = structuredClone(pluginDataStore)
+        const pluginDataResponse = await getPluginsDetail({ appId: +appId, pluginId: uniquePluginIds })
+        const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
+            pluginDataResponse.parentPlugins,
+        )
+        Object.keys(parentPluginStore).forEach((key) => {
+            if (!clonedPluginDataStore.parentPluginStore[key]) {
+                clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
+            }
+        })
+
+        Object.keys(pluginVersionStore).forEach((key) => {
+            if (!clonedPluginDataStore.pluginVersionStore[key]) {
+                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
+            }
+        })
+
+        handlePluginDataStoreUpdate(clonedPluginDataStore)
     }
 
     const getEnvironments = async (envId: number): Promise<void> => {
@@ -343,7 +382,11 @@ export default function CIPipeline({
     }
 
     const getPluginData = async (_formData?: PipelineFormType): Promise<void> => {
-        await getMandatoryPluginData(_formData ?? formData)
+        try {
+            await getMandatoryPluginData(_formData ?? formData)
+        } catch (error) {
+            // Do nothing
+        }
     }
 
     const calculateLastStepDetail = (
@@ -459,6 +502,7 @@ export default function CIPipeline({
             setPageState(ViewType.FORM)
         } catch (error) {
             setPageState(ViewType.ERROR)
+            setErrorCode(error?.code)
             showError(error)
         }
     }
@@ -511,6 +555,7 @@ export default function CIPipeline({
             .catch((error: ServerErrors) => {
                 showError(error)
                 setPageState(ViewType.ERROR)
+                setErrorCode(error?.code)
             })
     }
 
@@ -760,29 +805,13 @@ export default function CIPipeline({
         pluginDataStore,
     ])
 
-    const renderCIPipelineModal = () => {
+    const renderCIPipelineModalContent = () => {
+        if (pageState === ViewType.ERROR) {
+            return <ErrorScreenManager code={errorCode} />
+        }
+
         return (
-            <div
-                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
-                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
-                }`}
-            >
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
-                        {title}
-                    </h2>
-
-                    <button
-                        type="button"
-                        className="dc__transparent flex icon-dim-24"
-                        onClick={() => {
-                            close()
-                        }}
-                    >
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-
+            <>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
                         {isJobCard ? (
@@ -881,6 +910,34 @@ export default function CIPipeline({
                     </div>
                 )}
                 {ciPipelineId && showDeleteModal && renderDeleteCIModal()}
+            </>
+        )
+    }
+
+    const renderCIPipelineModal = () => {
+        return (
+            <div
+                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
+                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
+                }`}
+            >
+                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
+
+                    <button
+                        type="button"
+                        className="dc__transparent flex icon-dim-24"
+                        onClick={() => {
+                            close()
+                        }}
+                    >
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+
+                {renderCIPipelineModalContent()}
             </div>
         )
     }
