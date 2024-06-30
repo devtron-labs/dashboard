@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import React, { cloneElement } from 'react'
+import { commonSelectStyles, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
+import { OptionProps, StylesConfig, ValueContainerProps, components } from 'react-select'
+import { PluginVersionSelectOptionType } from './types'
 
 export const baseSelectStyles = {
     control: (base, state) => ({
@@ -309,4 +311,30 @@ export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType 
         stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
     }
     return stageTypeSelectorValue
+}
+
+export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelectOptionType, false>) => {
+    const { data: {isLatest, label} } = props
+    return (
+        <components.Option {...props}>
+            <div className="flexbox-col dc__gap-4">
+                <span className="cn-9 fs-13 fw-4 lh-20">{label}</span>
+                {isLatest && <span className="cn-7 fs-12 fw-4 lh-18">Latest</span>}
+            </div>
+        </components.Option>
+    )
+}
+
+export const pluginVersionSelectStyle: StylesConfig<PluginVersionSelectOptionType, false> = {
+    ...commonSelectStyles,
+    control: (base, state) => state.menuIsOpen ? commonSelectStyles.control(base, state) : ({
+        border: 'none',
+        minHeight: '20px',
+        display: 'grid',
+        gridTemplateColumns: 'auto 20px',
+        justifyContent: 'flex-start',
+        gap: '4px',
+        alignItems: 'center',
+        cursor: 'pointer',
+    }),
 }

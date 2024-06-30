@@ -23,18 +23,20 @@ import {
     RefVariableType,
     StepType,
     ActivityIndicator,
+    ImageWithFallback,
 } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
+import { ReactComponent as ICLegoBlock } from '../../assets/icons/ic-lego-block.svg'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PipelineFormType } from '../workflowEditor/types'
-import Tippy from '@tippyjs/react'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -369,6 +371,56 @@ export const TaskList = ({
         )
     }
 
+    // TODO: Ask for icon of inline as well
+    const renderPluginIcon = (taskDetail: StepType) => {
+        const pluginId = taskDetail.pluginRefStepDetail?.pluginId
+        const { isLatest, icon, name } = pluginDataStore.pluginVersionStore[pluginId] || {}
+
+        // If no plugin, then use ic-file
+
+        if (!pluginId) {
+            return <p>Placeholder image</p>
+        }
+
+        if (isLatest) {
+            return (
+                <ImageWithFallback
+                    fallbackImage={<ICLegoBlock className="dc__no-shrink icon-dim-20" />}
+                    imageProps={{
+                        src: icon,
+                        alt: `${name} logo`,
+                        width: 20,
+                        height: 20,
+                        className: 'dc__no-shrink',
+                    }}
+                />
+            )
+        }
+
+        return (
+            <div className="icon-dim-20 dc__no-shrink flexbox dc__position-rel dc__content-center">
+                <ImageWithFallback
+                    fallbackImage={<ICLegoBlock className="dc__no-shrink icon-dim-20" />}
+                    imageProps={{
+                        src: icon,
+                        alt: `${name} logo`,
+                        width: 20,
+                        height: 20,
+                        className: 'dc__no-shrink',
+                    }}
+                />
+
+                <div className="icon-dim-8 dc__transparent dc__no-shrink dc__position-abs dc__bottom-0 dc__right-0 flex">
+                    <ActivityIndicator
+                        rootClassName="dc__no-shrink"
+                        backgroundColorClass="bcg-5"
+                        iconSizeClass="icon-dim-6"
+                    />
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -387,14 +439,14 @@ export const TaskList = ({
                         >
                             <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
                             <div
-                                className={`flex left ${
+                                className={`flex left dc__gap-6 ${
                                     formDataErrorObj[activeStageName].steps[index] &&
                                     !formDataErrorObj[activeStageName].steps[index].isValid
                                         ? 'w-70'
                                         : 'w-80'
                                 }`}
                             >
-                                {/* TODO: Add icon here and convert this segment to a component */}
+                                {renderPluginIcon(taskDetail)}
                                 {renderTaskTitle(taskDetail)}
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>

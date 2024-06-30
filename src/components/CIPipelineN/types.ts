@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OptionType, PluginDetailType } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineFormType } from '../workflowEditor/types'
 
 export enum DockerArgsAction {
@@ -52,3 +53,5 @@ export interface PluginDetailHeaderProps {
     // TODO: Can reuse type
     handlePluginVersionChange: (pluginId: number) => Promise<void>
 }
+
+export interface PluginVersionSelectOptionType extends OptionType, Pick<PluginDetailType, 'isLatest'> {}

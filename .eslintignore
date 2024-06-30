@@ -60,7 +60,7 @@ src/components/CIPipelineN/TaskList.tsx
 src/components/CIPipelineN/TaskTypeDetailComponent.tsx
 src/components/CIPipelineN/VariableContainer.tsx
 src/components/CIPipelineN/YAMLScriptComponent.tsx
-src/components/CIPipelineN/ciPipeline.utils.ts
+src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
