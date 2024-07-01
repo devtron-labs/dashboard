@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
- .collapsible-list {
+.collapsible-list {
     min-width: 0;
     background: white;
 
@@ -30,9 +30,6 @@
         line-height: 18px;
         font-weight: 600;
         gap: 4px;
-        border: none;
-        background-color: inherit;
-        cursor: pointer;
     }
 
     &__icon {
@@ -45,8 +42,7 @@
             fill: var(--N700);
         }
     }
-
- }
+}
 
 .collapsible {
     margin-left: 16px;
@@ -60,7 +56,7 @@
         text-decoration: none;
         border-radius: 4px;
         padding: 6px 8px;
-        
+
         &.active {
             color: var(--B500);
             font-weight: 600;
@@ -78,16 +74,13 @@
             background: var(--N50);
         }
 
-        &__text-container{
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
         &__title {
-            color: var(--N900);
             font-size: 13px;
             line-height: 20px;
+        }
+
+        &:not(.active) &__title {
+            color: var(--N900);
         }
 
         &__subtitle {

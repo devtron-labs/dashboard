@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import Tippy, { TippyProps } from '@tippyjs/react'
 
@@ -28,12 +28,20 @@ import './CollapsibleList.scss'
 
 const renderWithTippy = (tippyProps: TippyProps) => (children: React.ReactElement) => (
     <Tippy {...tippyProps}>
-        <div>{children}</div>
+        <div className="dc__align-self-start">{children}</div>
     </Tippy>
 )
 
-export const CollapsibleList = ({ config }: CollapsibleListProps) => {
+export const CollapsibleList = ({ config, expandedIds }: CollapsibleListProps) => {
     const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>({})
+
+    useEffect(() => {
+        // Expand the collapsible list items whenever the `expandedIds` is modified.
+        setIsExpanded((prevState) => ({
+            ...prevState,
+            ...expandedIds.reduce((acc, id) => ({ ...acc, [id]: true }), {}),
+        }))
+    }, [expandedIds])
 
     const handleCollapseBtnClick = (id: string) => () =>
         setIsExpanded((prev) => ({
@@ -57,7 +65,7 @@ export const CollapsibleList = ({ config }: CollapsibleListProps) => {
                         <div className="flexbox dc__align-items-center dc__gap-4 py-6 px-8">
                             <button
                                 type="button"
-                                className="collapsible-list__header-button"
+                                className="dc__unset-button-styles collapsible-list__header-button"
                                 onClick={handleCollapseBtnClick(id)}
                             >
                                 <ICExpand
@@ -89,7 +97,7 @@ export const CollapsibleList = ({ config }: CollapsibleListProps) => {
                                 ) : (
                                     items.map(({ title, href, icon: Icon, iconProps, iconTooltipProps, subtitle }) => (
                                         <NavLink to={href} className="collapsible__item cursor">
-                                            <div className="collapsible__item__text-container">
+                                            <div className="flexbox-col flex-grow-1 mw-none">
                                                 <span className="dc__ellipsis-right collapsible__item__title">
                                                     {title}
                                                 </span>
