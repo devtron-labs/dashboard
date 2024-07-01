@@ -36,16 +36,11 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { isAWSCodeCommitURL, renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -102,14 +97,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     data-testid="already-existing-git-material"
                 >
                     <span className="mr-8">
-                        {this.props.material.url.includes('gitlab') ? <GitLab /> : null}
-                        {this.props.material.url.includes('github') ? <GitHub /> : null}
-                        {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
-                        {this.props.material.url.includes('gitlab') ||
-                        this.props.material.url.includes('github') ||
-                        this.props.material.url.includes('bitbucket') ? null : (
-                            <Git />
-                        )}
+                        {renderMaterialIcon(this.props.material.url)}
                     </span>
                     <div className="">
                         <div className="git__provider">{this.props.material.name}</div>
@@ -138,6 +126,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             return res[0]?.authMode == 'SSH' ? 'ssh' : 'https'
         }
         if (key === 'placeholder') {
+            if (isAWSCodeCommitURL(this.props.material?.gitProvider?.url)) {
+                return 'e.g. git-codecommit.ap-south-1.amazonaws.com/v1/repos/repo_name'
+            }
+
             return res[0]?.authMode == 'SSH' ? 'e.g. git@github.com:abc/xyz.git' : 'e.g. https://gitlab.com/abc/xyz.git'
         }
     }
@@ -667,23 +659,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 IndicatorSeparator: null,
                                 Option: (props) => {
                                     props.selectProps.styles.option = getCustomOptionSelectionStyle()
+
                                     return (
                                         <components.Option {...props}>
-                                            {props.data.url.includes('gitlab') ? (
-                                                <GitLab className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('github') ? (
-                                                <GitHub className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('bitbucket') ? (
-                                                <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            ) : null}
-                                            {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
-                                                <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
-                                            )}
-
+                                            <span className="mr-8">{renderMaterialIcon(props.data.url)}</span>
                                             {props.label}
                                         </components.Option>
                                     )
@@ -711,19 +690,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     if (props.hasValue) {
                                         value = props.getValue()[0].url
                                     }
-                                    const showGit =
-                                        value &&
-                                        !value.includes('github') &&
-                                        !value.includes('gitlab') &&
-                                        !value.includes('bitbucket')
                                     return (
                                         <components.Control {...props}>
-                                            {value.includes('github') ? <GitHub className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('gitlab') ? <GitLab className="icon-dim-20 ml-8" /> : null}
-                                            {value.includes('bitbucket') ? (
-                                                <BitBucket className="icon-dim-20 ml-8" />
-                                            ) : null}
-                                            {showGit ? <Git className="icon-dim-20 ml-8" /> : null}
+                                            <span className="ml-8">{renderMaterialIcon(value)}</span>
                                             {props.children}
                                         </components.Control>
                                     )

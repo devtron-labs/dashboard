@@ -96,6 +96,7 @@ export const URLS = {
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
+    GLOBAL_CONFIG_DEPLOYMENT_WINDOW: '/global-config/deployment-window',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     LINKED_CI_DETAILS: 'linked-ci-details',

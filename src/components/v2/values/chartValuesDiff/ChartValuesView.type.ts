@@ -15,7 +15,7 @@
  */
 
 import YAML from 'yaml'
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartValuesType, ChartVersionType } from '../../../charts/charts.types'
 import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../../appDetails/appDetails.type'
@@ -312,6 +312,7 @@ export interface ChartValuesViewState {
     showNoGitOpsWarning: boolean
     deploymentAppType: string
     gitRepoURL: string
+    authMode: GitOpsAuthModeType
     initialChartVersionValues: {
         chartVersionId: number
         chartValuesId: number
@@ -369,6 +370,7 @@ export enum ChartValuesViewActionTypes {
     showNoGitOpsWarning = 'showNoGitOpsWarning',
     selectedDeploymentApp = 'selectedDeploymentApp',
     setGitRepoURL = 'setGitRepoURL',
+    updateGitOpsConfiguration = 'updateGitOpsConfiguration',
     setInitialChartVersionValues = 'setInitialChartVersionValues',
 }
 
