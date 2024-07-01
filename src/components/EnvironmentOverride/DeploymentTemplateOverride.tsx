@@ -36,7 +36,6 @@ import {
 } from '../deploymentConfig/types'
 import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
 import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
@@ -52,7 +51,7 @@ export default function DeploymentTemplateOverride({
     isProtected,
     reloadEnvironments,
 }: DeploymentTemplateOverrideProps) {
-    const { currentServerInfo, isSuperAdmin } = useMainContext()
+    const { isSuperAdmin } = useMainContext()
     const { appId, envId } = useParams<{ appId; envId }>()
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
@@ -99,7 +98,7 @@ export default function DeploymentTemplateOverride({
     }, [environments])
 
     useEffect(() => {
-        dispatch({ type: DeploymentConfigStateActionTypes.reset })
+        dispatch({ type: DeploymentConfigStateActionTypes.reset, payload: { isSuperAdmin } })
         reloadEnvironments()
         setTimeout(() => {
             baseDeploymentAbortController.current = new AbortController()
@@ -409,7 +408,6 @@ export default function DeploymentTemplateOverride({
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
                         convertVariablesOverride={state.convertVariablesOverride}
-                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

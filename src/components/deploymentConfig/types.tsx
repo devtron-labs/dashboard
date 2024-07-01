@@ -18,7 +18,6 @@ import React from 'react'
 import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
 
 export interface DeploymentObject {
@@ -136,7 +135,6 @@ export interface DeploymentConfigFormCTAProps {
     isValues?: boolean
     convertVariables?: boolean
     handleLockedDiffDrawer: (value: boolean) => void
-    isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
@@ -215,11 +213,13 @@ export interface DeploymentTemplateOptionsTabProps {
     changeEditorMode?: () => void
 }
 
+// TODO: the following type can be combined with this into a single type
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
+    uneditedDocument: string
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -239,6 +239,7 @@ export interface DeploymentTemplateEditorViewProps {
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockKeysToggled: React.MutableRefObject<boolean>
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
+    uneditedDocument: DeploymentTemplateReadOnlyEditorViewProps['uneditedDocument']
 }
 
 export interface DeploymentConfigContextType {
@@ -467,6 +468,7 @@ export interface DeploymentTemplateGUIViewProps
     fetchingValues?: boolean
     value: string
     readOnly: boolean
+    uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']
 }
 
 export interface Schema {

@@ -31,6 +31,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
     isEnvOverride,
     lockedConfigKeysWithLockType,
     hideLockedKeys,
+    uneditedDocument,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const addOperationsRef = useRef([])
@@ -87,6 +88,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
             hideLockedKeys={hideLockedKeys}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
             readOnly
+            uneditedDocument={uneditedDocument}
         />
     )
 }

@@ -58,7 +58,6 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
-import CodeEditor from '../CodeEditor/CodeEditor'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -606,8 +605,8 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 setIsValues(true)
-                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
+                    toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
                 }
                 break
@@ -754,6 +753,7 @@ export default function DeploymentConfig({
             return (
                 <DeploymentTemplateReadOnlyEditorView
                     value={state.publishedState?.tempFormData}
+                    uneditedDocument={state.publishedState?.tempFormData}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
                 />
@@ -785,6 +785,7 @@ export default function DeploymentConfig({
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
+                uneditedDocument={state.data}
             />
         )
     }
@@ -825,7 +826,6 @@ export default function DeploymentConfig({
                 reload={reload}
                 isValues={state.isValues}
                 convertVariables={state.convertVariables}
-                isSuperAdmin={isSuperAdmin}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 showLockedDiffForApproval={showLockedDiffForApproval}

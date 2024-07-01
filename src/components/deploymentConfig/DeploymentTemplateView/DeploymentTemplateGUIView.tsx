@@ -15,18 +15,27 @@
  */
 
 import React, { useContext, useMemo } from 'react'
-import { InfoColourBar, Progressing, RJSFForm, FormProps, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
+import {
+    InfoColourBar,
+    Progressing,
+    RJSFForm,
+    FormProps,
+    GenericEmptyState,
+    joinObjects,
+    flatMapOfJSONPaths,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, Schema, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
 import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { getRenderActionButton } from '../utils'
+import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
 
-const UISchema = {
+const baseUISchema = {
     'ui:submitButtonOptions': {
         norender: true,
     },
@@ -37,9 +46,9 @@ const DeploymentTemplateGUIView = ({
     value,
     readOnly,
     editorOnChange,
-    /* TODO: either keep lock or remove inputs */
     hideLockedKeys,
     lockedConfigKeysWithLockType,
+    uneditedDocument,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
@@ -47,38 +56,29 @@ const DeploymentTemplateGUIView = ({
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
 
-    const recursiveDeleteKey = (i: number, obj: Schema, parts: string[]) => {
-        if (obj.type === 'array' && obj.items?.type === 'object') {
-            recursiveDeleteKey(i, obj.items, parts)
-            return
-        }
-        if (obj.type !== 'object' || i > parts.length - 1) {
-            return
-        }
-        const key = parts[i].split(/\[|\]/, 2)[0]
-        if (i === parts.length - 1) {
-            if (key in obj.properties) {
-                delete obj.properties[key]
-            }
-        }
-        if (key in obj.properties) {
-            recursiveDeleteKey(i + 1, obj.properties[key], parts)
-        }
-    }
-
     const state = useMemo(() => {
         try {
             const parsedGUISchema = JSON.parse(guiSchema)
-            if (hideLockedKeys) {
-                lockedConfigKeysWithLockType.config.forEach((key) =>
-                    recursiveDeleteKey(0, parsedGUISchema, key.split('.')),
-                )
-            }
             if (!Object.keys(parsedGUISchema).length) {
                 throw new Error()
             }
+            if (!hideLockedKeys) {
+                return {
+                    guiSchema: parsedGUISchema,
+                    uiSchema: baseUISchema,
+                }
+            }
             return {
                 guiSchema: parsedGUISchema,
+                uiSchema: joinObjects([
+                    baseUISchema,
+                    ...lockedConfigKeysWithLockType.config.flatMap((key) => {
+                        // NOTE: we need to use the original document to evaluate the actual paths
+                        return flatMapOfJSONPaths([key], YAML.parse(uneditedDocument)).map((path) => {
+                            return makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))
+                        })
+                    }),
+                ]),
             }
         } catch {
             return {
@@ -122,7 +122,7 @@ const DeploymentTemplateGUIView = ({
                 schema={state.guiSchema}
                 formData={YAML.parse(value)}
                 onChange={handleFormChange}
-                uiSchema={UISchema}
+                uiSchema={state.uiSchema}
                 disabled={readOnly}
                 liveValidate
             />

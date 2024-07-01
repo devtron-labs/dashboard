@@ -58,6 +58,7 @@ const DeploymentTemplateEditorView = ({
     lockedConfigKeysWithLockType,
     hideLockKeysToggled,
     removedPatches,
+    uneditedDocument,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -521,6 +522,7 @@ const DeploymentTemplateEditorView = ({
     ) : (
         <DeploymentTemplateGUIView
             fetchingValues={fetchingValues}
+            uneditedDocument={uneditedDocument}
             value={rhs}
             readOnly={readOnly}
             hideLockedKeys={hideLockedKeys}
