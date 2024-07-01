@@ -84,7 +84,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
             >
                 <button
                     type="button"
-                    className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus icon-dim-24 flex"
+                    className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus icon-dim-24"
                     aria-label="Info Icon"
                 >
                     <ICBookOpen className="dc__no-shrink icon-dim-16 scn-6" />
