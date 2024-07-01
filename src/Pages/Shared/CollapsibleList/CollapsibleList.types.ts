@@ -81,4 +81,9 @@ export interface CollapsibleListProps {
      * An array of collapsible list configurations.
      */
     config: CollapsibleListConfig[]
+    /**
+     * An array containing the IDs of the collapsible items that need to be expanded. \
+     * Whenever this array is modified, the expanded state is updated internally.
+     */
+    expandedIds?: string[]
 }
