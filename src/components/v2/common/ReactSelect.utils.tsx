@@ -137,6 +137,10 @@ export const Option = (props) => {
     )
 }
 
+/**
+ * @deprecated - use from fe-common
+ */
+
 export const DropdownIndicator = (props) => {
     return (
         <components.DropdownIndicator {...props}>
