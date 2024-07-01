@@ -57,7 +57,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
 
                 {!pluginData.isLatest && (
                     <>
-                        <div className="dc__border-right--n1" />
+                        <div className="dc__border-right--n1 h-16" />
                         <div className="flexbox dc__gap-4">
                             {/* TODO: Sync with product for animation */}
                             <ICNewVersion className="dc__no-shrink icon-dim-16" />

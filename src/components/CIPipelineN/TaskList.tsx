@@ -33,6 +33,7 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as ICLegoBlock } from '../../assets/icons/ic-lego-block.svg'
+import { ReactComponent as ICEditFile } from '../../assets/icons/ic-edit-file.svg'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -376,10 +377,10 @@ export const TaskList = ({
         const pluginId = taskDetail.pluginRefStepDetail?.pluginId
         const { isLatest, icon, name } = pluginDataStore.pluginVersionStore[pluginId] || {}
 
-        // If no plugin, then use ic-file
-
         if (!pluginId) {
-            return <p>Placeholder image</p>
+            return (
+                <ICEditFile className="dc__no-shrink icon-dim-20" />
+            )
         }
 
         if (isLatest) {

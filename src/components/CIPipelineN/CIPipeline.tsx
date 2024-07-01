@@ -244,6 +244,7 @@ export default function CIPipeline({
          */
         requiredPluginIds?: PluginDetailPayloadType['pluginId'],
     ): Promise<void> => {
+        // We don't support mandatory plugins in job?
         if (!isJobCard && processPluginData && prepareFormData) {
             let branchName = ''
             if (_formData?.materials?.length) {
@@ -295,7 +296,7 @@ export default function CIPipeline({
 
         const uniquePluginIds = [...new Set([...preBuildPluginIds, ...postBuildPluginIds])]
 
-        if (processPluginData && prepareFormData) {
+        if (processPluginData && prepareFormData && !isJobCard) {
             await getMandatoryPluginData(_formData, uniquePluginIds)
             return
         }
