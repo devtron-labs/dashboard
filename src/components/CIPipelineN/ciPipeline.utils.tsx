@@ -314,7 +314,10 @@ export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType 
 }
 
 export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelectOptionType, false>) => {
-    const { data: {isLatest, label} } = props
+    const {
+        data: { isLatest, label },
+    } = props
+
     return (
         <components.Option {...props}>
             <div className="flexbox-col dc__gap-4">
@@ -327,14 +330,17 @@ export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelect
 
 export const pluginVersionSelectStyle: StylesConfig<PluginVersionSelectOptionType, false> = {
     ...commonSelectStyles,
-    control: (base, state) => state.menuIsOpen ? commonSelectStyles.control(base, state) : ({
-        border: 'none',
-        minHeight: '20px',
-        display: 'grid',
-        gridTemplateColumns: 'auto 20px',
-        justifyContent: 'flex-start',
-        gap: '4px',
-        alignItems: 'center',
-        cursor: 'pointer',
-    }),
+    control: (base, state) =>
+        state.menuIsOpen
+            ? commonSelectStyles.control(base, state)
+            : {
+                  border: 'none',
+                  minHeight: '20px',
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 20px',
+                  justifyContent: 'flex-start',
+                  gap: '4px',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+              },
 }

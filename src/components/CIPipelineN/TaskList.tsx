@@ -379,7 +379,7 @@ export const TaskList = ({
 
         if (!pluginId) {
             return (
-                <ICEditFile className="dc__no-shrink icon-dim-20" />
+                <ICEditFile className="dc__no-shrink icon-dim-20 scn-6" />
             )
         }
 

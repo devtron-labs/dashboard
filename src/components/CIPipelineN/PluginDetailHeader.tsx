@@ -68,30 +68,28 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 )}
             </div>
 
-            {pluginData.docLink && (
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    Icon={ICHelp}
-                    className="w-300"
-                    heading={pluginData.name}
-                    infoText={pluginData.description}
-                    additionalContent={<PluginTagsContainer tags={pluginData.tags} />}
-                    iconClass="fcv-5"
-                    showCloseButton
-                    trigger="click"
-                    interactive
-                    documentationLink={pluginData.docLink}
-                    documentationLinkText="View documentation"
+            <TippyCustomized
+                theme={TippyTheme.white}
+                Icon={ICHelp}
+                className="w-300"
+                heading={pluginData.name}
+                infoText={pluginData.description}
+                additionalContent={<PluginTagsContainer tags={pluginData.tags} rootClassName="p-12" />}
+                iconClass="fcv-5"
+                showCloseButton
+                trigger="click"
+                interactive
+                documentationLink={pluginData.docLink}
+                documentationLinkText="View documentation"
+            >
+                <button
+                    type="button"
+                    className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus icon-dim-24 flex"
+                    aria-label="Info Icon"
                 >
-                    <button
-                        type="button"
-                        className="p-0 dc__no-background dc__no-border dc__outline-none-imp flex dc__tab-focus icon-dim-24 flex"
-                        aria-label="Info Icon"
-                    >
-                        <ICBookOpen className="dc__no-shrink icon-dim-16 scn-6" />
-                    </button>
-                </TippyCustomized>
-            )}
+                    <ICBookOpen className="dc__no-shrink icon-dim-16 scn-6" />
+                </button>
+            </TippyCustomized>
         </div>
     )
 }
