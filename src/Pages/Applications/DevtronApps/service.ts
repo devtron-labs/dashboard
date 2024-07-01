@@ -18,7 +18,10 @@
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../config'
-import { AppConfigStatusResponse } from './service.types'
+import { AppConfigStatusResponse, EnvConfigResponse } from './service.types'
 
 export const getAppConfigStatus = (appId: number, isJobView?: boolean): Promise<AppConfigStatusResponse> =>
     get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
+
+export const getEnvConfig = (appId: number, envId: number): Promise<EnvConfigResponse> =>
+    get(`${Routes.ENV_CONFIG}?appId=${appId}&envId=${envId}`)

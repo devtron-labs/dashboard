@@ -20,6 +20,7 @@ import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment, AppOtherEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
+import { ResourceConfig } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -48,7 +49,6 @@ export enum DEFAULT_LANDING_STAGE {
 export interface AppConfigProps {
     appName: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
-    isJobView?: boolean
     filteredEnvIds?: string
 }
 
@@ -83,6 +83,8 @@ export interface AppConfigState {
     isBaseConfigProtected?: boolean
     /** Array of configuration protection data which denotes which env is in protected state. */
     configProtectionData?: ConfigProtection[]
+    /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
+    envConfig: EnvConfigurationState
 }
 
 export interface AppStageUnlockedType {
@@ -98,12 +100,12 @@ export interface AppStageUnlockedType {
 
 export interface CustomNavItemsType {
     title: string
-    href: string
-    stage: string
-    isLocked: boolean
-    supportDocumentURL: string
-    flowCompletionPercent: number
-    currentStep: number
+    href?: string
+    stage?: string
+    isLocked?: boolean
+    supportDocumentURL?: string
+    flowCompletionPercent?: number
+    currentStep?: number
     required?: boolean
     isProtectionAllowed?: boolean
     altNavKey?: string
@@ -182,4 +184,21 @@ export interface AppConfigurationContextType {
     isWorkflowEditorUnlocked: boolean
     getRepo: string
     hideConfigHelp: boolean
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: (envId: number) => void
+}
+
+export interface EnvResourceConfig extends Pick<ResourceConfig, 'configState'> {
+    title: ResourceConfig['name']
+}
+
+export interface EnvConfigurationState {
+    /** Indicates if the environment configuration is currently loading. */
+    isLoading: boolean
+    /** The deployment template configuration. */
+    deploymentTemplate: EnvResourceConfig | null
+    /** Array of configuration maps. */
+    configMaps: EnvResourceConfig[]
+    /** Array of secrets. */
+    secrets: EnvResourceConfig[]
 }

@@ -47,7 +47,7 @@ import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from '.
 import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
-import '../appConfig.scss'
+import { renderNavItem } from './Navigation.helper'
 
 const EnvOverridesHelpNote = () => {
     return (
@@ -423,22 +423,32 @@ const EnvironmentOverrideRouter = ({
         if ((isJobView ? jobEnvs : allEnvs).length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {(isJobView ? jobEnvs : allEnvs).map((env) => {
-                        return (
-                            !env.deploymentAppDeleteRequest && (
-                                <EnvOverrideRoute
-                                    envOverride={env}
-                                    key={env.environmentName}
-                                    isJobView={isJobView}
-                                    ciPipelines={ciPipelines}
-                                    reload={reloadEnvData}
-                                    appId={appId}
-                                    workflowsRes={workflowsRes}
-                                    isEnvProtected={env.isProtected}
-                                />
-                            )
-                        )
-                    })}
+                    {isJobView
+                        ? jobEnvs.map(
+                              (env) =>
+                                  !env.deploymentAppDeleteRequest && (
+                                      <EnvOverrideRoute
+                                          envOverride={env}
+                                          key={env.environmentName}
+                                          isJobView={isJobView}
+                                          ciPipelines={ciPipelines}
+                                          reload={reloadEnvData}
+                                          appId={appId}
+                                          workflowsRes={workflowsRes}
+                                          isEnvProtected={env.isProtected}
+                                      />
+                                  ),
+                          )
+                        : allEnvs.map((env) =>
+                              renderNavItem(
+                                  {
+                                      title: env.environmentName,
+                                      isProtectionAllowed: env.isProtected,
+                                      href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/deployment-template`,
+                                  },
+                                  env.isProtected,
+                              ),
+                          )}
                 </div>
             )
         }

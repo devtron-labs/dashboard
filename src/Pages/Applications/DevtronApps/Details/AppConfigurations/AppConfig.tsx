@@ -24,6 +24,7 @@ import {
     DeleteDialog,
     ConfirmationDialog,
     useAsync,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
@@ -40,19 +41,19 @@ import {
     ConfigProtection,
 } from './appConfig.type'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
-import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
+import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked, getDTCMSecretList } from './AppConfig.utils'
 import AppComposeRouter from './AppComposeRouter'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppNavigation } from './Navigation/AppNavigation'
 import { AppConfigStatusResponseItem } from '../../service.types'
-import { getAppConfigStatus } from '../../service'
+import { getAppConfigStatus, getEnvConfig } from '../../service'
 import { AppOtherEnvironment } from '../../../../../services/service.types'
 import { AppConfigurationContext } from './AppConfiguration.context'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
 
-export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps) => {
+export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigProps) => {
     // HOOKS
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
@@ -63,7 +64,6 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
     const [showCannotDeleteTooltip, setShowCannotDeleteTooltip] = useState(false)
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
     const [reload, setReload] = useState(false)
-
     const [state, setState] = useState<AppConfigState>({
         view: 'LOADING',
         stageName: STAGE_NAME.LOADING,
@@ -80,7 +80,16 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
         environmentList: [],
         isBaseConfigProtected: false,
         configProtectionData: [],
+        envConfig: {
+            isLoading: true,
+            deploymentTemplate: null,
+            configMaps: [],
+            secrets: [],
+        },
     })
+
+    // GLOBAL CONSTANTS
+    const isJobView = resourceKind === ResourceKindType.job
 
     /**
      * Fetches environment configurations and protections for a given application.
@@ -147,11 +156,45 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
                 .catch(reject)
         })
 
+    /**
+     * Fetches environment configuration for a given environment ID.
+     *
+     * This function updates the component state to indicate that the environment configuration is loading,
+     * retrieves the configuration from the server, and updates the state with the retrieved configuration data.
+     * In case of an error, it shows an error message and ensures the loading state is reset.
+     *
+     * @param envId - The ID of the environment for which the configuration is to be fetched.
+     */
+    const fetchEnvConfig = (envId: number) => {
+        // Set loading state to true
+        setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: true } }))
+
+        // Fetch environment configuration
+        getEnvConfig(+appId, envId)
+            .then(({ result }) => {
+                setState((prevState) => ({
+                    ...prevState,
+                    envConfig: {
+                        isLoading: false,
+                        deploymentTemplate: getDTCMSecretList(result, 'Deployment Template')[0],
+                        configMaps: getDTCMSecretList(result, 'ConfigMap'),
+                        secrets: getDTCMSecretList(result, 'Secret'),
+                    },
+                }))
+            })
+            .catch((err) => {
+                showError(err)
+            })
+            .finally(() => {
+                setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: false } }))
+            })
+    }
+
     // ASYNC CALLS
     const [, userRoleRes, userRoleErr] = useAsync(() => getUserRole(appName), [appName])
     const [, appConfigData, appConfigError] = useAsync(
         () => Promise.all([getAppConfigStatus(+appId, isJobView), getWorkflowList(appId), fetchEnvironments()]),
-        [appId, filteredEnvIds, reload, isJobView],
+        [appId, filteredEnvIds, reload, resourceKind],
     )
 
     // CONSTANTS
@@ -159,8 +202,8 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
     const canShowExternalLinks =
         userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
     const hideConfigHelp = isJobView ? state.isCiPipeline : state.isCDPipeline
-    const isGitOpsConfigurationRequired = state.navItems.find(
-        (item) => item.stage === STAGE_NAME.GITOPS_CONFIG,
+    const isGitOpsConfigurationRequired = appConfigData?.[0].result?.find(
+        (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
     )?.required
 
     useEffect(() => {
@@ -224,12 +267,8 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
                 }
                 _lastConfiguredStage = STAGE_NAME.LOADING
             } else {
-                const _isGitOpsConfigurationRequired = configStatus.find(
-                    (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
-                )?.required
-
                 _lastConfiguredStage = lastConfiguredStage.stageName
-                _configs = isUnlocked(_lastConfiguredStage, _isGitOpsConfigurationRequired)
+                _configs = isUnlocked(_lastConfiguredStage, isGitOpsConfigurationRequired)
             }
         }
 
@@ -241,7 +280,7 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
 
     const processConfigStatusData = (configStatusRes: AppConfigStatusResponseItem[]) => {
         const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
-        const { navItems } = getNavItems(configs, appId, isJobView, configStatusRes)
+        const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
         let index = navItems.findIndex((item) => item.isLocked)
         if (index < 0) {
             index = isJobView ? DEFAULT_LANDING_STAGE.JOB_VIEW : DEFAULT_LANDING_STAGE.DEVTRON_APPS
@@ -261,6 +300,7 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
                 processConfigStatusData(configStatusRes.result)
 
             setState({
+                ...state,
                 view: 'FORM',
                 statusCode: 200,
                 stageName: lastConfiguredStage,
@@ -423,6 +463,21 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
             : ''
     }
 
+    const getAppComposeClasses = () => {
+        if (location.pathname.match(/(deployment-template|configmap|secret)/)) {
+            return 'app-compose-env-configurations__nav'
+        }
+        return `${
+            isGitOpsConfigurationRequired
+                ? 'app-compose-with-gitops-config__nav'
+                : 'app-compose-with-no-gitops-config__nav'
+        } ${isJobView ? 'job-compose__side-nav' : ''} ${
+            !showCannotDeleteTooltip ? 'dc__position-rel' : ''
+        }  ${hideConfigHelp ? 'hide-app-config-help' : ''} ${!canShowExternalLinks ? 'hide-external-links' : ''} ${
+            state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView ? 'config-protection__side-nav' : ''
+        }`
+    }
+
     const toggleRepoSelectionTippy = () => {
         setShowCannotDeleteTooltip(!showCannotDeleteTooltip)
     }
@@ -455,6 +510,8 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
             filteredEnvIds,
             reloadAppConfig,
             lastUnlockedStage: state.redirectionUrl,
+            envConfig: state.envConfig,
+            fetchEnvConfig,
         }),
         [
             appId,
@@ -479,21 +536,7 @@ export const AppConfig = ({ appName, isJobView, filteredEnvIds }: AppConfigProps
     return (
         <AppConfigurationContext.Provider value={contextValue}>
             <div className={`app-compose ${getAdditionalParentClass()}`}>
-                <div
-                    className={`app-compose__nav ${
-                        isGitOpsConfigurationRequired
-                            ? 'app-compose-with-gitops-config__nav'
-                            : 'app-compose-with-no-gitops-config__nav'
-                    } ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
-                        showCannotDeleteTooltip ? '' : 'dc__position-rel'
-                    } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
-                        canShowExternalLinks ? '' : 'hide-external-links'
-                    } ${
-                        state.isUnlocked.workflowEditor && ConfigProtectionView && !isJobView
-                            ? 'config-protection__side-nav'
-                            : ''
-                    }`}
-                >
+                <div className={`app-compose__nav ${getAppComposeClasses()} flex column left top dc__overflow-scroll`}>
                     <AppNavigation />
                 </div>
                 <div className="app-compose__main">

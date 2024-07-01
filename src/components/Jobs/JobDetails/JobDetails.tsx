@@ -84,7 +84,7 @@ export default function JobDetails() {
                             <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} isJobView />
+                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>

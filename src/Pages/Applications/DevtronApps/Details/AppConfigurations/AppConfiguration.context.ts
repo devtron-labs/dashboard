@@ -17,50 +17,8 @@
 import React from 'react'
 
 import { AppConfigurationContextType } from './appConfig.type'
-import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 
-export const AppConfigurationContext = React.createContext<AppConfigurationContextType>({
-    appId: '',
-    isUnlocked: {
-        configmap: false,
-        deploymentTemplate: false,
-        dockerBuildConfig: false,
-        material: false,
-        workflowEditor: false,
-        secret: false,
-        envOverride: false,
-        gitOpsConfig: false,
-    },
-    navItems: [],
-    respondOnSuccess: () => {},
-    isCiPipeline: false,
-    getWorkflows: () => {},
-    isCDPipeline: false,
-    environments: [],
-    workflowsRes: {
-        appId: -1,
-        appName: '',
-        isGitOpsRepoNotConfigured: false,
-        workflows: [],
-    },
-    userRole: UserRoleType.View,
-    canShowExternalLinks: false,
-    toggleRepoSelectionTippy: () => {},
-    setRepoState: () => {},
-    isJobView: false,
-    isBaseConfigProtected: false,
-    reloadEnvironments: () => {},
-    configProtectionData: [],
-    filteredEnvIds: '',
-    isGitOpsConfigurationRequired: false,
-    reloadAppConfig: () => {},
-    lastUnlockedStage: '',
-    deleteApp: () => {},
-    showCannotDeleteTooltip: false,
-    isWorkflowEditorUnlocked: false,
-    getRepo: '',
-    hideConfigHelp: false,
-})
+export const AppConfigurationContext = React.createContext<AppConfigurationContextType>(null)
 
 export const useAppConfigurationContext = () => {
     const context = React.useContext(AppConfigurationContext)
