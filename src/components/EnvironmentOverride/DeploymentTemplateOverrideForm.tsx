@@ -34,7 +34,6 @@ import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { handleConfigProtectionError } from '../deploymentConfig/DeploymentConfig.utils'
-import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
