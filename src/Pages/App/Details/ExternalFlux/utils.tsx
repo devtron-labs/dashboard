@@ -1,9 +1,11 @@
-export const getAppStatus = (appStatus: string) => {
+import { EXTERNAL_FLUX_APP_STATUS } from './types'
+
+export const getAppStatus = (appStatus: string): string => {
     if (appStatus === 'True') {
-        return 'Ready'
+        return EXTERNAL_FLUX_APP_STATUS.READY
     }
     if (appStatus === 'False') {
-        return 'Not Ready'
+        return EXTERNAL_FLUX_APP_STATUS.NOT_READY
     }
     return appStatus
 }

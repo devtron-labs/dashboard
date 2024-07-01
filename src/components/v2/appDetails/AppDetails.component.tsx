@@ -17,7 +17,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { DeploymentAppTypes, Progressing, processDeploymentStatusDetailsData } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    Progressing,
+    processDeploymentStatusDetailsData,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetailsComponentType, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -58,7 +62,6 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const deploymentModalShownRef = useRef(null)
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
     deploymentModalShownRef.current = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
     // State to track the loading state for the timeline data when the detailed status modal opens
     const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
@@ -198,7 +201,7 @@ const AppDetailsComponent = ({
                 )}
             </div>
 
-            {(
+            {!appDetails.deploymentAppDeleteRequest && (
                 <AppLevelExternalLinks
                     helmAppDetails={appDetails}
                     externalLinks={externalLinks}

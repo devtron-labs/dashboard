@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { SortBy } from '../list/types'
+
 export const APP_LIST_HEADERS = {
     AppName: 'App name',
     AppStatus: 'App status',
@@ -114,8 +117,8 @@ export const InitialEmptyUrlFilters = {
     appNameSearch: '',
     appStatuses: [],
     templateType: [],
-    sortBy: 'appNameSort',
-    sortOrder: 'ASC',
+    sortBy: SortBy.APP_NAME,
+    sortOrder: SortingOrder.ASC,
     offset: 0,
     hOffset: 0,
     size: 20,

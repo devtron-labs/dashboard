@@ -615,7 +615,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             return
         }
         setParsedPayloadOnUrlChange(InitialEmptyUrlFilters)
-        history.push(`${getChangeAppTabURL(appTabType)}`)
+        history.push(getChangeAppTabURL(appTabType))
         setCurrentTab(appTabType)
     }
 
@@ -812,19 +812,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                     {isExternalFlux && (
                         <>
-                        <Filter
-                            labelKey="label"
-                            buttonText="Template Type"
-                            multi
-                            isDisabled={dataStateType === AppListViewType.LOADING}
-                            list={masterFilters.templateType}
-                            placeholder="Search Template Type"
-                            type={AppListConstants.FilterType.TEMPLATE_TYPE}
-                            applyFilter={applyFilter}
-                            searchable
-                            isFirstLetterCapitalize
-                        />
-                        <span className="filter-divider" />
+                            <Filter
+                                labelKey="label"
+                                buttonText="Template Type"
+                                multi
+                                isDisabled={dataStateType === AppListViewType.LOADING}
+                                list={masterFilters.templateType}
+                                placeholder="Search Template Type"
+                                type={AppListConstants.FilterType.TEMPLATE_TYPE}
+                                applyFilter={applyFilter}
+                                searchable
+                                isFirstLetterCapitalize
+                            />
+                            <span className="filter-divider" />
                         </>
                     )}
                     <Filter
@@ -1069,7 +1069,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className='flexbox-col h-100'>
+        <div className="flexbox-col h-100">
             <HeaderWithCreateButton headerName="Applications" />
             {renderMasterFilters()}
             {renderAppliedFilters()}

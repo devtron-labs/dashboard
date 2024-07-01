@@ -51,6 +51,7 @@ import { GenericAppListProps } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { GenericAppListResponse, GenericAppType } from './AppListType'
 import { renderIcon } from './list.utils'
+import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
 
 // This app list is currently used for ExternalArgoCD and ExternalFluxCD app listing
 const GenericAppList = ({
@@ -96,9 +97,9 @@ const GenericAppList = ({
                     const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
                     externalAppData.result.fluxApplication.forEach((fluxApp) => {
                         if (fluxApp.appStatus === 'True') {
-                            fluxApp.appStatus = 'Ready'
+                            fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
                         } else if (fluxApp.appStatus === 'False') {
-                            fluxApp.appStatus = 'Not Ready'
+                            fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
                         }
                     })
 

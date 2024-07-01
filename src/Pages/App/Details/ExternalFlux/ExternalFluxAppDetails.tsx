@@ -21,7 +21,6 @@ import {
     useAsync,
     useMainContext,
     noop,
-    useInterval,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
@@ -37,32 +36,36 @@ const ExternalFluxAppDetails = () => {
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
 
-    useEffect(() => {
-        return () => {
-            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_FLUX_APP)
-        }
-    }, [])
+    let initTimer = null
 
     const [isAppDetailsLoading, appDetailsResult, appDetailsError, reloadAppDetails] = useAsync(
         () => getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization),
-        [],
+        [clusterId, appName, namespace, templateType],
         isSuperAdmin,
         {
             resetOnChange: false,
         },
     )
 
-    useInterval(reloadAppDetails, 30000)
+    useEffect(() => {
+        return () => {
+            IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_FLUX_APP)
+            clearTimeout(initTimer)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (appDetailsResult && !appDetailsError) {
+            initTimer = setTimeout(reloadAppDetails, 3000)
+            const genericAppDetail = {
+                ...appDetailsResult.result,
+                appStatus: getAppStatus(appDetailsResult.result.appStatus),
+            }
+            IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+        }
+    }, [appDetailsResult])
 
     const isLoading = isAppDetailsLoading && (!appDetailsResult || appDetailsError)
-
-    if (!isAppDetailsLoading && appDetailsResult) {
-        const genericAppDetail = {
-            ...appDetailsResult.result,
-            appStatus: getAppStatus(appDetailsResult.result.appStatus),
-        }
-        IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
-    }
 
     if (!isSuperAdmin) {
         return <ErrorScreenManager code={403} />

@@ -4,3 +4,8 @@ export interface ExternalFluxAppDetailParams {
     namespace: string
     templateType: string
 }
+
+export enum EXTERNAL_FLUX_APP_STATUS {
+    READY = 'Ready',
+    NOT_READY = 'Not Ready',
+}
