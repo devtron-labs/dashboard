@@ -29,6 +29,7 @@ import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-ch
 import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
+import { ReactComponent as ICDownload } from '../../../../../../../assets/icons/ic-arrow-line-down.svg'
 import {
     SelectWrapperType,
     ReactSelectType,
@@ -329,6 +330,27 @@ const manifestEditButtons = ({
     )
 }
 
+const downloadFileFolderButton = (elementData) => {
+    if (elementData.hideTerminalStripComponent) {
+        return null
+    }
+
+    const handleClick = () => {
+        elementData.setShowDownloadFileFolderModal(true)
+    }
+
+    return (
+        <button
+            className="dc__transparent flexbox dc__gap-4 dc__align-items-center pr-8"
+            type="button"
+            onClick={handleClick}
+        >
+            <ICDownload className="icon-dim-16 dc__no-shrink" />
+            <span className="fs-12 lh-20 fw-6 cb-5">Download file/folder</span>
+        </button>
+    )
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
         case TerminalWrapperType.CREATABLE_SELECT:
@@ -351,6 +373,8 @@ export default function terminalStripTypeData(elementData) {
             return debugModeToggleButton(elementData)
         case TerminalWrapperType.CUSTOM_COMPONENT:
             return elementData.customComponent()
+        case TerminalWrapperType.DOWNLOAD_FILE_FOLDER:
+            return downloadFileFolderButton(elementData)
         default:
             return null
     }
