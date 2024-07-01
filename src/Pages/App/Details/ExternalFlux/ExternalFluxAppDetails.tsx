@@ -56,7 +56,7 @@ const ExternalFluxAppDetails = () => {
 
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
-            initTimer = setTimeout(reloadAppDetails, 3000)
+            initTimer = setTimeout(reloadAppDetails, 30000)
             const genericAppDetail = {
                 ...appDetailsResult.result,
                 appStatus: getAppStatus(appDetailsResult.result.appStatus),

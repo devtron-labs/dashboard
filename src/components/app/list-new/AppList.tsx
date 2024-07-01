@@ -724,9 +724,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
         // In case of apps other than devtron apps, we are hiding virtual clusters from filters
         const clusterFilters =
-            params.appType === AppListConstants.AppType.DEVTRON_APPS
-                ? masterFilters.clusters
-                : masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
+            isExternalArgo || isExternalFlux
+                ? masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
+                : masterFilters.clusters
 
         return (
             <div className="search-filter-section">
