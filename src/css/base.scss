@@ -2207,6 +2207,12 @@ button.anchor {
     }
 }
 
+.dc__border-bottom-dashed {
+    &--n3 {
+        border-bottom: dashed 1px var(--N300);
+    }
+}
+
 .dc__border-bottom-v2 {
     border-bottom: solid 1px var(--V200);
 }
