@@ -10,7 +10,11 @@
                     "items": {
                         "type": "string"
                     },
-                    "title": "Value"
+                    "title": "Value",
+                    "hidden": {
+                        "condition": false,
+                        "match": "enabled"
+                    }
                 },
                 "enabled": {
                     "type": "boolean",
@@ -27,7 +31,11 @@
                     "items": {
                         "type": "string"
                     },
-                    "title": "Value"
+                    "title": "Value",
+                    "hidden": {
+                        "condition": false,
+                        "match": "enabled"
+                    }
                 },
                 "enabled": {
                     "type": "boolean",
@@ -149,7 +157,11 @@
                     "type": "boolean"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "hidden": {
+                        "condition": false,
+                        "match": "create"
+                    }
                 }
             }
         }
