@@ -51,6 +51,7 @@ export interface TerminalWrapperComponentType {
     isEnabled?: boolean
     dataTestId?: string
     classNamePrefix?: string
+    setShowDownloadFileFolderModal?: (showDownloadileFolderModal: boolean) => void
 }
 
 export interface TerminalSelectionListDataType {

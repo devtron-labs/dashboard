@@ -92,4 +92,5 @@ export enum TerminalWrapperType {
     MANIFEST_EDIT_BUTTONS = 'manifestEditButtons',
     DEBUG_MODE_TOGGLE_BUTTON = 'debugModeToggleButton',
     CUSTOM_COMPONENT = 'customComponent',
+    DOWNLOAD_FILE_FOLDER = 'downloadFileFolder',
 }
