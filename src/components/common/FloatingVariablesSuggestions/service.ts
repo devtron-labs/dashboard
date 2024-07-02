@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
+import { ScopedVariableType } from './types'
 
 const generateScope = (key, value) => {
     if (key && value) {
@@ -24,7 +25,7 @@ const generateScope = (key, value) => {
     return ''
 }
 
-export const getScopedVariables = (appId, envId, clusterId) => {
+export const getScopedVariables = async (appId, envId, clusterId, hideObjectVariables: boolean = true): Promise<ScopedVariableType[]> => {
     let query = `?appId=${appId}&scope={`
 
     query += generateScope('appId', appId)
@@ -37,5 +38,14 @@ export const getScopedVariables = (appId, envId, clusterId) => {
 
     query += '}'
 
-    return get(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`)
+    const { result } = await get(`${Routes.SCOPED_GLOBAL_VARIABLES}${query}`) as ResponseType<ScopedVariableType[]>
+    if (!result) {
+        return []
+    }
+
+    if (hideObjectVariables) {
+        return result.filter((variable) => !variable.variableValue || typeof variable.variableValue.value !== 'object')
+    }
+
+    return result
 }

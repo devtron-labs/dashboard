@@ -32,6 +32,7 @@ import { SUGGESTIONS_SIZE } from './constants'
  * @param envId - (Optional)
  * @param clusterId - (Optional)
  * @param bounds - (Optional) To set the bounds of the suggestions
+ * @param hideObjectVariables - (Optional) To hide the object/array variables, default is true
  * @returns
  */
 const FloatingVariablesSuggestions = ({
@@ -40,13 +41,14 @@ const FloatingVariablesSuggestions = ({
     envId,
     clusterId,
     bounds,
+    hideObjectVariables = true,
 }: FloatingVariablesSuggestionsProps) => {
     const [isActive, setIsActive] = useState<boolean>(false)
     const [collapsedPosition, setCollapsedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
     const [expandedPosition, setExpandedPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
     const [loadingScopedVariables, variablesData, error, reloadScopedVariables] = useAsync(
-        () => getScopedVariables(appId, envId, clusterId),
+        () => getScopedVariables(appId, envId, clusterId, hideObjectVariables),
         [appId, envId, clusterId],
     )
 
@@ -217,7 +219,7 @@ const FloatingVariablesSuggestions = ({
                 <Suggestions
                     handleDeActivation={handleDeActivation}
                     loading={loadingScopedVariables}
-                    variables={variablesData?.result ?? []}
+                    variables={variablesData ?? []}
                     reloadVariables={reloadScopedVariables}
                     error={error}
                 />
