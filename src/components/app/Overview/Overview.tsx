@@ -59,6 +59,7 @@ const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const DependencyList = importComponentFromFELibrary('DependencyList')
 const DeploymentWindowOverview = importComponentFromFELibrary('DeploymentWindowOverview')
+const PartOfReleaseTrack = importComponentFromFELibrary('PartOfReleaseTrack', null, 'function')
 
 type AvailableTabs = (typeof OVERVIEW_TABS)[keyof typeof OVERVIEW_TABS]
 
@@ -327,6 +328,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             </div>
                         </div>
                     )}
+                    {PartOfReleaseTrack && <PartOfReleaseTrack appId={+appId} />}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}
