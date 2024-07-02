@@ -340,14 +340,17 @@ const downloadFileFolderButton = (elementData) => {
     }
 
     return (
-        <button
-            className="dc__transparent flexbox dc__gap-4 dc__align-items-center pr-8"
-            type="button"
-            onClick={handleClick}
-        >
-            <ICDownload className="icon-dim-16 dc__no-shrink" />
-            <span className="fs-12 lh-20 fw-6 cb-5">Download file/folder</span>
-        </button>
+        <>
+            <span className="dc__border-right h-16" />
+            <button
+                className="dc__transparent flexbox dc__gap-4 dc__align-items-center px-8"
+                type="button"
+                onClick={handleClick}
+            >
+                <ICDownload className="icon-dim-16 dc__no-shrink" />
+                <span className="fs-12 lh-20 fw-6 cb-5">Download file/folder</span>
+            </button>
+        </>
     )
 }
 

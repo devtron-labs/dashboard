@@ -40,8 +40,10 @@ import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
 import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
+import { importComponentFromFELibrary } from '../../../../../common'
 
 let clusterTimeOut
+const DownloadFileFolderModal = importComponentFromFELibrary('DownloadFileFolderModal', null, 'function')
 
 const TerminalComponent = ({
     selectedTab,
@@ -75,6 +77,7 @@ const TerminalComponent = ({
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.DISCONNECTED)
     const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
+    const [showDownloadFileFolderModal, setShowDownloadFileFolderModal] = useState<boolean>(false)
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
@@ -250,6 +253,10 @@ const TerminalComponent = ({
         }
     }, [socketConnection])
 
+    const handleCloseDownloadModal = () => {
+        setShowDownloadFileFolderModal(false)
+    }
+
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
     }
@@ -321,6 +328,11 @@ const TerminalComponent = ({
                     Option,
                 },
             },
+            {
+                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: false,
+                setShowDownloadFileFolderModal,
+            },
         ],
         tabSwitcher: {
             terminalData: {
@@ -343,6 +355,9 @@ const TerminalComponent = ({
                 setSocketConnection={setSocketConnection}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
+            {
+                showDownloadFileFolderModal && <DownloadFileFolderModal handleClose={handleCloseDownloadModal} />
+            }
         </div>
     )
 }
