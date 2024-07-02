@@ -21,7 +21,7 @@ import { DELETE_ACTION } from '../../config'
 import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
 
-export default function DeleteCDNode({
+const DeleteCDNode = ({
     deleteDialog,
     setDeleteDialog,
     clusterName,
@@ -33,7 +33,7 @@ export default function DeleteCDNode({
     deleteTitleName,
     isLoading,
     showConfirmationBar,
-}: Readonly<DeleteCDNodeProps>) {
+}: Readonly<DeleteCDNodeProps>) => {
     const [deleteInput, setDeleteInput] = useState<string>('')
     const deleteTitle = showConfirmationBar
         ? `Delete Pipeline for '${deleteTitleName}' ?`
@@ -100,3 +100,5 @@ export default function DeleteCDNode({
         </DeleteDialog>
     )
 }
+
+export default DeleteCDNode
