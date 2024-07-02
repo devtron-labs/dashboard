@@ -253,6 +253,7 @@ export interface ChartInstalledConfig {
     referenceValueKind: string
     valuesSchemaJson?: string
     deploymentAppType?: string
+    isManifestScanEnabled: boolean
 }
 
 export interface ChartValuesViewState {
@@ -317,6 +318,7 @@ export interface ChartValuesViewState {
         chartVersionId: number
         chartValuesId: number
     }
+    isManifestScanEnabled: boolean
 }
 
 export enum ChartValuesViewActionTypes {
@@ -372,6 +374,7 @@ export enum ChartValuesViewActionTypes {
     setGitRepoURL = 'setGitRepoURL',
     updateGitOpsConfiguration = 'updateGitOpsConfiguration',
     setInitialChartVersionValues = 'setInitialChartVersionValues',
+    setIsManifestScanEnabled = 'setIsManifestScanEnabled'
 }
 
 export interface ChartValuesViewAction {
