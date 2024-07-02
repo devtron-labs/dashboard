@@ -15,13 +15,12 @@
  */
 
 import React, { Component } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import { FilterProps, FilterState } from './types'
 import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import './filter.css'
 import Tippy from '@tippyjs/react'
 import { replaceLastOddBackslash } from '../../../util/Util'
-import { AppListConstants } from '../../../config'
 
 export class Filter extends Component<FilterProps, FilterState> {
     node

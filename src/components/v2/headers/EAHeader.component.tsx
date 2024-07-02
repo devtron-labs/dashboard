@@ -18,13 +18,13 @@ import React from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { useParams, useRouteMatch } from 'react-router'
-import { URLS, AppListConstants } from '../../../config'
-import './header.scss'
 import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../../config'
+import './header.scss'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EAHeaderComponentType } from './appHeader.type'
 
-const EAHeaderComponent = ({ title, redirectURL, appType }: EAHeaderComponentType) => {
+const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: EAHeaderComponentType) => {
     const match = useRouteMatch()
     const params = useParams<{ appId: string; appName: string }>()
 
@@ -57,7 +57,7 @@ const EAHeaderComponent = ({ title, redirectURL, appType }: EAHeaderComponentTyp
                         App details
                     </NavLink>
                 </li>
-                {appType !== AppListConstants.AppType.ARGO_APPS && (
+                {!showAppDetailsOnly && (
                     <>
                         <li className="tab-list__tab">
                             <NavLink

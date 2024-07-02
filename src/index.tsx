@@ -147,6 +147,7 @@ if (!window || !window._env_) {
         HIDE_RELEASES: true,
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
+        FEATURE_EXTERNAL_FLUX_CD_ENABLE: false,
     }
 }
 

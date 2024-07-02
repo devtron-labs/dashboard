@@ -32,10 +32,12 @@ export const URLS = {
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
+    EXTERNAL_FLUX_APP: 'external-flux',
     APP_LIST: 'list',
     APP_LIST_DEVTRON: 'd',
     APP_LIST_HELM: 'h',
     APP_LIST_ARGO: 'a',
+    APP_LIST_FLUX: 'f',
     APPS: '/devtron-apps', // for V2 router
     HELM_CHARTS: 'helm-apps', // for V2 router
     APP_VALUES: 'values', // for V2 router
@@ -117,6 +119,10 @@ export const URLS = {
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
     RELEASES: '/releases',
+    DEVTRON_APP_LIST: '/app/list/d',
+    HELM_APP_LIST: '/app/list/h',
+    ARGO_APP_LIST: '/app/list/a',
+    FLUX_APP_LIST: '/app/list/f',
     BUILD: '/build',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
 }

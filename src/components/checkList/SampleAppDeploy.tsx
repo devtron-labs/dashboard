@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { AppListConstants } from '../../config'
+import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import Sample from '../../assets/img/ic-checklist-sample-app@2x.png'
 
 interface SampleAppDeployType {
