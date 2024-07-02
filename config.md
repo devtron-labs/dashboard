@@ -34,4 +34,5 @@
 | ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
 | ENABLE_RESOURCE_SCAN_V2            | true      | Enable image scan for resources (v2)          |
 | ORGANIZATION_NAME                      | ""         | Name of the organization     |
+| FEATURE_EXTERNAL_FLUX_CD_ENABLE       | true        | Enable External Flux app listing and app details |
 # DASHBOARD CONFIG SECRET

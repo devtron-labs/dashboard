@@ -28,7 +28,7 @@ export const getCurrentTabName = (appType: string): string => {
         case AppListConstants.AppType.FLUX_APPS:
             return AppListConstants.AppTabs.FLUX_APPS
         default:
-            return AppListConstants.AppTabs.HELM_APPS
+            return AppListConstants.AppTabs.DEVTRON_APPS
     }
 }
 

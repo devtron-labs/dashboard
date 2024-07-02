@@ -130,7 +130,7 @@ const AppStatusDetailModal = ({
                                 appStatus || _appDetails.resourceTree?.status?.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase()}
+                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase() || _appDetails.appStatus}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-details-cross">

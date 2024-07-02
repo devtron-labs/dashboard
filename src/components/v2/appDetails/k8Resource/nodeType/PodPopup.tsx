@@ -28,7 +28,6 @@ const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalB
 const PodPopup = ({
     kind,
     describeNode,
-    isExternalArgoApp,
     toggleShowDeleteConfirmation,
     handleShowVulnerabilityModal,
 }: PodPopupProps) => {
@@ -65,16 +64,14 @@ const PodPopup = ({
             {showResourceScanModal && OpenSecurityModalButton && (
                 <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
             )}
-            {!isExternalArgoApp && (
-                <span
-                    data-testid="delete-resource-button"
-                    className="flex dc__gap-8 pod-info__popup-row cr-5"
-                    onClick={toggleShowDeleteConfirmation}
-                >
-                    <ICDeleteInteractive className="icon-dim-16 scr-5" />
-                    <span>Delete</span>
-                </span>
-            )}
+            <span
+                data-testid="delete-resource-button"
+                className="flex dc__gap-8 pod-info__popup-row cr-5"
+                onClick={toggleShowDeleteConfirmation}
+            >
+                <ICDeleteInteractive className="icon-dim-16 scr-5" />
+                <span>Delete</span>
+            </span>
         </div>
     )
 }

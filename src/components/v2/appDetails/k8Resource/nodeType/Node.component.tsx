@@ -16,7 +16,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation, AppType } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
@@ -65,6 +65,8 @@ const NodeComponent = ({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
+
+    const isExternalHelmApp = appDetails?.appType === AppType.EXTERNAL_HELM_CHART
 
     useEffect(() => {
         if (externalLinks?.length > 0) {
@@ -493,7 +495,6 @@ const NodeComponent = ({
                                 </div>
                             )}
                     </div>
-
                     {node.childNodes?.length > 0 && _isSelected && (
                         <div className="ml-22 indent-line">
                             <div>{makeNodeTree(node.childNodes, true)}</div>

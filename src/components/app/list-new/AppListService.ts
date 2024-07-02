@@ -70,7 +70,7 @@ export const getInitData = (payloadParsedFromUrl: any, serverMode: string): Prom
             templateType: new Set(payloadParsedFromUrl.templateType),
         }
 
-        const filters = InitialEmptyMasterFilters
+        const filters = structuredClone(InitialEmptyMasterFilters)
 
         // set filter projects starts
         filters.projects = projectList
