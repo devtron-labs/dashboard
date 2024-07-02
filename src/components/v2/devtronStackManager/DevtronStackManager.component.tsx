@@ -311,7 +311,7 @@ export const NavItem = ({
         <div className="flex column left">
             <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 dc__uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
-            {currentServerInfo.serverInfo.installationType !== InstallationType.ENTERPRISE && (
+            {currentServerInfo?.serverInfo?.installationType !== InstallationType.ENTERPRISE && (
                 <>
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
                     {getNavLink(AboutSection)}
