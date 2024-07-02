@@ -323,7 +323,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && (
+            {!loadingResourceTree && !isExternalArgoOrFlux && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -350,8 +350,7 @@ const EnvironmentSelectorComponent = ({
                                 deployedAppDetail[2],
                                 deployedAppDetail[1],
                                 deployedAppDetail[0],
-                            )) ||
-                        isExternalArgoOrFlux
+                            ))
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
