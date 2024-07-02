@@ -37,7 +37,7 @@ import {
     clusterTerminalUpdate,
 } from './clusterNodes.service'
 import { GroupHeading, menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
-import { clusterImageDescription, convertToOptionsList, importComponentFromFELibrary } from '../common'
+import { clusterImageDescription, convertToOptionsList } from '../common'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import { ClusterTerminalType, NodeTaintType } from './types'
@@ -66,8 +66,6 @@ import {
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { URLParams } from '../ResourceBrowser/Types'
-
-const DownloadFileFolderModal = importComponentFromFELibrary('DownloadFileFolderModal', null, 'function')
 
 let clusterTimeOut
 
@@ -122,7 +120,6 @@ const ClusterTerminal = ({
     const [debugMode, setDebugMode] = useState<boolean>(false)
     const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
     const [hideManagedFields, setHideManagedFields] = useState<boolean>(true)
-    const [showDownloadFileFolderModal, setShowDownloadFileFolderModal] = useState<boolean>(false)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -959,11 +956,6 @@ node-details-full-screen
                 },
             },
             {
-                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
-                hideTerminalStripComponent: false,
-                setShowDownloadFileFolderModal,
-            },
-            {
                 type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
                 hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
                 showInfoTippy: true,
@@ -1019,7 +1011,6 @@ node-details-full-screen
                     forceDeletePod={setForceDelete}
                 />
             )}
-            {showDownloadFileFolderModal && <DownloadFileFolderModal />}
         </>
     )
 }
