@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { FileReaderStatusType, FileDataType, ReadFileAs, ValidatorType } from '../common/hooks/types'
-
-export enum FileView {
-    YAML = 'yaml',
-    SAVED = 'saved',
-}
+import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import { useFileReader } from '../common'
+import { FileReaderStatusType, FileDataType } from '../common/hooks/types'
+import { parseIntoYAMLString } from './utils'
 
 export enum VariableCategories {
     APPLICATION_ENV = 'ApplicationEnv',
@@ -62,7 +60,7 @@ export interface UploadScopedVariablesProps {
 export interface DescriptorProps {
     children?: React.ReactNode
     showUploadButton?: boolean
-    readFile?: (file: File, validator: ValidatorType, readAs: ReadFileAs) => void
+    readFile?: ReturnType<typeof useFileReader>['readFile']
     onSearch?: (query: string) => void
 }
 
@@ -109,4 +107,26 @@ export interface SearchBarProps {
     children?: React.ReactNode
     Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     iconClass?: string
+}
+
+export interface SavedVariablesViewParamsType {
+    currentView: ScopedVariablesFileViewType
+}
+
+export interface SavedVariablesContentProps {
+    handleSearch: (searchKey: string) => void
+    readFile: ReturnType<typeof useFileReader>['readFile']
+    handleActivateEditView: () => void
+    scopedVariablesYAML: ReturnType<typeof parseIntoYAMLString>
+    variablesList: VariableType[]
+}
+
+export interface YAMLEditorDropdownItemProps extends Pick<SavedVariablesContentProps, 'scopedVariablesYAML'> {
+    item: string
+}
+
+export interface DescriptorTabProps {
+    handleCurrentViewUpdate: (view: ScopedVariablesFileViewType) => void
+    currentView: ScopedVariablesFileViewType
+    targetView: ScopedVariablesFileViewType
 }

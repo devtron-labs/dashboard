@@ -26,6 +26,7 @@ import {
     TippyTheme,
     useMainContext,
     PageHeader,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -466,8 +467,8 @@ const NavItem = ({ serverMode }) => {
 
                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Scoped Variables</div>
@@ -651,7 +652,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route key={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
