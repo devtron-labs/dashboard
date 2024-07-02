@@ -15,7 +15,7 @@
  */
 
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { GitOpsAuthModeType, InfoColourBar, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { gitOpsConfigDevtron, getGitOpsRepoConfig } from '../../services/service'
 import UserGitRepo from './UserGitRepo'
@@ -31,6 +31,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
 }: UserGitRepoConfigurationProps) => {
     const [gitOpsRepoURL, setGitOpsRepoURL] = useState('')
     const [selectedRepoType, setSelectedRepoType] = useState(repoType.DEFAULT)
+    const [authMode, setAuthMode] = useState<GitOpsAuthModeType>(null)
     const [isEditable, setIsEditable] = useState(false)
     const [showReloadModal, setShowReloadModal] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -42,6 +43,10 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                 if (response.result) {
                     setGitOpsRepoURL(response.result.gitRepoURL)
                     setIsEditable(response.result.isEditable)
+                    setAuthMode(response.result.authMode)
+                    if (response.result.authMode === GitOpsAuthModeType.SSH) {
+                        setSelectedRepoType(repoType.CONFIGURE)
+                    }
                 }
             })
             .catch((err) => {
@@ -110,6 +115,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                 toast.success('Successfully saved.')
             })
             .catch((err) => {
+                // Comes when in global config, we have changed the status of directory management
                 if (err['code'] === 409) {
                     setShowReloadModal(true)
                 } else {
@@ -131,6 +137,7 @@ const UserGitRepConfiguration: FunctionComponent<UserGitRepoConfigurationProps> 
                         selectedRepoType={selectedRepoType}
                         repoURL={gitOpsRepoURL}
                         setRepoURL={setGitOpsRepoURL}
+                        authMode={authMode}
                     />
                 ) : (
                     renderSavedGitOpsRepoState(gitOpsRepoURL)
