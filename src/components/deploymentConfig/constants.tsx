@@ -181,9 +181,3 @@ export const GUI_VIEW_TEXTS = {
 }
 
 export const JOB_AND_CRONJOB_CHART_NAME = 'Job & CronJob'
-
-export const BASIC_VIEW_TIPPY_CONTENT = {
-    title: 'Basic view is locked',
-    infoText:
-        'Basic view is locked as hide locked keys is active. Please uncheck hide locked keys to switch views.',
-}
