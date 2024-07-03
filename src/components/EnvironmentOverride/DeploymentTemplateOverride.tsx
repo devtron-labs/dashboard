@@ -291,6 +291,7 @@ export default function DeploymentTemplateOverride({
                 readme: result.readme,
                 schema: result.schema,
                 guiSchema: result.guiSchema,
+                ...(result.guiSchema === '{}' ? { yamlMode: true } : {}),
             }
 
             if (isProtected && state.latestDraft) {
