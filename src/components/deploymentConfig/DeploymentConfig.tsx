@@ -346,6 +346,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
+                yamlMode: guiSchema === '{}' || isSuperAdmin,
                 // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
             }
@@ -357,6 +358,7 @@ export default function DeploymentConfig({
                     ...templateData,
                 }
                 payload['guiSchema'] = guiSchema
+                payload['yamlMode'] = templateData.yamlMode
 
                 payload['readme'] = readme
                 payload['schema'] = schema
