@@ -52,6 +52,11 @@ export const SingleSelectOption = (props) => {
     )
 }
 
+/**
+ * 
+ * @deprecated Use `MultiValueContainer` from common library
+ */
+
 export const MultiValueContainer = (props) => {
     const { children, data, innerProps, selectProps } = props
     const { label, value } = data

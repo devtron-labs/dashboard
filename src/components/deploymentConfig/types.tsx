@@ -140,7 +140,6 @@ export interface DeploymentConfigFormCTAProps {
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
-    setLockedOverride: (value: Object) => void
 }
 
 export interface CompareWithDropdownProps {
@@ -221,7 +220,6 @@ export interface DeploymentTemplateReadOnlyEditorViewProps {
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
-    removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
 }
 
 export interface DeploymentTemplateEditorViewProps {
