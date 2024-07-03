@@ -584,6 +584,9 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
+        // NOTE: this ref decides if hide lock keys logic applies
+        // In this case we want it to do it's calculation when we switch toggles
+        hideLockKeysToggled.current = true
         toggleYamlMode(!state.yamlMode)
     }
 
@@ -754,6 +757,7 @@ export default function DeploymentConfig({
                 <DeploymentTemplateReadOnlyEditorView
                     value={state.publishedState?.tempFormData}
                     uneditedDocument={state.publishedState?.tempFormData}
+                    editedDocument={state.publishedState?.tempFormData}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
                 />
@@ -786,6 +790,7 @@ export default function DeploymentConfig({
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
                 uneditedDocument={state.data}
+                editedDocument={state.tempFormData}
             />
         )
     }

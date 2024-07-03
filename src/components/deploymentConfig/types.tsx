@@ -213,13 +213,14 @@ export interface DeploymentTemplateOptionsTabProps {
     changeEditorMode?: () => void
 }
 
-// TODO: the following type can be combined with this into a single type
+// TODO: the following types can be combined with this into a single type
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
     uneditedDocument: string
+    editedDocument: string
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -240,6 +241,7 @@ export interface DeploymentTemplateEditorViewProps {
     hideLockKeysToggled: React.MutableRefObject<boolean>
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
     uneditedDocument: DeploymentTemplateReadOnlyEditorViewProps['uneditedDocument']
+    editedDocument: DeploymentTemplateReadOnlyEditorViewProps['editedDocument']
 }
 
 export interface DeploymentConfigContextType {
@@ -469,6 +471,7 @@ export interface DeploymentTemplateGUIViewProps
     value: string
     readOnly: boolean
     uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']
+    editedDocument?: DeploymentTemplateEditorViewProps['editedDocument']
 }
 
 export interface Schema {

@@ -49,6 +49,7 @@ const DeploymentTemplateGUIView = ({
     hideLockedKeys,
     lockedConfigKeysWithLockType,
     uneditedDocument,
+    editedDocument,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
@@ -68,15 +69,24 @@ const DeploymentTemplateGUIView = ({
                     uiSchema: baseUISchema,
                 }
             }
+            // Note: if the locked keys are not resolved from the following json(s)
+            // then the logic to hide them will not work
+            const parsedUneditedDocument = YAML.parse(uneditedDocument)
+            const parsedEditedDocument = YAML.parse(editedDocument)
+            // NOTE: suppose we lock ingress.hosts[1].host, and the locked key's path is
+            // resolved from either of the above json(s) then host field from all array entries
+            // will be hidden not just the host field at index 1 (limitation)
             return {
                 guiSchema: parsedGUISchema,
                 uiSchema: joinObjects([
                     baseUISchema,
                     ...lockedConfigKeysWithLockType.config.flatMap((key) => {
                         // NOTE: we need to use the original document to evaluate the actual paths
-                        return flatMapOfJSONPaths([key], YAML.parse(uneditedDocument)).map((path) => {
-                            return makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))
-                        })
+                        return flatMapOfJSONPaths([key], parsedUneditedDocument)
+                            .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
+                            .map((path) => {
+                                return makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))
+                            })
                     }),
                 ]),
             }

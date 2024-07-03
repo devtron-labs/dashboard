@@ -285,6 +285,7 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const changeEditorMode = (): void => {
+        hideLockKeysToggled.current = true
         toggleYamlMode(!state.yamlMode)
     }
 
@@ -550,6 +551,10 @@ export default function DeploymentTemplateOverrideForm({
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
                     uneditedDocument={getCodeEditorValue(true, true)}
+                    editedDocument={reapplyRemovedLockedKeysToYaml(
+                        YAML.parse(state.tempFormData),
+                        removedPatches.current,
+                    )}
                 />
             )
         }
@@ -581,6 +586,7 @@ export default function DeploymentTemplateOverrideForm({
                     convertVariablesOverride
                 }
                 uneditedDocument={getCodeEditorValue(false, true)}
+                editedDocument={reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current)}
                 globalChartRefId={state.data.globalChartRefId}
                 handleOverride={handleOverride}
                 isValues={isValuesOverride}

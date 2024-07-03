@@ -149,21 +149,6 @@
                     }
                 }
             }
-        },
-        "serviceAccount": {
-            "type": "object",
-            "properties": {
-                "create": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string",
-                    "hidden": {
-                        "condition": false,
-                        "match": "create"
-                    }
-                }
-            }
         }
     }
 }
