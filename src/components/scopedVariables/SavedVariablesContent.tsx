@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { CodeEditor, PopupMenu, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CodeEditor,
+    PopupMenu,
+    ScopedVariablesFileViewType,
+    SavedVariablesViewParamsType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import Descriptor from './Descriptor'
 import VariablesList from './VariablesList'
+import DescriptorTab from './DescriptionTab'
 import {
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_FILES_AS,
@@ -12,16 +18,10 @@ import {
     SCOPED_VARIABLES_TEMPLATE_DATA,
 } from './constants'
 import { downloadData, parseURLViewToValidView } from './utils'
-import {
-    DescriptorTabProps,
-    SavedVariablesContentProps,
-    SavedVariablesViewParamsType,
-    YAMLEditorDropdownItemProps,
-} from './types'
+import { DescriptorTabProps, SavedVariablesContentProps, YAMLEditorDropdownItemProps } from './types'
 import { importComponentFromFELibrary } from '../common'
 import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
-import DescriptorTab from './DescriptionTab'
 
 const SCOPED_VARIABLES_TEMPLATE = importComponentFromFELibrary(
     'SCOPED_VARIABLES_TEMPLATE_DATA',
@@ -72,19 +72,19 @@ const SavedVariablesContent = ({
 }: SavedVariablesContentProps) => {
     const history = useHistory()
     const { path } = useRouteMatch()
-    const { currentView: currentViewFromURL } = useParams<SavedVariablesViewParamsType>()
+    const { currentView: currentViewFromURL, ...params } = useParams<SavedVariablesViewParamsType>()
     const isEnvironmentListEnabled =
         window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && !!ScopedVariablesEnvironmentListContainer
     const currentView = parseURLViewToValidView(currentViewFromURL, isEnvironmentListEnabled)
 
     useEffect(() => {
         if (currentView !== currentViewFromURL) {
-            history.replace(generatePath(path, { currentView }))
+            history.replace(generatePath(path, { ...params, currentView }))
         }
     }, [currentViewFromURL])
 
     const handleCurrentViewUpdate: DescriptorTabProps['handleCurrentViewUpdate'] = (view) => {
-        history.push(generatePath(path, { currentView: view }))
+        history.push(generatePath(path, { ...params, currentView: view }))
     }
 
     const renderYAMLView = () => (
@@ -119,7 +119,11 @@ const SavedVariablesContent = ({
 
                         <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bcn-0 flex column dc__content-start dc__align-start dc__position-abs bcn-0 dc__border dc__border-radius-4-imp">
                             {DROPDOWN_ITEMS.map((item) => (
-                                <YAMLEditorDropdownItem item={item} scopedVariablesYAML={scopedVariablesYAML} />
+                                <YAMLEditorDropdownItem
+                                    key={item}
+                                    item={item}
+                                    scopedVariablesYAML={scopedVariablesYAML}
+                                />
                             ))}
                         </PopupMenu.Body>
                     </PopupMenu>

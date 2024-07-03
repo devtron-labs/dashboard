@@ -109,10 +109,6 @@ export interface SearchBarProps {
     iconClass?: string
 }
 
-export interface SavedVariablesViewParamsType {
-    currentView: ScopedVariablesFileViewType
-}
-
 export interface SavedVariablesContentProps {
     handleSearch: (searchKey: string) => void
     readFile: ReturnType<typeof useFileReader>['readFile']

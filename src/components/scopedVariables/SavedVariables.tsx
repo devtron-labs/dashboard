@@ -21,10 +21,16 @@ import ScopedVariablesLoader from './ScopedVariablesLoader'
 import ScopedVariablesEditor from './ScopedVariablesEditor'
 import SavedVariablesContent from './SavedVariablesContent'
 import Descriptor from './Descriptor'
-import { useFileReader } from '../common'
+import { importComponentFromFELibrary, useFileReader } from '../common'
 import { FileReaderStatus } from '../common/hooks/types'
 import { parseIntoYAMLString } from './utils'
 import { SavedVariablesViewProps, VariableType } from './types'
+
+const ScopedVariablesEnvironmentDetailsRouter = importComponentFromFELibrary(
+    'ScopedVariablesEnvironmentDetailsRouter',
+    null,
+    'function',
+)
 
 export default function SavedVariablesView({
     scopedVariablesData,
@@ -111,6 +117,10 @@ export default function SavedVariablesView({
                         variablesList={variablesList}
                     />
                 </Route>
+
+                {ScopedVariablesEnvironmentDetailsRouter && window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && (
+                    <ScopedVariablesEnvironmentDetailsRouter />
+                )}
 
                 <Redirect to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} />
             </Switch>

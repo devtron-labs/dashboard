@@ -34,4 +34,5 @@
 | ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
 | ENABLE_RESOURCE_SCAN_V2            | true      | Enable image scan for resources (v2)          |
 | ORGANIZATION_NAME                      | ""         | Name of the organization     |
+| FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE | false | Enable scoped variable environment list feature |
 # DASHBOARD CONFIG SECRET
