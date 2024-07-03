@@ -31,12 +31,12 @@ import AppDetailsComponent from '../../../../components/v2/appDetails/AppDetails
 import { getAppStatus } from './utils'
 import { AppDetails } from '../../../../components/v2/appDetails/appDetails.type'
 
+let initTimer = null
+
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
-
-    let initTimer = null
 
     const [isAppDetailsLoading, appDetailsResult, appDetailsError, reloadAppDetails] = useAsync(
         () => getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization),
@@ -65,8 +65,6 @@ const ExternalFluxAppDetails = () => {
         }
     }, [appDetailsResult])
 
-    const isLoading = isAppDetailsLoading && (!appDetailsResult || appDetailsError)
-
     if (!isSuperAdmin) {
         return <ErrorScreenManager code={403} />
     }
@@ -74,6 +72,8 @@ const ExternalFluxAppDetails = () => {
     if (appDetailsError) {
         return <ErrorScreenManager code={appDetailsError.code} reload={reloadAppDetails} />
     }
+
+    const isLoading = isAppDetailsLoading && !appDetailsResult
 
     return <AppDetailsComponent isExternalApp _init={noop} loadingDetails={isLoading} loadingResourceTree={isLoading} />
 }

@@ -91,7 +91,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 </div>
                 <div className="flex br-4">
                     <figure
-                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase().split(' ').join('-')} h-24 w-24`}
+                        className={`dc__app-summary__icon dc__zi-0 ${status.toLowerCase().replace(/ /g, '-')} h-24 w-24`}
                         style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
                     />
                 </div>
