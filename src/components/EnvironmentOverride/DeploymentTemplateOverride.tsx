@@ -291,7 +291,7 @@ export default function DeploymentTemplateOverride({
                 readme: result.readme,
                 schema: result.schema,
                 guiSchema: result.guiSchema,
-                yamlMode: result.guiSchema === '{}' || isSuperAdmin,
+                ...(result.guiSchema === '{}' ? { yamlMode: true } : {}),
             }
 
             if (isProtected && state.latestDraft) {
