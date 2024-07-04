@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react'
 import {
     AppStatus,
     showError,
-    Progressing,
     ErrorScreenManager,
     ServerErrors,
     Host,
