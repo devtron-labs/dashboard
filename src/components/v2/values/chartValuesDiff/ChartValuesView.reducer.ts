@@ -86,6 +86,9 @@ export const initState = (
             chartVersionId: selectedVersionFromParent,
             chartValuesId: chartValuesFromParent?.id,
         },
+        isManifestScanEnabled: window._env_.ENABLE_RESOURCE_SCAN_V2
+            ? installedConfigFromParent?.isManifestScanEnabled ?? false
+            : false,
     }
 }
 
@@ -191,7 +194,9 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, deploymentAppType: action.payload }
         case ChartValuesViewActionTypes.setGitRepoURL:
             return { ...state, gitRepoURL: action.payload }
-        case ChartValuesViewActionTypes.updateGitOpsConfiguration: 
+        case ChartValuesViewActionTypes.setIsManifestScanEnabled:
+            return { ...state, isManifestScanEnabled: action.payload }
+        case ChartValuesViewActionTypes.updateGitOpsConfiguration:
             return {
                 ...state,
                 showNoGitOpsWarning: action.payload.showNoGitOpsWarning,
