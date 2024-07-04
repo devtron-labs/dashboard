@@ -15,10 +15,13 @@
  *   limitations under the License.
  */
 
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, get } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../config'
 import { AppConfigStatusResponse } from './service.types'
+import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/appConfig.type'
 
-export const getAppConfigStatus = (appId: number, isJobView?: boolean): Promise<AppConfigStatusResponse> =>
-    get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
+export const getAppConfigStatus = (appId: number, resourceKind?: ResourceKindType): Promise<AppConfigStatusResponse> =>
+    get(
+        `${Routes.APP_CONFIG_STATUS}?app-id=${appId}${resourceKind === ResourceKindType.job ? `&appType=${DEFAULT_LANDING_STAGE.JOB_VIEW}` : ''}`,
+    )

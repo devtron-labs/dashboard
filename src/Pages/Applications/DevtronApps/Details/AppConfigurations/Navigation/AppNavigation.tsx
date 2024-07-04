@@ -28,7 +28,7 @@ import { ReactComponent as Lock } from '../../../../../../assets/icons/ic-locked
 import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
-import { useAppConfigurationContext } from '../AppConfiguration.context'
+import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 

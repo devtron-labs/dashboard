@@ -54,7 +54,7 @@ export interface AppConfigProps {
 
 export interface AppConfigState {
     /** The current view type of the application. */
-    view: keyof typeof ViewType
+    view: ViewType
     /** The status code. */
     statusCode: number
     /** The name of the current stage. */
@@ -149,37 +149,51 @@ export interface NextButtonProps {
     isDisabled: boolean
 }
 
+export enum ProtectionState {
+    ENABLED = 1,
+    DISABLED = 2,
+}
+
 export type ConfigProtection = {
     appId: number
     envId: number
-    state: 1 | 2
+    state: ProtectionState
 }
 
-export interface AppConfigurationContextType {
+interface CommonAppConfigurationProps {
     appId: string
-    isUnlocked: AppStageUnlockedType
-    navItems: CustomNavItemsType[]
     respondOnSuccess: () => void
-    isCiPipeline: boolean
     getWorkflows: () => void
-    isCDPipeline: boolean
-    environments: AppEnvironment[]
-    workflowsRes: WorkflowResult
     userRole: UserRoleType
     canShowExternalLinks: boolean
     toggleRepoSelectionTippy: () => void
-    setRepoState: React.Dispatch<React.SetStateAction<string>>
-    isJobView: boolean
-    isBaseConfigProtected: boolean
     reloadEnvironments: () => void
-    configProtectionData: ConfigProtection[]
     filteredEnvIds: string
     isGitOpsConfigurationRequired: boolean
     reloadAppConfig: () => void
-    lastUnlockedStage: string
     deleteApp: () => void
     showCannotDeleteTooltip: boolean
+    hideConfigHelp: boolean
+}
+
+export interface AppConfigurationContextType extends CommonAppConfigurationProps {
+    isUnlocked: AppStageUnlockedType
+    navItems: CustomNavItemsType[]
+    isCiPipeline: boolean
+    isCDPipeline: boolean
+    environments: AppEnvironment[]
+    workflowsRes: WorkflowResult
+    setRepoState: React.Dispatch<React.SetStateAction<string>>
+    isJobView: boolean
+    isBaseConfigProtected: boolean
+    configProtectionData: ConfigProtection[]
+    lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
-    hideConfigHelp: boolean
+}
+
+export interface AppConfigurationProviderProps extends CommonAppConfigurationProps {
+    children: JSX.Element
+    state: AppConfigState
+    resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
 }

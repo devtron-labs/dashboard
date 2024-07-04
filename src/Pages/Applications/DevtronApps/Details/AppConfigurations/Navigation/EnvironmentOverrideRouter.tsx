@@ -23,6 +23,7 @@ import {
     InfoColourBar,
     PopupMenu,
     Progressing,
+    getEnvironmentListMinPublic,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactSelect, { ValueContainerProps, components } from 'react-select'
@@ -32,7 +33,6 @@ import {
     addJobEnvironment,
     deleteJobEnvironment,
     getCIConfig,
-    getEnvironmentListMinPublic,
     getJobOtherEnvironmentMin,
 } from '../../../../../../services/service'
 import { ReactComponent as Dropdown } from '../../../../../../assets/icons/ic-chevron-down.svg'

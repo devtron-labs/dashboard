@@ -156,12 +156,14 @@ export interface UserRole {
     roles: string[]
     /**
      * If true, the user has super admin role
+     * @note If false, this key won't be present
      */
-    superAdmin: boolean
+    superAdmin?: boolean
     /**
      * Role of the user
+     * @note This key is present only when superAdmin is false
      */
-    role: UserRoleType
+    role?: UserRoleType
 }
 
 export type UserBulkDeletePayload =

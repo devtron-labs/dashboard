@@ -25,7 +25,7 @@ import ExternalLinks from '../../../../../components/externalLinks/ExternalLinks
 import SecretList from '../../../../../components/ConfigMapSecret/Secret/SecretList'
 import ConfigMapList from '../../../../../components/ConfigMapSecret/ConfigMap/ConfigMapList'
 import './appConfig.scss'
-import { useAppConfigurationContext } from './AppConfiguration.context'
+import { useAppConfigurationContext } from './AppConfiguration.provider'
 
 const MaterialList = lazy(() => import('../../../../../components/material/MaterialList'))
 const CIConfig = lazy(() => import('../../../../../components/ciConfig/CIConfig'))
@@ -110,39 +110,33 @@ const AppComposeRouter = () => {
                     <Route
                         key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
                         path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                        render={() => (
-                            <WorkflowEdit
-                                configStatus={1}
-                                isCDPipeline={isCDPipeline}
-                                respondOnSuccess={respondOnSuccess}
-                                getWorkflows={getWorkflows}
-                                isJobView={isJobView}
-                                envList={environments}
-                                reloadEnvironments={reloadEnvironments}
-                            />
-                        )}
-                    />,
-                    <Route
-                        key={`${path}/${URLS.APP_CM_CONFIG}`}
-                        path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}
-                        render={() => <ConfigMapList isJobView={isJobView} isProtected={false} />}
-                    />,
-                    <Route
-                        key={`${path}/${URLS.APP_CS_CONFIG}`}
-                        path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}
-                        render={() => <SecretList isJobView={isJobView} isProtected={false} />}
-                    />,
+                    >
+                        <WorkflowEdit
+                            configStatus={1}
+                            isCDPipeline={isCDPipeline}
+                            respondOnSuccess={respondOnSuccess}
+                            getWorkflows={getWorkflows}
+                            isJobView={isJobView}
+                            envList={environments}
+                            reloadEnvironments={reloadEnvironments}
+                        />
+                    </Route>,
+                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                        <ConfigMapList isJobView={isJobView} isProtected={false} />
+                    </Route>,
+                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                        <SecretList isJobView={isJobView} isProtected={false} />
+                    </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                        render={() => (
-                            <EnvironmentOverride
-                                environments={environments}
-                                isJobView={isJobView}
-                                reloadEnvironments={reloadEnvironments}
-                            />
-                        )}
-                    />,
+                    >
+                        <EnvironmentOverride
+                            environments={environments}
+                            isJobView={isJobView}
+                            reloadEnvironments={reloadEnvironments}
+                        />
+                    </Route>,
                 ]}
             </Switch>
         )

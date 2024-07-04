@@ -123,12 +123,6 @@ src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
 src/components/app/details/AppHeader.tsx
-src/components/app/details/appConfig/AppComposeRouter.tsx
-src/components/app/details/appConfig/AppConfig.tsx
-src/components/app/details/appConfig/AppConfig.utils.ts
-src/components/app/details/appConfig/AppConfigurationCheckBox.tsx
-src/components/app/details/appConfig/EnvironmentOverrideRouter.tsx
-src/components/app/details/appConfig/appConfig.type.ts
 src/components/app/details/appDetails/AppDetails.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx

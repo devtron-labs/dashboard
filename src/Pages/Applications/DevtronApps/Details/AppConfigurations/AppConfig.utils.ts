@@ -258,11 +258,11 @@ export const getNavItems = (
 }
 
 export function isCIPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
-    const ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
+    const ciPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CI_PIPELINE)
     return ciPipeline.status
 }
 
 export function isCDPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
-    const cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
+    const cdPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CD_PIPELINE)
     return cdPipeline.status
 }

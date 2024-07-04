@@ -267,11 +267,11 @@ export const Routes = {
     USER: 'user',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -390,7 +390,7 @@ export const DOCUMENTATION = {
     JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/jobs/workflow-editor-job`,
     GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
     MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
-    SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`
+    SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -691,9 +691,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -717,9 +717,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
