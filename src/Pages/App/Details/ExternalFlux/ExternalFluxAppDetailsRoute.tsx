@@ -17,7 +17,7 @@
 import React from 'react'
 import { AppListConstants, URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
-import EAHeaderComponent from '../../v2/headers/EAHeader.component'
+import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
 import ExternalFluxAppDetails from './ExternalFluxAppDetails'
 
 const ExternalFluxAppDetailsRoute = () => {
