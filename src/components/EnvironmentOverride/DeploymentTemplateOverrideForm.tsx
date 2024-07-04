@@ -499,7 +499,7 @@ export default function DeploymentTemplateOverrideForm({
         return manifestEditorValue
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean, getUnedited = false) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = getCodeEditorValueForReadOnly()
@@ -508,7 +508,7 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData && !getUnedited) {
+        } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -737,7 +737,7 @@ export default function DeploymentTemplateOverrideForm({
                             YAML.parse(getCodeEditorValue(false)),
                             removedPatches.current,
                         ),
-                        unedited: YAML.parse(getCodeEditorValue(false, true)),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly()),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
