@@ -22,6 +22,7 @@ import {
     ScriptType,
     PluginType,
     RefVariableType,
+    CIBuildType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -29,6 +30,7 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
+import { getDockerConfigOverrideData } from './utils'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -331,14 +333,17 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         preBuildStage,
         postBuildStage,
         scanEnabled: formData.scanEnabled,
-        dockerArgs: formData.args
-            .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
-            .reduce((agg, curr) => {
-                agg[curr.key] = curr.value
-                return agg
-            }, {}),
+        // send the docker args only when either the config is not overridden or ci build type is not build pack type
+        ...(!(formData.isDockerConfigOverridden && formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE) && {
+            dockerArgs: formData.args
+                .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
+                .reduce((agg, curr) => {
+                    agg[curr.key] = curr.value
+                    return agg
+                }, {})
+        }),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
-        dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
+        dockerConfigOverride: formData.isDockerConfigOverridden ? getDockerConfigOverrideData(formData.dockerConfigOverride) : {},
         defaultTag: formData.defaultTag,
         customTag: {
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
