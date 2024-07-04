@@ -344,7 +344,7 @@ const downloadFileFolderButton = (elementData) => {
         <>
             <span className="dc__border-right h-16" />
             <button
-                className="dc__transparent flexbox dc__gap-4 dc__align-items-center px-8"
+                className="dc__transparent flexbox dc__gap-4 dc__align-items-center px-16"
                 type="button"
                 onClick={handleClick}
             >
