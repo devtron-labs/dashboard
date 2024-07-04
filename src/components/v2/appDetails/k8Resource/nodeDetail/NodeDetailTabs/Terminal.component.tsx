@@ -355,9 +355,14 @@ const TerminalComponent = ({
                 setSocketConnection={setSocketConnection}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
-            {
-                showDownloadFileFolderModal && <DownloadFileFolderModal handleClose={handleCloseDownloadModal} appDetails={appDetails} isResourceBrowserView={isResourceBrowserView} />
-            }
+            {showDownloadFileFolderModal && (
+                <DownloadFileFolderModal
+                    handleClose={handleCloseDownloadModal}
+                    appDetails={appDetails}
+                    isResourceBrowserView={isResourceBrowserView}
+                    containerName={selectedContainerName}
+                />
+            )}
         </div>
     )
 }
