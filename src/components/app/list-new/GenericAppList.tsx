@@ -131,7 +131,7 @@ const GenericAppList = ({
                 init()
             }
         }
-    }, [payloadParsedFromUrl, dataStateType, clusterIdsCsv])
+    }, [payloadParsedFromUrl, dataStateType])
 
     // when external app data comes
     useEffect(() => {
@@ -178,7 +178,7 @@ const GenericAppList = ({
         } else {
             setDataStateType(AppListViewType.LOADING)
         }
-        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
+        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? null)
         setAppsList([])
         setFilteredAppsList([])
         if (sseConnection) {
@@ -232,7 +232,7 @@ const GenericAppList = ({
     }
 
     function _isAnyFilterationApplied() {
-        return _isAnyFilterationAppliedExceptClusterAndNs() || payloadParsedFromUrl.namespaces?.length
+        return _isAnyFilterationAppliedExceptClusterAndNs() || !!clusterIdsCsv
     }
 
     function _isOnlyAllClusterFilterationApplied() {
@@ -489,7 +489,7 @@ const GenericAppList = ({
 
     return (
         <>
-            {dataStateType === AppListViewType.LOADING && (
+            {(dataStateType === AppListViewType.LOADING || clusterIdsCsv === null) && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
