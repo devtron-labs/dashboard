@@ -356,7 +356,7 @@ const TerminalComponent = ({
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
             {
-                showDownloadFileFolderModal && <DownloadFileFolderModal handleClose={handleCloseDownloadModal} />
+                showDownloadFileFolderModal && <DownloadFileFolderModal handleClose={handleCloseDownloadModal} appDetails={appDetails} isResourceBrowserView={isResourceBrowserView} />
             }
         </div>
     )
