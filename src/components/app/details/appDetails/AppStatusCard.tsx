@@ -26,7 +26,7 @@ import './appDetails.scss'
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
-    const displayMessage = message && appDetails?.deploymentAppType === DeploymentAppTypes.HELM
+    const displayMessage = message && (appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isFluxCDApp)
 
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
@@ -38,11 +38,13 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
 
     const renderBottomContainer = () => {
         return (
-            <>
+            <div className='flexbox dc__content-space w-100'>
                 {displayMessage && (
-                    <div className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                        {message.slice(0, 30)}
-                    </div>
+                    <Tippy placement="right" content={message} arrow={false}>
+                        <div className="app-details-info-card__bottom-container__message fs-12 fw-4 dc__ellipsis-right dc__mxw-175">
+                            {message}
+                        </div>
+                    </Tippy>
                 )}
                 <div
                     className={`app-details-info-card__bottom-container__details fs-12 fw-6 ${
@@ -51,7 +53,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 >
                     Details
                 </div>
-            </>
+            </div>
         )
     }
 
