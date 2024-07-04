@@ -800,7 +800,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <div className="flexbox">
                             <Help className="icon-dim-20 fcb-5 mr-12" />
                             <div>
-                                For redirect URL or callback URL use: {`${window.location.origin}/orchestrator`}
+                                For redirectURI or callbackURI use: {`${window.location.origin}/orchestrator`}
                                 /api/dex/callback
                                 <br />
                                 Please ensure above URL is registered with the identity provider.
