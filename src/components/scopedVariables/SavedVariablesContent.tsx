@@ -53,13 +53,14 @@ const YAMLEditorDropdownItem = ({ item, scopedVariablesYAML }: YAMLEditorDropdow
     }
 
     return (
-        <div
+        <button
             key={item}
-            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50"
+            className="scoped-variables-editor-infobar__dropdown-item bcn-0 p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50 dc__outline-none-imp dc__no-border"
             onClick={handleDownloadFileClick}
+            type="button"
         >
             {item}
-        </div>
+        </button>
     )
 }
 
@@ -81,7 +82,7 @@ const SavedVariablesContent = ({
         if (currentView !== currentViewFromURL) {
             history.replace(generatePath(path, { ...params, currentView }))
         }
-    }, [currentViewFromURL])
+    }, [currentViewFromURL, isEnvironmentListEnabled])
 
     const handleCurrentViewUpdate: DescriptorTabProps['handleCurrentViewUpdate'] = (view) => {
         history.push(generatePath(path, { ...params, currentView: view }))
