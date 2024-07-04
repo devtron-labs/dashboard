@@ -468,7 +468,7 @@ const NavItem = ({ serverMode }) => {
                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
                             to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Scoped Variables</div>
@@ -652,7 +652,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
