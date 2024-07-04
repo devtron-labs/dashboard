@@ -336,7 +336,12 @@ export default function DeploymentConfig({
                     },
                     guiSchema,
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal, state.selectedChart.name)
+            } = await getDeploymentTemplate(
+                +appId,
+                +state.selectedChart.id,
+                baseDeploymentAbortController.signal,
+                state.selectedChart.name,
+            )
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
@@ -670,7 +675,7 @@ export default function DeploymentConfig({
             const documentsNPatches = {
                 edited,
                 unedited,
-                patches: jsonpatchCompare(unedited, edited)
+                patches: jsonpatchCompare(unedited, edited),
             }
             if (!lockedConfigKeysWithLockType.allowed) {
                 // NOTE: need to send only the changed parts from the yaml as json
@@ -741,9 +746,7 @@ export default function DeploymentConfig({
             result = await fetchManifestData(state.draftValues)
         } else if (hideLockedKeys) {
             const parsed = YAML.parse(state.tempFormData)
-            result = fetchManifestData(
-                YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)),
-            )
+            result = fetchManifestData(YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)))
         } else {
             result = await fetchManifestData(state.tempFormData)
         }
@@ -904,8 +907,11 @@ export default function DeploymentConfig({
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                             documents={{
-                                edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
-                                unedited: YAML.parse(state.data),
+                                edited: reapplyRemovedLockedKeysToYaml(
+                                    YAML.parse(isCompareAndApprovalState ? state.draftValues : state.tempFormData),
+                                    removedPatches.current,
+                                ),
+                                unedited: YAML.parse(state.publishedState?.tempFormData ?? state.data),
                             }}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}
                             setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}

@@ -487,7 +487,9 @@ export default function DeploymentTemplateOverrideForm({
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
             if (hideLockedKeys) {
-                codeEditorValue = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current))
+                codeEditorValue = YAMLStringify(
+                    reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
+                )
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -731,7 +733,10 @@ export default function DeploymentTemplateOverrideForm({
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
                     documents={{
-                        edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
+                        edited: reapplyRemovedLockedKeysToYaml(
+                            YAML.parse(getCodeEditorValue(false)),
+                            removedPatches.current,
+                        ),
                         unedited: YAML.parse(getCodeEditorValue(false, true)),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
