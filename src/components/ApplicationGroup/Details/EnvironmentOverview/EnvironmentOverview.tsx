@@ -30,6 +30,11 @@ import {
     AppInfoListType,
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
+    CommitChipCell,
+    ArtifactInfoModal,
+    ArtifactInfoModalProps,
+    ImageChipCell,
+    RegistryType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -39,9 +44,7 @@ import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
 import { Moment12HourFormat } from '../../../../config'
-import CommitChipCell from '../../../../Pages/Shared/CommitChipCell'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { TriggerInfoModal, TriggerInfoModalProps } from '../../../app/list/TriggerInfo'
 import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
@@ -63,6 +66,7 @@ import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-vie
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
 import './envOverview.scss'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
@@ -70,8 +74,6 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     null,
     'function',
 )
-
-// Adding here since in prompt re-direction PR have organized above imports to send them above
 const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
 
 export default function EnvironmentOverview({
@@ -98,7 +100,7 @@ export default function EnvironmentOverview({
     const [isHovered, setIsHovered] = useState<number>(null)
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
-        TriggerInfoModalProps,
+        ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
     > | null>(null)
     const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
@@ -382,28 +384,12 @@ export default function EnvironmentOverview({
                     isVirtualEnv={isVirtualEnv}
                 />
                 {item?.lastDeployedImage && (
-                    <div className="cn-7 fs-14 lh-20 flexbox">
-                        <Tippy content={item.lastDeployedImage} className="default-tt" placement="auto">
-                            <div
-                                className="env-deployments-info-row__last-deployed-cell bcn-1 br-6 pl-6 pr-6 flex dc__gap-4 cursor max-w-100"
-                                onClick={openCommitInfoModal}
-                            >
-                                <DockerIcon className="icon-dim-14 mw-14" />
-                                {isLastDeployedExpanded ? (
-                                    <div className="mono dc__ellipsis-left direction-left">
-                                        {item.lastDeployedImage}
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div>…</div>
-                                        <div className="mono dc__ellipsis-left direction-left text-overflow-clip">
-                                            {item.lastDeployedImage.split(':').at(-1)}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </Tippy>
-                    </div>
+                    <ImageChipCell
+                        handleClick={openCommitInfoModal}
+                        imagePath={item.lastDeployedImage}
+                        isExpanded={isLastDeployedExpanded}
+                        registryType={RegistryType.DOCKER}
+                    />
                 )}
                 <CommitChipCell handleClick={openCommitInfoModal} commits={item?.commits} />
                 {item?.lastDeployedBy && (
@@ -556,7 +542,14 @@ export default function EnvironmentOverview({
         }
 
         if (commitInfoModalConfig) {
-            return <TriggerInfoModal {...commitInfoModalConfig} close={closeCommitInfoModal} />
+            return (
+                <ArtifactInfoModal
+                    ciArtifactId={commitInfoModalConfig.ciArtifactId}
+                    envId={commitInfoModalConfig.envId}
+                    handleClose={closeCommitInfoModal}
+                    renderCIListHeader={renderCIListHeader}
+                />
+            )
         }
 
         return null
@@ -645,7 +638,7 @@ export default function EnvironmentOverview({
                             >
                                 <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                                 <ArrowLineDown
-                                    className="icon-dim-14 scn-5 rotate"
+                                    className="icon-dim-14 scn-7 rotate"
                                     style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                                 />
                             </button>

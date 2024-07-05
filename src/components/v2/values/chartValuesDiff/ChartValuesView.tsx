@@ -142,6 +142,7 @@ import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
 
 const ChartValuesView = ({
     appId,
@@ -211,7 +212,6 @@ const ChartValuesView = ({
         chartVersionId: commonState.selectedVersion,
         chartValuesId: commonState.chartValues?.id,
     }
-
     // detects changes in chart version and chart values from initial mount
     const isChartValueVersionUpdated = !deepEqual(currentChartVersionValues, commonState.initialChartVersionValues)
 
@@ -238,12 +238,13 @@ const ChartValuesView = ({
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
-            if (result.isInstalled && !result.isConfigured) {
-                dispatch({
-                    type: ChartValuesViewActionTypes.showNoGitOpsWarning,
-                    payload: true,
-                })
-            }
+            dispatch({
+                type: ChartValuesViewActionTypes.updateGitOpsConfiguration,
+                payload: {
+                    showNoGitOpsWarning: result.isInstalled && !result.isConfigured,
+                    authMode: result.authMode,
+                },
+            })
             setAllowedCustomBool(result.allowCustomRepository === true)
         } catch (error) {}
     }
@@ -358,7 +359,12 @@ const ChartValuesView = ({
                 dispatch,
             )
             getChartValuesList(appDetails.appStoreChartId, setChartValuesList)
-            fetchChartVersionsData(appDetails.appStoreChartId, dispatch, appDetails.appStoreAppVersion)
+            fetchChartVersionsData(
+                appDetails.appStoreChartId,
+                dispatch,
+                appDetails.appStoreAppVersion,
+                appDetails.appStoreInstalledAppVersionId,
+            )
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -379,10 +385,6 @@ const ChartValuesView = ({
                         id: appDetails.appStoreInstalledAppVersionId,
                         appStoreVersionId: commonState.installedConfig.appStoreVersion,
                         kind: ChartKind.DEPLOYED,
-                    },
-                    initialChartVersionValues: {
-                        ...commonState.initialChartVersionValues,
-                        chartValuesId: appDetails.appStoreInstalledAppVersionId,
                     },
                 },
             })
@@ -593,7 +595,6 @@ const ChartValuesView = ({
                 convertSchemaJsonToMap(_releaseInfo.valuesSchemaJson),
                 dispatch,
             )
-
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -976,6 +977,7 @@ const ChartValuesView = ({
                         ? DeploymentAppTypes.MANIFEST_DOWNLOAD
                         : commonState.deploymentAppType,
                     gitRepoURL: commonState.gitRepoURL,
+                    ...(ToggleSecurityScan && { isManifestScanEnabled: commonState.isManifestScanEnabled }),
                 }
                 res = await installChart(payload, chartValuesAbortRef.current?.signal)
             } else if (isCreateValueView) {
@@ -1004,6 +1006,7 @@ const ChartValuesView = ({
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     installedAppId: commonState.installedConfig.installedAppId,
                     appStoreVersion: commonState.selectedVersionUpdatePage.id,
+                    ...(ToggleSecurityScan && { isManifestScanEnabled: commonState.isManifestScanEnabled }),
                 }
                 res = await updateAppRelease(payload, chartValuesAbortRef.current.signal)
             }
@@ -1312,6 +1315,13 @@ const ChartValuesView = ({
                 </div>
             </div>
         )
+    }
+
+    const handleToggleSecurityScan = () => {
+        dispatch({
+            type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
+            payload: !commonState.isManifestScanEnabled,
+        })
     }
 
     const handleProjectSelection = (selected: ChartValuesOptionType) => {
@@ -1753,7 +1763,12 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-
+                        {window._env_.ENABLE_RESOURCE_SCAN_V2 && !isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
+                            <ToggleSecurityScan
+                                isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                handleToggleSecurityScan={handleToggleSecurityScan}
+                            />
+                        )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(

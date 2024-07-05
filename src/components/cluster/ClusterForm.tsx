@@ -30,6 +30,7 @@ import {
     useAsync,
     CustomInput,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -56,7 +57,7 @@ import {
     RemoteConnectionTypeCluster,
 } from './cluster.type'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,

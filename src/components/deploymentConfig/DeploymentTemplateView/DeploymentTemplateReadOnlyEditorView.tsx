@@ -14,35 +14,41 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
-import { Progressing, YAMLStringify, getUnlockedJSON, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useContext, useRef } from 'react'
+import { Progressing, YAMLStringify, MarkDown, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { MODES } from '../../../config'
 import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
 
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export default function DeploymentTemplateReadOnlyEditorView({
     value,
     isEnvOverride,
     lockedConfigKeysWithLockType,
     hideLockedKeys,
-    removedPatches,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const addOperationsRef = useRef([])
 
-    // filtereing the locked keys from the yaml
-    if (applyPatches) {
+    // NOTE: the following can throw error but not putting it in try block
+    // in order for it to not fail silently
+    if (removeLockedKeysFromYaml && reapplyRemovedLockedKeysToYaml) {
         if (hideLockedKeys) {
-            const filteredValue = getUnlockedJSON(YAML.parse(value), lockedConfigKeysWithLockType.config ?? [], false)
-            removedPatches.current = filteredValue.removedPatches
-            value = YAMLStringify(filteredValue.newDocument)
+            const { document, addOperations } = removeLockedKeysFromYaml(value, lockedConfigKeysWithLockType.config)
+            value = YAML.stringify(document, { sortMapEntries: true, simpleKeys: true })
+            if (addOperations.length) {
+                addOperationsRef.current = addOperations
+            }
         } else {
-            value = YAMLStringify(applyPatches(YAML.parse(value), removedPatches.current))
+            value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), {
+                sortOrderEntries: true,
+                simpleKeys: true,
+            })
         }
     }
 

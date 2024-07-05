@@ -30,6 +30,9 @@ import {
     HandleKeyValueChangeType,
     KeyValueListActionType,
     getIsRequestAborted,
+    handleUTCTime,
+    createGitCommitUrl,
+    CIMaterialType
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -42,10 +45,8 @@ import {
     getGitMaterialByCommitHash,
 } from '../../service'
 import {
-    createGitCommitUrl,
     getCIPipelineURL,
     importComponentFromFELibrary,
-    ISTTimeModal,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
 } from '../../../common'
@@ -67,7 +68,6 @@ import { getEnvironmentListMinPublic, getHostURLConfiguration } from '../../../.
 import { ReactComponent as ICError } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
-import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import {
     DEFAULT_ENV,
@@ -340,7 +340,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 : '',
                             commit: _result.Commit || '',
                             author: _result.Author || '',
-                            date: _result.Date ? ISTTimeModal(_result.Date, false) : '',
+                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
                             message: _result.Message || '',
                             changes: _result.Changes || [],
                             showChanges: true,

@@ -571,7 +571,6 @@ src/components/workflowEditor/types.ts
 src/components/workflowEditor/workflowEditor.tsx
 src/config/constants.ts
 src/config/routes.ts
-src/config/searchWorker.ts
 src/config/utils.ts
 src/index.tsx
 src/services/fetchWithFullRoute.ts
@@ -582,3 +581,10 @@ src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
 src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
+types/patternfly-react.d.ts
+tests-examples/demo-todo-app.spec.ts
+e2e-tests/adminLogin.spec.ts
+e2e-tests/example.spec.ts
+e2e-tests/auth.setup.ts
+playwright.config.ts
+jest.config.js

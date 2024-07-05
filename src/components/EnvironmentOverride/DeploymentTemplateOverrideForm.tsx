@@ -18,8 +18,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { Progressing, YAMLStringify, getLockedJSON, getUnlockedJSON } from '@devtron-labs/devtron-fe-common-lib'
-import * as jsonpatch from 'fast-json-patch'
+import { Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { compare as jsonpatchCompare, Operation } from 'fast-json-patch'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../common'
 import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../deploymentConfig/types'
 import { createDeploymentTemplate, updateDeploymentTemplate } from './service'
@@ -34,13 +34,14 @@ import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { handleConfigProtectionError } from '../deploymentConfig/DeploymentConfig.utils'
-import CodeEditor from '../CodeEditor/CodeEditor'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
+const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export default function DeploymentTemplateOverrideForm({
     state,
@@ -54,7 +55,6 @@ export default function DeploymentTemplateOverrideForm({
     handleAppMetrics,
     toggleDraftComments,
     isGrafanaModuleInstalled,
-    isEnterpriseInstallation,
     isValuesOverride,
     setIsValuesOverride,
     groupedData,
@@ -70,7 +70,6 @@ export default function DeploymentTemplateOverrideForm({
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft
     const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
     const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
-    const [lockedOverride, setLockedOverride] = useState({})
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
         config: [],
         allowed: false,
@@ -79,7 +78,7 @@ export default function DeploymentTemplateOverrideForm({
     const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
-    const removedPatches = useRef<Array<jsonpatch.Operation>>([])
+    const removedPatches = useRef<Array<Operation>>([])
 
     useEffect(() => {
         // Reset editor value on delete override action
@@ -118,19 +117,25 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
+        // FIXME: duplicate is of type string while obj is of type object. Bad!!
         let valuesOverride = obj || state.duplicate
 
-        if (applyPatches && hideLockedKeys) {
-            valuesOverride = applyPatches(valuesOverride, removedPatches.current)
+        if (hideLockedKeys && valuesOverride === obj) {
+            valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
 
         if (state.showLockedTemplateDiff) {
-            // if locked keys
+            const edited = YAML.parse(state.tempFormData)
+            const unedited = YAML.parse(state.data)
+            const documentsNPatches = {
+                edited,
+                unedited,
+                patches: jsonpatchCompare(unedited, edited),
+            }
             if (!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config, true).newDocument
+                valuesOverride = getUnlockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             } else {
-                // if allowed keys
-                valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
+                valuesOverride = getLockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             }
         }
         const payload = {
@@ -228,7 +233,6 @@ export default function DeploymentTemplateOverrideForm({
                 : await api(+appId, +envId, payload)
             if (deploymentTemplateResp.result.isLockConfigError && !saveEligibleChanges) {
                 // checking if any locked changes and opening drawer to show eligible and locked ones
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
                 handleLockedDiffDrawer(true)
                 return
@@ -482,8 +486,10 @@ export default function DeploymentTemplateOverrideForm({
                     : YAMLStringify(state.data.globalConfig)
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
-            if (applyPatches && hideLockedKeys) {
-                codeEditorValue = YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current))
+            if (hideLockedKeys) {
+                codeEditorValue = YAMLStringify(
+                    reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
+                )
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -546,7 +552,6 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
-                    removedPatches={removedPatches}
                 />
             )
         }
@@ -612,7 +617,6 @@ export default function DeploymentTemplateOverrideForm({
                 isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
-                hideLockedKeys={hideLockedKeys}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
@@ -642,7 +646,6 @@ export default function DeploymentTemplateOverrideForm({
                 isSuperAdmin={isSuperAdmin}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
-                setLockedOverride={setLockedOverride}
                 handleSaveChanges={handleSaveChanges}
             />
         </div>
@@ -724,13 +727,18 @@ export default function DeploymentTemplateOverrideForm({
             )}
             {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                 <DeploymentTemplateLockedDiff
-                    CodeEditor={CodeEditor}
                     closeModal={closeLockedDiffDrawerWithChildModal}
                     handleChangeCheckbox={handleChangeCheckbox}
                     saveEligibleChangesCb={saveEligibleChangesCb}
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
-                    lockedOverride={lockedOverride}
+                    documents={{
+                        edited: reapplyRemovedLockedKeysToYaml(
+                            YAML.parse(getCodeEditorValue(false)),
+                            removedPatches.current,
+                        ),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly()),
+                    }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
                     setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}

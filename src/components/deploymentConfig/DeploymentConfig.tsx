@@ -22,15 +22,13 @@ import {
     useEffectAfterMount,
     useAsync,
     Progressing,
-    getLockedJSON,
-    getUnlockedJSON,
     useMainContext,
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import * as jsonpatch from 'fast-json-patch'
+import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -60,14 +58,15 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
-import CodeEditor from '../CodeEditor/CodeEditor'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
-const applyPatches = importComponentFromFELibrary('applyPatches', null, 'function')
+const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
+const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
+const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
 
 export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
@@ -87,7 +86,6 @@ export default function DeploymentConfig({
         config: [],
         allowed: false,
     })
-    const [lockedOverride, setLockedOverride] = useState({})
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
@@ -101,7 +99,7 @@ export default function DeploymentConfig({
 
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
     const baseDeploymentAbortController = new AbortController()
-    const removedPatches = useRef<Array<jsonpatch.Operation>>([])
+    const removedPatches = useRef<Array<Operation>>([])
 
     const setIsValues = (value: boolean) => {
         dispatch({
@@ -338,7 +336,12 @@ export default function DeploymentConfig({
                     },
                     guiSchema,
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal, state.selectedChart.name)
+            } = await getDeploymentTemplate(
+                +appId,
+                +state.selectedChart.id,
+                baseDeploymentAbortController.signal,
+                state.selectedChart.name,
+            )
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
@@ -348,6 +351,8 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
+                ...(guiSchema === '{}' ? { yamlMode: true } : {}),
+                // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
             }
 
@@ -358,6 +363,9 @@ export default function DeploymentConfig({
                     ...templateData,
                 }
                 payload['guiSchema'] = guiSchema
+                if (templateData.yamlMode) {
+                    payload['yamlMode'] = templateData.yamlMode
+                }
 
                 payload['readme'] = readme
                 payload['schema'] = schema
@@ -444,7 +452,6 @@ export default function DeploymentConfig({
                 : await getIfLockedConfigNonProtected(requestBody)
             if (deploymentTemplateResp.result.isLockConfigError) {
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -492,7 +499,6 @@ export default function DeploymentConfig({
             const deploymentTemplateResp = await api(requestBody, baseDeploymentAbortController.signal)
             if (deploymentTemplateResp.result.isLockConfigError) {
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                setLockedOverride(deploymentTemplateResp.result?.lockedOverride)
                 handleLockedDiffDrawer(true)
                 return
             }
@@ -658,19 +664,27 @@ export default function DeploymentConfig({
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         let valuesOverride = obj
 
-        if (applyPatches && hideLockedKeys) {
-            valuesOverride = applyPatches(valuesOverride, removedPatches.current)
+        if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
+            valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
 
+        // NOTE: toggleLockedTemplateDiff in the reducer will trigger this
         if (state.showLockedTemplateDiff) {
-            // if locked keys
+            const edited = YAML.parse(state.tempFormData)
+            const unedited = YAML.parse(state.data)
+            const documentsNPatches = {
+                edited,
+                unedited,
+                patches: jsonpatchCompare(unedited, edited),
+            }
             if (!lockedConfigKeysWithLockType.allowed) {
-                valuesOverride = getUnlockedJSON(lockedOverride, lockedConfigKeysWithLockType.config, true).newDocument
+                // NOTE: need to send only the changed parts from the yaml as json
+                valuesOverride = getUnlockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             } else {
-                // if allowed keys
-                valuesOverride = getLockedJSON(lockedOverride, lockedConfigKeysWithLockType.config)
+                valuesOverride = getLockedJSON(documentsNPatches, lockedConfigKeysWithLockType.config)
             }
         }
+
         const requestData = {
             ...(state.chartConfig.chartRefId === state.selectedChart.id ? state.chartConfig : {}),
             appId: +appId,
@@ -730,10 +744,9 @@ export default function DeploymentConfig({
         let result = null
         if (isCompareAndApprovalState) {
             result = await fetchManifestData(state.draftValues)
-        } else if (applyPatches && hideLockedKeys) {
-            result = fetchManifestData(
-                YAMLStringify(applyPatches(YAML.parse(state.tempFormData), removedPatches.current)),
-            )
+        } else if (hideLockedKeys) {
+            const parsed = YAML.parse(state.tempFormData)
+            result = fetchManifestData(YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)))
         } else {
             result = await fetchManifestData(state.tempFormData)
         }
@@ -749,7 +762,6 @@ export default function DeploymentConfig({
                     value={state.publishedState?.tempFormData}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
-                    removedPatches={removedPatches}
                 />
             )
         }
@@ -799,7 +811,6 @@ export default function DeploymentConfig({
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
                 isValues={state.isValues}
-                hideLockedKeys={hideLockedKeys}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
@@ -825,7 +836,6 @@ export default function DeploymentConfig({
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
-                setLockedOverride={setLockedOverride}
                 handleSaveChanges={handleSaveChanges}
             />
         </div>
@@ -890,14 +900,19 @@ export default function DeploymentConfig({
                     )}
                     {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                         <DeploymentTemplateLockedDiff
-                            CodeEditor={CodeEditor}
                             closeModal={closeLockedDiffDrawerWithChildModal}
                             handleChangeCheckbox={handleChangeCheckbox}
                             saveEligibleChangesCb={saveEligibleChangesCb}
                             showLockedDiffForApproval={showLockedDiffForApproval}
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                            lockedOverride={lockedOverride}
+                            documents={{
+                                edited: reapplyRemovedLockedKeysToYaml(
+                                    YAML.parse(isCompareAndApprovalState ? state.draftValues : state.tempFormData),
+                                    removedPatches.current,
+                                ),
+                                unedited: YAML.parse(state.publishedState?.tempFormData ?? state.data),
+                            }}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}
                             setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                             appId={appId}
