@@ -297,6 +297,12 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
     ciPipeline = JSON.parse(JSON.stringify(ciPipeline))
     const preBuildStage = formData.preBuildStage?.steps?.length > 0 ? formData.preBuildStage : {}
     const postBuildStage = formData.postBuildStage?.steps?.length > 0 ? formData.postBuildStage : {}
+    // send the docker args only when either the config is not overridden or ci build type is not build pack type
+    const shouldSendDockerArgs = !(
+        formData.isDockerConfigOverridden &&
+        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
+    )
+
     const ci = {
         ...ciPipeline,
         id: ciPipeline.id,
@@ -333,17 +339,18 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         preBuildStage,
         postBuildStage,
         scanEnabled: formData.scanEnabled,
-        // send the docker args only when either the config is not overridden or ci build type is not build pack type
-        ...(!(formData.isDockerConfigOverridden && formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE) && {
+        ...(shouldSendDockerArgs && {
             dockerArgs: formData.args
                 .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
                 .reduce((agg, curr) => {
                     agg[curr.key] = curr.value
                     return agg
-                }, {})
+                }, {}),
         }),
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
-        dockerConfigOverride: formData.isDockerConfigOverridden ? getDockerConfigOverrideData(formData.dockerConfigOverride) : {},
+        dockerConfigOverride: formData.isDockerConfigOverridden
+            ? getDockerConfigOverrideData(formData.dockerConfigOverride)
+            : {},
         defaultTag: formData.defaultTag,
         customTag: {
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
