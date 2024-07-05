@@ -147,6 +147,7 @@
     "resolutions": {
         "**/@typescript-eslint/eslint-plugin": "^4.33.0",
         "**/@typescript-eslint/parser": "^4.33.0",
-        "react-error-overlay": "6.0.9"
+        "react": "^17.0.2",
+        "@types/react": "17.0.39"
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import * as Sentry from '@sentry/browser'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 import bugFixing from '../../assets/img/bug_fixing.svg'

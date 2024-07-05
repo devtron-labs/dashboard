@@ -2,10 +2,6 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "react": [
-                "./node_modules/react",
-                "./node_modules/@types/react/index.d.ts",
-            ],
             "@Icons/*": [
                 "./src/assets/icons/*"
             ],
