@@ -19,7 +19,7 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateOptionsTabProps } from './types'
 import fallbackGuiSchema from './basicViewSchema.json'
 import fallbackJobsNCronJobGuiSchema from './fallbackJobsNCronJobGuiSchema.json'
-import { JOB_AND_CRONJOB_CHART_NAME } from './constants'
+import { DEPLOYMENT, JOB_AND_CRONJOB_CHART_NAME, ROLLOUT_DEPLOYMENT, STATEFUL_SET } from './constants'
 
 export const getRenderActionButton =
     (changeEditorMode: DeploymentTemplateOptionsTabProps['changeEditorMode']) => () => (
@@ -37,8 +37,12 @@ const getGuiSchemaFromChartName = (chartName: string) => {
     switch (chartName) {
         case JOB_AND_CRONJOB_CHART_NAME:
             return fallbackJobsNCronJobGuiSchema
-        default:
+        case DEPLOYMENT:
+        case ROLLOUT_DEPLOYMENT:
+        case STATEFUL_SET:
             return fallbackGuiSchema
+        default:
+            return {}
     }
 }
 
