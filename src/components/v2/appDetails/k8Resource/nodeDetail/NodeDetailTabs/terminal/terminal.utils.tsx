@@ -332,10 +332,6 @@ const manifestEditButtons = ({
 }
 
 const downloadFileFolderButton = (elementData) => {
-    if (elementData.hideTerminalStripComponent) {
-        return null
-    }
-
     const handleClick = () => {
         elementData.setShowDownloadFileFolderModal(true)
     }

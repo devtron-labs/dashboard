@@ -168,3 +168,7 @@ export interface DebugModeType {
     onToggle: (value: boolean) => void
     isEnabled: boolean
 }
+
+export interface DownloadFileFolderButtonType {
+    setShowDownloadFileFolderModal: React.Dispatch<React.SetStateAction<boolean>>
+}
