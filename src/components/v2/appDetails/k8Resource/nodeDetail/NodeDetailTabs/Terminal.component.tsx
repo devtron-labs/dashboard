@@ -330,7 +330,6 @@ const TerminalComponent = ({
             },
             {
                 type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
-                hideTerminalStripComponent: false,
                 setShowDownloadFileFolderModal,
             },
         ],
