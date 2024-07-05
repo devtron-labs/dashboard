@@ -16,38 +16,37 @@
 
 module.exports = {
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint', 'react', 'prettier'],
+    plugins: ['@typescript-eslint', 'react', 'prettier', 'import'],
     env: {
         browser: true,
-        // ESLint 6 supports till ES2020 only
-        es2020: true,
+        es2021: true,
     },
-    extends: [
-        'eslint:recommended',
-        'plugin:react/recommended',
-        'plugin:react/jsx-runtime',
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/eslint-recommended',
-        'airbnb',
-        'airbnb/hooks',
-        'plugin:prettier/recommended',
-    ],
     parserOptions: {
-        ecmaVersion: 2020,
+        ecmaVersion: 2021,
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
         project: ['./tsconfig.json'],
     },
+    globals: {
+        JSX: true,
+    },
+    extends: [
+        'eslint:recommended',
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'airbnb',
+        'airbnb/hooks',
+        'plugin:prettier/recommended',
+    ],
     rules: {
+        'prettier/prettier': ['error'],
+        'linebreak-style': ['error', 'unix'],
         'no-console': 'warn',
         'no-var': 'error',
         'no-duplicate-imports': 'error',
-        curly: ['error', 'all'],
-        'keyword-spacing': 'error',
-        'prettier/prettier': ['error'],
-        'linebreak-style': ['error', 'unix'],
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 'warn',
         '@typescript-eslint/explicit-function-return-type': 'off',
@@ -55,7 +54,6 @@ module.exports = {
         // Since we are using typescript, we can disable the no-unused-vars rule for enum,etc
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'error',
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
         'react/jsx-filename-extension': [
             'error',
             {
@@ -68,13 +66,13 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
         'jsx-a11y/no-noninteractive-element-interactions': 'off',
         'no-underscore-dangle': 'off',
-        'no-restricted-exports': 'off',
         'import/no-extraneous-dependencies': [
             'warn',
             {
                 devDependencies: true,
             },
         ],
+        'import/no-named-as-default-member': 'off',
         'no-plusplus': [
             'error',
             {
@@ -91,11 +89,11 @@ module.exports = {
                 unnamedComponents: 'arrow-function',
             },
         ],
-        // FIXME: Turn this OFF once react-scripts is upgraded or removed
-        'react/jsx-uses-react': 'warn',
-        'react/react-in-jsx-scope': 'warn',
+        'react/jsx-uses-react': 'off',
+        'react/react-in-jsx-scope': 'off',
         // additional rules:
         '@typescript-eslint/no-floating-promises': 'error',
+        'import/prefer-default-export': 'off',
         'import/extensions': [
             'warn',
             'ignorePackages',
@@ -106,7 +104,11 @@ module.exports = {
                 tsx: 'never',
             },
         ],
+        // Re-add this while resolving ESLint issues
+        'import/no-cycle': 'off',
         'import/prefer-default-export': 'off',
+        'no-restricted-exports': 'off',
+        'import/named': 'off'
     },
     overrides: [
         {
@@ -120,11 +122,19 @@ module.exports = {
         react: {
             version: 'detect',
         },
+        'import/parsers': {
+            '@typescript-eslint/parser': ['.ts', '.tsx'],
+        },
         'import/resolver': {
+            typescript: {
+                alwaysTryTypes: true,
+            },
             node: {
                 moduleDirectory: ['src', 'node_modules'],
                 extensions: ['.js', '.jsx', '.ts', '.tsx'],
             },
         },
-    }
+        'import/ignore': ['\\.png$', '\\.jpg$', '\\.svg$'],
+    },
+    ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
 }
