@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components, MenuProps } from 'react-select'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-arrow-left.svg'

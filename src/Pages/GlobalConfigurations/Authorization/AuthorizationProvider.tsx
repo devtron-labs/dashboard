@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import { AuthorizationContextProps, AuthorizationProviderProps } from './types'
 
 const AuthorizationContext = createContext<AuthorizationContextProps>({

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
 import { ReactComponent as ArgoCD } from '../../../assets/icons/argo-cd-app.svg'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { showError, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'

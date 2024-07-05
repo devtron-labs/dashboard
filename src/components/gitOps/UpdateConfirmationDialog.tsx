@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-import React from 'react'
 import { ButtonWithLoader, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import GitProviderTabIcons from './GitProviderTabIcons'
 import { GitProvider, UpdateConfirmationDialogProps } from './gitops.type'

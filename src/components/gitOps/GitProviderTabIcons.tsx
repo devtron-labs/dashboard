@@ -15,7 +15,6 @@
  *   limitations under the License.
  */
 
-import React from 'react'
 import { GitProvider, GitProviderTabIconsProps } from './gitops.type'
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as ICAwsCodeCommit } from '../../assets/icons/ic-aws-codecommit.svg'

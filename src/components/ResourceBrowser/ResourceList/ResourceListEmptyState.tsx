@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceListEmptyStateType } from '../Types'
 import emptyCustomChart from '../../../assets/img/empty-noresult@2x.png'
