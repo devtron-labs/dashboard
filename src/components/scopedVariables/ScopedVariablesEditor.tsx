@@ -77,7 +77,7 @@ export default function ScopedVariablesEditor({
             }
         } catch (e) {
             if (e instanceof ServerErrors && Array.isArray(e.errors)) {
-                setInfoError(e.errors?.[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
+                setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
             toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             setIsSaving(false)
