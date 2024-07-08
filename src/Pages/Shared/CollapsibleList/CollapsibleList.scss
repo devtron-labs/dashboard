@@ -15,48 +15,8 @@
  *   limitations under the License.
  */
 
-.collapsible-list {
-    min-width: 0;
-    background: white;
-
-    &__header-button {
-        min-width: 0;
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-        padding: 0;
-        color: var(--N900);
-        font-size: 12px;
-        line-height: 18px;
-        font-weight: 600;
-        gap: 4px;
-    }
-
-    &__icon {
-        min-width: 16px;
-        max-width: 16px;
-        height: 16px;
-        cursor: pointer;
-
-        & .fill-color {
-            fill: var(--N700);
-        }
-    }
-}
-
 .collapsible {
-    margin-left: 16px;
-    padding-left: 4px;
-    border-left: 1px solid var(--N200);
-
     &__item {
-        display: flex;
-        gap: 8px;
-        color: var(--N700);
-        text-decoration: none;
-        border-radius: 4px;
-        padding: 6px 8px;
-
         &.active {
             color: var(--B500);
             font-weight: 600;
@@ -74,19 +34,8 @@
             background: var(--N50);
         }
 
-        &__title {
-            font-size: 13px;
-            line-height: 20px;
-        }
-
         &:not(.active) &__title {
             color: var(--N900);
-        }
-
-        &__subtitle {
-            color: var(--N700);
-            font-weight: 400;
-            line-height: 18px;
         }
     }
 }

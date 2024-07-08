@@ -33,7 +33,7 @@ export interface CollapsibleListItem {
     /**
      * Properties for the icon component.
      */
-    iconProps?: React.PropsWithChildren<React.SVGProps<SVGSVGElement>>
+    iconProps?: React.SVGProps<SVGSVGElement>
     /**
      * Properties for the tooltip component of the icon.
      */
@@ -54,17 +54,17 @@ export interface CollapsibleListConfig {
      */
     header: string
     /**
-     * A React component representing an icon to be displayed with the header.
+     * A React component representing an icon button to be displayed with the header.
      */
     headerIcon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     /**
      * Properties for the header icon component.
      */
-    headerIconProps?: React.PropsWithChildren<React.SVGProps<SVGSVGElement>>
+    headerIconProps?: React.SVGProps<SVGSVGElement>
     /**
-     * Properties for the tooltip component of the header icon.
+     * Properties for the header icon button component.
      */
-    headerIconTooltipProps?: TippyProps
+    headerIconBtnProps?: React.ButtonHTMLAttributes<HTMLButtonElement>
     /**
      * Text to display when there are no items in the list.
      * @default 'No items found.'

@@ -50,59 +50,56 @@ export const CollapsibleList = ({ config, expandedIds }: CollapsibleListProps) =
         }))
 
     return (
-        <div className="collapsible-list">
+        <div className="mw-none bcn-0">
             {config.map(
-                ({
-                    id,
-                    header,
-                    headerIcon: HeaderIcon,
-                    headerIconProps,
-                    headerIconTooltipProps,
-                    items,
-                    noItemsText,
-                }) => (
+                ({ id, header, headerIcon: HeaderIcon, headerIconProps, headerIconBtnProps, items, noItemsText }) => (
                     <Fragment key={id}>
                         <div className="flexbox dc__align-items-center dc__gap-4 py-6 px-8">
                             <button
                                 type="button"
-                                className="dc__unset-button-styles collapsible-list__header-button"
+                                className="dc__unset-button-styles mw-none flexbox dc__align-items-center flex-grow-1 p-0 cn-9 fs-12 lh-1-5 fw-6 dc__gap-4"
                                 onClick={handleCollapseBtnClick(id)}
                             >
                                 <ICExpand
-                                    className="collapsible-list__icon rotate"
+                                    className="icon-dim-16 fcn-6 dc__no-shrink cursor rotate"
                                     style={{ ['--rotateBy' as string]: isExpanded[id] ? '90deg' : '0deg' }}
                                 />
                                 <span className="flex-grow-1 dc__align-left dc__ellipsis-right">{header}</span>
                             </button>
                             {HeaderIcon && (
-                                <ConditionalWrap
-                                    condition={!!headerIconTooltipProps}
-                                    wrap={renderWithTippy(headerIconTooltipProps)}
+                                <button
+                                    {...headerIconBtnProps}
+                                    type="button"
+                                    className={`dc__unset-button-styles dc__no-shrink cursor ${headerIconBtnProps?.className || ''}`}
                                 >
                                     <HeaderIcon
                                         {...headerIconProps}
-                                        className={`collapsible-list__icon ${headerIconProps?.className || ''}`}
+                                        className={`icon-dim-16 ${headerIconProps?.className || ''}`}
                                     />
-                                </ConditionalWrap>
+                                </button>
                             )}
                         </div>
                         {isExpanded[id] && (
-                            <div className="collapsible">
+                            <div className="collapsible ml-16 pl-4 dc__border-left">
                                 {!items.length ? (
-                                    <div className="collapsible__item">
-                                        <span className="dc__ellipsis-right collapsible__item__title">
+                                    <div className="collapsible__item flexbox dc__gap-8 cn-7 dc__no-decor br-4 py-6 px-8">
+                                        <span className="collapsible__item__title dc__ellipsis-right fs-13 lh-20">
                                             {noItemsText || 'No items found.'}
                                         </span>
                                     </div>
                                 ) : (
                                     items.map(({ title, href, icon: Icon, iconProps, iconTooltipProps, subtitle }) => (
-                                        <NavLink to={href} className="collapsible__item cursor">
+                                        <NavLink
+                                            key={title}
+                                            to={href}
+                                            className="collapsible__item flexbox dc__gap-8 cn-7 dc__no-decor br-4 py-6 px-8 cursor"
+                                        >
                                             <div className="flexbox-col flex-grow-1 mw-none">
-                                                <span className="dc__ellipsis-right collapsible__item__title">
+                                                <span className="collapsible__item__title dc__ellipsis-right fs-13 lh-20">
                                                     {title}
                                                 </span>
                                                 {subtitle && (
-                                                    <span className="dc__ellipsis-right collapsible__item__subtitle">
+                                                    <span className="dc__ellipsis-right fw-4 lh-1-5 cn-7">
                                                         {subtitle}
                                                     </span>
                                                 )}
@@ -114,7 +111,7 @@ export const CollapsibleList = ({ config, expandedIds }: CollapsibleListProps) =
                                                 >
                                                     <Icon
                                                         {...iconProps}
-                                                        className={`collapsible-list__icon ${iconProps?.className || ''}`}
+                                                        className={`icon-dim-16 dc__no-shrink cursor ${iconProps?.className || ''}`}
                                                     />
                                                 </ConditionalWrap>
                                             )}
