@@ -464,39 +464,39 @@ const DeploymentTemplateEditorView = ({
     )
 
     const renderCodeEditor = (): JSX.Element => (
-            <div
-                className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
-                    isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
-                }`}
+        <div
+            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
+                isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
+            }`}
+        >
+            <CodeEditor
+                defaultValue={lhs}
+                value={rhs}
+                chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
+                onChange={editorOnChange}
+                mode={MODES.YAML}
+                validatorSchema={state.schema}
+                loading={
+                    state.chartConfigLoading ||
+                    fetchingValues ||
+                    draftLoading ||
+                    resolveLoading ||
+                    (state.openComparison && !lhs) ||
+                    reMountEditor
+                }
+                height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
+                diffView={state.openComparison}
+                readOnly={readOnly}
+                noParsing
             >
-                <CodeEditor
-                    defaultValue={lhs}
-                    value={rhs}
-                    chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
-                    onChange={editorOnChange}
-                    mode={MODES.YAML}
-                    validatorSchema={state.schema}
-                    loading={
-                        state.chartConfigLoading ||
-                        fetchingValues ||
-                        draftLoading ||
-                        resolveLoading ||
-                        (state.openComparison && !lhs) ||
-                        reMountEditor
-                    }
-                    height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
-                    diffView={state.openComparison}
-                    readOnly={readOnly}
-                    noParsing
-                >
-                    {isUnSet && !state.openComparison && !state.showReadme && (
-                        <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
-                    )}
-                    {state.showReadme && renderCodeEditorHeading()}
-                    {state.openComparison && renderCodeEditorCompareMode()}
-                </CodeEditor>
-            </div>
-        )
+                {isUnSet && !state.openComparison && !state.showReadme && (
+                    <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
+                )}
+                {state.showReadme && renderCodeEditorHeading()}
+                {state.openComparison && renderCodeEditorCompareMode()}
+            </CodeEditor>
+        </div>
+    )
 
     const renderCodeEditorView = () => {
         if (state.showReadme) {
