@@ -2277,6 +2277,14 @@ button.anchor {
     }
 }
 
+.dc__border-bottom-n0 {
+    border-bottom: solid 1px var(--N0);
+
+    &--important {
+        border-bottom: solid 1px var(--N0) !important;
+    }
+}
+
 .dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
 
@@ -2335,6 +2343,10 @@ button.anchor {
 
 .dc__box-shadow-top {
     box-shadow: inset 0 1px 0 0 #d6dbdf;
+}
+
+.dc__box-shadow-bottom-n2 {
+    box-shadow: inset 0 -1px 0 0 var(--N200);
 }
 
 .dc__cluster-error {
