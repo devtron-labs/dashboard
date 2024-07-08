@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { cloneElement } from 'react'
-import { commonSelectStyles, OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { SourceTypeMap } from '../../config'
-import { OptionProps, StylesConfig, ValueContainerProps, components } from 'react-select'
+import { commonSelectStyles, OptionType, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionProps, StylesConfig, components } from 'react-select'
 import { PluginVersionSelectOptionType } from './types'
 
 export const baseSelectStyles = {
