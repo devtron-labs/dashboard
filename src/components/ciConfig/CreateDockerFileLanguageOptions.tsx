@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'

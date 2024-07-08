@@ -21,7 +21,7 @@ import {
     Progressing,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-medium-delete.svg'
 import { deletePermissionGroupInBulk, deleteUserInBulk } from '../../../authorization.service'
