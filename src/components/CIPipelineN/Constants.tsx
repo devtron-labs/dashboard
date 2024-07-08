@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GroupHeading, groupStyle } from '../v2/common/ReactSelect.utils'
 
 export const groupHeading = (props) => {

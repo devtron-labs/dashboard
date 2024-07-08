@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentTemplateOptionsTabProps } from './types'
 import fallbackGuiSchema from './basicViewSchema.json'
