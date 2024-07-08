@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, post, put, trash, Host, K8sResourcePayloadAppType } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import {
     AppDetails,
     AppType,
-    K8sResourcePayloadAppType,
     K8sResourcePayloadDeploymentType,
     SelectedResourceType,
 } from '../../appDetails.type'
