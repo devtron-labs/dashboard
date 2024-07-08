@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import { IssuesListingModalType } from './appDetails.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'

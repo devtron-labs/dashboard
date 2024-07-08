@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import LoadingCard from '../../../../app/details/appDetails/LoadingCard'

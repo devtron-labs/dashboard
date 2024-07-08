@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../../config'
 

@@ -16,7 +16,7 @@
 
 // Disabling due to react select issue
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
