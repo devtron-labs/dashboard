@@ -23,7 +23,7 @@ import {
     RefVariableType,
     StepType,
     ActivityIndicator,
-    ImageWithFallback,
+    PluginImageContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -32,8 +32,8 @@ import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dot
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as ICLegoBlock } from '../../assets/icons/ic-lego-block.svg'
 import { ReactComponent as ICEditFile } from '../../assets/icons/ic-edit-file.svg'
+import { ReactComponent as ICCDStage } from '../../assets/icons/ic-cd-stage.svg'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -372,8 +372,14 @@ export const TaskList = ({
         )
     }
 
-    // TODO: Ask for icon of inline as well
     const renderPluginIcon = (taskDetail: StepType) => {
+        const isInline = taskDetail.stepType === PluginType.INLINE
+        if (isInline) {
+            return (
+                <ICCDStage className="dc__no-shrink icon-dim-20" />
+            )
+        }
+
         const pluginId = taskDetail.pluginRefStepDetail?.pluginId
         const { isLatest, icon, name } = pluginDataStore.pluginVersionStore[pluginId] || {}
 
@@ -385,8 +391,8 @@ export const TaskList = ({
 
         if (isLatest) {
             return (
-                <ImageWithFallback
-                    fallbackImage={<ICLegoBlock className="dc__no-shrink icon-dim-20" />}
+                <PluginImageContainer
+                    fallbackImageClassName='icon-dim-20'
                     imageProps={{
                         src: icon,
                         alt: `${name} logo`,
@@ -400,8 +406,8 @@ export const TaskList = ({
 
         return (
             <div className="icon-dim-20 dc__no-shrink flexbox dc__position-rel dc__content-center">
-                <ImageWithFallback
-                    fallbackImage={<ICLegoBlock className="dc__no-shrink icon-dim-20" />}
+                <PluginImageContainer
+                    fallbackImageClassName='icon-dim-20'
                     imageProps={{
                         src: icon,
                         alt: `${name} logo`,

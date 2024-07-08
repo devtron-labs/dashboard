@@ -1,5 +1,10 @@
-import React, { useContext } from 'react'
-import { TippyCustomized, TippyTheme, PluginTagsContainer } from '@devtron-labs/devtron-fe-common-lib'
+import { useContext } from 'react'
+import {
+    TippyCustomized,
+    TippyTheme,
+    PluginTagsContainer,
+    PluginImageContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps, PluginVersionSelectOptionType } from './types'
@@ -33,8 +38,16 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
     return (
         <div className="flexbox dc__align-items-center dc__content-space py-12 px-20 dc__border-bottom-n1">
             <div className="flexbox dc__gap-8 dc__align-items-center">
-                {/* FIXME: ImageWithFallback is needed for this case */}
-                <img src={pluginData.icon} alt={pluginData.name} width={24} height={24} className="p-2" />
+                <PluginImageContainer
+                    fallbackImageClassName="icon-dim-24 p-2"
+                    imageProps={{
+                        src: pluginData.icon,
+                        alt: pluginData.name,
+                        width: 24,
+                        height: 24,
+                        className: 'p-2',
+                    }}
+                />
                 <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{pluginData.name}</h4>
 
                 <ReactSelect<PluginVersionSelectOptionType>
@@ -74,7 +87,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 className="w-300"
                 heading={pluginData.name}
                 infoText={pluginData.description}
-                additionalContent={<PluginTagsContainer tags={pluginData.tags} rootClassName="p-12" />}
+                additionalContent={<PluginTagsContainer tags={pluginData.tags} rootClassName="px-12 pb-12" />}
                 iconClass="fcv-5"
                 showCloseButton
                 trigger="click"
