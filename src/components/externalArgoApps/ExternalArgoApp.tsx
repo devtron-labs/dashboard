@@ -17,9 +17,9 @@
 import React, { Suspense } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams } from 'react-router'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import EAHeaderComponent from '../v2/headers/EAHeader.component'
-import { AppListConstants, URLS } from '../../config'
+import { URLS } from '../../config'
 import ExternalArgoAppDetail from './ExternalArgoAppDetail'
 
 export default function ExternalArgoApp() {
@@ -31,7 +31,7 @@ export default function ExternalArgoApp() {
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.ARGO_APPS}
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.ARGO_APPS}`}
-                appType={AppListConstants.AppType.ARGO_APPS}
+                showAppDetailsOnly
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

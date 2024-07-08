@@ -1219,6 +1219,12 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.not-ready {
+        background: url('../assets//icons/ic-error.svg');
+        background-size: contain, contain;
+    }
+
+    &.ready,
     &.healthy,
     &.synced,
     &.sync.ok,
@@ -2386,6 +2392,10 @@ button.anchor {
 
 .dc__mxw-160 {
     max-width: 160px;
+}
+
+.dc__mxw-175 {
+    max-width: 175px;
 }
 
 .dc__mxw-178 {

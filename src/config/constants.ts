@@ -146,6 +146,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
     ARGO_APPS: 'argo-application',
+    FLUX_APPS: 'flux-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -410,30 +411,6 @@ export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticke
 export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
 
 export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
-
-// APP LIST STARTS
-export const AppListConstants = {
-    SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
-    CREATE_DEVTRON_APP_URL: 'create-d-app',
-    AppTabs: {
-        DEVTRON_APPS: 'Devtron Apps',
-        HELM_APPS: 'Helm Apps',
-        ARGO_APPS: 'ArgoCD Apps',
-    },
-    AppType: {
-        DEVTRON_APPS: 'd',
-        HELM_APPS: 'h',
-        ARGO_APPS: 'a',
-    },
-    FilterType: {
-        PROJECT: 'team',
-        CLUTSER: 'cluster',
-        NAMESPACE: 'namespace',
-        ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus',
-    },
-}
-// APP LIST ENDS
 
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
