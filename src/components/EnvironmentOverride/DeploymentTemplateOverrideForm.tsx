@@ -487,7 +487,9 @@ export default function DeploymentTemplateOverrideForm({
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
             if (hideLockedKeys) {
-                codeEditorValue = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current))
+                codeEditorValue = YAMLStringify(
+                    reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
+                )
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -497,7 +499,7 @@ export default function DeploymentTemplateOverrideForm({
         return manifestEditorValue
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean, getUnedited = false) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = getCodeEditorValueForReadOnly()
@@ -506,7 +508,7 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData && !getUnedited) {
+        } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -731,8 +733,11 @@ export default function DeploymentTemplateOverrideForm({
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
                     documents={{
-                        edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
-                        unedited: YAML.parse(getCodeEditorValue(false, true)),
+                        edited: reapplyRemovedLockedKeysToYaml(
+                            YAML.parse(getCodeEditorValue(false)),
+                            removedPatches.current,
+                        ),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly()),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
