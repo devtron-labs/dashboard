@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import {
     CodeEditor,

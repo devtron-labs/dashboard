@@ -1,4 +1,3 @@
-import React from 'react'
 import { DescriptorTabProps } from './types'
 import { DESCRIPTOR_TABS } from './constants'
 
