@@ -143,6 +143,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
     setConvertVariables,
+    setReMountEditor,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -233,6 +234,8 @@ export const CompareWithDropdown = ({
     const onChange = (selected: DeploymentChartOptionType) => {
         setConvertVariables(false)
         setSelectedOption(selected)
+        setReMountEditor(true)
+        setTimeout(() => setReMountEditor(false), 1000)
     }
 
     return (

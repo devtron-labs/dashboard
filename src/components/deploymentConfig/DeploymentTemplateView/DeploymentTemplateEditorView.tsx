@@ -62,6 +62,7 @@ const DeploymentTemplateEditorView = ({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
+    const [reMountEditor, setReMountEditor] = useState(false)
     const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
@@ -400,6 +401,7 @@ const DeploymentTemplateEditorView = ({
                             isValues={isValues}
                             groupedData={groupedData}
                             setConvertVariables={setConvertVariables}
+                            setReMountEditor={setReMountEditor}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -462,38 +464,39 @@ const DeploymentTemplateEditorView = ({
     )
 
     const renderCodeEditor = (): JSX.Element => (
-        <div
-            className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
-                isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
-            }`}
-        >
-            <CodeEditor
-                defaultValue={lhs}
-                value={rhs}
-                chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
-                onChange={editorOnChange}
-                mode={MODES.YAML}
-                validatorSchema={state.schema}
-                loading={
-                    state.chartConfigLoading ||
-                    fetchingValues ||
-                    draftLoading ||
-                    resolveLoading ||
-                    (state.openComparison && !lhs)
-                }
-                height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
-                diffView={state.openComparison}
-                readOnly={readOnly}
-                noParsing
+            <div
+                className={`form__row--code-editor-container dc__border-top-n1 dc__border-bottom-imp ${
+                    isDeleteDraftState && !state.showReadme ? 'delete-override-state' : ''
+                }`}
             >
-                {isUnSet && !state.openComparison && !state.showReadme && (
-                    <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
-                )}
-                {state.showReadme && renderCodeEditorHeading()}
-                {state.openComparison && renderCodeEditorCompareMode()}
-            </CodeEditor>
-        </div>
-    )
+                <CodeEditor
+                    defaultValue={lhs}
+                    value={rhs}
+                    chartVersion={state.selectedChart?.version.replace(/\./g, '-')}
+                    onChange={editorOnChange}
+                    mode={MODES.YAML}
+                    validatorSchema={state.schema}
+                    loading={
+                        state.chartConfigLoading ||
+                        fetchingValues ||
+                        draftLoading ||
+                        resolveLoading ||
+                        (state.openComparison && !lhs) ||
+                        reMountEditor
+                    }
+                    height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
+                    diffView={state.openComparison}
+                    readOnly={readOnly}
+                    noParsing
+                >
+                    {isUnSet && !state.openComparison && !state.showReadme && (
+                        <CodeEditor.Warning text={DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning} />
+                    )}
+                    {state.showReadme && renderCodeEditorHeading()}
+                    {state.openComparison && renderCodeEditorCompareMode()}
+                </CodeEditor>
+            </div>
+        )
 
     const renderCodeEditorView = () => {
         if (state.showReadme) {
