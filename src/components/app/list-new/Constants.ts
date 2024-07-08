@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { SortBy } from '../list/types'
+
 export const APP_LIST_HEADERS = {
     AppName: 'App name',
     AppStatus: 'App status',
@@ -23,6 +26,8 @@ export const APP_LIST_HEADERS = {
     Namespace: 'Namespace',
     LastDeployedAt: 'Last deployed at',
     SearchAppStatus: 'Search app status',
+    FluxCDStatus: 'Status',
+    FluxCDTemplateType: 'TEMPLATE TYPE',
 }
 export const appListLoading = Array.from(Array(3).keys()).map((index) => ({
     id: index,
@@ -53,6 +58,7 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     connectClusterLabel: 'Connect a cluster',
     noAppsFound: 'No apps found',
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
+    fluxCDInfoText: 'FluxCD based applications deployed in your cluster will be shown here',
 }
 export const ClearFiltersLabel = 'Clear filters'
 export const DefaultAppNote = `## Describe this application\n\nDescribe this application in a few words. The description could include the purpose, features, benefits, and target audience of your application. A well-written description will help users know about this application and how it works. Keep it concise and informative!\n`
@@ -89,4 +95,31 @@ export const StatusConstants = {
     NOT_AVILABLE: {
         normalCase: 'Not available',
     },
+    TEMPLATE_TYPE: {
+        normalCase: 'Template type',
+        noSpaceLower: 'templateType',
+    },
 } as const
+
+export const InitialEmptyMasterFilters = {
+    projects: [],
+    environments: [],
+    clusters: [],
+    namespaces: [],
+    appStatus: [],
+    templateType: [],
+}
+
+export const InitialEmptyUrlFilters = {
+    environments: [],
+    teams: [],
+    namespaces: [],
+    appNameSearch: '',
+    appStatuses: [],
+    templateType: [],
+    sortBy: SortBy.APP_NAME,
+    sortOrder: SortingOrder.ASC,
+    offset: 0,
+    hOffset: 0,
+    size: 20,
+}

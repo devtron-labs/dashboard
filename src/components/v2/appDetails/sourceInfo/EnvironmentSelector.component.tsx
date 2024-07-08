@@ -47,19 +47,20 @@ import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import { getEnvironmentName } from './utils'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
     _init,
+    loadingDetails,
     loadingResourceTree,
     isVirtualEnvironment,
-    appType,
 }: {
     isExternalApp: boolean
     _init?: () => void
+    loadingDetails: boolean
     loadingResourceTree: boolean
     isVirtualEnvironment?: boolean
-    appType: string
 }) => {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -75,19 +76,33 @@ const EnvironmentSelectorComponent = ({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
+    const isExternalArgoOrFlux =
+        appDetails.appType === AppType.EXTERNAL_ARGO_APP || appDetails.appType === AppType.EXTERNAL_FLUX_APP
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || [])
                 })
-                .catch((error) => {
-                    console.error('error in fetching environments')
+                .catch(() => {
+                    showError('Error in fetching environments')
                     setEnvironments([])
                 })
         }
     }, [params.appId])
+
+    const getDeployedUsing = () => {
+        if (isGitops) {
+            return DeploymentAppTypeNameMapping.GitOps
+        }
+        if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
+            return DeploymentAppTypeNameMapping.ArgoCD
+        }
+        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
+            return DeploymentAppTypeNameMapping.FluxCD
+        }
+        return DeploymentAppTypeNameMapping.Helm
+    }
 
     useEffect(() => {
         if (!params.envId && appDetails.environmentId) {
@@ -261,32 +276,37 @@ const EnvironmentSelectorComponent = ({
                                     }}
                                 />
                             )}
-
                             {(!environments || environments.length === 0) && appDetails && (
                                 <div
                                     className="bw-1 eb-2 br-4 bcn-0 pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}
                                     data-testid="env-name-app-details"
                                 >
-                                    {appDetails.environmentName || appDetails.namespace || <span>&nbsp;</span>}
+                                    {loadingDetails ? (
+                                        <span>&nbsp;</span>
+                                    ) : (
+                                        getEnvironmentName(
+                                            appDetails.clusterName,
+                                            appDetails.namespace,
+                                            appDetails.environmentName,
+                                        )
+                                    )}
                                 </div>
                             )}
                         </div>
                     </div>
-                    {(appDetails?.deploymentAppType || isExternalArgoApp) && (
+                    {(appDetails?.deploymentAppType || appDetails?.appType) && (
                         <Tippy
                             className="default-tt"
                             arrow={false}
                             disabled={isVirtualEnvironment}
                             placement="top"
-                            content={`Deployed using ${
-                                isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-                            }`}
+                            content={`Deployed using ${getDeployedUsing()}`}
                         >
                             <div className="flex">
                                 <DeploymentTypeIcon
-                                    deploymentAppType={appDetails?.deploymentAppType}
-                                    isExternalArgoApp={isExternalArgoApp}
+                                    deploymentAppType={appDetails.deploymentAppType}
+                                    appType={appDetails.appType}
                                 />
                             </div>
                         </Tippy>
@@ -303,7 +323,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && appType !== AppType.EXTERNAL_ARGO_APP && (
+            {!loadingResourceTree && !isExternalArgoOrFlux && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -324,14 +344,13 @@ const EnvironmentSelectorComponent = ({
                             <ScaleObjects className="mr-4" /> Scale workloads
                         </button>
                     )}
-
                     {!(
-                        deployedAppDetail &&
-                        checkIfDevtronOperatorHelmRelease(
-                            deployedAppDetail[2],
-                            deployedAppDetail[1],
-                            deployedAppDetail[0],
-                        )
+                        (deployedAppDetail &&
+                            checkIfDevtronOperatorHelmRelease(
+                                deployedAppDetail[2],
+                                deployedAppDetail[1],
+                                deployedAppDetail[0],
+                            ))
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
@@ -377,7 +396,6 @@ const EnvironmentSelectorComponent = ({
                     )}
                 </div>
             )}
-
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}

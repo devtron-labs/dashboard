@@ -26,6 +26,7 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    AppListConstants,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -33,7 +34,7 @@ import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
-import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -53,8 +54,9 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { AppListResponse } from '../../app/list-new/AppListType'
+import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
+import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -150,7 +152,7 @@ export default function NavigationRoutes() {
                         withCredentials: true,
                     })
                     _sseConnection.onmessage = (message) => {
-                        const externalAppData: AppListResponse = JSON.parse(message.data)
+                        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
                         if (externalAppData.result?.helmApps?.length <= 1) {
                             history.push(`/${URLS.GETTING_STARTED}`)
                         }
@@ -175,7 +177,7 @@ export default function NavigationRoutes() {
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email, })
+                    scope.setUser({ email })
                 })
             }
             if (window._env_.GA_ENABLED) {
@@ -437,8 +439,7 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []
-                                        ),
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -501,6 +502,11 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
                         render={() => <ExternalArgoApps />}
                     />
+                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
+                            <ExternalFluxAppDetailsRoute />
+                        </Route>
+                    )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}

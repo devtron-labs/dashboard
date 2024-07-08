@@ -15,7 +15,12 @@
  */
 
 import React, { Component } from 'react'
-import { AppStatus, Progressing, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    ErrorScreenManager,
+    DEFAULT_BASE_PAGE_SIZE,
+    AppListConstants,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'
@@ -31,7 +36,7 @@ import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-o
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import ContentCard from '../../common/ContentCard/ContentCard'
-import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
+import { DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import {
