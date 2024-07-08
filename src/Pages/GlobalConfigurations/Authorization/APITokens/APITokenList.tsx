@@ -15,7 +15,7 @@
  */
 
 import moment from 'moment'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { GenericFilterEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, MomentDateFormat } from '../../../../config'

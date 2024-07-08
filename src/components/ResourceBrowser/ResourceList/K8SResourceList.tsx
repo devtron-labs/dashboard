@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import Tippy from '@tippyjs/react'

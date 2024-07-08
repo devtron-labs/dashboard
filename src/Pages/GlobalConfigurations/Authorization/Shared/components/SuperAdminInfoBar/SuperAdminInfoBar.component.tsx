@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/ic-info-filled.svg'

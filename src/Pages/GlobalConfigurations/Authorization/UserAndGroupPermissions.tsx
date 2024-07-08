@@ -23,9 +23,9 @@ import {
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { lazy, useMemo, useState } from 'react'
+import { lazy, useMemo, useState } from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
-import { importComponentFromFELibrary } from '../../../components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 import { API_STATUS_CODES, Routes } from '../../../config'
 import './authorization.scss'
 import { getCustomRoles } from './authorization.service'

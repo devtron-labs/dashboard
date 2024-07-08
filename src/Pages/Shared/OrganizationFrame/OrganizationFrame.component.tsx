@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-blue-outline.svg'
 

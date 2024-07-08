@@ -113,8 +113,7 @@ const DeploymentTemplateGUIView = ({
             return (
                 <GenericEmptyState
                     image={EmptyFolderImage}
-                    title={state.error.title}
-                    subTitle={state.error.subTitle}
+                    {...state.error}
                 >
                     <button
                         type="button"

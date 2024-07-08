@@ -15,7 +15,6 @@
  */
 
 /* eslint-disable react/no-danger */
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
 import { highlightSearchText } from '@devtron-labs/devtron-fe-common-lib'

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Switch, useRouteMatch, Route } from 'react-router-dom'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import LinkedCIDetailsModal from './LinkedCIDetailsModal'
