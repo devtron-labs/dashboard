@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS, DOCUMENTATION } from '../../../../../config'
 import { AppConfigStatusResponseItem } from '../../service.types'
-import { AppStageUnlockedType, STAGE_NAME } from './appConfig.type'
+import { AppStageUnlockedType, CustomNavItemsType, STAGE_NAME } from './appConfig.type'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -94,175 +96,204 @@ export const getCompletedStep = (
 export const getNavItems = (
     _isUnlocked: AppStageUnlockedType,
     appId: string,
-    isJobView: boolean,
-    configStatus,
-): { navItems } => {
-    const isGitOpsConfigurationRequired = configStatus.find(
-        (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
-    )?.required
-    const completedSteps = getCompletedStep(_isUnlocked, isJobView, isGitOpsConfigurationRequired)
-    let navItems = []
-    if (isJobView) {
-        const completedPercent = completedSteps * 50
+    resourceKind: ResourceKindType,
+    isGitOpsConfigurationRequired: boolean,
+): { navItems: CustomNavItemsType[] } => {
+    const completedSteps = getCompletedStep(
+        _isUnlocked,
+        resourceKind === ResourceKindType.job,
+        isGitOpsConfigurationRequired,
+    )
 
-        navItems = [
-            {
-                title: 'Source code',
-                href: `/job/${appId}/edit/materials`,
-                stage: STAGE_NAME.GIT_MATERIAL,
-                isLocked: !_isUnlocked.material,
-                supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: true,
-            },
-            {
-                title: 'Workflow Editor',
-                href: `/job/${appId}/edit/workflow`,
-                stage: STAGE_NAME.WORKFLOW,
-                isLocked: !_isUnlocked.workflowEditor,
-                supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: true,
-            },
-            {
-                title: 'ConfigMaps',
-                href: `/job/${appId}/edit/configmap`,
-                stage: STAGE_NAME.CONFIGMAP,
-                isLocked: !_isUnlocked.configmap,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                isProtectionAllowed: true,
-                required: true,
-            },
-            {
-                title: 'Secrets',
-                href: `/job/${appId}/edit/secrets`,
-                stage: STAGE_NAME.SECRETS,
-                isLocked: !_isUnlocked.secret,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                isProtectionAllowed: true,
-                required: true,
-            },
-            {
-                title: 'Environment Override',
-                href: `/job/${appId}/edit/env-override`,
-                stage: STAGE_NAME.ENV_OVERRIDE,
-                isLocked: !_isUnlocked.envOverride,
-            },
-        ]
-    } else {
-        const completedPercent = completedSteps * (isGitOpsConfigurationRequired ? 20 : 25)
-        navItems = [
-            {
-                title: 'Git Repository',
-                href: `/app/${appId}/edit/materials`,
-                stage: STAGE_NAME.GIT_MATERIAL,
-                isLocked: !_isUnlocked.material,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: true,
-            },
-            {
-                title: 'Build Configuration',
-                href: `/app/${appId}/edit/docker-build-config`,
-                stage: STAGE_NAME.CI_CONFIG,
-                isLocked: !_isUnlocked.dockerBuildConfig,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: true,
-            },
-            {
-                title: 'Base Deployment Template',
-                href: `/app/${appId}/edit/deployment-template`,
-                stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
-                isLocked: !_isUnlocked.deploymentTemplate,
-                supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                isProtectionAllowed: true,
-                required: true,
-            },
-            {
-                title: 'GitOps Configuration',
-                href: `/app/${appId}/edit/gitops-config`,
-                stage: STAGE_NAME.GITOPS_CONFIG,
-                isLocked: !_isUnlocked.gitOpsConfig,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: isGitOpsConfigurationRequired,
-            },
-            {
-                title: 'Workflow Editor',
-                href: `/app/${appId}/edit/workflow`,
-                stage: STAGE_NAME.WORKFLOW,
-                isLocked: !_isUnlocked.workflowEditor,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                required: true,
-            },
-            {
-                title: 'ConfigMaps',
-                href: `/app/${appId}/edit/configmap`,
-                stage: STAGE_NAME.CONFIGMAP,
-                isLocked: !_isUnlocked.configmap,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                isProtectionAllowed: true,
-                required: true,
-            },
-            {
-                title: 'Secrets',
-                href: `/app/${appId}/edit/secrets`,
-                stage: STAGE_NAME.SECRETS,
-                isLocked: !_isUnlocked.secret,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-                isProtectionAllowed: true,
-                required: true,
-            },
-            {
-                title: 'External Links',
-                href: `/app/${appId}/edit/external-links`,
-                stage: STAGE_NAME.EXTERNAL_LINKS,
-                isLocked: false,
-                supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
-                flowCompletionPercent: completedPercent,
-                currentStep: completedSteps,
-            },
-            {
-                title: 'Protect Configuration',
-                href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
-                stage: STAGE_NAME.PROTECT_CONFIGURATION,
-                isLocked: false,
-            },
-            {
-                title: 'Environment Override',
-                href: `/app/${appId}/edit/env-override`,
-                stage: STAGE_NAME.ENV_OVERRIDE,
-                isLocked: !_isUnlocked.envOverride,
-            },
-        ]
+    let completedPercent = 0
+
+    switch (resourceKind) {
+        case ResourceKindType.job:
+            completedPercent = completedSteps * 50
+
+            return {
+                navItems: [
+                    {
+                        title: 'Source code',
+                        href: `/job/${appId}/edit/materials`,
+                        stage: STAGE_NAME.GIT_MATERIAL,
+                        isLocked: !_isUnlocked.material,
+                        supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: true,
+                    },
+                    {
+                        title: 'Workflow Editor',
+                        href: `/job/${appId}/edit/workflow`,
+                        stage: STAGE_NAME.WORKFLOW,
+                        isLocked: !_isUnlocked.workflowEditor,
+                        supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: true,
+                    },
+                    {
+                        title: 'ConfigMaps & Secrets',
+                        href: `/job/${appId}/edit/configmap`,
+                        stage: STAGE_NAME.REDIRECT_ITEM,
+                        isLocked: !_isUnlocked.configmap || !_isUnlocked.secret,
+                        isProtectionAllowed: true,
+                        required: true,
+                    },
+                    {
+                        title: 'ConfigMaps',
+                        href: `/job/${appId}/edit/configmap`,
+                        stage: STAGE_NAME.CONFIGMAP,
+                        isLocked: !_isUnlocked.configmap,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        isProtectionAllowed: true,
+                        required: true,
+                        altNavKey: 'env-configurations',
+                    },
+                    {
+                        title: 'Secrets',
+                        href: `/job/${appId}/edit/secrets`,
+                        stage: STAGE_NAME.SECRETS,
+                        isLocked: !_isUnlocked.secret,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        isProtectionAllowed: true,
+                        required: true,
+                        altNavKey: 'env-configurations',
+                    },
+                    {
+                        title: 'Environment Override',
+                        href: `/job/${appId}/edit/env-override`,
+                        stage: STAGE_NAME.ENV_OVERRIDE,
+                        isLocked: !_isUnlocked.envOverride,
+                    },
+                ],
+            }
+
+        default:
+            completedPercent = completedSteps * (isGitOpsConfigurationRequired ? 20 : 25)
+
+            return {
+                navItems: [
+                    {
+                        title: 'Git Repository',
+                        href: `/app/${appId}/edit/materials`,
+                        stage: STAGE_NAME.GIT_MATERIAL,
+                        isLocked: !_isUnlocked.material,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: true,
+                    },
+                    {
+                        title: 'Build Configuration',
+                        href: `/app/${appId}/edit/docker-build-config`,
+                        stage: STAGE_NAME.CI_CONFIG,
+                        isLocked: !_isUnlocked.dockerBuildConfig,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: true,
+                    },
+                    {
+                        title: 'Base Configurations',
+                        href: `/app/${appId}/edit/deployment-template`,
+                        stage: STAGE_NAME.REDIRECT_ITEM,
+                        isLocked: !_isUnlocked.deploymentTemplate || !_isUnlocked.configmap || !_isUnlocked.secret,
+                        isProtectionAllowed: true,
+                        required: true,
+                    },
+                    {
+                        title: 'Deployment Template',
+                        href: `/app/${appId}/edit/deployment-template`,
+                        stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
+                        isLocked: !_isUnlocked.deploymentTemplate,
+                        supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        isProtectionAllowed: true,
+                        required: true,
+                        altNavKey: 'env-configurations',
+                    },
+                    {
+                        title: 'GitOps Configuration',
+                        href: `/app/${appId}/edit/gitops-config`,
+                        stage: STAGE_NAME.GITOPS_CONFIG,
+                        isLocked: !_isUnlocked.gitOpsConfig,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: isGitOpsConfigurationRequired,
+                    },
+                    {
+                        title: 'Workflow Editor',
+                        href: `/app/${appId}/edit/workflow`,
+                        stage: STAGE_NAME.WORKFLOW,
+                        isLocked: !_isUnlocked.workflowEditor,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        required: true,
+                    },
+                    {
+                        title: 'ConfigMaps',
+                        href: `/app/${appId}/edit/configmap`,
+                        stage: STAGE_NAME.CONFIGMAP,
+                        isLocked: !_isUnlocked.configmap,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        isProtectionAllowed: true,
+                        required: true,
+                        altNavKey: 'env-configurations',
+                    },
+                    {
+                        title: 'Secrets',
+                        href: `/app/${appId}/edit/secrets`,
+                        stage: STAGE_NAME.SECRETS,
+                        isLocked: !_isUnlocked.secret,
+                        supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                        isProtectionAllowed: true,
+                        required: true,
+                        altNavKey: 'env-configurations',
+                    },
+                    {
+                        title: 'External Links',
+                        href: `/app/${appId}/edit/external-links`,
+                        stage: STAGE_NAME.EXTERNAL_LINKS,
+                        isLocked: false,
+                        supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
+                        flowCompletionPercent: completedPercent,
+                        currentStep: completedSteps,
+                    },
+                    {
+                        title: 'Protect Configuration',
+                        href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
+                        stage: STAGE_NAME.PROTECT_CONFIGURATION,
+                        isLocked: false,
+                    },
+                    {
+                        title: 'Environment Override',
+                        href: `/app/${appId}/edit/env-override`,
+                        stage: STAGE_NAME.ENV_OVERRIDE,
+                        isLocked: !_isUnlocked.envOverride,
+                    },
+                ],
+            }
     }
-
-    return { navItems }
 }
 
-export function isCIPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
+export const isCIPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
     const ciPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CI_PIPELINE)
     return ciPipeline.status
 }
 
-export function isCDPipelineCreated(responseArr: AppConfigStatusResponseItem[]): boolean {
+export const isCDPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
     const cdPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CD_PIPELINE)
     return cdPipeline.status
 }

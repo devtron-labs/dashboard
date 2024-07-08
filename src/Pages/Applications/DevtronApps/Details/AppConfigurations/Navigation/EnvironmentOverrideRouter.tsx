@@ -35,7 +35,6 @@ import {
     getCIConfig,
     getJobOtherEnvironmentMin,
 } from '../../../../../../services/service'
-import { ReactComponent as Dropdown } from '../../../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
@@ -43,11 +42,12 @@ import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-o
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
-import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from '../appConfig.type'
+import { JobEnvOverrideRouteProps } from '../appConfig.type'
 import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
-import '../appConfig.scss'
+import { renderNavItem } from './Navigation.helper'
+import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 const EnvOverridesHelpNote = () => {
     return (
@@ -66,30 +66,12 @@ const EnvOverridesHelpNote = () => {
     )
 }
 
-const EnvOverrideRoute = ({
-    envOverride,
-    isJobView,
-    ciPipelines,
-    reload,
-    appId,
-    workflowsRes,
-    isEnvProtected,
-}: EnvironmentOverrideRouteProps) => {
+const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
-    const location = useLocation()
-    const LINK = `${url}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}`
-    const [collapsed, toggleCollapsed] = useState(!location.pathname.includes(`${LINK}/`))
+    const { appId, workflowsRes } = useAppConfigurationContext()
     const [showConfirmationDialog, setConfirmationDialog] = useState(false)
     const [showDelete, setDeleteView] = useState(false)
     const [deletePipeline, setDeletePipeline] = useState()
-
-    useEffect(() => {
-        toggleCollapsed(!location.pathname.includes(`${LINK}/`))
-    }, [location.pathname])
-
-    const handleNavItemClick = () => {
-        toggleCollapsed(!collapsed)
-    }
 
     const deleteEnvHandler = () => {
         const requestBody = { envId: envOverride.environmentId, appId }
@@ -197,7 +179,7 @@ const EnvOverrideRoute = ({
     const deletePopUpMenu = (): JSX.Element => {
         return (
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
+                <PopupMenu.Button rootClassName="flex" isKebab>
                     <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
@@ -217,47 +199,17 @@ const EnvOverrideRoute = ({
     }
 
     return (
-        <div className="flex column left environment-route-wrapper top">
-            <div
-                className={`app-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
-                onClick={handleNavItemClick}
+        <div className="flexbox dc__align-items-center dc__content-space pr-8">
+            <NavLink
+                data-testid="env-deployment-template"
+                className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
+                to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/configmap`}
             >
-                <div className="flex left">
-                    <Dropdown className={`icon-dim-18 rotate mr-8 ${collapsed ? 'dc__flip-270' : ''}`} />
-                    {envOverride.environmentName}
-                </div>
-                <div className="flex">
-                    {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
-                    {isJobView && deletePopUpMenu()}
-                    {isJobView && showDelete && showDeleteDialog(deletePipeline)}
-                </div>
-            </div>
-
-            {!collapsed && (
-                <div className="environment-routes">
-                    {!isJobView && (
-                        <NavLink
-                            data-testid="env-deployment-template"
-                            className="app-compose__nav-item cursor"
-                            to={`${LINK}/deployment-template`}
-                        >
-                            Deployment template
-                        </NavLink>
-                    )}
-                    <NavLink
-                        className={`app-compose__nav-item cursor ${isJobView ? 'ml-16 w-auto-imp' : ''}`}
-                        to={`${LINK}/configmap`}
-                    >
-                        ConfigMaps
-                    </NavLink>
-                    <NavLink
-                        className={`app-compose__nav-item cursor ${isJobView ? 'ml-16 w-auto-imp' : ''}`}
-                        to={`${LINK}/secrets`}
-                    >
-                        Secrets
-                    </NavLink>
-                </div>
-            )}
+                <span className="dc__ellipsis-right">{envOverride.environmentName}</span>
+                {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
+            </NavLink>
+            {deletePopUpMenu()}
+            {showDelete && showDeleteDialog(deletePipeline)}
         </div>
     )
 }
@@ -279,13 +231,7 @@ const ValueContainer = (props: ValueContainerProps) => {
     )
 }
 
-const EnvironmentOverrideRouter = ({
-    isJobView,
-    workflowsRes,
-    getWorkflows,
-    allEnvs,
-    reloadEnvironments,
-}: EnvironmentOverrideRouterProps) => {
+const EnvironmentOverrideRouter = () => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -294,6 +240,8 @@ const EnvironmentOverrideRouter = ({
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
     const [isEnvLoading, setIsEnvLoading] = useState(false)
+
+    const { isJobView, getWorkflows, reloadEnvironments, environments } = useAppConfigurationContext()
 
     const getJobOtherEnvironment = async () => {
         setIsEnvLoading(true)
@@ -407,7 +355,7 @@ const EnvironmentOverrideRouter = ({
                         minHeight: '20px',
                         height: '30px',
                         marginTop: '4px',
-                        width: '220px',
+                        width: '100%',
                     }),
                     container: (base) => ({
                         ...base,
@@ -420,25 +368,32 @@ const EnvironmentOverrideRouter = ({
     }
 
     const renderEnvsNav = (): JSX.Element => {
-        if ((isJobView ? jobEnvs : allEnvs).length) {
+        if ((isJobView ? jobEnvs : environments).length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {(isJobView ? jobEnvs : allEnvs).map((env) => {
-                        return (
-                            !env.deploymentAppDeleteRequest && (
-                                <EnvOverrideRoute
-                                    envOverride={env}
-                                    key={env.environmentName}
-                                    isJobView={isJobView}
-                                    ciPipelines={ciPipelines}
-                                    reload={reloadEnvData}
-                                    appId={appId}
-                                    workflowsRes={workflowsRes}
-                                    isEnvProtected={env.isProtected}
-                                />
-                            )
-                        )
-                    })}
+                    {isJobView
+                        ? jobEnvs.map(
+                              (env) =>
+                                  !env.deploymentAppDeleteRequest && (
+                                      <JobEnvOverrideRoute
+                                          key={env.environmentName}
+                                          envOverride={env}
+                                          ciPipelines={ciPipelines}
+                                          reload={reloadEnvData}
+                                          isEnvProtected={env.isProtected}
+                                      />
+                                  ),
+                          )
+                        : environments.map((env) =>
+                              renderNavItem(
+                                  {
+                                      title: env.environmentName,
+                                      isProtectionAllowed: env.isProtected,
+                                      href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/deployment-template`,
+                                  },
+                                  env.isProtected,
+                              ),
+                          )}
                 </div>
             )
         }
@@ -463,17 +418,18 @@ const EnvironmentOverrideRouter = ({
                 Environment Overrides
             </div>
             {isJobView && (
-                <div className="flex dc__content-start dc__align-start cursor">
-                    <div className="flex dc__align-center pt-8 pb-8 pl-8">
-                        {addEnvironment ? (
-                            <div className="flex dc__align-center" onClick={handleAddEnvironment}>
-                                <Add className="icon-dim-18 fcb-5 mr-8" />
-                                <div className="fw-6 fs-13 cb-5">Add Environment</div>
-                            </div>
-                        ) : (
-                            renderEnvSelector()
-                        )}
-                    </div>
+                <div className="cursor">
+                    {addEnvironment ? (
+                        <div
+                            className="px-8 py-6 flexbox dc__align-items-center dc__content-space dc__gap-8"
+                            onClick={handleAddEnvironment}
+                        >
+                            <div className="fw-6 fs-13 lh-20 cb-5">Add Environment</div>
+                            <Add className="icon-dim-16 fcb-5" />
+                        </div>
+                    ) : (
+                        renderEnvSelector()
+                    )}
                 </div>
             )}
             {isEnvLoading ? (
