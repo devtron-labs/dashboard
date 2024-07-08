@@ -68,6 +68,7 @@ const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -447,6 +448,15 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Deployment Window</div>
+                        </NavLink>
+                    )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -661,6 +671,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
+            {
+                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                )
+            },
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
