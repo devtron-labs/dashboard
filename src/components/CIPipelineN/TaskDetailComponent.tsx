@@ -15,6 +15,7 @@
  */
 
 import React, { useContext, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { BuildStageVariable } from '../../config'
 import { ConditionContainerType, PluginVariableType, VariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
@@ -26,15 +27,13 @@ import {
     StyledRadioGroup as RadioGroup,
     Progressing,
     getPluginsDetail,
-    parsePluginDetailsDTOIntoPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
+import PluginDetailHeader from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps } from './types'
-import { useParams } from 'react-router-dom'
-import PluginDetailHeader from './PluginDetailHeader'
 
 export const TaskDetailComponent = () => {
     const {
@@ -147,11 +146,12 @@ export const TaskDetailComponent = () => {
 
         setIsLoadingPluginVersionDetails(true)
         try {
-            const pluginDetailResponse = await getPluginsDetail({
+            const {
+                pluginStore: { pluginVersionStore },
+            } = await getPluginsDetail({
                 appId: +appId,
                 pluginId: [pluginId],
             })
-            const { pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(pluginDetailResponse.parentPlugins)
             const clonedPluginDataStore = structuredClone(pluginDataStore)
 
             Object.keys(pluginVersionStore).forEach((key) => {
@@ -187,7 +187,6 @@ export const TaskDetailComponent = () => {
             calculateLastStepDetail(false, _formData, activeStageName)
             validateStage(BuildStageVariable.PreBuild, _formData)
             validateStage(BuildStageVariable.PostBuild, _formData)
-
 
             handlePluginDataStoreUpdate(clonedPluginDataStore)
             setFormData(_formData)

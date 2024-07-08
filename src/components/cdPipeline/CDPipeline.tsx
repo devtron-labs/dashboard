@@ -33,7 +33,6 @@ import {
     PluginDataStoreType,
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
-    parsePluginDetailsDTOIntoPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -384,16 +383,11 @@ export default function CDPipeline({
         }
 
         const clonedPluginDataStore = structuredClone(pluginDataStore)
-        // TODO: Can directly return as promise
-        const pluginDetailResponse = await getPluginsDetail({
+        const { pluginStore: { parentPluginStore, pluginVersionStore } } = await getPluginsDetail({
             appId: +appId,
             parentPluginId: [],
             pluginId: pluginIds,
         })
-
-        const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
-            pluginDetailResponse.parentPlugins,
-        )
 
         Object.keys(parentPluginStore).forEach((key) => {
             if (!clonedPluginDataStore.parentPluginStore[key]) {

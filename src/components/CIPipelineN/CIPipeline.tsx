@@ -34,7 +34,6 @@ import {
     PluginDetailPayloadType,
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
-    parsePluginDetailsDTOIntoPluginStore,
     ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -306,10 +305,10 @@ export default function CIPipeline({
         }
 
         const clonedPluginDataStore = structuredClone(pluginDataStore)
-        const pluginDataResponse = await getPluginsDetail({ appId: +appId, pluginId: uniquePluginIds })
-        const { parentPluginStore, pluginVersionStore } = parsePluginDetailsDTOIntoPluginStore(
-            pluginDataResponse.parentPlugins,
-        )
+        const {
+            pluginStore: { parentPluginStore, pluginVersionStore },
+        } = await getPluginsDetail({ appId: +appId, pluginId: uniquePluginIds })
+
         Object.keys(parentPluginStore).forEach((key) => {
             if (!clonedPluginDataStore.parentPluginStore[key]) {
                 clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
