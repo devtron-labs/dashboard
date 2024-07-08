@@ -15,7 +15,6 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react'
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
 import { ACCESS_TYPE_MAP } from '../../../../../../config'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'

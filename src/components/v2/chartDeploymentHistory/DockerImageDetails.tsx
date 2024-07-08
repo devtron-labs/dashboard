@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { DockerImageDetailsProps } from './chartDeploymentHistory.service'
 import { ReactComponent as DockerIcon } from '../../../assets/icons/misc/docker.svg'

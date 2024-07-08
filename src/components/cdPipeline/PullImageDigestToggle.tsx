@@ -15,7 +15,6 @@
  */
 
 import { ConditionalWrap, Toggle } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
 import { PullImageDigestToggleType } from './types'

@@ -24,8 +24,10 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
+const TARGET_URL = 'https://devtron-10.devtron.info/'
 
 function reactVirtualized(): PluginOption {
     return {
@@ -111,6 +113,7 @@ export default defineConfig(({ mode }) => {
             },
         },
         plugins: [
+            tsconfigPaths(),
             // @TODO: Check if we can remove the config object inside the react plugin
             react({
                 // Use React plugin in all *.jsx and *.tsx files
@@ -148,10 +151,10 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: 'https://devtron-10.devtron.info/',
+                    target: TARGET_URL,
                     changeOrigin: true,
                 },
-                '/grafana': 'https://devtron-10.devtron.info/',
+                '/grafana': TARGET_URL,
             },
         },
     }

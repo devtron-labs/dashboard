@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { useMainContext, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { DOCUMENTATION } from '../../../../../config'

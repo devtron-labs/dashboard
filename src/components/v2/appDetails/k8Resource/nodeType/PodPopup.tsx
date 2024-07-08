@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { ModuleNameMap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { NodeDetailTabs } from '../../../../app/types'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, useState, useEffect, Suspense } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import {
@@ -56,7 +56,7 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
+const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
@@ -762,7 +762,7 @@ const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...pr
 }
 
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
-    if (React.isValidElement(src)) {
+    if (isValidElement(src)) {
         return src
     }
     return (

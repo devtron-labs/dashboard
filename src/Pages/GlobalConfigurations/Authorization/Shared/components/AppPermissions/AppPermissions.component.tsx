@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { VisibleModal, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Success } from '../../../../assets/icons/ic-success-outline.svg'
