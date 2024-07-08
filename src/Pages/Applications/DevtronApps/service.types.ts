@@ -27,3 +27,30 @@ export interface AppConfigStatusResponseItem {
 }
 
 export type AppConfigStatusResponse = ResponseType<AppConfigStatusResponseItem[]>
+
+export enum ResourceConfigState {
+    Unnamed,
+    Draft,
+    ApprovalPending,
+    Published,
+}
+
+export enum ResourceType {
+    ConfigMap = 'ConfigMap',
+    Secret = 'Secret',
+    DeploymentTemplate = 'Deployment Template',
+}
+
+export interface ResourceConfig {
+    name: string
+    configState: ResourceConfigState
+    type: ResourceType
+    overridden: boolean
+    global: boolean
+}
+
+export interface EnvConfig {
+    resourceConfig: ResourceConfig[]
+}
+
+export type EnvConfigResponse = ResponseType<EnvConfig>
