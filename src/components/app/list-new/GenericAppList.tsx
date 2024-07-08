@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
-    Progressing,
     ErrorScreenManager,
     ServerErrors,
     GenericEmptyState,
@@ -46,6 +45,7 @@ import {
     APP_LIST_HEADERS,
     ClearFiltersLabel,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
+    appListLoading,
 } from './Constants'
 import { GenericAppListProps } from '../types'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -490,8 +490,14 @@ const GenericAppList = ({
     return (
         <>
             {(dataStateType === AppListViewType.LOADING || clusterIdsCsv === null) && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
+                <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
+                    {appListLoading.map((eachRow) => (
+                        <div className="pl-20 resource-list__table-row" key={eachRow.id}>
+                            {Object.keys(eachRow).map((eachKey) => (
+                                <div className="child child-shimmer-loading" key={eachKey} />
+                            ))}
+                        </div>
+                    ))}
                 </div>
             )}
             {dataStateType === AppListViewType.ERROR && (

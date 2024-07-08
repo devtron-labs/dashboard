@@ -38,9 +38,9 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
 
     const renderBottomContainer = () => {
         return (
-            <div className='flexbox dc__content-space w-100'>
+            <div className="flexbox dc__content-space w-100">
                 {displayMessage && (
-                    <Tippy placement="right" content={message} arrow={false}>
+                    <Tippy className="default-tt dc__mxw-200-imp" placement="bottom" content={message} arrow={false}>
                         <div className="app-details-info-card__bottom-container__message fs-12 fw-4 dc__ellipsis-right dc__mxw-175">
                             {message}
                         </div>
