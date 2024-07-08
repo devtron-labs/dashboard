@@ -15,7 +15,6 @@
  */
 
 import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../../constants'
 import { getIsSuperAdminPermission } from '../../../utils'
 import { AppPermissions } from '../AppPermissions'

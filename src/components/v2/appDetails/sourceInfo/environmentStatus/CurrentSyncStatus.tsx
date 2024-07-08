@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
 import { CurrentSyncStatusType } from './notesDrawer.type'

@@ -20,7 +20,6 @@ import {
     SortableTableHeaderCell,
     UserListSortableKeys,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { handleToggleCheckForBulkSelection } from '../../utils'
