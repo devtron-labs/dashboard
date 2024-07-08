@@ -234,6 +234,11 @@ export const CompareWithDropdown = ({
     const onChange = (selected: DeploymentChartOptionType) => {
         setConvertVariables(false)
         setSelectedOption(selected)
+        // NOTE: this is to trigger a loading state in CodeEditor
+        // React-Monaco-Editor internally does not put defaultValue prop
+        // inside any of its useEffects thus, the diffs don't update when
+        // defaultValue i.e lhs changes. To trigger an update we need to trigger
+        // the loader of CodeEditor
         setReMountEditor(true)
         setTimeout(() => setReMountEditor(false), 1000)
     }

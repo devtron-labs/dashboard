@@ -62,7 +62,6 @@ const DeploymentTemplateEditorView = ({
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [fetchingValues, setFetchingValues] = useState(false)
-    const [reMountEditor, setReMountEditor] = useState(false)
     const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
@@ -401,7 +400,7 @@ const DeploymentTemplateEditorView = ({
                             isValues={isValues}
                             groupedData={groupedData}
                             setConvertVariables={setConvertVariables}
-                            setReMountEditor={setReMountEditor}
+                            setReMountEditor={setFetchingValues}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -481,9 +480,7 @@ const DeploymentTemplateEditorView = ({
                     fetchingValues ||
                     draftLoading ||
                     resolveLoading ||
-                    (state.openComparison && !lhs) ||
-                    reMountEditor
-                }
+                    (state.openComparison && !lhs)}
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}
