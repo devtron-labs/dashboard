@@ -385,8 +385,8 @@ export default function CDPipeline({
         const clonedPluginDataStore = structuredClone(pluginDataStore)
         const { pluginStore: { parentPluginStore, pluginVersionStore } } = await getPluginsDetail({
             appId: +appId,
-            parentPluginId: [],
-            pluginId: pluginIds,
+            parentPluginIds: [],
+            pluginIds,
         })
 
         Object.keys(parentPluginStore).forEach((key) => {

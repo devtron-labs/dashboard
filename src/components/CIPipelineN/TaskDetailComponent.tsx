@@ -150,7 +150,7 @@ export const TaskDetailComponent = () => {
                 pluginStore: { pluginVersionStore },
             } = await getPluginsDetail({
                 appId: +appId,
-                pluginId: [pluginId],
+                pluginIds: [pluginId],
             })
             const clonedPluginDataStore = structuredClone(pluginDataStore)
 

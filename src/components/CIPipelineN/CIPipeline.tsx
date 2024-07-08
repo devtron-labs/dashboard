@@ -307,7 +307,7 @@ export default function CIPipeline({
         const clonedPluginDataStore = structuredClone(pluginDataStore)
         const {
             pluginStore: { parentPluginStore, pluginVersionStore },
-        } = await getPluginsDetail({ appId: +appId, pluginId: uniquePluginIds })
+        } = await getPluginsDetail({ appId: +appId, pluginIds: uniquePluginIds })
 
         Object.keys(parentPluginStore).forEach((key) => {
             if (!clonedPluginDataStore.parentPluginStore[key]) {

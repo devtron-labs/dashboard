@@ -178,7 +178,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
 
     function renderPluginList(): JSX.Element {
         return (
-            <div className="px-20 dc__overflow-scroll">
+            <div className="px-20 dc__overflow-scroll flexbox-col">
                 <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <PluginCard
@@ -196,7 +196,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
                     handlePluginSelection={handlePluginSelection}
                     isSelectable={false}
                     persistFilters={false}
-                    rootClassName="pt-8 pre-build-plugin-list-container dc__gap-4 pb-4"
+                    rootClassName="pt-8 pre-build-plugin-list-container dc__gap-4 pb-4 flex-grow-1"
                 />
             </div>
         )
