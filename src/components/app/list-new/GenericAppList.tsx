@@ -87,35 +87,34 @@ const GenericAppList = ({
     const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
         const fluxAppListURL = `${Host}/${Routes.FLUX_APPS}?clusterIds=${clusterIdsCsv}`
 
-        return new Promise((resolve, reject) => {
-            const _sseConnection = new EventSource(fluxAppListURL, {
-                withCredentials: true,
-            })
-
-            _sseConnection.onmessage = (message) => {
-                try {
-                    const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
-                    externalAppData.result.fluxApplication.forEach((fluxApp) => {
-                        if (fluxApp.appStatus === 'True') {
-                            fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
-                        } else if (fluxApp.appStatus === 'False') {
-                            fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
-                        }
-                    })
-
-                    const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-                    setAppsList((currAppList) => [...currAppList, ...recievedExternalFluxApps])
-                    resolve(null)
-                } catch (err) {
-                    showError(err)
-                }
-            }
-            _sseConnection.onerror = (err) => {
-                closeSseConnection(_sseConnection)
-                reject(err)
-            }
-            setSseConnection(_sseConnection)
+        const _sseConnection = new EventSource(fluxAppListURL, {
+            withCredentials: true,
         })
+
+        _sseConnection.onmessage = (message) => {
+            try {
+                const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
+                externalAppData.result.fluxApplication.forEach((fluxApp) => {
+                    if (fluxApp.appStatus === 'True') {
+                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
+                    } else if (fluxApp.appStatus === 'False') {
+                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
+                    }
+                })
+
+                const recievedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+                setAppsList((currAppList) => [...currAppList, ...recievedExternalFluxApps])
+            } catch (err) {
+                showError(err)
+                setErrorResponseCode(err.code)
+            } finally {
+                setDataStateType(AppListViewType.LIST)
+            }
+        }
+        _sseConnection.onerror = (err) => {
+            closeSseConnection(_sseConnection)
+        }
+        setSseConnection(_sseConnection)
     }
 
     // component load
@@ -132,7 +131,7 @@ const GenericAppList = ({
                 init()
             }
         }
-    }, [payloadParsedFromUrl, dataStateType, clusterIdsCsv])
+    }, [payloadParsedFromUrl, dataStateType])
 
     // when external app data comes
     useEffect(() => {
@@ -149,7 +148,6 @@ const GenericAppList = ({
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                setDataStateType(AppListViewType.ERROR)
                 setErrorResponseCode(errors.code)
             })
             .finally(() => {
@@ -160,14 +158,6 @@ const GenericAppList = ({
     const handleFluxAppListing = () => {
         setDataStateType(AppListViewType.LOADING)
         getExternalInstalledFluxApps(clusterIdsCsv)
-            .catch((error) => {
-                showError(error)
-                setDataStateType(AppListViewType.ERROR)
-                setErrorResponseCode(error.code)
-            })
-            .finally(() => {
-                setDataStateType(AppListViewType.LIST)
-            })
     }
 
     useEffect(() => {
@@ -188,7 +178,7 @@ const GenericAppList = ({
         } else {
             setDataStateType(AppListViewType.LOADING)
         }
-        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? '')
+        setClusterIdsCsv(_getClusterIdsFromRequestUrl() ?? null)
         setAppsList([])
         setFilteredAppsList([])
         if (sseConnection) {
@@ -242,11 +232,12 @@ const GenericAppList = ({
     }
 
     function _isAnyFilterationApplied() {
-        return _isAnyFilterationAppliedExceptClusterAndNs() || payloadParsedFromUrl.namespaces?.length
+        return _isAnyFilterationAppliedExceptClusterAndNs() || !!clusterIdsCsv
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        const _isAllClusterSelected = masterFilters.clusters.length && !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
+        const _isAllClusterSelected =
+            masterFilters.clusters.length && !masterFilters.clusters.some((_cluster) => !_cluster.isChecked)
         const _isAnyNamespaceSelected = masterFilters.namespaces.some((_namespace) => _namespace.isChecked)
         return _isAllClusterSelected && !_isAnyFilterationAppliedExceptClusterAndNs() && !_isAnyNamespaceSelected
     }
@@ -498,7 +489,7 @@ const GenericAppList = ({
 
     return (
         <>
-            {dataStateType === AppListViewType.LOADING && (
+            {(dataStateType === AppListViewType.LOADING || clusterIdsCsv === null) && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>

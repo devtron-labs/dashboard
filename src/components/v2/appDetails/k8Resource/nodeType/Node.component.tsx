@@ -45,6 +45,7 @@ const NodeComponent = ({
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
+    isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -484,7 +485,7 @@ const NodeComponent = ({
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
                             node?.kind !== 'EndpointSlice' &&
-                            !isExternalHelmApp && (
+                            !isExternalApp && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}

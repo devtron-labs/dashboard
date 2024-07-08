@@ -689,8 +689,8 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        <div className="h-16 dc__border-right ml-8 mr-8" />
-                        {downloadInProgress ? (
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
+                        {!isExternalApp && (downloadInProgress ? (
                             <Progressing
                                 size={16}
                                 styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
@@ -709,7 +709,7 @@ const LogsComponent = ({
                                     />
                                 </span>
                             </Tippy>
-                        )}
+                        ))}
                     </div>
                     <div className="dc__border-right " />
                     <form

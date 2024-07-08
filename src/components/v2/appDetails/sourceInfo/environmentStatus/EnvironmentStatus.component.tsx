@@ -88,6 +88,7 @@ const EnvironmentStatusComponent = ({
                 status={status}
                 setDetailed={setShowAppStatusDetail}
                 cardLoading={cardLoading}
+                message={appDetails.FluxAppStatusDetail?.message} // Show Message in case of FluxCD Apps
             />
         )
     }
