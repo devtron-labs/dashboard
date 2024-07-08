@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { Drawer, OptionType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'

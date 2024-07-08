@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { memo, useState } from 'react'
+import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelp } from '../../../assets/icons/ic-help.svg'

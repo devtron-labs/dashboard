@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterMetaDataBarProps } from './types'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, useState, useEffect, Suspense } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import {
@@ -57,7 +57,7 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
+const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
@@ -68,6 +68,7 @@ const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -447,6 +448,15 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Deployment Window</div>
+                        </NavLink>
+                    )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -661,6 +671,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
                 </Route>
             )}
+            {
+                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                )
+            },
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
@@ -729,7 +746,7 @@ const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...pr
 }
 
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
-    if (React.isValidElement(src)) {
+    if (isValidElement(src)) {
         return src
     }
     return (

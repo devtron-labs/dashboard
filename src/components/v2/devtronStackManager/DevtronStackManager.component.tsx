@@ -31,6 +31,7 @@ import {
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -255,6 +256,9 @@ export const NavItem = ({
     showInitializing,
     showVersionInfo,
 }: StackManagerNavItemType): JSX.Element => {
+
+    const {currentServerInfo} = useMainContext()
+
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (
             <NavLink
@@ -307,8 +311,12 @@ export const NavItem = ({
         <div className="flex column left">
             <div className="section-heading cn-6 fs-12 fw-6 pl-8 mb-8 dc__uppercase">Integrations</div>
             {ModulesSection.map((route) => getNavLink(route))}
-            <hr className="mt-8 mb-8 w-100 checklist__divider" />
-            {getNavLink(AboutSection)}
+            {currentServerInfo?.serverInfo?.installationType !== InstallationType.ENTERPRISE && (
+                <>
+                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {getNavLink(AboutSection)}
+                </>
+            )}
         </div>
     )
 }
@@ -1130,9 +1138,9 @@ const ManagedByNote = (): JSX.Element => {
                     <Info className="icon-dim-20" />
                 </div>
                 <div>
-                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">Managed by Devtron Labs</h2>
+                    <h2 className="managed-by__note-title m-0 p-0 fs-13 fw-6 lh-20">Managed by Devtron Inc.</h2>
                     <p className="fs-13 fw-4 mb-0 mt-4 lh-20">
-                        Devtron stack is managed by Devtron Labs.
+                        Devtron stack is managed by Devtron Inc.
                         <br />
                         For any support, please contact your Devtron representative.
                     </p>

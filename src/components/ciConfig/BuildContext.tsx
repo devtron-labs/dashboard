@@ -16,7 +16,7 @@
 
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import { CustomInput, OptionType, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
 import { checkoutPathOption, renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'

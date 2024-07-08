@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import moment from 'moment'
 import { Moment12HourExportFormat } from '../../../../../config'
 

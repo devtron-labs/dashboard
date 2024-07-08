@@ -23,7 +23,6 @@ import {
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getPermissionGroupById } from '../../authorization.service'

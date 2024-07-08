@@ -16,7 +16,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
-import { Progressing, showError, SortingOrder, YAMLStringify, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, SortingOrder, YAMLStringify, MarkDown, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -29,7 +29,6 @@ import {
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { importComponentFromFELibrary, versionComparator } from '../../common'
 import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { MODES } from '../../../config'
 import {
     CompareWithDropdown,

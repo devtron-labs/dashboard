@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'

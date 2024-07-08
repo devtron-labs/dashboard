@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'

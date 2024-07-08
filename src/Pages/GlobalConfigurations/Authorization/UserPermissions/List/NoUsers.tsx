@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import nullStateImage from '../../../../../assets/img/empty-applist@2x.png'
