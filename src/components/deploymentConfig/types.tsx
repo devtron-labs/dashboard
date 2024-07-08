@@ -153,7 +153,7 @@ export interface CompareWithDropdownProps {
     isValues: boolean
     groupedData: any
     setConvertVariables: (convertVariables: boolean) => void
-    setReMountEditor: React.Dispatch<React.SetStateAction<boolean>>
+    setFetchingValues: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface CompareWithApprovalPendingAndDraftProps {

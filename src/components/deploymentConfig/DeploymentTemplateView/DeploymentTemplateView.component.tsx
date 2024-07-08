@@ -143,7 +143,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
     setConvertVariables,
-    setReMountEditor,
+    setFetchingValues,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -239,8 +239,8 @@ export const CompareWithDropdown = ({
         // inside any of its useEffects thus, the diffs don't update when
         // defaultValue i.e lhs changes. To trigger an update we need to trigger
         // the loader of CodeEditor
-        setReMountEditor(true)
-        setTimeout(() => setReMountEditor(false), 1000)
+        setFetchingValues(true)
+        setTimeout(() => setFetchingValues(false), 1000)
     }
 
     return (

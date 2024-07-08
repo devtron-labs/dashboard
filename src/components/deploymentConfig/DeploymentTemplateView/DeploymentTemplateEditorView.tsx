@@ -400,7 +400,7 @@ const DeploymentTemplateEditorView = ({
                             isValues={isValues}
                             groupedData={groupedData}
                             setConvertVariables={setConvertVariables}
-                            setReMountEditor={setFetchingValues}
+                            setFetchingValues={setFetchingValues}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
