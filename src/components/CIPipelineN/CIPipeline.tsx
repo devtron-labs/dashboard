@@ -80,7 +80,6 @@ import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
-// TODO: On methods send data store as well
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
 const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 export default function CIPipeline({
@@ -532,6 +531,10 @@ export default function CIPipeline({
         }
     }, [location.pathname, ciPipeline.pipelineType])
 
+    const handleClose = () => {
+        close()
+    }
+
     const deletePipeline = (): void => {
         deleteCIPipeline(
             formData,
@@ -546,7 +549,7 @@ export default function CIPipeline({
                 if (response) {
                     toast.success('Pipeline Deleted')
                     setPageState(ViewType.FORM)
-                    close()
+                    handleClose()
                     deleteWorkflow(appId, Number(workflowId))
                 }
             })
@@ -703,7 +706,7 @@ export default function CIPipeline({
                 if (response) {
                     toast.success(msg)
                     setApiInProgress(false)
-                    close()
+                    handleClose()
                     getWorkflows()
                 }
             })
@@ -916,7 +919,7 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <div className="flex flex-align-center flex-justify bcn-0 py-12 pr-20 pl-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -924,9 +927,7 @@ export default function CIPipeline({
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
-                        onClick={() => {
-                            close()
-                        }}
+                        onClick={handleClose}
                     >
                         <Close className="icon-dim-24" />
                     </button>

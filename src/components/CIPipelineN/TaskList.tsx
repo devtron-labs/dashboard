@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext, Fragment } from 'react'
+import { useState, useContext, Fragment } from 'react'
 import {
     PopupMenu,
     BuildStageVariable,
     PluginType,
     RefVariableStageType,
     RefVariableType,
-    StepType,
-    ActivityIndicator,
-    PluginImageContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as ICEditFile } from '../../assets/icons/ic-edit-file.svg'
-import { ReactComponent as ICCDStage } from '../../assets/icons/ic-cd-stage.svg'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -112,14 +107,14 @@ export const TaskList = ({
         if (_taskDetail[0].isMandatory) {
             isMandatoryMissing = true
             const deletedTaskPluginId = _taskDetail[0].pluginRefStepDetail.pluginId
-            const parentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
+            const deletedTaskParentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
 
             for (const task of newList) {
                 const currentTaskPluginId = task.pluginRefStepDetail?.pluginId
                 const currentTaskParentPluginId =
                     pluginDataStore.pluginVersionStore[currentTaskPluginId]?.parentPluginId
 
-                if (currentTaskParentPluginId === parentPluginId) {
+                if (currentTaskParentPluginId === deletedTaskParentPluginId) {
                     task.isMandatory = true
                     isMandatoryMissing = false
                     break
@@ -166,11 +161,9 @@ export const TaskList = ({
                 !isJobView &&
                 isRequired &&
                 !isCdPipeline &&
-                // TODO: Test this change to shift newList to formData
                 isRequired(_formData, mandatoryPluginsMap, moveToStage, parentPluginId, pluginDataStore, true)
             if (_taskDetail[0].isMandatory && !isPluginRequired) {
                 isMandatoryMissing = true
-                // FIXME: Fix this check and refactor this code
                 for (const task of newList) {
                     const taskParentPluginId =
                         pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
@@ -318,116 +311,6 @@ export const TaskList = ({
         setSelectedTaskIndex(index)
     }
 
-    // TODO: A component would be better
-    const renderTaskTitleTippyContent = (
-        isLatest: boolean,
-        pluginVersion: string,
-        pluginName: string,
-        displayName: string,
-    ) => {
-        return (
-            <div className="flexbox-col dc__gap-6">
-                <div className="flexbox-col dc__gap-4">
-                    <h4 className="m-0 cn-0 fs-12 fw-6 lh-18 dc__truncate">{displayName}</h4>
-
-                    <p className="m-0 dc__truncate c-n50">
-                        {pluginName}({pluginVersion})
-                    </p>
-                </div>
-
-                {!isLatest && (
-                    <>
-                        <div className="dc__border-bottom--n7" />
-
-                        <div className="px-2 flexbox dc__align-items-center dc__gap-4">
-                            <ActivityIndicator
-                                rootClassName="dc__no-shrink"
-                                backgroundColorClass="bcg-5"
-                                iconSizeClass="icon-dim-8"
-                            />
-                            <span className="cg-5 fs-12 fw-6 lh-16">New version available </span>
-                        </div>
-                    </>
-                )}
-            </div>
-        )
-    }
-
-    const renderTaskTitle = (taskDetail: StepType) => {
-        const pluginId = taskDetail.pluginRefStepDetail?.pluginId
-        const { isLatest, pluginVersion, name: pluginName } = pluginDataStore.pluginVersionStore[pluginId] || {}
-
-        if (!pluginId) {
-            return <span className="dc__ellipsis-right">{taskDetail.name}</span>
-        }
-
-        return (
-            <Tippy
-                arrow={false}
-                className="default-tt w-200"
-                content={renderTaskTitleTippyContent(isLatest, pluginVersion, pluginName, taskDetail.name)}
-            >
-                <span className="w-100 dc__ellipsis-right">{taskDetail.name}</span>
-            </Tippy>
-        )
-    }
-
-    const renderPluginIcon = (taskDetail: StepType) => {
-        const isInline = taskDetail.stepType === PluginType.INLINE
-        if (isInline) {
-            return (
-                <ICCDStage className="dc__no-shrink icon-dim-20" />
-            )
-        }
-
-        const pluginId = taskDetail.pluginRefStepDetail?.pluginId
-        const { isLatest, icon, name } = pluginDataStore.pluginVersionStore[pluginId] || {}
-
-        if (!pluginId) {
-            return (
-                <ICEditFile className="dc__no-shrink icon-dim-20 scn-6" />
-            )
-        }
-
-        if (isLatest) {
-            return (
-                <PluginImageContainer
-                    fallbackImageClassName='icon-dim-20'
-                    imageProps={{
-                        src: icon,
-                        alt: `${name} logo`,
-                        width: 20,
-                        height: 20,
-                        className: 'dc__no-shrink',
-                    }}
-                />
-            )
-        }
-
-        return (
-            <div className="icon-dim-20 dc__no-shrink flexbox dc__position-rel dc__content-center">
-                <PluginImageContainer
-                    fallbackImageClassName='icon-dim-20'
-                    imageProps={{
-                        src: icon,
-                        alt: `${name} logo`,
-                        width: 20,
-                        height: 20,
-                        className: 'dc__no-shrink',
-                    }}
-                />
-
-                <div className="icon-dim-8 dc__transparent dc__no-shrink dc__position-abs dc__bottom-0 dc__right-0 flex">
-                    <ActivityIndicator
-                        rootClassName="dc__no-shrink"
-                        backgroundColorClass="bcg-5"
-                        iconSizeClass="icon-dim-6"
-                    />
-                </div>
-            </div>
-        )
-    }
-
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -453,8 +336,7 @@ export const TaskList = ({
                                         : 'w-80'
                                 }`}
                             >
-                                {renderPluginIcon(taskDetail)}
-                                {renderTaskTitle(taskDetail)}
+                                <TaskTitle taskDetail={taskDetail} />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
