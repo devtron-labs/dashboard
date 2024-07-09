@@ -27,7 +27,6 @@ import {
     useMainContext,
     PageHeader,
     URLS as CommonURLS,
-    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -668,7 +667,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {
@@ -700,7 +699,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
