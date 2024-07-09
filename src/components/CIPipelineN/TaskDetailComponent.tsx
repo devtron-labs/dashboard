@@ -107,7 +107,7 @@ export const TaskDetailComponent = () => {
         const _formData = structuredClone(formData)
 
         const oldPluginInputVariables: VariableType[] =
-            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables
+            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables || []
 
         const oldPluginInputVariablesMap = oldPluginInputVariables.reduce(
             (acc, inputVariable) => {
@@ -116,6 +116,9 @@ export const TaskDetailComponent = () => {
             },
             {} as Record<string, VariableType>,
         )
+
+        // newPluginVersionData.inputVariables is never null since parsed through DTO and it is always an array
+        // But formData steps inputVariables can be null
 
         // In inputVariables we are going to traverse, the inputVariables of newPluginVersion and
         // if in older one it is present we would keep its struct else we would remove it

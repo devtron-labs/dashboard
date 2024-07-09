@@ -22,7 +22,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
     const pluginVersionList = pluginDataStore.parentPluginStore[parentPluginId].pluginVersions
     const options: PluginVersionSelectOptionType[] = pluginVersionList.map((plugin) => ({
         label: plugin.pluginVersion,
-        value: String(plugin.id),
+        value: plugin.id,
         isLatest: plugin.isLatest,
     }))
 
@@ -33,7 +33,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
 
         // No need to await this change since either will call the API which would unmount this component else will update the plugin version
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        handlePluginVersionChange(+selectedOption.value)
+        handlePluginVersionChange(selectedOption.value)
     }
 
     return (
@@ -51,11 +51,11 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 />
                 <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{name}</h4>
 
-                <ReactSelect<PluginVersionSelectOptionType>
+                <ReactSelect<PluginVersionSelectOptionType, false>
                     options={options}
                     value={{
                         label: pluginVersion,
-                        value: String(id),
+                        value: id,
                         isLatest,
                     }}
                     placeholder="Version"
