@@ -51,7 +51,7 @@ export interface TerminalWrapperComponentType {
     isEnabled?: boolean
     dataTestId?: string
     classNamePrefix?: string
-    setShowDownloadFileFolderModal?: (showDownloadileFolderModal: boolean) => void
+    setShowDownloadFileFolderModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface TerminalSelectionListDataType {
