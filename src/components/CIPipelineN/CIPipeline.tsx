@@ -35,6 +35,7 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     ErrorScreenManager,
+    getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -106,7 +107,7 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const history = useHistory()
     const [pageState, setPageState] = useState(ViewType.LOADING)
-    const [errorCode, setErrorCode] = useState<number>(0)
+    const [errorCode, setErrorCode] = useState<number>(null)
     const saveOrUpdateButtonTitle = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const isJobCard = isJobCI || isJobView // constant for common elements of both Job and CI_JOB
     const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobCard ? 'job' : 'build'} pipeline`
@@ -234,6 +235,9 @@ export default function CIPipeline({
         }
     }
 
+    const areMandatoryPluginPossible = !isJobCard && processPluginData && prepareFormData
+
+    // NOTE: Wrap this method in try catch block to handle error
     const getMandatoryPluginData = async (
         _formData: PipelineFormType,
         /**
@@ -241,8 +245,7 @@ export default function CIPipeline({
          */
         requiredPluginIds?: PluginDetailPayloadType['pluginId'],
     ): Promise<void> => {
-        // We don't support mandatory plugins in job?
-        if (!isJobCard && processPluginData && prepareFormData) {
+        if (areMandatoryPluginPossible) {
             let branchName = ''
             if (_formData?.materials?.length) {
                 for (const material of _formData.materials) {
@@ -253,47 +256,35 @@ export default function CIPipeline({
             }
             if (selectedBranchRef.current !== branchName) {
                 selectedBranchRef.current = branchName
-                try {
-                    const {
-                        mandatoryPluginData: processedPluginData,
-                        pluginDataStore: updatedPluginDataStore,
-                    }: ProcessPluginDataReturnType = await processPluginData(
-                        _formData,
-                        pluginDataStore,
-                        appId,
-                        ciPipelineId,
-                        branchName,
-                        requiredPluginIds,
-                    )
+                const {
+                    mandatoryPluginData: processedPluginData,
+                    pluginDataStore: updatedPluginDataStore,
+                }: ProcessPluginDataReturnType = await processPluginData(
+                    _formData,
+                    pluginDataStore,
+                    appId,
+                    ciPipelineId,
+                    branchName,
+                    requiredPluginIds,
+                )
 
-                    const areRequiredIdsPresent =
-                        !requiredPluginIds?.length ||
-                        requiredPluginIds.every((id) => !!updatedPluginDataStore.pluginVersionStore[id])
-
-                    if (!areRequiredIdsPresent) {
-                        // TODO: uncomment
-                        // throw new Error('Required plugin details not found')
-                    }
-
-                    setMandatoryPluginData(processedPluginData)
-                    handlePluginDataStoreUpdate(updatedPluginDataStore)
-                    setFormData((prevForm) =>
-                        prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
-                    )
-                } catch (error) {
-                    throw error
-                }
+                setMandatoryPluginData(processedPluginData)
+                handlePluginDataStoreUpdate(updatedPluginDataStore)
+                setFormData((prevForm) =>
+                    prepareFormData({ ...prevForm }, processedPluginData?.pluginData ?? [], updatedPluginDataStore),
+                )
             }
         }
     }
 
+    // NOTE: Wrap this component in try catch block to handle error
     const getInitialPlugins = async (_formData: PipelineFormType): Promise<void> => {
         const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.preBuildStage)
         const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.postBuildStage)
 
         const uniquePluginIds = [...new Set([...preBuildPluginIds, ...postBuildPluginIds])]
 
-        if (processPluginData && prepareFormData && !isJobCard) {
+        if (areMandatoryPluginPossible) {
             await getMandatoryPluginData(_formData, uniquePluginIds)
             return
         }
@@ -302,24 +293,11 @@ export default function CIPipeline({
             return
         }
 
-        const clonedPluginDataStore = structuredClone(pluginDataStore)
         const {
             pluginStore: { parentPluginStore, pluginVersionStore },
         } = await getPluginsDetail({ appId: +appId, pluginIds: uniquePluginIds })
 
-        Object.keys(parentPluginStore).forEach((key) => {
-            if (!clonedPluginDataStore.parentPluginStore[key]) {
-                clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
-            }
-        })
-
-        Object.keys(pluginVersionStore).forEach((key) => {
-            if (!clonedPluginDataStore.pluginVersionStore[key]) {
-                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
-            }
-        })
-
-        handlePluginDataStoreUpdate(clonedPluginDataStore)
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
     }
 
     const getEnvironments = async (envId: number): Promise<void> => {
@@ -924,11 +902,7 @@ export default function CIPipeline({
                         {title}
                     </h2>
 
-                    <button
-                        type="button"
-                        className="dc__transparent flex icon-dim-24"
-                        onClick={handleClose}
-                    >
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={handleClose}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
