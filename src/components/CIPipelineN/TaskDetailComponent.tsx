@@ -29,6 +29,7 @@ import {
     getPluginsDetail,
     StepType,
     PluginDataStoreType,
+    getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import PluginDetailHeader from './PluginDetailHeader'
@@ -167,12 +168,7 @@ export const TaskDetailComponent = () => {
                 appId: +appId,
                 pluginIds: [pluginId],
             })
-            const clonedPluginDataStore = structuredClone(pluginDataStore)
-
-            Object.keys(pluginVersionStore).forEach((key) => {
-                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
-            })
-
+            const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, {}, pluginVersionStore)
             const newPluginVersionData = clonedPluginDataStore.pluginVersionStore[pluginId]
             const _formData = getFormDataWithReplacedPluginVersion(newPluginVersionData, pluginId)
 
