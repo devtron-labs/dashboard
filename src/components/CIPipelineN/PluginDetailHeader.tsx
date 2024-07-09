@@ -46,7 +46,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                         alt: name,
                         width: 24,
                         height: 24,
-                        className: 'p-2',
+                        className: 'p-2 dc__no-shrink',
                     }}
                 />
                 <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{name}</h4>
