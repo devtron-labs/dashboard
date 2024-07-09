@@ -21,8 +21,9 @@ import {
     useAsync,
     useMainContext,
     noop,
+    DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { ExternalFluxAppDetailParams } from './types'
 import { getExternalFluxCDAppDetails } from './service'
@@ -57,9 +58,11 @@ const ExternalFluxAppDetails = () => {
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
             initTimer = setTimeout(reloadAppDetails, 30000)
-            const genericAppDetail = {
+            const genericAppDetail: AppDetails = {
                 ...appDetailsResult.result,
                 appStatus: getAppStatus(appDetailsResult.result.appStatus),
+                deploymentAppType: DeploymentAppTypes.FLUX,
+                fluxTemplateType: templateType,
             }
             IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
         }

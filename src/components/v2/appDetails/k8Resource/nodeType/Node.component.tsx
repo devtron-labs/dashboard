@@ -67,6 +67,7 @@ const NodeComponent = ({
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
 
     const isExternalHelmApp = appDetails?.appType === AppType.EXTERNAL_HELM_CHART
+    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     useEffect(() => {
         if (externalLinks?.length > 0) {
@@ -485,7 +486,7 @@ const NodeComponent = ({
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
                             node?.kind !== 'EndpointSlice' &&
-                            !isExternalApp && (
+                            !(isExternalHelmApp || isExternalArgoApp) && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}

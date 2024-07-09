@@ -494,6 +494,7 @@ const ManifestComponent = ({
             {!error && (
                 <div className="bcn-0 h-100">
                     {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                        appDetails.appType === AppType.EXTERNAL_FLUX_APP ||
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                             appDetails.deploymentAppDeleteRequest)) && (

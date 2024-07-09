@@ -689,8 +689,8 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
-                        {!isExternalApp && (downloadInProgress ? (
+                        <div className="h-16 dc__border-right ml-8 mr-8" />
+                        {(downloadInProgress ? (
                             <Progressing
                                 size={16}
                                 styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}

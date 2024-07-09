@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
+import { getDeploymentType, getK8sResourcePayloadAppType } from './k8Resource/nodeDetail/nodeDetail.util'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
@@ -48,14 +49,14 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         nodeDetails.group = ''
     }
 
-    const { appName, deploymentAppType, clusterId, namespace, appType, appId } = appDetails
+    const { appName, deploymentAppType, clusterId, namespace, appType, appId, fluxTemplateType } = appDetails
     const { group, version, kind, name } = nodeDetails
 
     const data = {
         appId:
             appType == AppType.DEVTRON_APP
                 ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-                : getAppId(clusterId, namespace, appName),
+                : getAppId(clusterId, namespace, appName, fluxTemplateType ?? null),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -66,10 +67,10 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                 namespace,
                 name,
             },
-            forceDelete: forceDelete 
+            forceDelete: forceDelete
         },
-        appType: appType == AppType.DEVTRON_APP ? 0 : 1,
-        deploymentType: deploymentAppType == DeploymentAppTypes.HELM ? 0 : 1,
+        appType: getK8sResourcePayloadAppType(appType),
+        deploymentType: getDeploymentType(deploymentAppType)
     }
     return post(Routes.DELETE_RESOURCE, data)
 }

@@ -76,8 +76,9 @@ const EnvironmentSelectorComponent = ({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-    const isExternalArgoOrFlux =
-        appDetails.appType === AppType.EXTERNAL_ARGO_APP || appDetails.appType === AppType.EXTERNAL_FLUX_APP
+    const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
+    const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
+
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
@@ -323,7 +324,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && !isExternalArgoOrFlux && (
+            {!loadingResourceTree && !isExternalArgo && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -346,11 +347,11 @@ const EnvironmentSelectorComponent = ({
                     )}
                     {!(
                         (deployedAppDetail &&
-                            checkIfDevtronOperatorHelmRelease(
-                                deployedAppDetail[2],
-                                deployedAppDetail[1],
-                                deployedAppDetail[0],
-                            ))
+                        checkIfDevtronOperatorHelmRelease(
+                            deployedAppDetail[2],
+                            deployedAppDetail[1],
+                            deployedAppDetail[0],
+                            )) || isExternalFlux
                     ) && (
                         <div
                             data-testid="dot-button-app-details"

@@ -25,9 +25,12 @@ import {
     SelectedResourceType,
 } from '../../appDetails.type'
 import { ParamsType } from './nodeDetail.type'
-import { getK8sResourcePayloadAppType } from './nodeDetail.util'
+import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
 
-export const getAppId = (clusterId: number, namespace: string, appName: string) => {
+export const getAppId = (clusterId: number, namespace: string, appName: string, templateType?: string) => {
+    if (templateType) {
+        return `${clusterId}|${namespace}|${appName}|${templateType === 'Kustomization'}`
+    }
     return `${clusterId}|${namespace}|${appName}`
 }
 export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appId: number, envId: number) => {
@@ -115,16 +118,13 @@ export const getAppDetailsForManifest = (appDetails: AppDetails) => {
     const appId =
         appDetails.appType === AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
+            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject, appDetails.fluxTemplateType ?? null)
 
     return {
         appId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? appId : '',
         clusterId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? 0 : appDetails.clusterId,
         appType: getK8sResourcePayloadAppType(appDetails.appType),
-        deploymentType:
-            appDetails.deploymentAppType === DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
+        deploymentType: getDeploymentType(appDetails.deploymentAppType),
     }
 }
 
@@ -304,7 +304,7 @@ export const getLogsURL = (
     const appId =
         ad.appType === AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+            : getAppId(ad.clusterId, ad.namespace, applicationObject, ad.fluxTemplateType ?? null)
 
     let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     if (isResourceBrowserView) {
@@ -313,10 +313,7 @@ export const getLogsURL = (
         logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&externalArgoApplicationName=${ad.appName}`
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
-        const deploymentType =
-            ad.deploymentAppType === DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        const deploymentType = getDeploymentType(ad.deploymentAppType)
         if (appType === 0) {
             logsURL += `&namespace=${ad.namespace}`
         }
