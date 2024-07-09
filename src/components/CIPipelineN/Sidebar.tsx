@@ -24,7 +24,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
-import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
+import { BuildStageVariable, DOCUMENTATION, TriggerType } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
@@ -54,7 +54,6 @@ export const Sidebar = ({
     const {
         formData,
         setFormData,
-        configurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -342,35 +341,31 @@ export const Sidebar = ({
         <div>
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container">
-                    {configurationType === ConfigurationType.GUI && (
-                        <>
-                            {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
-                                <MandatoryPluginWarning
-                                    stage={activeStageName}
-                                    mandatoryPluginData={mandatoryPluginData}
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    formDataErrorObj={formDataErrorObj}
-                                    setFormDataErrorObj={setFormDataErrorObj}
-                                    pluginDataStore={pluginDataStore}
-                                    handleApplyPlugin={handleApplyPlugin}
-                                />
-                            )}
-                            <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <div className="pb-16 sidebar-action-container-border">
-                                <TaskList
-                                    withWarning={showMandatoryWarning()}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
-                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    isJobView={isJobCard}
-                                />
-                            </div>
-                            {isCdPipeline &&
-                                (!isVirtualEnvironment ||
-                                    formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
-                                triggerPipelineMode()}
-                        </>
+                    {!isCdPipeline && !isJobCard && MandatoryPluginWarning && showMandatoryWarning() && (
+                        <MandatoryPluginWarning
+                            stage={activeStageName}
+                            mandatoryPluginData={mandatoryPluginData}
+                            formData={formData}
+                            setFormData={setFormData}
+                            formDataErrorObj={formDataErrorObj}
+                            setFormDataErrorObj={setFormDataErrorObj}
+                            pluginDataStore={pluginDataStore}
+                            handleApplyPlugin={handleApplyPlugin}
+                        />
                     )}
+                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
+                    <div className="pb-16 sidebar-action-container-border">
+                        <TaskList
+                            withWarning={showMandatoryWarning()}
+                            mandatoryPluginsMap={mandatoryPluginsMap}
+                            setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                            isJobView={isJobCard}
+                        />
+                    </div>
+                    {isCdPipeline &&
+                        (!isVirtualEnvironment || formData.generatedHelmPushAction === GeneratedHelmPush.PUSH) &&
+                        triggerPipelineMode()}
+
                     {isJobView && (
                         <EnvironmentList
                             isBuildStage

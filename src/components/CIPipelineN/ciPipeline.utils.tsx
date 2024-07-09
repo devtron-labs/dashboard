@@ -100,29 +100,6 @@ export const pluginSelectStyle = {
     }),
 }
 
-export const yamlEditorSelectStyle = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        minHeight: 'auto',
-        border: 'none',
-        width: 'max-content',
-    }),
-    option: (base, state) => ({
-        ...base,
-        fontWeight: '500',
-        color: 'var(--N900)',
-        fontSize: '12px',
-        padding: '5px 10px',
-        minWidth: '200px',
-    }),
-    dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-    menu: (base, state) => ({
-        ...base,
-        width: '150px',
-    }),
-}
-
 export const selectVariableStyle = {
     ...baseSelectStyles,
     control: (base, state) => ({

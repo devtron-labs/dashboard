@@ -21,11 +21,9 @@ import {
     VariableType,
     RefVariableType,
     Progressing,
-    YAMLStringify,
     CDEmptyState,
     PluginListContainer,
 } from '@devtron-labs/devtron-fe-common-lib'
-import YAML from 'yaml'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
@@ -33,10 +31,9 @@ import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
-import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
+import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
-import { YAMLScriptComponent } from './YAMLScriptComponent'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -55,8 +52,6 @@ export const PreBuild: React.FC<PreBuildType> = ({
         addNewTask,
         selectedTaskIndex,
         setSelectedTaskIndex,
-        configurationType,
-        setConfigurationType,
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
@@ -66,15 +61,8 @@ export const PreBuild: React.FC<PreBuildType> = ({
         pluginDataStore,
         handlePluginDataStoreUpdate,
     } = useContext(pipelineContext)
-    const [editorValue, setEditorValue] = useState<string>(YAMLStringify(formData[activeStageName]))
-    useEffect(() => {
-        if (configurationType === ConfigurationType.YAML) {
-            setEditorValue(YAMLStringify(formData[activeStageName]))
-        }
-    }, [configurationType])
 
     useEffect(() => {
-        setConfigurationType(ConfigurationType.GUI)
         setSelectedTaskIndex(0)
     }, [activeStageName])
 
@@ -152,15 +140,6 @@ export const PreBuild: React.FC<PreBuildType> = ({
         } else {
             setFormDataErrorObj(_formDataErrorObj)
         }
-    }
-
-    const handleEditorValueChange = (editorValue: string): void => {
-        try {
-            setEditorValue(editorValue)
-            const _form = { ...formData }
-            _form[activeStageName] = YAML.parse(editorValue)
-            setFormData(_form)
-        } catch (error) {}
     }
 
     const handlePluginSelection = (parentPluginId: number) => {
@@ -256,16 +235,8 @@ export const PreBuild: React.FC<PreBuildType> = ({
                 </div>
             )
         }
-        if (configurationType === ConfigurationType.GUI) {
-            return renderGUI()
-        }
-        return (
-            <YAMLScriptComponent
-                editorValue={editorValue}
-                handleEditorValueChange={handleEditorValueChange}
-                showSample
-            />
-        )
+
+        return renderGUI()
     }
 
     return <React.Fragment key={activeStageName}>{renderComponent()}</React.Fragment>

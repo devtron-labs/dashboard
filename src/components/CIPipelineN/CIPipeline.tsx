@@ -121,7 +121,6 @@ export default function CIPipeline({
     })
     const [apiInProgress, setApiInProgress] = useState<boolean>(false)
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
-    const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
     const [globalVariables, setGlobalVariables] = useState<{ label: string; value: string; format: string }[]>([])
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
@@ -776,8 +775,6 @@ export default function CIPipeline({
             loadingState,
             setLoadingState,
             addNewTask,
-            configurationType,
-            setConfigurationType,
             activeStageName,
             selectedTaskIndex,
             setSelectedTaskIndex,
@@ -799,7 +796,6 @@ export default function CIPipeline({
         formDataErrorObj,
         inputVariablesListFromPrevStep,
         selectedTaskIndex,
-        configurationType,
         pageState,
         globalVariables,
         pluginDataStore,

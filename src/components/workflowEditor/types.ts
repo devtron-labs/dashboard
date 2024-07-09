@@ -293,8 +293,6 @@ export interface PipelineContext {
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    configurationType: string
-    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
     validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
     isCdPipeline?: boolean

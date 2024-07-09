@@ -187,7 +187,6 @@ export default function CDPipeline({
     const [configMapAndSecrets, setConfigMapAndSecrets] = useState([])
     const [savedCustomTagPattern, setSavedCustomTagPattern] = useState<string>('')
     const [selectedTaskIndex, setSelectedTaskIndex] = useState<number>(0)
-    const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [globalVariables, setGlobalVariables] = useState<
         { label: string; value: string; format: string; stageType: string }[]
     >([])
@@ -1091,8 +1090,6 @@ export default function CDPipeline({
             validateTask,
             validateStage,
             addNewTask,
-            configurationType,
-            setConfigurationType,
             pageState,
             setPageState,
             globalVariables,
@@ -1115,7 +1112,6 @@ export default function CDPipeline({
         formDataErrorObj,
         inputVariablesListFromPrevStep,
         selectedTaskIndex,
-        configurationType,
         pageState,
         globalVariables,
         configMapAndSecrets,
