@@ -13,13 +13,13 @@ import { ReactComponent as ICBookOpen } from '../../assets/icons/ic-book-open.sv
 import { ReactComponent as ICHelp } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICNewVersion } from '../../assets/icons/ic-new-version.svg'
 
-// Check for same to same change
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)
 
     const selectedPluginId = formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId
-    const pluginData = pluginDataStore.pluginVersionStore[selectedPluginId]
-    const pluginVersionList = pluginDataStore.parentPluginStore[pluginData.parentPluginId].pluginVersions
+    const { parentPluginId, icon, name, description, tags, id, isLatest, pluginVersion, docLink } =
+        pluginDataStore.pluginVersionStore[selectedPluginId]
+    const pluginVersionList = pluginDataStore.parentPluginStore[parentPluginId].pluginVersions
     const options: PluginVersionSelectOptionType[] = pluginVersionList.map((plugin) => ({
         label: plugin.pluginVersion,
         value: String(plugin.id),
@@ -42,21 +42,21 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 <PluginImageContainer
                     fallbackImageClassName="icon-dim-24 p-2"
                     imageProps={{
-                        src: pluginData.icon,
-                        alt: pluginData.name,
+                        src: icon,
+                        alt: name,
                         width: 24,
                         height: 24,
                         className: 'p-2',
                     }}
                 />
-                <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{pluginData.name}</h4>
+                <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{name}</h4>
 
                 <ReactSelect<PluginVersionSelectOptionType>
                     options={options}
                     value={{
-                        label: pluginData.pluginVersion,
-                        value: String(pluginData.id),
-                        isLatest: pluginData.isLatest,
+                        label: pluginVersion,
+                        value: String(id),
+                        isLatest,
                     }}
                     placeholder="Version"
                     onChange={handleChange}
@@ -69,7 +69,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     inputId="plugin-detail-header__version-select"
                 />
 
-                {!pluginData.isLatest && (
+                {!isLatest && (
                     <>
                         <div className="dc__border-right--n1 h-16" />
                         <div className="flexbox dc__gap-4">
@@ -86,14 +86,14 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 theme={TippyTheme.white}
                 Icon={ICHelp}
                 className="w-300"
-                heading={pluginData.name}
-                infoText={pluginData.description}
-                additionalContent={<PluginTagsContainer tags={pluginData.tags} rootClassName="px-12 pb-12" />}
+                heading={name}
+                infoText={description}
+                additionalContent={<PluginTagsContainer tags={tags} rootClassName="px-12 pb-12" />}
                 iconClass="fcv-5"
                 showCloseButton
                 trigger="click"
                 interactive
-                documentationLink={pluginData.docLink}
+                documentationLink={docLink}
                 documentationLinkText="View documentation"
             >
                 <button
