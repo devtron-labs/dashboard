@@ -211,18 +211,17 @@ const AppComposeRouter = () => {
                     <Route
                         key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
                         path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                        render={() => (
-                            <WorkflowEdit
-                                configStatus={1}
-                                isCDPipeline={isCDPipeline}
-                                respondOnSuccess={respondOnSuccess}
-                                getWorkflows={getWorkflows}
-                                filteredEnvIds={filteredEnvIds}
-                                reloadEnvironments={reloadEnvironments}
-                                reloadAppConfig={reloadAppConfig}
-                            />
-                        )}
-                    />,
+                    >
+                        <WorkflowEdit
+                            configStatus={1}
+                            isCDPipeline={isCDPipeline}
+                            respondOnSuccess={respondOnSuccess}
+                            getWorkflows={getWorkflows}
+                            filteredEnvIds={filteredEnvIds}
+                            reloadEnvironments={reloadEnvironments}
+                            reloadAppConfig={reloadAppConfig}
+                        />
+                    </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
                     </Route>,
@@ -232,10 +231,9 @@ const AppComposeRouter = () => {
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                        render={() => (
-                            <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
-                        )}
-                    />,
+                    >
+                        <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
+                    </Route>,
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}
                 {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

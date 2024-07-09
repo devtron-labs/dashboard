@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useLocation, useRouteMatch, useHistory, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {

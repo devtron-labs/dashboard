@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { CustomNavItemsType } from '../appConfig.type'
 
 interface HelpBoxType {

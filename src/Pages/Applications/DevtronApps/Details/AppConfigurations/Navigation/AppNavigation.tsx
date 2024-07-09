@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { NavLink, useLocation } from 'react-router-dom'
 import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -119,7 +119,7 @@ export const AppNavigation = () => {
                 if (item.altNavKey) {
                     return null
                 }
-                if (item.stage === 'EXTERNAL_LINKS') {
+                if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
                     return (
                         canShowExternalLinks && (
                             <div key={item.stage}>
@@ -129,7 +129,7 @@ export const AppNavigation = () => {
                         )
                     )
                 }
-                if (item.stage === 'PROTECT_CONFIGURATION') {
+                if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
                     return (
                         isWorkflowEditorUnlocked &&
                         ConfigProtectionView && (
@@ -141,7 +141,10 @@ export const AppNavigation = () => {
                     )
                 }
 
-                if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
+                if (
+                    item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                    (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                ) {
                     return (
                         <ConditionalWrap
                             key={item.stage}

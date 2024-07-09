@@ -119,7 +119,7 @@ export const getNavItems = (
             {
                 title: 'Workflow Editor',
                 href: `/job/${appId}/edit/workflow`,
-                stage: 'WORKFLOW',
+                stage: STAGE_NAME.WORKFLOW,
                 isLocked: !_isUnlocked.workflowEditor,
                 supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
@@ -129,7 +129,7 @@ export const getNavItems = (
             {
                 title: 'ConfigMaps',
                 href: `/job/${appId}/edit/configmap`,
-                stage: 'CONFIGMAP',
+                stage: STAGE_NAME.CONFIGMAP,
                 isLocked: !_isUnlocked.configmap,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
                 flowCompletionPercent: completedPercent,
@@ -140,7 +140,7 @@ export const getNavItems = (
             {
                 title: 'Secrets',
                 href: `/job/${appId}/edit/secrets`,
-                stage: 'SECRETS',
+                stage: STAGE_NAME.SECRETS,
                 isLocked: !_isUnlocked.secret,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
                 flowCompletionPercent: completedPercent,
@@ -151,7 +151,7 @@ export const getNavItems = (
             {
                 title: 'Environment Override',
                 href: `/job/${appId}/edit/env-override`,
-                stage: 'ENV_OVERRIDE',
+                stage: STAGE_NAME.ENV_OVERRIDE,
                 isLocked: !_isUnlocked.envOverride,
             },
         ]
@@ -201,7 +201,7 @@ export const getNavItems = (
             {
                 title: 'Workflow Editor',
                 href: `/app/${appId}/edit/workflow`,
-                stage: 'WORKFLOW',
+                stage: STAGE_NAME.WORKFLOW,
                 isLocked: !_isUnlocked.workflowEditor,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
                 flowCompletionPercent: completedPercent,
@@ -211,7 +211,7 @@ export const getNavItems = (
             {
                 title: 'ConfigMaps',
                 href: `/app/${appId}/edit/configmap`,
-                stage: 'CONFIGMAP',
+                stage: STAGE_NAME.CONFIGMAP,
                 isLocked: !_isUnlocked.configmap,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
                 flowCompletionPercent: completedPercent,
@@ -222,7 +222,7 @@ export const getNavItems = (
             {
                 title: 'Secrets',
                 href: `/app/${appId}/edit/secrets`,
-                stage: 'SECRETS',
+                stage: STAGE_NAME.SECRETS,
                 isLocked: !_isUnlocked.secret,
                 supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
                 flowCompletionPercent: completedPercent,
@@ -233,7 +233,7 @@ export const getNavItems = (
             {
                 title: 'External Links',
                 href: `/app/${appId}/edit/external-links`,
-                stage: 'EXTERNAL_LINKS',
+                stage: STAGE_NAME.EXTERNAL_LINKS,
                 isLocked: false,
                 supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
                 flowCompletionPercent: completedPercent,
@@ -242,13 +242,13 @@ export const getNavItems = (
             {
                 title: 'Protect Configuration',
                 href: `/app/${appId}/edit/${URLS.APP_CONFIG_PROTECTION}`,
-                stage: 'PROTECT_CONFIGURATION',
+                stage: STAGE_NAME.PROTECT_CONFIGURATION,
                 isLocked: false,
             },
             {
                 title: 'Environment Override',
                 href: `/app/${appId}/edit/env-override`,
-                stage: 'ENV_OVERRIDE',
+                stage: STAGE_NAME.ENV_OVERRIDE,
                 isLocked: !_isUnlocked.envOverride,
             },
         ]
