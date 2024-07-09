@@ -1,4 +1,3 @@
-import React from 'react'
 import { components, DropdownIndicatorProps } from 'react-select'
 
 import { commonSelectStyles, getCommonSelectStyle } from '@devtron-labs/devtron-fe-common-lib'

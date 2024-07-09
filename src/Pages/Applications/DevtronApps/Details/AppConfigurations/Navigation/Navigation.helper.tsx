@@ -1,4 +1,3 @@
-import React from 'react'
 import { NavLink, generatePath } from 'react-router-dom'
 
 import { ReactComponent as Lock } from '../../../../../../assets/icons/ic-locked.svg'
