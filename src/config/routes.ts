@@ -196,30 +196,3 @@ export function getAppCDURL(
 export function getAppDeploymentMetricsURL(appId: number | string): string {
     return `${URLS.APP}/${appId}/${URLS.APP_DEPLOYMENT_METRICS}`
 }
-
-enum APP_CONFIG_STAGES {
-    APP = 'APP',
-    MATERIAL = 'MATERIAL',
-    TEMPLATE = 'TEMPLATE',
-    CI_PIPELINE = 'CI_PIPELINE',
-    CHART = 'CHART',
-    CD_PIPELINE = 'CD_PIPELINE',
-    CHART_ENV_CONFIG = 'CHART_ENV_CONFIG',
-}
-
-interface StageStatusResponseItem {
-    stage: number
-    stageName: APP_CONFIG_STAGES
-    status: boolean
-    required: boolean
-}
-
-export function isCIPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    const ciPipeline = responseArr.find((item) => item.stageName === 'CI_PIPELINE')
-    return ciPipeline.status
-}
-
-export function isCDPipelineCreated(responseArr: StageStatusResponseItem[]): boolean {
-    const cdPipeline = responseArr.find((item) => item.stageName === 'CD_PIPELINE')
-    return cdPipeline.status
-}

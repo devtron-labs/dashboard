@@ -23,31 +23,31 @@ import {
     InfoColourBar,
     PopupMenu,
     Progressing,
+    getEnvironmentListMinPublic,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import ReactSelect, { components } from 'react-select'
-import { URLS, DOCUMENTATION } from '../../../../config'
-import { usePrevious, createClusterEnvGroup } from '../../../common'
+import ReactSelect, { ValueContainerProps, components } from 'react-select'
+import { URLS, DOCUMENTATION } from '../../../../../../config'
+import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
 import {
     addJobEnvironment,
     deleteJobEnvironment,
     getCIConfig,
-    getEnvironmentListMinPublic,
     getJobOtherEnvironmentMin,
-} from '../../../../services/service'
-import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg'
-import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
-import { ReactComponent as More } from '../../../../assets/icons/ic-more-option.svg'
-import { ReactComponent as DeleteIcon } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
-import warn from '../../../../assets/icons/ic-warning.svg'
-import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from './appConfig.type'
-import { groupHeading } from '../../../CIPipelineN/Constants'
-import { RESOURCE_ACTION_MENU } from '../../../ResourceBrowser/Constants'
-import { groupStyle } from '../../../v2/common/ReactSelect.utils'
-import './appConfig.scss'
+} from '../../../../../../services/service'
+import { ReactComponent as Dropdown } from '../../../../../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
+import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
+import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
+import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
+import warn from '../../../../../../assets/icons/ic-warning.svg'
+import { EnvironmentOverrideRouteProps, EnvironmentOverrideRouterProps } from '../appConfig.type'
+import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
+import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
+import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
+import '../appConfig.scss'
 
 const EnvOverridesHelpNote = () => {
     return (
@@ -91,6 +91,19 @@ const EnvOverrideRoute = ({
         toggleCollapsed(!collapsed)
     }
 
+    const deleteEnvHandler = () => {
+        const requestBody = { envId: envOverride.environmentId, appId }
+        deleteJobEnvironment(requestBody)
+            .then(() => {
+                toast.success('Deleted Successfully')
+                reload()
+                setDeleteView(false)
+            })
+            .catch((error) => {
+                showError(error)
+            })
+    }
+
     const handleDeleteConfirmation = () => {
         setDeleteView(false)
         deleteEnvHandler()
@@ -99,19 +112,6 @@ const EnvOverrideRoute = ({
     const handleCancelDelete = () => {
         setDeleteView(false)
         setDeletePipeline(null)
-    }
-
-    const deleteEnvHandler = () => {
-        const requestBody = { envId: envOverride.environmentId, appId }
-        deleteJobEnvironment(requestBody)
-            .then((response) => {
-                toast.success('Deleted Successfully')
-                reload()
-                setDeleteView(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
     }
 
     const handleViewPipeline = () => {
@@ -134,7 +134,7 @@ const EnvOverrideRoute = ({
         )
     }
 
-    const renderConfirmationDeleteModal = (pipeline: any, path: string): JSX.Element => {
+    const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => {
         return (
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warn} />
@@ -154,7 +154,11 @@ const EnvOverrideRoute = ({
                     <button type="button" className="cta cancel" onClick={handleCancelDelete}>
                         Cancel
                     </button>
-                    <button onClick={handleDeleteConfirmation} className="cta delete cta-cd-delete-modal ml-16">
+                    <button
+                        type="button"
+                        onClick={handleDeleteConfirmation}
+                        className="cta delete cta-cd-delete-modal ml-16"
+                    >
                         Delete Anyway
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -162,7 +166,7 @@ const EnvOverrideRoute = ({
         )
     }
 
-    const showDeleteDialog = (pipeline: any): JSX.Element => {
+    const showDeleteDialog = (pipeline): JSX.Element => {
         const workFlows = workflowsRes?.workflows
         let workFlow
         if (pipeline) {
@@ -178,6 +182,16 @@ const EnvOverrideRoute = ({
             ? `${url}/${URLS.APP_WORKFLOW_CONFIG}/${workFlow?.id}/ci-pipeline/${pipeline?.id}/pre-build`
             : ''
         return !showConfirmationDialog ? renderDeleteDialog() : renderConfirmationDeleteModal(pipeline, path)
+    }
+
+    const toggleDeleteDialog = (e) => {
+        e.stopPropagation()
+        setDeleteView(true)
+        const pipeline = ciPipelines?.find((env) => env.environmentId === envOverride.environmentId)
+        if (pipeline) {
+            setConfirmationDialog(true)
+            setDeletePipeline(pipeline)
+        }
     }
 
     const deletePopUpMenu = (): JSX.Element => {
@@ -200,16 +214,6 @@ const EnvOverrideRoute = ({
                 </PopupMenu.Body>
             </PopupMenu>
         )
-    }
-
-    const toggleDeleteDialog = (e) => {
-        e.stopPropagation()
-        setDeleteView(true)
-        const pipeline = ciPipelines?.find((env) => env.environmentId === envOverride.environmentId)
-        if (pipeline) {
-            setConfirmationDialog(true)
-            setDeletePipeline(pipeline)
-        }
     }
 
     return (
@@ -258,13 +262,30 @@ const EnvOverrideRoute = ({
     )
 }
 
-export default function EnvironmentOverrideRouter({
+const ValueContainer = (props: ValueContainerProps) => {
+    const { selectProps, children } = props
+    return (
+        <components.ValueContainer {...props}>
+            {!selectProps.inputValue ? (
+                <>
+                    <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
+                    <span className="dc__position-abs dc__left-35 cn-5 ml-2">{selectProps.placeholder}</span>
+                </>
+            ) : (
+                <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
+            )}
+            <span className="dc__position-abs dc__left-30 cn-5 ml-2">{React.cloneElement(children[1])}</span>
+        </components.ValueContainer>
+    )
+}
+
+const EnvironmentOverrideRouter = ({
     isJobView,
     workflowsRes,
     getWorkflows,
     allEnvs,
     reloadEnvironments,
-}: EnvironmentOverrideRouterProps) {
+}: EnvironmentOverrideRouterProps) => {
     const { pathname } = useLocation()
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
@@ -273,30 +294,6 @@ export default function EnvironmentOverrideRouter({
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
     const [isEnvLoading, setIsEnvLoading] = useState(false)
-
-    useEffect(() => {
-        if (
-            previousPathName &&
-            ((previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) ||
-                // This is a serious potential bug. Need to handle this properly
-                (previousPathName.includes(URLS.LINKED_CD) && !pathname.includes(URLS.LINKED_CD)) ||
-                (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
-                (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
-        ) {
-            if (isJobView) {
-                getJobOtherEnvironment()
-            } else {
-                reloadEnvironments()
-            }
-            getWorkflows()
-        }
-    }, [pathname])
-
-    useEffect(() => {
-        if (isJobView) {
-            getJobOtherEnvironment()
-        }
-    }, [appId])
 
     const getJobOtherEnvironment = async () => {
         setIsEnvLoading(true)
@@ -315,11 +312,38 @@ export default function EnvironmentOverrideRouter({
             setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
             setCIPipelines(ciConfigRes?.ciPipelines)
             setJobEnvs(jobEnvRes ?? [])
-        } catch (error) {
         } finally {
             setIsEnvLoading(false)
         }
     }
+
+    useEffect(() => {
+        if (
+            previousPathName &&
+            ((previousPathName.includes('/cd-pipeline') && !pathname.includes('/cd-pipeline')) ||
+                // This is a serious potential bug. Need to handle this properly
+                (previousPathName.includes(URLS.LINKED_CD) && !pathname.includes(URLS.LINKED_CD)) ||
+                (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
+                (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
+        ) {
+            if (isJobView) {
+                getJobOtherEnvironment()
+                    .then(() => {})
+                    .catch(() => {})
+            } else {
+                reloadEnvironments()
+            }
+            getWorkflows()
+        }
+    }, [pathname])
+
+    useEffect(() => {
+        if (isJobView) {
+            getJobOtherEnvironment()
+                .then(() => {})
+                .catch(() => {})
+        }
+    }, [appId])
 
     const selectEnvironment = async (selection) => {
         try {
@@ -329,6 +353,8 @@ export default function EnvironmentOverrideRouter({
             await addJobEnvironment(requestBody)
             toast.success('Saved Successfully')
             getJobOtherEnvironment()
+                .then(() => {})
+                .catch(() => {})
         } catch (error) {
             showError(error)
         } finally {
@@ -343,25 +369,11 @@ export default function EnvironmentOverrideRouter({
     const reloadEnvData = () => {
         if (isJobView) {
             getJobOtherEnvironment()
+                .then(() => {})
+                .catch(() => {})
         } else {
             reloadEnvironments()
         }
-    }
-
-    const ValueContainer = (props): JSX.Element => {
-        return (
-            <components.ValueContainer {...props}>
-                {!props.selectProps.inputValue ? (
-                    <>
-                        <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
-                        <span className="dc__position-abs dc__left-35 cn-5 ml-2">{props.selectProps.placeholder}</span>
-                    </>
-                ) : (
-                    <Search className="dc__position-abs icon-dim-18 ml-8 mw-18" />
-                )}
-                <span className="dc__position-abs dc__left-30 cn-5 ml-2">{React.cloneElement(props.children[1])}</span>
-            </components.ValueContainer>
-        )
     }
 
     const renderEnvSelector = (): JSX.Element => {
@@ -411,7 +423,7 @@ export default function EnvironmentOverrideRouter({
         if ((isJobView ? jobEnvs : allEnvs).length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {(isJobView ? jobEnvs : allEnvs).map((env, index) => {
+                    {(isJobView ? jobEnvs : allEnvs).map((env) => {
                         return (
                             !env.deploymentAppDeleteRequest && (
                                 <EnvOverrideRoute
@@ -472,3 +484,5 @@ export default function EnvironmentOverrideRouter({
         </div>
     )
 }
+
+export default EnvironmentOverrideRouter
