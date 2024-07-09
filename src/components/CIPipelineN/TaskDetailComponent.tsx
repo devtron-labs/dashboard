@@ -163,12 +163,12 @@ export const TaskDetailComponent = () => {
         setIsLoadingPluginVersionDetails(true)
         try {
             const {
-                pluginStore: { pluginVersionStore },
+                pluginStore: { parentPluginStore, pluginVersionStore },
             } = await getPluginsDetail({
                 appId: +appId,
                 pluginIds: [pluginId],
             })
-            const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, {}, pluginVersionStore)
+            const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
             const newPluginVersionData = clonedPluginDataStore.pluginVersionStore[pluginId]
             const _formData = getFormDataWithReplacedPluginVersion(newPluginVersionData, pluginId)
 
