@@ -336,7 +336,12 @@ export const TaskList = ({
                                         : 'w-80'
                                 }`}
                             >
-                                <TaskTitle taskDetail={taskDetail} />
+                                <TaskTitle taskDetail={taskDetail} rootClassName={
+                                    formDataErrorObj[activeStageName].steps[index] &&
+                                    !formDataErrorObj[activeStageName].steps[index].isValid
+                                        ? 'w-70'
+                                        : 'w-80'
+                                } />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&

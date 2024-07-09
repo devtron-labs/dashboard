@@ -60,6 +60,7 @@ export interface TaskDetailComponentParamsType {
 
 export interface TaskTitleProps {
     taskDetail: StepType
+    rootClassName?: string
 }
 
 export interface TaskTitleTippyContentProps {

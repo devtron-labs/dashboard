@@ -186,7 +186,7 @@ export const TaskDetailComponent = () => {
     }
 
     if (isLoadingPluginVersionDetails) {
-        return <Progressing />
+        return <Progressing pageLoader />
     }
 
     return (

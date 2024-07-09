@@ -11,7 +11,7 @@ import { PluginDetailHeaderProps, PluginVersionSelectOptionType } from './types'
 import { PluginVersionSelectOption, pluginVersionSelectStyle } from './ciPipeline.utils'
 import { ReactComponent as ICBookOpen } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as ICHelp } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ICNewVersion } from '../../assets/icons/ic-new-version.svg'
+import { ReactComponent as ICUpdateAnimated } from '../../assets/icons/ic-update-animated.svg'
 
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)
@@ -73,9 +73,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     <>
                         <div className="dc__border-right--n1 h-16" />
                         <div className="flexbox dc__gap-4">
-                            {/* TODO: Sync with product for animation */}
-                            <ICNewVersion className="dc__no-shrink icon-dim-16" />
-
+                            <ICUpdateAnimated className="dc__no-shrink icon-dim-14" />
                             <span className="cg-6 fs-12 fw-6 lh-16">New version available</span>
                         </div>
                     </>
