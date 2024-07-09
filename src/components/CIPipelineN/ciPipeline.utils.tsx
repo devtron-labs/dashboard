@@ -318,7 +318,7 @@ export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelect
 
     return (
         <components.Option {...props}>
-            <div className="flexbox-col dc__gap-4">
+            <div className="flexbox-col">
                 <span className="cn-9 fs-13 fw-4 lh-20">{label}</span>
                 {isLatest && <span className="cn-7 fs-12 fw-4 lh-18">Latest</span>}
             </div>
@@ -330,15 +330,31 @@ export const pluginVersionSelectStyle: StylesConfig<PluginVersionSelectOptionTyp
     ...commonSelectStyles,
     control: (base, state) =>
         state.menuIsOpen
-            ? commonSelectStyles.control(base, state)
+            ? {
+                  ...commonSelectStyles.control(base, state),
+              }
             : {
                   border: 'none',
                   minHeight: '20px',
                   display: 'grid',
-                  gridTemplateColumns: 'auto 20px',
+                  gridTemplateColumns: 'auto 24px',
                   justifyContent: 'flex-start',
-                  gap: '4px',
                   alignItems: 'center',
                   cursor: 'pointer',
               },
+    singleValue: (base, state) => ({
+        ...base,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
+        fontSize: '14px',
+        fontWeight: '600',
+        lineHeight: '24px',
+    }),
+    valueContainer: (base, state) => ({
+        ...commonSelectStyles.valueContainer(base),
+        padding: state.selectProps.menuIsOpen ? '0 8px' : '0',
+    }),
+    option: (base, state) => ({
+        ...commonSelectStyles.option(base, state),
+        padding: '6px 8px',
+    }),
 }

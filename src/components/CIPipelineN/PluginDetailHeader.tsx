@@ -64,7 +64,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                         IndicatorSeparator: null,
                         Option: PluginVersionSelectOption,
                     }}
-                    className="w-100px"
+                    className="dc__mxw-160"
                     inputId="plugin-detail-header__version-select"
                 />
 
