@@ -296,7 +296,7 @@ export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelect
     return (
         <components.Option {...props}>
             <div className="flexbox-col">
-                <span className="cn-9 fs-13 fw-4 lh-20">{label}</span>
+                <span className="cn-9 fs-13 fw-4 lh-20 dc__truncate">{label}</span>
                 {isLatest && <span className="cn-7 fs-12 fw-4 lh-18">Latest</span>}
             </div>
         </components.Option>

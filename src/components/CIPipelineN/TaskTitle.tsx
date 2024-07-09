@@ -26,14 +26,14 @@ const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayNam
                         backgroundColorClass="bcg-5"
                         iconSizeClass="icon-dim-8"
                     />
-                    <span className="cg-5 fs-12 fw-6 lh-16">New version available </span>
+                    <span className="cg-5 fs-12 fw-6 lh-16">New version available</span>
                 </div>
             </>
         )}
     </div>
 )
 
-const TaskTitle = ({ taskDetail, rootClassName }: TaskTitleProps) => {
+const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
     const { pluginDataStore } = useContext(pipelineContext)
     const isInline = taskDetail.stepType === PluginType.INLINE
     const pluginId = taskDetail.pluginRefStepDetail?.pluginId
@@ -80,19 +80,11 @@ const TaskTitle = ({ taskDetail, rootClassName }: TaskTitleProps) => {
         )
     }
 
-    const renderTaskTitle = () => {
-        if (!pluginId) {
-            return <span className="dc__truncate">{taskDetail.name}</span>
-        }
-
-        return <span className="w-100 dc__truncate">{taskDetail.name}</span>
-    }
-
     const renderContent = () => {
         return (
-            <div className={`flex left dc__gap-6 ${rootClassName}`}>
+            <div className="flex left dc__gap-6">
                 {renderPluginIcon()}
-                {renderTaskTitle()}
+                <span className="w-100 dc__truncate">{taskDetail.name}</span>
             </div>
         )
     }

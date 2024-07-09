@@ -768,6 +768,7 @@ export default function CIPipeline({
             globalVariables,
             pluginDataStore,
             handlePluginDataStoreUpdate,
+            pageState,
         }
     }, [
         formData,

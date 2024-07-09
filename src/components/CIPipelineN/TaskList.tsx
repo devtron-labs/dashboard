@@ -329,19 +329,9 @@ export const TaskList = ({
                         >
                             <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
                             <div
-                                className={`flex left dc__gap-6 ${
-                                    formDataErrorObj[activeStageName].steps[index] &&
-                                    !formDataErrorObj[activeStageName].steps[index].isValid
-                                        ? 'w-70'
-                                        : 'w-80'
-                                }`}
+                                className={`flex left dc__gap-6 dc__content-space w-100`}
                             >
-                                <TaskTitle taskDetail={taskDetail} rootClassName={
-                                    formDataErrorObj[activeStageName].steps[index] &&
-                                    !formDataErrorObj[activeStageName].steps[index].isValid
-                                        ? 'w-70'
-                                        : 'w-80'
-                                } />
+                                <TaskTitle taskDetail={taskDetail} />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
