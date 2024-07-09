@@ -16,7 +16,7 @@
 
 import { memo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { URLS } from '../../../config'
+import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelp } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICDown } from '../../../assets/icons/ic-chevron-down.svg'
 import { SUGGESTIONS_INFO_TITLE } from './constants'
