@@ -494,7 +494,6 @@ export default function CIPipeline({
                     setFormData(ciPipelineResponse.result.form)
                     await getInitialPlugins(ciPipelineResponse.result.form)
                     await getEnvironments(0)
-                    setPageState(ViewType.FORM)
                 }
             }
             await getGlobalVariables()

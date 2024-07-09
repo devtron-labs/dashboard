@@ -45,7 +45,7 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    mandatoryPluginsMap,
+    mandatoryPluginsMap = {},
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,

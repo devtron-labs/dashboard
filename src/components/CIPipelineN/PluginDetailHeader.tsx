@@ -13,6 +13,7 @@ import { ReactComponent as ICBookOpen } from '../../assets/icons/ic-book-open.sv
 import { ReactComponent as ICHelp } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as ICNewVersion } from '../../assets/icons/ic-new-version.svg'
 
+// Check for same to same change
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)
 

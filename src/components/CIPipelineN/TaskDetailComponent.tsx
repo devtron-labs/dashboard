@@ -27,13 +27,15 @@ import {
     StyledRadioGroup as RadioGroup,
     Progressing,
     getPluginsDetail,
+    StepType,
+    PluginDataStoreType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
 import PluginDetailHeader from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PluginDetailHeaderProps } from './types'
+import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
 
 export const TaskDetailComponent = () => {
     const {
@@ -50,16 +52,13 @@ export const TaskDetailComponent = () => {
         validateStage,
     } = useContext(pipelineContext)
     const validationRules = new ValidationRules()
-
-    // TODO: Derive from ciPipeline modal
-    const { appId } = useParams<{ appId: string }>()
+    const { appId } = useParams<TaskDetailComponentParamsType>()
 
     const [isLoadingPluginVersionDetails, setIsLoadingPluginVersionDetails] = useState<boolean>(false)
 
+    const selectedStep: StepType = formData[activeStageName].steps[selectedTaskIndex]
     const currentStepTypeVariable =
-        formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE
-            ? 'inlineStepDetail'
-            : 'pluginRefStepDetail'
+        selectedStep.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
 
     const handleNameChange = (e: any): void => {
         const _formData = { ...formData }
@@ -100,46 +99,62 @@ export const TaskDetailComponent = () => {
         }
     }
 
-    const handlePluginVersionChange: PluginDetailHeaderProps['handlePluginVersionChange'] = async (pluginId) => {
+    const getFormDataWithReplacedPluginVersion = (
+        newPluginVersionData: PluginDataStoreType['pluginVersionStore'][0],
+        pluginId: number,
+    ): typeof formData => {
         const _formData = structuredClone(formData)
 
-        // TODO: Map and remove duplication
         const oldPluginInputVariables: VariableType[] =
             _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables
 
-        if (pluginDataStore.pluginVersionStore[pluginId]) {
-            // In inputVariables we are going to traverse, the inputVariables of newPluginVersion and if in older one it is present we would keep its struct else we would remove it
-            const newPluginVersionData = pluginDataStore.pluginVersionStore[pluginId]
-            const newInputVariables = newPluginVersionData.inputVariables.map((inputVariable) => {
-                const oldInputVariable = oldPluginInputVariables.find(
-                    (oldInputVariable) => oldInputVariable.name === inputVariable.name,
-                )
-                if (oldInputVariable) {
-                    return {
-                        ...inputVariable,
-                        value: oldInputVariable.value,
-                        variableType: oldInputVariable.variableType,
-                        refVariableStepIndex: oldInputVariable.refVariableStepIndex,
-                        refVariableName: oldInputVariable.refVariableName,
-                        refVariableStage: oldInputVariable.refVariableStage,
-                        variableStepIndexInPlugin: oldInputVariable.variableStepIndexInPlugin,
-                    }
+        const oldPluginInputVariablesMap = oldPluginInputVariables.reduce(
+            (acc, inputVariable) => {
+                acc[inputVariable.name] = inputVariable
+                return acc
+            },
+            {} as Record<string, VariableType>,
+        )
+
+        // In inputVariables we are going to traverse, the inputVariables of newPluginVersion and
+        // if in older one it is present we would keep its struct else we would remove it
+        const newInputVariables = newPluginVersionData.inputVariables.map((inputVariable) => {
+            const oldInputVariable = oldPluginInputVariablesMap[inputVariable.name]
+            if (oldInputVariable) {
+                return {
+                    ...inputVariable,
+                    value: oldInputVariable.value,
+                    variableType: oldInputVariable.variableType,
+                    refVariableStepIndex: oldInputVariable.refVariableStepIndex,
+                    refVariableName: oldInputVariable.refVariableName,
+                    refVariableStage: oldInputVariable.refVariableStage,
+                    variableStepIndexInPlugin: oldInputVariable.variableStepIndexInPlugin,
                 }
-
-                return inputVariable
-            })
-
-            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
-                ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
-                pluginId,
-                inputVariables: newInputVariables,
-                outputVariables: newPluginVersionData.outputVariables,
             }
 
-            calculateLastStepDetail(false, _formData, activeStageName)
-            validateStage(BuildStageVariable.PreBuild, _formData)
-            validateStage(BuildStageVariable.PostBuild, _formData)
+            return inputVariable
+        })
 
+        _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
+            ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
+            pluginId,
+            inputVariables: newInputVariables,
+            outputVariables: newPluginVersionData.outputVariables,
+        }
+        _formData[activeStageName].steps[selectedTaskIndex].description = newPluginVersionData.description
+        _formData[activeStageName].steps[selectedTaskIndex].name = newPluginVersionData.name
+
+        calculateLastStepDetail(false, _formData, activeStageName)
+        validateStage(BuildStageVariable.PreBuild, _formData)
+        validateStage(BuildStageVariable.PostBuild, _formData)
+
+        return _formData
+    }
+
+    const handlePluginVersionChange: PluginDetailHeaderProps['handlePluginVersionChange'] = async (pluginId) => {
+        if (pluginDataStore.pluginVersionStore[pluginId]) {
+            const newPluginVersionData = pluginDataStore.pluginVersionStore[pluginId]
+            const _formData = getFormDataWithReplacedPluginVersion(newPluginVersionData, pluginId)
             setFormData(_formData)
             return
         }
@@ -159,34 +174,7 @@ export const TaskDetailComponent = () => {
             })
 
             const newPluginVersionData = clonedPluginDataStore.pluginVersionStore[pluginId]
-            const newInputVariables = newPluginVersionData.inputVariables.map((inputVariable) => {
-                const oldInputVariable = oldPluginInputVariables.find(
-                    (oldInputVariable) => oldInputVariable.name === inputVariable.name,
-                )
-                if (oldInputVariable) {
-                    return {
-                        ...inputVariable,
-                        value: oldInputVariable.value,
-                        variableType: oldInputVariable.variableType,
-                        refVariableStepIndex: oldInputVariable.refVariableStepIndex,
-                        refVariableName: oldInputVariable.refVariableName,
-                        refVariableStage: oldInputVariable.refVariableStage,
-                        variableStepIndexInPlugin: oldInputVariable.variableStepIndexInPlugin,
-                    }
-                }
-
-                return inputVariable
-            })
-            _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
-                ..._formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail,
-                pluginId,
-                inputVariables: newInputVariables,
-                outputVariables: newPluginVersionData.outputVariables,
-            }
-
-            calculateLastStepDetail(false, _formData, activeStageName)
-            validateStage(BuildStageVariable.PreBuild, _formData)
-            validateStage(BuildStageVariable.PostBuild, _formData)
+            const _formData = getFormDataWithReplacedPluginVersion(newPluginVersionData, pluginId)
 
             handlePluginDataStoreUpdate(clonedPluginDataStore)
             setFormData(_formData)
@@ -201,13 +189,12 @@ export const TaskDetailComponent = () => {
         return <Progressing />
     }
 
-    // TODO: Add check if not inline only then show plugin version heading
     return (
         <>
-            {/* TODO: Can be const */}
-            {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF && (
+            {selectedStep.stepType === PluginType.PLUGIN_REF && (
                 <PluginDetailHeader handlePluginVersionChange={handlePluginVersionChange} />
             )}
+
             <div className="p-20 dc__overflow-scroll">
                 <div>
                     <div className="row-container mb-12">
@@ -217,7 +204,7 @@ export const TaskDetailComponent = () => {
                             data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
-                            value={formData[activeStageName].steps[selectedTaskIndex].name}
+                            value={selectedStep.name}
                             name="task-name"
                             error={renderTaskNameError()}
                         />
@@ -229,7 +216,7 @@ export const TaskDetailComponent = () => {
                             data-testid="preBuild-task-description-textbox"
                             type="text"
                             onChange={(e) => handleDescriptionChange(e)}
-                            value={formData[activeStageName].steps[selectedTaskIndex].description}
+                            value={selectedStep.description}
                             placeholder="Enter task description"
                             name="task-description"
                         />
@@ -241,13 +228,13 @@ export const TaskDetailComponent = () => {
                             <input
                                 type="checkbox"
                                 className="cursor icon-dim-16"
-                                checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
+                                checked={selectedStep.triggerIfParentStageFail}
                                 onChange={handleTriggerIfParentStageFailChange}
                             />
                         </div>
                     )}
 
-                    {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
+                    {selectedStep.stepType === PluginType.INLINE && (
                         <div className="row-container mb-12">
                             <div className="fw-6 fs-13 lh-32 cn-7 ">Task type</div>
                             <RadioGroup
@@ -279,20 +266,19 @@ export const TaskDetailComponent = () => {
                     )}
                 </div>
                 <hr />
-                {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                {selectedStep.stepType === PluginType.INLINE ? (
                     <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                 ) : (
                     <VariableContainer type={PluginVariableType.INPUT} />
                 )}{' '}
                 <hr />
-                {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.inputVariables?.length >
-                    0 && (
+                {selectedStep[currentStepTypeVariable]?.inputVariables?.length > 0 && (
                     <>
                         <ConditionContainer type={ConditionContainerType.TRIGGER_SKIP} />
                         <hr />
                     </>
                 )}
-                {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
+                {selectedStep.stepType === PluginType.INLINE ? (
                     <>
                         <TaskTypeDetailComponent />
                         {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
@@ -303,9 +289,8 @@ export const TaskDetailComponent = () => {
                 ) : (
                     <VariableContainer type={PluginVariableType.OUTPUT} />
                 )}
-                {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.outputVariables?.length >
-                    0 &&
-                    (formData[activeStageName].steps[selectedTaskIndex].stepType !== PluginType.INLINE ||
+                {selectedStep[currentStepTypeVariable]?.outputVariables?.length > 0 &&
+                    (selectedStep.stepType !== PluginType.INLINE ||
                         formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                             ScriptType.CONTAINERIMAGE) && (
                         <>

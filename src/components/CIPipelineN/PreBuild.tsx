@@ -40,7 +40,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({
-    mandatoryPluginsMap,
+    mandatoryPluginsMap = {},
     isJobView,
     availableTags,
     handleUpdateAvailableTags,
@@ -110,7 +110,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
+            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId].parentPluginId
             isPluginRequired =
                 !isJobView &&
                 isRequired &&
