@@ -50,7 +50,6 @@ export interface DockerArgsItemProps extends DockerArgsCommonType {
 }
 
 export interface PluginDetailHeaderProps {
-    // TODO: Can reuse type
     handlePluginVersionChange: (pluginId: number) => Promise<void>
 }
 

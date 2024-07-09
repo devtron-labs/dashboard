@@ -25,8 +25,8 @@ import {
     APPROVAL_MODAL_TYPE,
     YAMLStringify,
     ACTION_STATE,
-    PluginDetailPayloadType,
     DEFAULT_SECRET_PLACEHOLDER,
+    PluginDetailServiceParamsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -1261,7 +1261,7 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     return className
 }
 
-export const getRequiredPluginIdsFromBuildStage = (stage?: PipelineBuildStageType): PluginDetailPayloadType['pluginId'] => {
+export const getRequiredPluginIdsFromBuildStage = (stage: PipelineBuildStageType): PluginDetailServiceParamsType['pluginIds'] => {
     if (!stage?.steps?.length) {
         return []
     }
