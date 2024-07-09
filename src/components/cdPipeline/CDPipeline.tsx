@@ -33,6 +33,7 @@ import {
     PluginDataStoreType,
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
+    getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -376,31 +377,22 @@ export default function CDPipeline({
     const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
         const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.preBuildStage)
         const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.postBuildStage)
-        const pluginIds = [...preBuildPluginIds, ...postBuildPluginIds]
+        const pluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
         if (pluginIds.length === 0) {
             return
         }
 
-        const clonedPluginDataStore = structuredClone(pluginDataStore)
         const { pluginStore: { parentPluginStore, pluginVersionStore } } = await getPluginsDetail({
             appId: +appId,
-            parentPluginIds: [],
             pluginIds,
+            shouldShowError: false,
         })
 
-        Object.keys(parentPluginStore).forEach((key) => {
-            if (!clonedPluginDataStore.parentPluginStore[key]) {
-                clonedPluginDataStore.parentPluginStore[key] = parentPluginStore[key]
-            }
-        })
-
-        Object.keys(pluginVersionStore).forEach((key) => {
-            if (!clonedPluginDataStore.pluginVersionStore[key]) {
-                clonedPluginDataStore.pluginVersionStore[key] = pluginVersionStore[key]
-            }
-        })
-
-        handlePluginDataStoreUpdate(clonedPluginDataStore)
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(
+            pluginDataStore,
+            parentPluginStore,
+            pluginVersionStore,
+        ))
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
