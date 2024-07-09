@@ -243,10 +243,14 @@ export default function CDPipeline({
     )
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
-        setPluginDataStore((prevPluginDataStore) => ({ ...prevPluginDataStore, ...updatedPluginDataStore }))
+        const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
+
+        setPluginDataStore((prevPluginDataStore) =>
+            getUpdatedPluginStore(prevPluginDataStore, parentPluginStore, pluginVersionStore),
+        )
     }
 
-    const handleUpdateAvailableTags = (tags: string[]) => {
+    const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
         setAvailableTags(tags)
     }
 
@@ -382,17 +386,15 @@ export default function CDPipeline({
             return
         }
 
-        const { pluginStore: { parentPluginStore, pluginVersionStore } } = await getPluginsDetail({
+        const {
+            pluginStore: { parentPluginStore, pluginVersionStore },
+        } = await getPluginsDetail({
             appId: +appId,
             pluginIds,
             shouldShowError: false,
         })
 
-        handlePluginDataStoreUpdate(getUpdatedPluginStore(
-            pluginDataStore,
-            parentPluginStore,
-            pluginVersionStore,
-        ))
+        handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
     }
 
     const getCDPipeline = (form, dockerRegistries): void => {
@@ -1097,6 +1099,8 @@ export default function CDPipeline({
             setReloadNoGitOpsRepoConfiguredModal,
             pluginDataStore,
             handlePluginDataStoreUpdate,
+            availableTags,
+            handleUpdateAvailableTags,
         }
     }, [
         formData,
@@ -1109,6 +1113,7 @@ export default function CDPipeline({
         configMapAndSecrets,
         isVirtualEnvironment,
         pluginDataStore,
+        availableTags,
     ])
 
     const renderCDPipelineBody = () => {
@@ -1147,18 +1152,12 @@ export default function CDPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild
-                                        availableTags={availableTags}
-                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
-                                    />
+                                    <PreBuild />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild
-                                        availableTags={availableTags}
-                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
-                                    />
+                                    <PreBuild />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

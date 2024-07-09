@@ -1261,7 +1261,9 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     return className
 }
 
-export const getRequiredPluginIdsFromBuildStage = (stage: PipelineBuildStageType): PluginDetailServiceParamsType['pluginIds'] => {
+export const getRequiredPluginIdsFromBuildStage = (
+    stage: PipelineBuildStageType,
+): PluginDetailServiceParamsType['pluginIds'] => {
     if (!stage?.steps?.length) {
         return []
     }

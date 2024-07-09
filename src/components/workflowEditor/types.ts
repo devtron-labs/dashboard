@@ -327,6 +327,8 @@ export interface PipelineContext {
     setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
     pluginDataStore: PluginDataStoreType
     handlePluginDataStoreUpdate: (pluginDataStore: PluginDataStoreType) => void
+    availableTags: string[]
+    handleUpdateAvailableTags: (tags: string[]) => void
 }
 
 export interface SourceTypeCardProps {

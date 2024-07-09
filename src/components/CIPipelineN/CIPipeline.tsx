@@ -217,10 +217,14 @@ export default function CIPipeline({
     }, [mandatoryPluginData])
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
-        setPluginDataStore((prevPluginDataStore) => ({ ...prevPluginDataStore, ...updatedPluginDataStore }))
+        const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
+
+        setPluginDataStore((prevPluginDataStore) =>
+            getUpdatedPluginStore(prevPluginDataStore, parentPluginStore, pluginVersionStore),
+        )
     }
 
-    const handleUpdateAvailableTags = (tags: string[]) => {
+    const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
         setAvailableTags(tags)
     }
 
@@ -769,6 +773,8 @@ export default function CIPipeline({
             pluginDataStore,
             handlePluginDataStoreUpdate,
             pageState,
+            availableTags,
+            handleUpdateAvailableTags,
         }
     }, [
         formData,
@@ -780,6 +786,7 @@ export default function CIPipeline({
         pageState,
         globalVariables,
         pluginDataStore,
+        availableTags,
     ])
 
     const renderCIPipelineModalContent = () => {
@@ -825,21 +832,12 @@ export default function CIPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild
-                                        availableTags={availableTags}
-                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
-                                        isJobView={isJobCard}
-                                        mandatoryPluginsMap={mandatoryPluginsMap}
-                                    />
+                                    <PreBuild isJobView={isJobCard} mandatoryPluginsMap={mandatoryPluginsMap} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild
-                                        availableTags={availableTags}
-                                        handleUpdateAvailableTags={handleUpdateAvailableTags}
-                                        mandatoryPluginsMap={mandatoryPluginsMap}
-                                    />
+                                    <PreBuild mandatoryPluginsMap={mandatoryPluginsMap} />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

@@ -403,8 +403,6 @@ export interface BuildType {
 export interface PreBuildType {
     mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     isJobView?: boolean
-    availableTags: string[]
-    handleUpdateAvailableTags: (tags: string[]) => void
 }
 
 export enum CIPipelineBuildType {

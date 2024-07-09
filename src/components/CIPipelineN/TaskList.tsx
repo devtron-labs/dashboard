@@ -328,9 +328,7 @@ export const TaskList = ({
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
-                            <div
-                                className={`flex left dc__gap-6 dc__content-space w-100`}
-                            >
+                            <div className={`flex left dc__gap-6 dc__content-space w-100`}>
                                 <TaskTitle taskDetail={taskDetail} />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>

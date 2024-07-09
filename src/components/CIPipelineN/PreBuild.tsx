@@ -42,8 +42,6 @@ const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({
     mandatoryPluginsMap = {},
     isJobView,
-    availableTags,
-    handleUpdateAvailableTags,
 }) => {
     const {
         formData,
@@ -60,6 +58,8 @@ export const PreBuild: React.FC<PreBuildType> = ({
         pageState,
         pluginDataStore,
         handlePluginDataStoreUpdate,
+        availableTags,
+        handleUpdateAvailableTags,
     } = useContext(pipelineContext)
 
     useEffect(() => {
