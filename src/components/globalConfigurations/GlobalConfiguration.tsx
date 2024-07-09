@@ -27,6 +27,7 @@ import {
     useMainContext,
     PageHeader,
     URLS as CommonURLS,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -46,7 +47,6 @@ import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))

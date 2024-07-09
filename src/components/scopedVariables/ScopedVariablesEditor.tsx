@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
