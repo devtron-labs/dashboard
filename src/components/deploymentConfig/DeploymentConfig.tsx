@@ -300,13 +300,6 @@ export default function DeploymentConfig({
         })
     }
 
-    const toggleYamlMode = (yamlMode: boolean) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.yamlMode,
-            payload: yamlMode,
-        })
-    }
-
     const reload = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
@@ -564,6 +557,16 @@ export default function DeploymentConfig({
         }
     }
 
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (yamlMode && !state.yamlMode && state.guiValues) {
+            editorOnChange(YAMLStringify(state.guiValues))
+        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.yamlMode,
+            payload: yamlMode,
+        })
+    }
+
     const handleReadMeClick = () => {
         if (!state.showReadme && state.unableToParseYaml) {
             return
@@ -656,7 +659,7 @@ export default function DeploymentConfig({
     }
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
-        let valuesOverride = obj
+        let valuesOverride = !state.yamlMode && state.guiValues ? state.guiValues : obj
 
         if (applyPatches && hideLockedKeys) {
             valuesOverride = applyPatches(valuesOverride, removedPatches.current)
