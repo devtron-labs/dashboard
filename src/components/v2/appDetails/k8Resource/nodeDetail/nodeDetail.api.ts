@@ -239,6 +239,7 @@ export const downloadLogs = async (
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     logsURL += `${filter}`
+    // TODO: Use useDownload() Hook to download file/folder
     setDownloadInProgress(true)
     await fetch(logsURL)
         .then(async (response) => {
