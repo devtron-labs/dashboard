@@ -208,6 +208,25 @@ const EnvironmentSelectorComponent = ({
         setWorkloadsModal(true)
     }
 
+    const fluxAppIdentifier = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}|${appDetails.fluxTemplateType === 'Kustomization'}`
+
+    const getAppIdentifierForUrlsModal = () => {
+        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+            return params.appId
+        }
+        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
+            return fluxAppIdentifier
+        }
+        return ''
+    }
+
+    const getAppIdentifierForScaleWorkloadsModal = () => {
+        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
+            return fluxAppIdentifier
+        }
+        return params.appId
+    }
+
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
@@ -400,14 +419,14 @@ const EnvironmentSelectorComponent = ({
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}
-                    isEAMode={appDetails.appType === AppType.EXTERNAL_HELM_CHART}
-                    appId={appDetails.appType === AppType.EXTERNAL_HELM_CHART ? params.appId : ''}
+                    isExternalApp={isExternalApp}
+                    appId={getAppIdentifierForUrlsModal()}
                     envId={params.envId}
                     close={closeUrlInfo}
                 />
             )}
             {showWorkloadsModal && (
-                <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
+                <ScaleWorkloadsModal appId={getAppIdentifierForScaleWorkloadsModal()} onClose={() => setWorkloadsModal(false)} history={history} />
             )}
         </div>
     )

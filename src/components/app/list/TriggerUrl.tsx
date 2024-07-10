@@ -24,7 +24,7 @@ import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
 import { ManifestUrlList, TriggerURL } from './types'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 
-export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) => {
+export const TriggerUrlModal = ({ appId, envId, installedAppId, isExternalApp, close }: TriggerURL) => {
     const [result, setResponse] = useState<ManifestUrlList[]>()
     const [loading, setLoading] = useState(true)
     const data = { Ingress: [], Service: [] }
@@ -46,7 +46,7 @@ export const TriggerUrlModal = ({ appId, envId, installedAppId, isEAMode, close 
 
     async function getManifest() {
         try {
-            if (isEAMode) {
+            if (isExternalApp) {
                 const response = await getManifestUrlInfo(appId)
                 setResponse(response.result)
                 setLoading(false)

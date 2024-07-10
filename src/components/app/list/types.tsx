@@ -163,7 +163,7 @@ export interface TriggerURL {
     envId: string
     installedAppId?: string
     close: () => void
-    isEAMode?: boolean
+    isExternalApp?: boolean
 }
 
 export interface ManifestUrlList {

@@ -170,7 +170,7 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName, appDetails.fluxTemplateType ?? null)
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
