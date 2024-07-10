@@ -40,6 +40,7 @@ import {
     ClearTerminalType,
     EditManifestType,
     DebugModeType,
+    ElementData,
 } from './terminal.type'
 import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
@@ -330,7 +331,7 @@ const manifestEditButtons = ({
     )
 }
 
-const downloadFileFolderButton = (elementData) => {
+const downloadFileFolderButton = (elementData: ElementData): JSX.Element => {
     if (elementData.hideTerminalStripComponent) {
         return null
     }
@@ -354,7 +355,7 @@ const downloadFileFolderButton = (elementData) => {
     )
 }
 
-export default function terminalStripTypeData(elementData) {
+export default function terminalStripTypeData(elementData: ElementData) {
     switch (elementData.type) {
         case TerminalWrapperType.CREATABLE_SELECT:
             return creatableSelectWrapper(elementData)
