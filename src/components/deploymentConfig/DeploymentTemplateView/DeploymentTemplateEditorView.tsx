@@ -104,7 +104,7 @@ const DeploymentTemplateEditorView = ({
             chartRefId: state.selectedChartRefId,
             values: value,
             valuesAndManifestFlag: 1,
-            envId: envId ? +envId : null,
+            ...(envId && { envId: +envId })
         }
         const response = await getDeploymentManisfest(request)
 
