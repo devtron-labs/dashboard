@@ -18,7 +18,7 @@ import React, { useContext, useMemo } from 'react'
 import { InfoColourBar, Progressing, RJSFForm, FormProps, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, Schema, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentConfigContextType, Schema, DeploymentTemplateGUIViewProps, DeploymentConfigStateActionTypes } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -36,16 +36,17 @@ const DeploymentTemplateGUIView = ({
     fetchingValues,
     value,
     readOnly,
-    editorOnChange,
-    /* TODO: either keep lock or remove inputs */
     hideLockedKeys,
     lockedConfigKeysWithLockType,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
         state: { chartConfigLoading, guiSchema, selectedChart },
+        dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+
+    const formData = useMemo(() => YAML.parse(value), [])
 
     const recursiveDeleteKey = (i: number, obj: Schema, parts: string[]) => {
         if (obj.type === 'array' && obj.items?.type === 'object') {
@@ -91,7 +92,10 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        editorOnChange?.(YAML.stringify(data.formData, { sortMapEntries: true }))
+        dispatch({
+            type: DeploymentConfigStateActionTypes.guiValues,
+            payload: data.formData,
+        })
     }
 
     const renderContent = () => {
@@ -122,7 +126,7 @@ const DeploymentTemplateGUIView = ({
             <RJSFForm
                 className="w-650-px"
                 schema={state.guiSchema}
-                formData={YAML.parse(value)}
+                formData={formData}
                 onChange={handleFormChange}
                 uiSchema={UISchema}
                 disabled={readOnly}

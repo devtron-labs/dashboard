@@ -524,7 +524,6 @@ const DeploymentTemplateEditorView = ({
             value={rhs}
             readOnly={readOnly}
             hideLockedKeys={hideLockedKeys}
-            editorOnChange={editorOnChange}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
         />
     )
