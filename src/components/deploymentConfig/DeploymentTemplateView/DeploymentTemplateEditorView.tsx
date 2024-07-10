@@ -16,7 +16,14 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
-import { Progressing, showError, SortingOrder, YAMLStringify, MarkDown, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    showError,
+    SortingOrder,
+    YAMLStringify,
+    MarkDown,
+    CodeEditor,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -97,6 +104,7 @@ const DeploymentTemplateEditorView = ({
             chartRefId: state.selectedChartRefId,
             values: value,
             valuesAndManifestFlag: 1,
+            envId: envId ? +envId : null,
         }
         const response = await getDeploymentManisfest(request)
 
