@@ -18,6 +18,7 @@ import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
@@ -29,7 +30,6 @@ import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-ch
 import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
-import { ReactComponent as ICDownload } from '../../../../../../../assets/icons/ic-arrow-line-down.svg'
 import {
     SelectWrapperType,
     ReactSelectType,
@@ -44,6 +44,8 @@ import {
 } from './terminal.type'
 import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
+
+const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) {
@@ -332,26 +334,18 @@ const manifestEditButtons = ({
 }
 
 const downloadFileFolderButton = (elementData: ElementData): JSX.Element => {
-    if (elementData.hideTerminalStripComponent) {
+    if (elementData.hideTerminalStripComponent || !DownloadFileFolderButton) {
         return null
     }
 
-    const handleClick = () => {
-        elementData.setShowDownloadFileFolderModal(true)
-    }
-
     return (
-        <>
-            <span className="dc__border-right h-16" />
-            <button
-                className="dc__transparent flexbox dc__gap-4 dc__align-items-center px-16"
-                type="button"
-                onClick={handleClick}
-            >
-                <ICDownload className="icon-dim-16 dc__no-shrink" />
-                <span className="fs-12 lh-20 fw-6 cb-5">Download file/folder</span>
-            </button>
-        </>
+        <DownloadFileFolderButton
+            appDetails={elementData.appDetails}
+            containerName={elementData.containerName}
+            isResourceBrowserView={elementData.isResourceBrowserView}
+            isClusterTerminalView={elementData.isClusterTerminalView}
+            clusterViewPodName={elementData.podName}
+        />
     )
 }
 

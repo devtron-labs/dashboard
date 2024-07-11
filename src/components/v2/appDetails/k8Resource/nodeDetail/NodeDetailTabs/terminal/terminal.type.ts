@@ -19,6 +19,7 @@ import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-sele
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { EditModeType, TerminalWrapperType } from './constants'
+import { AppDetails } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface TerminalWrapperComponentType {
     type: TerminalWrapperType
@@ -51,7 +52,11 @@ export interface TerminalWrapperComponentType {
     isEnabled?: boolean
     dataTestId?: string
     classNamePrefix?: string
-    setShowDownloadFileFolderModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isResourceBrowserView?: boolean
+    isClusterTerminalView?: boolean
+    containerName?: string
+    podName?: string
+    appDetails?: AppDetails
 }
 
 export interface TerminalSelectionListDataType {

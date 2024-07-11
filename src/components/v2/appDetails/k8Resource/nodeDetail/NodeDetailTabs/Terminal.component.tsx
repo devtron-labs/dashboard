@@ -43,7 +43,6 @@ import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross
 import { importComponentFromFELibrary } from '../../../../../common'
 
 let clusterTimeOut
-const DownloadFileFolderModal = importComponentFromFELibrary('DownloadFileFolderModal', null, 'function')
 
 const TerminalComponent = ({
     selectedTab,
@@ -77,7 +76,6 @@ const TerminalComponent = ({
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.DISCONNECTED)
     const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
-    const [showDownloadFileFolderModal, setShowDownloadFileFolderModal] = useState<boolean>(false)
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
@@ -253,10 +251,6 @@ const TerminalComponent = ({
         }
     }, [socketConnection])
 
-    const handleCloseDownloadModal = () => {
-        setShowDownloadFileFolderModal(false)
-    }
-
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
     }
@@ -331,7 +325,10 @@ const TerminalComponent = ({
             {
                 type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
                 hideTerminalStripComponent: false,
-                setShowDownloadFileFolderModal,
+                isResourceBrowserView: !!isResourceBrowserView,
+                isClusterTerminalView: false,
+                containerName: selectedContainerName,
+                appDetails: appDetails,
             },
         ],
         tabSwitcher: {
@@ -355,14 +352,6 @@ const TerminalComponent = ({
                 setSocketConnection={setSocketConnection}
                 className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
             />
-            {showDownloadFileFolderModal && (
-                <DownloadFileFolderModal
-                    handleClose={handleCloseDownloadModal}
-                    appDetails={appDetails}
-                    isResourceBrowserView={isResourceBrowserView}
-                    containerName={selectedContainerName}
-                />
-            )}
         </div>
     )
 }
