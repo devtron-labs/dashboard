@@ -50,7 +50,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     }
 
     const { appName, deploymentAppType, clusterId, namespace, appType, appId, fluxTemplateType } = appDetails
-    const { group, version, kind, name } = nodeDetails
+    const { group, version, kind, name, namespace: nodeNamespace } = nodeDetails
 
     const data = {
         appId:
@@ -64,7 +64,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                     Version: version,
                     Kind: kind,
                 },
-                namespace,
+                namespace: nodeNamespace,
                 name,
             },
             forceDelete: forceDelete

@@ -387,13 +387,14 @@ export const generateEphemeralUrl = (
     appName: string,
     appId: number,
     appType: string,
+    fluxTemplateType: string,
     isResourceBrowserView: boolean,
     params: ParamsType,
 ) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName)
+            : getAppId(clusterId, namespace, appName, fluxTemplateType)
 
     const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return post(url, requestData)
@@ -407,13 +408,14 @@ export const deleteEphemeralUrl = (
     appName: string,
     appId: number,
     appType: string,
+    fluxTemplateType: string,
     isResourceBrowserView: boolean,
     params: ParamsType,
 ) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName)
+            : getAppId(clusterId, namespace, appName, fluxTemplateType)
 
     const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
     return trash(url, requestData)

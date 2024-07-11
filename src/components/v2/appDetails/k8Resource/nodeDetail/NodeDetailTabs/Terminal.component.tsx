@@ -106,6 +106,7 @@ const TerminalComponent = ({
                 appDetails.appName,
                 appDetails.appId,
                 appDetails.appType,
+                appDetails.fluxTemplateType,
                 isResourceBrowserView,
                 params,
             )
