@@ -24,6 +24,7 @@ import {
     TippyCustomized,
     TippyTheme,
     YAMLStringify,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -52,7 +53,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { styles, Option } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
