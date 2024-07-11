@@ -49,7 +49,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                         className: 'p-2 dc__no-shrink',
                     }}
                 />
-                <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155">{name}</h4>
+                <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155 m-0">{name}</h4>
 
                 <ReactSelect<PluginVersionSelectOptionType, false>
                     options={options}

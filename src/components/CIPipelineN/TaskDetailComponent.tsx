@@ -37,6 +37,7 @@ import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
+import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 
 export const TaskDetailComponent = () => {
     const {
@@ -145,15 +146,18 @@ export const TaskDetailComponent = () => {
             pluginId,
             inputVariables: newInputVariables,
             outputVariables: newPluginVersionData.outputVariables,
-            // Clearing conditionDetails if inputVariables length is 0
-            ...(!newInputVariables.length && { conditionDetails: []}),
+            conditionDetails: filterInvalidConditionDetails(
+                _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails,
+                newInputVariables.length,
+                newPluginVersionData.outputVariables.length,
+            )
         } as StepType['pluginRefStepDetail']
         _formData[activeStageName].steps[selectedTaskIndex].description = newPluginVersionData.description
         _formData[activeStageName].steps[selectedTaskIndex].name = newPluginVersionData.name
 
         calculateLastStepDetail(false, _formData, activeStageName)
-        validateStage(BuildStageVariable.PreBuild, _formData, undefined , clonedPluginDataStore)
-        validateStage(BuildStageVariable.PostBuild, _formData, undefined , clonedPluginDataStore)
+        validateStage(BuildStageVariable.PreBuild, _formData, undefined, clonedPluginDataStore)
+        validateStage(BuildStageVariable.PostBuild, _formData, undefined, clonedPluginDataStore)
 
         return _formData
     }
@@ -176,7 +180,11 @@ export const TaskDetailComponent = () => {
             })
             const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
             const newPluginVersionData = clonedPluginDataStore.pluginVersionStore[pluginId]
-            const _formData = getFormDataWithReplacedPluginVersion(newPluginVersionData, pluginId, clonedPluginDataStore)
+            const _formData = getFormDataWithReplacedPluginVersion(
+                newPluginVersionData,
+                pluginId,
+                clonedPluginDataStore,
+            )
 
             handlePluginDataStoreUpdate(clonedPluginDataStore)
             setFormData(_formData)
