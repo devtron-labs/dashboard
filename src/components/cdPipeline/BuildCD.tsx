@@ -64,7 +64,7 @@ import PullImageDigestToggle from './PullImageDigestToggle'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const ManualApproval = importComponentFromFELibrary('ManualApproval')
+const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -757,13 +757,6 @@ export default function BuildCD({
         )
     }
 
-    const renderManualEnableContent = () => {
-        <div className="flex left mt-12">
-        <InfoIcon className="manual-approval-info-icon icon-dim-20 mr-8" /> All users having ‘Approver’
-        permission for this application and environment can approve.
-    </div>
-    }
-
     const renderBuild = () => {
         return (
             <>
@@ -777,16 +770,8 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
-                {isAdvanced && ManualApproval && (
-                    <>
-                        <div className="divider mt-12 mb-12" />
-                        <ManualApproval
-                            requiredApprovals={formData.requiredApprovals}
-                            currentRequiredCount={formData.userApprovalConfig?.requiredCount}
-                            onChangeRequiredApprovals={onChangeRequiredApprovals}
-                            renderManualEnableContent={renderManualEnableContent}
-                        />
-                    </>
+                {isAdvanced && getBuildCDManualApproval && (
+                   getBuildCDManualApproval(formData.requiredApprovals, formData.userApprovalConfig?.requiredCount, onChangeRequiredApprovals)
                 )}
                 {isAdvanced && (
                     <>
