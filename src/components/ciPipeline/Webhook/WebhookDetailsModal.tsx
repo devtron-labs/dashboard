@@ -25,6 +25,7 @@ import {
     CustomInput,
     ClipboardButton,
     ButtonWithLoader,
+    CodeEditor
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -56,7 +57,6 @@ import {
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
 import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
 import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'

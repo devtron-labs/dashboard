@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useKeyDown } from '../common'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import checkGreen from '../../assets/icons/misc/checkGreen.svg'
 import arrowSquareout from '../../assets/icons/misc/arrowSquareOut.svg'
 import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import './deploymentConfig.scss'
 import { MODES } from '../../config/constants'
+import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 
 interface Readme {
     readme: any

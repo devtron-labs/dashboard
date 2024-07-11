@@ -914,7 +914,7 @@ export const SwitchItemValues = {
     Configuration: 'configuration',
 }
 
-export const DEFAULT_CONTAINER_NAME = {
-    DEBUGGER: 'debugger',
-    DEVTRON_DEBUG_TERMINAL: 'devtron-debug-terminal'
+export enum DEFAULT_CONTAINER_NAME {
+    DEBUGGER = 'debugger',
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
 }
