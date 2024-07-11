@@ -310,7 +310,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     if (apiError) {
-        return <ErrorScreenManager code={apiError?.code} reload={getAppMetaInfoRes} />
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
