@@ -94,13 +94,6 @@ export default function DeploymentTemplateOverrideForm({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
     }
 
-    const toggleYamlMode = (yamlMode: boolean) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.yamlMode,
-            payload: yamlMode,
-        })
-    }
-
     const setLoadingManifestOverride = (value: boolean) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loadingManifestOverride,
@@ -117,7 +110,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
-        let valuesOverride = obj || state.duplicate
+        let valuesOverride = (!state.yamlMode && state.guiValues ? state.guiValues : obj) || state.duplicate
 
         if (hideLockedKeys && valuesOverride === obj) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
@@ -320,6 +313,16 @@ export default function DeploymentTemplateOverrideForm({
                 payload: true,
             })
         }
+    }
+
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (!state.yamlMode && yamlMode && state.guiValues) {
+            editorOnChange(YAMLStringify(state.guiValues))
+        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.yamlMode,
+            payload: yamlMode,
+        })
     }
 
     const handleReadMeClick = () => {

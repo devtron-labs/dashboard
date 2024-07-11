@@ -338,6 +338,7 @@ export interface DeploymentConfigStateType {
     template: string
     schema: any
     guiSchema: string
+    guiValues: object
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -437,6 +438,7 @@ export enum DeploymentConfigStateActionTypes {
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
     guiSchema = 'guiSchema',
+    guiValues = 'guiValues',
 }
 
 export interface DeploymentConfigStateAction {
@@ -465,7 +467,7 @@ export interface SaveConfirmationDialogProps {
 export interface DeploymentTemplateGUIViewProps
     extends Pick<
         DeploymentTemplateEditorViewProps,
-        'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys'
+        'lockedConfigKeysWithLockType' | 'hideLockedKeys'
     > {
     fetchingValues?: boolean
     value: string

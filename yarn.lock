@@ -997,6 +997,7 @@
   version "0.1.8-beta-2"
   resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.8-beta-2.tgz#e0405add75262837c3b30f751d7dcb09b55c94b3"
   integrity sha512-6Wdgm8hLhQNwpaYP1G5azRNFRmnXOOLyPdLowHh4R9rK5Xp+77rJw6v3A43zghP421e+Kq7seCPlxfKUKsMvDQ==
+
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"

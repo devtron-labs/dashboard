@@ -41,7 +41,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
     if (removeLockedKeysFromYaml && reapplyRemovedLockedKeysToYaml) {
         if (hideLockedKeys) {
             const { document, addOperations } = removeLockedKeysFromYaml(value, lockedConfigKeysWithLockType.config)
-            value = YAML.stringify(document, { sortMapEntries: true, simpleKeys: true })
+            value = YAML.stringify(document, { simpleKeys: true })
             if (addOperations.length) {
                 addOperationsRef.current = addOperations
             }
