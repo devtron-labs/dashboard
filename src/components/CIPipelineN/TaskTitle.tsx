@@ -71,7 +71,7 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
 
                 <div className="icon-dim-8 dc__transparent dc__no-shrink dc__position-abs dc__bottom-0 dc__right-0 flex">
                     <ActivityIndicator
-                        rootClassName="dc__no-shrink en-1"
+                        rootClassName="dc__no-shrink en-1 bw-1_5"
                         backgroundColorClass="bcg-5"
                         iconSizeClass="icon-dim-8"
                     />
