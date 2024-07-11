@@ -57,8 +57,10 @@ import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
+
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -755,6 +757,13 @@ export default function BuildCD({
         )
     }
 
+    const renderManualEnableContent = () => {
+        <div className="flex left mt-12">
+        <InfoIcon className="manual-approval-info-icon icon-dim-20 mr-8" /> All users having ‘Approver’
+        permission for this application and environment can approve.
+    </div>
+    }
+
     const renderBuild = () => {
         return (
             <>
@@ -775,6 +784,7 @@ export default function BuildCD({
                             requiredApprovals={formData.requiredApprovals}
                             currentRequiredCount={formData.userApprovalConfig?.requiredCount}
                             onChangeRequiredApprovals={onChangeRequiredApprovals}
+                            renderManualEnableContent={renderManualEnableContent}
                         />
                     </>
                 )}
