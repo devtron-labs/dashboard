@@ -63,7 +63,6 @@ export default function DeploymentTemplateOverrideForm({
     setManifestDataRHS,
     setManifestDataLHS,
     convertVariablesOverride,
-    isSuperAdmin,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -279,6 +278,7 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const changeEditorMode = (): void => {
+        hideLockKeysToggled.current = true
         toggleYamlMode(!state.yamlMode)
     }
 
@@ -366,8 +366,8 @@ export default function DeploymentTemplateOverrideForm({
             case 1:
             case 3:
                 setIsValuesOverride(true)
-                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
+                    toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
                 }
                 break
@@ -555,6 +555,11 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
+                    uneditedDocument={getCodeEditorValueForReadOnly()}
+                    editedDocument={reapplyRemovedLockedKeysToYaml(
+                        YAML.parse(state.tempFormData),
+                        removedPatches.current,
+                    )}
                 />
             )
         }
@@ -585,6 +590,8 @@ export default function DeploymentTemplateOverrideForm({
                     !isValuesOverride ||
                     convertVariablesOverride
                 }
+                uneditedDocument={getCodeEditorValueForReadOnly()}
+                editedDocument={reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current)}
                 globalChartRefId={state.data.globalChartRefId}
                 handleOverride={handleOverride}
                 isValues={isValuesOverride}
@@ -646,7 +653,6 @@ export default function DeploymentTemplateOverrideForm({
                 convertVariables={convertVariablesOverride}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
-                isSuperAdmin={isSuperAdmin}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 handleSaveChanges={handleSaveChanges}

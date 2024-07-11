@@ -596,6 +596,9 @@ export default function DeploymentConfig({
     }
 
     const changeEditorMode = (): void => {
+        // NOTE: this ref decides if hide lock keys logic applies
+        // In this case we want it to do it's calculation when we switch toggles
+        hideLockKeysToggled.current = true
         toggleYamlMode(!state.yamlMode)
     }
 
@@ -617,8 +620,8 @@ export default function DeploymentConfig({
             case 1:
             case 3:
                 setIsValues(true)
-                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
+                    toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
                 }
                 break
@@ -763,6 +766,8 @@ export default function DeploymentConfig({
             return (
                 <DeploymentTemplateReadOnlyEditorView
                     value={state.publishedState?.tempFormData}
+                    uneditedDocument={state.publishedState?.tempFormData}
+                    editedDocument={state.publishedState?.tempFormData}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
                 />
@@ -794,6 +799,8 @@ export default function DeploymentConfig({
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
+                uneditedDocument={state.data}
+                editedDocument={state.tempFormData}
             />
         )
     }
@@ -834,7 +841,6 @@ export default function DeploymentConfig({
                 reload={reload}
                 isValues={state.isValues}
                 convertVariables={state.convertVariables}
-                isSuperAdmin={isSuperAdmin}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 showLockedDiffForApproval={showLockedDiffForApproval}

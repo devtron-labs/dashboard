@@ -15,18 +15,27 @@
  */
 
 import React, { useContext, useMemo } from 'react'
-import { InfoColourBar, Progressing, RJSFForm, FormProps, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
+import {
+    InfoColourBar,
+    Progressing,
+    RJSFForm,
+    FormProps,
+    GenericEmptyState,
+    joinObjects,
+    flatMapOfJSONPaths,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, Schema, DeploymentTemplateGUIViewProps, DeploymentConfigStateActionTypes } from '../types'
+import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps, DeploymentConfigStateActionTypes } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
 import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { getRenderActionButton } from '../utils'
+import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
 
-const UISchema = {
+const baseUISchema = {
     'ui:submitButtonOptions': {
         norender: true,
     },
@@ -38,6 +47,8 @@ const DeploymentTemplateGUIView = ({
     readOnly,
     hideLockedKeys,
     lockedConfigKeysWithLockType,
+    uneditedDocument,
+    editedDocument,
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
@@ -48,38 +59,38 @@ const DeploymentTemplateGUIView = ({
 
     const formData = useMemo(() => YAML.parse(value), [])
 
-    const recursiveDeleteKey = (i: number, obj: Schema, parts: string[]) => {
-        if (obj.type === 'array' && obj.items?.type === 'object') {
-            recursiveDeleteKey(i, obj.items, parts)
-            return
-        }
-        if (obj.type !== 'object' || i > parts.length - 1) {
-            return
-        }
-        const key = parts[i].split(/\[|\]/, 2)[0]
-        if (i === parts.length - 1) {
-            if (key in obj.properties) {
-                delete obj.properties[key]
-            }
-        }
-        if (key in obj.properties) {
-            recursiveDeleteKey(i + 1, obj.properties[key], parts)
-        }
-    }
-
     const state = useMemo(() => {
         try {
             const parsedGUISchema = JSON.parse(guiSchema)
-            if (hideLockedKeys) {
-                lockedConfigKeysWithLockType.config.forEach((key) =>
-                    recursiveDeleteKey(0, parsedGUISchema, key.split('.')),
-                )
-            }
             if (!Object.keys(parsedGUISchema).length) {
                 throw new Error()
             }
+            if (!hideLockedKeys) {
+                return {
+                    guiSchema: parsedGUISchema,
+                    uiSchema: baseUISchema,
+                }
+            }
+            // Note: if the locked keys are not resolved from the following json(s)
+            // then the logic to hide them will not work
+            const parsedUneditedDocument = YAML.parse(uneditedDocument)
+            const parsedEditedDocument = YAML.parse(editedDocument)
+            // NOTE: suppose we lock ingress.hosts[1].host, and the locked key's path is
+            // resolved from either of the above json(s) then host field from all array entries
+            // will be hidden not just the host field at index 1 (limitation)
             return {
                 guiSchema: parsedGUISchema,
+                uiSchema: joinObjects([
+                    baseUISchema,
+                    ...lockedConfigKeysWithLockType.config.flatMap((key) => {
+                        // NOTE: we need to use the original document to evaluate the actual paths
+                        return flatMapOfJSONPaths([key], parsedUneditedDocument)
+                            .concat(flatMapOfJSONPaths([key], parsedEditedDocument))
+                            .map((path) => {
+                                return makeObjectFromJsonPathArray(0, JSONPath.toPathArray(path))
+                            })
+                    }),
+                ]),
             }
         } catch {
             return {
@@ -128,11 +139,11 @@ const DeploymentTemplateGUIView = ({
                 schema={state.guiSchema}
                 formData={formData}
                 onChange={handleFormChange}
-                uiSchema={UISchema}
-                disabled={readOnly}
+                uiSchema={state.uiSchema}
                 experimental_defaultFormStateBehavior={{
                     emptyObjectFields: 'skipDefaults',
                 }}
+                disabled={readOnly}
                 liveValidate
             />
         )

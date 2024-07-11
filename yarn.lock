@@ -993,14 +993,16 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.7.tgz#a76ffc307e6df16277ecbdc0c3209c2bf9881eac"
-  integrity sha512-EM/VUIlNpYgtiWTmKab6eHZanAKUSRd1MSo0a4wdlVU7ZIAuWAx+DIyP68vI/cEzXGnXEwRIpueIopbSY4+ZlA==
+"@devtron-labs/devtron-fe-common-lib@0.1.6-beta-1":
+  version "0.1.6-beta-1"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.6-beta-1.tgz#e31decf061256170547b3f4a68d248f79d5997b7"
+  integrity sha512-Tbs6qQcav/N8TR0XFDSN4n+Xjbpq/DIxKCCADGcPwOkFJj0Y8eu4wtyw6gXnPMgsuO0PudKoGSGfLMypPp2NfA==
+
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
+    jsonpath-plus "^9.0.0"
     react-dates "^21.8.0"
     react-monaco-editor "^0.54.0"
     sass "^1.69.7"
@@ -1371,6 +1373,16 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@jsep-plugin/assignment@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@jsep-plugin/assignment/-/assignment-1.2.1.tgz"
+  integrity sha512-gaHqbubTi29aZpVbBlECRpmdia+L5/lh2BwtIJTmtxdbecEyyX/ejAOg7eQDGNvGOUmPY7Z2Yxdy9ioyH/VJeA==
+
+"@jsep-plugin/regex@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@jsep-plugin/regex/-/regex-1.0.3.tgz"
+  integrity sha512-XfZgry4DwEZvSFtS/6Y+R48D7qJYJK6R9/yJFyUFHCIUMEEHuJ4X95TDgJp5QkmzfLYvapMPzskV5HpIDrREug==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2418,7 +2430,7 @@ ajv@^6.12.4, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^8.0.0, ajv@^8.12.0, ajv@^8.6.0:
+ajv@^8.0.0, ajv@^8.12.0:
   version "8.16.0"
   resolved "https://registry.npmjs.org/ajv/-/ajv-8.16.0.tgz"
   integrity sha512-F0twR8U1ZU67JIEtekUcLkXkoO5mMMmgGD8sK/xUFzJ805jxHQl92hImFAqqXMyMYjSPOyUPAwHYhB72g5sTXw==
@@ -2427,6 +2439,16 @@ ajv@^8.0.0, ajv@^8.12.0, ajv@^8.6.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.4.1"
+
+ajv@^8.6.0:
+  version "8.15.0"
+  resolved "https://registry.npmjs.org/ajv/-/ajv-8.15.0.tgz"
+  integrity sha512-15BTtQUOsSrmHCy+B4VnAiJAJxJ8IFgu6fcjFQF3jQYZ78nLSQthlFg4ehp+NLIyfvFgOlxNsjKIEhydtFPVHQ==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    fast-uri "^2.3.0"
+    json-schema-traverse "^1.0.0"
+    require-from-string "^2.0.2"
 
 ansi-escapes@^4.3.0:
   version "4.3.2"
@@ -3934,6 +3956,11 @@ fast-levenshtein@^2.0.6:
   resolved "https://registry.npmjs.org/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
 
+fast-uri@^2.3.0:
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/fast-uri/-/fast-uri-2.4.0.tgz"
+  integrity sha512-ypuAmmMKInk5q7XcepxlnUWDLWv4GFtaJqAzWKqn62IpQ3pejtr5dTVbt3vwqVaMKmkNR55sTT+CqUKIaT21BA==
+
 fastq@^1.6.0:
   version "1.17.1"
   resolved "https://registry.npmjs.org/fastq/-/fastq-1.17.1.tgz"
@@ -4771,6 +4798,11 @@ jsdom-worker@^0.2.1:
     mitt "^1.1.3"
     uuid-v4 "^0.1.0"
 
+jsep@^1.3.8:
+  version "1.3.8"
+  resolved "https://registry.npmjs.org/jsep/-/jsep-1.3.8.tgz"
+  integrity sha512-qofGylTGgYj9gZFsHuyWAN4jr35eJ66qJCK4eKDnldohuUoQFbU3iZn2zjvEbd9wOAhP9Wx5DsAAduTyE1PSWQ==
+
 jsesc@^2.5.1:
   version "2.5.2"
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz"
@@ -4852,6 +4884,15 @@ jsonfile@^6.0.1:
     universalify "^2.0.0"
   optionalDependencies:
     graceful-fs "^4.1.6"
+
+jsonpath-plus@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-9.0.0.tgz"
+  integrity sha512-bqE77VIDStrOTV/czspZhTn+o27Xx9ZJRGVkdVShEtPoqsIx5yALv3lWVU6y+PqYvWPJNWE7ORCQheQkEe0DDA==
+  dependencies:
+    "@jsep-plugin/assignment" "^1.2.1"
+    "@jsep-plugin/regex" "^1.0.3"
+    jsep "^1.3.8"
 
 jsonpointer@^5.0.0, jsonpointer@^5.0.1:
   version "5.0.1"

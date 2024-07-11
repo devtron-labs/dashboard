@@ -10,7 +10,11 @@
                     "items": {
                         "type": "string"
                     },
-                    "title": "Value"
+                    "title": "Value",
+                    "hidden": {
+                        "condition": false,
+                        "match": "enabled"
+                    }
                 },
                 "enabled": {
                     "type": "boolean",
@@ -27,7 +31,11 @@
                     "items": {
                         "type": "string"
                     },
-                    "title": "Value"
+                    "title": "Value",
+                    "hidden": {
+                        "condition": false,
+                        "match": "enabled"
+                    }
                 },
                 "enabled": {
                     "type": "boolean",
@@ -139,17 +147,6 @@
                         "type": "string",
                         "pattern": "NoSchedule|PreferNoSchedule|NoExecute"
                     }
-                }
-            }
-        },
-        "serviceAccount": {
-            "type": "object",
-            "properties": {
-                "create": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
                 }
             }
         }
