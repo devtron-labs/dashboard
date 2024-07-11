@@ -309,10 +309,13 @@ export const pluginVersionSelectStyle: StylesConfig<PluginVersionSelectOptionTyp
         state.menuIsOpen
             ? {
                   ...commonSelectStyles.control(base, state),
+                  minHeight: '20px',
+                  height: '28px',
               }
             : {
                   border: 'none',
                   minHeight: '20px',
+                  height: '28px',
                   display: 'grid',
                   gridTemplateColumns: 'auto 24px',
                   justifyContent: 'flex-start',

@@ -395,7 +395,12 @@ export default function CIPipeline({
         return { index: stepsLength + 1, calculatedStageVariables: _inputVariablesListPerTask }
     }
 
-    const validateStage = (stageName: string, _formData: PipelineFormType, formDataErrorObject?): void => {
+    const validateStage = (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?: PipelineFormDataErrorType,
+        clonedPluginDataStore: typeof pluginDataStore = pluginDataStore,
+    ): void => {
         const _formDataErrorObj = {
             ...(formDataErrorObject ?? formDataErrorObj),
             name: validationRules.name(_formData.name),
@@ -432,7 +437,7 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(validatePlugins(formData, mandatoryPluginData.pluginData, pluginDataStore))
+                setMandatoryPluginData(validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore))
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }

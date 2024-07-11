@@ -294,7 +294,7 @@ export interface PipelineContext {
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
+    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any, clonedPluginDataStore?: PluginDataStoreType) => void
     isCdPipeline?: boolean
     configMapAndSecrets?: {
         label: string

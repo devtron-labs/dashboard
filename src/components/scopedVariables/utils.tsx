@@ -69,7 +69,6 @@ export const validator: ValidatorType = ({ data, type }) => {
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
-                    debugger
                     const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,

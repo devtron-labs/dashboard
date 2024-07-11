@@ -394,3 +394,34 @@ export const handleDeleteCDNodePipeline = (
 ) => {
     handleDeletePipeline(DELETE_ACTION.DELETE, deleteCD, deploymentAppType)
 }
+
+export const filterInvalidConditionDetails = (
+    conditionDetails: StepType['pluginRefStepDetail']['conditionDetails'],
+    inputVariableCount: number,
+    outputVariableCount: number,
+): StepType['pluginRefStepDetail']['conditionDetails'] => {
+    if (!inputVariableCount && !outputVariableCount) {
+        return []
+    }
+
+    return (
+        conditionDetails?.filter((conditionDetail) => {
+            const isInputVariableCondition =
+                conditionDetail.conditionType === ConditionType.TRIGGER ||
+                conditionDetail.conditionType === ConditionType.SKIP
+            const isOutputVariableCondition =
+                conditionDetail.conditionType === ConditionType.PASS ||
+                conditionDetail.conditionType === ConditionType.FAIL
+
+            if (isInputVariableCondition && !inputVariableCount) {
+                return false
+            }
+
+            if (isOutputVariableCondition && !outputVariableCount) {
+                return false
+            }
+
+            return true
+        }) || []
+    )
+}
