@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import ReactSelect from 'react-select'
-import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { ScriptType, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { yamlEditorSelectStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 
