@@ -173,5 +173,3 @@ export interface DebugModeType {
     onToggle: (value: boolean) => void
     isEnabled: boolean
 }
-
-export type ElementData = any

@@ -328,7 +328,7 @@ const TerminalComponent = ({
                 isResourceBrowserView: !!isResourceBrowserView,
                 isClusterTerminalView: false,
                 containerName: selectedContainerName,
-                appDetails: appDetails,
+                appDetails,
             },
         ],
         tabSwitcher: {
