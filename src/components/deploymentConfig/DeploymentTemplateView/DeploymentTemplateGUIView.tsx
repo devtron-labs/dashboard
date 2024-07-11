@@ -57,7 +57,7 @@ const DeploymentTemplateGUIView = ({
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
 
-    const formData = useMemo(() => YAML.parse(value), [])
+    const formData = useMemo(() => YAML.parse(value), [value])
 
     const state = useMemo(() => {
         try {
