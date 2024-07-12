@@ -126,7 +126,7 @@ export default function DeploymentTemplateOverrideForm({
 
         if (state.showLockedTemplateDiff) {
             const edited = YAML.parse(state.tempFormData)
-            const unedited = YAML.parse(state.data)
+            const unedited = YAML.parse(getCodeEditorValueForReadOnly(true))
             const documentsNPatches = {
                 edited,
                 unedited,
@@ -435,7 +435,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToDeleteOverrideDraft = () => prepareDataToSave(true)
 
-    const getCodeEditorValueForReadOnly = () => {
+    const getCodeEditorValueForReadOnly = (fetchUnEdited?: boolean) => {
         if (state.publishedState) {
             if (
                 state.publishedState.isOverride &&
@@ -444,7 +444,7 @@ export default function DeploymentTemplateOverrideForm({
                 return YAMLStringify(state.publishedState.environmentConfig.envOverrideValues)
             }
         } else if (
-            state.selectedCompareOption?.id === Number(envId) &&
+            (state.selectedCompareOption?.id === Number(envId) || fetchUnEdited) &&
             state.data.environmentConfig.envOverrideValues
         ) {
             return YAMLStringify(state.data.environmentConfig.envOverrideValues)
@@ -487,7 +487,9 @@ export default function DeploymentTemplateOverrideForm({
         } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
             if (hideLockedKeys) {
-                codeEditorValue = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current))
+                codeEditorValue = YAMLStringify(
+                    reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
+                )
             }
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -497,7 +499,7 @@ export default function DeploymentTemplateOverrideForm({
         return manifestEditorValue
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean, getUnedited = false) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = getCodeEditorValueForReadOnly()
@@ -506,7 +508,7 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData && !getUnedited) {
+        } else if (state.tempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -607,7 +609,7 @@ export default function DeploymentTemplateOverrideForm({
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
-                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} />
+                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} hideObjectVariables={false} />
                 </div>
             )}
 
@@ -731,8 +733,11 @@ export default function DeploymentTemplateOverrideForm({
                     showLockedDiffForApproval={showLockedDiffForApproval}
                     onSave={handleSubmit}
                     documents={{
-                        edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
-                        unedited: YAML.parse(getCodeEditorValue(false, true)),
+                        edited: reapplyRemovedLockedKeysToYaml(
+                            YAML.parse(getCodeEditorValue(false)),
+                            removedPatches.current,
+                        ),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly(true)),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}

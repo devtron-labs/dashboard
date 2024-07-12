@@ -106,12 +106,8 @@ export default () => {
 
             // Handling of strings and numbers in string type.
             if (typeof valueA === 'string' && typeof valueB === 'string') {
-                if (!Number.isNaN(Number(valueA)) || !Number.isNaN(Number(valueB))) {
-                    return numberComparatorBySortOrder(
-                        !Number.isNaN(Number(valueA)) ? Number(valueA) : 0,
-                        !Number.isNaN(Number(valueB)) ? Number(valueB) : 0,
-                        sortOrder,
-                    )
+                if (!Number.isNaN(Number(valueA)) && !Number.isNaN(Number(valueB))) {
+                    return numberComparatorBySortOrder(Number(valueA), Number(valueB), sortOrder)
                 }
                 return stringComparatorBySortOrder(valueA, valueB, sortOrder)
             }

@@ -16,11 +16,10 @@
 
 import React, { Component } from 'react'
 import yamlJsParser from 'yaml'
-import { showError, Progressing, ErrorScreenManager, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, PageHeader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import {
     BulkEditsProps,
     BulkEditsState,

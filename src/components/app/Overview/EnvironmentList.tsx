@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
     AppStatus,
@@ -35,15 +35,14 @@ import {
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
 
-import { ReactComponent as DockerIcon } from '../../../assets/icons/git/docker.svg'
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as ArrowLineDown } from '../../../assets/icons/ic-arrow-line-down.svg'
+import { ReactComponent as ArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as Database } from '../../../assets/icons/ic-env.svg'
 import { ReactComponent as VirtualEnvIcon } from '../../../assets/icons/ic-environment-temp.svg'
 import { ModuleNameMap, URLS } from '../../../config'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { getAppOtherEnvironment } from '../../../services/service'
+import { getAppOtherEnvironment } from '@Services/service'
 import { AppEnvironment } from '../../../services/service.types'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'

@@ -15,7 +15,6 @@
  */
 
 /* eslint-disable react/prop-types */
-import React from 'react'
 import ReactSelect from 'react-select'
 import moment from 'moment'
 import { InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'

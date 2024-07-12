@@ -15,7 +15,6 @@
  */
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import BulkSelectionClearConfirmationModal from './BulkSelectionClearConfirmationModal'
 import BulkDeleteModal from './BulkDeleteModal'
 import { BulkSelectionModalProps } from './types'

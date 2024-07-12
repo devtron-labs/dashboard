@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useRef, useState, useEffect } from 'react'
+import { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 // @TODO: Patternfly styles files need to be removed in future

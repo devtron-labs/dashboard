@@ -336,7 +336,12 @@ export default function DeploymentConfig({
                     },
                     guiSchema,
                 },
-            } = await getDeploymentTemplate(+appId, +state.selectedChart.id, baseDeploymentAbortController.signal, state.selectedChart.name)
+            } = await getDeploymentTemplate(
+                +appId,
+                +state.selectedChart.id,
+                baseDeploymentAbortController.signal,
+                state.selectedChart.name,
+            )
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
@@ -346,6 +351,7 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
+                ...(guiSchema === '{}' ? { yamlMode: true } : {}),
                 // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
             }
@@ -357,6 +363,9 @@ export default function DeploymentConfig({
                     ...templateData,
                 }
                 payload['guiSchema'] = guiSchema
+                if (templateData.yamlMode) {
+                    payload['yamlMode'] = templateData.yamlMode
+                }
 
                 payload['readme'] = readme
                 payload['schema'] = schema
@@ -666,7 +675,7 @@ export default function DeploymentConfig({
             const documentsNPatches = {
                 edited,
                 unedited,
-                patches: jsonpatchCompare(unedited, edited)
+                patches: jsonpatchCompare(unedited, edited),
             }
             if (!lockedConfigKeysWithLockType.allowed) {
                 // NOTE: need to send only the changed parts from the yaml as json
@@ -737,9 +746,7 @@ export default function DeploymentConfig({
             result = await fetchManifestData(state.draftValues)
         } else if (hideLockedKeys) {
             const parsed = YAML.parse(state.tempFormData)
-            result = fetchManifestData(
-                YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)),
-            )
+            result = fetchManifestData(YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)))
         } else {
             result = await fetchManifestData(state.tempFormData)
         }
@@ -796,7 +803,7 @@ export default function DeploymentConfig({
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
-                    <FloatingVariablesSuggestions zIndex={100} appId={appId} />
+                    <FloatingVariablesSuggestions zIndex={100} appId={appId} hideObjectVariables={false} />
                 </div>
             )}
 
@@ -900,8 +907,11 @@ export default function DeploymentConfig({
                             onSave={save}
                             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                             documents={{
-                                edited: reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
-                                unedited: YAML.parse(state.data),
+                                edited: reapplyRemovedLockedKeysToYaml(
+                                    YAML.parse(isCompareAndApprovalState ? state.draftValues : state.tempFormData),
+                                    removedPatches.current,
+                                ),
+                                unedited: YAML.parse(state.publishedState?.tempFormData ?? state.data),
                             }}
                             disableSaveEligibleChanges={disableSaveEligibleChanges}
                             setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './apiToken.scss'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as Search } from '../../../../assets/icons/ic-search.svg'
+import emptyGeneratToken from '@Images/ic-empty-generate-token.png'
+import { EMPTY_STATE_STATUS } from '@Config/constantMessaging'
+import { ReactComponent as Search } from '@Icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { getGeneratedAPITokenList } from './service'
-import emptyGeneratToken from '../../../../assets/img/ic-empty-generate-token.png'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { TokenListType, TokenResponseType } from './apiToken.type'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApiTokens = () => {
     const { path } = useRouteMatch()

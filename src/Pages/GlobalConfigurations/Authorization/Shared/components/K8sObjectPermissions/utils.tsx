@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, ACTION_LABEL, EntityTypes, authorizationSelectStyles } from '../../../constants'

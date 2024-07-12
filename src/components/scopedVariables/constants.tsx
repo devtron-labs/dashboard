@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { FileReaderStatus } from '../common/hooks/types'
 
-export const DEFAULT_TITLE = 'Scoped variables'
+export const DEFAULT_TITLE = 'Scoped Variables'
 export const DEFAULT_DESCRIPTION =
     'Scoped variable is a key-value pair. Value can be scoped and can be used dynamically across devtron.'
 export const UPLOAD_DESCRIPTION_L1 = 'Upload file to add'
@@ -27,6 +28,11 @@ export const DOWNLOAD_TEMPLATE_NAME = 'variables-template.yaml'
 export const DOWNLOAD_FILES_AS = 'application/x-yaml'
 export const DROPDOWN_ITEMS = ['Download saved file', 'Download template']
 export const TABLE_LIST_HEADINGS = ['VARIABLE NAME', 'DESCRIPTION', 'VALUE IS']
+export const DESCRIPTOR_TABS = {
+    [ScopedVariablesFileViewType.ENVIRONMENT_LIST]: 'Environment',
+    [ScopedVariablesFileViewType.SAVED]: 'Variables',
+    [ScopedVariablesFileViewType.YAML]: 'YAML',
+}
 
 // File Reader error messages
 export const PARSE_ERROR_STATUS = {
