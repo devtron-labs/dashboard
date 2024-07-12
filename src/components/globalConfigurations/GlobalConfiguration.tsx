@@ -46,7 +46,6 @@ import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -668,7 +667,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {
@@ -700,7 +699,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
