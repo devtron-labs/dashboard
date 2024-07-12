@@ -181,7 +181,6 @@ const DeploymentTemplateEditorView = ({
                 ? !state.fetchedValues[state.selectedCompareOption.id]
                 : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache
             !state.chartConfigLoading &&
-            !fetchingValues &&
             !convertVariables
         ) {
             setFetchingValues(true)
