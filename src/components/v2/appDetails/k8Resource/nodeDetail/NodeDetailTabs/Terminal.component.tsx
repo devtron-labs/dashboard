@@ -40,7 +40,6 @@ import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
 import { ReactComponent as Cross } from '../../../../../../assets/icons/ic-cross.svg'
-import { importComponentFromFELibrary } from '../../../../../common'
 
 let clusterTimeOut
 
