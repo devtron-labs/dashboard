@@ -22,6 +22,7 @@ import {
     Drawer,
     CustomInput,
     ClipboardButton,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -30,7 +31,6 @@ import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfigu
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { WebhhookConfigModalState, WebhookConfigModalProps } from './types'
 import CreateHeaderDetails from './CreateHeaderDetails'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
