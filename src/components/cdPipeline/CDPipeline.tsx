@@ -661,7 +661,7 @@ export default function CDPipeline({
 
         // Its not allowed to switch from external to external
         if (changeCIPayload?.switchFromCiPipelineId) {
-            pipeline['switchFromCiPipelineId'] = changeCIPayload.switchFromCiPipelineId
+            pipeline['switchFromCiPipelineId'] = +changeCIPayload.switchFromCiPipelineId
         }
         if (childPipelineId) {
             pipeline['childPipelineId'] = +childPipelineId

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
-import { DisableType, SourceTypeCardProps } from './types'
+import { SourceTypeCardProps } from './types'
 
-export default function SourceTypeCard({
+const SourceTypeCard = ({
     title,
     subtitle,
     image,
@@ -28,8 +27,8 @@ export default function SourceTypeCard({
     type,
     handleCardAction,
     disableInfo,
-}: Readonly<SourceTypeCardProps>) {
-    function renderTippy(children) {
+}: Readonly<SourceTypeCardProps>) => {
+    const renderTippy = (children) => {
         return (
             <Tippy className="default-tt w-200" placement="top" content={disableInfo} arrow={false}>
                 {/* Since in disabled state Tippy does'nt work */}
@@ -39,16 +38,8 @@ export default function SourceTypeCard({
     }
 
     return (
-        <ConditionalWrap wrap={renderTippy} condition={!!disableInfo && disableInfo !== DisableType.COMING_SOON}>
+        <ConditionalWrap wrap={renderTippy} condition={!!disableInfo}>
             <div className={disableInfo ? 'cursor-not-allowed dc__position-rel' : ''}>
-                {disableInfo === DisableType.COMING_SOON && (
-                    <div className="ribbon-wrapper dc__position-abs dc__top-0 dc__overflow-hidden dc__align-center w-120">
-                        <div className="ribbon-content flex fs-8 fw-6 cn-7 lh-12 pl-8 pr-8 pt-0 pb-0 bcn-1 dc__flip-45 dc__position-rel">
-                            {DisableType.COMING_SOON}
-                        </div>
-                    </div>
-                )}
-
                 <div
                     className={`flexbox p-12 dc__gap-12 dc__align-self-stretch br-4 dc__border-n1 bcn-0 dc__hover-n50  ${
                         disableInfo ? 'dc__disable-click dc__opacity-0_5' : ''
@@ -77,3 +68,5 @@ export default function SourceTypeCard({
         </ConditionalWrap>
     )
 }
+
+export default SourceTypeCard
