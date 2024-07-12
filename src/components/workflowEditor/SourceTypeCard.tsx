@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeCardProps } from './types'
