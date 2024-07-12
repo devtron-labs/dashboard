@@ -697,7 +697,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return this.props.nodes
         }
 
-        const originalNodes = JSON.parse(JSON.stringify(this.props.nodes))
+        const originalNodes = structuredClone((this.props.nodes))
         const bufferHeight = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
         const bufferNodes = this.props.workflowPositionState?.nodes ?? []
         // would traverse through nodes if type and id matches with bufferNodes then would add bufferHeight to y
@@ -729,7 +729,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
 
         // If no node is present in workflow then disable change CI button
-        const isChangeCIEnabled = nodesWithBufferHeight?.length > 0
+        const isChangeCIEnabled = nodesWithBufferHeight.length > 0
 
         return (
             <ConditionalWrap
