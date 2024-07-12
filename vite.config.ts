@@ -24,6 +24,7 @@ import { createRequire } from 'node:module'
 import requireTransform from 'vite-plugin-require-transform'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import { VitePWA } from 'vite-plugin-pwa'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
@@ -112,6 +113,7 @@ export default defineConfig(({ mode }) => {
             },
         },
         plugins: [
+            tsconfigPaths(),
             // @TODO: Check if we can remove the config object inside the react plugin
             react({
                 // Use React plugin in all *.jsx and *.tsx files

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { AllExpandableDropdownTypes } from '../../AppGroup.types'
 
 export const AllExpandableDropdown = ({

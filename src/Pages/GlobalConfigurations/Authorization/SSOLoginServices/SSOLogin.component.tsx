@@ -33,10 +33,10 @@ import {
     ButtonWithLoader,
     YAMLStringify,
     DEFAULT_SECRET_PLACEHOLDER,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
-import CodeEditor from '../../../../components/CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
 import { ViewType, DOCUMENTATION, URLS, SwitchItemValues } from '../../../../config'
@@ -801,7 +801,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <div className="flexbox">
                             <Help className="icon-dim-20 fcb-5 mr-12" />
                             <div>
-                                For redirect URL or callback URL use: {`${window.location.origin}/orchestrator`}
+                                For redirectURI or callbackURI use: {`${window.location.origin}/orchestrator`}
                                 /api/dex/callback
                                 <br />
                                 Please ensure above URL is registered with the identity provider.

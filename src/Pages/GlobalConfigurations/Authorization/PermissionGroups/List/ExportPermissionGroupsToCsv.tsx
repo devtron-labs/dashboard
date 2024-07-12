@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-
 import { PermissionGroupListHeaderProps } from './types'
 import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Progressing, VisibleModal, stopPropagation, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
 import CIMaterial from './ciMaterial'

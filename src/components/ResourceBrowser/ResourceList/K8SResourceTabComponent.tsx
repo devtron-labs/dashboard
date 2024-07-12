@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAsync, abortPreviousRequests, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { K8SResourceTabComponentProps, URLParams } from '../Types'

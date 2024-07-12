@@ -15,7 +15,6 @@
  */
 
 import { BulkSelection, Pagination, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 import { handleToggleCheckForBulkSelection } from '../../utils'
 import { permissionGroupLoading, SortableKeys } from './constants'

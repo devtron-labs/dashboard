@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-
 const OrganizationTextLogo = () => (
     <span className="cn-0 fs-12 fw-7 lh-16 font-merriweather dc__capitalize dc__truncate">
         {window._env_.ORGANIZATION_NAME}

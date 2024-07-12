@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { GenericEmptyState, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyImage from '../../../../assets/img/empty-applist@2x.png'
 import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../../../config/constantMessaging'
