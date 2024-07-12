@@ -626,7 +626,9 @@ export default function DeploymentConfig({
                 }
                 break
             case 2:
-                isGuiModeRef.current = state.yamlMode
+                if (state.selectedTabIndex !== 2) {
+                    isGuiModeRef.current = state.yamlMode
+                }
                 if (!state.openComparison) {
                     if (!state.yamlMode) {
                         if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {
