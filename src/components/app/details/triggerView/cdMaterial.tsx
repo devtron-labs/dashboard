@@ -65,6 +65,7 @@ import {
     usePrompt,
     getIsRequestAborted,
     GitCommitInfoGeneric,
+    useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -121,7 +122,7 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -161,6 +162,7 @@ const CDMaterial = ({
     // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
     const { searchParams } = useSearchString()
+    const { handleDownload } = useDownload()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
 
@@ -882,15 +884,17 @@ const CDMaterial = ({
     }
 
     const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
+        if (!getDownloadManifestUrl) {
+            return
+        }
         const downloadManifestDownload = {
             appId,
             envId,
             appName: getHelmPackageName(helmPackageName, cdWorkflowType),
             cdWorkflowType,
         }
-        if (getDeployManifestDownload) {
-            getDeployManifestDownload(downloadManifestDownload)
-        }
+        const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
+        handleDownload({downloadUrl, fileName: downloadManifestDownload.appName, downloadSuccessToastContent: 'Manifest Downloaded Successfully'})
     }
 
     const showErrorIfNotAborted = (errors: ServerErrors) => {
