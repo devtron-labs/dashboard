@@ -118,7 +118,7 @@ export default function DeploymentTemplateOverrideForm({
 
         if (state.showLockedTemplateDiff) {
             const edited = YAML.parse(state.tempFormData)
-            const unedited = YAML.parse(state.data)
+            const unedited = YAML.parse(getCodeEditorValueForReadOnly(true))
             const documentsNPatches = {
                 edited,
                 unedited,
@@ -438,7 +438,7 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToDeleteOverrideDraft = () => prepareDataToSave(true)
 
-    const getCodeEditorValueForReadOnly = () => {
+    const getCodeEditorValueForReadOnly = (fetchUnEdited?: boolean) => {
         if (state.publishedState) {
             if (
                 state.publishedState.isOverride &&
@@ -447,7 +447,7 @@ export default function DeploymentTemplateOverrideForm({
                 return YAMLStringify(state.publishedState.environmentConfig.envOverrideValues)
             }
         } else if (
-            state.selectedCompareOption?.id === Number(envId) &&
+            (state.selectedCompareOption?.id === Number(envId) || fetchUnEdited) &&
             state.data.environmentConfig.envOverrideValues
         ) {
             return YAMLStringify(state.data.environmentConfig.envOverrideValues)
@@ -746,7 +746,7 @@ export default function DeploymentTemplateOverrideForm({
                             YAML.parse(getCodeEditorValue(false)),
                             removedPatches.current,
                         ),
-                        unedited: YAML.parse(getCodeEditorValueForReadOnly()),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly(true)),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}
