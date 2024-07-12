@@ -402,6 +402,7 @@ const DeploymentTemplateEditorView = ({
                             isValues={isValues}
                             groupedData={groupedData}
                             setConvertVariables={setConvertVariables}
+                            setFetchingValues={setFetchingValues}
                         />
                         {!isDeleteDraftState &&
                             isEnvOverride &&
@@ -481,8 +482,7 @@ const DeploymentTemplateEditorView = ({
                     fetchingValues ||
                     draftLoading ||
                     resolveLoading ||
-                    (state.openComparison && !lhs)
-                }
+                    (state.openComparison && !lhs)}
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}

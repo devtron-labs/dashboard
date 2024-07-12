@@ -151,6 +151,7 @@ export interface CompareWithDropdownProps {
     isValues: boolean
     groupedData: any
     setConvertVariables: (convertVariables: boolean) => void
+    setFetchingValues: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface CompareWithApprovalPendingAndDraftProps {
