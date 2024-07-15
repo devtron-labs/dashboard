@@ -93,7 +93,7 @@ export const URLS = {
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
-    GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
+    GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION: '/global-config/lock-deployment-configuration',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
     GLOBAL_CONFIG_DEPLOYMENT_WINDOW: '/global-config/deployment-window',
     GUIDE: 'guide',

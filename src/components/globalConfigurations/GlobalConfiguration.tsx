@@ -64,7 +64,7 @@ const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfr
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
-const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
+const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
@@ -522,13 +522,13 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Filter Condition</div>
                         </NavLink>
                     )}
-                    {LockConfiguration && (
+                    {LockDeploymentConfiguration && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
-                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            to={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
+                            key={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Lock Deployment Config</div>
+                            <div className="flexbox flex-justify">Lock Deployment Configuration</div>
                         </NavLink>
                     )}
 
@@ -661,7 +661,10 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route
+                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
+                    path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                >
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
@@ -670,13 +673,12 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
-                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
+            {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                    <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            ,
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
@@ -697,9 +699,9 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {LockConfiguration && (
-                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
+            {LockDeploymentConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
+                    <LockDeploymentConfiguration />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
