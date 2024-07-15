@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import YAML from 'yaml'
 import {
     InfoColourBar,
@@ -57,6 +57,8 @@ const DeploymentTemplateGUIView = ({
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(YAML.parse(value))
+
+    useEffect(() => setFormData(YAML.parse(value)), [value])
 
     const state = useMemo(() => {
         try {
@@ -140,10 +142,10 @@ const DeploymentTemplateGUIView = ({
                 formData={formData}
                 onChange={handleFormChange}
                 uiSchema={state.uiSchema}
+                disabled={readOnly}
                 experimental_defaultFormStateBehavior={{
                     emptyObjectFields: 'skipDefaults',
                 }}
-                disabled={readOnly}
                 liveValidate
             />
         )
