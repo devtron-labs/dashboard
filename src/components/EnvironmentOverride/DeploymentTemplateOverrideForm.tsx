@@ -512,7 +512,7 @@ export default function DeploymentTemplateOverrideForm({
         return manifestEditorValue
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean, notTempFormData = false) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = getCodeEditorValueForReadOnly()
@@ -521,7 +521,7 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData) {
+        } else if (state.tempFormData && !notTempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -565,11 +565,8 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
-                    uneditedDocument={getCodeEditorValueForReadOnly()}
-                    editedDocument={reapplyRemovedLockedKeysToYaml(
-                        YAML.parse(state.tempFormData),
-                        removedPatches.current,
-                    )}
+                    uneditedDocument={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
+                    editedDocument={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
                 />
             )
         }
@@ -600,8 +597,9 @@ export default function DeploymentTemplateOverrideForm({
                     !isValuesOverride ||
                     convertVariablesOverride
                 }
-                uneditedDocument={getCodeEditorValueForReadOnly()}
-                editedDocument={state.tempFormData}
+                uneditedDocument={getCodeEditorValue(false, true)}
+                // FIXME: make sure that the value did not change from hide locked keys logic
+                editedDocument={getCodeEditorValue(false)}
                 globalChartRefId={state.data.globalChartRefId}
                 handleOverride={handleOverride}
                 isValues={isValuesOverride}

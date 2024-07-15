@@ -809,7 +809,7 @@ export default function DeploymentConfig({
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                 hideLockKeysToggled={hideLockKeysToggled}
                 removedPatches={removedPatches}
-                uneditedDocument={state.data}
+                uneditedDocument={state.publishedState?.tempFormData || state.data}
                 editedDocument={state.tempFormData}
             />
         )
