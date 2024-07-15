@@ -20,7 +20,7 @@ import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import { EnvConfig, ResourceConfig } from '../../service.types'
+import { ResourceConfig } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -186,15 +186,17 @@ export interface AppConfigurationProviderProps extends CommonAppConfigurationPro
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
 }
 
-export interface EnvResourceConfig extends Pick<ResourceConfig, 'configState'> {
-    title: ResourceConfig['name']
+export interface EnvConfigType {
+    deploymentTemplate: ResourceConfig | null
+    configmaps: ResourceConfig[]
+    secrets: ResourceConfig[]
 }
 
 export interface EnvConfigurationState {
     /** Indicates if the environment configuration is currently loading. */
     isLoading: boolean
     /** Environment Configuration containing Deployment Template, Config Maps & Secrets */
-    config: EnvConfig
+    config: EnvConfigType
 }
 
 export enum EnvResourceType {

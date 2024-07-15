@@ -41,8 +41,14 @@ import {
     ConfigProtection,
 } from './appConfig.type'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
-import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
-import AppComposeRouter from './AppComposeRouter'
+import {
+    isCIPipelineCreated,
+    isCDPipelineCreated,
+    getNavItems,
+    isUnlocked,
+    transformEnvConfig,
+} from './AppConfig.utils'
+import AppComposeRouter from './MainContent/AppComposeRouter'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppNavigation } from './Navigation/AppNavigation'
 import { AppConfigStatusResponseItem } from '../../service.types'
@@ -168,7 +174,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                     ...prevState,
                     envConfig: {
                         isLoading: false,
-                        config: result,
+                        config: transformEnvConfig(result),
                     },
                 }))
             })
@@ -455,7 +461,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const getAppComposeClasses = () => {
         if (location.pathname.match(/(deployment-template|configmap|secret)/)) {
-            return 'app-compose-env-configurations__nav'
+            return `app-compose-env-configurations__nav ${hideConfigHelp ? 'hide-app-config-help' : ''}`
         }
         return `${
             isGitOpsConfigurationRequired

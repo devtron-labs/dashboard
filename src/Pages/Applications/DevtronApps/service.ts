@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { ResourceKindType, get } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../config'
 import { AppConfigStatusResponse, EnvConfigResponse } from './service.types'
@@ -23,8 +23,11 @@ import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/appConfig.typ
 
 export const getAppConfigStatus = (appId: number, resourceKind?: ResourceKindType): Promise<AppConfigStatusResponse> =>
     get(
-        `${Routes.APP_CONFIG_STATUS}?app-id=${appId}${resourceKind === ResourceKindType.job ? `&appType=${DEFAULT_LANDING_STAGE.JOB_VIEW}` : ''}`,
+        getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, {
+            'app-id': appId,
+            appType: resourceKind === ResourceKindType.job ? DEFAULT_LANDING_STAGE.JOB_VIEW : undefined,
+        }),
     )
 
 export const getEnvConfig = (appId: number, envId: number): Promise<EnvConfigResponse> =>
-    get(`${Routes.ENV_CONFIG}?appId=${appId}&envId=${envId}`)
+    get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))

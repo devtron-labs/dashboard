@@ -29,10 +29,10 @@ export interface AppConfigStatusResponseItem {
 export type AppConfigStatusResponse = ResponseType<AppConfigStatusResponseItem[]>
 
 export enum ResourceConfigState {
-    Unnamed,
-    Draft,
-    ApprovalPending,
-    Published,
+    Unnamed = 'Unnamed',
+    Draft = 'Draft',
+    ApprovalPending = 'ApprovalPending',
+    Published = 'Published',
 }
 
 export enum ResourceType {
@@ -47,6 +47,7 @@ export interface ResourceConfig {
     type: ResourceType
     overridden: boolean
     global: boolean
+    id: number
 }
 
 export interface EnvConfig {

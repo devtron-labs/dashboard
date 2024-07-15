@@ -1,14 +1,15 @@
 import { NavLink, generatePath } from 'react-router-dom'
 
-import { ReactComponent as Lock } from '../../../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
-import { ReactComponent as ICStamp } from '../../../../../../assets/icons/ic-stamp.svg'
-import { ReactComponent as ICEditFile } from '../../../../../../assets/icons/ic-edit-file.svg'
-import { CustomNavItemsType, EnvResourceType } from '../appConfig.type'
-import { EnvConfig, ResourceConfigState, ResourceType } from '../../../service.types'
-import { CollapsibleListItem } from '../../../../../Shared/CollapsibleList'
-import { URLS } from '../../../../../../config'
-import { AppEnvironment } from '../../../../../../services/service.types'
+import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
+import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
+import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
+import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
+import { URLS } from '@Config/routes'
+import { AppEnvironment } from '@Services/service.types'
+import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
+import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
+
+import { CustomNavItemsType, EnvConfigType, EnvResourceType } from '../appConfig.type'
 
 export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: boolean) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
@@ -94,19 +95,24 @@ const getIcon = (
     return undefined
 }
 
-const getSubtitle = (global: boolean, overridden: boolean) => {
+const getSubtitle = (global: boolean, overridden: boolean, configState: ResourceConfigState, envId: number) => {
+    if (envId === -1) {
+        return !global ? 'Unpublished' : ''
+    }
+    if (!global && configState !== ResourceConfigState.Published) {
+        return 'Unpublished'
+    }
     if (overridden) {
         return 'Overridden'
     }
     if (global && !overridden) {
         return 'Inheriting'
     }
-
     return 'Created at environment'
 }
 
 export const getEnvConfiguration = (
-    envConfigRes: EnvConfig,
+    { deploymentTemplate, configmaps, secrets }: EnvConfigType,
     basePath: string,
     appId: string,
     environmentData:
@@ -116,81 +122,55 @@ export const getEnvConfiguration = (
               environmentId: number
               isProtected: boolean
           },
-) =>
-    envConfigRes.resourceConfig.reduce<{
-        deploymentTemplate: Omit<CollapsibleListItem, 'subtitle'>
-        configMaps: CollapsibleListItem[]
-        secrets: CollapsibleListItem[]
-    }>(
-        (acc, curr) => {
-            return {
-                ...acc,
-                deploymentTemplate:
-                    curr.type === ResourceType.DeploymentTemplate
-                        ? {
-                              configState: curr.configState,
-                              title: 'Deployment template',
-                              href: getNavigationPath(
-                                  basePath,
-                                  appId,
-                                  environmentData.environmentId,
-                                  EnvResourceType.DeploymentTemplate,
-                                  curr.configState,
-                              ),
-                              iconConfig: getIcon(curr.configState, environmentData.isProtected),
-                          }
-                        : acc.deploymentTemplate,
-                configMaps:
-                    curr.type === ResourceType.ConfigMap
-                        ? [
-                              ...acc.configMaps,
-                              {
-                                  configState: curr.configState,
-                                  title: curr.name,
-                                  href: getNavigationPath(
-                                      basePath,
-                                      appId,
-                                      environmentData.environmentId,
-                                      EnvResourceType.ConfigMap,
-                                      curr.configState,
-                                      curr.name,
-                                  ),
-                                  iconConfig: getIcon(curr.configState, environmentData.isProtected),
-                                  subtitle:
-                                      environmentData.environmentId !== -1
-                                          ? getSubtitle(curr.global, curr.overridden)
-                                          : undefined,
-                              },
-                          ]
-                        : acc.configMaps,
-                secrets:
-                    curr.type === ResourceType.Secret
-                        ? [
-                              ...acc.secrets,
-                              {
-                                  configState: curr.configState,
-                                  title: curr.name,
-                                  href: getNavigationPath(
-                                      basePath,
-                                      appId,
-                                      environmentData.environmentId,
-                                      EnvResourceType.Secret,
-                                      curr.configState,
-                                      curr.name,
-                                  ),
-                                  iconConfig: getIcon(curr.configState, environmentData.isProtected),
-                                  subtitle:
-                                      environmentData.environmentId !== -1
-                                          ? getSubtitle(curr.global, curr.overridden)
-                                          : undefined,
-                              },
-                          ]
-                        : acc.secrets,
-            }
-        },
-        {
-            deploymentTemplate: null,
-            configMaps: [],
-            secrets: [],
-        },
-    )
+): {
+    deploymentTemplate: Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
+        configState: ResourceConfigState
+    }
+    configmaps: (Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
+        configState: ResourceConfigState
+    })[]
+    secrets: (Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
+        configState: ResourceConfigState
+    })[]
+} => ({
+    deploymentTemplate: {
+        configState: deploymentTemplate.configState,
+        title: 'Deployment template',
+        href: getNavigationPath(
+            basePath,
+            appId,
+            environmentData.environmentId,
+            EnvResourceType.DeploymentTemplate,
+            deploymentTemplate.configState,
+        ),
+        iconConfig: getIcon(deploymentTemplate.configState, environmentData.isProtected),
+    },
+    configmaps: configmaps.map(({ configState, name, global, overridden }) => ({
+        configState,
+        title: name,
+        href: getNavigationPath(
+            basePath,
+            appId,
+            environmentData.environmentId,
+            EnvResourceType.ConfigMap,
+            configState,
+            name,
+        ),
+        iconConfig: getIcon(configState, environmentData.isProtected),
+        subtitle: getSubtitle(global, overridden, configState, environmentData.environmentId),
+    })),
+    secrets: secrets.map(({ configState, name, global, overridden }) => ({
+        configState,
+        title: name,
+        href: getNavigationPath(
+            basePath,
+            appId,
+            environmentData.environmentId,
+            EnvResourceType.Secret,
+            configState,
+            name,
+        ),
+        iconConfig: getIcon(configState, environmentData.isProtected),
+        subtitle: getSubtitle(global, overridden, configState, environmentData.environmentId),
+    })),
+})

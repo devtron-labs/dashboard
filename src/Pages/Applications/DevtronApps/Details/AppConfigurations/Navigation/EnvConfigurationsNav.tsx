@@ -5,17 +5,18 @@ import ReactSelect, { GroupBase, OptionProps, components } from 'react-select'
 
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICBack } from '../../../../../../assets/icons/ic-caret-left-small.svg'
-import { ReactComponent as ICAdd } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
-import { CollapsibleList, CollapsibleListConfig } from '../../../../../Shared/CollapsibleList'
-import { AppEnvironment } from '../../../../../../services/service.types'
-import { ResourceConfigState } from '../../../service.types'
+import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
+import { getJobOtherEnvironmentMin } from '@Services/service'
+import { AppEnvironment } from '@Services/service.types'
+import { EnvSelectDropdownIndicator, envSelectStyles } from 'src/util/EnvSelect.utils'
+import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/CollapsibleList'
+import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
+
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
-import { getJobOtherEnvironmentMin } from '../../../../../../services/service'
-import { EnvSelectDropdownIndicator, envSelectStyles } from '../../../../../../util/EnvSelect.utils'
-import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
 import { EnvResourceType } from '../appConfig.type'
+import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
 
 // COMPONENTS
 export const Option = (props: OptionProps<AppEnvironment, false, GroupBase<AppEnvironment>>) => {
@@ -45,7 +46,7 @@ export const EnvConfigurationsNav = () => {
     const {
         path,
         params: { envId },
-    } = useRouteMatch<{ envId: string }>()
+    } = useRouteMatch<{ envId: string; resourceType: string }>()
     const { appId, resourceKind, envConfig, fetchEnvConfig, isBaseConfigProtected, environments, lastUnlockedStage } =
         useAppConfigurationContext()
 
@@ -53,13 +54,14 @@ export const EnvConfigurationsNav = () => {
     const [expandedIds, setExpandedIds] = useState<Record<EnvResourceType, boolean>>()
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
-        configMaps: [],
+        configmaps: [],
         secrets: [],
     })
     const [jobEnvs, setJobEnvs] = useState<AppEnvironment[]>([])
 
     // CONSTANTS
     const isDevtronApp = resourceKind === ResourceKindType.devtronApplication
+    const isJob = resourceKind === ResourceKindType.job
     /** Current Environment Data. */
     const environmentData = (isDevtronApp ? environments : jobEnvs)?.find(
         ({ environmentId }) => environmentId === +envId,
@@ -73,7 +75,7 @@ export const EnvConfigurationsNav = () => {
         _updatedEnvConfig: ReturnType<typeof getEnvConfiguration>,
         resourceType: EnvResourceType,
     ) =>
-        _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configMaps' : 'secrets'].push({
+        _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configmaps' : 'secrets'].push({
             title: 'Unnamed',
             href: getNavigationPath(
                 path,
@@ -82,6 +84,8 @@ export const EnvConfigurationsNav = () => {
                 resourceType,
                 ResourceConfigState.Unnamed,
             ),
+            configState: ResourceConfigState.Unnamed,
+            subtitle: '',
         })
 
     useEffect(() => {
@@ -94,9 +98,8 @@ export const EnvConfigurationsNav = () => {
     }, [envId])
 
     useEffect(() => {
-        if (envConfig.config) {
+        if (!envConfig.isLoading && envConfig.config) {
             const newEnvConfig = getEnvConfiguration(envConfig.config, path, appId, environmentData)
-
             let resourceType: EnvResourceType
 
             if (pathname.includes('/configmap')) {
@@ -109,17 +112,19 @@ export const EnvConfigurationsNav = () => {
                 addUnnamedNavLink(newEnvConfig, resourceType)
             }
 
-            setExpandedIds({ ...expandedIds, [resourceType]: true })
+            setExpandedIds((prevState) => ({ ...prevState, [resourceType]: true }))
             setUpdatedEnvConfig(newEnvConfig)
         }
-    }, [envConfig])
+    }, [envConfig, pathname])
 
     useEffect(() => {
-        getJobOtherEnvironmentMin(appId)
-            .then(({ result }) => {
-                setJobEnvs(result)
-            })
-            .catch(() => {})
+        if (isJob) {
+            getJobOtherEnvironmentMin(appId)
+                .then(({ result }) => {
+                    setJobEnvs(result)
+                })
+                .catch(() => {})
+        }
     }, [])
 
     // METHODS
@@ -147,7 +152,7 @@ export const EnvConfigurationsNav = () => {
      * @param resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`/create`)) {
+        if (pathname.includes(`${resourceType}/create`)) {
             return
         }
 
@@ -175,7 +180,7 @@ export const EnvConfigurationsNav = () => {
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
             },
-            items: updatedEnvConfig.configMaps,
+            items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
             isExpanded: expandedIds?.configmap,
         },
@@ -204,7 +209,7 @@ export const EnvConfigurationsNav = () => {
             environmentId: -1,
             isProtected: isBaseConfigProtected,
         },
-        ...(isDevtronApp ? environments : jobEnvs),
+        ...((isDevtronApp ? environments : jobEnvs) || []),
     ]
 
     const onEnvSelect = ({ environmentId }: typeof environmentData) => {
@@ -218,7 +223,7 @@ export const EnvConfigurationsNav = () => {
                     environmentId,
                     EnvResourceType.ConfigMap,
                     undefined,
-                    updatedEnvConfig.configMaps[0]?.title,
+                    updatedEnvConfig.configmaps[0]?.title,
                 ),
             )
         }
@@ -258,7 +263,7 @@ export const EnvConfigurationsNav = () => {
         <>
             {renderEnvSelector()}
             <div className="mw-none p-8">
-                {(isDevtronApp ? !environments.length : !jobEnvs.length) || envConfig.isLoading ? (
+                {envConfig.isLoading ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
                     <>

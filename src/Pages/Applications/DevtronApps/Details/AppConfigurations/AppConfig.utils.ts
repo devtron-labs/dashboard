@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS, DOCUMENTATION } from '../../../../../config'
-import { AppConfigStatusResponseItem } from '../../service.types'
-import { AppStageUnlockedType, CustomNavItemsType, STAGE_NAME } from './appConfig.type'
+import { URLS, DOCUMENTATION } from '@Config/index'
+
+import { AppConfigStatusResponseItem, EnvConfig, ResourceType } from '../../service.types'
+import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './appConfig.type'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -296,4 +297,27 @@ export const isCIPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) 
 export const isCDPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
     const cdPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CD_PIPELINE)
     return cdPipeline.status
+}
+
+export const transformEnvConfig = ({ resourceConfig }: EnvConfig) => {
+    const updatedEnvConfig = resourceConfig.reduce<EnvConfigType>(
+        (acc, curr) => {
+            return {
+                ...acc,
+                deploymentTemplate: curr.type === ResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
+                configmaps: curr.type === ResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
+                secrets: curr.type === ResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
+            }
+        },
+        {
+            deploymentTemplate: null,
+            configmaps: [],
+            secrets: [],
+        },
+    )
+
+    updatedEnvConfig.configmaps.sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+    updatedEnvConfig.secrets.sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+
+    return updatedEnvConfig
 }
