@@ -16,24 +16,28 @@
 
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../../../config'
-import { ErrorBoundary, importComponentFromFELibrary } from '../../../../../components/common'
-import { ReactComponent as Next } from '../../../../../assets/icons/ic-arrow-forward.svg'
-import { NextButtonProps, STAGE_NAME } from './appConfig.type'
-import ExternalLinks from '../../../../../components/externalLinks/ExternalLinks'
-import SecretList from '../../../../../components/ConfigMapSecret/Secret/SecretList'
-import ConfigMapList from '../../../../../components/ConfigMapSecret/ConfigMap/ConfigMapList'
-import './appConfig.scss'
-import { useAppConfigurationContext } from './AppConfiguration.provider'
 
-const MaterialList = lazy(() => import('../../../../../components/material/MaterialList'))
-const CIConfig = lazy(() => import('../../../../../components/ciConfig/CIConfig'))
-const DeploymentConfig = lazy(() => import('../../../../../components/deploymentConfig/DeploymentConfig'))
-const WorkflowEdit = lazy(() => import('../../../../../components/workflowEditor/workflowEditor'))
-const EnvironmentOverride = lazy(() => import('../../../../../components/EnvironmentOverride/EnvironmentOverride'))
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
+import { URLS } from '@Config/index'
+import { ErrorBoundary, importComponentFromFELibrary } from '@Components/common'
+import ExternalLinks from '@Components/externalLinks/ExternalLinks'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { ConfigMapSecretContainer } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.container'
+
+import { NextButtonProps, STAGE_NAME } from '../appConfig.type'
+import { useAppConfigurationContext } from '../AppConfiguration.provider'
+
+import '../appConfig.scss'
+
+const MaterialList = lazy(() => import('@Components/material/MaterialList'))
+const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
+const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
+const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
+const EnvironmentOverride = lazy(() => import('@Components/EnvironmentOverride/EnvironmentOverride'))
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
-const UserGitRepoConfiguration = lazy(() => import('../../../../../components/gitOps/UserGitRepConfiguration'))
+const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -122,10 +126,10 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapList isJobView={isJobView} isProtected={false} />
+                        <ConfigMapSecretContainer isProtected={false} />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <SecretList isJobView={isJobView} isProtected={false} />
+                        <ConfigMapSecretContainer isProtected={false} componentType={CMSecretComponentType.Secret} />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
@@ -223,10 +227,13 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
+                        <ConfigMapSecretContainer isProtected={isBaseConfigProtected} />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <SecretList isProtected={isBaseConfigProtected} reloadEnvironments={reloadEnvironments} />
+                        <ConfigMapSecretContainer
+                            isProtected={isBaseConfigProtected}
+                            componentType={CMSecretComponentType.Secret}
+                        />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}

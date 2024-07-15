@@ -53,6 +53,8 @@ export interface EnvironmentOverrideComponentProps {
     environments?: any
     reloadEnvironments: () => void
     envName?: string
+    // Remove this once App Groups CM, Secret are revamped.
+    isAppGroup?: boolean
 }
 
 export interface CommonEnvironmentOverridesProps {

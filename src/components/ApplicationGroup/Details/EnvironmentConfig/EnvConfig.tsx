@@ -92,6 +92,7 @@ export default function EnvConfig({ filteredAppIds, envName }: AppGroupDetailDef
                     environments={[]}
                     reloadEnvironments={noop}
                     envName={envName}
+                    isAppGroup
                 />
             </div>
         </div>

@@ -1,0 +1,248 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { Dispatch, SetStateAction } from 'react'
+
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ComponentStates } from '@Components/EnvironmentOverride/EnvironmentOverrides.type'
+
+import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
+
+export interface KeyValueYaml {
+    yaml: string
+    handleYamlChange: any
+    error: string
+}
+export interface KeyValue {
+    k: string
+    v: string
+    keyError?: string
+    valueError?: string
+}
+export interface KeyValueValidated {
+    isValid: boolean
+    arr: KeyValue[]
+}
+
+export interface ConfigMapSecretFormProps {
+    name: string
+    appChartRef: { id: number; version: string; name: string }
+    configMapSecretData: any
+    id: number
+    componentType: CMSecretComponentType
+    updateCMSecret: (name?: string, isDelete?: boolean) => void
+    cmSecretStateLabel: CM_SECRET_STATE
+    isJobView: boolean
+    readonlyView: boolean
+    isProtectedView: boolean
+    draftMode: boolean
+    latestDraftData: any
+    reloadEnvironments?: () => void
+    isAppAdmin?: boolean
+    showTitle?: boolean
+    onCancel?: () => void
+}
+
+export interface ConfigMapSecretDataEditorContainerProps {
+    componentType: CMSecretComponentType
+    state: ConfigMapSecretState
+    dispatch: (action: ConfigMapAction) => void
+    tempArr: any[]
+    setTempArr: (arr: any[]) => void
+    readonlyView: boolean
+    draftMode: boolean
+}
+
+export interface DraftDetailsForCommentDrawerType {
+    draftId: number
+    draftVersionId: number
+    index: number
+}
+
+export interface ProtectedConfigMapSecretDetailsProps {
+    title: string
+    appChartRef: { id: number; version: string; name: string }
+    data: any
+    id: number
+    componentType: CMSecretComponentType
+    updateCMSecret: (name?: string, isDelete?: boolean) => void
+    cmSecretStateLabel: CM_SECRET_STATE
+    isJobView: boolean
+    selectedTab: CMSecretProtectedTab
+    draftData
+    parentName: string
+    reloadEnvironments?: () => void
+}
+
+interface ValueWithError {
+    value: string
+    error: string
+}
+
+export interface SecretState {
+    externalType: string
+    roleARN: ValueWithError
+    esoData: any
+    secretData: any
+    secretDataYaml: string
+    codeEditorRadio: string
+    esoDataSecret: any
+    secretStore: any
+    secretStoreRef: any
+    refreshInterval: any
+    esoSecretYaml: string
+    secretMode: boolean
+    unAuthorized: boolean
+}
+
+export interface ConfigMapState {
+    loading: boolean
+    dialog: boolean
+    subPath: string
+    filePermission: ValueWithError
+    currentData: any
+    external: boolean
+    externalValues: { k: string; v: any; keyError: string; valueError: string }[]
+    selectedType: string
+    volumeMountPath: ValueWithError
+    isSubPathChecked: boolean
+    externalSubpathValues: ValueWithError
+    isFilePermissionChecked: boolean
+    configName: ValueWithError
+    yamlMode: boolean
+    cmSecretState: CM_SECRET_STATE
+    showDeleteModal: boolean
+    showDraftSaveModal: boolean
+    showProtectedDeleteModal: boolean
+    showProtectedDeleteOverrideModal: boolean
+    draftPayload: any
+    isValidateFormError: boolean
+}
+export interface ConfigMapSecretState extends ConfigMapState, SecretState {}
+
+export enum ConfigMapActionTypes {
+    reInit = 'reInit',
+    submitLoading = 'submitLoading',
+    overrideLoading = 'overrideLoading',
+    success = 'success',
+    error = 'error',
+    setExternal = 'setExternal',
+    setSelectedType = 'setSelectedType',
+    setVolumeMountPath = 'setVolumeMountPath',
+    setIsSubPathChecked = 'setIsSubPathChecked',
+    setExternalSubpathValues = 'setExternalSubpathValues',
+    setIsFilePermissionChecked = 'setIsFilePermissionChecked',
+    setFilePermission = 'setFilePermission',
+    setConfigName = 'setConfigName',
+    multipleOptions = 'multipleOptions',
+    toggleYamlMode = 'toggleYamlMode',
+    setExternalType = 'setExternalType',
+    setSecretDataYaml = 'setSecretDataYaml',
+    setEsoYaml = 'setEsoYaml',
+    setSecretData = 'setSecretData',
+    setRoleARN = 'setRoleARN',
+    setCodeEditorRadio = 'setCodeEditorRadio',
+    updateCurrentData = 'updateCurrentData',
+    toggleSecretMode = 'toggleSecretMode',
+    toggleUnAuthorized = 'toggleUnAuthorized',
+    toggleDialog = 'toggleDialog',
+    toggleDeleteModal = 'toggleDeleteModal',
+    toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
+    toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
+    toggleDraftSaveModal = 'toggleDraftSaveModal',
+    setValidateFormError = 'setValidateFormError',
+}
+
+export interface ConfigMapAction {
+    type: ConfigMapActionTypes
+    payload?: any
+}
+
+export interface CMSecret {
+    id: number
+    appId: number
+    environmentId?: number
+    configData: ConfigDatum[]
+}
+
+export interface ConfigDatum {
+    name: string
+    type: string
+    external: boolean
+    data: Record<string, string>
+    defaultData: Record<string, string>
+    global: boolean
+    externalType: string
+    esoSecretData: {}
+    defaultESOSecretData: {}
+    secretData: Record<string, string>
+    roleARN: string
+    subPath: boolean
+    filePermission: string
+    overridden: boolean
+}
+
+export type CMSecretResponse = ResponseType<CMSecret>
+
+export interface CMSecretContainerProps {
+    componentType?: CMSecretComponentType
+    parentName?: string
+    parentState?: ComponentStates
+    setParentState?: Dispatch<SetStateAction<ComponentStates>>
+    isOverrideView?: boolean
+    clusterId?: string
+    isProtected?: boolean
+}
+
+export interface CMSecretConfigData extends ConfigDatum {
+    secretMode: boolean
+    unAuthorized: boolean
+    draftId?: number
+    draftState?: number
+    isNew?: boolean
+}
+
+export interface ConfigMapSecretData extends Omit<CMSecret, 'configData'> {
+    configData: CMSecretConfigData
+}
+
+export enum DraftState {
+    Init = 1,
+    Discarded = 2,
+    Published = 3,
+    AwaitApproval = 4,
+}
+
+export interface OverrideProps {
+    overridden: boolean
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    loading?: boolean
+    type: CMSecretComponentType
+    readonlyView: boolean
+    isProtectedView: boolean
+}
+
+export enum CMSecretComponentType {
+    ConfigMap = 1,
+    Secret = 2,
+}
+
+export enum CMSecretProtectedTab {
+    Published = 1,
+    Compare = 2,
+    Draft = 3,
+}
