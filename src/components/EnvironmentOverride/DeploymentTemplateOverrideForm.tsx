@@ -111,6 +111,7 @@ export default function DeploymentTemplateOverrideForm({
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
         let valuesOverride = (!state.yamlMode && state.guiValues ? state.guiValues : obj) || state.duplicate
+        updateYamlWithGUIData()
 
         if (hideLockedKeys && valuesOverride === obj) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)

@@ -679,6 +679,7 @@ export default function DeploymentConfig({
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         let valuesOverride = !state.yamlMode && state.guiValues ? state.guiValues : obj
+        updateYamlWithGUIData()
 
         if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
