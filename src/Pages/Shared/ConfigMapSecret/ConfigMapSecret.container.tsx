@@ -32,6 +32,8 @@ import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedContainer'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 
+import './ConfigMapSecret.scss'
+
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
@@ -456,7 +458,7 @@ export const ConfigMapSecretContainer = ({
 
     return (
         <div
-            className={`cm-secret-main-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''}`}
+            className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''}`}
         >
             <div className="main-content py-16 px-20">
                 <div className="flexbox-col dc__gap-16 dc__mxw-1200">{renderDetails()}</div>

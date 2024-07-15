@@ -24,7 +24,6 @@ import { ReactComponent as DeleteIcon } from '@Icons/ic-delete-interactive.svg'
 import { PATTERNS } from '@Config/index'
 
 import { KeyValue, KeyValueValidated, KeyValueYaml, OverrideProps } from './ConfigMapSecret.types'
-import './ConfigMapSecret.scss'
 
 export const validateKeyValuePair = (arr: KeyValue[]): KeyValueValidated => {
     let isValid = true
