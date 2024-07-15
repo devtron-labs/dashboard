@@ -563,9 +563,15 @@ export default function DeploymentConfig({
         }
     }
 
-    const toggleYamlMode = (yamlMode: boolean) => {
-        if (yamlMode && !state.yamlMode && state.guiValues) {
+    const updateYamlWithGUIData = () => {
+        if (state.guiValues) {
             editorOnChange(YAMLStringify(state.guiValues))
+        }
+    }
+
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (yamlMode && !state.yamlMode) {
+            updateYamlWithGUIData()
         }
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
@@ -615,6 +621,8 @@ export default function DeploymentConfig({
         })
 
         setConvertVariables(false)
+
+        updateYamlWithGUIData()
 
         switch (index) {
             case 1:

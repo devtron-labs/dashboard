@@ -315,9 +315,15 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const toggleYamlMode = (yamlMode: boolean) => {
-        if (!state.yamlMode && yamlMode && state.guiValues) {
+    const updateYamlWithGUIData = () => {
+        if (state.guiValues) {
             editorOnChange(YAMLStringify(state.guiValues))
+        }
+    }
+
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (!state.yamlMode && yamlMode) {
+            updateYamlWithGUIData()
         }
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
@@ -361,6 +367,8 @@ export default function DeploymentTemplateOverrideForm({
         })
 
         setConvertVariables(false)
+
+        updateYamlWithGUIData()
 
         switch (index) {
             case 1:
@@ -593,7 +601,7 @@ export default function DeploymentTemplateOverrideForm({
                     convertVariablesOverride
                 }
                 uneditedDocument={getCodeEditorValueForReadOnly()}
-                editedDocument={reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current)}
+                editedDocument={state.tempFormData}
                 globalChartRefId={state.data.globalChartRefId}
                 handleOverride={handleOverride}
                 isValues={isValuesOverride}
