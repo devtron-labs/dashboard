@@ -56,9 +56,13 @@ const DeploymentTemplateGUIView = ({
         dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-    const [formData, setFormData] = useState(YAML.parse(value))
+    const [formData, setFormData] = useState(null)
 
-    useEffect(() => setFormData(YAML.parse(value)), [value])
+    useEffect(() => {
+        if (value && !formData) {
+            setFormData(YAML.parse(value))
+        }
+    }, [value])
 
     const state = useMemo(() => {
         try {
@@ -139,7 +143,7 @@ const DeploymentTemplateGUIView = ({
             <RJSFForm
                 className="w-650-px"
                 schema={state.guiSchema}
-                formData={formData}
+                formData={formData || {}}
                 onChange={handleFormChange}
                 uiSchema={state.uiSchema}
                 disabled={readOnly}
