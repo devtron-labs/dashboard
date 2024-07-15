@@ -4065,6 +4065,11 @@ textarea,
     transform: rotate(270deg);
 }
 
+// Helpful in case of transition transform
+.dc__flip-n90 {
+    transform: rotate(-90deg);
+}
+
 .dc__flip {
     transform: scaleX(-1);
 }
