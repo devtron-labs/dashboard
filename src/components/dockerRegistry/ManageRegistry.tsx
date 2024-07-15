@@ -38,6 +38,7 @@ import {
     InfoIconTippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { DOCUMENTATION } from '../../config'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -324,7 +325,7 @@ const ManageRegistry = ({
                 Use the&nbsp;
                 <a
                     className="dc__link"
-                    href="https://docs.devtron.ai/v/v0.6/getting-started/global-configurations/docker-registries#specify-image-pull-secret"
+                    href={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET}
                     target="_blank"
                     rel="noreferrer"
                 >

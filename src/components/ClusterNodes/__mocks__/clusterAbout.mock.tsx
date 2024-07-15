@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-
 export const clusterId = '1'
 export const mockSuccessResponseWithOutNote = {
     code: 200,

@@ -15,7 +15,14 @@
  */
 
 import React, { useContext } from 'react'
-import { CHECKBOX_VALUE, Checkbox, ConditionalWrap, Progressing, showError, useUserEmail } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CHECKBOX_VALUE,
+    Checkbox,
+    ConditionalWrap,
+    Progressing,
+    showError,
+    useUserEmail,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
@@ -46,7 +53,7 @@ export default function DeploymentConfigFormCTA({
     setShowLockedDiffForApproval,
     showLockedDiffForApproval,
     checkForProtectedLockedChanges,
-    setLockedOverride,
+    handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
@@ -91,7 +98,6 @@ export default function DeploymentConfigFormCTA({
                 const deploymentTemplateResp = await checkForProtectedLockedChanges()
                 if (deploymentTemplateResp.result.isLockConfigError) {
                     setShowLockedDiffForApproval(true)
-                    setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                     handleLockedDiffDrawer(true)
                 } else {
                     setShowLockedDiffForApproval(false)
@@ -119,8 +125,8 @@ export default function DeploymentConfigFormCTA({
                     className={`form-submit-cta cta flex h-32 ${isApprovalPending ? 'dc__bg-g5' : ''} ${
                         _disabled || approveDisabled ? 'disabled' : ''
                     }`}
-                    type={_disabled || isApprovalPending ? 'button' : 'submit'}
-                    onClick={checkForLockedChangesForApproval}
+                    type="button"
+                    onClick={_disabled || isApprovalPending ? checkForLockedChangesForApproval : handleSaveChanges}
                     data-testid={`${
                         !isEnvOverride && !isCiPipeline
                             ? 'base-deployment-template-save-and-next-button'

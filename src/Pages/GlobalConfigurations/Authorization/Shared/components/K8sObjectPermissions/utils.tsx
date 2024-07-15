@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { ReactSelectInputAction } from '@devtron-labs/devtron-fe-common-lib'
 import { SELECT_ALL_VALUE } from '../../../../../../config'
 import { ActionTypes, ACTION_LABEL, EntityTypes, authorizationSelectStyles } from '../../../constants'
@@ -48,7 +47,7 @@ export const multiSelectAllState = (selected, actionMeta, setState, options) => 
         actionMeta.action === ReactSelectInputAction.removeValue
     ) {
         setState(selected.filter((o) => o.value !== SELECT_ALL_VALUE))
-    } else if (selected.length === options.length - 1) {
+    } else if (selected.length >= options.length - 1 && actionMeta.action !== 'create-option') {
         setState(options)
     } else {
         setState(selected)

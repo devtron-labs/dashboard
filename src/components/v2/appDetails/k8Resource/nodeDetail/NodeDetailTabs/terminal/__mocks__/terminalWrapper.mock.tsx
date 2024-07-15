@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { MainContextProvider } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../../config'
 import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'

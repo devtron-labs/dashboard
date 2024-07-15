@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, useState, useEffect, Suspense } from 'react'
+import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import {
@@ -26,6 +26,7 @@ import {
     TippyTheme,
     useMainContext,
     PageHeader,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -45,7 +46,6 @@ import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -56,7 +56,7 @@ const ClusterList = lazy(() => import('../cluster/Cluster'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
-const Authorization = lazy(() => import('../../Pages/GlobalConfigurations/Authorization'))
+const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
@@ -67,6 +67,7 @@ const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
+const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -446,6 +447,15 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Deployment Window</div>
+                        </NavLink>
+                    )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -466,8 +476,8 @@ const NavItem = ({ serverMode }) => {
 
                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Scoped Variables</div>
@@ -651,15 +661,22 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
+            {
+                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                )
+            },
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
@@ -682,7 +699,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
@@ -728,7 +745,7 @@ const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...pr
 }
 
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
-    if (React.isValidElement(src)) {
+    if (isValidElement(src)) {
         return src
     }
     return (

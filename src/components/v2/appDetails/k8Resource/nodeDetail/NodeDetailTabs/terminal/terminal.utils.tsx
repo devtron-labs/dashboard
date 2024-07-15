@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'

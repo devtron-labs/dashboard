@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
+import { DEFAULT_SECRET_PLACEHOLDER } from '@devtron-labs/devtron-fe-common-lib'
 import { TLSInputFieldProps } from './types'
-import { DEFAULT_SECRET_PLACEHOLDER } from '../../../config'
 import { ReactComponent as ICWarning } from '../../../assets/icons/ic-warning.svg'
 
 const TLSInputField = ({

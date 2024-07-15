@@ -16,7 +16,7 @@
 
 import React from 'react'
 import Tippy from '@tippyjs/react'
-import { GenericEmptyState, GenericFilterEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericFilterEmptyState, Grid } from '@devtron-labs/devtron-fe-common-lib'
 import { VariableType, VariablesListItemProps } from './types'
 import {
     TABLE_LIST_HEADINGS,

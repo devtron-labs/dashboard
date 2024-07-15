@@ -16,7 +16,7 @@
 
 // @ts-nocheck
 import yaml from 'yaml'
-import { YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { YAMLStringify, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
@@ -81,7 +81,6 @@ export const validator: ValidatorType = ({ data, type }) => {
                 }
                 return PARSE_ERROR_STATUS
             } catch (e) {
-                console.log(e.message)
                 return YAML_PARSE_ERROR_STATUS
             }
         default:
@@ -130,7 +129,7 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
         return 0
     })
 
-    // Soring on the basis of category
+    // Sorting on the basis of category
     const precedingOrder = ['ApplicationEnv', 'Application', 'Env', 'Cluster', 'Global']
     mutatedVariablesObj.spec.forEach((variablesObj) => {
         variablesObj.values.sort((a, b) => {
@@ -160,4 +159,15 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
     })
 
     return mutatedVariablesObj
+}
+
+export const parseURLViewToValidView = (urlView: string, isEnvironmentListEnabled: boolean): ScopedVariablesFileViewType => {
+    switch (urlView) {
+        case ScopedVariablesFileViewType.ENVIRONMENT_LIST:
+            return isEnvironmentListEnabled ? ScopedVariablesFileViewType.ENVIRONMENT_LIST : ScopedVariablesFileViewType.YAML
+        case ScopedVariablesFileViewType.SAVED:
+            return ScopedVariablesFileViewType.SAVED
+        default:
+            return ScopedVariablesFileViewType.YAML
+    }
 }

@@ -15,7 +15,7 @@
  */
 
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
 import {
     GenericSectionErrorState,
@@ -567,10 +567,10 @@ const AppPermissions = () => {
             const _k8sPermission = _assignedRoleFilters.map((k8s) => ({
                 entity: EntityTypes.CLUSTER,
                 cluster: { label: k8s.cluster, value: k8s.cluster },
-                namespace: {
-                    label: k8s.namespace === '' ? 'All Namespaces / Cluster' : k8s.namespace,
-                    value: k8s.namespace === '' ? SELECT_ALL_VALUE : k8s.namespace,
-                },
+                namespace: k8s.namespace.split(',').map((namespace) => ({
+                    label: !namespace ? 'All Namespaces / Cluster' : namespace,
+                    value: !namespace ? SELECT_ALL_VALUE : namespace,
+                })),
                 group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
                 action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
                 kind: {

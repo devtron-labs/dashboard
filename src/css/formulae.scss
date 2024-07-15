@@ -62,6 +62,10 @@
     flex: 1;
 }
 
+.flex-grow-none {
+    flex-grow: 0 !important
+}
+
 .flex-grow-1 {
     flex-grow: 1;
 }

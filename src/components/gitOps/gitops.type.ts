@@ -15,25 +15,26 @@
  */
 
 import { RouteComponentProps } from 'react-router'
-import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
+import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 
-export type GitOpsFieldKeyType =
-    | 'host'
-    | 'username'
-    | 'token'
-    | 'gitHubOrgId'
-    | 'azureProjectName'
-    | 'gitLabGroupId'
-    | 'bitBucketWorkspaceId'
-    | 'bitBucketProjectKey'
 export type GitOpsOrganisationIdType =
     | 'gitHubOrgId'
     | 'gitLabGroupId'
     | 'azureProjectName'
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
-export type GitProviderType = 'GITHUB' | 'GITLAB' | 'AZURE_DEVOPS' | 'BITBUCKET_CLOUD' | 'BITBUCKET_DC'
+
+export enum GitProvider {
+    GITHUB = 'GITHUB',
+    GITLAB = 'GITLAB',
+    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
+    AZURE_DEVOPS = 'AZURE_DEVOPS',
+    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
+    OTHER_GIT_OPS = 'OTHER_GIT_OPS',
+}
+
+export type GitProviderType = GitProvider | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
     username: {
@@ -46,59 +47,101 @@ export interface CustomGitOpsState {
     }
 }
 
-export enum GitProvider {
-    GITLAB = 'GITLAB',
-    GITHUB = 'GITHUB',
-    AZURE_DEVOPS = 'AZURE_DEVOPS',
-    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-}
-
-export interface GitOpsConfig extends TLSConfigDTO, Pick<TLSConnectionDTO, 'enableTLSVerification'> {
+export interface GitOpsConfig
+    extends TLSConfigDTO,
+        Pick<TLSConnectionDTO, 'enableTLSVerification'>,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType
     host: string
-    token: string
-    username?: string
     active: boolean
     gitLabGroupId: string
     gitHubOrgId: string
     azureProjectName: string
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
+    allowCustomRepository?: boolean
+}
+
+export interface DefaultShortGitOpsType
+    extends Pick<GitOpsConfig, 'caData' | 'tlsCertData' | 'tlsKeyData'>,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
+    host: string
+    gitHubOrgId: string
+    gitLabGroupId: string
+    azureProjectName: string
+    bitBucketWorkspaceId: string
+    bitBucketProjectKey: string
+}
+
+export interface GitOpsFormErrorType extends Omit<DefaultShortGitOpsType, 'authMode'> {}
+
+interface BitBucketDCDataStoreType {
+    [GitOpsAuthModeType.PASSWORD]: Pick<BaseGitOpsType, 'username' | 'token'>
+    [GitOpsAuthModeType.SSH_AND_PASSWORD]: Pick<BaseGitOpsType, 'username' | 'sshKey' | 'token'>
 }
 
 export interface GitOpsState {
+    /**
+     * To define loading, error, logical state of component
+     */
     view: string
+    /**
+     * For error screen manager
+     */
     statusCode: number
-    providerTab: GitProviderType
+    /**
+     * Currently selected tab
+     */
+    providerTab: GitProvider
+    /**
+     * API response list of all providers with their config
+     */
     gitList: GitOpsConfig[]
+    /**
+     * The details of the selected git provider
+     */
     form: GitOpsConfig
     isFormEdited: boolean
+    /**
+     * To show triangular check on the selected git provider
+     * Will be only changed after API call
+     * Can also contain BitBucket DC as provider
+     */
     lastActiveGitOp: undefined | GitOpsConfig
     saveLoading: boolean
     validateLoading: boolean
+    /**
+     * To identify which radio tab is selected in case of bitbucket
+     */
     isBitbucketCloud: boolean
-    isError: {
-        host: string
-        username: string
-        token: string
-        gitHubOrgId: string
-        gitLabGroupId: string
-        azureProjectName: string
-        bitBucketWorkspaceId: string
-        bitBucketProjectKey: string
-        tlsKeyData: string
-        tlsCertData: string
-        caData: string
-    }
+    /**
+     * Error states for input fields
+     */
+    isError: GitOpsFormErrorType
     validatedTime: string
     validationError: GitOpsConfig[]
+    // TODO: Should be VALIDATION_STATUS, but can't change as of now due to service default to '', connect with @vivek
     validationStatus: string
     deleteRepoError: boolean
+    /**
+     * To show validation response of url of selected git provider
+     * Like using http instead of https
+     */
     isUrlValidationError: boolean
+    // FIXME: Should be repoType from ../../config
     selectedRepoType: string
     validationSkipped: boolean
     allowCustomGitRepo: boolean
+    /**
+     * To show update confirmation dialog, in case of updating git provider details
+     */
+    showUpdateConfirmationDialog: boolean
+    /**
+     * Initial value of authMode for BitBucketDC and if fresh setup, then set that as PASSWORD
+     */
+    initialBitBucketDCAuthMode: GitOpsAuthModeType
+    bitBucketDCDataStore: BitBucketDCDataStoreType
 }
 
 export interface GitOpsProps extends RouteComponentProps<{}> {
@@ -106,7 +149,7 @@ export interface GitOpsProps extends RouteComponentProps<{}> {
 }
 
 export interface UserGitRepoConfigurationProps {
-    respondOnSuccess: (redirection?:boolean) => void
+    respondOnSuccess: (redirection?: boolean) => void
     appId: number
     reloadAppConfig?: () => void
 }
@@ -116,9 +159,43 @@ export interface UserGitRepoProps {
     repoURL: string
     selectedRepoType: string
     staleData?: boolean
+    authMode: GitOpsAuthModeType
 }
 
-export interface BitbucketCloudAndServerToggleSectionPropsType {
-    isBitbucketCloud: boolean
-    setIsBitbucketCloud: (value: boolean) => void
+export interface GitProviderTabProps {
+    /**
+     * Currently selected tab
+     */
+    providerTab: GitProviderType
+    /**
+     * Acts as handleChange on radio tab
+     */
+    handleGitopsTab: (e) => void
+    /**
+     * Based on this would showCheck of previous selected on tab
+     */
+    lastActiveGitOp: undefined | GitOpsConfig
+    /**
+     * Value of tab to be rendered
+     */
+    provider: GitProvider
+    /**
+     * If true would disable radio tab
+     */
+    saveLoading: boolean
+    datatestid: string
+}
+
+export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'provider'> {
+    rootClassName?: string
+}
+
+export interface UpdateConfirmationDialogProps
+    extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
+    handleUpdate: () => void
+    handleCancel: () => void
+    /**
+     * To render title provider for bitbucket
+     */
+    enableBitBucketSource: boolean
 }

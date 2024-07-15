@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { Drawer, OptionType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
@@ -91,6 +91,9 @@ const K8sPermissionModal = ({
                 break
             case K8sPermissionActionType.onRoleChange:
                 _k8sPermissionList[key].action = data
+                break
+            case K8sPermissionActionType.setNamespace:
+                _k8sPermissionList[key].namespace = data
                 break
             case K8sPermissionActionType.onStatusChange: {
                 const { status, timeToLive } = data

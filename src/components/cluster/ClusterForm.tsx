@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import {
     showError,
     Progressing,
@@ -30,7 +30,9 @@ import {
     useAsync,
     CustomInput,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -56,7 +58,7 @@ import {
     RemoteConnectionTypeCluster,
 } from './cluster.type'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap, DEFAULT_SECRET_PLACEHOLDER } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
@@ -66,7 +68,6 @@ import {
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react'
+import { FunctionComponent } from 'react'
 import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { BuildInfraProps } from './types'

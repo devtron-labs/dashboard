@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { CustomInput, RadioGroup, RadioGroupItem, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { Component } from 'react'
+import { CustomInput, RadioGroup, RadioGroupItem, Toggle, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, SourceTypeMap } from '../../config'
 import { Trash, Page } from '../common'
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as PreBuild } from '../../assets/icons/ic-cd-stage.svg'
-import CodeEditor from '../CodeEditor/CodeEditor'
-import error from '../../assets/icons/misc/errorInfo.svg'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/appstatus/ic-appstatus-failed.svg'

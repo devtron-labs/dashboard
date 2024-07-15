@@ -28,6 +28,7 @@ import {
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -41,7 +42,6 @@ import {
     getManifestResource,
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
-import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
@@ -497,7 +497,7 @@ const ManifestComponent = ({
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                             appDetails.deploymentAppDeleteRequest)) && (
-                        <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
+                        <div className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky': ''}`}>
                             {tabs.map((tab: iLink, index) => {
                                 return (!showDesiredAndCompareManifest &&
                                     (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||

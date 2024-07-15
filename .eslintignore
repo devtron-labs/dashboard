@@ -205,7 +205,6 @@ src/components/bulkEdits/bulkedit.utils.tsx
 src/components/bulkEdits/bulkedits.service.tsx
 src/components/cdPipeline/BuildCD.tsx
 src/components/cdPipeline/CDPipeline.tsx
-src/components/cdPipeline/DeleteCDNode.tsx
 src/components/cdPipeline/NewCDPipeline.tsx
 src/components/cdPipeline/cdPipeline.service.ts
 src/components/cdPipeline/cdPipeline.types.ts
@@ -225,7 +224,6 @@ src/components/charts/Charts.tsx
 src/components/charts/MultiChartSummary.tsx
 src/components/charts/SavedValues/SavedValuesList.tsx
 src/components/charts/chartValues/ChartValues.tsx
-src/components/charts/charts.helper.ts
 src/components/charts/charts.service.ts
 src/components/charts/charts.types.tsx
 src/components/charts/charts.util.tsx
@@ -560,10 +558,8 @@ src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
 src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
-src/components/workflowEditor/SourceTypeCard.tsx
 src/components/workflowEditor/ToggleCDSelectButton.tsx
 src/components/workflowEditor/Workflow.tsx
-src/components/workflowEditor/WorkflowOptionsModal.tsx
 src/components/workflowEditor/nodes/CDNode.tsx
 src/components/workflowEditor/nodes/CINode.tsx
 src/components/workflowEditor/nodes/StaticNode.tsx
@@ -573,7 +569,6 @@ src/components/workflowEditor/types.ts
 src/components/workflowEditor/workflowEditor.tsx
 src/config/constants.ts
 src/config/routes.ts
-src/config/searchWorker.ts
 src/config/utils.ts
 src/index.tsx
 src/services/fetchWithFullRoute.ts
@@ -584,3 +579,10 @@ src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
 src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
+types/patternfly-react.d.ts
+tests-examples/demo-todo-app.spec.ts
+e2e-tests/adminLogin.spec.ts
+e2e-tests/example.spec.ts
+e2e-tests/auth.setup.ts
+playwright.config.ts
+jest.config.js

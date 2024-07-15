@@ -27,24 +27,21 @@ import {
     stopPropagation,
     useAsync,
     CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword, TLSConnectionForm } from '../common'
+import { useForm, handleOnBlur, handleOnFocus, parsePassword, renderMaterialIcon, TLSConnectionForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
-import { DEFAULT_SECRET_PLACEHOLDER, DOCUMENTATION } from '../../config'
+import { DOCUMENTATION } from '../../config'
 import { DropdownIndicator } from './gitProvider.util'
 import { Option } from '../v2/common/ReactSelect.utils'
 import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -287,16 +284,7 @@ const CollapsedList = ({
                 <List.Logo>
                     {id && (
                         <div className="">
-                            <span className="mr-8">
-                                {url.includes('gitlab') ? <GitLab /> : null}
-                                {url.includes('github') ? <GitHub /> : null}
-                                {url.includes('bitbucket') ? <BitBucket /> : null}
-                                {url.includes('gitlab') ||
-                                url.includes('github') ||
-                                url.includes('bitbucket') ? null : (
-                                    <Git />
-                                )}
-                            </span>
+                            <span className="mr-8">{renderMaterialIcon(url)}</span>
                         </div>
                     )}
                     {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
@@ -463,7 +451,10 @@ const GitForm = ({
                 ...tlsInput,
                 tlsConfig: {
                     ...tlsInput.tlsConfig,
-                    tlsCertData: { value: tlsInput.tlsConfig.tlsCertData.value, error: isTLSCertDataEmpty ? message : '' },
+                    tlsCertData: {
+                        value: tlsInput.tlsConfig.tlsCertData.value,
+                        error: isTLSCertDataEmpty ? message : '',
+                    },
                     tlsKeyData: { value: tlsInput.tlsConfig.tlsKeyData.value, error: isTLSKeyDataEmpty ? message : '' },
                 },
             })

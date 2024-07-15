@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
-import { InfoColourBar, ServerErrors, ButtonWithLoader } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoColourBar, ServerErrors, ButtonWithLoader, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import Descriptor from './Descriptor'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { parseYAMLStringToObj, parseIntoYAMLString, sortVariables } from './utils'
 import { postScopedVariables, getScopedVariablesJSON } from './service'
 import { ScopedVariablesDataType, ScopedVariablesEditorProps } from './types'
@@ -76,7 +75,7 @@ export default function ScopedVariablesEditor({
                 toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
             }
         } catch (e) {
-            if (e instanceof ServerErrors && Array.isArray(e.errors) && e.code === 406) {
+            if (e instanceof ServerErrors && Array.isArray(e.errors)) {
                 setInfoError(e.errors[0]?.userMessage || UPLOAD_FAILED_STANDARD_MESSAGE)
             }
             toast.error(UPLOAD_FAILED_STANDARD_MESSAGE)
@@ -163,9 +162,10 @@ export default function ScopedVariablesEditor({
                     {infoError && (
                         <InfoColourBar
                             message={infoError}
-                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
+                            classname="w-100 bcr-1 mb-16 m-0 dc__border dc__border-bottom-r2 dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
                             Icon={ICError}
                             iconClass="icon-dim-20"
+                            linkClass="dc__truncate--clamp-6"
                         />
                     )}
 
