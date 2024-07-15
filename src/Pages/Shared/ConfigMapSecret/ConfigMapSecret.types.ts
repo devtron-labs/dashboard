@@ -53,7 +53,8 @@ export interface ConfigMapSecretFormProps {
     latestDraftData: any
     reloadEnvironments?: () => void
     isAppAdmin?: boolean
-    showTitle?: boolean
+    openDeleteModal: CMSecretDeleteModalType
+    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
     onCancel?: () => void
 }
 
@@ -73,8 +74,7 @@ export interface DraftDetailsForCommentDrawerType {
     index: number
 }
 
-export interface ProtectedConfigMapSecretDetailsProps {
-    title: string
+export interface ProtectedConfigMapSecretProps {
     appChartRef: { id: number; version: string; name: string }
     data: any
     id: number
@@ -86,6 +86,8 @@ export interface ProtectedConfigMapSecretDetailsProps {
     draftData
     parentName: string
     reloadEnvironments?: () => void
+    openDeleteModal: CMSecretDeleteModalType
+    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
 }
 
 interface ValueWithError {
@@ -125,9 +127,7 @@ export interface ConfigMapState {
     configName: ValueWithError
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
-    showDeleteModal: boolean
     showDraftSaveModal: boolean
-    showProtectedDeleteModal: boolean
     showProtectedDeleteOverrideModal: boolean
     draftPayload: any
     isValidateFormError: boolean
@@ -246,3 +246,5 @@ export enum CMSecretProtectedTab {
     Compare = 2,
     Draft = 3,
 }
+
+export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'

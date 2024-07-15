@@ -99,8 +99,6 @@ export const initState = (
         },
         yamlMode: true,
         cmSecretState: cmSecretStateLabel,
-        showDeleteModal: false,
-        showProtectedDeleteModal: false,
         showProtectedDeleteOverrideModal: false,
         showDraftSaveModal: false,
         draftPayload: null,
@@ -141,13 +139,8 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
             return { ...state, yamlMode: !state.yamlMode }
         case ConfigMapActionTypes.toggleDialog:
             return { ...state, dialog: !state.dialog }
-        case ConfigMapActionTypes.toggleDeleteModal:
-            return { ...state, showDeleteModal: !state.showDeleteModal }
-        case ConfigMapActionTypes.toggleProtectedDeleteModal:
-            return { ...state, showProtectedDeleteModal: !state.showProtectedDeleteModal }
         case ConfigMapActionTypes.toggleProtectedDeleteOverrideModal:
             return { ...state, showProtectedDeleteOverrideModal: !state.showProtectedDeleteOverrideModal }
-
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }
         case ConfigMapActionTypes.setSecretDataYaml:

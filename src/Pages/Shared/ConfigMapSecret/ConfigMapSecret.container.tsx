@@ -13,6 +13,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { ComponentStates } from '@Components/EnvironmentOverride/EnvironmentOverrides.type'
@@ -25,6 +26,7 @@ import {
     ConfigMapSecretData,
     CMSecretProtectedTab,
     DraftState,
+    CMSecretDeleteModalType,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
 import { getCMSecret } from './ConfigMapSecret.service'
@@ -67,6 +69,7 @@ export const ConfigMapSecretContainer = ({
             ? CMSecretProtectedTab.Compare
             : CMSecretProtectedTab.Draft,
     )
+    const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
 
     // CONSTANTS
     const envConfigData =
@@ -340,24 +343,23 @@ export const ConfigMapSecretContainer = ({
         toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index: 0 })
     }
 
+    const showDeleteButton = () => {
+        return (
+            ((cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) ||
+                (cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
+                    selectedTab === CMSecretProtectedTab.Draft &&
+                    draftData.action !== 3)) &&
+            !!name
+        )
+    }
+
+    const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
+
     // RENDERERS
     const renderDetails = (): JSX.Element => {
         if (name && isProtected && draftData?.draftId) {
             return (
                 <>
-                    <article className="flexbox dc__align-items-center dc__content-space">
-                        <div
-                            data-testid={`add-${componentType}-button`}
-                            className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8"
-                        >
-                            <span>{name}</span>
-                            {cmSecretStateLabel && (
-                                <div className="dc__border h-20 lh-20 fs-12 fw-6 cn-9 px-6 br-4 dc__uppercase">
-                                    {cmSecretStateLabel}
-                                </div>
-                            )}
-                        </div>
-                    </article>
                     <ConfigToolbar
                         loading={loader}
                         draftId={draftData.draftId}
@@ -381,7 +383,6 @@ export const ConfigMapSecretContainer = ({
                         className="p-0-imp"
                     />
                     <ProtectedConfigMapSecretDetails
-                        title={name}
                         appChartRef={appChartRef}
                         data={cmSecretData?.configData}
                         id={selectedCMSecret?.id}
@@ -393,6 +394,8 @@ export const ConfigMapSecretContainer = ({
                         parentName={parentName}
                         reloadEnvironments={reloadEnvironments}
                         updateCMSecret={updateCMSecret}
+                        openDeleteModal={openDeleteModal}
+                        setOpenDeleteModal={setOpenDeleteModal}
                     />
                 </>
             )
@@ -401,7 +404,6 @@ export const ConfigMapSecretContainer = ({
         return (
             <ConfigMapSecretForm
                 name={!isCreateState ? name : ''}
-                showTitle
                 appChartRef={appChartRef}
                 configMapSecretData={cmSecretData?.configData}
                 id={selectedCMSecret?.id}
@@ -423,6 +425,8 @@ export const ConfigMapSecretContainer = ({
                 }
                 reloadEnvironments={reloadEnvironments}
                 onCancel={redirectURLToValidPage}
+                openDeleteModal={openDeleteModal}
+                setOpenDeleteModal={setOpenDeleteModal}
             />
         )
     }
@@ -461,7 +465,36 @@ export const ConfigMapSecretContainer = ({
             className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''}`}
         >
             <div className="main-content py-16 px-20">
-                <div className="flexbox-col dc__gap-16 dc__mxw-1200">{renderDetails()}</div>
+                <div className="flexbox-col dc__gap-16 dc__mxw-1200">
+                    <article className="flexbox dc__align-items-center dc__content-space">
+                        <div
+                            data-testid={`add-${componentType}-button`}
+                            className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8"
+                        >
+                            <span>
+                                {!isCreateState
+                                    ? name
+                                    : `Create ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
+                            </span>
+                            {cmSecretStateLabel && (
+                                <div className="dc__border h-20 lh-20 fs-12 fw-6 cn-9 px-6 br-4 dc__uppercase">
+                                    {cmSecretStateLabel}
+                                </div>
+                            )}
+                        </div>
+                        {showDeleteButton() && (
+                            <button
+                                type="button"
+                                className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
+                                onClick={handleDelete}
+                            >
+                                <Trash className="icon-dim-16 mr-4" />
+                                Delete{isProtected ? '...' : ''}
+                            </button>
+                        )}
+                    </article>
+                    {renderDetails()}
+                </div>
             </div>
             {DraftComments && showComments && selectedDraft && (
                 <DraftComments

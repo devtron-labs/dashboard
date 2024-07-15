@@ -38,7 +38,6 @@ import {
 
 import warningIcon from '@Images/warning-medium.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '@Config/index'
 import {
     isVersionLessThanOrEqualToTarget,
@@ -105,7 +104,8 @@ export const ConfigMapSecretForm = React.memo(
         isAppAdmin,
         name,
         updateCMSecret,
-        showTitle,
+        openDeleteModal,
+        setOpenDeleteModal,
         onCancel,
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapReducer, [])
@@ -632,24 +632,12 @@ export const ConfigMapSecretForm = React.memo(
             return `Save${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
         }
 
-        const closeProtectedDeleteModal = (): void => {
-            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
-        }
-
         const closeProtectedDeleteOverrideModal = (): void => {
             dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
         }
 
         const closeDeleteModal = (): void => {
-            dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
-        }
-
-        const openDeleteModal = (): void => {
-            if (isProtectedView) {
-                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
-            } else {
-                dispatch({ type: ConfigMapActionTypes.toggleDeleteModal })
-            }
+            setOpenDeleteModal(null)
         }
 
         const toggleDraftSaveModal = (): void => {
@@ -732,7 +720,7 @@ export const ConfigMapSecretForm = React.memo(
                         resourceType={componentType === CMSecretComponentType.Secret ? 2 : 1}
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
-                        toggleModal={closeProtectedDeleteModal}
+                        toggleModal={closeDeleteModal}
                         reload={() => updateCMSecret(undefined, true)}
                     />
                 )
@@ -1078,45 +1066,8 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
-        const isShowDeleteButton = (): boolean => {
-            return (
-                ((cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
-                    cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) ||
-                    (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && draftMode)) &&
-                configMapSecretData?.name
-            )
-        }
-
         return (
             <>
-                {showTitle && (
-                    <article className="flexbox dc__align-items-center dc__content-space">
-                        <div
-                            data-testid={`add-${componentType}-button`}
-                            className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8"
-                        >
-                            <span>
-                                {name ||
-                                    `Create ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
-                            </span>
-                            {cmSecretStateLabel && (
-                                <div className="dc__border h-20 lh-20 fs-12 fw-6 cn-9 px-6 br-4 dc__uppercase">
-                                    {cmSecretStateLabel}
-                                </div>
-                            )}
-                        </div>
-                        {isShowDeleteButton() && (
-                            <button
-                                type="button"
-                                className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
-                                onClick={openDeleteModal}
-                            >
-                                <Trash className="icon-dim-16 mr-4" />
-                                Delete{isProtectedView ? '...' : ''}
-                            </button>
-                        )}
-                    </article>
-                )}
                 <div>
                     {!draftMode &&
                         (state.cmSecretState === CM_SECRET_STATE.INHERITED ||
@@ -1195,9 +1146,9 @@ export const ConfigMapSecretForm = React.memo(
                         </div>
                     )}
                 </div>
-                {configMapSecretData?.name && state.showDeleteModal && renderDeleteModal()}
+                {configMapSecretData?.name && openDeleteModal === 'deleteModal' && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
-                {state.showProtectedDeleteModal && renderProtectedDeleteModal()}
+                {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
                 {state.showProtectedDeleteOverrideModal && renderProtectedDeleteOverRideModal()}
                 {state.showDraftSaveModal && (
                     <SaveChangesModal

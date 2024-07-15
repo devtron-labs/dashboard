@@ -17,7 +17,7 @@ import { DeploymentHistoryDetail } from '@Components/app/details/cdDetails/cd.ty
 import {
     CMSecretComponentType,
     CMSecretProtectedTab,
-    ProtectedConfigMapSecretDetailsProps,
+    ProtectedConfigMapSecretProps,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
 import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
@@ -38,7 +38,9 @@ export const ProtectedConfigMapSecretDetails = ({
     parentName,
     reloadEnvironments,
     updateCMSecret,
-}: ProtectedConfigMapSecretDetailsProps) => {
+    openDeleteModal,
+    setOpenDeleteModal,
+}: ProtectedConfigMapSecretProps) => {
     // HOOKS
     const { appId, name } = useParams<{ appId: string; name: string }>()
     const { email } = useUserEmail()
@@ -315,6 +317,8 @@ export const ProtectedConfigMapSecretDetails = ({
                 }
                 reloadEnvironments={reloadEnvironments}
                 isAppAdmin={draftData.isAppAdmin}
+                openDeleteModal={openDeleteModal}
+                setOpenDeleteModal={setOpenDeleteModal}
             />
         )
     }
