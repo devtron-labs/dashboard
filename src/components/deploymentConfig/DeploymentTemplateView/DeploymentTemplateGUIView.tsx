@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useMemo } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import YAML from 'yaml'
 import {
     InfoColourBar,
@@ -56,8 +56,7 @@ const DeploymentTemplateGUIView = ({
         dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
-
-    const formData = useMemo(() => YAML.parse(value), [value])
+    const [formData, setFormData] = useState(YAML.parse(value))
 
     const state = useMemo(() => {
         try {
@@ -103,6 +102,7 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
+        setFormData(data.formData)
         dispatch({
             type: DeploymentConfigStateActionTypes.guiValues,
             payload: data.formData,
