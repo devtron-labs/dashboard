@@ -609,9 +609,6 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
-        if (state.unableToParseYaml) {
-            return
-        }
         // setting true to update codeditor values with current locked keys checkbox value
         hideLockKeysToggled.current = true
 
