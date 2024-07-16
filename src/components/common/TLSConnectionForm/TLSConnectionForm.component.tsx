@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react'
 import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import TLSInputField from './TLSInputField'
 import { TLSConnectionFormActionType, TLSConnectionFormProps } from './types'

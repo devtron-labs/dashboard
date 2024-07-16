@@ -431,7 +431,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
     }
 
+    /**
+     * Method to validate the form fields if form is unedited/or is aws or other gitops tab
+     * To be consumed by isInvalid method only
+     */
     getFormErrors(form: GitOpsConfig): typeof this.state.isError {
+        // No need to validate for tls values in case of ssh and ssh + password
         if (this.getIsOtherGitOpsTabSelected()) {
             return {
                 ...DefaultErrorFields,
@@ -450,6 +455,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
+        const currentAuthMode = this.getFormAuthMode(form.authMode, form.provider)
+        const isAuthModePassword = currentAuthMode === GitOpsAuthModeType.PASSWORD
         const isBitBucketDC = this.state.form.provider === 'BITBUCKET_DC'
         const isBitBucketDCCreateView =
             !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
@@ -463,6 +470,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
 
+        // TODO: Add validation checks for existing data
+        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            this.state.form.tlsCertData,
+            this.state.form.tlsKeyData,
+        )
+
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
@@ -474,10 +487,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             bitBucketProjectKey: isBitBucketProjectKeyRequired ? this.requiredFieldCheck(form.bitBucketProjectKey) : '',
             sshHost: '',
             sshKey: isSSHKeyRequired ? this.requiredFieldCheck(form.sshKey) : '',
-            // TODO: Look into this later
-            tlsCertData: '',
+            // No need to validate here since already validated in isInvalid
+            tlsCertData: isAuthModePassword && isTLSCertDataEmpty ? message : '',
+            tlsKeyData: isAuthModePassword && isTLSKeyDataEmpty ? message : '',
             caData: '',
-            tlsKeyData: '',
         }
     }
 
@@ -521,7 +534,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             isError.username.length > 0 ||
             isError.token.length > 0 ||
             isError.sshKey.length > 0 ||
-            isError.bitBucketProjectKey.length > 0
+            isError.bitBucketProjectKey.length > 0 ||
+            isError.tlsCertData.length > 0 ||
+            isError.tlsKeyData.length > 0 ||
+            isError.caData.length > 0
 
         if (!_isInvalid) {
             if (this.state.providerTab === GitProvider.GITHUB) {
@@ -535,20 +551,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
-            this.state.form.tlsCertData,
-            this.state.form.tlsKeyData,
-        )
-        if (isTLSKeyDataEmpty) {
-            isError.tlsKeyData = message
-        }
-
-        if (isTLSCertDataEmpty) {
-            isError.tlsCertData = message
-        }
-
         this.setState({ isError })
-        return _isInvalid || isTLSKeyDataEmpty || isTLSCertDataEmpty
+        return _isInvalid
     }
 
     suggestedValidGitOpsUrl() {
@@ -583,16 +587,17 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     getPayload = () => {
-        const tlsValues = getTLSConnectionPayloadValues({
+        const currentAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
+        const tlsValues = currentAuthMode === GitOpsAuthModeType.PASSWORD ? getTLSConnectionPayloadValues({
             enableTLSVerification: this.state.form.enableTLSVerification,
             tlsConfig: {
                 caData: this.state.form.caData,
                 tlsCertData: this.state.form.tlsCertData,
                 tlsKeyData: this.state.form.tlsKeyData,
             },
-        })
+        }) : {}
 
-        // TODO: In case of ssh, we do not send tls values
+        // In case of ssh, we do not send tls values
         if (this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) {
             return {
                 id: this.state.form.id,
@@ -627,7 +632,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             allowCustomRepository: this.state.selectedRepoType === repoType.CONFIGURE,
             active: true,
-            // TODO: For bitbucket dc if authMode is ssh and password then do not send payload
             ...tlsValues,
         }
         return payload
@@ -807,6 +811,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
+        // No need to remove tls related data since we do not send that in payload
         return {
             ...this.state.form,
             authMode: GitOpsAuthModeType.SSH_AND_PASSWORD,
@@ -946,6 +951,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const warning =
             'Devtron was unable to delete the test repository “devtron-sample-repo-dryrun-…”. Please delete it manually.'
         const isAuthModeSSH = this.getIsAuthModeSSH(this.state.form.authMode, this.state.form.provider)
+        // Would be showing TLS Config Form if auth mode is Password
+        const formAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
+        const isTLSConfigFormVisible = formAuthMode === GitOpsAuthModeType.PASSWORD
 
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -1194,25 +1202,27 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 </div>
 
                                 {BitBucketDCCredentials && this.state.form.provider === 'BITBUCKET_DC' ? (
-                                    <BitBucketDCCredentials
-                                        authMode={this.state.form.authMode}
-                                        initialAuthMode={this.state.initialBitBucketDCAuthMode}
-                                        handleAuthModeChange={this.handleAuthModeChange}
-                                        handleChange={this.handleChange}
-                                        username={{
-                                            value: this.state.form.username,
-                                            error: this.state.isError.username,
-                                        }}
-                                        sshKey={{
-                                            value: this.state.form.sshKey,
-                                            error: this.state.isError.sshKey,
-                                        }}
-                                        token={{
-                                            value: this.state.form.token,
-                                            error: this.state.isError.token,
-                                        }}
-                                        id={this.state.form.id}
-                                    />
+                                    <div className={`flexbox-col ${isTLSConfigFormVisible ? 'mb-16' : ''}`}>
+                                        <BitBucketDCCredentials
+                                            authMode={this.state.form.authMode}
+                                            initialAuthMode={this.state.initialBitBucketDCAuthMode}
+                                            handleAuthModeChange={this.handleAuthModeChange}
+                                            handleChange={this.handleChange}
+                                            username={{
+                                                value: this.state.form.username,
+                                                error: this.state.isError.username,
+                                            }}
+                                            sshKey={{
+                                                value: this.state.form.sshKey,
+                                                error: this.state.isError.sshKey,
+                                            }}
+                                            token={{
+                                                value: this.state.form.token,
+                                                error: this.state.isError.token,
+                                            }}
+                                            id={this.state.form.id}
+                                        />
+                                    </div>
                                 ) : (
                                     <div className="form__row--two-third gitops__id mb-20 fs-13">
                                         <div>
@@ -1278,28 +1288,28 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             </Fragment>
                         )}
 
-                        <hr />
-
-                        <TLSConnectionForm
-                            enableTLSVerification={this.state.form.enableTLSVerification}
-                            caData={{
-                                value: this.state.form.caData,
-                                error: this.state.isError.caData,
-                            }}
-                            tlsCertData={{
-                                value: this.state.form.tlsCertData,
-                                error: this.state.isError.tlsCertData,
-                            }}
-                            tlsKeyData={{
-                                value: this.state.form.tlsKeyData,
-                                error: this.state.isError.tlsKeyData,
-                            }}
-                            handleChange={this.handleTLSConfigChange}
-                            isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
-                            rootClassName="mb-16"
-                        />
-
-                        <hr />
+                        {isTLSConfigFormVisible ? (
+                            <TLSConnectionForm
+                                enableTLSVerification={this.state.form.enableTLSVerification}
+                                caData={{
+                                    value: this.state.form.caData,
+                                    error: this.state.isError.caData,
+                                }}
+                                tlsCertData={{
+                                    value: this.state.form.tlsCertData,
+                                    error: this.state.isError.tlsCertData,
+                                }}
+                                tlsKeyData={{
+                                    value: this.state.form.tlsKeyData,
+                                    error: this.state.isError.tlsKeyData,
+                                }}
+                                handleChange={this.handleTLSConfigChange}
+                                isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
+                                rootClassName="mb-16"
+                            />
+                        ) : (
+                            <hr />
+                        )}
 
                         <div>
                             <div className="form__row flex left">

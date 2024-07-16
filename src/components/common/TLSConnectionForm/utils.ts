@@ -20,6 +20,7 @@ export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): 
     const { enableTLSVerification, tlsConfig } = tlsConnection
     const { caData, tlsCertData, tlsKeyData } = tlsConfig
 
+    // TODO: Have to check case for existing data since secrets are not sent in the response
     const areAllFieldsEmpty = !caData && !tlsCertData && !tlsKeyData
 
     if (!enableTLSVerification || areAllFieldsEmpty) {
@@ -29,6 +30,7 @@ export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): 
     return tlsConnection
 }
 
+// TODO: Have to check case for existing data since secrets are not sent in the response
 export const getCertificateAndKeyDependencyError = (
     tlsCertData: TLSConfigDTO['tlsCertData'],
     tlsKeyData: TLSConfigDTO['tlsKeyData'],
