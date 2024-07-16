@@ -4746,3 +4746,10 @@ textarea::placeholder {
 .bw-1_5 {
     border-width: 1.5px;
 }
+
+.dc__fill-available-space {
+    > * {
+        width: 100%;
+        height: 100%;
+    }
+}
