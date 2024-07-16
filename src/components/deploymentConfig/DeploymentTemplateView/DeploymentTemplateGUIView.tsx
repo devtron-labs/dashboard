@@ -59,8 +59,12 @@ const DeploymentTemplateGUIView = ({
     const [formData, setFormData] = useState(null)
 
     useEffect(() => {
-        if (value && !formData) {
-            setFormData(YAML.parse(value))
+        try {
+            if (value && !formData) {
+                setFormData(YAML.parse(value))
+            }
+        } catch {
+            changeEditorMode()
         }
     }, [value])
 
