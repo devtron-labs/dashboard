@@ -445,6 +445,8 @@ const GitForm = ({
             tlsInput.tlsConfig.tlsCertData.value,
             tlsInput.tlsConfig.tlsKeyData.value,
         )
+        // TODO: Add existing data check for error as well
+        const isAuthModePassword = state.auth.value === 'USERNAME_PASSWORD'
 
         if (message) {
             setTLSInput({
@@ -453,9 +455,12 @@ const GitForm = ({
                     ...tlsInput.tlsConfig,
                     tlsCertData: {
                         value: tlsInput.tlsConfig.tlsCertData.value,
-                        error: isTLSCertDataEmpty ? message : '',
+                        error: isTLSCertDataEmpty && isAuthModePassword ? message : '',
                     },
-                    tlsKeyData: { value: tlsInput.tlsConfig.tlsKeyData.value, error: isTLSKeyDataEmpty ? message : '' },
+                    tlsKeyData: {
+                        value: tlsInput.tlsConfig.tlsKeyData.value,
+                        error: isTLSKeyDataEmpty && isAuthModePassword ? message : '',
+                    },
                 },
             })
             return
@@ -819,15 +824,17 @@ const GitForm = ({
                 </div>
             )}
 
-            <TLSConnectionForm
-                enableTLSVerification={tlsInput.enableTLSVerification}
-                caData={tlsInput.tlsConfig.caData}
-                tlsCertData={tlsInput.tlsConfig.tlsCertData}
-                tlsKeyData={tlsInput.tlsConfig.tlsKeyData}
-                handleChange={handleTLSConfigChange}
-                isTLSInitiallyConfigured={id && enableTLSVerification}
-                rootClassName="mb-16"
-            />
+            {state.auth.value === 'USERNAME_PASSWORD' && (
+                <TLSConnectionForm
+                    enableTLSVerification={tlsInput.enableTLSVerification}
+                    caData={tlsInput.tlsConfig.caData}
+                    tlsCertData={tlsInput.tlsConfig.tlsCertData}
+                    tlsKeyData={tlsInput.tlsConfig.tlsKeyData}
+                    handleChange={handleTLSConfigChange}
+                    isTLSInitiallyConfigured={id && enableTLSVerification}
+                    rootClassName="mb-16"
+                />
+            )}
 
             <div className="form__row form__buttons">
                 {id && (
