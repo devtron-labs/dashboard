@@ -352,6 +352,7 @@ const DeploymentTemplateEditorView = ({
                 hideLockKeysToggled,
                 unableToParseYaml: state.unableToParseYaml,
                 readOnly,
+                uneditedDocument,
             })
             lhs = updatedLHS
             rhs = updatedRHS
