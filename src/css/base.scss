@@ -372,6 +372,10 @@ a:focus {
     top: 40px;
 }
 
+.dc__top-44 {
+    top: 44px;
+}
+
 .dc__top-46 {
     top: 46px;
 }
@@ -1168,14 +1172,14 @@ button.anchor {
         }
 
         svg path {
-            stroke: white;
+            fill: white;
         }
 
         &:disabled {
             cursor: not-allowed;
 
             svg path {
-                stroke: var(--N400);
+                fill: var(--N400);
             }
         }
     }
@@ -2133,9 +2137,14 @@ button.anchor {
     text-align: left !important;
 }
 
+// Use text-align-end instead for internationalization
 .dc__align-right {
     text-align: right;
     margin-left: auto;
+}
+
+.dc__text-align-end {
+    text-align: end;
 }
 
 .dc__align-baseline {
@@ -3972,6 +3981,10 @@ textarea,
 
 .dc__column-gap-8 {
     column-gap: 8px;
+}
+
+.dc__column-gap-10 {
+    column-gap: 10px;
 }
 
 .dc__column-gap-12 {
