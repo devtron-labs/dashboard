@@ -171,13 +171,16 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName, appDetails.fluxTemplateType ?? null)
+                : getAppId(
+                      appDetails.clusterId,
+                      appDetails.namespace,
+                      appDetails.appName,
+                      appDetails.fluxTemplateType ?? null,
+                  )
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else if (isExternalArgoApp) {
-            url += `${appDetails.clusterId}`
         } else {
             url += `${appId}`
         }
@@ -185,7 +188,7 @@ const TerminalComponent = ({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }

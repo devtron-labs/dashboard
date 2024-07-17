@@ -48,12 +48,7 @@ export const getManifestResource = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
-    const url =
-        Routes.MANIFEST +
-        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
-            ? `?externalArgoApplicationName=${ad.appName}`
-            : '')
-    return post(url, requestData, { signal })
+    return post(Routes.MANIFEST, requestData, { signal })
 }
 
 export const getDesiredManifestResource = (
@@ -178,12 +173,7 @@ function getEventHelmApps(
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, nodeName, nodeType)
-    const url =
-        Routes.EVENTS +
-        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
-            ? `?externalArgoApplicationName=${ad.appName}`
-            : '')
-    return post(url, requestData)
+    return post(Routes.EVENTS, requestData)
 }
 
 const getFilterWithValue = (type: string, value: string, unit?: string) => {
