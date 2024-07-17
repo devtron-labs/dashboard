@@ -34,4 +34,5 @@
 | ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
 | ENABLE_RESOURCE_SCAN_V2            | true      | Enable image scan for resources (v2)          |
 | ORGANIZATION_NAME                      | ""         | Name of the organization     |
+| RESOURCE_TREE_TIMEOUT                      | 25000         | timeout for app details resource tree     |
 # DASHBOARD CONFIG SECRET
