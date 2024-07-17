@@ -219,14 +219,8 @@ export const downloadLogs = async (
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
-        const appType =
-            ad.appType == AppType.DEVTRON_APP
-                ? K8sResourcePayloadAppType.DEVTRON_APP
-                : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType =
-            ad.deploymentAppType == DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+        const appType = getK8sResourcePayloadAppType(ad.appType)
+        const deploymentType = getDeploymentType(ad.deploymentAppType)
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
     }
     logsURL += `${filter}`
