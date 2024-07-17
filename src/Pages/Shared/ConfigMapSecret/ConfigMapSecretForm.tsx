@@ -16,7 +16,7 @@
 
 import React, { useEffect, useReducer, useRef } from 'react'
 
-import { useParams } from 'react-router-dom'
+import { Prompt, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import ReactSelect from 'react-select'
 
@@ -34,11 +34,13 @@ import {
     DeleteDialog,
     ServerErrors,
     CustomInput,
+    usePrompt,
+    deepEqual,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT } from '@Config/index'
+import { DOCUMENTATION, PATTERNS, ROLLOUT_DEPLOYMENT, UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/index'
 import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
@@ -64,8 +66,9 @@ import {
     ConfigMapSecretFormProps,
     KeyValueValidated,
     CMSecretComponentType,
+    CMSecretYamlData,
 } from './ConfigMapSecret.types'
-import { ConfigMapReducer, initState } from './ConfigMapSecret.reducer'
+import { ConfigMapSecretReducer, initState } from './ConfigMapSecret.reducer'
 import {
     SecretOptions,
     getTypeGroups,
@@ -79,7 +82,7 @@ import {
     ExternalSecretHelpNote,
 } from './secret.utils'
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './ConfigMapSecret.constants'
-import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
+import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditor.container'
 
 import '@Components/EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
@@ -108,8 +111,8 @@ export const ConfigMapSecretForm = React.memo(
         setOpenDeleteModal,
         onCancel,
     }: ConfigMapSecretFormProps): JSX.Element => {
-        const memoizedReducer = React.useCallback(ConfigMapReducer, [])
-        const tempArr = useRef([])
+        const memoizedReducer = React.useCallback(ConfigMapSecretReducer, [])
+        const tempArr = useRef<CMSecretYamlData[]>([])
         const [state, dispatch] = useReducer(
             memoizedReducer,
             initState(configMapSecretData, componentType, cmSecretStateLabel),
@@ -138,9 +141,17 @@ export const ConfigMapSecretForm = React.memo(
                 type: ConfigMapActionTypes.reInit,
                 payload: initState(configMapSecretData, componentType, cmSecretStateLabel),
             })
+
+            return () => {
+                tempArr.current = []
+            }
         }, [configMapSecretData])
 
-        const setTempArr = (arr) => {
+        const setTempArr = (arr: CMSecretYamlData[]) => {
+            dispatch({
+                type: ConfigMapActionTypes.multipleOptions,
+                payload: { isFormDirty: arr.length && !deepEqual(arr, state.currentData) },
+            })
             tempArr.current = arr
         }
 
@@ -151,6 +162,10 @@ export const ConfigMapSecretForm = React.memo(
                 configMapSecretAbortRef.current.abort()
             }
         }, [envId])
+
+        usePrompt({
+            shouldPrompt: state.isFormDirty,
+        })
 
         const handleOverride = async (e) => {
             e.preventDefault()
@@ -321,7 +336,9 @@ export const ConfigMapSecretForm = React.memo(
             }
 
             if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
-                toast.error(`Please add ${componentType} data before saving.`)
+                toast.error(
+                    `Please add ${componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'} data before saving.`,
+                )
                 isFormValid = false
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
@@ -474,7 +491,7 @@ export const ConfigMapSecretForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.error })
         }
 
-        async function handleSubmit(e) {
+        const handleSubmit = async (e) => {
             e.preventDefault()
             const { isValid, arr } = validateForm()
             if (!isValid) {
@@ -569,14 +586,13 @@ export const ConfigMapSecretForm = React.memo(
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {
                         dialog: false,
-                        showDeleteModal: false,
-                        showProtectedDeleteModal: false,
                         submitLoading: false,
                         overrideLoading: false,
                     },
                 })
+                setOpenDeleteModal(null)
 
-                updateCMSecret(undefined, true)
+                updateCMSecret()
             } catch (err) {
                 handleError(3, err)
             }
@@ -589,7 +605,11 @@ export const ConfigMapSecretForm = React.memo(
         const toggleExternalType = (selectedExternalType): void => {
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
-                payload: { external: selectedExternalType.value !== '', externalType: selectedExternalType.value },
+                payload: {
+                    external: selectedExternalType.value !== '',
+                    externalType: selectedExternalType.value,
+                    isFormDirty: !!state.configName.value,
+                },
             })
         }
 
@@ -721,7 +741,7 @@ export const ConfigMapSecretForm = React.memo(
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
                         toggleModal={closeDeleteModal}
-                        reload={() => updateCMSecret(undefined, true)}
+                        reload={() => updateCMSecret()}
                     />
                 )
             }
@@ -730,7 +750,7 @@ export const ConfigMapSecretForm = React.memo(
         const trimConfigMapName = (): void => {
             dispatch({
                 type: ConfigMapActionTypes.setConfigName,
-                payload: { value: state.configName.value.trim() },
+                payload: { ...state.configName, value: state.configName.value.trim() },
             })
         }
         const renderRollARN = (): JSX.Element => {
@@ -1105,7 +1125,7 @@ export const ConfigMapSecretForm = React.memo(
                                 componentType={componentType}
                                 state={state}
                                 dispatch={dispatch}
-                                tempArr={tempArr.current}
+                                tempArr={tempArr}
                                 setTempArr={setTempArr}
                                 readonlyView={readonlyView}
                                 draftMode={draftMode}
@@ -1163,6 +1183,7 @@ export const ConfigMapSecretForm = React.memo(
                         showAsModal
                     />
                 )}
+                <Prompt when={state.isFormDirty} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             </>
         )
     },

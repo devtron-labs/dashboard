@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -18,7 +18,6 @@ import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { ComponentStates } from '@Components/EnvironmentOverride/EnvironmentOverrides.type'
 import { useAppConfigurationContext } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfiguration.provider'
-import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 import {
     CMSecretComponentType,
     DraftDetailsForCommentDrawerType,
@@ -31,7 +30,7 @@ import {
 
 import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
-import { ProtectedConfigMapSecretDetails } from './ProtectedContainer'
+import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 
 import './ConfigMapSecret.scss'
@@ -54,42 +53,38 @@ export const ConfigMapSecretContainer = ({
     const { path } = useRouteMatch()
     const history = useHistory()
     const { appId, envId, name } = useParams<{ appId: string; envId: string; name: string }>()
-    const { envConfig, reloadEnvironments, lastUnlockedStage, fetchEnvConfig, isJobView } = useAppConfigurationContext()
+    const { envConfig, reloadEnvironments, fetchEnvConfig, isJobView, lastUnlockedStage } = useAppConfigurationContext()
 
     // STATES
-    const [isLoading, setIsLoading] = useState(false)
-    const [draftDataMap, setDraftDataMap] = useState<Record<string, Record<string, number>>>()
-    const [showComments, setShowComments] = useState(false)
+    const [isCMSecretLoading, setIsCMSecretLoading] = useState(false)
+    const [cmSecretError, setCmSecretError] = useState(false)
+    const [cmSecretData, setCmSecretData] = useState<ConfigMapSecretData>(null)
+    const [draftDataMap, setDraftDataMap] = useState<Record<string, Record<string, number>>>(null)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
     const [draftData, setDraftData] = useState(null)
+    const [showComments, setShowComments] = useState(false)
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
-    const [cmSecretData, SetCmSecretData] = useState<ConfigMapSecretData>(null)
-    const [selectedTab, setSelectedTab] = useState<CMSecretProtectedTab>(
-        cmSecretData?.configData?.draftState === DraftState.AwaitApproval
-            ? CMSecretProtectedTab.Compare
-            : CMSecretProtectedTab.Draft,
-    )
+    const [selectedTab, setSelectedTab] = useState<CMSecretProtectedTab>(null)
     const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
 
     // CONSTANTS
     const envConfigData =
         envConfig.config?.[componentType === CMSecretComponentType.ConfigMap ? 'configmaps' : 'secrets'] || []
-    const selectedCMSecret = envConfigData.find((data) => data.name === name)
+    const selectedCMSecret = useMemo(() => envConfigData.find((data) => data.name === name), [envConfig, name])
     const isCreateState = name === 'create'
     const isEmptyState = !name && !envConfigData.length
-    const isUnpublished =
-        !selectedCMSecret?.global &&
-        (selectedCMSecret?.configState === ResourceConfigState.Draft ||
-            selectedCMSecret?.configState === ResourceConfigState.ApprovalPending)
 
+    const isUnpublished = draftDataMap?.[name]?.draftId === selectedCMSecret?.id
     let cmSecretStateLabel = isUnpublished ? CM_SECRET_STATE.UNPUBLISHED : CM_SECRET_STATE.BASE
     if (isOverrideView) {
         if (selectedCMSecret?.global) {
-            cmSecretStateLabel = selectedCMSecret.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
+            cmSecretStateLabel = selectedCMSecret?.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
         } else {
             cmSecretStateLabel = isUnpublished ? CM_SECRET_STATE.UNPUBLISHED : CM_SECRET_STATE.ENV
         }
     }
+
+    const componentName = componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'
 
     // REFS
     const abortController = useRef<AbortController>(null)
@@ -105,7 +100,8 @@ export const ConfigMapSecretContainer = ({
     }, [])
 
     // LOADING
-    const loader = isLoading || initLoading || envConfig.isLoading
+    const loader = isCMSecretLoading || initLoading || envConfig.isLoading
+    const cmSecretLoader = initLoading || envConfig.isLoading
 
     useEffect(() => {
         if (initResult) {
@@ -135,7 +131,7 @@ export const ConfigMapSecretContainer = ({
 
     const getCMSecretData = () => {
         abortController.current = new AbortController()
-        setIsLoading(true)
+        setIsCMSecretLoading(true)
 
         Promise.allSettled([
             isProtected && getDraftByResourceName
@@ -149,7 +145,7 @@ export const ConfigMapSecretContainer = ({
                 let _configMap: ConfigMapSecretData
 
                 if (
-                    _draftData?.status === 'fulfilled' &&
+                    _draftData.status === 'fulfilled' &&
                     _draftData.value?.result &&
                     (_draftData.value.result.draftState === DraftState.Init ||
                         _draftData.value.result.draftState === DraftState.AwaitApproval)
@@ -232,12 +228,13 @@ export const ConfigMapSecretContainer = ({
                                 },
                             }
                         } else {
-                            toast.error(`The ${componentType} '${name}' has been deleted`)
+                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            setCmSecretError(true)
                             _configMap = null
                         }
                     }
 
-                    SetCmSecretData(_configMap)
+                    setCmSecretData(_configMap)
                 } else if (
                     cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
                     _draftData?.status === 'fulfilled' &&
@@ -245,20 +242,21 @@ export const ConfigMapSecretContainer = ({
                 ) {
                     if (_draftData.value.result.draftState === DraftState.Published) {
                         const dataFromDraft = JSON.parse(_draftData.value.result.data)
-                        SetCmSecretData({
+                        setCmSecretData({
                             ...dataFromDraft,
                             configData: { ...dataFromDraft.configData[0], unAuthorized: dataFromDraft.dataEncrypted },
                         })
                     } else if (_draftData.value.result.draftState === DraftState.Discarded) {
-                        toast.error(`The ${componentType} '${name}' has been deleted`)
-                        SetCmSecretData(null)
+                        toast.error(`The ${componentName} '${name}' has been deleted`)
+                        setCmSecretError(true)
+                        setCmSecretData(null)
                     }
                 }
                 if (
                     (_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) ||
                     (_draftData?.status === 'fulfilled' && _draftData?.value !== null)
                 ) {
-                    setIsLoading(true)
+                    setIsCMSecretLoading(true)
                 }
                 if (
                     (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
@@ -267,64 +265,51 @@ export const ConfigMapSecretContainer = ({
                     toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 }
             })
-            .catch((error) => {
+            .catch((err) => {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 setDraftData(null)
-                showError(error)
+                showError(err)
             })
             .finally(() => {
-                setIsLoading(false)
+                setIsCMSecretLoading(false)
             })
     }
 
-    useEffect(() => {
-        if (selectedCMSecret?.id > -1 && !isCreateState) {
-            getCMSecretData()
-        } else {
-            setIsLoading(false)
-        }
-
-        return () => {
-            SetCmSecretData(null)
-            setDraftData(null)
-        }
-    }, [name, selectedCMSecret])
-
-    useEffect(() => {
-        if (!name && !envConfig.isLoading && envConfigData.length) {
-            history.replace(generatePath(path, { appId, envId, name: envConfigData[0].name }))
-        }
-    }, [])
-
-    // HELPERS
     const redirectURLToValidPage = () => {
-        const index =
-            envConfigData.length > 1 && envConfigData[envConfigData.length - 1].name === name
-                ? envConfigData.length - 2
-                : envConfigData.length - 1
-
-        history.push(
+        history.replace(
             generatePath(path, {
                 appId,
                 envId,
-                name: index ? envConfigData[index].name : undefined,
+                name: envConfigData.length ? envConfigData[envConfigData.length - 1].name : undefined,
             }),
         )
     }
 
-    const updateCMSecret = (_name?: string, isDelete?: boolean) => {
-        setIsLoading(true)
+    useEffect(() => {
+        if (!cmSecretLoader && selectedCMSecret && !isCreateState) {
+            getCMSecretData()
+        }
 
-        if (isCreateState) {
-            history.push(generatePath(path, { appId, envId, name: _name }))
-        } else if (isDelete) {
+        if (!loader && !selectedCMSecret && !isCreateState && !isEmptyState) {
             redirectURLToValidPage()
         }
 
-        fetchEnvConfig(+envId || -1)
-    }
+        return () => {
+            setCmSecretData(null)
+            setDraftData(null)
+            setCmSecretError(null)
+        }
+    }, [selectedCMSecret, cmSecretLoader])
 
     // METHODS
+    const updateCMSecret = (_name?: string) => {
+        fetchEnvConfig(+envId || -1)
+
+        if (isCreateState) {
+            history.push(generatePath(path, { appId, envId, name: _name }))
+        }
+    }
+
     const handleTabSelection = (index: number): void => {
         setSelectedTab(index)
     }
@@ -345,10 +330,10 @@ export const ConfigMapSecretContainer = ({
 
     const showDeleteButton = () => {
         return (
-            ((cmSecretStateLabel !== CM_SECRET_STATE.INHERITED && cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) ||
-                (cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
-                    selectedTab === CMSecretProtectedTab.Draft &&
-                    draftData.action !== 3)) &&
+            cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
+            draftData?.action !== 3 &&
+            !isCreateState &&
             !!name
         )
     }
@@ -356,7 +341,34 @@ export const ConfigMapSecretContainer = ({
     const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
 
     // RENDERERS
-    const renderDetails = (): JSX.Element => {
+    const renderHeader = () => (
+        <article className="flexbox dc__align-items-center dc__content-space">
+            <div data-testid={`add-${componentType}-button`} className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8">
+                <span>
+                    {!isCreateState
+                        ? name
+                        : `Create ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
+                </span>
+                {cmSecretStateLabel && (
+                    <div className="flex dc__border h-20 lh-20 fs-12 fw-6 cn-9 px-6 br-4 dc__uppercase">
+                        {cmSecretStateLabel}
+                    </div>
+                )}
+            </div>
+            {showDeleteButton() && (
+                <button
+                    type="button"
+                    className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
+                    onClick={handleDelete}
+                >
+                    <Trash className="icon-dim-16 mr-4" />
+                    Delete{isProtected ? '...' : ''}
+                </button>
+            )}
+        </article>
+    )
+
+    const renderDetails = () => {
         if (name && isProtected && draftData?.draftId) {
             return (
                 <>
@@ -378,7 +390,7 @@ export const ConfigMapSecretContainer = ({
                         commentsPresent={draftData.commentsCount > 0}
                         isApprovalPending={draftData.draftState === DraftState.AwaitApproval}
                         approvalUsers={draftData.approvers}
-                        reload={() => updateCMSecret(undefined, true)}
+                        reload={() => updateCMSecret()}
                         componentType={componentType}
                         className="p-0-imp"
                     />
@@ -435,7 +447,7 @@ export const ConfigMapSecretContainer = ({
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     }
 
-    if (!cmSecretData && !draftData && !isCreateState && !isEmptyState) {
+    if (cmSecretError) {
         return <ErrorScreenManager code={404} redirectURL={lastUnlockedStage} />
     }
 
@@ -462,37 +474,11 @@ export const ConfigMapSecretContainer = ({
 
     return (
         <div
-            className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''}`}
+            className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''} ${selectedTab === null || selectedTab === CMSecretProtectedTab.Draft || (draftData?.draftState === DraftState.AwaitApproval && selectedTab === CMSecretProtectedTab.Compare) ? 'with-crud-btn' : ''}`}
         >
             <div className="main-content py-16 px-20">
-                <div className="flexbox-col dc__gap-16 dc__mxw-1200">
-                    <article className="flexbox dc__align-items-center dc__content-space">
-                        <div
-                            data-testid={`add-${componentType}-button`}
-                            className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8"
-                        >
-                            <span>
-                                {!isCreateState
-                                    ? name
-                                    : `Create ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
-                            </span>
-                            {cmSecretStateLabel && (
-                                <div className="dc__border h-20 lh-20 fs-12 fw-6 cn-9 px-6 br-4 dc__uppercase">
-                                    {cmSecretStateLabel}
-                                </div>
-                            )}
-                        </div>
-                        {showDeleteButton() && (
-                            <button
-                                type="button"
-                                className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
-                                onClick={handleDelete}
-                            >
-                                <Trash className="icon-dim-16 mr-4" />
-                                Delete{isProtected ? '...' : ''}
-                            </button>
-                        )}
-                    </article>
+                <div key={name} className="flexbox-col dc__gap-16 dc__mxw-1200">
+                    {renderHeader()}
                     {renderDetails()}
                 </div>
             </div>

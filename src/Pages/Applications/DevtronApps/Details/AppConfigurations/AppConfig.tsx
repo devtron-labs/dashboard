@@ -277,7 +277,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const processConfigStatusData = (configStatusRes: AppConfigStatusResponseItem[]) => {
         const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
         const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
-        let index = navItems.findIndex((item) => item.isLocked)
+        let index = navItems.filter(({ altNavKey }) => !altNavKey).findIndex((item) => item.isLocked)
         if (index < 0) {
             index = isJob ? DEFAULT_LANDING_STAGE.JOB_VIEW : DEFAULT_LANDING_STAGE.DEVTRON_APPS
         }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -44,7 +44,7 @@ export interface ConfigMapSecretFormProps {
     configMapSecretData: any
     id: number
     componentType: CMSecretComponentType
-    updateCMSecret: (name?: string, isDelete?: boolean) => void
+    updateCMSecret: (name?: string) => void
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
     readonlyView: boolean
@@ -62,8 +62,8 @@ export interface ConfigMapSecretDataEditorContainerProps {
     componentType: CMSecretComponentType
     state: ConfigMapSecretState
     dispatch: (action: ConfigMapAction) => void
-    tempArr: any[]
-    setTempArr: (arr: any[]) => void
+    tempArr: MutableRefObject<CMSecretYamlData[]>
+    setTempArr: (arr: CMSecretYamlData[]) => void
     readonlyView: boolean
     draftMode: boolean
 }
@@ -79,7 +79,7 @@ export interface ProtectedConfigMapSecretProps {
     data: any
     id: number
     componentType: CMSecretComponentType
-    updateCMSecret: (name?: string, isDelete?: boolean) => void
+    updateCMSecret: (name?: string) => void
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
     selectedTab: CMSecretProtectedTab
@@ -111,12 +111,21 @@ export interface SecretState {
     unAuthorized: boolean
 }
 
+export interface CMSecretYamlData {
+    k: string
+    v: string
+    keyError: string
+    valueError: string
+    id?: string | number
+}
+
 export interface ConfigMapState {
+    isFormDirty: boolean
     loading: boolean
     dialog: boolean
     subPath: string
     filePermission: ValueWithError
-    currentData: any
+    currentData: CMSecretYamlData[]
     external: boolean
     externalValues: { k: string; v: any; keyError: string; valueError: string }[]
     selectedType: string

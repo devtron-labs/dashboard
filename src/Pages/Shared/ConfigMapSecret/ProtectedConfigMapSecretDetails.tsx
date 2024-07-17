@@ -17,6 +17,7 @@ import { DeploymentHistoryDetail } from '@Components/app/details/cdDetails/cd.ty
 import {
     CMSecretComponentType,
     CMSecretProtectedTab,
+    DraftState,
     ProtectedConfigMapSecretProps,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
@@ -161,6 +162,7 @@ export const ProtectedConfigMapSecretDetails = ({
             displayName: 'data',
             value: JSON.stringify(getCodeEditorData(_data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
+
         return prepareHistoryData(
             { ..._data, codeEditorValue },
             componentType === CMSecretComponentType.Secret
@@ -171,7 +173,7 @@ export const ProtectedConfigMapSecretDetails = ({
     }
 
     const renderApproveButton = (): JSX.Element => {
-        if (draftData.draftState !== 4 || !ApproveRequestTippy) {
+        if (draftData.draftState !== DraftState.AwaitApproval || !ApproveRequestTippy) {
             return null
         }
         const hasAccess = hasApproverAccess(email, draftData.approvers)
@@ -281,7 +283,9 @@ export const ProtectedConfigMapSecretDetails = ({
             draftData.action === 3 &&
             cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN
         ) {
-            return renderEmptyMessage(`This ${componentType} will be deleted on approval`)
+            return renderEmptyMessage(
+                `This ${componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'} will be deleted on approval`,
+            )
         }
         return (
             <ConfigMapSecretForm

@@ -29,13 +29,12 @@ import { getSecretInitState } from './secret.utils'
 
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
-    return Object.keys(decodedData).map((k, idx) => {
+    return Object.keys(decodedData).map((k) => {
         return {
             k,
             v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
             keyError: '',
             valueError: '',
-            id: idx,
         }
     })
 }
@@ -57,7 +56,7 @@ export const processCurrentData = (
             componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
         )
     }
-    return [{ k: '', v: '', keyError: '', valueError: '', id: '' }]
+    return [{ k: '', v: '', keyError: '', valueError: '' }]
 }
 
 export const initState = (
@@ -68,6 +67,7 @@ export const initState = (
     const secretInitState =
         componentType === CMSecretComponentType.Secret ? getSecretInitState(configMapSecretData) : {}
     const initialState = {
+        isFormDirty: false,
         loading: false,
         dialog: false,
         subPath: configMapSecretData?.subPath ?? '',
@@ -108,7 +108,7 @@ export const initState = (
     return initialState
 }
 
-export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
+export const ConfigMapSecretReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
     switch (action.type) {
         case ConfigMapActionTypes.reInit:
             return { ...action.payload }
@@ -120,21 +120,21 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
         case ConfigMapActionTypes.error:
             return { ...state, submitLoading: false, overrideLoading: false }
         case ConfigMapActionTypes.setExternal:
-            return { ...state, external: action.payload }
+            return { ...state, external: action.payload, isFormDirty: !!state.configName.value }
         case ConfigMapActionTypes.setSelectedType:
             return { ...state, selectedType: action.payload }
         case ConfigMapActionTypes.setVolumeMountPath:
-            return { ...state, volumeMountPath: action.payload }
+            return { ...state, volumeMountPath: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setIsSubPathChecked:
             return { ...state, isSubPathChecked: !state.isSubPathChecked }
         case ConfigMapActionTypes.setExternalSubpathValues:
-            return { ...state, externalSubpathValues: action.payload }
+            return { ...state, externalSubpathValues: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setIsFilePermissionChecked:
             return { ...state, isFilePermissionChecked: !state.isFilePermissionChecked }
         case ConfigMapActionTypes.setFilePermission:
-            return { ...state, filePermission: action.payload }
+            return { ...state, filePermission: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setConfigName:
-            return { ...state, configName: action.payload }
+            return { ...state, configName: action.payload, isFormDirty: !!action.payload.value }
         case ConfigMapActionTypes.toggleYamlMode:
             return { ...state, yamlMode: !state.yamlMode }
         case ConfigMapActionTypes.toggleDialog:
@@ -144,17 +144,17 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }
         case ConfigMapActionTypes.setSecretDataYaml:
-            return { ...state, secretDataYaml: action.payload }
+            return { ...state, secretDataYaml: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setEsoYaml:
-            return { ...state, esoSecretYaml: action.payload }
+            return { ...state, esoSecretYaml: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setSecretData:
-            return { ...state, secretData: action.payload }
+            return { ...state, secretData: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setRoleARN:
-            return { ...state, roleARN: action.payload }
+            return { ...state, roleARN: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setCodeEditorRadio:
             return { ...state, codeEditorRadio: action.payload }
         case ConfigMapActionTypes.updateCurrentData:
-            return { ...state, currentData: action.payload }
+            return { ...state, currentData: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.toggleSecretMode:
             return { ...state, secretMode: !state.secretMode }
         case ConfigMapActionTypes.toggleUnAuthorized:

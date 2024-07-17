@@ -50,7 +50,7 @@ export enum DEVTRON_APPS_STEPS {
 
 export enum DEFAULT_LANDING_STAGE {
     JOB_VIEW = 2,
-    DEVTRON_APPS = 5,
+    DEVTRON_APPS = 6,
 }
 
 export interface AppConfigProps {

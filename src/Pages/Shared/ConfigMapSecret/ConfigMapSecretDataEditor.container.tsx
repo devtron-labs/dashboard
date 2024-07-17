@@ -128,7 +128,7 @@ const ConfigMapSecretDataEditor = ({
         dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
     }
 
-    function setKeyValueArray(arr) {
+    const setKeyValueArray = (arr) => {
         setTempArr(arr)
     }
 
@@ -163,7 +163,7 @@ const ConfigMapSecretDataEditor = ({
             if (!state.secretMode) {
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
-                    payload: { currentData: tempArr, yamlMode: !state.yamlMode },
+                    payload: { currentData: tempArr.current, yamlMode: !state.yamlMode },
                 })
                 setTempArr([])
                 return
@@ -254,7 +254,7 @@ const ConfigMapSecretDataEditor = ({
         if (!state.secretMode && state.yamlMode) {
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
-                payload: { secretMode: true, currentData: tempArr },
+                payload: { secretMode: true, currentData: tempArr.current },
             })
         } else {
             dispatch({

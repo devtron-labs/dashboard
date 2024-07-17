@@ -143,7 +143,7 @@ export const AppNavigation = () => {
                         return <EnvironmentOverrideRouter key={item.stage} />
                     })}
                     {isJobView && <div className="h-100" />}
-                    <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
+                    <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0 dc__align-self-end">
                         <button
                             data-testid="delete-job-app-button"
                             type="button"

@@ -213,20 +213,17 @@ export const EnvConfigurationsNav = () => {
     ]
 
     const onEnvSelect = ({ environmentId }: typeof environmentData) => {
-        if (isDevtronApp) {
-            history.push(getNavigationPath(path, appId, environmentId, EnvResourceType.DeploymentTemplate))
-        } else {
-            history.push(
-                getNavigationPath(
-                    path,
-                    appId,
-                    environmentId,
-                    EnvResourceType.ConfigMap,
-                    undefined,
-                    updatedEnvConfig.configmaps[0]?.title,
-                ),
-            )
+        let resourceType = EnvResourceType.DeploymentTemplate
+
+        if (pathname.includes('/configmap')) {
+            resourceType = EnvResourceType.ConfigMap
+        } else if (pathname.includes('/secrets')) {
+            resourceType = EnvResourceType.Secret
         }
+
+        const name = pathname.split(`${resourceType}/`)[1]
+
+        history.push(getNavigationPath(path, appId, environmentId, resourceType, undefined, name))
     }
 
     const renderEnvSelector = () => {
