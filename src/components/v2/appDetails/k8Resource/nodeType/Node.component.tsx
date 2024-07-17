@@ -16,7 +16,13 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { useRouteMatch, useParams, useHistory } from 'react-router'
-import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation, AppType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    TippyCustomized,
+    TippyTheme,
+    ClipboardButton,
+    stopPropagation,
+    AppType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'
@@ -381,7 +387,8 @@ const NodeComponent = ({
                                                                         ? ''
                                                                         : 'resource-action-tabs__active'
                                                                 }  ${
-                                                                    index === getNodeDetailTabs(node.kind as NodeType)?.length - 1
+                                                                    index ===
+                                                                    getNodeDetailTabs(node.kind as NodeType)?.length - 1
                                                                         ? ''
                                                                         : 'dc__border-right'
                                                                 } pl-6 pr-6`}
@@ -485,8 +492,7 @@ const NodeComponent = ({
                         )}
                         {node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
-                            node?.kind !== 'EndpointSlice' &&
-                            !(isExternalHelmApp || isExternalArgoApp) && (
+                            node?.kind !== 'EndpointSlice' && (
                                 <div className="flex col-1 pt-9 pb-9 flex-row-reverse">
                                     <NodeDeleteComponent
                                         nodeDetails={node}

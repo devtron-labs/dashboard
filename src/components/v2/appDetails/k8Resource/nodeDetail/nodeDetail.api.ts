@@ -121,7 +121,7 @@ export const getAppDetailsForManifest = (appDetails: AppDetails) => {
             : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject, appDetails.fluxTemplateType ?? null)
 
     return {
-        appId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? appId : '',
+        appId,
         clusterId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? 0 : appDetails.clusterId,
         appType: getK8sResourcePayloadAppType(appDetails.appType),
         deploymentType: getDeploymentType(appDetails.deploymentAppType),
@@ -217,6 +217,9 @@ export const downloadLogs = async (
     } else {
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
+    const selectedNamespace = ad.resourceTree?.nodes?.find(
+        (node) => node.name === nodeName,
+    )?.namespace
     let logsURL = `${Host}/${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
@@ -234,10 +237,7 @@ export const downloadLogs = async (
             ad.deploymentAppType == DeploymentAppTypes.HELM
                 ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
                 : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
-        if (appType === 0) {
-            logsURL += `&namespace=${ad.namespace}`
-        }
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
     }
     logsURL += `${filter}`
     setDownloadInProgress(true)
@@ -314,10 +314,7 @@ export const getLogsURL = (
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
         const deploymentType = getDeploymentType(ad.deploymentAppType)
-        if (appType === 0) {
-            logsURL += `&namespace=${ad.namespace}`
-        }
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
     }
     return `${logsURL}&follow=true${filter}`
 }

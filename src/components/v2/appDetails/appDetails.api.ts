@@ -70,7 +70,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
             forceDelete: forceDelete
         },
         appType: getK8sResourcePayloadAppType(appType),
-        deploymentType: getDeploymentType(deploymentAppType)
+        deploymentType: getDeploymentType(deploymentAppType),
     }
     return post(Routes.DELETE_RESOURCE, data)
 }
