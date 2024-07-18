@@ -31,11 +31,10 @@ export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appI
     return `${clusterId}|${appId}|${envId}`
 }
 
-export const generateAppIdentifier = (appDetails: AppDetails, appName: string) => {
+export const generateAppIdentifier = (appDetails: AppDetails, appName: string) =>
     appDetails.appType === AppType.DEVTRON_APP
         ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
         : getAppId(appDetails.clusterId, appDetails.namespace, appName, appDetails.fluxTemplateType ?? null)
-}
 
 export const getManifestResource = (
     ad: AppDetails,

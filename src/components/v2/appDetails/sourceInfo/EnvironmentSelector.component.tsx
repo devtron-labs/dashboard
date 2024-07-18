@@ -66,7 +66,7 @@ const EnvironmentSelectorComponent = ({
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
-    const [showWorkloadsModal, setWorkloadsModal] = useState(false)
+    const [showWorkloadsModal, setShowWorkloadsModal] = useState(false)
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
@@ -206,7 +206,7 @@ const EnvironmentSelectorComponent = ({
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     const handleScaleWorkloads = () => {
-        setWorkloadsModal(true)
+        setShowWorkloadsModal(true)
     }
 
     const appIdentifier = getAppId(
@@ -420,7 +420,7 @@ const EnvironmentSelectorComponent = ({
             {showWorkloadsModal && (
                 <ScaleWorkloadsModal
                     appId={appIdentifier}
-                    onClose={() => setWorkloadsModal(false)}
+                    onClose={() => setShowWorkloadsModal(false)}
                     history={history}
                 />
             )}

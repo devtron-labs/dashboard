@@ -188,7 +188,7 @@ const TerminalComponent = ({
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }

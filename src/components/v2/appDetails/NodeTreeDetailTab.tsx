@@ -45,7 +45,7 @@ const NodeTreeDetailTab = ({
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
         const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
         AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL, isExternalApp)
-    }, [params.appId, params.envId, appDetails])
+    }, [params.appId, params.envId])
 
     const handleFocusTabs = () => {
         if (tabRef?.current) {

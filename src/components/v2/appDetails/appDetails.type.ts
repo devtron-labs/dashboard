@@ -361,7 +361,6 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
     k8SObjectMapRaw?: ApiResourceGroupType[]
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
@@ -477,6 +476,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
     getComponentKey: () => string
+    isExternalApp: boolean
 }
 
 export interface NodeTreeDetailTabProps {

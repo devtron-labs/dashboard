@@ -166,6 +166,6 @@ export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<Upda
 }
 
 export const getManifestUrlInfo = (appId: string, appType: AppType): Promise<ResponseType> => {
-    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}?appType=${getK8sResourcePayloadAppType(appType)}`
+    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}&appType=${getK8sResourcePayloadAppType(appType)}`
     return get(url)
 }
