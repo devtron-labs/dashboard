@@ -61,24 +61,30 @@ export interface TLSConnectionFormProps
     rootClassName?: string
 }
 
-export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handleChange'> {
-    label: string
-    id: string
-    placeholder: string
-    isSensitive: boolean
-    value: string
-    error: string
-    updateAction:
-        | TLSConnectionFormActionType.UPDATE_CA_DATA
-        | TLSConnectionFormActionType.UPDATE_CERT_DATA
-        | TLSConnectionFormActionType.UPDATE_KEY_DATA
+type TLSInputActionType =
+    | {
+          updateAction: TLSConnectionFormActionType.UPDATE_CA_DATA
+          clearAction: TLSConnectionFormActionType.CLEAR_CA_DATA
+      }
+    | {
+          updateAction: TLSConnectionFormActionType.UPDATE_CERT_DATA
+          clearAction: TLSConnectionFormActionType.CLEAR_CERT_DATA
+      }
+    | {
+          updateAction: TLSConnectionFormActionType.UPDATE_KEY_DATA
+          clearAction: TLSConnectionFormActionType.CLEAR_KEY_DATA
+      }
 
-    showClearButton?: boolean
-    clearAction:
-        | TLSConnectionFormActionType.CLEAR_CA_DATA
-        | TLSConnectionFormActionType.CLEAR_CERT_DATA
-        | TLSConnectionFormActionType.CLEAR_KEY_DATA
-}
+export type TLSInputFieldProps = Pick<TLSConnectionFormProps, 'handleChange'> &
+    TLSInputActionType & {
+        label: string
+        id: string
+        placeholder: string
+        isSensitive: boolean
+        value: string
+        error: string
+        showClearButton?: boolean
+    }
 
 export interface GetCertificateAndKeyDependencyErrorReturnType {
     isTLSKeyError: boolean
