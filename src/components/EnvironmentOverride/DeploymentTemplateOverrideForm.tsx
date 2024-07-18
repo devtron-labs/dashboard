@@ -354,7 +354,9 @@ export default function DeploymentTemplateOverrideForm({
 
     const handleTabSelection = (index: number) => {
         // setting true to update codeditor values with current locked keys checkbox value
-        hideLockKeysToggled.current = true
+        if (state.selectedTabIndex !== index) {
+            hideLockKeysToggled.current = true
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
