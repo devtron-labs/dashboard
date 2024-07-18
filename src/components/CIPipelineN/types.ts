@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExtendedOptionType } from '@Components/app/types'
 import { PipelineFormType } from '../workflowEditor/types'
 
 export enum DockerArgsAction {
@@ -46,4 +47,29 @@ export interface DockerArgsProps extends DockerArgsCommonType {
 export interface DockerArgsItemProps extends DockerArgsCommonType {
     arg: PipelineFormType['args'][number]
     index: number
+}
+
+export interface SuggestedTagOptionType {
+    label: string
+    options: OptionsListType[]
+}
+
+export interface OptionsListType {
+    value: string
+    description: string
+    format: string
+    label: string
+    stageType: string
+    variableType: string
+}
+
+export interface InputPluginSelectionType {
+    selectedOutputVariable: ExtendedOptionType
+    variableOptions?: SuggestedTagOptionType[]
+    variableData?: ExtendedOptionType
+    setVariableData?: (tagData: ExtendedOptionType) => void
+    refVar?: React.MutableRefObject<HTMLTextAreaElement>
+    noBackDrop?: boolean
+    placeholder: string
+    selectedVariableIndex: number
 }

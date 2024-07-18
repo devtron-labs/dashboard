@@ -79,13 +79,6 @@ src/components/ClusterNodes/NodeListSearchFilter.tsx
 src/components/ClusterNodes/constants.ts
 src/components/ClusterNodes/types.ts
 src/components/CodeEditor/CodeEditor.tsx
-src/components/ConfigMapSecret/ConfigMap/ConfigMapList.tsx
-src/components/ConfigMapSecret/ConfigMapSecret.components.tsx
-src/components/ConfigMapSecret/ConfigMapSecretDataEditorContainer.tsx
-src/components/ConfigMapSecret/ConfigMapSecretForm.tsx
-src/components/ConfigMapSecret/Secret/SecretList.tsx
-src/components/ConfigMapSecret/Secret/secret.utils.tsx
-src/components/ConfigMapSecret/Types.ts
 src/components/CustomChart/CustomChartList.tsx
 src/components/CustomChart/CustomChartList.utils.ts
 src/components/CustomChart/UploadChartModal.tsx

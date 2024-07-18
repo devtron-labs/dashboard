@@ -14,63 +14,16 @@
  * limitations under the License.
  */
 
-import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { CM_SECRET_STATE } from './Constants'
-import { ExtendedOptionType } from '../app/types'
+import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
-export interface KeyValueInputInterface {
-    keyLabel: string
-    valueLabel: string
-    k: string
-    v: string
-    index: number
-    onChange: any
-    onDelete: any
-    keyError?: string
-    valueError?: string
-    valueType?: string
-}
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface SuggestedTagOptionType {
-    label: string
-    options: OptionsListType[]
-}
+import {
+    ComponentStates,
+    EnvironmentOverrideComponentProps,
+} from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
-export interface OptionsListType {
-    value: string
-    description: string
-    format: string
-    label: string
-    stageType: string
-    variableType: string
-}
-
-export interface InputPluginSelectionType {
-    selectedOutputVariable: ExtendedOptionType
-    variableOptions?: SuggestedTagOptionType[]
-    variableData?: ExtendedOptionType
-    setVariableData?: (tagData: ExtendedOptionType) => void
-    refVar?: React.MutableRefObject<HTMLTextAreaElement>
-    noBackDrop?: boolean
-    placeholder: string
-    selectedVariableIndex: number
-}
-
-export interface ResizableTextareaProps {
-    minHeight?: number
-    maxHeight?: number
-    value?: string
-    onChange?: (e) => void
-    onBlur?: (e) => void
-    onFocus?: (e) => void
-    className?: string
-    placeholder?: string
-    lineHeight?: number
-    padding?: number
-    disabled?: boolean
-    name?: string
-    dataTestId?: string
-}
+import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
 
 export interface KeyValueYaml {
     yaml: string
@@ -88,25 +41,13 @@ export interface KeyValueValidated {
     arr: KeyValue[]
 }
 
-export interface ConfigMapListProps {
-    isJobView?: boolean
-    isOverrideView?: boolean
-    isProtected?: boolean
-    parentName?: string
-    parentState?: ComponentStates
-    setParentState?: React.Dispatch<React.SetStateAction<ComponentStates>>
-    reloadEnvironments?: () => void
-    clusterId?: string
-}
-
 export interface ConfigMapSecretFormProps {
+    name: string
     appChartRef: { id: number; version: string; name: string }
-    updateCollapsed: (collapse?: boolean) => void
     configMapSecretData: any
-    id
-    componentType: string
-    update: (...args) => void
-    index: number
+    id: number
+    componentType: CMSecretComponentType
+    updateCMSecret: (name?: string) => void
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
     readonlyView: boolean
@@ -115,13 +56,17 @@ export interface ConfigMapSecretFormProps {
     latestDraftData: any
     reloadEnvironments?: () => void
     isAppAdmin?: boolean
+    openDeleteModal: CMSecretDeleteModalType
+    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
+    onCancel?: () => void
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
-    componentType: string
+    componentType: CMSecretComponentType
     state: ConfigMapSecretState
     dispatch: (action: ConfigMapAction) => void
-    tempArr
+    tempArr: MutableRefObject<CMSecretYamlData[]>
+    setTempArr: (arr: CMSecretYamlData[]) => void
     readonlyView: boolean
     draftMode: boolean
 }
@@ -132,37 +77,20 @@ export interface DraftDetailsForCommentDrawerType {
     index: number
 }
 
-export interface ConfigMapSecretProps {
-    componentType: string
-    title: string
-    appChartRef: any
-    update: (index?, result?) => void
-    data?: any
-    index?: number
-    id?: number
-    isOverrideView?: boolean
-    isJobView: boolean
-    isProtected: boolean
-    toggleDraftComments?: (data: DraftDetailsForCommentDrawerType) => void
-    reduceOpacity?: boolean
-    parentName?: string
-    reloadEnvironments?: () => void
-}
-
-export interface ProtectedConfigMapSecretDetailsProps {
+export interface ProtectedConfigMapSecretProps {
     appChartRef: { id: number; version: string; name: string }
-    updateCollapsed: (collapse?: boolean) => void
     data: any
     id: number
-    componentType: string
-    update: (...args) => void
-    index: number
+    componentType: CMSecretComponentType
+    updateCMSecret: (name?: string) => void
     cmSecretStateLabel: CM_SECRET_STATE
     isJobView: boolean
-    selectedTab
+    selectedTab: CMSecretProtectedTab
     draftData
-    parentName
+    parentName: string
     reloadEnvironments?: () => void
+    openDeleteModal: CMSecretDeleteModalType
+    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
 }
 
 interface ValueWithError {
@@ -186,12 +114,21 @@ export interface SecretState {
     unAuthorized: boolean
 }
 
+export interface CMSecretYamlData {
+    k: string
+    v: string
+    keyError: string
+    valueError: string
+    id?: string | number
+}
+
 export interface ConfigMapState {
+    isFormDirty: boolean
     loading: boolean
     dialog: boolean
     subPath: string
     filePermission: ValueWithError
-    currentData: any
+    currentData: CMSecretYamlData[]
     external: boolean
     externalValues: { k: string; v: any; keyError: string; valueError: string }[]
     selectedType: string
@@ -202,9 +139,7 @@ export interface ConfigMapState {
     configName: ValueWithError
     yamlMode: boolean
     cmSecretState: CM_SECRET_STATE
-    showDeleteModal: boolean
     showDraftSaveModal: boolean
-    showProtectedDeleteModal: boolean
     showProtectedDeleteOverrideModal: boolean
     draftPayload: any
     isValidateFormError: boolean
@@ -248,3 +183,84 @@ export interface ConfigMapAction {
     type: ConfigMapActionTypes
     payload?: any
 }
+
+export interface CMSecret {
+    id: number
+    appId: number
+    environmentId?: number
+    configData: ConfigDatum[]
+}
+
+export interface ConfigDatum {
+    name: string
+    type: string
+    external: boolean
+    data: Record<string, string>
+    defaultData: Record<string, string>
+    global: boolean
+    externalType: string
+    esoSecretData: {}
+    defaultESOSecretData: {}
+    secretData: Record<string, string>
+    roleARN: string
+    subPath: boolean
+    filePermission: string
+    overridden: boolean
+}
+
+export type CMSecretResponse = ResponseType<CMSecret>
+
+export interface CMSecretContainerProps
+    extends Pick<
+        EnvironmentOverrideComponentProps,
+        'reloadEnvironments' | 'envConfig' | 'fetchEnvConfig' | 'isJob' | 'onErrorRedirectURL'
+    > {
+    componentType?: CMSecretComponentType
+    parentName?: string
+    parentState?: ComponentStates
+    setParentState?: Dispatch<SetStateAction<ComponentStates>>
+    isOverrideView?: boolean
+    clusterId?: string
+    isProtected?: boolean
+}
+
+export interface CMSecretConfigData extends ConfigDatum {
+    secretMode: boolean
+    unAuthorized: boolean
+    draftId?: number
+    draftState?: number
+    isNew?: boolean
+}
+
+export interface ConfigMapSecretData extends Omit<CMSecret, 'configData'> {
+    configData: CMSecretConfigData
+}
+
+export enum DraftState {
+    Init = 1,
+    Discarded = 2,
+    Published = 3,
+    AwaitApproval = 4,
+}
+
+export interface OverrideProps {
+    overridden: boolean
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    loading?: boolean
+    type: CMSecretComponentType
+    readonlyView: boolean
+    isProtectedView: boolean
+}
+
+export enum CMSecretComponentType {
+    ConfigMap = 1,
+    Secret = 2,
+}
+
+export enum CMSecretProtectedTab {
+    Published = 1,
+    Compare = 2,
+    Draft = 3,
+}
+
+export type CMSecretDeleteModalType = 'deleteModal' | 'protectedDeleteModal'

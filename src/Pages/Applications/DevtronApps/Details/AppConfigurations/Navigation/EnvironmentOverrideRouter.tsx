@@ -407,25 +407,25 @@ const EnvironmentOverrideRouter = () => {
             <div className="app-compose__nav-item routes-container-header flex dc__uppercase no-hover">
                 Environment Overrides
             </div>
-            {isJobView && (
-                <div className="cursor">
-                    {addEnvironment ? (
-                        <div
-                            className="px-8 py-6 flexbox dc__align-items-center dc__content-space dc__gap-8"
-                            onClick={handleAddEnvironment}
-                        >
-                            <div className="fw-6 fs-13 lh-20 cb-5">Add Environment</div>
-                            <Add className="icon-dim-16 fcb-5" />
-                        </div>
-                    ) : (
-                        renderEnvSelector()
-                    )}
-                </div>
-            )}
+            {isJobView &&
+                (addEnvironment ? (
+                    <button
+                        type="button"
+                        className="px-8 py-6 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__unset-button-styles w-100"
+                        onClick={handleAddEnvironment}
+                    >
+                        <span className="fw-6 fs-13 lh-20 cb-5">Add Environment</span>
+                        <Add className="icon-dim-16 fcb-5" />
+                    </button>
+                ) : (
+                    renderEnvSelector()
+                ))}
             {isEnvLoading ? (
                 <Progressing styles={{ height: '80px' }} />
             ) : (
-                <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
+                (!!environments.length || !isJobView) && (
+                    <div className="flex column left environment-routes-container top">{renderEnvsNav()}</div>
+                )
             )}
         </div>
     )

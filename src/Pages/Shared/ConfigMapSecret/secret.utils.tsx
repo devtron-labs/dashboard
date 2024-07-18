@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { components } from 'react-select'
-import { OptionType, YAMLStringify, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { components, OptionProps, GroupHeadingProps } from 'react-select'
+import { NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { NavLink } from 'react-router-dom'
-import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outlined.svg'
-import { SECRET_TOAST_INFO, CM_SECRET_STATE } from '../Constants'
-import { ConfigMapAction, ConfigMapActionTypes, SecretState } from '../Types'
-import { processCurrentData } from '../ConfigMapSecret.reducer'
-import { DOCUMENTATION, URLS } from '../../../config'
+
+import { OptionType, YAMLStringify, showError } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as InfoIcon } from '@Icons/ic-info-outlined.svg'
+import { URLS, DOCUMENTATION } from '@Config/index'
+import { getCustomOptionSelectionStyle } from '@Components/v2/common/ReactSelect.utils'
+
+import { SECRET_TOAST_INFO, CM_SECRET_STATE } from './ConfigMapSecret.constants'
+import { processCurrentData } from './ConfigMapSecret.reducer'
+import { ConfigMapAction, ConfigMapActionTypes, SecretState, CMSecretComponentType } from './ConfigMapSecret.types'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -252,9 +254,9 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
         return externalType
     }
     if (isJobView) {
-        const externalType = [...noGroups].find((x) => x.value === typeValue)
+        const _externalType = [...noGroups].find((x) => x.value === typeValue)
         if (typeValue) {
-            return externalType
+            return _externalType
         }
         return [
             {
@@ -263,6 +265,7 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
             },
         ]
     }
+
     return [
         {
             label: '',
@@ -279,31 +282,38 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
     ]
 }
 
-export const SecretOptions = (props) => {
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+export const SecretOptions = (props: OptionProps<ReturnType<typeof getTypeGroups>>) => {
+    const { selectProps, data } = props
+
+    // props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    const styles = { ...selectProps.styles, option: getCustomOptionSelectionStyle() }
+
     return (
-        <components.Option {...props}>
+        <components.Option {...props} selectProps={{ ...selectProps, styles }}>
             <div>
-                <div>{props.data.label}</div>
-                {props.data?.deprecated && <div className="cy-7 fw-4 fs-11">Deprecated</div>}
+                <div>{data.label}</div>
+                {data?.deprecated && <div className="cy-7 fw-4 fs-11">Deprecated</div>}
             </div>
         </components.Option>
     )
 }
 
-export const GroupHeading = (props) => {
-    if (!props.data.label) {
+export const GroupHeading = (props: GroupHeadingProps<ReturnType<typeof getTypeGroups>>) => {
+    const { data } = props
+
+    if (!data.label) {
         return null
     }
     return (
         <components.GroupHeading {...props}>
             <div className="flex flex-justify h-100">
-                {props.data.label}
+                {data.label}
                 <a
                     className="flex"
                     href="https://github.com/external-secrets/external-secrets"
                     target="_blank"
                     rel="noreferrer"
+                    aria-label={`${data.label}-info`}
                 >
                     <InfoIcon className="icon-dim-20 fcn-6" />
                 </a>
@@ -354,7 +364,11 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
             payload: {
                 secretMode: false,
                 cmSecretState: CM_SECRET_STATE.OVERRIDDEN,
-                currentData: processCurrentData(configMapSecretData, CM_SECRET_STATE.INHERITED, 'secret'),
+                currentData: processCurrentData(
+                    configMapSecretData,
+                    CM_SECRET_STATE.INHERITED,
+                    CMSecretComponentType.Secret,
+                ),
             },
         })
         if (configMapSecretData.secretData) {
@@ -394,32 +408,39 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             secretStore: json.secretStore,
             secretStoreRef: json.secretStoreRef,
             refreshInterval: json.refreshInterval,
+            esoData: undefined,
         }
         if (Array.isArray(json?.esoData)) {
-            payload['esoData'] = json.esoData
+            payload.esoData = json.esoData
         }
         dispatch({
             type: ConfigMapActionTypes.multipleOptions,
             payload,
         })
     } else if (Array.isArray(json)) {
-        json = json.map((j) => {
-            const temp = {}
-            temp['isBinary'] = j.isBinary
+        const _json = json.map((j) => {
+            const temp = {
+                isBinary: undefined,
+                fileName: undefined,
+                name: undefined,
+                property: undefined,
+                value: undefined,
+            }
+            temp.isBinary = j.isBinary
             if (j.key) {
-                temp['fileName'] = j.key
+                temp.fileName = j.key
             }
             if (j.property) {
-                temp['property'] = j.property
+                temp.property = j.property
             }
             if (j.name) {
-                temp['name'] = j.name
+                temp.name = j.name
             }
             return temp
         })
         dispatch({
             type: ConfigMapActionTypes.setSecretData,
-            payload: json,
+            payload: _json,
         })
     }
 }
@@ -453,10 +474,12 @@ export function handleSecretDataYamlChange(
         } else {
             handleValidJson(isESO, json, dispatch)
         }
-    } catch (error) {}
+    } catch (error) {
+        // do nothing
+    }
 }
 
-export const getSecretInitState = (configMapSecretData, draftMode: boolean): SecretState => {
+export const getSecretInitState = (configMapSecretData): SecretState => {
     let tempSecretData
     let jsonForSecretDataYaml
     if (configMapSecretData?.secretData?.length) {
@@ -470,16 +493,22 @@ export const getSecretInitState = (configMapSecretData, draftMode: boolean): Sec
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
     jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
-        const temp = {}
-        temp['isBinary'] = j.isBinary
+        const temp = {
+            isBinary: undefined,
+            key: undefined,
+            name: undefined,
+            property: undefined,
+            value: undefined,
+        }
+        temp.isBinary = j.isBinary
         if (j.key) {
-            temp['key'] = j.key
+            temp.key = j.key
         }
         if (j.property) {
-            temp['property'] = j.property
+            temp.property = j.property
         }
         if (j.name) {
-            temp['name'] = j.name
+            temp.name = j.name
         }
         return temp
     })
