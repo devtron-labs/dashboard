@@ -179,8 +179,9 @@ const EphemeralContainerDrawer = ({
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        iconClassName="fcn-6 ml-8"
+                        iconClassName="icon-dim-16 fcn-6 ml-8"
                         documentationLink={DOCUMENTATION.APP_EPHEMERAL_CONTAINER}
+                        documentationLinkText="View Documentation"
                     />
                 </h2>
                 <button
