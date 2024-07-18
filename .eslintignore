@@ -89,10 +89,8 @@ src/components/ConfigMapSecret/Types.ts
 src/components/CustomChart/CustomChartList.tsx
 src/components/CustomChart/CustomChartList.utils.ts
 src/components/CustomChart/UploadChartModal.tsx
-src/components/EnvironmentOverride/DeploymentTemplateOverride.tsx
-src/components/EnvironmentOverride/DeploymentTemplateOverrideForm.tsx
-src/components/EnvironmentOverride/EnvironmentOverride.tsx
-src/components/EnvironmentOverride/EnvironmentOverrides.type.ts
+src/components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride.tsx
+src/components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverrideForm.tsx
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
