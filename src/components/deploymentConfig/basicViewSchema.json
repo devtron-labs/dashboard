@@ -178,10 +178,10 @@
                 "type": "object",
                 "properties": {
                     "port": {
-                        "type": "integer"
+                        "type": ["integer", "string"]
                     },
                     "servicePort": {
-                        "type": "integer"
+                        "type": ["integer", "string"]
                     }
                 },
                 "required": ["port", "servicePort"]
@@ -213,7 +213,7 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": ["integer", "string"]
                 }
             }
         },
@@ -225,7 +225,7 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": ["integer", "string"]
                 }
             }
         },

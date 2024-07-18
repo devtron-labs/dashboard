@@ -112,7 +112,7 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": ["integer", "string"]
                 }
             }
         },
@@ -124,7 +124,7 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": ["integer", "string"]
                 }
             }
         },

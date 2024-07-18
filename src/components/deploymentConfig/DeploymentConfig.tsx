@@ -36,7 +36,6 @@ import {
     getDeploymentManisfest,
     getOptions,
     getIfLockedConfigProtected,
-    getIfLockedConfigNonProtected,
 } from './service'
 import { getChartReferences } from '../../services/service'
 import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'

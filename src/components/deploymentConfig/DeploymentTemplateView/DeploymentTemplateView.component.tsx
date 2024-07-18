@@ -143,7 +143,7 @@ export const CompareWithDropdown = ({
     isValues,
     groupedData,
     setConvertVariables,
-    setFetchingValues,
+    triggerEditorLoadingState,
 }: CompareWithDropdownProps) => {
     const [groupedOptions, setGroupedOptions] = useState([
         {
@@ -234,13 +234,7 @@ export const CompareWithDropdown = ({
     const onChange = (selected: DeploymentChartOptionType) => {
         setConvertVariables(false)
         setSelectedOption(selected)
-        // NOTE: this is to trigger a loading state in CodeEditor
-        // React-Monaco-Editor internally does not put defaultValue prop
-        // inside any of its useEffects thus, the diffs don't update when
-        // defaultValue i.e lhs changes. To trigger an update we need to trigger
-        // the loader of CodeEditor
-        setFetchingValues(true)
-        setTimeout(() => setFetchingValues(false), 1000)
+        triggerEditorLoadingState()
     }
 
     return (
