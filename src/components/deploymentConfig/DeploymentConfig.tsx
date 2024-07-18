@@ -57,6 +57,7 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
+import { applyCompareDiffOfTempFormDataOnOriginalData } from './utils'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -297,6 +298,16 @@ export default function DeploymentConfig({
         })
     }
 
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (!state.yamlMode && yamlMode) {
+            applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.yamlMode,
+            payload: yamlMode,
+        })
+    }
+
     const reload = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
@@ -529,22 +540,6 @@ export default function DeploymentConfig({
         }
     }
 
-    const updateYamlWithGUIData = () => {
-        if (state.guiValues) {
-            editorOnChange(YAMLStringify(state.guiValues))
-        }
-    }
-
-    const toggleYamlMode = (yamlMode: boolean) => {
-        if (yamlMode && !state.yamlMode) {
-            updateYamlWithGUIData()
-        }
-        dispatch({
-            type: DeploymentConfigStateActionTypes.yamlMode,
-            payload: yamlMode,
-        })
-    }
-
     const handleReadMeClick = () => {
         if (!state.showReadme && state.unableToParseYaml) {
             return
@@ -585,9 +580,7 @@ export default function DeploymentConfig({
 
         setConvertVariables(false)
 
-        if (!state.yamlMode) {
-            updateYamlWithGUIData()
-        }
+        applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
 
         switch (index) {
             case 1:
@@ -643,10 +636,7 @@ export default function DeploymentConfig({
     }
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
-        let valuesOverride = !state.yamlMode && state.guiValues ? state.guiValues : obj
-        if (!state.yamlMode) {
-            updateYamlWithGUIData()
-        }
+        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
 
         if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)

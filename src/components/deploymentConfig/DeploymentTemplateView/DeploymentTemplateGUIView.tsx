@@ -45,6 +45,7 @@ const DeploymentTemplateGUIView = ({
     fetchingValues,
     value,
     readOnly,
+    editorOnChange,
     hideLockedKeys,
     lockedConfigKeysWithLockType,
     uneditedDocument,
@@ -53,25 +54,13 @@ const DeploymentTemplateGUIView = ({
     const {
         isUnSet,
         state: { chartConfigLoading, guiSchema, selectedChart },
-        dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
 
-    const updateGUIValues = (document: object) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.guiValues,
-            payload: document,
-        })
-    }
-
     useEffect(() => {
         try {
-            if (value && !formData) {
-                const document = YAML.parse(value)
-                setFormData(document)
-                updateGUIValues(document)
-            }
+            setFormData(YAML.parse(value))
         } catch {
             changeEditorMode()
         }
@@ -121,8 +110,7 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
-        setFormData(data.formData)
-        updateGUIValues(data.formData as object)
+        editorOnChange?.(YAML.stringify(data.formData))
     }
 
     const renderContent = () => {

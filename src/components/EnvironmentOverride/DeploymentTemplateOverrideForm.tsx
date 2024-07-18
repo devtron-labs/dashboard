@@ -34,6 +34,7 @@ import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { handleConfigProtectionError } from '../deploymentConfig/DeploymentConfig.utils'
+import { applyCompareDiffOfTempFormDataOnOriginalData } from '@Components/deploymentConfig/utils'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -94,6 +95,16 @@ export default function DeploymentTemplateOverrideForm({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDeleteOverrideDraftModal })
     }
 
+    const toggleYamlMode = (yamlMode: boolean) => {
+        if (!state.yamlMode && yamlMode) {
+            applyCompareDiffOfTempFormDataOnOriginalData(getCodeEditorValueForReadOnly(true), getCodeEditorValue(false), editorOnChange)
+        }
+        dispatch({
+            type: DeploymentConfigStateActionTypes.yamlMode,
+            payload: yamlMode,
+        })
+    }
+
     const setLoadingManifestOverride = (value: boolean) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loadingManifestOverride,
@@ -110,12 +121,13 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
-        let valuesOverride = (!state.yamlMode && state.guiValues ? state.guiValues : obj) || state.duplicate
-        if (!state.yamlMode) {
-            updateYamlWithGUIData()
-        }
+        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
+            getCodeEditorValueForReadOnly(true),
+            getCodeEditorValue(false),
+            editorOnChange,
+        )
 
-        if (hideLockedKeys && valuesOverride === obj) {
+        if (hideLockedKeys && typeof valuesOverride === 'object') {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
 
@@ -318,22 +330,6 @@ export default function DeploymentTemplateOverrideForm({
         }
     }
 
-    const updateYamlWithGUIData = () => {
-        if (state.guiValues) {
-            editorOnChange(YAMLStringify(state.guiValues))
-        }
-    }
-
-    const toggleYamlMode = (yamlMode: boolean) => {
-        if (!state.yamlMode && yamlMode) {
-            updateYamlWithGUIData()
-        }
-        dispatch({
-            type: DeploymentConfigStateActionTypes.yamlMode,
-            payload: yamlMode,
-        })
-    }
-
     const handleReadMeClick = () => {
         if (!state.showReadme && state.unableToParseYaml) {
             return
@@ -367,9 +363,11 @@ export default function DeploymentTemplateOverrideForm({
 
         setConvertVariables(false)
 
-        if (!state.yamlMode) {
-            updateYamlWithGUIData()
-        }
+        applyCompareDiffOfTempFormDataOnOriginalData(
+            getCodeEditorValueForReadOnly(true),
+            getCodeEditorValue(false),
+            editorOnChange,
+        )
 
         switch (index) {
             case 1:

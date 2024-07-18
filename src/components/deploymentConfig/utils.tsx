@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { applyCompareDiffOnUneditedDocument, ResponseType, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import YAML from 'yaml'
 import { DeploymentTemplateOptionsTabProps } from './types'
 import fallbackGuiSchema from './basicViewSchema.json'
 import fallbackJobsNCronJobGuiSchema from './fallbackJobsNCronJobGuiSchema.json'
@@ -73,4 +74,14 @@ export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
         return { items: makeObjectFromJsonPathArray(index + 1, paths) }
     }
     return { [key]: makeObjectFromJsonPathArray(index + 1, paths) }
+}
+
+export const applyCompareDiffOfTempFormDataOnOriginalData = (
+    unedited: string,
+    edited: string,
+    updateTempFormData: (data: string) => void,
+) => {
+    const updated = applyCompareDiffOnUneditedDocument(YAML.parse(unedited), YAML.parse(edited))
+    updateTempFormData(YAMLStringify(updated))
+    return updated
 }

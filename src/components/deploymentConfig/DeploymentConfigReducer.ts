@@ -68,7 +68,6 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     convertVariablesOverride: false,
     showLockedTemplateDiff: false,
     lockChangesLoading: false,
-    guiValues: null,
 }
 
 export const deploymentConfigReducer = (
@@ -178,8 +177,6 @@ export const deploymentConfigReducer = (
             return { ...state, convertVariablesOverride: action.payload }
         case DeploymentConfigStateActionTypes.guiSchema:
             return { ...state, guiSchema: action.payload }
-        case DeploymentConfigStateActionTypes.guiValues:
-            return { ...state, guiValues: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:
