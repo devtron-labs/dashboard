@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import ReactSelect, { components } from 'react-select'
-import { CustomInput, InfoColourBar, REGISTRY_TYPE_MAP } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, CustomInput, InfoColourBar, REGISTRY_TYPE_MAP, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { Routes, URLS } from '../../config'
-import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -43,6 +41,15 @@ export default function CIContainerRegistryConfig({
     isCDPipeline,
 }: CIContainerRegistryConfigProps) {
     const [selectedRegistry, setSelectedRegistry] = useState(currentRegistry)
+
+    const getCustomRegistryOption = (registry) => ({
+        ...registry,
+        label: registry.id,
+        value: registry.id,
+        startIcon: <div className={`dc__registry-icon dc__no-shrink ${registry.registryType}`} />,
+    })
+
+    const getContainerRegistryOptions = () => dockerRegistries.map(getCustomRegistryOption)
 
     const onClickRedirectLink = (e) => {
         if (typeof Storage !== 'undefined') {
@@ -95,49 +102,16 @@ export default function CIContainerRegistryConfig({
         }
     }
 
-    const containerRegistryOption = (props): JSX.Element => {
-        props.selectProps.styles.option = getCustomOptionSelectionStyle()
-        return (
-            <components.Option {...props}>
-                <div style={{ display: 'flex' }}>
-                    <div className={`dc__registry-icon mr-5 ${props.data.registryType}`} />
-                    {props.label}
-                </div>
-            </components.Option>
-        )
-    }
-
-    const containerRegistryMenuList = (props): JSX.Element => {
-        return (
-            <components.MenuList {...props}>
-                {props.children}
-                {!configOverrideView && (
-                    <NavLink
-                        to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
-                        className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
-                        style={{ backgroundColor: '#FFF' }}
-                        data-testid="add-container-registry-button"
-                    >
-                        <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
-                        Add Container Registry
-                    </NavLink>
-                )}
-            </components.MenuList>
-        )
-    }
-
-    const containerRegistryControls = (props): JSX.Element => {
-        let value = ''
-        if (props.hasValue) {
-            value = props.getValue()[0].registryType
-        }
-        return (
-            <components.Control {...props}>
-                <div className={`dc__registry-icon ml-10 ${value}`} />
-                {props.children}
-            </components.Control>
-        )
-    }
+    const renderContainerRegistryMenuList = (): JSX.Element => (
+        <NavLink
+            to={URLS.GLOBAL_CONFIG_DOCKER}
+            className="flex left dc__gap-8 dc__border-top bcn-0 px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
+            data-testid="add-container-registry-button"
+        >
+            <Add className="icon-dim-20 dc__no-shrink fcb-5" />
+            <span>Add Container Registry</span>
+        </NavLink>
+    )
 
     return (
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
@@ -146,34 +120,28 @@ export default function CIContainerRegistryConfig({
             </h3>
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label dc__required-field">
-                        Container Registry
-                    </label>
                     {configOverrideView && !allowOverride ? (
-                        <div className="flex left">
-                            <span className={`dc__registry-icon mr-8 ${currentRegistry?.registryType}`} />
-                            <span className="fs-14 fw-4 lh-20 cn-9">{currentRegistry?.id}</span>
-                        </div>
+                        <>
+                            <label htmlFor="" className="form__label dc__required-field">
+                                Container Registry
+                            </label>
+                            <div className="flex left dc__gap-8">
+                                <span className={`dc__registry-icon dc__no-shrink ${currentRegistry?.registryType}`} />
+                                <span className="fs-14 fw-4 lh-20 cn-9">{currentRegistry?.id}</span>
+                            </div>
+                        </>
                     ) : (
-                        <ReactSelect
-                            className="m-0"
+                        <SelectPicker
                             classNamePrefix="build-config__select-container-registry"
-                            tabIndex={1}
-                            isMulti={false}
-                            isClearable={false}
-                            options={dockerRegistries}
-                            getOptionLabel={(option) => `${option.id}`}
-                            getOptionValue={(option) => `${option.id}`}
-                            value={configOverrideView && !allowOverride ? currentRegistry : selectedRegistry}
-                            styles={_multiSelectStyles}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: containerRegistryOption,
-                                MenuList: containerRegistryMenuList,
-                                Control: containerRegistryControls,
-                            }}
+                            inputId="build-config__select-container-registry"
+                            name="build-config__select-container-registry"
+                            label="Container Registry"
+                            options={getContainerRegistryOptions()}
+                            value={selectedRegistry ? getCustomRegistryOption(selectedRegistry) : null}
+                            required
+                            renderMenuListFooter={configOverrideView ? undefined : renderContainerRegistryMenuList}
                             onChange={handleRegistryChange}
-                            isDisabled={configOverrideView && !allowOverride}
+                            size={ComponentSizeType.large}
                         />
                     )}
                     {registry.error && <label className="form__error">{registry.error}</label>}
@@ -204,6 +172,7 @@ export default function CIContainerRegistryConfig({
                             disabled={configOverrideView && !allowOverride}
                             data-testid="container-repository-textbox"
                             error={repository_name.error}
+                            rootClassName="h-36"
                         />
                     )}
                     {!ciConfig && selectedRegistry?.registryType === 'ecr' && (
