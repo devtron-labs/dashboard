@@ -456,6 +456,8 @@ export default function DeploymentConfig({
                 return
             }
             if (isProtected) {
+                // NOTE: if isProtected is true then we only have sent a validate call
+                // thus open the saveChangesModal
                 toggleSaveChangesModal()
                 return
             }
