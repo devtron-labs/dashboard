@@ -17,7 +17,15 @@
 import Tippy from '@tippyjs/react'
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useDownload, useMainContext, useKeyDown } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    Host,
+    Progressing,
+    useDownload,
+    useMainContext,
+    useKeyDown,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -770,7 +778,8 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            height: isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
+                            height:
+                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >

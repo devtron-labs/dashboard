@@ -27,14 +27,8 @@ import { importComponentFromFELibrary } from '../../../common'
 
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 
-export const TriggerModalRow = ({
-    rowData,
-    index,
-    isVirtualEnv,
-    envName,
-    setDownloadPopupOpen,
-}: TriggerModalRowType) => {
-    const {isDownloading, handleDownload} = useDownload()
+export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
+    const { isDownloading, handleDownload } = useDownload()
     const [isDownloaded, setIsDownloaded] = useState(false)
     const params = {
         appId: rowData.appId,
@@ -61,15 +55,9 @@ export const TriggerModalRow = ({
             return
         }
         const downloadUrl = getDownloadManifestUrl(params)
-        handleDownload({downloadUrl, fileName: params.appName, showSuccessfulToast: false})
+        handleDownload({ downloadUrl, fileName: params.appName, showSuccessfulToast: false })
         setIsDownloaded(true)
     }
-
-    useEffect(() => {
-        if (typeof setDownloadPopupOpen === 'function') {
-            setDownloadPopupOpen(isDownloading)
-        }
-    }, [isDownloading])
 
     return (
         <div

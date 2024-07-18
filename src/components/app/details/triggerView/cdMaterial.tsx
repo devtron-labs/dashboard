@@ -894,7 +894,11 @@ const CDMaterial = ({
             cdWorkflowType,
         }
         const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
-        handleDownload({downloadUrl, fileName: downloadManifestDownload.appName, downloadSuccessToastContent: 'Manifest Downloaded Successfully'})
+        handleDownload({
+            downloadUrl,
+            fileName: downloadManifestDownload.appName,
+            downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+        })
     }
 
     const showErrorIfNotAborted = (errors: ServerErrors) => {

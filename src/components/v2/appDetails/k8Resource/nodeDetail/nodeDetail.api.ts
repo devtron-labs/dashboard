@@ -19,7 +19,6 @@ import {
     post,
     put,
     trash,
-    Host,
     K8sResourcePayloadAppType,
     HandleDownloadProps,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -241,7 +240,7 @@ export const downloadLogs = (
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     logsURL += `${filter}`
-    handleDownload({downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log`})
+    handleDownload({ downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log` })
 }
 
 export const getLogsURL = (

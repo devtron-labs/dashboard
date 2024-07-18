@@ -516,7 +516,7 @@ const HistoryLogs = ({
     })
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const getArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
+    const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
@@ -542,7 +542,7 @@ const HistoryLogs = ({
                 status={triggerDetails.status}
                 artifact={ciJobArtifact[index]}
                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                downloadArtifactUrl={getArtifactUrl}
+                downloadArtifactUrl={downloadArtifactUrl}
                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
                 isJobView={isJobView}
                 isJobCI={isJobCI}
@@ -578,7 +578,11 @@ const HistoryLogs = ({
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} renderCIListHeader={renderCIListHeader} />
+                    <GitChanges
+                        gitTriggers={triggerDetails.gitTriggers}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        renderCIListHeader={renderCIListHeader}
+                    />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
@@ -588,7 +592,7 @@ const HistoryLogs = ({
                             status={triggerDetails.status}
                             artifact={triggerDetails.artifact}
                             blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            downloadArtifactUrl={getArtifactUrl}
+                            downloadArtifactUrl={downloadArtifactUrl}
                             isArtifactUploaded={triggerDetails.isArtifactUploaded}
                             isJobView={isJobView}
                             isJobCI={isJobCI}

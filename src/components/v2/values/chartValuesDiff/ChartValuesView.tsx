@@ -941,7 +941,11 @@ const ChartValuesView = ({
                 isHelmApp: true,
             }
             const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
-            handleDownload({downloadUrl, fileName: downloadManifestDownload.appName, downloadSuccessToastContent: 'Manifest Downloaded Successfully'})
+            handleDownload({
+                downloadUrl,
+                fileName: downloadManifestDownload.appName,
+                downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+            })
         }
 
         try {
@@ -1767,12 +1771,15 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {window._env_.ENABLE_RESOURCE_SCAN_V2 && !isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
-                            <ToggleSecurityScan
-                                isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                handleToggleSecurityScan={handleToggleSecurityScan}
-                            />
-                        )}
+                        {window._env_.ENABLE_RESOURCE_SCAN_V2 &&
+                            !isExternalApp &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
