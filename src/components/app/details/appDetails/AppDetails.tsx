@@ -436,7 +436,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, interval + 5000 || 25000, appDetailsAbortRef.current.signal)
+        fetchResourceTreeInTime(params.appId, params.envId, interval - 3000 || 25000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
