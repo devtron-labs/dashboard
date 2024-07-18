@@ -218,7 +218,7 @@ export const downloadLogs = (
     } else {
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
-    let logsURL = `${Host}/${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId =
         ad.appType == AppType.DEVTRON_APP
@@ -241,7 +241,7 @@ export const downloadLogs = (
         logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     logsURL += `${filter}`
-    handleDownload({downloadUrl: logsURL, showFilePreparingToast: true, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log`})
+    handleDownload({downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log`})
 }
 
 export const getLogsURL = (
