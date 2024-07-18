@@ -39,10 +39,15 @@ import {
     TLSConnectionDTO,
     TLSConnectionFormActionType,
     TLSConnectionFormProps,
+    useForm,
+    handleOnBlur,
+    handleOnFocus,
+    parsePassword,
+    renderMaterialIcon,
+    TLSConnectionForm,
 } from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, handleOnBlur, handleOnFocus, parsePassword, renderMaterialIcon, TLSConnectionForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import { DOCUMENTATION } from '../../config'
 import { DropdownIndicator } from './gitProvider.util'
@@ -158,7 +163,7 @@ export default function GitProvider({ ...props }) {
             userName: '',
             password: '',
             sshPrivateKey: '',
-            ...defaultTLSData,
+            ...structuredClone(defaultTLSData),
         },
     ].concat(providerList)
 
@@ -257,7 +262,6 @@ const CollapsedList = ({
 
     useEffectAfterMount(() => {
         async function update() {
-            // FIXME: Duplicate
             const payload = {
                 id: id || 0,
                 name,
@@ -483,24 +487,24 @@ const GitForm = ({
     }
 
     async function onSave() {
-        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+        const { isTLSKeyError, isTLSCertError, message } = getCertificateAndKeyDependencyError(
             tlsInput.isTLSCertDataPresent,
             tlsInput.isTLSKeyDataPresent,
         )
         const isAuthModePassword = state.auth.value === 'USERNAME_PASSWORD'
 
-        if (message) {
+        if (message && isAuthModePassword) {
             setTLSInput({
                 ...tlsInput,
                 tlsConfig: {
                     ...tlsInput.tlsConfig,
                     tlsCertData: {
                         value: tlsInput.tlsConfig.tlsCertData.value,
-                        error: isTLSCertDataEmpty && isAuthModePassword ? message : '',
+                        error: isTLSCertError ? message : '',
                     },
                     tlsKeyData: {
                         value: tlsInput.tlsConfig.tlsKeyData.value,
-                        error: isTLSKeyDataEmpty && isAuthModePassword ? message : '',
+                        error: isTLSKeyError ? message : '',
                     },
                 },
             })
@@ -514,21 +518,21 @@ const GitForm = ({
             url: state.url.value,
             authMode: state.auth.value,
             active,
-            ...getTLSConnectionPayloadValues({
-                enableTLSVerification: tlsInput.enableTLSVerification,
-                isCADataPresent: tlsInput.isCADataPresent,
-                isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
-                isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
-                tlsConfig: {
-                    caData: tlsInput.tlsConfig.caData.value,
-                    tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
-                    tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
-                },
-            }),
             ...(state.auth.value === 'USERNAME_PASSWORD'
                 ? {
                       username: customState.username.value,
                       password: parsePassword(customState.password.value),
+                      ...getTLSConnectionPayloadValues({
+                        enableTLSVerification: tlsInput.enableTLSVerification,
+                        isCADataPresent: tlsInput.isCADataPresent,
+                        isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
+                        isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
+                        tlsConfig: {
+                            caData: tlsInput.tlsConfig.caData.value,
+                            tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
+                            tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
+                        },
+                    }),
                   }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
@@ -647,13 +651,10 @@ const GitForm = ({
 
     const handleTLSConfigChange: TLSConnectionFormProps['handleChange'] = ({ action, payload }) => {
         switch (action) {
-            case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
+            case TLSConnectionFormActionType.TOGGLE_ENABLE_TLS_VERIFICATION:
                 setTLSInput({
                     ...tlsInput,
                     enableTLSVerification: !tlsInput.enableTLSVerification,
-                    tlsConfig: {
-                        ...tlsInput.tlsConfig,
-                    },
                 })
                 break
             case TLSConnectionFormActionType.UPDATE_CA_DATA:

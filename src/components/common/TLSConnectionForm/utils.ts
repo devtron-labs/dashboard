@@ -40,23 +40,23 @@ export const getCertificateAndKeyDependencyError = (
 ): GetCertificateAndKeyDependencyErrorReturnType => {
     if (isTLSKeyDataPresent && !isTLSCertDataPresent) {
         return {
-            isTLSKeyDataEmpty: false,
-            isTLSCertDataEmpty: true,
+            isTLSKeyError: false,
+            isTLSCertError: true,
             message: 'TLS Certificate is required along with TLS Key',
         }
     }
 
     if (isTLSCertDataPresent && !isTLSKeyDataPresent) {
         return {
-            isTLSKeyDataEmpty: true,
-            isTLSCertDataEmpty: false,
+            isTLSKeyError: true,
+            isTLSCertError: false,
             message: 'TLS Key is required along with TLS Certificate',
         }
     }
 
     return {
-        isTLSKeyDataEmpty: false,
-        isTLSCertDataEmpty: false,
+        isTLSKeyError: false,
+        isTLSCertError: false,
         message: '',
     }
 }

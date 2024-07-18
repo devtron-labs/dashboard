@@ -447,14 +447,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const currentAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
         const isAuthModePassword = currentAuthMode === GitOpsAuthModeType.PASSWORD
 
-        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+        const { isTLSKeyError, isTLSCertError, message } = getCertificateAndKeyDependencyError(
             this.state.form.isTLSCertDataPresent,
             this.state.form.isTLSKeyDataPresent,
         )
 
         return {
-            tlsCertData: isAuthModePassword && isTLSCertDataEmpty ? message : '',
-            tlsKeyData: isAuthModePassword && isTLSKeyDataEmpty ? message : '',
+            tlsCertData: isAuthModePassword && isTLSCertError ? message : '',
+            tlsKeyData: isAuthModePassword && isTLSKeyError ? message : '',
             caData: '',
         }
     }
@@ -464,6 +464,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
      * To be consumed by isInvalid method only
      */
     getFormErrors(form: GitOpsConfig): typeof this.state.isError {
+        // QUERY: Can remove form from params since it is same as state
         // No need to validate for tls values in case of ssh and ssh + password
         if (this.getIsOtherGitOpsTabSelected()) {
             return {
@@ -839,7 +840,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        // No need to remove tls related data since we do not send that in payload
+        // No need to remove tls related data since we do not send that in payload and can retain it so on change back to password, user can see the data
         return {
             ...this.state.form,
             authMode: GitOpsAuthModeType.SSH_AND_PASSWORD,
@@ -919,7 +920,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const isTLSInitiallyConfigured = this.state.form.id && initialGitOps?.enableTLSVerification
 
         switch (action) {
-            case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
+            case TLSConnectionFormActionType.TOGGLE_ENABLE_TLS_VERIFICATION:
                 this.setState((prevState) => ({
                     ...prevState,
                     form: {

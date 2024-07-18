@@ -30,7 +30,7 @@ const TLSConnectionForm = ({
     isTLSKeyDataPresent,
 }: TLSConnectionFormProps) => {
     const handleToggle = () => {
-        handleChange({ action: TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY })
+        handleChange({ action: TLSConnectionFormActionType.TOGGLE_ENABLE_TLS_VERIFICATION })
     }
 
     return (

@@ -34,7 +34,7 @@ export interface TLSConnectionDTO {
 }
 
 export enum TLSConnectionFormActionType {
-    TOGGLE_INSECURE_SKIP_TLS_VERIFY = 'TOGGLE_INSECURE_SKIP_TLS_VERIFY',
+    TOGGLE_ENABLE_TLS_VERIFICATION = 'TOGGLE_ENABLE_TLS_VERIFICATION',
     UPDATE_CA_DATA = 'UPDATE_CA_DATA',
     CLEAR_CA_DATA = 'CLEAR_CA_DATA',
     UPDATE_CERT_DATA = 'UPDATE_CERT_DATA',
@@ -81,8 +81,8 @@ export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handle
 }
 
 export interface GetCertificateAndKeyDependencyErrorReturnType {
-    isTLSKeyDataEmpty: boolean
-    isTLSCertDataEmpty: boolean
+    isTLSKeyError: boolean
+    isTLSCertError: boolean
     message: string
 }
 
