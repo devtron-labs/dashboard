@@ -25,8 +25,10 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
             className="env-config-nav-item cursor"
             to={item.href}
         >
-            <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && <Lock className="icon-dim-20" data-testid={`${linkDataTestName}-lockicon`} />}
+            <span className="dc__truncate nav-text">{item.title}</span>
+            {item.isLocked && (
+                <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${linkDataTestName}-lockicon`} />
+            )}
             {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && (
                 <ProtectedIcon className="icon-dim-20 fcv-5" />
             )}
@@ -79,7 +81,7 @@ const getIcon = (
             Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICEditFile,
             tooltipProps: {
                 content: configState === ResourceConfigState.ApprovalPending ? 'Approval pending' : 'Draft',
-                placement: 'right' as const,
+                placement: 'right',
                 arrow: false,
             },
             props: {

@@ -18,7 +18,7 @@ import { ResourceKindType, stringComparatorBySortOrder } from '@devtron-labs/dev
 
 import { URLS, DOCUMENTATION } from '@Config/index'
 
-import { AppConfigStatusResponseItem, EnvConfig, ResourceType } from '../../service.types'
+import { AppConfigStatusItemType, EnvConfigDTO, ConfigResourceType } from '../../service.types'
 import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './appConfig.type'
 
 // stage: last configured stage
@@ -289,24 +289,24 @@ export const getNavItems = (
     }
 }
 
-export const isCIPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
+export const isCIPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
     const ciPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CI_PIPELINE)
     return ciPipeline.status
 }
 
-export const isCDPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
+export const isCDPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
     const cdPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CD_PIPELINE)
     return cdPipeline.status
 }
 
-export const transformEnvConfig = ({ resourceConfig }: EnvConfig) => {
+export const transformEnvConfig = ({ resourceConfig }: EnvConfigDTO) => {
     const updatedEnvConfig = resourceConfig.reduce<EnvConfigType>(
         (acc, curr) => {
             return {
                 ...acc,
-                deploymentTemplate: curr.type === ResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
-                configmaps: curr.type === ResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
-                secrets: curr.type === ResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
+                deploymentTemplate: curr.type === ConfigResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
+                configmaps: curr.type === ConfigResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
+                secrets: curr.type === ConfigResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
             }
         },
         {

@@ -55,11 +55,16 @@ export const EnvConfigurationsNav = ({
                   isProtected: isBaseConfigProtected,
               }
             : null)
+    let resourceType: EnvResourceType
+    if (pathname.includes(`/${EnvResourceType.ConfigMap}`)) {
+        resourceType = EnvResourceType.ConfigMap
+    } else if (pathname.includes(`/${EnvResourceType.Secret}`)) {
+        resourceType = EnvResourceType.Secret
+    } else if (pathname.includes(`/${EnvResourceType.DeploymentTemplate}`)) {
+        resourceType = EnvResourceType.DeploymentTemplate
+    }
 
-    const addUnnamedNavLink = (
-        _updatedEnvConfig: ReturnType<typeof getEnvConfiguration>,
-        resourceType: EnvResourceType,
-    ) =>
+    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) =>
         _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configmaps' : 'secrets'].push({
             title: 'Unnamed',
             href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
@@ -68,7 +73,7 @@ export const EnvConfigurationsNav = ({
         })
 
     useEffect(() => {
-        // Fetch the env configuration
+        // Fetch the env configuration (-1 for base env)
         fetchEnvConfig(+(envId || -1))
 
         return () => {
@@ -79,16 +84,9 @@ export const EnvConfigurationsNav = ({
     useEffect(() => {
         if (!envConfig.isLoading && envConfig.config) {
             const newEnvConfig = getEnvConfiguration(envConfig.config, path, params, environmentData, paramToCheck)
-            let resourceType: EnvResourceType
-
-            if (pathname.includes('/configmap')) {
-                resourceType = EnvResourceType.ConfigMap
-            } else if (pathname.includes('/secrets')) {
-                resourceType = EnvResourceType.Secret
-            }
 
             if (pathname.includes('/create')) {
-                addUnnamedNavLink(newEnvConfig, resourceType)
+                addUnnamedNavLink(newEnvConfig)
             }
 
             setExpandedIds((prevState) => ({ ...prevState, [resourceType]: true }))
@@ -104,7 +102,10 @@ export const EnvConfigurationsNav = ({
         return iconConfig ? (
             <Tippy {...iconConfig.tooltipProps}>
                 <div className="flex">
-                    <iconConfig.Icon {...iconConfig.props} className={`icon-dim-16 ${iconConfig.props.className}`} />
+                    <iconConfig.Icon
+                        {...iconConfig.props}
+                        className={`icon-dim-16 dc__no-shrink ${iconConfig.props.className}`}
+                    />
                 </div>
             </Tippy>
         ) : null
@@ -118,19 +119,19 @@ export const EnvConfigurationsNav = ({
     /**
      * Handles the click event for a collapsible header icon, updating the environment configuration and navigation path.
      *
-     * @param resourceType - The type of resource
+     * @param _resourceType - The type of resource
      */
-    const onHeaderIconBtnClick = (resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`${resourceType}/create`)) {
+    const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
+        if (pathname.includes(`${_resourceType}/create`)) {
             return
         }
-        setExpandedIds({ ...expandedIds, [resourceType]: true })
+        setExpandedIds({ ...expandedIds, [_resourceType]: true })
 
         const newEnvConfig = updatedEnvConfig
-        addUnnamedNavLink(newEnvConfig, resourceType)
+        addUnnamedNavLink(newEnvConfig)
         setUpdatedEnvConfig(newEnvConfig)
 
-        history.push(getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck))
+        history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
     }
 
     /** Collapsible List Config. */
@@ -184,14 +185,6 @@ export const EnvConfigurationsNav = ({
     ]
 
     const onEnvSelect = ({ id }: typeof environmentData) => {
-        let resourceType = EnvResourceType.DeploymentTemplate
-
-        if (pathname.includes('/configmap')) {
-            resourceType = EnvResourceType.ConfigMap
-        } else if (pathname.includes('/secrets')) {
-            resourceType = EnvResourceType.Secret
-        }
-
         const name = pathname.split(`${resourceType}/`)[1]
 
         history.push(getNavigationPath(path, params, id, resourceType, name, paramToCheck))
@@ -223,7 +216,7 @@ export const EnvConfigurationsNav = ({
                     onChange={onEnvSelect}
                     placeholder="Select Environment"
                 />
-                {environmentData.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
+                {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
             </div>
         )
     }

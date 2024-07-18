@@ -37,7 +37,7 @@ import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-o
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
-import { JobEnvOverrideRouteProps } from '../appConfig.type'
+import { EnvResourceType, JobEnvOverrideRouteProps } from '../appConfig.type'
 import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
@@ -198,9 +198,9 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
             <NavLink
                 data-testid="env-deployment-template"
                 className="app-compose__nav-item  app-compose__nav-item--job cursor dc__gap-8"
-                to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/configmap`}
+                to={`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envOverride.environmentId}/${EnvResourceType.ConfigMap}`}
             >
-                <span className="dc__ellipsis-right">{envOverride.environmentName}</span>
+                <span className="dc__truncate">{envOverride.environmentName}</span>
                 {isEnvProtected && <ProtectedIcon className="icon-dim-20 fcv-5" />}
             </NavLink>
             {deletePopUpMenu()}
@@ -378,7 +378,7 @@ const EnvironmentOverrideRouter = () => {
                                       {
                                           title: env.environmentName,
                                           isProtectionAllowed: env.isProtected,
-                                          href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/deployment-template`,
+                                          href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
                                       },
                                       env.isProtected,
                                   )}

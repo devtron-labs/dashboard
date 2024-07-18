@@ -39,6 +39,7 @@ import {
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
     ConfigProtection,
+    EnvResourceType,
 } from './appConfig.type'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import {
@@ -51,7 +52,7 @@ import {
 import AppComposeRouter from './MainContent/AppComposeRouter'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppNavigation } from './Navigation/AppNavigation'
-import { AppConfigStatusResponseItem } from '../../service.types'
+import { AppConfigStatusItemType } from '../../service.types'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
 import { AppOtherEnvironment } from '../../../../../services/service.types'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
@@ -215,7 +216,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     // DATA TRANSFORMERS
     const getUnlockedConfigsAndLastStage = (
-        configStatus: AppConfigStatusResponseItem[],
+        configStatus: AppConfigStatusItemType[],
     ): {
         configs: AppStageUnlockedType
         lastConfiguredStage: STAGE_NAME
@@ -274,7 +275,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }
     }
 
-    const processConfigStatusData = (configStatusRes: AppConfigStatusResponseItem[]) => {
+    const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
         const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
         const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
         let index = navItems.filter(({ altNavKey }) => !altNavKey).findIndex((item) => item.isLocked)
@@ -460,7 +461,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const getAppComposeClasses = () => {
-        if (location.pathname.match(/(deployment-template|configmap|secret)/)) {
+        const resourceTypes = Object.values(EnvResourceType)
+        const regExp = new RegExp(`(${resourceTypes.join('|')})`)
+
+        if (location.pathname.match(regExp)) {
             return `app-compose-env-configurations__nav ${hideConfigHelp ? 'hide-app-config-help' : ''}`
         }
         return `${
