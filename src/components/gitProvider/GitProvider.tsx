@@ -143,18 +143,6 @@ export default function GitProvider({ ...props }) {
 
     return (
         <section className="global-configuration__component flex-1" data-testid="git-provider-wrapper">
-            {/* <h2 className="form__title">Git accounts</h2>
-            <div className="form__subtitle">
-                Manage your organization’s git accounts. &nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    Learn more about git accounts
-                </a>
-            </div> */}
             <FeatureTitleWithInfo
                 title={HEADER_TEXT.GIT_ACCOUNTS.title}
                 renderDescriptionContent={() => HEADER_TEXT.GIT_ACCOUNTS.description}
