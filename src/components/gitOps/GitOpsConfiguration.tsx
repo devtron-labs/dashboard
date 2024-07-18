@@ -1141,7 +1141,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                                         ? 'Azure DevOps Access Token '
                                                         : 'Personal Access Token ',
-                                                    DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
+                                                    DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB,
                                                     '(Check permissions required for PAT)',
                                                 )}
                                                 value={this.state.form.token}
