@@ -304,7 +304,7 @@ export const Details: React.FC<DetailsType> = ({
         })
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
-    const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
+    const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
     appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
     const aggregatedNodes: AggregatedNodes = useMemo(() => {
@@ -403,7 +403,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
-        appDetailsAPI(params.appId, params.envId, 25000, appDetailsAbortRef.current.signal)
+        appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
@@ -436,7 +436,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const fetchResourceTree = () => {
-        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000 || 25000, appDetailsAbortRef.current.signal)
+        fetchResourceTreeInTime(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 if (
                     response.errors &&
