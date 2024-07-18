@@ -152,8 +152,6 @@ export const TaskDetailComponent = () => {
                 newPluginVersionData.outputVariables.length,
             )
         } as StepType['pluginRefStepDetail']
-        _formData[activeStageName].steps[selectedTaskIndex].description = newPluginVersionData.description
-        _formData[activeStageName].steps[selectedTaskIndex].name = newPluginVersionData.name
 
         calculateLastStepDetail(false, _formData, activeStageName)
         validateStage(BuildStageVariable.PreBuild, _formData, undefined, clonedPluginDataStore)
