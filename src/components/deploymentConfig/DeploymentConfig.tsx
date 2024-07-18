@@ -584,7 +584,9 @@ export default function DeploymentConfig({
 
         setConvertVariables(false)
 
-        updateYamlWithGUIData()
+        if (!state.yamlMode) {
+            updateYamlWithGUIData()
+        }
 
         switch (index) {
             case 1:

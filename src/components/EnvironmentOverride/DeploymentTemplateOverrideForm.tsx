@@ -367,7 +367,9 @@ export default function DeploymentTemplateOverrideForm({
 
         setConvertVariables(false)
 
-        updateYamlWithGUIData()
+        if (!state.yamlMode) {
+            updateYamlWithGUIData()
+        }
 
         switch (index) {
             case 1:
