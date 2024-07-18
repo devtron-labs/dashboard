@@ -320,8 +320,7 @@ export default function DeploymentTemplateOverride({
 
     async function handleOverride(e) {
         e.preventDefault()
-        if (state.unableToParseYaml) {
-        } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
+        if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             // permanent delete
             if (isProtected && showDeleteModal) {

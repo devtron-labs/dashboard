@@ -58,10 +58,19 @@ const DeploymentTemplateGUIView = ({
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
 
+    const updateGUIValues = (document: object) => {
+        dispatch({
+            type: DeploymentConfigStateActionTypes.guiValues,
+            payload: document,
+        })
+    }
+
     useEffect(() => {
         try {
             if (value && !formData) {
-                setFormData(YAML.parse(value))
+                const document = YAML.parse(value)
+                setFormData(document)
+                updateGUIValues(document)
             }
         } catch {
             changeEditorMode()
@@ -113,10 +122,7 @@ const DeploymentTemplateGUIView = ({
 
     const handleFormChange: FormProps['onChange'] = (data) => {
         setFormData(data.formData)
-        dispatch({
-            type: DeploymentConfigStateActionTypes.guiValues,
-            payload: data.formData,
-        })
+        updateGUIValues(data.formData as object)
     }
 
     const renderContent = () => {

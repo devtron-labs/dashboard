@@ -411,66 +411,25 @@ export default function DeploymentConfig({
 
     const handleSaveChanges = (e) => {
         e.preventDefault()
-        if (!state.chartConfig.id) {
+        if (!state.chartConfig.id || !isSuperAdmin) {
             // create flow
             save()
-        } else if (isSuperAdmin) {
+        } else {
             // is superadmin
             openConfirmationOrSaveChangesModal()
-        } else {
-            checkForLockedChanges()
         }
     }
 
     function openConfirmationOrSaveChangesModal() {
         if (!obj) {
             toast.error(error)
-        } else if (isProtected) {
-            toggleSaveChangesModal()
         } else if (state.chartConfig.id) {
             // update flow, might have overridden
             handleConfirmationDialog(true)
         }
     }
 
-    const checkForLockedChanges = async () => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.lockChangesLoading,
-            payload: true,
-        })
-        try {
-            const requestBody = prepareDataToSave(true)
-            const deploymentTemplateResp = isProtected
-                ? await checkForProtectedLockedChanges()
-                : await getIfLockedConfigNonProtected(requestBody)
-            if (deploymentTemplateResp.result.isLockConfigError) {
-                setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
-                handleLockedDiffDrawer(true)
-                return
-            }
-            if (isProtected) {
-                toggleSaveChangesModal()
-                return
-            }
-            if (state.chartConfig.id) {
-                handleConfirmationDialog(true)
-            }
-        } catch (err) {
-            handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
-            if (!baseDeploymentAbortController.signal.aborted) {
-                showError(err)
-                baseDeploymentAbortController.abort()
-            }
-        } finally {
-            dispatch({
-                type: DeploymentConfigStateActionTypes.lockChangesLoading,
-                payload: false,
-            })
-        }
-    }
-
-    const checkForProtectedLockedChanges = async () => {
-        const data = prepareDataToSave()
+    const checkForProtectedLockedChanges = async (data: object) => {
         const action = data['id'] > 0 ? 2 : 1
         const requestPayload = {
             appId: Number(appId),
@@ -482,17 +441,23 @@ export default function DeploymentConfig({
     }
 
     async function save() {
+        const actionType = isProtected ? 'lockChangesLoading' : 'loading'
         dispatch({
-            type: DeploymentConfigStateActionTypes.loading,
+            type: DeploymentConfigStateActionTypes[actionType],
             payload: true,
         })
+        const unprotectedApi = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
+        const api = isProtected ? checkForProtectedLockedChanges : unprotectedApi
         try {
             const requestBody = prepareDataToSave(true)
-            const api = state.chartConfig.id ? updateDeploymentTemplate : saveDeploymentTemplate
             const deploymentTemplateResp = await api(requestBody, baseDeploymentAbortController.signal)
             if (deploymentTemplateResp.result.isLockConfigError) {
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
                 handleLockedDiffDrawer(true)
+                return
+            }
+            if (isProtected) {
+                toggleSaveChangesModal()
                 return
             }
             reloadEnvironments()
@@ -514,7 +479,7 @@ export default function DeploymentConfig({
             }
         } finally {
             dispatch({
-                type: DeploymentConfigStateActionTypes.loading,
+                type: DeploymentConfigStateActionTypes[actionType],
                 payload: false,
             })
             saveEligibleChangesCb && closeLockedDiffDrawerWithChildModal()
@@ -676,7 +641,9 @@ export default function DeploymentConfig({
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
         let valuesOverride = !state.yamlMode && state.guiValues ? state.guiValues : obj
-        updateYamlWithGUIData()
+        if (!state.yamlMode) {
+            updateYamlWithGUIData()
+        }
 
         if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
@@ -852,7 +819,7 @@ export default function DeploymentConfig({
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 showLockedDiffForApproval={showLockedDiffForApproval}
-                checkForProtectedLockedChanges={checkForProtectedLockedChanges}
+                checkForProtectedLockedChanges={() => checkForProtectedLockedChanges(prepareDataToSave())}
                 handleSaveChanges={handleSaveChanges}
             />
         </div>

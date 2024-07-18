@@ -111,7 +111,9 @@ export default function DeploymentTemplateOverrideForm({
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
         let valuesOverride = (!state.yamlMode && state.guiValues ? state.guiValues : obj) || state.duplicate
-        updateYamlWithGUIData()
+        if (!state.yamlMode) {
+            updateYamlWithGUIData()
+        }
 
         if (hideLockedKeys && valuesOverride === obj) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
@@ -624,7 +626,13 @@ export default function DeploymentTemplateOverrideForm({
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
-                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} hideObjectVariables={false} />
+                    <FloatingVariablesSuggestions
+                        zIndex={1004}
+                        appId={appId}
+                        envId={envId}
+                        clusterId={clusterId}
+                        hideObjectVariables={false}
+                    />
                 </div>
             )}
 
@@ -632,6 +640,7 @@ export default function DeploymentTemplateOverrideForm({
                 isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
+                isValues={isValuesOverride}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
