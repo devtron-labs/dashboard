@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import K8ResourceComponent from './k8Resource/K8Resource.component'
 import './appDetails.scss'
@@ -45,7 +45,7 @@ const NodeTreeDetailTab = ({
         const _pods = IndexStore.getNodesByKind(NodeType.Pod)
         const isLogAnalyserURL = window.location.href.indexOf(URLS.APP_DETAILS_LOG) > 0
         AppDetailsStore.initAppDetailsTabs(url, _pods.length > 0, isLogAnalyserURL, isExternalApp)
-    }, [params.appId, params.envId])
+    }, [params.appId, params.envId, appDetails])
 
     const handleFocusTabs = () => {
         if (tabRef?.current) {

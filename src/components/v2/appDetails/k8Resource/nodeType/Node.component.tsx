@@ -51,7 +51,6 @@ const NodeComponent = ({
     isDevtronApp,
     clusterId,
     isDeploymentBlocked,
-    isExternalApp,
 }: NodeComponentProps) => {
     const { url } = useRouteMatch()
     const history = useHistory()
@@ -71,9 +70,6 @@ const NodeComponent = ({
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
-
-    const isExternalHelmApp = appDetails?.appType === AppType.EXTERNAL_HELM_CHART
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     useEffect(() => {
         if (externalLinks?.length > 0) {

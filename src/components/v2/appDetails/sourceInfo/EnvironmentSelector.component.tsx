@@ -48,6 +48,7 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
+import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -208,24 +209,12 @@ const EnvironmentSelectorComponent = ({
         setWorkloadsModal(true)
     }
 
-    const fluxAppIdentifier = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}|${appDetails.fluxTemplateType === 'Kustomization'}`
-
-    const getAppIdentifierForUrlsModal = () => {
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            return params.appId
-        }
-        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
-            return fluxAppIdentifier
-        }
-        return ''
-    }
-
-    const getAppIdentifierForScaleWorkloadsModal = () => {
-        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
-            return fluxAppIdentifier
-        }
-        return params.appId
-    }
+    const appIdentifier = getAppId(
+        appDetails.clusterId,
+        appDetails.namespace,
+        appDetails.appName,
+        appDetails.fluxTemplateType,
+    )
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -343,7 +332,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && !isExternalArgo && (
+            {!loadingResourceTree && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -366,11 +355,13 @@ const EnvironmentSelectorComponent = ({
                     )}
                     {!(
                         (deployedAppDetail &&
-                        checkIfDevtronOperatorHelmRelease(
-                            deployedAppDetail[2],
-                            deployedAppDetail[1],
-                            deployedAppDetail[0],
-                            )) || isExternalFlux
+                            checkIfDevtronOperatorHelmRelease(
+                                deployedAppDetail[2],
+                                deployedAppDetail[1],
+                                deployedAppDetail[0],
+                            )) ||
+                        isExternalFlux ||
+                        isExternalArgo
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
@@ -420,13 +411,18 @@ const EnvironmentSelectorComponent = ({
                 <TriggerUrlModal
                     installedAppId={params.appId}
                     isExternalApp={isExternalApp}
-                    appId={getAppIdentifierForUrlsModal()}
+                    appId={appIdentifier}
                     envId={params.envId}
                     close={closeUrlInfo}
+                    appType={appDetails.appType}
                 />
             )}
             {showWorkloadsModal && (
-                <ScaleWorkloadsModal appId={getAppIdentifierForScaleWorkloadsModal()} onClose={() => setWorkloadsModal(false)} history={history} />
+                <ScaleWorkloadsModal
+                    appId={appIdentifier}
+                    onClose={() => setWorkloadsModal(false)}
+                    history={history}
+                />
             )}
         </div>
     )

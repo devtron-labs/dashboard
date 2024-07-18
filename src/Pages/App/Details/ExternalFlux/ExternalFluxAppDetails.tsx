@@ -57,7 +57,7 @@ const ExternalFluxAppDetails = () => {
 
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
-            initTimer = setTimeout(reloadAppDetails, 30000)
+            initTimer = setTimeout(reloadAppDetails, 3000 || window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 3000)
             const genericAppDetail: AppDetails = {
                 ...appDetailsResult.result,
                 appStatus: getAppStatus(appDetailsResult.result.appStatus),

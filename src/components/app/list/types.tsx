@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 
 export interface AppListState {
@@ -164,6 +164,7 @@ export interface TriggerURL {
     installedAppId?: string
     close: () => void
     isExternalApp?: boolean
+    appType: AppType
 }
 
 export interface ManifestUrlList {

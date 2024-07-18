@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { get, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, trash, ResponseType, AppType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
 import { getAPIOptionsWithTriggerTimeout } from '../common'
+import { getK8sResourcePayloadAppType } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.util'
 
 export interface ReleaseInfoResponse extends ResponseType {
     result?: ReleaseAndInstalledAppInfo
@@ -164,7 +165,7 @@ export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<Upda
     return put(Routes.HELM_LINK_TO_CHART_STORE_API, request, options)
 }
 
-export const getManifestUrlInfo = (appId: string): Promise<ResponseType> => {
-    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}`
+export const getManifestUrlInfo = (appId: string, appType: AppType): Promise<ResponseType> => {
+    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}?appType=${getK8sResourcePayloadAppType(appType)}`
     return get(url)
 }
