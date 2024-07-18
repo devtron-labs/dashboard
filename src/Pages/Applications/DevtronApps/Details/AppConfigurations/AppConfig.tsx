@@ -28,7 +28,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { getAppOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
+import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
@@ -101,7 +101,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      * a flag indicating if base configuration protection is enabled, and an array of configuration protections.
      *
      * The function performs the following steps:
-     * 1. Calls `getAppOtherEnvironmentMin` with the application ID (`appId`) to fetch the environment configurations.
+     * 1. Calls `getAppOtherEnvironmentMin` or `getJobOtherEnvironmentMin` (if resource kind is `job` (isJob)) with the application ID (`appId`) to fetch the environment configurations.
      * 2. Calls `getConfigProtections` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
      * 3. Creates a map (`envProtectMap`) to store protection states for each environment based on the configuration protections response.
      * 4. Filters the environment configurations based on `filteredEnvIds`, if provided, and marks them as protected if they are found in the protection map.
@@ -119,7 +119,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         configProtections: ConfigProtection[]
     }> =>
         Promise.all([
-            getAppOtherEnvironmentMin(appId),
+            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
         ]).then(([envResult, configProtectionsResp]) => {
             let envProtectMap: Record<number, boolean> = {}

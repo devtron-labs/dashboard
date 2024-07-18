@@ -204,3 +204,20 @@ export enum EnvResourceType {
     Secret = 'secrets',
     DeploymentTemplate = 'deployment-template',
 }
+
+export interface EnvEnvironment {
+    name: string
+    id: number
+    isProtected: boolean
+}
+
+export interface EnvConfigurationsNavProps {
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: (envId: number) => void
+    isBaseConfigProtected?: boolean
+    environments: EnvEnvironment[]
+    paramToCheck?: 'appId' | 'envId'
+    goBackURL: string
+    showBaseConfigurations?: boolean
+    showDeploymentTemplate?: boolean
+}

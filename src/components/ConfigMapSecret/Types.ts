@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { CM_SECRET_STATE } from './Constants'
 import { ExtendedOptionType } from '../app/types'
 

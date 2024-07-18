@@ -51,6 +51,10 @@ export const AppNavigation = () => {
         hideConfigHelp,
         isBaseConfigProtected,
         isGitOpsConfigurationRequired,
+        environments,
+        envConfig,
+        fetchEnvConfig,
+        lastUnlockedStage,
     } = useAppConfigurationContext()
 
     // CONSTANTS
@@ -94,7 +98,19 @@ export const AppNavigation = () => {
                     key={`env-configurations-${appId}`}
                     path={`${path}/:resourceType(deployment-template|configmap|secrets|${URLS.APP_ENV_OVERRIDE_CONFIG})/:envId(\\d+)?`}
                 >
-                    <EnvConfigurationsNav />
+                    <EnvConfigurationsNav
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        environments={environments.map(({ environmentName, environmentId, isProtected }) => ({
+                            id: environmentId,
+                            isProtected,
+                            name: environmentName,
+                        }))}
+                        isBaseConfigProtected={isBaseConfigProtected}
+                        showBaseConfigurations
+                        showDeploymentTemplate={!isJobView}
+                        goBackURL={lastUnlockedStage}
+                    />
                 </Route>
                 <Route key="default-navigation">
                     {navItems.map((item) => {

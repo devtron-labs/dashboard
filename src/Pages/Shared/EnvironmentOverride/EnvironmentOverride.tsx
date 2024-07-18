@@ -15,31 +15,39 @@
  */
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
-import { Redirect, Route, Switch, generatePath } from 'react-router-dom'
+import {
+    useParams,
+    useRouteMatch,
+    useHistory,
+    useLocation,
+    Redirect,
+    Route,
+    Switch,
+    generatePath,
+} from 'react-router-dom'
 
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
+import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
 import { ConfigMapSecretContainer } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.container'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-import ConfigMapList from '@Components/ConfigMapSecret/ConfigMap/ConfigMapList'
-import SecretList from '@Components/ConfigMapSecret/Secret/SecretList'
 
-import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.type'
+import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'
 
-export default function EnvironmentOverride({
+const EnvironmentOverride = ({
     appList,
-    isJobView,
+    isJob,
     environments,
     reloadEnvironments,
     envName,
-    isAppGroup,
-}: EnvironmentOverrideComponentProps) {
+    onErrorRedirectURL,
+    envConfig,
+    fetchEnvConfig,
+}: EnvironmentOverrideComponentProps) => {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path, url } = useRouteMatch()
@@ -90,7 +98,7 @@ export default function EnvironmentOverride({
     if (viewState === ComponentStates.failed) {
         return (
             <Reload
-                reload={(event) => {
+                reload={() => {
                     setViewState(ComponentStates.reloading)
                 }}
             />
@@ -141,55 +149,37 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        {isAppGroup ? (
-                            <ConfigMapList
-                                key={`config-map-${params.appId}-${params.envId}`}
-                                isOverrideView
-                                isProtected={isProtected}
-                                parentState={viewState}
-                                parentName={getParentName()}
-                                setParentState={setViewState}
-                                isJobView={isJobView}
-                                reloadEnvironments={reloadEnvironments}
-                                clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
-                            />
-                        ) : (
-                            <ConfigMapSecretContainer
-                                key={`config-map-${params.appId}-${params.envId}`}
-                                isOverrideView
-                                isProtected={isProtected}
-                                parentState={viewState}
-                                parentName={getParentName()}
-                                setParentState={setViewState}
-                                clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
-                            />
-                        )}
+                        <ConfigMapSecretContainer
+                            key={`config-map-${params.appId}-${params.envId}`}
+                            isOverrideView
+                            isProtected={isProtected}
+                            parentState={viewState}
+                            parentName={getParentName()}
+                            setParentState={setViewState}
+                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={onErrorRedirectURL}
+                            reloadEnvironments={reloadEnvironments}
+                            isJob={isJob}
+                        />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        {isAppGroup ? (
-                            <SecretList
-                                key={`secret-${params.appId}-${params.envId}`}
-                                isOverrideView
-                                parentState={viewState}
-                                isProtected={isProtected}
-                                parentName={getParentName()}
-                                setParentState={setViewState}
-                                isJobView={isJobView}
-                                reloadEnvironments={reloadEnvironments}
-                                clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
-                            />
-                        ) : (
-                            <ConfigMapSecretContainer
-                                key={`secret-${params.appId}-${params.envId}`}
-                                isOverrideView
-                                isProtected={isProtected}
-                                parentState={viewState}
-                                parentName={getParentName()}
-                                setParentState={setViewState}
-                                clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
-                                componentType={CMSecretComponentType.Secret}
-                            />
-                        )}
+                        <ConfigMapSecretContainer
+                            key={`secret-${params.appId}-${params.envId}`}
+                            isOverrideView
+                            isProtected={isProtected}
+                            parentState={viewState}
+                            parentName={getParentName()}
+                            setParentState={setViewState}
+                            clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            componentType={CMSecretComponentType.Secret}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={onErrorRedirectURL}
+                            reloadEnvironments={reloadEnvironments}
+                            isJob={isJob}
+                        />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
                 </Switch>
@@ -197,3 +187,5 @@ export default function EnvironmentOverride({
         </ErrorBoundary>
     )
 }
+
+export default EnvironmentOverride

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useReducer, Reducer, useRef } from 'react'
-import { useParams } from 'react-router'
+import { useEffect, useReducer, Reducer, useRef } from 'react'
+import { useParams } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -25,20 +25,19 @@ import {
     ModuleNameMap,
     ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getDeploymentTemplate, chartRefAutocomplete } from './service'
-import { getOptions } from '../deploymentConfig/service'
-import { importComponentFromFELibrary } from '../common'
-import '../deploymentConfig/deploymentConfig.scss'
+import { getDeploymentTemplate, chartRefAutocomplete } from '../../../Pages/Shared/EnvironmentOverride/service'
+import { getOptions } from '../service'
+import { importComponentFromFELibrary } from '../../common'
+import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes, DeploymentConfigStateWithDraft } from '../types'
 import {
-    DeploymentConfigStateAction,
-    DeploymentConfigStateActionTypes,
-    DeploymentConfigStateWithDraft,
-} from '../deploymentConfig/types'
-import { ComponentStates, DeploymentTemplateOverrideProps } from './EnvironmentOverrides.type'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { groupDataByType } from '../deploymentConfig/DeploymentConfig.utils'
-import { deploymentConfigReducer, initDeploymentConfigState } from '../deploymentConfig/DeploymentConfigReducer'
+    ComponentStates,
+    DeploymentTemplateOverrideProps,
+} from '../../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { groupDataByType } from '../DeploymentConfig.utils'
+import { deploymentConfigReducer, initDeploymentConfigState } from '../DeploymentConfigReducer'
 import DeploymentTemplateOverrideForm from './DeploymentTemplateOverrideForm'
+import '../deploymentConfig.scss'
 
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')

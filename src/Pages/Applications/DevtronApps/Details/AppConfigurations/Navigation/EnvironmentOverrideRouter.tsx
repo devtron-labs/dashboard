@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
 import {
     showError,
@@ -29,12 +29,7 @@ import { toast } from 'react-toastify'
 import ReactSelect, { ValueContainerProps, components } from 'react-select'
 import { URLS, DOCUMENTATION } from '../../../../../../config'
 import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
-import {
-    addJobEnvironment,
-    deleteJobEnvironment,
-    getCIConfig,
-    getJobOtherEnvironmentMin,
-} from '../../../../../../services/service'
+import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as Search } from '../../../../../../assets/icons/ic-search.svg'
@@ -236,7 +231,6 @@ const EnvironmentOverrideRouter = () => {
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
     const [environmentOptions, setEnvironmentOptions] = useState([])
-    const [jobEnvs, setJobEnvs] = useState([])
     const [addEnvironment, setEnvironmentView] = useState(true)
     const [ciPipelines, setCIPipelines] = useState([])
     const [isEnvLoading, setIsEnvLoading] = useState(false)
@@ -246,10 +240,9 @@ const EnvironmentOverrideRouter = () => {
     const getJobOtherEnvironment = async () => {
         setIsEnvLoading(true)
         try {
-            const [{ result: envListMinRes }, { result: ciConfigRes }, { result: jobEnvRes }] = await Promise.all([
+            const [{ result: envListMinRes }, { result: ciConfigRes }] = await Promise.all([
                 getEnvironmentListMinPublic(),
                 getCIConfig(Number(appId)),
-                getJobOtherEnvironmentMin(appId),
             ])
             const list = []
             envListMinRes?.forEach((env) => {
@@ -259,7 +252,6 @@ const EnvironmentOverrideRouter = () => {
             })
             setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
             setCIPipelines(ciConfigRes?.ciPipelines)
-            setJobEnvs(jobEnvRes ?? [])
         } finally {
             setIsEnvLoading(false)
         }
@@ -278,9 +270,8 @@ const EnvironmentOverrideRouter = () => {
                 getJobOtherEnvironment()
                     .then(() => {})
                     .catch(() => {})
-            } else {
-                reloadEnvironments()
             }
+            reloadEnvironments()
             getWorkflows()
         }
     }, [pathname])
@@ -303,6 +294,7 @@ const EnvironmentOverrideRouter = () => {
             getJobOtherEnvironment()
                 .then(() => {})
                 .catch(() => {})
+            reloadEnvironments()
         } catch (error) {
             showError(error)
         } finally {
@@ -319,9 +311,8 @@ const EnvironmentOverrideRouter = () => {
             getJobOtherEnvironment()
                 .then(() => {})
                 .catch(() => {})
-        } else {
-            reloadEnvironments()
         }
+        reloadEnvironments()
     }
 
     const renderEnvSelector = (): JSX.Element => {
@@ -368,13 +359,13 @@ const EnvironmentOverrideRouter = () => {
     }
 
     const renderEnvsNav = (): JSX.Element => {
-        if ((isJobView ? jobEnvs : environments).length) {
+        if (environments.length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {isJobView
-                        ? jobEnvs.map(
-                              (env) =>
-                                  !env.deploymentAppDeleteRequest && (
+                    {environments.map((env) => (
+                        <Fragment key={env.environmentId}>
+                            {isJobView
+                                ? !env.deploymentAppDeleteRequest && (
                                       <JobEnvOverrideRoute
                                           key={env.environmentName}
                                           envOverride={env}
@@ -382,18 +373,17 @@ const EnvironmentOverrideRouter = () => {
                                           reload={reloadEnvData}
                                           isEnvProtected={env.isProtected}
                                       />
-                                  ),
-                          )
-                        : environments.map((env) =>
-                              renderNavItem(
-                                  {
-                                      title: env.environmentName,
-                                      isProtectionAllowed: env.isProtected,
-                                      href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/deployment-template`,
-                                  },
-                                  env.isProtected,
-                              ),
-                          )}
+                                  )
+                                : renderNavItem(
+                                      {
+                                          title: env.environmentName,
+                                          isProtectionAllowed: env.isProtected,
+                                          href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/deployment-template`,
+                                      },
+                                      env.isProtected,
+                                  )}
+                        </Fragment>
+                    ))}
                 </div>
             )
         }

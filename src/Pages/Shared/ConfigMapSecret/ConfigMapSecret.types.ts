@@ -18,7 +18,10 @@ import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ComponentStates } from '@Components/EnvironmentOverride/EnvironmentOverrides.type'
+import {
+    ComponentStates,
+    EnvironmentOverrideComponentProps,
+} from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
 
@@ -207,7 +210,11 @@ export interface ConfigDatum {
 
 export type CMSecretResponse = ResponseType<CMSecret>
 
-export interface CMSecretContainerProps {
+export interface CMSecretContainerProps
+    extends Pick<
+        EnvironmentOverrideComponentProps,
+        'reloadEnvironments' | 'envConfig' | 'fetchEnvConfig' | 'isJob' | 'onErrorRedirectURL'
+    > {
     componentType?: CMSecretComponentType
     parentName?: string
     parentState?: ComponentStates

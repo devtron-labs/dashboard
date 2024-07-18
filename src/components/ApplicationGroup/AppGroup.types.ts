@@ -34,6 +34,7 @@ import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { GVKType } from '../ResourceBrowser/Types'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/appConfig.type'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -246,7 +247,9 @@ export interface EnvSelectorType {
 }
 
 export interface ApplicationRouteType {
-    envListData: ConfigAppList
+    envAppList: ConfigAppList[]
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: () => void
 }
 
 export interface EnvironmentsListViewType {

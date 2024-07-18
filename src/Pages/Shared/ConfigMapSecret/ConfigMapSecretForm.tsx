@@ -84,7 +84,7 @@ import {
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './ConfigMapSecret.constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditor.container'
 
-import '@Components/EnvironmentOverride/environmentOverride.scss'
+import '@Pages/Shared/EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')

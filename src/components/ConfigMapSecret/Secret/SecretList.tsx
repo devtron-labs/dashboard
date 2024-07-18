@@ -24,7 +24,7 @@ import { ConfigMapListProps, DraftDetailsForCommentDrawerType } from '../Types'
 import { getSecretList } from '../service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '../../common'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-arrow-left.svg'
-import { ComponentStates, SECTION_HEADING_INFO } from '../../EnvironmentOverride/EnvironmentOverrides.type'
+import { ComponentStates, SECTION_HEADING_INFO } from '../../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import '../ConfigMapSecret.scss'
 
 const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')

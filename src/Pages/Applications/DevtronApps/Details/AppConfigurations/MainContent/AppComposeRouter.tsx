@@ -35,7 +35,7 @@ const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
 const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
-const EnvironmentOverride = lazy(() => import('@Components/EnvironmentOverride/EnvironmentOverride'))
+const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
 
@@ -87,6 +87,8 @@ const AppComposeRouter = () => {
         isGitOpsConfigurationRequired,
         reloadAppConfig,
         lastUnlockedStage,
+        envConfig,
+        fetchEnvConfig,
     } = useAppConfigurationContext()
 
     const renderJobViewRoutes = (): JSX.Element => {
@@ -126,19 +128,37 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer isProtected={false} />
+                        <ConfigMapSecretContainer
+                            isJob
+                            isProtected={false}
+                            reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
+                        />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer isProtected={false} componentType={CMSecretComponentType.Secret} />
+                        <ConfigMapSecretContainer
+                            isJob
+                            isProtected={false}
+                            componentType={CMSecretComponentType.Secret}
+                            reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
+                        />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                     >
                         <EnvironmentOverride
+                            isJob
                             environments={environments}
-                            isJobView={isJobView}
                             reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
                         />
                     </Route>,
                 ]}
@@ -227,19 +247,35 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer isProtected={isBaseConfigProtected} />
+                        <ConfigMapSecretContainer
+                            isProtected={isBaseConfigProtected}
+                            reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
+                        />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretContainer
                             isProtected={isBaseConfigProtected}
                             componentType={CMSecretComponentType.Secret}
+                            reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
                         />
                     </Route>,
                     <Route
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                     >
-                        <EnvironmentOverride environments={environments} reloadEnvironments={reloadEnvironments} />
+                        <EnvironmentOverride
+                            environments={environments}
+                            reloadEnvironments={reloadEnvironments}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={lastUnlockedStage}
+                        />
                     </Route>,
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}

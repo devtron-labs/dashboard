@@ -67,9 +67,10 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './Constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditorContainer'
 import { INVALID_YAML_MSG } from '../../config/constantMessaging'
-import '../EnvironmentOverride/environmentOverride.scss'
-import './ConfigMapSecret.scss'
 import { ValidationRules } from '../cdPipeline/validationRules'
+
+import '@Pages/Shared/EnvironmentOverride/environmentOverride.scss'
+import './ConfigMapSecret.scss'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
 const DeleteModal = importComponentFromFELibrary('DeleteModal')

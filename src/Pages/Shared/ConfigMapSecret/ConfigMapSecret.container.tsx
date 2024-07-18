@@ -16,8 +16,8 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
-import { ComponentStates } from '@Components/EnvironmentOverride/EnvironmentOverrides.type'
-import { useAppConfigurationContext } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfiguration.provider'
+import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
+import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 import {
     CMSecretComponentType,
     DraftDetailsForCommentDrawerType,
@@ -48,12 +48,16 @@ export const ConfigMapSecretContainer = ({
     clusterId,
     parentName,
     isProtected,
+    isJob,
+    envConfig,
+    fetchEnvConfig,
+    reloadEnvironments,
+    onErrorRedirectURL,
 }: CMSecretContainerProps) => {
     // HOOKS
     const { path } = useRouteMatch()
     const history = useHistory()
     const { appId, envId, name } = useParams<{ appId: string; envId: string; name: string }>()
-    const { envConfig, reloadEnvironments, fetchEnvConfig, isJobView, lastUnlockedStage } = useAppConfigurationContext()
 
     // STATES
     const [isCMSecretLoading, setIsCMSecretLoading] = useState(false)
@@ -74,11 +78,14 @@ export const ConfigMapSecretContainer = ({
     const isCreateState = name === 'create'
     const isEmptyState = !name && !envConfigData.length
 
-    const isUnpublished = draftDataMap?.[name]?.draftId === selectedCMSecret?.id
+    // TODO: REFACTOR THE ENUMS (CONFIG DIFF - PHASE 2)
+    const isUnpublished = selectedCMSecret?.configStage === ResourceConfigStage.Unpublished
     let cmSecretStateLabel = isUnpublished ? CM_SECRET_STATE.UNPUBLISHED : CM_SECRET_STATE.BASE
     if (isOverrideView) {
-        if (selectedCMSecret?.global) {
-            cmSecretStateLabel = selectedCMSecret?.overridden ? CM_SECRET_STATE.OVERRIDDEN : CM_SECRET_STATE.INHERITED
+        if (selectedCMSecret?.configStage === ResourceConfigStage.Overridden) {
+            cmSecretStateLabel = CM_SECRET_STATE.OVERRIDDEN
+        } else if (selectedCMSecret?.configStage === ResourceConfigStage.Inheriting) {
+            cmSecretStateLabel = CM_SECRET_STATE.INHERITED
         } else {
             cmSecretStateLabel = isUnpublished ? CM_SECRET_STATE.UNPUBLISHED : CM_SECRET_STATE.ENV
         }
@@ -192,7 +199,8 @@ export const ConfigMapSecretContainer = ({
                                 configData: _cmSecretData.value.result.configData[0],
                             }
 
-                            _result.configData.overridden = selectedCMSecret.overridden
+                            _result.configData.overridden =
+                                selectedCMSecret.configStage === ResourceConfigStage.Overridden
 
                             if (draftId || draftState) {
                                 _result.configData.draftId = draftId
@@ -400,7 +408,7 @@ export const ConfigMapSecretContainer = ({
                         id={selectedCMSecret?.id}
                         componentType={componentType}
                         cmSecretStateLabel={cmSecretStateLabel}
-                        isJobView={isJobView}
+                        isJobView={isJob}
                         selectedTab={selectedTab}
                         draftData={draftData}
                         parentName={parentName}
@@ -422,7 +430,7 @@ export const ConfigMapSecretContainer = ({
                 componentType={componentType}
                 updateCMSecret={updateCMSecret}
                 cmSecretStateLabel={cmSecretStateLabel}
-                isJobView={isJobView}
+                isJobView={isJob}
                 readonlyView={false}
                 isProtectedView={isProtected}
                 draftMode={false}
@@ -448,7 +456,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     if (cmSecretError) {
-        return <ErrorScreenManager code={404} redirectURL={lastUnlockedStage} />
+        return <ErrorScreenManager code={404} redirectURL={onErrorRedirectURL} />
     }
 
     if (isEmptyState) {

@@ -35,6 +35,13 @@ export enum ResourceConfigState {
     Published = 'Published',
 }
 
+export enum ResourceConfigStage {
+    Inheriting = 'Inheriting',
+    Overridden = 'Overridden',
+    Env = 'Env',
+    Unpublished = 'Unpublished',
+}
+
 export enum ResourceType {
     ConfigMap = 'ConfigMap',
     Secret = 'Secret',
@@ -45,8 +52,7 @@ export interface ResourceConfig {
     name: string
     configState: ResourceConfigState
     type: ResourceType
-    overridden: boolean
-    global: boolean
+    configStage: ResourceConfigStage
     id: number
 }
 
