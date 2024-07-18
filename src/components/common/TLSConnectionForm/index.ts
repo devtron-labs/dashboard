@@ -15,3 +15,5 @@
  */
 
 export { default as TLSConnectionForm } from './TLSConnectionForm.component'
+export * from './utils'
+export * from './types'

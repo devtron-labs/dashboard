@@ -25,13 +25,22 @@ export interface TLSConfigDTO {
 export interface TLSConnectionDTO {
     enableTLSVerification: boolean
     tlsConfig: TLSConfigDTO
+    /**
+     * Used in case when we have already saved data and we have'nt filled the fields
+     */
+    isCADataPresent: boolean
+    isTLSCertDataPresent: boolean
+    isTLSKeyDataPresent: boolean
 }
 
 export enum TLSConnectionFormActionType {
     TOGGLE_INSECURE_SKIP_TLS_VERIFY = 'TOGGLE_INSECURE_SKIP_TLS_VERIFY',
     UPDATE_CA_DATA = 'UPDATE_CA_DATA',
+    CLEAR_CA_DATA = 'CLEAR_CA_DATA',
     UPDATE_CERT_DATA = 'UPDATE_CERT_DATA',
+    CLEAR_CERT_DATA = 'CLEAR_CERT_DATA',
     UPDATE_KEY_DATA = 'UPDATE_KEY_DATA',
+    CLEAR_KEY_DATA = 'CLEAR_KEY_DATA',
 }
 
 interface TLSConnectionHandleChangeParamsType {
@@ -39,7 +48,11 @@ interface TLSConnectionHandleChangeParamsType {
     payload?: string
 }
 
-export interface TLSConnectionFormProps extends Pick<TLSConnectionDTO, 'enableTLSVerification'> {
+export interface TLSConnectionFormProps
+    extends Pick<
+        TLSConnectionDTO,
+        'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+    > {
     caData: InputFieldState<TLSConfigDTO['caData']>
     tlsCertData: InputFieldState<TLSConfigDTO['tlsCertData']>
     tlsKeyData: InputFieldState<TLSConfigDTO['tlsKeyData']>
@@ -59,10 +72,23 @@ export interface TLSInputFieldProps extends Pick<TLSConnectionFormProps, 'handle
         | TLSConnectionFormActionType.UPDATE_CA_DATA
         | TLSConnectionFormActionType.UPDATE_CERT_DATA
         | TLSConnectionFormActionType.UPDATE_KEY_DATA
+
+    showClearButton?: boolean
+    clearAction:
+        | TLSConnectionFormActionType.CLEAR_CA_DATA
+        | TLSConnectionFormActionType.CLEAR_CERT_DATA
+        | TLSConnectionFormActionType.CLEAR_KEY_DATA
 }
 
 export interface GetCertificateAndKeyDependencyErrorReturnType {
     isTLSKeyDataEmpty: boolean
     isTLSCertDataEmpty: boolean
     message: string
+}
+
+export interface GetIsTLSDataPresentParamsType {
+    targetValue: string
+    isTLSInitiallyConfigured: boolean
+    wasFieldInitiallyPresent: boolean
+    wasFieldClearedAfterInitialConfig: boolean
 }

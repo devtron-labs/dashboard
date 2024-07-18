@@ -49,7 +49,7 @@ export interface CustomGitOpsState {
 
 export interface GitOpsConfig
     extends TLSConfigDTO,
-        Pick<TLSConnectionDTO, 'enableTLSVerification'>,
+        Pick<TLSConnectionDTO, 'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'>,
         Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType
@@ -61,6 +61,9 @@ export interface GitOpsConfig
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
     allowCustomRepository?: boolean
+    isCADataClearedAfterInitialConfig: boolean
+    isTLSCertDataClearedAfterInitialConfig: boolean
+    isTLSKeyDataClearedAfterInitialConfig: boolean
 }
 
 export interface DefaultShortGitOpsType

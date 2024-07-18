@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-import { GetCertificateAndKeyDependencyErrorReturnType, TLSConfigDTO, TLSConnectionDTO } from './types'
+import { GetCertificateAndKeyDependencyErrorReturnType, GetIsTLSDataPresentParamsType, TLSConnectionDTO } from './types'
 
 export const getTLSConnectionPayloadValues = (tlsConnection: TLSConnectionDTO): TLSConnectionDTO => {
-    const { enableTLSVerification, tlsConfig } = tlsConnection
-    const { caData, tlsCertData, tlsKeyData } = tlsConfig
+    const { enableTLSVerification, isCADataPresent, isTLSCertDataPresent, isTLSKeyDataPresent } = tlsConnection
 
-    // TODO: Have to check case for existing data since secrets are not sent in the response
-    const areAllFieldsEmpty = !caData && !tlsCertData && !tlsKeyData
+    const areAllFieldsEmpty = !isCADataPresent && !isTLSCertDataPresent && !isTLSKeyDataPresent
 
     if (!enableTLSVerification || areAllFieldsEmpty) {
-        return { enableTLSVerification: false, tlsConfig: null }
+        return {
+            enableTLSVerification: false,
+            tlsConfig: null,
+            isCADataPresent: false,
+            isTLSCertDataPresent: false,
+            isTLSKeyDataPresent: false,
+        }
     }
 
     return tlsConnection
 }
 
-// TODO: Have to check case for existing data since secrets are not sent in the response
 export const getCertificateAndKeyDependencyError = (
-    tlsCertData: TLSConfigDTO['tlsCertData'],
-    tlsKeyData: TLSConfigDTO['tlsKeyData'],
+    isTLSCertDataPresent: TLSConnectionDTO['isTLSCertDataPresent'],
+    isTLSKeyDataPresent: TLSConnectionDTO['isTLSKeyDataPresent'],
 ): GetCertificateAndKeyDependencyErrorReturnType => {
-    if (tlsKeyData && !tlsCertData) {
+    if (isTLSKeyDataPresent && !isTLSCertDataPresent) {
         return {
             isTLSKeyDataEmpty: false,
             isTLSCertDataEmpty: true,
@@ -43,7 +46,7 @@ export const getCertificateAndKeyDependencyError = (
         }
     }
 
-    if (tlsCertData && !tlsKeyData) {
+    if (isTLSCertDataPresent && !isTLSKeyDataPresent) {
         return {
             isTLSKeyDataEmpty: true,
             isTLSCertDataEmpty: false,
@@ -56,4 +59,21 @@ export const getCertificateAndKeyDependencyError = (
         isTLSCertDataEmpty: false,
         message: '',
     }
+}
+
+export const getIsTLSDataPresent = ({
+    targetValue,
+    isTLSInitiallyConfigured,
+    wasFieldInitiallyPresent,
+    wasFieldClearedAfterInitialConfig,
+}: GetIsTLSDataPresentParamsType): boolean => {
+    if (!isTLSInitiallyConfigured || wasFieldClearedAfterInitialConfig) {
+        return targetValue.length > 0
+    }
+
+    if (targetValue.length === 0) {
+        return wasFieldInitiallyPresent
+    }
+
+    return true
 }

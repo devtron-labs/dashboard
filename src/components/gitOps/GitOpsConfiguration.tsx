@@ -31,6 +31,17 @@ import {
     handleDisableSubmitOnEnter,
     DEFAULT_SECRET_PLACEHOLDER,
 } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    TLSConnectionFormActionType,
+    TLSConnectionFormProps,
+    getCertificateAndKeyDependencyError,
+    getIsTLSDataPresent,
+    getTLSConnectionPayloadValues,
+    handleOnFocus,
+    importComponentFromFELibrary,
+    parsePassword,
+    TLSConnectionForm,
+} from '@Components/common'
 import { ViewType, DOCUMENTATION, repoType } from '../../config'
 import {
     GitOpsState,
@@ -41,7 +52,6 @@ import {
     GitProviderTabProps,
     GitProviderType,
 } from './gitops.type'
-import { handleOnFocus, importComponentFromFELibrary, parsePassword, TLSConnectionForm } from '../common'
 import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import {
@@ -68,8 +78,6 @@ import {
 import GitProviderTabIcons from './GitProviderTabIcons'
 import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
-import { getCertificateAndKeyDependencyError, getTLSConnectionPayloadValues } from '../common/TLSConnectionForm/utils'
-import { TLSConnectionFormActionType, TLSConnectionFormProps } from '../common/TLSConnectionForm/types'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')
@@ -244,6 +252,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             caData: tlsConfig?.caData ?? '',
                             tlsCertData: tlsConfig?.tlsCertData ?? '',
                             tlsKeyData: tlsConfig?.tlsKeyData ?? '',
+                            isCADataClearedAfterInitialConfig: false,
+                            isTLSCertDataClearedAfterInitialConfig: false,
+                            isTLSKeyDataClearedAfterInitialConfig: false,
                         }
                     }) || []
 
@@ -431,6 +442,23 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
     }
 
+    // Would be called by getFormErrors if is unedited else by isInvalid
+    validateTLSData = (): Pick<typeof this.state.isError, 'tlsCertData' | 'tlsKeyData' | 'caData'> => {
+        const currentAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
+        const isAuthModePassword = currentAuthMode === GitOpsAuthModeType.PASSWORD
+
+        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
+            this.state.form.isTLSCertDataPresent,
+            this.state.form.isTLSKeyDataPresent,
+        )
+
+        return {
+            tlsCertData: isAuthModePassword && isTLSCertDataEmpty ? message : '',
+            tlsKeyData: isAuthModePassword && isTLSKeyDataEmpty ? message : '',
+            caData: '',
+        }
+    }
+
     /**
      * Method to validate the form fields if form is unedited/or is aws or other gitops tab
      * To be consumed by isInvalid method only
@@ -455,8 +483,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             }
         }
 
-        const currentAuthMode = this.getFormAuthMode(form.authMode, form.provider)
-        const isAuthModePassword = currentAuthMode === GitOpsAuthModeType.PASSWORD
         const isBitBucketDC = this.state.form.provider === 'BITBUCKET_DC'
         const isBitBucketDCCreateView =
             !this.state.form.id || this.state.form.authMode !== this.state.initialBitBucketDCAuthMode
@@ -470,12 +496,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         const isBitBucketProjectKeyRequired = this.state.providerTab === GitProvider.BITBUCKET_CLOUD
 
-        // TODO: Add validation checks for existing data
-        const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
-            this.state.form.tlsCertData,
-            this.state.form.tlsKeyData,
-        )
-
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
@@ -487,10 +507,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             bitBucketProjectKey: isBitBucketProjectKeyRequired ? this.requiredFieldCheck(form.bitBucketProjectKey) : '',
             sshHost: '',
             sshKey: isSSHKeyRequired ? this.requiredFieldCheck(form.sshKey) : '',
-            // No need to validate here since already validated in isInvalid
-            tlsCertData: isAuthModePassword && isTLSCertDataEmpty ? message : '',
-            tlsKeyData: isAuthModePassword && isTLSKeyDataEmpty ? message : '',
-            caData: '',
+            ...this.validateTLSData(),
         }
     }
 
@@ -527,6 +544,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 isError,
                 isFormEdited: true,
             })
+        } else {
+            isError = {
+                ...isError,
+                ...this.validateTLSData(),
+            }
         }
 
         let _isInvalid =
@@ -588,14 +610,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     getPayload = () => {
         const currentAuthMode = this.getFormAuthMode(this.state.form.authMode, this.state.form.provider)
-        const tlsValues = currentAuthMode === GitOpsAuthModeType.PASSWORD ? getTLSConnectionPayloadValues({
-            enableTLSVerification: this.state.form.enableTLSVerification,
-            tlsConfig: {
-                caData: this.state.form.caData,
-                tlsCertData: this.state.form.tlsCertData,
-                tlsKeyData: this.state.form.tlsKeyData,
-            },
-        }) : {}
+        const tlsValues =
+            currentAuthMode === GitOpsAuthModeType.PASSWORD
+                ? getTLSConnectionPayloadValues({
+                      enableTLSVerification: this.state.form.enableTLSVerification,
+                      isTLSKeyDataPresent: this.state.form.isTLSKeyDataPresent,
+                      isTLSCertDataPresent: this.state.form.isTLSCertDataPresent,
+                      isCADataPresent: this.state.form.isCADataPresent,
+                      tlsConfig: {
+                          caData: this.state.form.caData,
+                          tlsCertData: this.state.form.tlsCertData,
+                          tlsKeyData: this.state.form.tlsKeyData,
+                      },
+                  })
+                : {}
 
         // In case of ssh, we do not send tls values
         if (this.isAWSCodeCommitTabSelected() || this.getIsOtherGitOpsTabSelected()) {
@@ -887,6 +915,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     handleTLSConfigChange: TLSConnectionFormProps['handleChange'] = ({ action, payload }) => {
+        const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
+        const isTLSInitiallyConfigured = this.state.form.id && initialGitOps?.enableTLSVerification
+
         switch (action) {
             case TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY:
                 this.setState((prevState) => ({
@@ -903,6 +934,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
+                        isCADataPresent: getIsTLSDataPresent({
+                            targetValue: payload,
+                            isTLSInitiallyConfigured,
+                            wasFieldInitiallyPresent: initialGitOps?.isCADataPresent,
+                            wasFieldClearedAfterInitialConfig: prevState.form.isCADataClearedAfterInitialConfig,
+                        }),
                         caData: payload,
                     },
                     isError: {
@@ -917,6 +954,12 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
+                        isTLSCertDataPresent: getIsTLSDataPresent({
+                            targetValue: payload,
+                            isTLSInitiallyConfigured,
+                            wasFieldInitiallyPresent: initialGitOps?.isTLSCertDataPresent,
+                            wasFieldClearedAfterInitialConfig: prevState.form.isTLSCertDataClearedAfterInitialConfig,
+                        }),
                         tlsCertData: payload,
                     },
                     isError: {
@@ -932,7 +975,63 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     ...prevState,
                     form: {
                         ...prevState.form,
+                        isTLSKeyDataPresent: getIsTLSDataPresent({
+                            targetValue: payload,
+                            isTLSInitiallyConfigured,
+                            wasFieldInitiallyPresent: initialGitOps?.isTLSKeyDataPresent,
+                            wasFieldClearedAfterInitialConfig: prevState.form.isTLSKeyDataClearedAfterInitialConfig,
+                        }),
                         tlsKeyData: payload,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        tlsKeyData: '',
+                        tlsCertData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.CLEAR_CA_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        caData: '',
+                        isCADataPresent: false,
+                        isCADataClearedAfterInitialConfig: true,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        caData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.CLEAR_CERT_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        tlsCertData: '',
+                        isTLSCertDataPresent: false,
+                        isTLSCertDataClearedAfterInitialConfig: true,
+                    },
+                    isError: {
+                        ...prevState.isError,
+                        tlsKeyData: '',
+                        tlsCertData: '',
+                    },
+                    isFormEdited: true,
+                }))
+                break
+            case TLSConnectionFormActionType.CLEAR_KEY_DATA:
+                this.setState((prevState) => ({
+                    ...prevState,
+                    form: {
+                        ...prevState.form,
+                        tlsKeyData: '',
+                        isTLSKeyDataPresent: false,
+                        isTLSKeyDataClearedAfterInitialConfig: true,
                     },
                     isError: {
                         ...prevState.isError,
@@ -1305,6 +1404,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 }}
                                 handleChange={this.handleTLSConfigChange}
                                 isTLSInitiallyConfigured={this.state.form.id && initialGitOps?.enableTLSVerification}
+                                isCADataPresent={this.state.form.isCADataPresent}
+                                isTLSCertDataPresent={this.state.form.isTLSCertDataPresent}
+                                isTLSKeyDataPresent={this.state.form.isTLSKeyDataPresent}
                                 rootClassName="mb-16"
                             />
                         ) : (

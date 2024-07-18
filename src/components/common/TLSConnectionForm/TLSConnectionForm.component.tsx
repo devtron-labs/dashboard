@@ -25,6 +25,9 @@ const TLSConnectionForm = ({
     handleChange,
     isTLSInitiallyConfigured,
     rootClassName,
+    isCADataPresent,
+    isTLSCertDataPresent,
+    isTLSKeyDataPresent,
 }: TLSConnectionFormProps) => {
     const handleToggle = () => {
         handleChange({ action: TLSConnectionFormActionType.TOGGLE_INSECURE_SKIP_TLS_VERIFY })
@@ -54,9 +57,11 @@ const TLSConnectionForm = ({
                         placeholder="Enter CA data"
                         error={caData.error}
                         value={caData.value}
-                        isSensitive={isTLSInitiallyConfigured}
+                        isSensitive={isTLSInitiallyConfigured && isCADataPresent}
                         handleChange={handleChange}
                         updateAction={TLSConnectionFormActionType.UPDATE_CA_DATA}
+                        clearAction={TLSConnectionFormActionType.CLEAR_CA_DATA}
+                        showClearButton={isCADataPresent}
                     />
                     <TLSInputField
                         label="TLS Key"
@@ -64,9 +69,11 @@ const TLSConnectionForm = ({
                         placeholder="Enter TLS key"
                         error={tlsKeyData.error}
                         value={tlsKeyData.value}
-                        isSensitive={isTLSInitiallyConfigured}
+                        isSensitive={isTLSInitiallyConfigured && isTLSKeyDataPresent}
                         handleChange={handleChange}
                         updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}
+                        clearAction={TLSConnectionFormActionType.CLEAR_KEY_DATA}
+                        showClearButton={isTLSKeyDataPresent}
                     />
                     <TLSInputField
                         label="TLS Certificate"
@@ -74,9 +81,11 @@ const TLSConnectionForm = ({
                         placeholder="Enter TLS certificate"
                         error={tlsCertData.error}
                         value={tlsCertData.value}
-                        isSensitive={isTLSInitiallyConfigured}
+                        isSensitive={isTLSInitiallyConfigured && isTLSCertDataPresent}
                         handleChange={handleChange}
                         updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}
+                        clearAction={TLSConnectionFormActionType.CLEAR_CERT_DATA}
+                        showClearButton={isTLSCertDataPresent}
                     />
                 </>
             )}

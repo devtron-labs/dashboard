@@ -39,6 +39,12 @@ export const DefaultGitOpsConfig = {
     provider: GitProvider.GITHUB,
     active: true,
     enableTLSVerification: false,
+    isCADataPresent: false,
+    isTLSCertDataPresent: false,
+    isTLSKeyDataPresent: false,
+    isCADataClearedAfterInitialConfig: false,
+    isTLSCertDataClearedAfterInitialConfig: false,
+    isTLSKeyDataClearedAfterInitialConfig: false,
 }
 
 export const DefaultShortGitOps: DefaultShortGitOpsType = {

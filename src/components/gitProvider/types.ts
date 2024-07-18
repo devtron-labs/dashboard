@@ -1,5 +1,5 @@
 import { InputFieldState } from '@devtron-labs/devtron-fe-common-lib'
-import { TLSConfigDTO } from '../common/TLSConnectionForm/types'
+import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 
 interface TLSConfigInputType {
     caData: InputFieldState<TLSConfigDTO['caData']>
@@ -7,7 +7,13 @@ interface TLSConfigInputType {
     tlsKeyData: InputFieldState<TLSConfigDTO['tlsKeyData']>
 }
 
-export interface TLSInputType {
-    enableTLSVerification: boolean
+export interface TLSInputType
+    extends Pick<
+        TLSConnectionDTO,
+        'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+    > {
     tlsConfig: TLSConfigInputType
+    isCADataClearedAfterInitialConfig: boolean
+    isTLSCertDataClearedAfterInitialConfig: boolean
+    isTLSKeyDataClearedAfterInitialConfig: boolean
 }

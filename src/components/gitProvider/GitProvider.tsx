@@ -32,6 +32,14 @@ import {
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
+import {
+    getCertificateAndKeyDependencyError,
+    getIsTLSDataPresent,
+    getTLSConnectionPayloadValues,
+    TLSConnectionDTO,
+    TLSConnectionFormActionType,
+    TLSConnectionFormProps,
+} from '@Components/common'
 import { getGitHostList, getGitProviderList } from '../../services/service'
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, renderMaterialIcon, TLSConnectionForm } from '../common'
@@ -48,8 +56,6 @@ import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../.
 import { AuthenticationType } from '../cluster/cluster.type'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
-import { getCertificateAndKeyDependencyError, getTLSConnectionPayloadValues } from '../common/TLSConnectionForm/utils'
-import { TLSConnectionFormActionType, TLSConnectionFormProps } from '../common/TLSConnectionForm/types'
 import { TLSInputType } from './types'
 
 export default function GitProvider({ ...props }) {
@@ -129,6 +135,18 @@ export default function GitProvider({ ...props }) {
         return <ErrorScreenManager code={error?.code} />
     }
 
+    const defaultTLSData: TLSConnectionDTO = {
+        enableTLSVerification: false,
+        tlsConfig: {
+            caData: '',
+            tlsCertData: '',
+            tlsKeyData: '',
+        },
+        isCADataPresent: false,
+        isTLSCertDataPresent: false,
+        isTLSKeyDataPresent: false,
+    }
+
     const allProviders = [
         {
             id: null,
@@ -140,12 +158,7 @@ export default function GitProvider({ ...props }) {
             userName: '',
             password: '',
             sshPrivateKey: '',
-            enableTLSVerification: false,
-            tlsConfig: {
-                caData: '',
-                tlsCertData: '',
-                tlsKeyData: '',
-            },
+            ...defaultTLSData,
         },
     ].concat(providerList)
 
@@ -186,6 +199,9 @@ export default function GitProvider({ ...props }) {
                             sshPrivateKey={provider.sshPrivateKey}
                             enableTLSVerification={provider.enableTLSVerification}
                             tlsConfig={provider.tlsConfig}
+                            isCADataPresent={provider.isCADataPresent}
+                            isTLSCertDataPresent={provider.isTLSCertDataPresent}
+                            isTLSKeyDataPresent={provider.isTLSKeyDataPresent}
                         />
                         {showGitProviderConfigModal && (
                             <VisibleModal className="app-status__material-modal">
@@ -223,6 +239,9 @@ const CollapsedList = ({
     sshPrivateKey,
     enableTLSVerification,
     tlsConfig,
+    isCADataPresent,
+    isTLSCertDataPresent,
+    isTLSKeyDataPresent,
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -230,6 +249,11 @@ const CollapsedList = ({
     const [loading, setLoading] = useState(false)
     const selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
+
+    const handleReload = async () => {
+        toggleCollapse(true)
+        await reload()
+    }
 
     useEffectAfterMount(() => {
         async function update() {
@@ -242,6 +266,9 @@ const CollapsedList = ({
                 active: enabled,
                 gitHostId: +gitHostId,
                 enableTLSVerification,
+                isCADataPresent,
+                isTLSCertDataPresent,
+                isTLSKeyDataPresent,
                 tlsConfig,
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
@@ -250,7 +277,7 @@ const CollapsedList = ({
             try {
                 setLoading(true)
                 await updateGitProviderConfig(payload, id)
-                await reload()
+                await handleReload()
                 toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
             } catch (err) {
                 showError(err)
@@ -335,7 +362,7 @@ const CollapsedList = ({
                         hostListOption,
                         getHostList,
                         getProviderList,
-                        reload,
+                        reload: handleReload,
                         providerList,
                         toggleCollapse,
                         showGitProviderConfigModal,
@@ -345,6 +372,9 @@ const CollapsedList = ({
                         sshPrivateKey,
                         enableTLSVerification,
                         tlsConfig,
+                        isCADataPresent,
+                        isTLSCertDataPresent,
+                        isTLSKeyDataPresent,
                     }}
                 />
             )}
@@ -375,7 +405,11 @@ const GitForm = ({
     setGithost,
     sshPrivateKey = '',
     enableTLSVerification,
+    // Could be null since coming from api
     tlsConfig,
+    isCADataPresent,
+    isTLSCertDataPresent,
+    isTLSKeyDataPresent,
     ...props
 }) => {
     const { state, handleOnChange, handleOnSubmit } = useForm(
@@ -413,6 +447,12 @@ const GitForm = ({
     // Need to merge all the input states to a single state
     const [tlsInput, setTLSInput] = useState<TLSInputType>({
         enableTLSVerification: enableTLSVerification ?? false,
+        isCADataPresent: isCADataPresent ?? false,
+        isTLSCertDataPresent: isTLSCertDataPresent ?? false,
+        isTLSKeyDataPresent: isTLSKeyDataPresent ?? false,
+        isCADataClearedAfterInitialConfig: false,
+        isTLSCertDataClearedAfterInitialConfig: false,
+        isTLSKeyDataClearedAfterInitialConfig: false,
         tlsConfig: {
             caData: { value: tlsConfig?.caData || '', error: '' },
             tlsCertData: { value: tlsConfig?.tlsCertData || '', error: '' },
@@ -422,6 +462,8 @@ const GitForm = ({
 
     const [deleting, setDeleting] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+
+    const isTLSInitiallyConfigured = id && enableTLSVerification
 
     function customHandleChange(e) {
         const _name = e.target.name
@@ -442,10 +484,9 @@ const GitForm = ({
 
     async function onSave() {
         const { isTLSKeyDataEmpty, isTLSCertDataEmpty, message } = getCertificateAndKeyDependencyError(
-            tlsInput.tlsConfig.tlsCertData.value,
-            tlsInput.tlsConfig.tlsKeyData.value,
+            tlsInput.isTLSCertDataPresent,
+            tlsInput.isTLSKeyDataPresent,
         )
-        // TODO: Add existing data check for error as well
         const isAuthModePassword = state.auth.value === 'USERNAME_PASSWORD'
 
         if (message) {
@@ -475,6 +516,9 @@ const GitForm = ({
             active,
             ...getTLSConnectionPayloadValues({
                 enableTLSVerification: tlsInput.enableTLSVerification,
+                isCADataPresent: tlsInput.isCADataPresent,
+                isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
+                isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
                 tlsConfig: {
                     caData: tlsInput.tlsConfig.caData.value,
                     tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
@@ -615,6 +659,12 @@ const GitForm = ({
             case TLSConnectionFormActionType.UPDATE_CA_DATA:
                 setTLSInput({
                     ...tlsInput,
+                    isCADataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isCADataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isCADataClearedAfterInitialConfig,
+                    }),
                     tlsConfig: {
                         ...tlsInput.tlsConfig,
                         caData: {
@@ -627,6 +677,12 @@ const GitForm = ({
             case TLSConnectionFormActionType.UPDATE_CERT_DATA:
                 setTLSInput({
                     ...tlsInput,
+                    isTLSCertDataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isTLSCertDataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isTLSCertDataClearedAfterInitialConfig,
+                    }),
                     tlsConfig: {
                         ...tlsInput.tlsConfig,
                         tlsCertData: {
@@ -643,10 +699,66 @@ const GitForm = ({
             case TLSConnectionFormActionType.UPDATE_KEY_DATA:
                 setTLSInput({
                     ...tlsInput,
+                    isTLSKeyDataPresent: getIsTLSDataPresent({
+                        targetValue: payload,
+                        isTLSInitiallyConfigured,
+                        wasFieldInitiallyPresent: tlsConfig?.isTLSKeyDataPresent,
+                        wasFieldClearedAfterInitialConfig: tlsInput.isTLSKeyDataClearedAfterInitialConfig,
+                    }),
                     tlsConfig: {
                         ...tlsInput.tlsConfig,
                         tlsKeyData: {
                             value: payload,
+                            error: '',
+                        },
+                        tlsCertData: {
+                            ...tlsInput.tlsConfig.tlsCertData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_CA_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isCADataClearedAfterInitialConfig: true,
+                    isCADataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        caData: {
+                            value: '',
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_CERT_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSCertDataClearedAfterInitialConfig: true,
+                    isTLSCertDataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsCertData: {
+                            value: '',
+                            error: '',
+                        },
+                        tlsKeyData: {
+                            ...tlsInput.tlsConfig.tlsKeyData,
+                            error: '',
+                        },
+                    },
+                })
+                break
+            case TLSConnectionFormActionType.CLEAR_KEY_DATA:
+                setTLSInput({
+                    ...tlsInput,
+                    isTLSKeyDataClearedAfterInitialConfig: true,
+                    isTLSKeyDataPresent: false,
+                    tlsConfig: {
+                        ...tlsInput.tlsConfig,
+                        tlsKeyData: {
+                            value: '',
                             error: '',
                         },
                         tlsCertData: {
@@ -670,9 +782,6 @@ const GitForm = ({
         password: customState.password.value || '',
         accessToken: customState.accessToken.value || '',
         sshPrivateKey: customState.sshInput.value || '',
-        // TODO: Verify
-        // insecureSkipTLSVerify,
-        // tlsConfig,
     }
 
     return (
@@ -827,11 +936,14 @@ const GitForm = ({
             {state.auth.value === 'USERNAME_PASSWORD' && (
                 <TLSConnectionForm
                     enableTLSVerification={tlsInput.enableTLSVerification}
+                    handleChange={handleTLSConfigChange}
                     caData={tlsInput.tlsConfig.caData}
                     tlsCertData={tlsInput.tlsConfig.tlsCertData}
                     tlsKeyData={tlsInput.tlsConfig.tlsKeyData}
-                    handleChange={handleTLSConfigChange}
-                    isTLSInitiallyConfigured={id && enableTLSVerification}
+                    isCADataPresent={tlsInput.isCADataPresent}
+                    isTLSCertDataPresent={tlsInput.isTLSCertDataPresent}
+                    isTLSKeyDataPresent={tlsInput.isTLSKeyDataPresent}
+                    isTLSInitiallyConfigured={isTLSInitiallyConfigured}
                     rootClassName="mb-16"
                 />
             )}
