@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Progressing, useDownload } from '@devtron-labs/devtron-fe-common-lib'
 import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
@@ -28,7 +28,7 @@ import { importComponentFromFELibrary } from '../../../common'
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 
 export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
-    const { isDownloading, handleDownload } = useDownload()
+    const { isDownloading, handleDownload, downloadError } = useDownload()
     const [isDownloaded, setIsDownloaded] = useState(false)
     const params = {
         appId: rowData.appId,
@@ -56,7 +56,9 @@ export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: Trigg
         }
         const downloadUrl = getDownloadManifestUrl(params)
         handleDownload({ downloadUrl, fileName: params.appName, showSuccessfulToast: false })
-        setIsDownloaded(true)
+        if (!downloadError) {
+            setIsDownloaded(true)
+        }
     }
 
     return (
