@@ -299,8 +299,11 @@ export default function DeploymentConfig({
     }
 
     const toggleYamlMode = (yamlMode: boolean) => {
+        // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
         if (!state.yamlMode && yamlMode) {
-            applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+            try {
+                applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+            } catch {}
         }
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
@@ -582,7 +585,10 @@ export default function DeploymentConfig({
 
         setConvertVariables(false)
 
-        applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+        // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
+        try {
+            applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+        } catch {}
 
         switch (index) {
             case 1:

@@ -97,7 +97,14 @@ export default function DeploymentTemplateOverrideForm({
 
     const toggleYamlMode = (yamlMode: boolean) => {
         if (!state.yamlMode && yamlMode) {
-            applyCompareDiffOfTempFormDataOnOriginalData(getCodeEditorValueForReadOnly(true), getCodeEditorValue(false), editorOnChange)
+            // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
+            try {
+                applyCompareDiffOfTempFormDataOnOriginalData(
+                    getCodeEditorValueForReadOnly(true),
+                    getCodeEditorValue(false),
+                    editorOnChange,
+                )
+            } catch {}
         }
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
@@ -365,19 +372,22 @@ export default function DeploymentTemplateOverrideForm({
 
         setConvertVariables(false)
 
-        applyCompareDiffOfTempFormDataOnOriginalData(
-            getCodeEditorValueForReadOnly(true),
-            getCodeEditorValue(false),
-            editorOnChange,
-        )
+        // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
+        try {
+            applyCompareDiffOfTempFormDataOnOriginalData(
+                getCodeEditorValueForReadOnly(true),
+                getCodeEditorValue(false),
+                editorOnChange,
+            )
+        } catch {}
 
         switch (index) {
             case 1:
             case 3:
                 setIsValuesOverride(true)
                 if (state.selectedTabIndex === 2) {
-                    toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
+                    toggleYamlMode(isGuiModeRef.current)
                 }
                 break
             case 2:
