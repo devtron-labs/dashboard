@@ -105,7 +105,7 @@ export default function DeploymentTemplateOptionsTab({
             placement="bottom"
             Icon={ErrorIcon}
             heading="Invalid YAML"
-            infoText="The provided YAML is invalid. Basic (GUI) view can only be generated for a valid YAML."
+            infoText="The provided YAML is invalid. GUI view can only be generated for a valid YAML."
             additionalContent={getRestoreLastSavedCTA()}
             trigger="mouseenter click"
             interactive
@@ -141,7 +141,7 @@ export default function DeploymentTemplateOptionsTab({
                             value="gui"
                             canSelect={!state.chartConfigLoading && codeEditorValue}
                         >
-                            Basic (GUI)
+                            GUI
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
                             value="yaml"
