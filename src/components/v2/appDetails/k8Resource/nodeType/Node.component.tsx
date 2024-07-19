@@ -21,7 +21,6 @@ import {
     TippyTheme,
     ClipboardButton,
     stopPropagation,
-    AppType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'

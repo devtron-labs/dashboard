@@ -213,7 +213,10 @@ export const downloadLogs = async (
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
         const deploymentType = getDeploymentType(ad.deploymentAppType)
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}${isExternalArgoApp ? `&externalArgoApplicationName=${ad.appName}` : ''}`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
+        if (isExternalArgoApp) {
+            logsURL += `&externalArgoApplicationName=${ad.appName}`
+        }
     }
     logsURL += `${filter}`
     setDownloadInProgress(true)
@@ -285,7 +288,10 @@ export const getLogsURL = (
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
         const deploymentType = getDeploymentType(ad.deploymentAppType)
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}${isExternalArgoApp ? `&externalArgoApplicationName=${ad.appName}` : ''}`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
+        if (isExternalArgoApp) {
+            logsURL += `&externalArgoApplicationName=${ad.appName}`
+        }
     }
     return `${logsURL}&follow=true${filter}`
 }
