@@ -20,8 +20,6 @@ src/components/ApplicationGroup/Constants.ts
 src/components/ApplicationGroup/CreateAppGroup.tsx
 src/components/ApplicationGroup/Details/EnvCDDetails/EnvCDDetails.tsx
 src/components/ApplicationGroup/Details/EnvCIDetails/EnvCIDetails.tsx
-src/components/ApplicationGroup/Details/EnvironmentConfig/ApplicationRoutes.tsx
-src/components/ApplicationGroup/Details/EnvironmentConfig/EnvConfig.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/EnvironmentOverview.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx

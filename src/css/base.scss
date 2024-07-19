@@ -4723,3 +4723,26 @@ textarea::placeholder {
 .dc__modal-gradient {
     background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
 }
+
+.dc__nav-item {
+    &.active {
+        color: var(--B500);
+        font-weight: 600;
+        background: var(--B100);
+
+        &:hover {
+            color: var(--B500);
+            background: var(--B100);
+        }
+    }
+
+    &:hover {
+        color: var(--N700);
+        text-decoration: none;
+        background: var(--N50);
+    }
+
+    &__text {
+        max-width: 192px;
+    }
+}

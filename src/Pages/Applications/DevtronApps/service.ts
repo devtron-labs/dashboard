@@ -15,12 +15,19 @@
  *   limitations under the License.
  */
 
-import { ResourceKindType, ResponseType, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResourceKindType,
+    ResponseType,
+    get,
+    getUrlWithSearchParams,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { AppConfigStatusItemType, EnvConfigDTO } from './service.types'
-import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/appConfig.type'
+import { AppConfigStatusItemType } from './service.types'
+import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
+import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
 export const getAppConfigStatus = (
     appId: number,
@@ -33,5 +40,12 @@ export const getAppConfigStatus = (
         }),
     )
 
-export const getEnvConfig = (appId: number, envId: number): Promise<ResponseType<EnvConfigDTO>> =>
-    get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))
+export const getEnvConfig = async (appId: number, envId: number) => {
+    try {
+        const res = await get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))
+        return transformEnvConfig(res.result)
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}

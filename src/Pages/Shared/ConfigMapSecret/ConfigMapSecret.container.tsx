@@ -102,7 +102,9 @@ export const ConfigMapSecretContainer = ({
 
         return Promise.all([
             getAppChartRefForAppAndEnv(+appId, +envId),
-            isProtected && getAllDrafts ? getAllDrafts(appId, envId ?? -1, 1, abortController.current.signal) : null,
+            isProtected && getAllDrafts
+                ? getAllDrafts(appId, envId ?? -1, componentType, abortController.current.signal)
+                : null,
         ])
     }, [])
 
@@ -133,6 +135,10 @@ export const ConfigMapSecretContainer = ({
                 setParentState?.(ComponentStates.failed)
                 showError(initError)
             }
+        }
+
+        return () => {
+            setParentState?.(ComponentStates.loading)
         }
     }, [initResult, initError])
 
@@ -485,7 +491,7 @@ export const ConfigMapSecretContainer = ({
             className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''} ${selectedTab === null || selectedTab === CMSecretProtectedTab.Draft || (draftData?.draftState === DraftState.AwaitApproval && selectedTab === CMSecretProtectedTab.Compare) ? 'with-crud-btn' : ''}`}
         >
             <div className="main-content py-16 px-20">
-                <div key={name} className="flexbox-col dc__gap-16 dc__mxw-1200">
+                <div className="flexbox-col dc__gap-16 dc__mxw-1200">
                     {renderHeader()}
                     {renderDetails()}
                 </div>

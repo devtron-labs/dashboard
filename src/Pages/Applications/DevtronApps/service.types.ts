@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-import { STAGE_NAME } from './Details/AppConfigurations/appConfig.type'
+import { STAGE_NAME } from './Details/AppConfigurations/AppConfig.types'
 
 export interface AppConfigStatusItemType {
     stage: number

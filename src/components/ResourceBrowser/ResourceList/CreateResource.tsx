@@ -31,7 +31,7 @@ import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamat
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ConfigResourceType } from '../Types'
+import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
@@ -40,7 +40,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const [showCodeEditorView, toggleCodeEditorView] = useState(true)
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
-    const [resourceResponse, setResourceResponse] = useState<ConfigResourceType[]>(null)
+    const [resourceResponse, setResourceResponse] = useState<ResourceType[]>(null)
 
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 

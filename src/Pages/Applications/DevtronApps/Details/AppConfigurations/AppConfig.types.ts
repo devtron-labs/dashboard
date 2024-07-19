@@ -16,11 +16,12 @@
 
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import { ResourceConfig } from '../../service.types'
+import { ResourceConfig, ResourceConfigState } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -205,7 +206,7 @@ export enum EnvResourceType {
     DeploymentTemplate = 'deployment-template',
 }
 
-export interface EnvEnvironment {
+export interface EnvironmentOptionType {
     name: string
     id: number
     isProtected: boolean
@@ -215,9 +216,20 @@ export interface EnvConfigurationsNavProps {
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     isBaseConfigProtected?: boolean
-    environments: EnvEnvironment[]
+    environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
+}
+
+export interface EnvConfigRouteParams {
+    appId: string
+    envId: string
+    resourceType: string
+}
+
+export interface ExtendedCollapsibleListItem
+    extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
+    configState: ResourceConfigState
 }

@@ -19,7 +19,7 @@ import { ResourceKindType, stringComparatorBySortOrder } from '@devtron-labs/dev
 import { URLS, DOCUMENTATION } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO, ConfigResourceType } from '../../service.types'
-import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './appConfig.type'
+import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>

@@ -37,7 +37,7 @@ import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-o
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
-import { EnvResourceType, JobEnvOverrideRouteProps } from '../appConfig.type'
+import { EnvResourceType, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { groupHeading } from '../../../../../../components/CIPipelineN/Constants'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.utils'
@@ -252,6 +252,8 @@ const EnvironmentOverrideRouter = () => {
             })
             setEnvironmentOptions(createClusterEnvGroup(list, 'clusterName'))
             setCIPipelines(ciConfigRes?.ciPipelines)
+        } catch (err) {
+            showError(err)
         } finally {
             setIsEnvLoading(false)
         }

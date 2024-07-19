@@ -18,7 +18,7 @@
 import { ReactNode } from 'react'
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../appConfig.type'
+import { DEVTRON_APPS_STEPS, EnvResourceType, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
@@ -39,7 +39,6 @@ export const AppNavigation = () => {
 
     // CONTEXTS
     const {
-        appId,
         navItems,
         deleteApp,
         canShowExternalLinks,
@@ -88,17 +87,41 @@ export const AppNavigation = () => {
         </TippyCustomized>
     )
 
+    const getValidBackURL = () => {
+        const isBackURLLocked = location.pathname === lastUnlockedStage
+        const secondLastUnlockedStage = isBackURLLocked
+            ? navItems.reduce(
+                  (acc, curr) => {
+                      if (curr.href === lastUnlockedStage) {
+                          acc.found = true
+                      }
+
+                      if (acc.found) {
+                          acc.href = acc.result[acc.result.length - 1]?.href
+                          return acc
+                      }
+
+                      if (!curr.isLocked) {
+                          acc.result.push(curr)
+                      }
+
+                      return acc
+                  },
+                  { result: [], found: false, href: '' },
+              ).href
+            : ''
+
+        return secondLastUnlockedStage || lastUnlockedStage
+    }
+
     return (
-        <>
-            {!hideConfigHelp && (
-                <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} totalSteps={totalSteps} />
-            )}
-            <Switch>
-                <Route
-                    key={`env-configurations-${appId}`}
-                    path={`${path}/:resourceType(deployment-template|configmap|secrets|${URLS.APP_ENV_OVERRIDE_CONFIG})/:envId(\\d+)?`}
-                >
+        <Switch>
+            <Route
+                path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')}|${URLS.APP_ENV_OVERRIDE_CONFIG})/:envId(\\d+)?`}
+            >
+                {({ match }) => (
                     <EnvConfigurationsNav
+                        key={`env-configurations-nav-${match.params.envId}`}
                         envConfig={envConfig}
                         fetchEnvConfig={fetchEnvConfig}
                         environments={environments.map(({ environmentName, environmentId, isProtected }) => ({
@@ -109,10 +132,19 @@ export const AppNavigation = () => {
                         isBaseConfigProtected={isBaseConfigProtected}
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
-                        goBackURL={lastUnlockedStage}
+                        goBackURL={getValidBackURL()}
                     />
-                </Route>
-                <Route key="default-navigation">
+                )}
+            </Route>
+            <Route key="default-navigation">
+                <>
+                    {!hideConfigHelp && (
+                        <AppConfigurationCheckBox
+                            selectedNav={selectedNav}
+                            isJobView={isJobView}
+                            totalSteps={totalSteps}
+                        />
+                    )}
                     {navItems.map((item) => {
                         if (item.altNavKey) {
                             return null
@@ -169,8 +201,8 @@ export const AppNavigation = () => {
                             Delete {isJobView ? 'Job' : 'Application'}
                         </button>
                     </div>
-                </Route>
-            </Switch>
-        </>
+                </>
+            </Route>
+        </Switch>
     )
 }

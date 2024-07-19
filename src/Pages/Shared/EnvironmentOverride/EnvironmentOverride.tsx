@@ -135,7 +135,7 @@ const EnvironmentOverride = ({
 
     return (
         <ErrorBoundary>
-            <div className={isDeploymentOverride ? 'deployment-template-override h-100' : 'h-100'}>
+            <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
@@ -150,7 +150,6 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretContainer
-                            key={`config-map-${params.appId}-${params.envId}`}
                             isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
@@ -166,7 +165,6 @@ const EnvironmentOverride = ({
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretContainer
-                            key={`secret-${params.appId}-${params.envId}`}
                             isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}

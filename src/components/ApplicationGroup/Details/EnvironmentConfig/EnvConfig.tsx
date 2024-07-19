@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useRouteMatch } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
-import { transformEnvConfig } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.utils'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
+import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
@@ -33,6 +33,7 @@ const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtec
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
     const {
+        path,
         params: { appId, envId },
     } = useRouteMatch<{ envId: string; appId: string }>()
     const { pathname } = useLocation()
@@ -49,18 +50,17 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                     ? getEnvConfigProtections(Number(envId))
                     : { result: null },
             ]),
-        [envId, filteredAppIds],
+        [filteredAppIds],
     )
-    const [envConfigLoading, envConfigRes, , refetch] = useAsync(() => getEnvConfig(+appId, +envId), [appId])
+    const [envConfigLoading, envConfigRes, , refetch] = useAsync(
+        () => (appId ? getEnvConfig(+appId, +envId) : null),
+        [],
+    )
 
-    // CONSTANTS
-    const envConfig = useMemo(
-        () => ({
-            config: envConfigRes?.result ? transformEnvConfig(envConfigRes.result) : null,
-            isLoading: envConfigLoading,
-        }),
-        [envConfigLoading, envConfigRes],
-    )
+    const envConfig = {
+        config: envConfigRes,
+        isLoading: envConfigLoading,
+    }
 
     useEffect(() => {
         if (
@@ -79,7 +79,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
         }
     }, [initDataResults])
 
-    if (loading) {
+    if (loading || !envAppList.length) {
         return (
             <div className="loading-state">
                 <Progressing pageLoader />
@@ -89,10 +89,8 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     return (
         <div className="env-compose">
-            <div
-                className={`env-compose__nav ${pathname.match(/(deployment-template|configmap|secret)/) ? 'env-configurations' : ''}`}
-            >
-                <ApplicationRoute envAppList={envAppList} envConfig={envConfig} fetchEnvConfig={refetch} />
+            <div className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}>
+                <ApplicationRoute key={appId} envAppList={envAppList} envConfig={envConfig} fetchEnvConfig={refetch} />
             </div>
             {appId ? (
                 <div className="env-compose__main">
@@ -103,7 +101,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                         envName={envName}
                         envConfig={envConfig}
                         fetchEnvConfig={refetch}
-                        onErrorRedirectURL=""
+                        onErrorRedirectURL={generatePath(path, { envId })}
                     />
                 </div>
             ) : (

@@ -26,7 +26,7 @@ import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretContainer } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.container'
 
-import { NextButtonProps, STAGE_NAME } from '../appConfig.type'
+import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 import '../appConfig.scss'

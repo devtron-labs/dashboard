@@ -8,7 +8,15 @@ import { URLS } from '@Config/routes'
 import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
-import { CustomNavItemsType, EnvConfigType, EnvEnvironment, EnvResourceType } from '../appConfig.type'
+import {
+    CustomNavItemsType,
+    EnvConfigRouteParams,
+    EnvConfigType,
+    EnvironmentOptionType,
+    EnvResourceType,
+    ExtendedCollapsibleListItem,
+} from '../AppConfig.types'
+import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 
 export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: boolean) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
@@ -22,7 +30,7 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
                     event.preventDefault()
                 }
             }}
-            className="env-config-nav-item cursor"
+            className="dc__nav-item cursor fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
             to={item.href}
         >
             <span className="dc__truncate nav-text">{item.title}</span>
@@ -48,7 +56,7 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
  */
 export const getNavigationPath = (
     basePath: string,
-    params: { appId: string; envId: string; resourceType: string },
+    params: EnvConfigRouteParams,
     id: number,
     resourceType: EnvResourceType,
     href?: string,
@@ -56,13 +64,13 @@ export const getNavigationPath = (
 ) => {
     const additionalPath = href ? `/${href}` : ''
     const isEnvIdChanged = paramToCheck === 'envId'
-    const isBaseEnv = id === -1
+    const isBaseEnv = id === BASE_CONFIGURATIONS.id
     const _resourceType = isEnvIdChanged && !isBaseEnv ? URLS.APP_ENV_OVERRIDE_CONFIG : resourceType
 
     return `${generatePath(basePath, {
         ...params,
         resourceType: _resourceType,
-        [paramToCheck]: id !== -1 ? id : undefined,
+        [paramToCheck]: !isBaseEnv ? id : undefined,
     })}${isEnvIdChanged && !isBaseEnv ? `/${resourceType}${additionalPath}` : `${additionalPath}`}`
 }
 
@@ -93,7 +101,7 @@ const getIcon = (
     return undefined
 }
 
-const SUBTITLE = {
+const SUBTITLE: Record<ResourceConfigStage, string> = {
     [ResourceConfigStage.Inheriting]: 'Inheriting',
     [ResourceConfigStage.Unpublished]: 'Unpublished',
     [ResourceConfigStage.Env]: 'Created at environment',
@@ -103,19 +111,13 @@ const SUBTITLE = {
 export const getEnvConfiguration = (
     envConfig: EnvConfigType,
     basePath: string,
-    params: { appId: string; envId: string; resourceType: string },
-    { id, isProtected }: EnvEnvironment,
+    params: EnvConfigRouteParams,
+    { id, isProtected }: EnvironmentOptionType,
     paramToCheck: 'appId' | 'envId' = 'envId',
 ): {
-    deploymentTemplate: Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
-        configState: ResourceConfigState
-    }
-    configmaps: (Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
-        configState: ResourceConfigState
-    })[]
-    secrets: (Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> & {
-        configState: ResourceConfigState
-    })[]
+    deploymentTemplate: ExtendedCollapsibleListItem
+    configmaps: ExtendedCollapsibleListItem[]
+    secrets: ExtendedCollapsibleListItem[]
 } =>
     Object.keys(envConfig).reduce(
         (acc, curr) => ({
@@ -157,3 +159,17 @@ export const getEnvConfiguration = (
             secrets: [],
         },
     )
+
+export const resourceTypeBasedOnPath = (pathname: string) => {
+    if (pathname.includes(`/${EnvResourceType.ConfigMap}`)) {
+        return EnvResourceType.ConfigMap
+    }
+    if (pathname.includes(`/${EnvResourceType.Secret}`)) {
+        return EnvResourceType.Secret
+    }
+    if (pathname.includes(`/${EnvResourceType.DeploymentTemplate}`)) {
+        return EnvResourceType.DeploymentTemplate
+    }
+
+    return undefined
+}

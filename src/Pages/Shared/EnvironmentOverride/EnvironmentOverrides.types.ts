@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/appConfig.type'
+import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DOCUMENTATION, URLS } from '../../../config'
 import { AppEnvironment } from '../../../services/service.types'
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'

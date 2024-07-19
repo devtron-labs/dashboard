@@ -97,7 +97,7 @@ export enum CreateResourceStatus {
     updated = 'Updated',
 }
 
-export interface ConfigResourceType {
+export interface ResourceType {
     kind: string
     name: string
     isUpdate: boolean
@@ -105,7 +105,7 @@ export interface ConfigResourceType {
 }
 
 export interface CreateResourceResponse extends ResponseType {
-    result?: ConfigResourceType[]
+    result?: ResourceType[]
 }
 
 export interface ResourceDetailsPropType extends LogSearchTermType {

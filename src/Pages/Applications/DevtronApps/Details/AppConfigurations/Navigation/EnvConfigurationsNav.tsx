@@ -6,12 +6,13 @@ import ReactSelect from 'react-select'
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
-import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from 'src/util/EnvSelect.utils'
 import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/CollapsibleList'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
-import { EnvConfigurationsNavProps, EnvResourceType } from '../appConfig.type'
-import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
+import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
+import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvResourceType } from '../AppConfig.types'
+import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
+import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -33,7 +34,7 @@ export const EnvConfigurationsNav = ({
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
-    const { path, params } = useRouteMatch<{ appId: string; envId: string; resourceType: string }>()
+    const { path, params } = useRouteMatch<EnvConfigRouteParams>()
     const { envId } = params
 
     // STATES
@@ -50,19 +51,12 @@ export const EnvConfigurationsNav = ({
         environments.find((environment) => environment.id === +params[paramToCheck]) ||
         (showBaseConfigurations
             ? {
-                  name: 'Base Configurations',
-                  id: -1,
+                  name: BASE_CONFIGURATIONS.name,
+                  id: BASE_CONFIGURATIONS.id,
                   isProtected: isBaseConfigProtected,
               }
             : null)
-    let resourceType: EnvResourceType
-    if (pathname.includes(`/${EnvResourceType.ConfigMap}`)) {
-        resourceType = EnvResourceType.ConfigMap
-    } else if (pathname.includes(`/${EnvResourceType.Secret}`)) {
-        resourceType = EnvResourceType.Secret
-    } else if (pathname.includes(`/${EnvResourceType.DeploymentTemplate}`)) {
-        resourceType = EnvResourceType.DeploymentTemplate
-    }
+    const resourceType = resourceTypeBasedOnPath(pathname)
 
     const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) =>
         _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configmaps' : 'secrets'].push({
@@ -73,13 +67,13 @@ export const EnvConfigurationsNav = ({
         })
 
     useEffect(() => {
-        // Fetch the env configuration (-1 for base env)
-        fetchEnvConfig(+(envId || -1))
+        // Fetch the env configuration
+        fetchEnvConfig(+(envId || BASE_CONFIGURATIONS.id))
 
         return () => {
             setExpandedIds(null)
         }
-    }, [envId])
+    }, [])
 
     useEffect(() => {
         if (!envConfig.isLoading && envConfig.config) {
@@ -175,8 +169,8 @@ export const EnvConfigurationsNav = ({
         ...(showBaseConfigurations
             ? [
                   {
-                      name: 'Base Configurations',
-                      id: -1,
+                      name: BASE_CONFIGURATIONS.name,
+                      id: BASE_CONFIGURATIONS.id,
                       isProtected: isBaseConfigProtected,
                   },
               ]
@@ -192,8 +186,7 @@ export const EnvConfigurationsNav = ({
 
     const renderEnvSelector = () => {
         return (
-            // TODO: en-1 border-color
-            <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom">
+            <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
                 <NavLink to={goBackURL}>
                     <div className="dc__border br-4 flex p-1">
                         <ICBack className="icon-dim-16" />
@@ -232,10 +225,10 @@ export const EnvConfigurationsNav = ({
                         {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
                             <NavLink
                                 data-testid="env-deployment-template"
-                                className="env-config-nav-item cursor dc__gap-8"
+                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
                                 to={updatedEnvConfig.deploymentTemplate.href}
                             >
-                                <span className="dc__ellipsis-right">{updatedEnvConfig.deploymentTemplate.title}</span>
+                                <span className="dc__truncate">{updatedEnvConfig.deploymentTemplate.title}</span>
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}

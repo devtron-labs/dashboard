@@ -1,9 +1,10 @@
-import { components, DropdownIndicatorProps, OptionProps, GroupBase } from 'react-select'
+import { components, DropdownIndicatorProps, OptionProps } from 'react-select'
 
 import { commonSelectStyles, getCommonSelectStyle } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ArrowDown } from '@Icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
+import { EnvironmentOptionType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 export const EnvSelectDropdownIndicator = (props: DropdownIndicatorProps) => {
     return (
@@ -51,7 +52,7 @@ export const envSelectStyles = getCommonSelectStyle({
     }),
 })
 
-export const EnvSelectOption = <T extends { isProtected?: boolean }>(props: OptionProps<T, false, GroupBase<T>>) => {
+export const EnvSelectOption = (props: OptionProps<EnvironmentOptionType>) => {
     const { data, label } = props
 
     return (

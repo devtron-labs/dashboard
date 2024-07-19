@@ -29,7 +29,6 @@ import {
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
-import { deleteApp } from './appConfig.service'
 import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
 import {
@@ -39,23 +38,18 @@ import {
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
     ConfigProtection,
-    EnvResourceType,
-} from './appConfig.type'
+} from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
-import {
-    isCIPipelineCreated,
-    isCDPipelineCreated,
-    getNavItems,
-    isUnlocked,
-    transformEnvConfig,
-} from './AppConfig.utils'
+import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './MainContent/AppComposeRouter'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppNavigation } from './Navigation/AppNavigation'
 import { AppConfigStatusItemType } from '../../service.types'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
 import { AppOtherEnvironment } from '../../../../../services/service.types'
+import { deleteApp } from './AppConfig.service'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
+import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
@@ -170,17 +164,17 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
         // Fetch environment configuration
         getEnvConfig(+appId, envId)
-            .then(({ result }) => {
+            .then((res) => {
                 setState((prevState) => ({
                     ...prevState,
                     envConfig: {
                         isLoading: false,
-                        config: transformEnvConfig(result),
+                        config: res,
                     },
                 }))
             })
-            .catch((err) => {
-                showError(err)
+            .catch(() => {
+                // Error Handled in service
             })
             .finally(() => {
                 setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: false } }))
@@ -278,7 +272,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
         const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
         const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
-        let index = navItems.filter(({ altNavKey }) => !altNavKey).findIndex((item) => item.isLocked)
+        // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
+        let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
         if (index < 0) {
             index = isJob ? DEFAULT_LANDING_STAGE.JOB_VIEW : DEFAULT_LANDING_STAGE.DEVTRON_APPS
         }
@@ -461,11 +456,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const getAppComposeClasses = () => {
-        const resourceTypes = Object.values(EnvResourceType)
-        const regExp = new RegExp(`(${resourceTypes.join('|')})`)
-
-        if (location.pathname.match(regExp)) {
-            return `app-compose-env-configurations__nav ${hideConfigHelp ? 'hide-app-config-help' : ''}`
+        if (location.pathname.match(ENV_CONFIG_PATH_REG)) {
+            return 'app-compose-env-configurations__nav'
         }
         return `${
             isGitOpsConfigurationRequired

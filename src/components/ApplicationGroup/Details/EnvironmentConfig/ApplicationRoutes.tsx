@@ -19,23 +19,20 @@ import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
+import { EnvResourceType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
-import '@Pages/Applications/DevtronApps/Details/AppConfigurations/appConfig.scss'
 import { ApplicationRouteType } from '../../AppGroup.types'
 
 const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: ApplicationRouteType) => {
     const {
         url,
-        params: { appId, envId },
+        params: { envId },
         path,
     } = useRouteMatch<{ envId: string; appId: string }>()
 
     return (
         <Switch>
-            <Route
-                key={`env-configurations-${appId}`}
-                path={`${path}/:resourceType(deployment-template|configmap|secrets)`}
-            >
+            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
                 <EnvConfigurationsNav
                     envConfig={envConfig}
                     fetchEnvConfig={fetchEnvConfig}
@@ -61,7 +58,7 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                                 {
                                     title: name,
                                     isProtectionAllowed: isProtected,
-                                    href: `${url}/${id}/deployment-template`,
+                                    href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
                                 },
                                 isProtected,
                             )}

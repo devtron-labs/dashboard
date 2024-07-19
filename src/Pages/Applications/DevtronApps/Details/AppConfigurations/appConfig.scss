@@ -32,11 +32,7 @@
 
         &.app-compose-env-configurations__nav {
             padding: 0;
-            grid-template-rows: 100px 45px 1fr;
-
-            &.hide-app-config-help {
-                grid-template-rows: 45px 1fr;
-            }
+            grid-template-rows: 45px 44px 1fr;
         }
 
         &.app-compose-with-no-gitops-config__nav {
@@ -263,38 +259,5 @@
 
     .repo-configured-icon {
         width: 96px;
-    }
-}
-
-.env-config-nav-item {
-    font-size: 13px;
-    line-height: 32px;
-    color: var(--N700);
-    width: 100%;
-    border-radius: 4px;
-    padding: 0 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-decoration: none;
-
-    &.active {
-        color: var(--B500);
-        font-weight: 600;
-        background: var(--B100);
-
-        &:hover:not(.no-hover) {
-            background: var(--B100);
-        }
-    }
-
-    &:hover:not(.no-hover) {
-        color: var(--N700);
-        text-decoration: none;
-        background: var(--N50);
-    }
-
-    .nav-text {
-        max-width: 192px;
     }
 }
