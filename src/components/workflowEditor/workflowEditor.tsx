@@ -221,8 +221,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflowId, showDeleteDialog: true })
     }
 
+    /**
+     * This method sets the value of changeCIPayload on click of change ci button in workflow.
+     */
     handleChangeCI = (changeCIPayload: ChangeCIPayloadType) => {
         this.setState({ changeCIPayload, showWorkflowOptionsModal: true })
+    }
+
+    resetChangeCIPayload = () => {
+        this.setState({ changeCIPayload: null })
     }
 
     handleNewPipelineModal = () => {
@@ -230,12 +237,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             return
         }
 
-        // This is meant for newPipeline
-        this.setState({ showWorkflowOptionsModal: true, changeCIPayload: null })
+        this.resetChangeCIPayload()
+        this.setState({ showWorkflowOptionsModal: true })
     }
 
     handleCloseWorkflowOptionsModal = () => {
-        // Not setting changeCIPayload to null as it is used in the routes as props
+        // Not setting changeCIPayload to null as in some cases we would open CIPipeline/CDPipeline with changeCIPayload
         this.setState({ showWorkflowOptionsModal: false })
     }
 
@@ -392,7 +399,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         if (showWebhookTippy) {
             this.setState({ envToShowWebhookTippy: environmentId })
         }
-        this.setState({ changeCIPayload: null })
+        this.resetChangeCIPayload()
     }
 
     hideNoGitOpsWarning = (isContinueWithHelm: boolean) => {
@@ -657,6 +664,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                       blackListedIds={this.state.blackListedCI ?? {}}
                                       deleteWorkflow={this.deleteWorkflow}
                                       getWorkflows={this.getWorkflows}
+                                      workflows={this.state.workflows}
                                   />
                               </Route>,
                           ]
@@ -959,6 +967,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         changeCIPayload={this.state.changeCIPayload}
                         workflows={this.state.workflows}
                         getWorkflows={this.getWorkflows}
+                        resetChangeCIPayload={this.resetChangeCIPayload}
                     />
                 )}
             </>
