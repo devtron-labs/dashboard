@@ -68,7 +68,7 @@ const DeploymentTemplateEditorView = ({
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])
     const [filteredCharts, setFilteredCharts] = useState<DeploymentChartOptionType[]>([])
     const [globalChartRef, setGlobalChartRef] = useState(null)
-    const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.id === +envId
+    const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.environmentId === +envId
     const baseDeploymentAbortController = useRef(null)
     const [showDraftData, setShowDraftData] = useState(false)
     const [draftManifestData, setDraftManifestData] = useState(null)
@@ -190,7 +190,7 @@ const DeploymentTemplateEditorView = ({
         if (
             state.selectedChart &&
             state.selectedCompareOption &&
-            state.selectedCompareOption.id !== -1 &&
+            state.selectedCompareOption.environmentId !== -1 &&
             (isValues
                 ? !state.fetchedValues[state.selectedCompareOption.id]
                 : !state.fetchedValuesManifest[state.selectedCompareOption.id]) && // check if present in respective cache

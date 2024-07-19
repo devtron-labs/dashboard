@@ -463,12 +463,12 @@ export default function DeploymentTemplateOverrideForm({
         if (state.publishedState) {
             if (
                 state.publishedState.isOverride &&
-                (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
+                (state.selectedCompareOption?.environmentId !== -1 || state.selectedTabIndex === 1)
             ) {
                 return YAMLStringify(state.publishedState.environmentConfig.envOverrideValues)
             }
         } else if (
-            (state.selectedCompareOption?.id === Number(envId) || fetchUnEdited) &&
+            (state.selectedCompareOption?.environmentId === Number(envId) || fetchUnEdited) &&
             state.data.environmentConfig.envOverrideValues
         ) {
             return YAMLStringify(state.data.environmentConfig.envOverrideValues)
