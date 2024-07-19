@@ -37,6 +37,7 @@ import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { INLINE_PLUGIN_TEXT } from './Constants'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({
@@ -163,8 +164,8 @@ export const PreBuild: React.FC<PreBuildType> = ({
                     <PluginCard
                         dataTestId="execute-custom-script-button"
                         imgSource={PreBuildIcon}
-                        title="Execute custom script"
-                        subTitle="Write a script to perform custom tasks."
+                        title={INLINE_PLUGIN_TEXT.TITLE}
+                        subTitle={INLINE_PLUGIN_TEXT.DESCRIPTION}
                     />
                 </div>
                 <PluginListContainer

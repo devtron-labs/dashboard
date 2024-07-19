@@ -246,12 +246,12 @@ export default function ChartGroupUpdate({}) {
     const renderChartGroupEditActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex right">
-                <button className="cta h-32 flex cancel mr-16" onClick={handleSave}>
+                <button className="cta h-32 flex cancel cta__no-svg-override mr-16" onClick={handleSave}>
                     {loading ? (
                         <Progressing />
                     ) : (
                         <div className="flex left " data-testid="save-group-button-navbar" style={{ width: '100%' }}>
-                            <SaveIcon className="mr-5" />
+                            <SaveIcon className="mr-5 scn-6" />
                             Save
                         </div>
                     )}
