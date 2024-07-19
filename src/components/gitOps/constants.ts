@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { DOCUMENTATION } from '@Config/constants'
 import { DefaultShortGitOpsType, GitOpsFormErrorType, GitProvider } from './gitops.type'
 
 export const GitHost = {
@@ -95,3 +96,16 @@ export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
     `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
+
+export const getDocLinkForGitProvider = (currentGitProvider: GitProvider): string => {
+    if (currentGitProvider === GitProvider.GITLAB) {
+        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB
+    }
+    if (currentGitProvider === GitProvider.AZURE_DEVOPS) {
+        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE
+    }
+    if (currentGitProvider === GitProvider.BITBUCKET_CLOUD) {
+        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET
+    }
+    return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB
+}
