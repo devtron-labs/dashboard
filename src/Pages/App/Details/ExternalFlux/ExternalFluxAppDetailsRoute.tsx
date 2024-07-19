@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { AppListConstants, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListConstants, Progressing, URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Suspense } from 'react'
 import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
 import ExternalFluxAppDetails from './ExternalFluxAppDetails'
 
@@ -29,12 +30,14 @@ const ExternalFluxAppDetailsRoute = () => {
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
                 showAppDetailsOnly
             />
-            <Switch>
-                <Route path={`${path}${URLS.DETAILS}`}>
-                    <ExternalFluxAppDetails />
-                </Route>
-                <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-            </Switch>
+            <Suspense fallback={<Progressing pageLoader />}>
+                <Switch>
+                    <Route path={`${path}${URLS.DETAILS}`}>
+                        <ExternalFluxAppDetails />
+                    </Route>
+                    <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
+                </Switch>
+            </Suspense>
         </>
     )
 }

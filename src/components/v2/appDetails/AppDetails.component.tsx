@@ -94,8 +94,8 @@ const AppDetailsComponent = ({
     useEffect(() => {
         // Get deployment status timeline on argocd apps
         if (
-            appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS ||
-            appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+            (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS ||
+            appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) && !isExternalApp
         ) {
             getDeploymentDetailStepsData()
         }

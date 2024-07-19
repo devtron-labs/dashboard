@@ -22,8 +22,9 @@ import {
     useMainContext,
     noop,
     DeploymentAppTypes,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ExternalFluxAppDetailParams } from './types'
 import { getExternalFluxCDAppDetails } from './service'
@@ -36,6 +37,7 @@ let initTimer = null
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
+    const [isPublishing, setIsPublishing] = useState<boolean>(true)
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
 
@@ -65,6 +67,7 @@ const ExternalFluxAppDetails = () => {
                 fluxTemplateType: templateType,
             }
             IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+            setIsPublishing(false)
         }
     }, [appDetailsResult])
 
@@ -77,6 +80,10 @@ const ExternalFluxAppDetails = () => {
     }
 
     const isLoading = isAppDetailsLoading && !appDetailsResult
+
+    if (isLoading || isPublishing) {
+        return <Progressing pageLoader />
+    }
 
     return <AppDetailsComponent isExternalApp _init={noop} loadingDetails={isLoading} loadingResourceTree={isLoading} />
 }

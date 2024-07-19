@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -62,6 +62,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
     const [isFetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
+    const isHelmApp = appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
 
     useEffect(() => {
         _getAndSetAppDetail()
@@ -115,7 +116,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const _getAndSetAppDetail = async () => {
         try {
-            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS) {
+            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp ) {
                 const response = await getInstalledChartDetailWithResourceTree(
                     +appDetails.installedAppId,
                     +appDetails.environmentId,
@@ -287,10 +288,6 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             setScalingInProgress(true)
-            if (appDetails.appType != AppType.EXTERNAL_HELM_CHART && appDetails.appType !== AppType.EXTERNAL_FLUX_APP) {
-                appId = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}`
-            }
-            const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
             const requestPayload: HibernateRequest = {
@@ -306,7 +303,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     })),
             }
 
-            const { result } = await workloadUpdate(requestPayload)
+            const { result } = isHibernateReq ? await hibernateApp(requestPayload, appDetails.appType) : await unhibernateApp(requestPayload, appDetails.appType)
 
             if (Array.isArray(result)) {
                 result.forEach((status) => {
