@@ -405,6 +405,8 @@ export const Details: React.FC<DetailsType> = ({
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
+                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
+
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
@@ -416,7 +418,6 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
-                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
