@@ -29,7 +29,7 @@ import {
 } from 'react-router-dom'
 import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
-import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig1'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
