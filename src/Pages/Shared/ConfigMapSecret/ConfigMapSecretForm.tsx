@@ -22,7 +22,6 @@ import ReactSelect from 'react-select'
 
 import {
     showError,
-    Progressing,
     ConfirmationDialog,
     Checkbox,
     CHECKBOX_VALUE,
@@ -36,6 +35,7 @@ import {
     CustomInput,
     usePrompt,
     deepEqual,
+    ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -149,8 +149,8 @@ export const ConfigMapSecretForm = React.memo(
 
         const setTempArr = (arr: CMSecretYamlData[]) => {
             dispatch({
-                type: ConfigMapActionTypes.multipleOptions,
-                payload: { isFormDirty: arr.length && !deepEqual(arr, state.currentData) },
+                type: ConfigMapActionTypes.setFormDirty,
+                payload: arr.length && !deepEqual(arr, state.currentData),
             })
             tempArr.current = arr
         }
@@ -741,7 +741,7 @@ export const ConfigMapSecretForm = React.memo(
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
                         toggleModal={closeDeleteModal}
-                        reload={() => updateCMSecret()}
+                        reload={updateCMSecret}
                     />
                 )
             }
@@ -1102,7 +1102,7 @@ export const ConfigMapSecretForm = React.memo(
                             />
                         )}
                     <div>
-                        <div className="cm-secret-name-container">
+                        <div className="form__row--two-third dc__gap-12">
                             {dataTypeSelector()}
                             {renderName()}
                         </div>
@@ -1135,7 +1135,7 @@ export const ConfigMapSecretForm = React.memo(
 
                     {!readonlyView && (
                         <div className="crud-btn p-16 flexbox dc__align-items-center dc__gap-12 left dc__position-abs dc__border-top dc__bottom-0 dc__left-0 dc__right-0">
-                            <button
+                            <ButtonWithLoader
                                 disabled={
                                     (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
                                     (draftMode && !isAppAdmin) ||
@@ -1143,11 +1143,12 @@ export const ConfigMapSecretForm = React.memo(
                                 }
                                 data-testid={`${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}-save-button`}
                                 type="submit"
-                                className="cta h-32 flex"
+                                rootClassName="cta h-32 flex"
                                 onClick={handleSubmit}
+                                isLoading={state.submitLoading}
                             >
-                                {state.submitLoading ? <Progressing /> : submitButtonText()}
-                            </button>
+                                {submitButtonText()}
+                            </ButtonWithLoader>
                             {!name && (
                                 <button
                                     disabled={

@@ -285,7 +285,6 @@ export const getTypeGroups = (isJobView?: boolean, typeValue?: string) => {
 export const SecretOptions = (props: OptionProps<ReturnType<typeof getTypeGroups>>) => {
     const { selectProps, data } = props
 
-    // props.selectProps.styles.option = getCustomOptionSelectionStyle()
     const styles = { ...selectProps.styles, option: getCustomOptionSelectionStyle() }
 
     return (
@@ -402,6 +401,29 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
     }
 }
 
+export const transformSecretDataJSON = (jsonObj: any[]) => {
+    jsonObj.map((j) => {
+        const temp = {
+            isBinary: undefined,
+            fileName: undefined,
+            name: undefined,
+            property: undefined,
+            value: undefined,
+        }
+        temp.isBinary = j.isBinary
+        if (j.key) {
+            temp.fileName = j.key
+        }
+        if (j.property) {
+            temp.property = j.property
+        }
+        if (j.name) {
+            temp.name = j.name
+        }
+        return temp
+    })
+}
+
 const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapAction) => void): void => {
     if (isESO) {
         const payload = {
@@ -418,26 +440,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             payload,
         })
     } else if (Array.isArray(json)) {
-        const _json = json.map((j) => {
-            const temp = {
-                isBinary: undefined,
-                fileName: undefined,
-                name: undefined,
-                property: undefined,
-                value: undefined,
-            }
-            temp.isBinary = j.isBinary
-            if (j.key) {
-                temp.fileName = j.key
-            }
-            if (j.property) {
-                temp.property = j.property
-            }
-            if (j.name) {
-                temp.name = j.name
-            }
-            return temp
-        })
+        const _json = transformSecretDataJSON(json)
         dispatch({
             type: ConfigMapActionTypes.setSecretData,
             payload: _json,
@@ -492,26 +495,7 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
     tempSecretData = tempSecretData.map((s) => {
         return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
     })
-    jsonForSecretDataYaml = jsonForSecretDataYaml.map((j) => {
-        const temp = {
-            isBinary: undefined,
-            key: undefined,
-            name: undefined,
-            property: undefined,
-            value: undefined,
-        }
-        temp.isBinary = j.isBinary
-        if (j.key) {
-            temp.key = j.key
-        }
-        if (j.property) {
-            temp.property = j.property
-        }
-        if (j.name) {
-            temp.name = j.name
-        }
-        return temp
-    })
+    jsonForSecretDataYaml = transformSecretDataJSON(jsonForSecretDataYaml)
     const tempEsoSecretData =
         (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
             ? configMapSecretData?.defaultESOSecretData

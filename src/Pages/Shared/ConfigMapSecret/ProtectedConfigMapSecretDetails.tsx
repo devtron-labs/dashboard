@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
+    abortPreviousRequests,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
     DeploymentHistoryDiffView,
     Progressing,
@@ -50,14 +51,18 @@ export const ProtectedConfigMapSecretDetails = ({
     const [baseData, setBaseData] = useState(data)
 
     // REFS
-    const abortController = useRef(new AbortController())
+    const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
     const [baseDataLoading, baseDataRes] = useAsync(
         () =>
-            getCMSecret(componentType, id, appId, data.name, {
-                signal: abortController.current.signal,
-            }),
+            abortPreviousRequests(
+                () =>
+                    getCMSecret(componentType, id, appId, data.name, {
+                        signal: abortControllerRef.current.signal,
+                    }),
+                abortControllerRef,
+            ),
         [],
         draftData.action === 3 &&
             cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&

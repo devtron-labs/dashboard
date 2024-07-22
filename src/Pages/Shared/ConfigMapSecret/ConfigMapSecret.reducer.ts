@@ -167,6 +167,8 @@ export const ConfigMapSecretReducer = (state: ConfigMapSecretState, action: Conf
             return { ...state, showDraftSaveModal: !state.showDraftSaveModal }
         case ConfigMapActionTypes.setValidateFormError:
             return { ...state, isValidateFormError: action.payload }
+        case ConfigMapActionTypes.setFormDirty:
+            return { ...state, isFormDirty: action.payload }
 
         default:
             return state

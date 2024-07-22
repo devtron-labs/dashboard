@@ -177,6 +177,7 @@ export enum ConfigMapActionTypes {
     toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
     setValidateFormError = 'setValidateFormError',
+    setFormDirty = 'setFormDirty',
 }
 
 export interface ConfigMapAction {

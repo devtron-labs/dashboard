@@ -3,8 +3,10 @@ import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router
 import { toast } from 'react-toastify'
 
 import {
+    abortPreviousRequests,
     ErrorScreenManager,
     GenericEmptyState,
+    getIsRequestAborted,
     noop,
     Progressing,
     showError,
@@ -94,19 +96,23 @@ export const ConfigMapSecretContainer = ({
     const componentName = componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'
 
     // REFS
-    const abortController = useRef<AbortController>(null)
+    const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
-    const [initLoading, initResult, initError] = useAsync(() => {
-        abortController.current = new AbortController()
-
-        return Promise.all([
-            getAppChartRefForAppAndEnv(+appId, +envId),
-            isProtected && getAllDrafts
-                ? getAllDrafts(appId, envId ?? -1, componentType, abortController.current.signal)
-                : null,
-        ])
-    }, [])
+    const [initLoading, initResult, initError] = useAsync(
+        () =>
+            abortPreviousRequests(
+                () =>
+                    Promise.all([
+                        getAppChartRefForAppAndEnv(+appId, +envId),
+                        isProtected && getAllDrafts
+                            ? getAllDrafts(appId, envId ?? -1, componentType, abortControllerRef.current.signal)
+                            : null,
+                    ]),
+                abortControllerRef,
+            ),
+        [],
+    )
 
     // LOADING
     const loader = isCMSecretLoading || initLoading || envConfig.isLoading
@@ -131,7 +137,7 @@ export const ConfigMapSecretContainer = ({
             setParentState?.(ComponentStates.loaded)
         }
         if (initError) {
-            if (!abortController.current.signal.aborted) {
+            if (!abortControllerRef.current.signal.aborted) {
                 setParentState?.(ComponentStates.failed)
                 showError(initError)
             }
@@ -143,15 +149,16 @@ export const ConfigMapSecretContainer = ({
     }, [initResult, initError])
 
     const getCMSecretData = () => {
-        abortController.current = new AbortController()
-        setIsCMSecretLoading(true)
+        abortPreviousRequests(() => {
+            setIsCMSecretLoading(true)
 
-        Promise.allSettled([
-            isProtected && getDraftByResourceName
-                ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortController.current.signal)
-                : null,
-            getCMSecret(componentType, selectedCMSecret.id, appId, name, envId, abortController.current.signal),
-        ])
+            return Promise.allSettled([
+                isProtected && getDraftByResourceName
+                    ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef.current.signal)
+                    : null,
+                getCMSecret(componentType, selectedCMSecret.id, appId, name, envId, abortControllerRef.current.signal),
+            ])
+        }, abortControllerRef)
             .then(([_draftData, _cmSecretData]) => {
                 let draftId: number
                 let draftState: number
@@ -258,7 +265,10 @@ export const ConfigMapSecretContainer = ({
                         const dataFromDraft = JSON.parse(_draftData.value.result.data)
                         setCmSecretData({
                             ...dataFromDraft,
-                            configData: { ...dataFromDraft.configData[0], unAuthorized: dataFromDraft.dataEncrypted },
+                            configData: {
+                                ...dataFromDraft.configData[0],
+                                unAuthorized: dataFromDraft.dataEncrypted,
+                            },
                         })
                     } else if (_draftData.value.result.draftState === DraftState.Discarded) {
                         toast.error(`The ${componentName} '${name}' has been deleted`)
@@ -266,25 +276,29 @@ export const ConfigMapSecretContainer = ({
                         setCmSecretData(null)
                     }
                 }
-                if (
-                    (_cmSecretData?.status === 'fulfilled' && _cmSecretData?.value !== null) ||
-                    (_draftData?.status === 'fulfilled' && _draftData?.value !== null)
-                ) {
-                    setIsCMSecretLoading(true)
-                }
+
                 if (
                     (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
                     (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
                 ) {
                     toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 }
+
+                if (_cmSecretData.status === 'rejected' || _draftData.status === 'rejected') {
+                    if (_cmSecretData.status === 'rejected') {
+                        setIsCMSecretLoading(getIsRequestAborted(_cmSecretData.reason))
+                    }
+                    if (_draftData.status === 'rejected') {
+                        setIsCMSecretLoading(getIsRequestAborted(_draftData.reason))
+                    }
+                } else {
+                    setIsCMSecretLoading(false)
+                }
             })
             .catch((err) => {
                 toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 setDraftData(null)
                 showError(err)
-            })
-            .finally(() => {
                 setIsCMSecretLoading(false)
             })
     }
@@ -342,15 +356,12 @@ export const ConfigMapSecretContainer = ({
         toggleDraftComments({ draftId: draftData?.draftId, draftVersionId: draftData?.draftVersionId, index: 0 })
     }
 
-    const showDeleteButton = () => {
-        return (
-            cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
-            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
-            draftData?.action !== 3 &&
-            !isCreateState &&
-            !!name
-        )
-    }
+    const showDeleteButton =
+        cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+        cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
+        draftData?.action !== 3 &&
+        !isCreateState &&
+        !!name
 
     const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
 
@@ -369,7 +380,7 @@ export const ConfigMapSecretContainer = ({
                     </div>
                 )}
             </div>
-            {showDeleteButton() && (
+            {showDeleteButton && (
                 <button
                     type="button"
                     className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
@@ -490,7 +501,7 @@ export const ConfigMapSecretContainer = ({
         <div
             className={`cm-secret-container h-100 dc__position-rel bcn-0 ${showComments ? 'with-comment-drawer' : ''} ${selectedTab === null || selectedTab === CMSecretProtectedTab.Draft || (draftData?.draftState === DraftState.AwaitApproval && selectedTab === CMSecretProtectedTab.Compare) ? 'with-crud-btn' : ''}`}
         >
-            <div className="main-content py-16 px-20">
+            <div className="main-content py-16 px-20 h-100 dc__hide-hscroll">
                 <div className="flexbox-col dc__gap-16 dc__mxw-1200">
                     {renderHeader()}
                     {renderDetails()}

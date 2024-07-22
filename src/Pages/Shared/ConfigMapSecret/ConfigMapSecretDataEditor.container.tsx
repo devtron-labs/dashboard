@@ -41,6 +41,7 @@ import {
     hasESO,
     hasHashiOrAWS,
     sampleJSONs,
+    transformSecretDataJSON,
     VIEW_MODE,
 } from './Secret.utils'
 import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
@@ -85,6 +86,11 @@ const ConfigMapSecretDataEditor = ({
     }
 
     const keyValueTableHandleChange = (rowId: string | number, headerKey: string, value: string) => {
+        // We check if rowId is a string or not because:
+        // - When data is changed from the YAML editor to the GUI, IDs are mapped to indices (numbers).
+        // - When data is added via the GUI, IDs are created internally by the GUI editor as strings.
+
+        // Check if rowId is not a string (i.e., it's a number, representing an index).
         if (typeof rowId !== 'string') {
             const _currentData = state.currentData.map((currentData, idx) =>
                 rowId === idx
@@ -98,8 +104,11 @@ const ConfigMapSecretDataEditor = ({
             )
             dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
         } else {
+            // When rowId is a string, it means the data was added via the GUI editor where IDs are strings.
+            // Find the index of the current data item with the matching ID.
             const index = state.currentData.findIndex(({ id }) => rowId === id)
             if (index > -1) {
+                // If the item is found, update the current data object with the new value and reset errors.
                 const _currentData = state.currentData.map((currentData, idx) =>
                     index === idx
                         ? {
@@ -112,6 +121,8 @@ const ConfigMapSecretDataEditor = ({
                 )
                 dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
             } else {
+                // If the item is not found, it means it's a new entry added via the GUI editor.
+                // Create a new data object and add it to the current data state.
                 const _currentData = [
                     ...state.currentData,
                     { k: '', v: '', [headerKey]: value, keyError: '', valueError: '', id: rowId },
@@ -122,7 +133,12 @@ const ConfigMapSecretDataEditor = ({
     }
 
     const keyValueRemove = (rowId: string) => {
+        // Create a new array by filtering out the item with the matching rowId.
+        // If rowId is a string, it means we're dealing with an ID from the GUI.
+        // If rowId is a number, it means we're dealing with an index mapped as ID from the YAML editor.
         const _currentData = state.currentData.filter(({ id }, idx) =>
+            // When rowId is a string, remove the item with the matching ID.
+            // When rowId is a number, remove the item at the matching index.
             typeof rowId === 'string' ? id !== rowId : idx !== rowId,
         )
         dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
@@ -203,25 +219,7 @@ const ConfigMapSecretDataEditor = ({
             type: ConfigMapActionTypes.setSecretData,
             payload: json,
         })
-        json = json.map((j) => {
-            const temp = {
-                isBinary: undefined,
-                key: '',
-                name: '',
-                property: '',
-            }
-            temp.isBinary = j.isBinary
-            if (j.fileName) {
-                temp.key = j.fileName
-            }
-            if (j.property) {
-                temp.property = j.property
-            }
-            if (j.name) {
-                temp.name = j.name
-            }
-            return temp
-        })
+        json = transformSecretDataJSON(json)
         dispatch({
             type: ConfigMapActionTypes.setSecretDataYaml,
             payload: YAMLStringify(json),
@@ -316,7 +314,7 @@ const ConfigMapSecretDataEditor = ({
                     </CodeEditor.Header>
                     {!state.external && error && (
                         <div className="validation-error-block">
-                            <Info color="#f32e2e" style={{ height: '16px', width: '16px' }} />
+                            <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
                             <div>{error}</div>
                         </div>
                     )}
