@@ -115,8 +115,8 @@ export const ConfigMapSecretContainer = ({
     )
 
     // LOADING
-    const loader = isCMSecretLoading || initLoading || envConfig.isLoading
-    const cmSecretLoader = initLoading || envConfig.isLoading
+    const loader = isCMSecretLoading || initLoading || getIsRequestAborted(initError) || envConfig.isLoading
+    const cmSecretLoader = initLoading || getIsRequestAborted(initError) || envConfig.isLoading
 
     useEffect(() => {
         if (initResult) {
@@ -136,11 +136,9 @@ export const ConfigMapSecretContainer = ({
 
             setParentState?.(ComponentStates.loaded)
         }
-        if (initError) {
-            if (!abortControllerRef.current.signal.aborted) {
-                setParentState?.(ComponentStates.failed)
-                showError(initError)
-            }
+        if (initError && !getIsRequestAborted(initError)) {
+            setParentState?.(ComponentStates.failed)
+            showError(initError)
         }
 
         return () => {

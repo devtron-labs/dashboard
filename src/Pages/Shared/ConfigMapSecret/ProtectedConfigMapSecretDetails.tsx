@@ -6,7 +6,9 @@ import {
     abortPreviousRequests,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
     DeploymentHistoryDiffView,
+    getIsRequestAborted,
     Progressing,
+    showError,
     useAsync,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -54,7 +56,7 @@ export const ProtectedConfigMapSecretDetails = ({
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     // ASYNC CALLS
-    const [baseDataLoading, baseDataRes] = useAsync(
+    const [baseDataLoading, baseDataRes, baseDataErr] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
@@ -75,7 +77,11 @@ export const ProtectedConfigMapSecretDetails = ({
             const _baseData = { ...baseDataRes.result.configData[0], unAuthorized: false }
             setBaseData(_baseData)
         }
-    }, [baseDataRes])
+
+        if (baseDataErr && !getIsRequestAborted(baseDataErr)) {
+            showError(baseDataErr)
+        }
+    }, [baseDataRes, baseDataErr])
 
     const getData = () => {
         try {
@@ -229,7 +235,7 @@ export const ProtectedConfigMapSecretDetails = ({
     }
 
     const renderDiffView = (): JSX.Element => {
-        if (baseDataLoading) {
+        if (baseDataLoading || getIsRequestAborted(baseDataErr)) {
             return (
                 <div className="h-300">
                     <Progressing />

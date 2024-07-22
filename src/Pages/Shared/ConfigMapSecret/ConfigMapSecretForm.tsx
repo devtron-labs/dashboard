@@ -1057,7 +1057,9 @@ export const ConfigMapSecretForm = React.memo(
         const dataTypeSelector = (): JSX.Element => {
             return (
                 <div className="form__row mb-0-imp">
-                    <div className="form__label">Data type</div>
+                    {/* TODO: will be resolved when replaced with Select Picker */}
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label className="form__label">Data type</label>
                     <div className="form-row__select-external-type">
                         {componentType === CMSecretComponentType.Secret ? (
                             secretDataTypeSelectWithInfo()
