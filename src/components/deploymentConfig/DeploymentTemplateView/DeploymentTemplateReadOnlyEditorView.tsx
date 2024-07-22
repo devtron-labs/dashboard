@@ -47,7 +47,6 @@ export default function DeploymentTemplateReadOnlyEditorView({
             }
         } else {
             value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), {
-                sortOrderEntries: true,
                 simpleKeys: true,
             })
         }

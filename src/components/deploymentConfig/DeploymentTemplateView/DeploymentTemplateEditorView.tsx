@@ -104,7 +104,7 @@ const DeploymentTemplateEditorView = ({
     }
 
     useEffect(() => {
-        // triggerEditorLoadingState()
+        triggerEditorLoadingState()
     }, [hideLockedKeys])
 
     const resolveVariables = async (value: string) => {
