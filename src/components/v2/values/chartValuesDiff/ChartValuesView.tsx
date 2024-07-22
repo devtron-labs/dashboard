@@ -1592,7 +1592,7 @@ const ChartValuesView = ({
             !commonState.installedConfig?.isOCICompliantChart
         return (
             <div
-                className={`chart-values-view__container bcn-0 ${
+                className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
