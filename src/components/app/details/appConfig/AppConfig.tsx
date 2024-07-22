@@ -332,7 +332,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             if (state.canDeleteApp) {
                 return (
                     <DeleteDialog
-                        title={`Delete '${appName}'?`}
+                        title={`Delete job '${appName}'?`}
                         delete={deleteAppHandler}
                         closeDelete={() => {
                             setState((state) => ({ ...state, showDeleteConfirm: false }))
@@ -340,9 +340,9 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     >
                         <DeleteDialog.Description>
                             <p className="fs-13 cn-7 lh-1-54">
-                                This will delete all resources associated with this application.
+                            The job and all its pipelines will be deleted. Deleted job pipelines cannot be restore.
                             </p>
-                            <p className="fs-13 cn-7 lh-1-54">Deleted applications cannot be restored.</p>
+                            <p className="fs-13 cn-7 lh-1-54">Are you sure?</p>
                         </DeleteDialog.Description>
                     </DeleteDialog>
                 )

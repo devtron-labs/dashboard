@@ -17,7 +17,7 @@
 import React from 'react'
 import { AppStatus, ErrorScreenManager, Progressing, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import { Pagination } from '../../common'
+import { Pagination, trackByGAEvent } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -43,6 +43,7 @@ export default function JobListView(props: JobListViewProps) {
     const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
+        trackByGAEvent('Job', event.currentTarget.dataset.action)
         props.handleEditJob(event.currentTarget.dataset.key)
     }
 
@@ -95,15 +96,15 @@ export default function JobListView(props: JobListViewProps) {
                                     />
                                 )}
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0 value cb-5" data-testid="job-list-for-sort">
                                     {job.name}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView />
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">
                                     {environmentName(job.defaultPipeline)}
                                     {environmentName(job.defaultPipeline) === DEFAULT_ENV && (
@@ -111,10 +112,10 @@ export default function JobListView(props: JobListViewProps) {
                                     )}
                                 </p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
-                            <div className="app-list__cell dc__border-bottom-n1">
+                            <div className="app-list__cell">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
@@ -124,6 +125,7 @@ export default function JobListView(props: JobListViewProps) {
                                     data-key={job.id}
                                     className="button-edit"
                                     onClick={handleEditJob}
+                                    data-action="Edit Configure Clicked"
                                 >
                                     <Edit className="button-edit__icon" />
                                 </button>
