@@ -62,7 +62,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
     const [isFetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
-    const isHelmApp = appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
+    const isHelmApp =
+        appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
 
     useEffect(() => {
         _getAndSetAppDetail()
@@ -116,7 +117,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const _getAndSetAppDetail = async () => {
         try {
-            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp ) {
+            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp) {
                 const response = await getInstalledChartDetailWithResourceTree(
                     +appDetails.installedAppId,
                     +appDetails.environmentId,
@@ -303,7 +304,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                     })),
             }
 
-            const { result } = isHibernateReq ? await hibernateApp(requestPayload, appDetails.appType) : await unhibernateApp(requestPayload, appDetails.appType)
+            const { result } = isHibernateReq
+                ? await hibernateApp(requestPayload, appDetails.appType)
+                : await unhibernateApp(requestPayload, appDetails.appType)
 
             if (Array.isArray(result)) {
                 result.forEach((status) => {

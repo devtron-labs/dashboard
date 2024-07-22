@@ -79,13 +79,21 @@ const ExternalFluxAppDetails = () => {
         return <ErrorScreenManager code={appDetailsError.code} reload={reloadAppDetails} />
     }
 
-    const isLoading = isAppDetailsLoading && !appDetailsResult
+    // To show loader on first render only
+    const isLoadingOnMount = isAppDetailsLoading && !appDetailsResult
 
-    if (isLoading || isPublishing) {
+    if (isLoadingOnMount || isPublishing) {
         return <Progressing pageLoader />
     }
 
-    return <AppDetailsComponent isExternalApp _init={noop} loadingDetails={isLoading} loadingResourceTree={isLoading} />
+    return (
+        <AppDetailsComponent
+            isExternalApp
+            _init={noop}
+            loadingDetails={isLoadingOnMount}
+            loadingResourceTree={isLoadingOnMount}
+        />
+    )
 }
 
 export default ExternalFluxAppDetails

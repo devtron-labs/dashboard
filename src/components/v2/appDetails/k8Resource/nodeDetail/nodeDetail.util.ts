@@ -15,6 +15,7 @@
  */
 
 import { Moment } from 'moment'
+import { decode, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
@@ -33,7 +34,6 @@ import { ManifestData, NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
-import { decode, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 
 export const getNodeDetailTabs = (nodeType: NodeType, isResourceBrowserTab?: boolean) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
@@ -479,7 +479,7 @@ export const getTrimmedManifestData = (
     return returnAsString ? JSON.stringify(manifestData) : manifestData
 }
 
-export const getK8sResourcePayloadAppType = (appType: string) => {
+export const getK8sResourcePayloadAppType = (appType: string): number => {
     if (appType === AppType.DEVTRON_APP) {
         return K8sResourcePayloadAppType.DEVTRON_APP
     }
@@ -503,7 +503,7 @@ export const getDecodedEncodedSecretManifestData = (
     return returnAsString ? JSON.stringify(encodedData) : manifestData
 }
 
-export const getDeploymentType = (deploymentAppType: DeploymentAppTypes) => {
+export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): number => {
     if (deploymentAppType === DeploymentAppTypes.HELM) {
         return K8sResourcePayloadDeploymentType.HELM_INSTALLED
     }

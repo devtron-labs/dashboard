@@ -18,12 +18,13 @@ import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtro
 import { toast } from 'react-toastify'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
-import { ParamsType } from './nodeDetail.type'
+import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType, ResponsePayload } from './nodeDetail.type'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
+import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 
-export const getAppId = (clusterId: number, namespace: string, appName: string, templateType?: string) => {
+export const getAppId = ({ clusterId, namespace, appName, templateType }: AppDetailsAppIdentifierProps) => {
     if (templateType) {
-        return `${clusterId}|${namespace}|${appName}|${templateType === 'Kustomization'}`
+        return `${clusterId}|${namespace}|${appName}|${templateType === FluxCDTemplateType.KUSTOMIZATION}`
     }
     return `${clusterId}|${namespace}|${appName}`
 }
@@ -34,7 +35,12 @@ export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appI
 export const generateAppIdentifier = (appDetails: AppDetails, appName: string) =>
     appDetails.appType === AppType.DEVTRON_APP
         ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-        : getAppId(appDetails.clusterId, appDetails.namespace, appName, appDetails.fluxTemplateType ?? null)
+        : getAppId({
+              clusterId: appDetails.clusterId,
+              namespace: appDetails.namespace,
+              appName,
+              templateType: appDetails.fluxTemplateType ?? null,
+          })
 
 export const getManifestResource = (
     ad: AppDetails,
@@ -60,7 +66,11 @@ export const getDesiredManifestResource = (
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
     const requestData = {
-        appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
+        appId: getAppId({
+            clusterId: appDetails.clusterId,
+            namespace: appDetails.namespace,
+            appName: appDetails.appName,
+        }),
         resource: {
             Group: selectedResource.group ? selectedResource.group : '',
             Version: selectedResource.version ? selectedResource.version : 'v1',
@@ -338,43 +348,43 @@ const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, app
     return url
 }
 
-export const generateEphemeralUrl = (
+export const generateEphemeralUrl = ({
     requestData,
-    clusterId: number,
-    environmentId: number,
-    namespace: string,
-    appName: string,
-    appId: number,
-    appType: string,
-    fluxTemplateType: string,
-    isResourceBrowserView: boolean,
-    params: ParamsType,
-) => {
+    clusterId,
+    environmentId,
+    namespace,
+    appName,
+    appId,
+    appType,
+    fluxTemplateType,
+    isResourceBrowserView,
+    params,
+}: EphemeralContainerProps) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName, fluxTemplateType)
+            : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })
 
     const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return post(url, requestData)
 }
 
-export const deleteEphemeralUrl = (
+export const deleteEphemeralUrl = ({
     requestData,
-    clusterId: number,
-    environmentId: number,
-    namespace: string,
-    appName: string,
-    appId: number,
-    appType: string,
-    fluxTemplateType: string,
-    isResourceBrowserView: boolean,
-    params: ParamsType,
-) => {
+    clusterId,
+    environmentId,
+    namespace,
+    appName,
+    appId,
+    appType,
+    fluxTemplateType,
+    isResourceBrowserView,
+    params,
+}: EphemeralContainerProps) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName, fluxTemplateType)
+            : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })
 
     const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return trash(url, requestData)

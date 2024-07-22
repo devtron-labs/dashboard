@@ -98,18 +98,18 @@ const TerminalComponent = ({
         }
 
         const deleteEphemeralContainer = (containerName: string) => {
-            deleteEphemeralUrl(
-                getPayload(containerName),
-                appDetails.clusterId,
-                appDetails.environmentId,
-                appDetails.namespace,
-                appDetails.appName,
-                appDetails.appId,
-                appDetails.appType,
-                appDetails.fluxTemplateType,
+            deleteEphemeralUrl({
+                requestData: getPayload(containerName),
+                clusterId: appDetails.clusterId,
+                environmentId: appDetails.environmentId,
+                namespace: appDetails.namespace,
+                appName: appDetails.appName,
+                appId: appDetails.appId,
+                appType: appDetails.appType,
+                fluxTemplateType: appDetails.fluxTemplateType,
                 isResourceBrowserView,
                 params,
-            )
+            })
                 .then((response: any) => {
                     const _containers: Options[] = []
                     const containerName = response.result
@@ -171,12 +171,12 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(
-                      appDetails.clusterId,
-                      appDetails.namespace,
-                      appDetails.appName,
-                      appDetails.fluxTemplateType ?? null,
-                  )
+                : getAppId({
+                      clusterId: appDetails.clusterId,
+                      namespace: appDetails.namespace,
+                      appName: appDetails.appName,
+                      templateType: appDetails.fluxTemplateType ?? null,
+                  })
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {

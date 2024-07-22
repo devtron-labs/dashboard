@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { lazy, Suspense } from 'react'
 import { AppListConstants, Progressing, URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
-import { Suspense } from 'react'
 import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
-import ExternalFluxAppDetails from './ExternalFluxAppDetails'
+
+const ExternalFluxAppDetails = lazy(() => import('./ExternalFluxAppDetails'))
 
 const ExternalFluxAppDetailsRoute = () => {
     const { path } = useRouteMatch()

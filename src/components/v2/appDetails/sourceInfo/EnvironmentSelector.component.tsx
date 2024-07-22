@@ -209,12 +209,12 @@ const EnvironmentSelectorComponent = ({
         setShowWorkloadsModal(true)
     }
 
-    const appIdentifier = getAppId(
-        appDetails.clusterId,
-        appDetails.namespace,
-        appDetails.appName,
-        appDetails.fluxTemplateType,
-    )
+    const appIdentifier = getAppId({
+        clusterId: appDetails.clusterId,
+        namespace: appDetails.namespace,
+        appName: appDetails.appName,
+        templateType: appDetails.fluxTemplateType,
+    })
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -360,7 +360,7 @@ const EnvironmentSelectorComponent = ({
                                 deployedAppDetail[1],
                                 deployedAppDetail[0],
                             )) ||
-                        isExternalFlux ||
+                        isExternalFlux || // To hide delete application button in argo and flux app details
                         isExternalArgo
                     ) && (
                         <div

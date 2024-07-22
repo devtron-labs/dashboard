@@ -360,11 +360,11 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     function _buildAppDetailUrl(newInstalledAppId: number, newEnvironmentId: number) {
         if (serverMode == SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                selectedEnvironment.clusterId,
-                selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: selectedEnvironment.clusterId,
+                namespace: selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}`
     }

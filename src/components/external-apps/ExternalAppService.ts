@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, put, trash, ResponseType, AppType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, trash, ResponseType, AppType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { HelmApp, AppEnvironmentDetail } from '../app/list-new/AppListType'
 import { ResourceTree } from '../v2/appDetails/appDetails.type'
@@ -154,7 +154,7 @@ export const updateAppReleaseWithoutLinking = (
     return put(Routes.HELM_RELEASE_APP_UPDATE_WITHOUT_LINKING_API, requestPayload, options)
 }
 
-export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest, abortSignal?: AbortSignal ): Promise<any> => {
+export const updateAppRelease = (requestPayload: UpdateAppReleaseRequest, abortSignal?: AbortSignal): Promise<any> => {
     const options = getAPIOptionsWithTriggerTimeout()
     options.signal = abortSignal
     return put(Routes.UPDATE_APP_API, requestPayload, options)
@@ -166,6 +166,10 @@ export const linkToChartStore = (request: LinkToChartStoreRequest): Promise<Upda
 }
 
 export const getManifestUrlInfo = (appId: string, appType: AppType): Promise<ResponseType> => {
-    const url = `${Routes.EA_INGRESS_SERVICE_MANIFEST}?appId=${appId}&appType=${getK8sResourcePayloadAppType(appType)}`
+    const params = {
+        appId,
+        appType: getK8sResourcePayloadAppType(appType),
+    }
+    const url = getUrlWithSearchParams(Routes.EA_INGRESS_SERVICE_MANIFEST, params)
     return get(url)
 }

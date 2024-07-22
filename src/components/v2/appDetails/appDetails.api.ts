@@ -56,7 +56,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         appId:
             appType == AppType.DEVTRON_APP
                 ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, Number(envId))
-                : getAppId(clusterId, namespace, appName, fluxTemplateType ?? null),
+                : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType ?? null }),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -67,7 +67,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
                 namespace: nodeNamespace,
                 name,
             },
-            forceDelete: forceDelete
+            forceDelete: forceDelete,
         },
         appType: getK8sResourcePayloadAppType(appType),
         deploymentType: getDeploymentType(deploymentAppType),
