@@ -23,6 +23,7 @@ import {
     YAMLStringify,
     InfoIconTippy,
     CodeEditor,
+    SelectOption,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -239,6 +240,8 @@ const EphemeralContainerDrawer = ({
         }
     }
 
+    const renderSelectOption = (props) => <SelectOption showTippy tippyClass="default-tt" {...props} />
+
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20">
@@ -287,6 +290,7 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
+                            Option: (props) => renderSelectOption(props),
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}
