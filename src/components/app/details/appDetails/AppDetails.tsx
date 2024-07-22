@@ -789,6 +789,7 @@ export const Details: React.FC<DetailsType> = ({
                     clusterName={appDetails?.clusterName}
                     namespace={appDetails?.namespace}
                     clusterId={appDetails?.clusterId}
+                    isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
         </>
@@ -1500,29 +1501,6 @@ export const SyncStatusMessage = (app: Application) => {
         default:
             return <span>{message}</span>
     }
-}
-
-const getOperationStateTitle = (app: Application) => {
-    const appOperationState = getAppOperationState(app)
-    const operationType = getOperationType(app)
-    switch (operationType) {
-        case 'Delete':
-            return 'Deleting'
-        case 'Sync':
-            switch (appOperationState.phase) {
-                case 'Running':
-                    return 'Syncing'
-                case 'Error':
-                    return 'Sync error'
-                case 'Failed':
-                    return 'Sync failed'
-                case 'Succeeded':
-                    return 'Sync OK'
-                case 'Terminating':
-                    return 'Terminated'
-            }
-    }
-    return 'Unknown'
 }
 
 export const getAppOperationState = (app: Application) => {
