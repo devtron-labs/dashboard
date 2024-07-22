@@ -18,7 +18,7 @@ import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtro
 import { toast } from 'react-toastify'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
-import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType, ResponsePayload } from './nodeDetail.type'
+import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType } from './nodeDetail.type'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
 import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 
