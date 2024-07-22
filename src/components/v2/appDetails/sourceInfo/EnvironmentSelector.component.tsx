@@ -360,7 +360,8 @@ const EnvironmentSelectorComponent = ({
                                 deployedAppDetail[1],
                                 deployedAppDetail[0],
                             )) ||
-                        isExternalFlux || // To hide delete application button in argo and flux app details
+                        // To hide delete application button in argo and flux app details
+                        isExternalFlux ||
                         isExternalArgo
                     ) && (
                         <div
