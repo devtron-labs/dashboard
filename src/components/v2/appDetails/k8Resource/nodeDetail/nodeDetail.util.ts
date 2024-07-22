@@ -479,7 +479,7 @@ export const getTrimmedManifestData = (
     return returnAsString ? JSON.stringify(manifestData) : manifestData
 }
 
-export const getK8sResourcePayloadAppType = (appType: string): number => {
+export const getK8sResourcePayloadAppType = (appType: string): K8sResourcePayloadAppType => {
     if (appType === AppType.DEVTRON_APP) {
         return K8sResourcePayloadAppType.DEVTRON_APP
     }
@@ -503,7 +503,7 @@ export const getDecodedEncodedSecretManifestData = (
     return returnAsString ? JSON.stringify(encodedData) : manifestData
 }
 
-export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): number => {
+export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sResourcePayloadDeploymentType => {
     if (deploymentAppType === DeploymentAppTypes.HELM) {
         return K8sResourcePayloadDeploymentType.HELM_INSTALLED
     }
