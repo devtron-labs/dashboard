@@ -15,8 +15,11 @@
  */
 
 import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
-import { getEnvironmentConfigs, getEnvironmentSecrets } from '../../services/service'
+
+import { Routes } from '@Config/constants'
+import { getEnvironmentConfigs, getEnvironmentSecrets } from '@Services/service'
+
+import { CMSecretComponentType, CMSecretResponse } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
 export function updateConfig(id, appId, configData, signal?) {
     return post(
@@ -78,14 +81,23 @@ export function deleteEnvSecret(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_SECRET}/${appId}/${envId}/${id}?name=${name}`)
 }
 
-export function getCMSecret(componentType, id, appId, name, envId?, signal?) {
+export const getCMSecret = (
+    componentType: CMSecretComponentType,
+    id,
+    appId,
+    name,
+    envId?,
+    signal?,
+): Promise<CMSecretResponse> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
-            componentType === 'secret' ? Routes.APP_CREATE_ENV_SECRET : Routes.APP_CREATE_ENV_CONFIG_MAP
+            componentType === CMSecretComponentType.Secret
+                ? Routes.APP_CREATE_ENV_SECRET
+                : Routes.APP_CREATE_ENV_CONFIG_MAP
         }/edit/${appId}/${envId}`
     } else {
-        url = `${componentType === 'secret' ? Routes.APP_CREATE_SECRET : Routes.APP_CREATE_CONFIG_MAP}/edit/${appId}`
+        url = `${componentType === CMSecretComponentType.Secret ? Routes.APP_CREATE_SECRET : Routes.APP_CREATE_CONFIG_MAP}/edit/${appId}`
     }
     return get(`${url}/${id}?name=${name}`, { signal })
 }

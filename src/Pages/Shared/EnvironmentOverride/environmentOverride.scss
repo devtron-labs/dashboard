@@ -132,9 +132,22 @@ div.override-container {
     background: var(--B100);
     border-bottom: 1px solid var(--B200);
 
+    // TODO: will be removed when app groups are revamped
+    &--revamp-design {
+        padding: 8px 12px;
+        border: 1px solid var(--B200);
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+
     &.override-warning {
         background: var(--Y100);
         border-bottom: 1px solid var(--Y200);
+        
+        &--revamp-design {
+            border: 1px solid var(--Y200);
+            
+        }
     }
 
     .override-title,

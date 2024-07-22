@@ -28,8 +28,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { getAppOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
-import { deleteApp } from './appConfig.service'
+import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
 import warn from '../../../../../assets/icons/ic-warning.svg'
 import './appConfig.scss'
 import {
@@ -39,16 +38,18 @@ import {
     STAGE_NAME,
     DEFAULT_LANDING_STAGE,
     ConfigProtection,
-} from './appConfig.type'
+} from './AppConfig.types'
 import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
 import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
-import AppComposeRouter from './AppComposeRouter'
+import AppComposeRouter from './MainContent/AppComposeRouter'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppNavigation } from './Navigation/AppNavigation'
-import { AppConfigStatusResponseItem } from '../../service.types'
+import { AppConfigStatusItemType } from '../../service.types'
 import { getAppConfigStatus, getEnvConfig } from '../../service'
 import { AppOtherEnvironment } from '../../../../../services/service.types'
+import { deleteApp } from './AppConfig.service'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
+import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
@@ -95,7 +96,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
      * a flag indicating if base configuration protection is enabled, and an array of configuration protections.
      *
      * The function performs the following steps:
-     * 1. Calls `getAppOtherEnvironmentMin` with the application ID (`appId`) to fetch the environment configurations.
+     * 1. Calls `getAppOtherEnvironmentMin` or `getJobOtherEnvironmentMin` (if resource kind is `job` (isJob)) with the application ID (`appId`) to fetch the environment configurations.
      * 2. Calls `getConfigProtections` with the application ID (`appId`) if the function is defined and resource kind is `job` (isJob), to fetch configuration protections.
      * 3. Creates a map (`envProtectMap`) to store protection states for each environment based on the configuration protections response.
      * 4. Filters the environment configurations based on `filteredEnvIds`, if provided, and marks them as protected if they are found in the protection map.
@@ -113,7 +114,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         configProtections: ConfigProtection[]
     }> =>
         Promise.all([
-            getAppOtherEnvironmentMin(appId),
+            isJob ? getJobOtherEnvironmentMin(appId) : getAppOtherEnvironmentMin(appId),
             typeof getConfigProtections === 'function' && !isJob ? getConfigProtections(Number(appId)) : null,
         ]).then(([envResult, configProtectionsResp]) => {
             let envProtectMap: Record<number, boolean> = {}
@@ -163,17 +164,17 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
         // Fetch environment configuration
         getEnvConfig(+appId, envId)
-            .then(({ result }) => {
+            .then((res) => {
                 setState((prevState) => ({
                     ...prevState,
                     envConfig: {
                         isLoading: false,
-                        config: result,
+                        config: res,
                     },
                 }))
             })
-            .catch((err) => {
-                showError(err)
+            .catch(() => {
+                // Error Handled in service
             })
             .finally(() => {
                 setState((prevState) => ({ ...prevState, envConfig: { ...prevState.envConfig, isLoading: false } }))
@@ -209,7 +210,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     // DATA TRANSFORMERS
     const getUnlockedConfigsAndLastStage = (
-        configStatus: AppConfigStatusResponseItem[],
+        configStatus: AppConfigStatusItemType[],
     ): {
         configs: AppStageUnlockedType
         lastConfiguredStage: STAGE_NAME
@@ -268,10 +269,11 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
         }
     }
 
-    const processConfigStatusData = (configStatusRes: AppConfigStatusResponseItem[]) => {
+    const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
         const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
         const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
-        let index = navItems.findIndex((item) => item.isLocked)
+        // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
+        let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
         if (index < 0) {
             index = isJob ? DEFAULT_LANDING_STAGE.JOB_VIEW : DEFAULT_LANDING_STAGE.DEVTRON_APPS
         }
@@ -454,7 +456,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const getAppComposeClasses = () => {
-        if (location.pathname.match(/(deployment-template|configmap|secret)/)) {
+        if (location.pathname.match(ENV_CONFIG_PATH_REG)) {
             return 'app-compose-env-configurations__nav'
         }
         return `${

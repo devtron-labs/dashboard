@@ -15,9 +15,17 @@
  */
 
 import { YAMLStringify, decode } from '@devtron-labs/devtron-fe-common-lib'
-import { CM_SECRET_STATE } from './Constants'
-import { getSecretInitState } from './Secret/secret.utils'
-import { ConfigMapAction, ConfigMapActionTypes, ConfigMapSecretState, ConfigMapState } from './Types'
+
+import {
+    CMSecretComponentType,
+    ConfigMapAction,
+    ConfigMapActionTypes,
+    CMSecretConfigData,
+    ConfigMapSecretState,
+    ConfigMapState,
+} from './ConfigMapSecret.types'
+import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
+import { getSecretInitState } from './Secret.utils'
 
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
@@ -31,17 +39,21 @@ const secureValues = (data, isExternalType) => {
     })
 }
 
-export const processCurrentData = (configMapSecretData, cmSecretStateLabel, componentType) => {
+export const processCurrentData = (
+    configMapSecretData: CMSecretConfigData,
+    cmSecretStateLabel: CM_SECRET_STATE,
+    componentType: CMSecretComponentType,
+) => {
     if (configMapSecretData?.data) {
         return secureValues(
             configMapSecretData.data,
-            componentType === 'secret' && configMapSecretData.externalType === '',
+            componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
         )
     }
     if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED && configMapSecretData?.defaultData) {
         return secureValues(
             configMapSecretData.defaultData,
-            componentType === 'secret' && configMapSecretData.externalType === '',
+            componentType === CMSecretComponentType.Secret && configMapSecretData.externalType === '',
         )
     }
     return [{ k: '', v: '', keyError: '', valueError: '' }]
@@ -49,12 +61,13 @@ export const processCurrentData = (configMapSecretData, cmSecretStateLabel, comp
 
 export const initState = (
     configMapSecretData,
-    componentType: string,
+    componentType: CMSecretComponentType,
     cmSecretStateLabel: CM_SECRET_STATE,
-    draftMode: boolean,
 ): ConfigMapState | ConfigMapSecretState => {
-    const secretInitState = componentType === 'secret' ? getSecretInitState(configMapSecretData, draftMode) : {}
+    const secretInitState =
+        componentType === CMSecretComponentType.Secret ? getSecretInitState(configMapSecretData) : {}
     const initialState = {
+        isFormDirty: false,
         loading: false,
         dialog: false,
         subPath: configMapSecretData?.subPath ?? '',
@@ -86,8 +99,6 @@ export const initState = (
         },
         yamlMode: true,
         cmSecretState: cmSecretStateLabel,
-        showDeleteModal: false,
-        showProtectedDeleteModal: false,
         showProtectedDeleteOverrideModal: false,
         showDraftSaveModal: false,
         draftPayload: null,
@@ -97,7 +108,7 @@ export const initState = (
     return initialState
 }
 
-export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
+export const ConfigMapSecretReducer = (state: ConfigMapSecretState, action: ConfigMapAction) => {
     switch (action.type) {
         case ConfigMapActionTypes.reInit:
             return { ...action.payload }
@@ -109,46 +120,41 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
         case ConfigMapActionTypes.error:
             return { ...state, submitLoading: false, overrideLoading: false }
         case ConfigMapActionTypes.setExternal:
-            return { ...state, external: action.payload }
+            return { ...state, external: action.payload, isFormDirty: !!state.configName.value }
         case ConfigMapActionTypes.setSelectedType:
             return { ...state, selectedType: action.payload }
         case ConfigMapActionTypes.setVolumeMountPath:
-            return { ...state, volumeMountPath: action.payload }
+            return { ...state, volumeMountPath: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setIsSubPathChecked:
             return { ...state, isSubPathChecked: !state.isSubPathChecked }
         case ConfigMapActionTypes.setExternalSubpathValues:
-            return { ...state, externalSubpathValues: action.payload }
+            return { ...state, externalSubpathValues: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setIsFilePermissionChecked:
             return { ...state, isFilePermissionChecked: !state.isFilePermissionChecked }
         case ConfigMapActionTypes.setFilePermission:
-            return { ...state, filePermission: action.payload }
+            return { ...state, filePermission: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setConfigName:
-            return { ...state, configName: action.payload }
+            return { ...state, configName: action.payload, isFormDirty: !!action.payload.value }
         case ConfigMapActionTypes.toggleYamlMode:
             return { ...state, yamlMode: !state.yamlMode }
         case ConfigMapActionTypes.toggleDialog:
             return { ...state, dialog: !state.dialog }
-        case ConfigMapActionTypes.toggleDeleteModal:
-            return { ...state, showDeleteModal: !state.showDeleteModal }
-        case ConfigMapActionTypes.toggleProtectedDeleteModal:
-            return { ...state, showProtectedDeleteModal: !state.showProtectedDeleteModal }
         case ConfigMapActionTypes.toggleProtectedDeleteOverrideModal:
             return { ...state, showProtectedDeleteOverrideModal: !state.showProtectedDeleteOverrideModal }
-
         case ConfigMapActionTypes.setExternalType:
             return { ...state, externalType: action.payload }
         case ConfigMapActionTypes.setSecretDataYaml:
-            return { ...state, secretDataYaml: action.payload }
+            return { ...state, secretDataYaml: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setEsoYaml:
-            return { ...state, esoSecretYaml: action.payload }
+            return { ...state, esoSecretYaml: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setSecretData:
-            return { ...state, secretData: action.payload }
+            return { ...state, secretData: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setRoleARN:
-            return { ...state, roleARN: action.payload }
+            return { ...state, roleARN: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.setCodeEditorRadio:
             return { ...state, codeEditorRadio: action.payload }
         case ConfigMapActionTypes.updateCurrentData:
-            return { ...state, currentData: action.payload }
+            return { ...state, currentData: action.payload, isFormDirty: true }
         case ConfigMapActionTypes.toggleSecretMode:
             return { ...state, secretMode: !state.secretMode }
         case ConfigMapActionTypes.toggleUnAuthorized:
@@ -161,6 +167,8 @@ export const ConfigMapReducer = (state: ConfigMapSecretState, action: ConfigMapA
             return { ...state, showDraftSaveModal: !state.showDraftSaveModal }
         case ConfigMapActionTypes.setValidateFormError:
             return { ...state, isValidateFormError: action.payload }
+        case ConfigMapActionTypes.setFormDirty:
+            return { ...state, isFormDirty: action.payload }
 
         default:
             return state

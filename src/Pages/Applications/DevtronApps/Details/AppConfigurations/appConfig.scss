@@ -32,7 +32,7 @@
 
         &.app-compose-env-configurations__nav {
             padding: 0;
-            grid-template-rows: 44px 1fr;
+            grid-template-rows: 45px 44px 1fr;
         }
 
         &.app-compose-with-no-gitops-config__nav {
@@ -193,7 +193,6 @@
         border: 1px solid var(--N200);
         border-radius: 4px;
         overflow: hidden;
-        margin-bottom: 8px;
     }
 
     .validation-error-block {

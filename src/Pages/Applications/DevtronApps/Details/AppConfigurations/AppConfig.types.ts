@@ -16,11 +16,12 @@
 
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import { EnvConfig, ResourceConfig } from '../../service.types'
+import { ResourceConfig, ResourceConfigState } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -50,7 +51,7 @@ export enum DEVTRON_APPS_STEPS {
 
 export enum DEFAULT_LANDING_STAGE {
     JOB_VIEW = 2,
-    DEVTRON_APPS = 5,
+    DEVTRON_APPS = 6,
 }
 
 export interface AppConfigProps {
@@ -186,19 +187,49 @@ export interface AppConfigurationProviderProps extends CommonAppConfigurationPro
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
 }
 
-export interface EnvResourceConfig extends Pick<ResourceConfig, 'configState'> {
-    title: ResourceConfig['name']
+export interface EnvConfigType {
+    deploymentTemplate: ResourceConfig | null
+    configmaps: ResourceConfig[]
+    secrets: ResourceConfig[]
 }
 
 export interface EnvConfigurationState {
     /** Indicates if the environment configuration is currently loading. */
     isLoading: boolean
     /** Environment Configuration containing Deployment Template, Config Maps & Secrets */
-    config: EnvConfig
+    config: EnvConfigType
 }
 
 export enum EnvResourceType {
     ConfigMap = 'configmap',
     Secret = 'secrets',
     DeploymentTemplate = 'deployment-template',
+}
+
+export interface EnvironmentOptionType {
+    name: string
+    id: number
+    isProtected: boolean
+}
+
+export interface EnvConfigurationsNavProps {
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: (envId: number) => void
+    isBaseConfigProtected?: boolean
+    environments: EnvironmentOptionType[]
+    paramToCheck?: 'appId' | 'envId'
+    goBackURL: string
+    showBaseConfigurations?: boolean
+    showDeploymentTemplate?: boolean
+}
+
+export interface EnvConfigRouteParams {
+    appId: string
+    envId: string
+    resourceType: string
+}
+
+export interface ExtendedCollapsibleListItem
+    extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
+    configState: ResourceConfigState
 }

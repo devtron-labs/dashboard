@@ -15,9 +15,11 @@
  */
 
 import React from 'react'
-import { DOCUMENTATION, URLS } from '../../config'
-import { AppEnvironment } from '../../services/service.types'
-import { ConfigAppList } from '../ApplicationGroup/AppGroup.types'
+
+import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DOCUMENTATION, URLS } from '../../../config'
+import { AppEnvironment } from '../../../services/service.types'
+import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
 
 export enum ComponentStates {
     loading = 'loading',
@@ -49,10 +51,13 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 
 export interface EnvironmentOverrideComponentProps {
     appList?: ConfigAppList[]
-    isJobView?: boolean
-    environments?: any
+    environments: AppEnvironment[]
     reloadEnvironments: () => void
     envName?: string
+    isJob?: boolean
+    onErrorRedirectURL: string
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: (envId: number) => void
 }
 
 export interface CommonEnvironmentOverridesProps {
@@ -60,10 +65,6 @@ export interface CommonEnvironmentOverridesProps {
     setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
     isJobView?: boolean
 }
-
-export interface ConfigMapOverridesProps extends CommonEnvironmentOverridesProps {}
-
-export interface SecretOverridesProps extends CommonEnvironmentOverridesProps {}
 
 export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverridesProps {
     environments: AppEnvironment[]

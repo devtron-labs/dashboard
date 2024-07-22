@@ -1,35 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import ReactSelect, { GroupBase, OptionProps, components } from 'react-select'
+import ReactSelect from 'react-select'
 
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
+import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/CollapsibleList'
+import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
-import { ReactComponent as ICBack } from '../../../../../../assets/icons/ic-caret-left-small.svg'
-import { ReactComponent as ICAdd } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
-import { CollapsibleList, CollapsibleListConfig } from '../../../../../Shared/CollapsibleList'
-import { AppEnvironment } from '../../../../../../services/service.types'
-import { ResourceConfigState } from '../../../service.types'
-import { useAppConfigurationContext } from '../AppConfiguration.provider'
-import { getJobOtherEnvironmentMin } from '../../../../../../services/service'
-import { EnvSelectDropdownIndicator, envSelectStyles } from '../../../../../../util/EnvSelect.utils'
-import { getEnvConfiguration, getNavigationPath } from './Navigation.helper'
-import { EnvResourceType } from '../appConfig.type'
-
-// COMPONENTS
-export const Option = (props: OptionProps<AppEnvironment, false, GroupBase<AppEnvironment>>) => {
-    const { data, label } = props
-
-    return (
-        <components.Option {...props}>
-            <div className="flexbox dc__align-items-center dc__gap-8">
-                <span className="flex-grow-1 dc__align-left">{label}</span>
-                {data.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
-            </div>
-        </components.Option>
-    )
-}
+import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
+import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvResourceType } from '../AppConfig.types'
+import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
+import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -38,89 +21,72 @@ const ShimmerText = ({ width }: { width: string }) => (
     </div>
 )
 
-export const EnvConfigurationsNav = () => {
+export const EnvConfigurationsNav = ({
+    showBaseConfigurations,
+    showDeploymentTemplate,
+    envConfig,
+    fetchEnvConfig,
+    isBaseConfigProtected,
+    environments,
+    goBackURL,
+    paramToCheck = 'envId',
+}: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
-    const {
-        path,
-        params: { envId },
-    } = useRouteMatch<{ envId: string }>()
-    const { appId, resourceKind, envConfig, fetchEnvConfig, isBaseConfigProtected, environments, lastUnlockedStage } =
-        useAppConfigurationContext()
+    const { path, params } = useRouteMatch<EnvConfigRouteParams>()
+    const { envId } = params
 
     // STATES
     const [expandedIds, setExpandedIds] = useState<Record<EnvResourceType, boolean>>()
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
-        configMaps: [],
+        configmaps: [],
         secrets: [],
     })
-    const [jobEnvs, setJobEnvs] = useState<AppEnvironment[]>([])
 
     // CONSTANTS
-    const isDevtronApp = resourceKind === ResourceKindType.devtronApplication
     /** Current Environment Data. */
-    const environmentData = (isDevtronApp ? environments : jobEnvs)?.find(
-        ({ environmentId }) => environmentId === +envId,
-    ) || {
-        environmentName: 'Base Configurations',
-        environmentId: -1,
-        isProtected: isBaseConfigProtected,
-    }
+    const environmentData =
+        environments.find((environment) => environment.id === +params[paramToCheck]) ||
+        (showBaseConfigurations
+            ? {
+                  name: BASE_CONFIGURATIONS.name,
+                  id: BASE_CONFIGURATIONS.id,
+                  isProtected: isBaseConfigProtected,
+              }
+            : null)
+    const resourceType = resourceTypeBasedOnPath(pathname)
 
-    const addUnnamedNavLink = (
-        _updatedEnvConfig: ReturnType<typeof getEnvConfiguration>,
-        resourceType: EnvResourceType,
-    ) =>
-        _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configMaps' : 'secrets'].push({
+    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) =>
+        _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configmaps' : 'secrets'].push({
             title: 'Unnamed',
-            href: getNavigationPath(
-                path,
-                appId,
-                environmentData.environmentId,
-                resourceType,
-                ResourceConfigState.Unnamed,
-            ),
+            href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
+            configState: ResourceConfigState.Unnamed,
+            subtitle: '',
         })
 
     useEffect(() => {
         // Fetch the env configuration
-        fetchEnvConfig(+(envId || -1))
+        fetchEnvConfig(+(envId || BASE_CONFIGURATIONS.id))
 
         return () => {
             setExpandedIds(null)
         }
-    }, [envId])
+    }, [])
 
     useEffect(() => {
-        if (envConfig.config) {
-            const newEnvConfig = getEnvConfiguration(envConfig.config, path, appId, environmentData)
-
-            let resourceType: EnvResourceType
-
-            if (pathname.includes('/configmap')) {
-                resourceType = EnvResourceType.ConfigMap
-            } else if (pathname.includes('/secrets')) {
-                resourceType = EnvResourceType.Secret
-            }
+        if (!envConfig.isLoading && envConfig.config) {
+            const newEnvConfig = getEnvConfiguration(envConfig.config, path, params, environmentData, paramToCheck)
 
             if (pathname.includes('/create')) {
-                addUnnamedNavLink(newEnvConfig, resourceType)
+                addUnnamedNavLink(newEnvConfig)
             }
 
-            setExpandedIds({ ...expandedIds, [resourceType]: true })
+            setExpandedIds((prevState) => ({ ...prevState, [resourceType]: true }))
             setUpdatedEnvConfig(newEnvConfig)
         }
-    }, [envConfig])
-
-    useEffect(() => {
-        getJobOtherEnvironmentMin(appId)
-            .then(({ result }) => {
-                setJobEnvs(result)
-            })
-            .catch(() => {})
-    }, [])
+    }, [envConfig, pathname])
 
     // METHODS
     /** Renders the Deployment Template Nav Icon based on `envConfig`. */
@@ -130,7 +96,10 @@ export const EnvConfigurationsNav = () => {
         return iconConfig ? (
             <Tippy {...iconConfig.tooltipProps}>
                 <div className="flex">
-                    <iconConfig.Icon {...iconConfig.props} className={`icon-dim-16 ${iconConfig.props.className}`} />
+                    <iconConfig.Icon
+                        {...iconConfig.props}
+                        className={`icon-dim-16 dc__no-shrink ${iconConfig.props.className}`}
+                    />
                 </div>
             </Tippy>
         ) : null
@@ -144,21 +113,19 @@ export const EnvConfigurationsNav = () => {
     /**
      * Handles the click event for a collapsible header icon, updating the environment configuration and navigation path.
      *
-     * @param resourceType - The type of resource
+     * @param _resourceType - The type of resource
      */
-    const onHeaderIconBtnClick = (resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`/create`)) {
+    const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
+        if (pathname.includes(`${_resourceType}/create`)) {
             return
         }
-
-        setExpandedIds({ ...expandedIds, [resourceType]: true })
-        history.push(
-            getNavigationPath(path, appId, environmentData.environmentId, resourceType, ResourceConfigState.Unnamed),
-        )
+        setExpandedIds({ ...expandedIds, [_resourceType]: true })
 
         const newEnvConfig = updatedEnvConfig
-        addUnnamedNavLink(newEnvConfig, resourceType)
+        addUnnamedNavLink(newEnvConfig)
         setUpdatedEnvConfig(newEnvConfig)
+
+        history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
     }
 
     /** Collapsible List Config. */
@@ -175,7 +142,7 @@ export const EnvConfigurationsNav = () => {
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
             },
-            items: updatedEnvConfig.configMaps,
+            items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
             isExpanded: expandedIds?.configmap,
         },
@@ -199,35 +166,28 @@ export const EnvConfigurationsNav = () => {
 
     // REACT SELECT PROPS
     const envOptions = [
-        {
-            environmentName: 'Base Configurations',
-            environmentId: -1,
-            isProtected: isBaseConfigProtected,
-        },
-        ...(isDevtronApp ? environments : jobEnvs),
+        ...(showBaseConfigurations
+            ? [
+                  {
+                      name: BASE_CONFIGURATIONS.name,
+                      id: BASE_CONFIGURATIONS.id,
+                      isProtected: isBaseConfigProtected,
+                  },
+              ]
+            : []),
+        ...environments,
     ]
 
-    const onEnvSelect = ({ environmentId }: typeof environmentData) => {
-        if (isDevtronApp) {
-            history.push(getNavigationPath(path, appId, environmentId, EnvResourceType.DeploymentTemplate))
-        } else {
-            history.push(
-                getNavigationPath(
-                    path,
-                    appId,
-                    environmentId,
-                    EnvResourceType.ConfigMap,
-                    undefined,
-                    updatedEnvConfig.configMaps[0]?.title,
-                ),
-            )
-        }
+    const onEnvSelect = ({ id }: typeof environmentData) => {
+        const name = pathname.split(`${resourceType}/`)[1]
+
+        history.push(getNavigationPath(path, params, id, resourceType, name, paramToCheck))
     }
 
     const renderEnvSelector = () => {
         return (
-            <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom en-1">
-                <NavLink to={lastUnlockedStage}>
+            <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
+                <NavLink to={goBackURL}>
                     <div className="dc__border br-4 flex p-1">
                         <ICBack className="icon-dim-16" />
                     </div>
@@ -238,18 +198,18 @@ export const EnvConfigurationsNav = () => {
                     isClearable={false}
                     value={environmentData}
                     options={envOptions}
-                    getOptionLabel={(option) => `${option.environmentName}`}
-                    getOptionValue={(option) => `${option.environmentId}`}
+                    getOptionLabel={(option) => `${option.name}`}
+                    getOptionValue={(option) => `${option.id}`}
                     styles={envSelectStyles}
                     components={{
                         IndicatorSeparator: null,
-                        Option,
+                        Option: EnvSelectOption,
                         DropdownIndicator: EnvSelectDropdownIndicator,
                     }}
                     onChange={onEnvSelect}
                     placeholder="Select Environment"
                 />
-                {environmentData.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
+                {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
             </div>
         )
     }
@@ -258,17 +218,17 @@ export const EnvConfigurationsNav = () => {
         <>
             {renderEnvSelector()}
             <div className="mw-none p-8">
-                {(isDevtronApp ? !environments.length : !jobEnvs.length) || envConfig.isLoading ? (
+                {envConfig.isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
                     <>
-                        {isDevtronApp && updatedEnvConfig.deploymentTemplate && (
+                        {showDeploymentTemplate && updatedEnvConfig.deploymentTemplate && (
                             <NavLink
                                 data-testid="env-deployment-template"
-                                className="app-compose__nav-item cursor dc__gap-8"
+                                className="dc__nav-item cursor dc__gap-8 fs-13 lh-32 cn-7 w-100 br-4 px-8 flexbox dc__align-items-center dc__content-space dc__no-decor"
                                 to={updatedEnvConfig.deploymentTemplate.href}
                             >
-                                <span className="dc__ellipsis-right">{updatedEnvConfig.deploymentTemplate.title}</span>
+                                <span className="dc__truncate">{updatedEnvConfig.deploymentTemplate.title}</span>
                                 {renderDeploymentTemplateNavIcon()}
                             </NavLink>
                         )}

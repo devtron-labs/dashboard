@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS, DOCUMENTATION } from '../../../../../config'
-import { AppConfigStatusResponseItem } from '../../service.types'
-import { AppStageUnlockedType, CustomNavItemsType, STAGE_NAME } from './appConfig.type'
+import { URLS, DOCUMENTATION } from '@Config/index'
+
+import { AppConfigStatusItemType, EnvConfigDTO, ConfigResourceType } from '../../service.types'
+import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
 // stage: last configured stage
 const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
@@ -137,7 +138,7 @@ export const getNavItems = (
                         title: 'ConfigMaps & Secrets',
                         href: `/job/${appId}/edit/configmap`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
-                        isLocked: !_isUnlocked.configmap || !_isUnlocked.secret,
+                        isLocked: !_isUnlocked.configmap,
                         isProtectionAllowed: true,
                         required: true,
                     },
@@ -203,7 +204,7 @@ export const getNavItems = (
                         title: 'Base Configurations',
                         href: `/app/${appId}/edit/deployment-template`,
                         stage: STAGE_NAME.REDIRECT_ITEM,
-                        isLocked: !_isUnlocked.deploymentTemplate || !_isUnlocked.configmap || !_isUnlocked.secret,
+                        isLocked: !_isUnlocked.deploymentTemplate,
                         isProtectionAllowed: true,
                         required: true,
                     },
@@ -288,12 +289,35 @@ export const getNavItems = (
     }
 }
 
-export const isCIPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
+export const isCIPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
     const ciPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CI_PIPELINE)
     return ciPipeline.status
 }
 
-export const isCDPipelineCreated = (responseArr: AppConfigStatusResponseItem[]) => {
+export const isCDPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
     const cdPipeline = responseArr.find((item) => item.stageName === STAGE_NAME.CD_PIPELINE)
     return cdPipeline.status
+}
+
+export const transformEnvConfig = ({ resourceConfig }: EnvConfigDTO) => {
+    const updatedEnvConfig = resourceConfig.reduce<EnvConfigType>(
+        (acc, curr) => {
+            return {
+                ...acc,
+                deploymentTemplate: curr.type === ConfigResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
+                configmaps: curr.type === ConfigResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
+                secrets: curr.type === ConfigResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
+            }
+        },
+        {
+            deploymentTemplate: null,
+            configmaps: [],
+            secrets: [],
+        },
+    )
+
+    updatedEnvConfig.configmaps.sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+    updatedEnvConfig.secrets.sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+
+    return updatedEnvConfig
 }
