@@ -17,10 +17,10 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { ConfirmationDialog, Progressing, VisibleModal, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationDialog, Progressing, SortingOrder, VisibleModal2, DropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
-import { DropdownIndicator, Option } from '../../v2/common/ReactSelect.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Locked } from '../../../assets/icons/ic-locked.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-filled.svg'
@@ -444,7 +444,7 @@ export const SaveConfirmationDialog = ({
     showAsModal,
     closeLockedDiffDrawerWithChildModal,
 }: SaveConfirmationDialogProps) => {
-    const { state, dispatch } = useContext(DeploymentConfigContext)
+    const { state } = useContext(DeploymentConfigContext)
     const saveConfirmationContent = () => (
         <div
             className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
@@ -491,7 +491,7 @@ export const SaveConfirmationDialog = ({
     return (
         <>
             {showAsModal ? (
-                <VisibleModal className="">{saveConfirmationContent()}</VisibleModal>
+                <VisibleModal2 className="">{saveConfirmationContent()}</VisibleModal2>
             ) : (
                 saveConfirmationContent()
             )}
