@@ -17,7 +17,7 @@
 import React, { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
-import { ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { ClipboardButton, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
 import { SuggestionsItemProps } from './types'
 import { NO_DEFINED_DESCRIPTION } from './constants'
 
@@ -41,6 +41,9 @@ export default function SuggestionItem({
         }
         if (typeof value === 'boolean') {
             return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value ? 'true' : 'false'}</p>
+        }
+        if (typeof value === 'object') {
+            return <pre className="cn-0 fs-12 fw-6 lh-18 m-0 bcn-9">{YAMLStringify(value)}</pre>
         }
         return <p className="cn-0 fs-12 fw-6 lh-18 m-0">{value}</p>
     }

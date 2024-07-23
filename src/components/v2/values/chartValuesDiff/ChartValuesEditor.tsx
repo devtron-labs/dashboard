@@ -16,7 +16,7 @@
 
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { showError, DetailsProgressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, DetailsProgressing, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { Moment12HourFormat } from '../../../../config'
@@ -32,7 +32,6 @@ import {
     CompareWithDropdownProps,
     ValuesForDiffStateType,
 } from './ChartValuesView.type'
-import CodeEditor from '../../../CodeEditor/CodeEditor'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import {
     GROUPED_OPTION_LABELS,

@@ -24,6 +24,7 @@ import {
     ClipboardButton,
     YAMLStringify,
     Nodes,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -48,7 +49,6 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Review } from '../../assets/icons/ic-visibility-on.svg'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,

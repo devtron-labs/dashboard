@@ -17,9 +17,9 @@
 import React, { useEffect, useState } from 'react'
 import { ReactComponent as CaretIcon } from '../../assets/icons/ic-chevron-down.svg'
 import { MODES } from '../../config'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { getCIConfigDiffValues } from './CIConfig.utils'
 import { CIBuildConfigDiffProps, CIConfigDiffType } from './types'
+import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CIBuildConfigDiff = ({
     configOverridenWorkflows,

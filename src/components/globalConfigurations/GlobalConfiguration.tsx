@@ -26,6 +26,7 @@ import {
     TippyTheme,
     useMainContext,
     PageHeader,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
@@ -45,7 +46,6 @@ import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType, ProtectedInputType } from './globalConfiguration.type'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
@@ -476,8 +476,8 @@ const NavItem = ({ serverMode }) => {
 
                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                            key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Scoped Variables</div>
@@ -660,13 +660,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} path={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {CatalogFramework && (
                 <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             {
@@ -698,7 +698,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             )}
             {LockConfiguration && (
                 <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} CodeEditor={CodeEditor} />
+                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
