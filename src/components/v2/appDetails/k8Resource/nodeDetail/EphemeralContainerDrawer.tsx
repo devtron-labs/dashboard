@@ -22,8 +22,9 @@ import {
     ButtonWithLoader,
     YAMLStringify,
     InfoIconTippy,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
@@ -37,7 +38,6 @@ import {
     ResponsePayload,
 } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
     convertToOptionsList,
     DevtronSwitch as Switch,

@@ -15,9 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, CIBuildType, ClipboardButton } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, CIBuildType, ClipboardButton, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { MODES } from '../../config'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import CreateDockerFileLanguageOptions from './CreateDockerFileLanguageOptions'
 import BuildContext from './BuildContext'
 import { RootBuildContext } from './ciConfigConstant'

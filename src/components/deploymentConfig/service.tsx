@@ -76,10 +76,6 @@ export const getIfLockedConfigProtected = (request) => {
     return post(Routes.LOCKED_CONFIG_PROTECTED, request)
 }
 
-export const getIfLockedConfigNonProtected = (request) => {
-    return post(Routes.LOCKED_CONFIG_NON_PROTECTED, request)
-}
-
 export const saveDeploymentTemplate = (request, abortSignal) => {
     const URL = `${Routes.DEPLOYMENT_TEMPLATE}`
     return post(URL, request)

@@ -28,6 +28,7 @@ import {
     useEffectAfterMount,
     ServerErrors,
     useMainContext,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ManifestTabJSON } from '../../../../utils/tabUtils/tab.json'
@@ -41,7 +42,6 @@ import {
     getManifestResource,
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
-import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'

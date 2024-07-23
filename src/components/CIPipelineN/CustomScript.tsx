@@ -15,9 +15,8 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
-import { ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+import { ScriptType, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'

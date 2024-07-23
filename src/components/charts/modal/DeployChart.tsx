@@ -27,6 +27,7 @@ import {
     DeploymentAppTypes,
     CustomInput,
     useMainContext,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { useHistory, useParams } from 'react-router'
@@ -51,7 +52,6 @@ import {
 import { ChartValuesSelect } from '../util/ChartValueSelect'
 import { getChartValuesURL } from '../charts.helper'
 import { styles, menuList, DropdownIndicator } from '../charts.util'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import './DeployChart.scss'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'

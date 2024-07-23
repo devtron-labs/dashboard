@@ -17,7 +17,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { DeploymentHistorySingleValue } from '../../cdDetails/cd.type'
-import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import { MODES } from '../../../../../config'
 import './TriggerViewConfigDiff.scss'
 import { DEPLOYMENT_CONFIGURATION_NAV_MAP, getDeployConfigOptions } from '../TriggerView.utils'
@@ -28,7 +27,7 @@ import { TriggerViewConfigDiffProps } from '../types'
 import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../../../assets/icons/ic-view-variable-toggle.svg'
-import { Toggle, ConditionalWrap, useSearchString, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { Toggle, ConditionalWrap, useSearchString, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 
 export default function TriggerViewConfigDiff({
