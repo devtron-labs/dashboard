@@ -135,7 +135,6 @@ export interface DeploymentConfigFormCTAProps {
     isValues?: boolean
     convertVariables?: boolean
     handleLockedDiffDrawer: (value: boolean) => void
-    isSuperAdmin: boolean
     showLockedDiffForApproval: boolean
     setShowLockedDiffForApproval: (show: boolean) => void
     checkForProtectedLockedChanges: () => Promise<ResponseType>
@@ -152,6 +151,7 @@ export interface CompareWithDropdownProps {
     isValues: boolean
     groupedData: any
     setConvertVariables: (convertVariables: boolean) => void
+    triggerEditorLoadingState: () => void
 }
 
 export interface CompareWithApprovalPendingAndDraftProps {
@@ -214,11 +214,14 @@ export interface DeploymentTemplateOptionsTabProps {
     changeEditorMode?: () => void
 }
 
+// TODO: the following types can be combined with this into a single type
 export interface DeploymentTemplateReadOnlyEditorViewProps {
     value: string
     isEnvOverride?: boolean
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockedKeys: boolean
+    uneditedDocument: string
+    editedDocument: string
 }
 
 export interface DeploymentTemplateEditorViewProps {
@@ -238,6 +241,8 @@ export interface DeploymentTemplateEditorViewProps {
     lockedConfigKeysWithLockType: ConfigKeysWithLockType
     hideLockKeysToggled: React.MutableRefObject<boolean>
     removedPatches: React.MutableRefObject<jsonpatch.Operation[]>
+    uneditedDocument: DeploymentTemplateReadOnlyEditorViewProps['uneditedDocument']
+    editedDocument: DeploymentTemplateReadOnlyEditorViewProps['editedDocument']
 }
 
 export interface DeploymentConfigContextType {
@@ -466,6 +471,8 @@ export interface DeploymentTemplateGUIViewProps
     fetchingValues?: boolean
     value: string
     readOnly: boolean
+    uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']
+    editedDocument?: DeploymentTemplateEditorViewProps['editedDocument']
 }
 
 export interface Schema {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import YAML from 'yaml'
-import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import { MODES } from '../../config/constants'
+import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ClusterCodeEditor() {
     const inputFileRef = useRef(null)
