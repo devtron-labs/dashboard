@@ -241,8 +241,6 @@ const CreatePluginFormContent = ({
                 />
             </div>
 
-            <div className="dc__border-bottom-n1" />
-
             {/* Input variable container */}
             <CreatePluginInputVariableContainer inputVariables={inputVariables} handleChange={handleChange} />
         </div>

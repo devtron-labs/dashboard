@@ -16,7 +16,7 @@ const InputVariableItem = ({ handleChange, index, name, allowEmptyValue }: Input
                     selected={!allowEmptyValue}
                     onSelect={handleAllowEmptyValueToggle}
                     name={`toggle-${name}-allow-empty-value`}
-                    rootClassName="mb-0 asterisk-toggle"
+                    rootClassName="mb-0 square-toggle"
                     Icon={ICAsterisk}
                     iconClass={`bcn-0 ${!allowEmptyValue ? 'fcr-5' : 'fcn-6'}`}
                     color={!allowEmptyValue ? 'var(--B300)' : 'var(--N200)'}
@@ -30,21 +30,31 @@ const CreatePluginInputVariableContainer = ({
     inputVariables,
     handleChange,
 }: CreatePluginInputVariableContainerProps) => {
+    if (!inputVariables.length) {
+        return null
+    }
+
     return (
-        <div className="flexbox-col dc__gap-8">
-            <h3 className="m-0 cn-9 fs-13 fw-6 lh-20">Mark input variables as mandatory/optional for this plugin</h3>
-            <div className="create-plugin-form__input-variable-container flexbox-col p-4 br-8 dc__border bcn-0">
-                {inputVariables.map((inputVariable, index) => (
-                    <InputVariableItem
-                        key={inputVariable.name}
-                        handleChange={handleChange}
-                        index={index}
-                        name={inputVariable.name}
-                        allowEmptyValue={inputVariable.allowEmptyValue}
-                    />
-                ))}
+        <>
+            <div className="dc__border-bottom-n1" />
+
+            <div className="flexbox-col dc__gap-8">
+                <h3 className="m-0 cn-9 fs-13 fw-6 lh-20">
+                    Mark input variables as mandatory/optional for this plugin
+                </h3>
+                <div className="create-plugin-form__input-variable-container flexbox-col p-4 br-8 dc__border bcn-0">
+                    {inputVariables.map((inputVariable, index) => (
+                        <InputVariableItem
+                            key={inputVariable.name}
+                            handleChange={handleChange}
+                            index={index}
+                            name={inputVariable.name}
+                            allowEmptyValue={inputVariable.allowEmptyValue}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     )
 }
 
