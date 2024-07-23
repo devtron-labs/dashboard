@@ -65,7 +65,7 @@ import {
     DefaultShortGitOps,
     LinkAndLabelSpec,
     DefaultErrorFields,
-    PROVIDER__DOC_LINK_MAP,
+    PROVIDER_DOC_LINK_MAP,
 } from './constants'
 import GitProviderTabIcons from './GitProviderTabIcons'
 import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
@@ -1144,7 +1144,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                                         ? 'Azure DevOps Access Token '
                                                         : 'Personal Access Token ',
-                                                        PROVIDER__DOC_LINK_MAP[this.state.providerTab],
+                                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
                                                     '(Check permissions required for PAT)',
                                                 )}
                                                 value={this.state.form.token}

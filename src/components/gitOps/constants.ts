@@ -97,7 +97,7 @@ export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
 
-export const PROVIDER__DOC_LINK_MAP: Record<
+export const PROVIDER_DOC_LINK_MAP: Record<
     Exclude<GitProvider, GitProvider.OTHER_GIT_OPS | GitProvider.AWS_CODE_COMMIT>,
     string
 > = {
