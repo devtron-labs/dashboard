@@ -193,8 +193,6 @@ export const Routes = {
     APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
-    PLUGIN_LIST: 'plugin/global/list',
-    PLUGIN_DETAIL: 'plugin/global',
     GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
     DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
