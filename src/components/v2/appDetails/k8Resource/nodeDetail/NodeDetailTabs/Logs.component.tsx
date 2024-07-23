@@ -697,7 +697,7 @@ const LogsComponent = ({
                             />
                         ) : (
                             <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                <span>
+                                <span className='flex dc__align-items-center'>
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||

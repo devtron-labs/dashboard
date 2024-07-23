@@ -50,7 +50,7 @@ import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/a
 import { APP_LIST_HEADERS, InitialEmptyMasterFilters, InitialEmptyUrlFilters, StatusConstants } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import { getChangeAppTabURL, getCurrentTabName } from './list.utils'
+import { getChangeAppTabURL, getCurrentTabName, getPayloadFromUrl } from './list.utils'
 import GenericAppList from './GenericAppList'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
@@ -66,7 +66,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map())
@@ -95,6 +94,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
+    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState(getPayloadFromUrl(location.search, appCount, true).payload)
 
     // on page load
     useEffect(() => {
@@ -109,7 +109,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         // set payload parsed from url
-        const payloadParsedFromUrl = onRequestUrlChange()
+        const payloadParsedFromUrl = onRequestUrlChange(false)
         setParsedPayloadOnUrlChange(payloadParsedFromUrl)
 
         // fetch master filters data and some master data
@@ -157,7 +157,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }, [isDataSyncing])
 
     useEffect(() => {
-        setParsedPayloadOnUrlChange(onRequestUrlChange())
+        setParsedPayloadOnUrlChange(onRequestUrlChange(false))
     }, [location.search])
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
@@ -189,43 +189,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const onRequestUrlChange = (showExportCsvButton?: boolean): any => {
         const searchQuery = location.search
 
-        const params = queryString.parse(searchQuery)
-        const search = params.search || ''
-        const environments = params.environment || ''
-        const appStatus = params.appStatus || ''
-        const teams = params.team || ''
-        const clustersAndNamespaces = params.namespace || ''
-        const templateType = params.templateType || ''
-
-        const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
-        const environmentsArr = environments
-            .toString()
-            .split(',')
-            .map((env) => +env)
-            .filter((item) => item != 0)
-        const teamsArr = teams
-            .toString()
-            .split(',')
-            .filter((team) => team != '')
-            .map((team) => Number(team))
-        const appStatusArr = appStatus
-            .toString()
-            .split(',')
-            .filter((status) => status != '')
-            .map((status) => status)
-        const templateTypesArr = templateType
-            .toString()
-            .split(',')
-            .filter((type) => !!type)
-
-        // update master filters data (check/uncheck)
-        const filterApplied = {
-            environments: new Set<number>(environmentsArr),
-            teams: new Set<number>(teamsArr),
-            appStatus: new Set<string>(appStatusArr),
-            clusterVsNamespaceMap: _clusterVsNamespaceMap,
-            templateType: new Set<string>(templateTypesArr),
-        }
+        const { payload, filterApplied } = getPayloadFromUrl(searchQuery, appCount, showExportCsvButton)
 
         const _masterFilters = structuredClone(InitialEmptyMasterFilters)
 
@@ -296,43 +260,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }))
         setMasterFilters(_masterFilters)
         // update master filters data ends (check/uncheck)
-
-        const sortBy = params.orderBy || SortBy.APP_NAME
-        const sortOrder = params.sortOrder || OrderBy.ASC
-        let offset = +params.offset || 0
-        let hOffset = +params.hOffset || 0
-        let pageSize: number = +params.pageSize || 20
-        const pageSizes = new Set([20, 40, 50])
-
-        if (!pageSizes.has(pageSize)) {
-            // handle invalid pageSize
-            pageSize = 20
-        }
-        if (offset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            offset = 0
-        }
-        if (hOffset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            hOffset = 0
-        }
-
-        const payload = {
-            environments: environmentsArr,
-            teams: teamsArr,
-            namespaces: clustersAndNamespaces
-                .toString()
-                .split(',')
-                .filter((item) => item != ''),
-            appNameSearch: search,
-            appStatuses: appStatusArr,
-            templateType: templateTypesArr,
-            sortBy,
-            sortOrder,
-            offset,
-            hOffset,
-            size: showExportCsvButton ? appCount : +pageSize,
-        }
 
         // check whether to fetch namespaces from backend if any cluster is selected and not same as old
         // do it only for non page load, as on pageload getInitData is handling this logic
