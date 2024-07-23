@@ -52,6 +52,7 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { createAppListPayload } from '../list/appList.modal'
 import { getChangeAppTabURL, getCurrentTabName, getPayloadFromUrl } from './list.utils'
 import GenericAppList from './GenericAppList'
+import { PayloadParsedFromURL } from '../types'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -94,7 +95,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
-    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState(getPayloadFromUrl(location.search, appCount, true).payload)
+    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState<PayloadParsedFromURL>(getPayloadFromUrl(location.search, appCount, true).payload)
 
     // on page load
     useEffect(() => {

@@ -690,14 +690,14 @@ const LogsComponent = ({
                             }}
                         />
                         <div className="h-16 dc__border-right ml-8 mr-8" />
-                        {(downloadInProgress ? (
+                        {downloadInProgress ? (
                             <Progressing
                                 size={16}
                                 styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
                             />
                         ) : (
                             <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                <span className='flex dc__align-items-center'>
+                                <span className="flex dc__align-items-center">
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||
@@ -709,7 +709,7 @@ const LogsComponent = ({
                                     />
                                 </span>
                             </Tippy>
-                        ))}
+                        )}
                     </div>
                     <div className="dc__border-right " />
                     <form
@@ -769,7 +769,8 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            height: isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
+                            height:
+                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
