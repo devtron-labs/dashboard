@@ -1,12 +1,30 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
 import { CreatePluginModal } from '../CreatePluginModal'
 
 const CreatePluginButton = () => {
+    const { formData, formDataErrorObj, setFormDataErrorObj, activeStageName, selectedTaskIndex, validateTask } =
+        useContext(pipelineContext)
     const [openCreatePluginModal, setOpenCreatePluginModal] = useState<boolean>(false)
 
     const handleOpenCreatePluginModal = () => {
+        // Before opening the modal we will check if the given task is valid, if not would just showError
+        const clonedFormErrorObj = structuredClone(formDataErrorObj)
+        validateTask(
+            formData[activeStageName].steps[selectedTaskIndex],
+            clonedFormErrorObj[activeStageName].steps[selectedTaskIndex],
+        )
+
+        setFormDataErrorObj(clonedFormErrorObj)
+        const isTaskValid = clonedFormErrorObj[activeStageName].steps[selectedTaskIndex].isValid
+        if (!isTaskValid) {
+            toast.error('Please ensure the task is valid before saving it as a plugin.')
+            return
+        }
+
         setOpenCreatePluginModal(true)
     }
 
