@@ -97,15 +97,9 @@ export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
 
-export const getDocLinkForGitProvider = (currentGitProvider: GitProvider): string => {
-    if (currentGitProvider === GitProvider.GITLAB) {
-        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB
-    }
-    if (currentGitProvider === GitProvider.AZURE_DEVOPS) {
-        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE
-    }
-    if (currentGitProvider === GitProvider.BITBUCKET_CLOUD) {
-        return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET
-    }
-    return DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB
+export const PROVIDER__DOC_LINK_MAP = {
+    [GitProvider.GITHUB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB,
+    [GitProvider.GITLAB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB,
+    [GitProvider.AZURE_DEVOPS]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE,
+    [GitProvider.BITBUCKET_CLOUD]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET,
 }
