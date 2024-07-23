@@ -55,7 +55,6 @@ import {
     URLS,
     CONFIGURATION_TYPES,
     AppCreationType,
-    HEADER_TEXT,
 } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'

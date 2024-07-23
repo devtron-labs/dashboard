@@ -32,7 +32,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType, DOCUMENTATION, repoType, HEADER_TEXT } from '../../config'
+import { ViewType, repoType, HEADER_TEXT } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,

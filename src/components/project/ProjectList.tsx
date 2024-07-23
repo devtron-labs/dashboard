@@ -23,7 +23,7 @@ import {
     FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, HEADER_TEXT, ViewType } from '../../config'
+import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
