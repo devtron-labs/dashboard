@@ -142,6 +142,7 @@ export interface CreatePluginFormFieldProps extends Pick<CreatePluginFormContent
     isRequired?: boolean
     isDisabled?: boolean
     useTextArea?: boolean
+    autoFocus?: boolean
 }
 
 export interface CreatePluginInputVariableContainerProps extends Pick<CreatePluginFormContentProps, 'handleChange'> {

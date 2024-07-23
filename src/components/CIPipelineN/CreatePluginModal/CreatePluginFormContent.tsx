@@ -90,6 +90,7 @@ const CreatePluginFormContent = ({
                     isLoading={isLoadingParentPluginList}
                     optionListError={parentPluginListError}
                     reloadOptionList={reloadParentPluginList}
+                    autoFocus
                 />
             )
         }
@@ -103,6 +104,7 @@ const CreatePluginFormContent = ({
                 handleChange={handleChange}
                 placeholder="Enter plugin name"
                 isRequired
+                autoFocus
             />
         )
     }
@@ -185,41 +187,45 @@ const CreatePluginFormContent = ({
                 />
             )}
 
-            {/* Existing plugin / display name */}
-            {renderPluginName()}
+            <div className="dc__grid-row-one-half dc__column-gap-12">
+                {/* Existing plugin / display name */}
+                {renderPluginName()}
 
-            {/* Plugin ID */}
-            <CreatePluginFormField
-                label="Plugin ID"
-                value={pluginIdentifier}
-                error={pluginFormError.pluginIdentifier}
-                action={CreatePluginActionType.UPDATE_PLUGIN_ID}
-                handleChange={handleChange}
-                placeholder="Enter plugin ID"
-                isDisabled={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN}
-                isRequired
-            />
+                {/* Plugin ID */}
+                <CreatePluginFormField
+                    label="Plugin ID"
+                    value={pluginIdentifier}
+                    error={pluginFormError.pluginIdentifier}
+                    action={CreatePluginActionType.UPDATE_PLUGIN_ID}
+                    handleChange={handleChange}
+                    placeholder="Enter plugin ID"
+                    isDisabled={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN}
+                    isRequired
+                />
+            </div>
 
-            {/* New Version / Plugin Version */}
-            <CreatePluginFormField
-                label={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN ? 'New version' : 'Plugin version'}
-                value={pluginVersion}
-                error={pluginFormError.pluginVersion}
-                action={CreatePluginActionType.UPDATE_PLUGIN_VERSION}
-                handleChange={handleChange}
-                placeholder="Eg. 1.0.0"
-                isRequired
-            />
+            <div className="dc__grid-row-one-half dc__column-gap-12">
+                {/* New Version / Plugin Version */}
+                <CreatePluginFormField
+                    label={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN ? 'New version' : 'Plugin version'}
+                    value={pluginVersion}
+                    error={pluginFormError.pluginVersion}
+                    action={CreatePluginActionType.UPDATE_PLUGIN_VERSION}
+                    handleChange={handleChange}
+                    placeholder="Eg. 1.0.0"
+                    isRequired
+                />
 
-            {/* Documentation Link */}
-            <CreatePluginFormField
-                label="Documentation link"
-                value={docLink}
-                error={pluginFormError.docLink}
-                action={CreatePluginActionType.UPDATE_DOCUMENTATION_LINK}
-                handleChange={handleChange}
-                placeholder="Documentation link for this plugin version"
-            />
+                {/* Documentation Link */}
+                <CreatePluginFormField
+                    label="Documentation link"
+                    value={docLink}
+                    error={pluginFormError.docLink}
+                    action={CreatePluginActionType.UPDATE_DOCUMENTATION_LINK}
+                    handleChange={handleChange}
+                    placeholder="Documentation link for this plugin version"
+                />
+            </div>
 
             {/* Description */}
             <CreatePluginFormField

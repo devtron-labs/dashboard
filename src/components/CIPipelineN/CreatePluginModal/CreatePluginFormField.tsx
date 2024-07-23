@@ -13,6 +13,7 @@ const CreatePluginFormField = ({
     isRequired,
     isDisabled,
     useTextArea,
+    autoFocus,
 }: CreatePluginFormFieldProps) => {
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
@@ -38,6 +39,8 @@ const CreatePluginFormField = ({
                     id={action}
                     data-testid={action}
                     disabled={isDisabled}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus={autoFocus}
                 />
 
                 {error && (
@@ -61,6 +64,7 @@ const CreatePluginFormField = ({
             isRequiredField={isRequired}
             disabled={isDisabled}
             dataTestid={action}
+            autoFocus={autoFocus}
         />
     )
 }

@@ -5,7 +5,6 @@ import {
     CHECKBOX_VALUE,
     EditImageFormFieldProps,
     getAvailablePluginTags,
-    noop,
     stopPropagation,
     useAsync,
     VariableType,
@@ -103,6 +102,12 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         setPluginFormError(clonedPluginFormError)
     }
 
+    const handleToggleShouldReplaceCustomTask = () => {
+        handleChange({
+            action: CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK,
+        })
+    }
+
     const handleSubmit = () => {}
 
     return (
@@ -144,8 +149,8 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
 
                 <div className="dc__border-top py-16 px-20 flexbox dc__content-space dc__align-items-center">
                     <Checkbox
-                        isChecked={false}
-                        onChange={noop}
+                        isChecked={pluginForm.shouldReplaceCustomTask}
+                        onChange={handleToggleShouldReplaceCustomTask}
                         rootClassName="icon-dim-20 w-100 mb-0 dc_width-max-content"
                         dataTestId="replace-custom-task-checkbox"
                         tabIndex={0}
