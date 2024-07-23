@@ -1,4 +1,10 @@
-import { PluginDataStoreType, PluginDetailType, ServerErrors, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    EditImageFormFieldProps,
+    PluginDataStoreType,
+    PluginDetailType,
+    ServerErrors,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CreatePluginModalURLParamsType {
     appId: string
@@ -26,6 +32,7 @@ export interface CreatePluginFormType
 
 export enum CreatePluginActionType {
     UPDATE_CURRENT_TAB = 'updateCurrentTab',
+    UPDATE_PLUGIN_ICON = 'updatePluginIcon',
     UPDATE_NEW_PLUGIN_NAME = 'updateNewPluginName',
     UPDATE_PARENT_PLUGIN = 'updateParentPlugin',
     UPDATE_PLUGIN_ID = 'updatePluginId',
@@ -38,6 +45,7 @@ export enum CreatePluginActionType {
 }
 
 type CreatePluginSingleInputActionType =
+    | CreatePluginActionType.UPDATE_PLUGIN_ICON
     | CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME
     | CreatePluginActionType.UPDATE_PLUGIN_ID
     | CreatePluginActionType.UPDATE_PLUGIN_VERSION
@@ -122,6 +130,7 @@ export interface CreatePluginFormContentProps {
     availableTags: string[]
     availableTagsError: ServerErrors
     reloadAvailableTags: () => void
+    handleIconError: EditImageFormFieldProps['handleError']
 }
 
 export interface CreatePluginFormFieldProps extends Pick<CreatePluginFormContentProps, 'handleChange'> {

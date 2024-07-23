@@ -1,5 +1,6 @@
 import CreatableSelect from 'react-select/creatable'
 import {
+    EditImageFormField,
     GenericSectionErrorState,
     LoadingIndicator,
     multiSelectStyles,
@@ -29,8 +30,10 @@ const CreatePluginFormContent = ({
     availableTags,
     availableTagsError,
     reloadAvailableTags,
+    handleIconError,
 }: CreatePluginFormContentProps) => {
-    const { currentTab, name, pluginIdentifier, docLink, pluginVersion, description, tags, inputVariables } = pluginForm
+    const { currentTab, name, pluginIdentifier, docLink, pluginVersion, description, tags, inputVariables, icon } =
+        pluginForm
 
     const handleTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const targetMode = e.target.value as CreatePluginFormViewType
@@ -150,6 +153,10 @@ const CreatePluginFormContent = ({
         return <Option {...props} />
     }
 
+    const handleURLChange = (url: string) => {
+        handleChange({ action: CreatePluginActionType.UPDATE_PLUGIN_ICON, payload: url })
+    }
+
     return (
         <div className="flexbox-col dc__overflow-scroll p-20 dc__gap-16">
             <StyledRadioGroup
@@ -164,6 +171,19 @@ const CreatePluginFormContent = ({
                     </StyledRadioGroup.Radio>
                 ))}
             </StyledRadioGroup>
+
+            {currentTab === CreatePluginFormViewType.NEW_PLUGIN && (
+                <EditImageFormField
+                    url={icon}
+                    defaultIcon={<ICLegoBlock className="w-100 h-100 dc__opacity-1 p-5" />}
+                    errorMessage={pluginFormError.icon}
+                    handleError={handleIconError}
+                    handleURLChange={handleURLChange}
+                    ariaLabelPrefix="Edit plugin icon"
+                    dataTestIdPrefix="edit-plugin-icon"
+                    altText="Plugin icon"
+                />
+            )}
 
             {/* Existing plugin / display name */}
             {renderPluginName()}

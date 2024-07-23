@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import {
     Checkbox,
     CHECKBOX_VALUE,
+    EditImageFormFieldProps,
     getAvailablePluginTags,
     noop,
     stopPropagation,
@@ -51,6 +52,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             case CreatePluginActionType.UPDATE_CURRENT_TAB:
                 clonedPluginForm.currentTab = payload
                 break
+            case CreatePluginActionType.UPDATE_PLUGIN_ICON:
+                clonedPluginForm.icon = payload
+                break
             case CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME:
                 clonedPluginForm.id = 0
                 clonedPluginForm.name = payload
@@ -90,6 +94,15 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         setPluginFormError(clonedPluginFormError)
     }
 
+    /* Have to make an exception (i.e, having a separate handler for form error update) 
+     for icon error since it is being handled by component itself 
+    */
+    const handleIconError: EditImageFormFieldProps['handleError'] = (errorMessage) => {
+        const clonedPluginFormError = structuredClone(pluginFormError)
+        clonedPluginFormError.icon = errorMessage
+        setPluginFormError(clonedPluginFormError)
+    }
+
     const handleSubmit = () => {}
 
     return (
@@ -125,6 +138,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         availableTags={availableTags}
                         availableTagsError={availableTagsError}
                         reloadAvailableTags={reloadAvailableTags}
+                        handleIconError={handleIconError}
                     />
                 </div>
 
