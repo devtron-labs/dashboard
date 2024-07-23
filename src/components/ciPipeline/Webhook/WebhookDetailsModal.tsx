@@ -484,7 +484,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             return (
                 <a
                     className="dc__link dc__no-decor fs-13 fw-4"
-                    href={DOCUMENTATION.WEBHOOK_API_TOKEN}
+                    href={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
                     rel="noreferrer noopener"
                     target="_blank"
                 >
