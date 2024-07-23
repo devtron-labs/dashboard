@@ -21,12 +21,12 @@ import { ReactComponent as ICClose } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICSearch } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ICVariable } from '../../../assets/icons/ic-variable.svg'
 import NoVariables from '../../../assets/img/no-artifact@2x.png'
-import { SuggestionsProps, SuggestionType } from './types'
+import { SuggestionsProps, ScopedVariableType } from './types'
 import SuggestionsInfo from './SuggestionsInfo'
 import { NO_DEFINED_DESCRIPTION, NO_DEFINED_VALUE } from './constants'
 
 const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, error }: SuggestionsProps) => {
-    const [suggestions, setSuggestions] = useState<SuggestionType[]>(variables)
+    const [suggestions, setSuggestions] = useState<ScopedVariableType[]>(variables)
     const [clearSearch, setClearSearch] = useState<boolean>(false)
     const [highlightText, setHighlightText] = useState<string>('')
 
@@ -114,7 +114,7 @@ const Suggestions = ({ handleDeActivation, loading, variables, reloadVariables, 
         <>
             <div className="flexbox-col dc__align-self-stretch dc__overflow-scroll bcn-0 flex-grow-1">
                 {suggestions.length ? (
-                    suggestions.map((variable: SuggestionType) => (
+                    suggestions.map((variable) => (
                         <SuggestionItem
                             key={variable.variableName}
                             variableName={variable.variableName}

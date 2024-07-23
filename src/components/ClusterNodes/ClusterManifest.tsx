@@ -16,8 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import YAML from 'yaml'
-import { VisibleModal2, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
-import CodeEditor from '../CodeEditor/CodeEditor'
+import { VisibleModal2, YAMLStringify, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../v2/common/message.ui'
 import { getClusterManifest } from './clusterNodes.service'
 import { ManifestMessaging, MESSAGING_UI, MODES } from '../../config'

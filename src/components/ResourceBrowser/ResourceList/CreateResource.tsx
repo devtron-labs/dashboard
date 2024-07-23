@@ -22,6 +22,7 @@ import {
     InfoColourBar,
     GenericEmptyState,
     useRegisterShortcut,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { APP_STATUS_HEADERS, MODES } from '../../../config'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
@@ -30,7 +31,6 @@ import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as MechanicalOperation } from '../../../assets/img/ic-mechanical-operation.svg'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
