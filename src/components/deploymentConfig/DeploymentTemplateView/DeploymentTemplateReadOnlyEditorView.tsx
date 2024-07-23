@@ -31,6 +31,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
     isEnvOverride,
     lockedConfigKeysWithLockType,
     hideLockedKeys,
+    uneditedDocument,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
     const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const addOperationsRef = useRef([])
@@ -40,13 +41,12 @@ export default function DeploymentTemplateReadOnlyEditorView({
     if (removeLockedKeysFromYaml && reapplyRemovedLockedKeysToYaml) {
         if (hideLockedKeys) {
             const { document, addOperations } = removeLockedKeysFromYaml(value, lockedConfigKeysWithLockType.config)
-            value = YAML.stringify(document, { sortMapEntries: true, simpleKeys: true })
+            value = YAML.stringify(document, { simpleKeys: true })
             if (addOperations.length) {
                 addOperationsRef.current = addOperations
             }
         } else {
             value = YAMLStringify(reapplyRemovedLockedKeysToYaml(YAML.parse(value), addOperationsRef.current), {
-                sortOrderEntries: true,
                 simpleKeys: true,
             })
         }
@@ -87,6 +87,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
             hideLockedKeys={hideLockedKeys}
             lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
             readOnly
+            uneditedDocument={uneditedDocument}
         />
     )
 }

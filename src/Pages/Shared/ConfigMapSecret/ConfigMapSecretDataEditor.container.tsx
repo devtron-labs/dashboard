@@ -22,6 +22,7 @@ import {
     KeyValueTable,
     StyledRadioGroup as RadioGroup,
     YAMLStringify,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ShowIcon } from '@Icons/ic-visibility-on.svg'
@@ -29,7 +30,6 @@ import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { PATTERNS } from '@Config/constants'
 import { KeyValueFileInput } from '@Components/util/KeyValueFileInput'
-import CodeEditor from '@Components/CodeEditor/CodeEditor'
 import { Info } from '@Components/common'
 
 import {

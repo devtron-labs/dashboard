@@ -97,7 +97,7 @@ export default function DeploymentTemplateOverride({
     }, [environments])
 
     useEffect(() => {
-        dispatch({ type: DeploymentConfigStateActionTypes.reset })
+        dispatch({ type: DeploymentConfigStateActionTypes.reset, payload: { isSuperAdmin } })
         reloadEnvironments()
         setTimeout(() => {
             baseDeploymentAbortController.current = new AbortController()
@@ -319,8 +319,7 @@ export default function DeploymentTemplateOverride({
 
     async function handleOverride(e) {
         e.preventDefault()
-        if (state.unableToParseYaml) {
-        } else if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
+        if (state.duplicate && (!state.latestDraft || state.isDraftOverriden)) {
             const showDeleteModal = state.latestDraft ? state.latestDraft.action !== 3 : state.data.IsOverride
             // permanent delete
             if (isProtected && showDeleteModal) {
@@ -408,7 +407,6 @@ export default function DeploymentTemplateOverride({
                         setManifestDataRHS={setManifestDataRHSOverride}
                         setManifestDataLHS={setManifestDataLHSOverride}
                         convertVariablesOverride={state.convertVariablesOverride}
-                        isSuperAdmin={isSuperAdmin}
                     />
                 )}
             </div>

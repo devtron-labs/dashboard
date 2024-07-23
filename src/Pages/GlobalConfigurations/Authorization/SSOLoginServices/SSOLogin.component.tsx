@@ -33,10 +33,10 @@ import {
     ButtonWithLoader,
     YAMLStringify,
     DEFAULT_SECRET_PLACEHOLDER,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
-import CodeEditor from '../../../../components/CodeEditor/CodeEditor'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
 import { ViewType, DOCUMENTATION, URLS, SwitchItemValues } from '../../../../config'
