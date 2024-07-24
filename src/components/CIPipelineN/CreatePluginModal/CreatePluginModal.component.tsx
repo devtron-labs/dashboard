@@ -5,8 +5,13 @@ import {
     CHECKBOX_VALUE,
     EditImageFormFieldProps,
     getAvailablePluginTags,
+    getPluginsDetail,
+    ServerErrors,
     stopPropagation,
     useAsync,
+    validateDescription,
+    validateDisplayName,
+    validateName,
     VariableType,
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -20,10 +25,11 @@ import {
     CreatePluginModalURLParamsType,
     CreatePluginActionType,
     CreatePluginFormErrorType,
+    CreatePluginFormContentProps,
 } from './types'
 import { getParentPluginList } from './service'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
-import { getDefaultPluginFormData } from './utils'
+import { getDefaultPluginFormData, validateDocumentationLink, validatePluginVersion, validateTags } from './utils'
 import './CreatePluginModal.scss'
 
 const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
@@ -46,14 +52,76 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const [pluginFormError, setPluginFormError] = useState<CreatePluginFormErrorType>(
         structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR),
     )
+    const [arePluginDetailsLoading, setArePluginDetailsLoading] = useState<boolean>(false)
+    const [pluginDetailsError, setPluginDetailsError] = useState<ServerErrors>(null)
+    const [selectedPluginVersions, setSelectedPluginVersions] = useState<
+        CreatePluginFormContentProps['selectedPluginVersions']
+    >([])
 
-    const handleChange: CreatePluginHandleChangeType = ({ action, payload }) => {
-        const clonedPluginForm = structuredClone(pluginForm)
-        const clonedPluginFormError = structuredClone(pluginFormError)
+    /**
+     * @description This method is used to prefill the form with the selected plugin (latest version) details.
+     */
+    const prefillFormOnPluginSelection: CreatePluginFormContentProps['prefillFormOnPluginSelection'] = async (
+        clonedPluginForm,
+    ) => {
+        try {
+            const { id: parentPluginId } = clonedPluginForm
+            setArePluginDetailsLoading(true)
+            const {
+                pluginStore: { parentPluginStore, pluginVersionStore },
+            } = await getPluginsDetail({
+                appId: appId ? +appId : null,
+                parentPluginIds: [parentPluginId],
+            })
+            const { latestVersionId, pluginVersions } = parentPluginStore[parentPluginId]
+            const { pluginIdentifier, pluginVersion, docLink, description, tags, inputVariables } =
+                pluginVersionStore[latestVersionId]
+            const latestVersionInputVariablesMap = inputVariables.reduce((acc, inputVariable) => {
+                acc[inputVariable.name] = inputVariable
+                return acc
+            }, {})
+
+            setSelectedPluginVersions(pluginVersions.map((pluginVersionData) => pluginVersionData.pluginVersion))
+
+            return {
+                ...clonedPluginForm,
+                pluginIdentifier,
+                pluginVersion,
+                docLink,
+                description,
+                tags,
+                // traversing on our input variables and setting allowEmptyValue on basis of latest plugin's input variables
+                inputVariables: clonedPluginForm.inputVariables.map((inputVariable) => {
+                    const latestVersionInputVariable = latestVersionInputVariablesMap[inputVariable.name]
+                    return {
+                        ...inputVariable,
+                        allowEmptyValue: latestVersionInputVariable
+                            ? latestVersionInputVariable.allowEmptyValue
+                            : false,
+                    }
+                }),
+            }
+        } catch (error) {
+            setPluginDetailsError(error)
+            return clonedPluginForm
+        } finally {
+            setArePluginDetailsLoading(false)
+        }
+    }
+
+    const handleChange: CreatePluginHandleChangeType = async ({ action, payload }) => {
+        let clonedPluginForm = structuredClone(pluginForm)
+        let clonedPluginFormError = structuredClone(pluginFormError)
 
         switch (action) {
             case CreatePluginActionType.UPDATE_CURRENT_TAB:
-                clonedPluginForm.currentTab = payload
+                clonedPluginForm = {
+                    ...getDefaultPluginFormData(formInputVariables),
+                    currentTab: payload,
+                }
+                clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
+                setArePluginDetailsLoading(false)
+                setPluginDetailsError(null)
                 break
             case CreatePluginActionType.UPDATE_PLUGIN_ICON:
                 clonedPluginForm.icon = payload
@@ -61,30 +129,36 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             case CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME:
                 clonedPluginForm.id = 0
                 clonedPluginForm.name = payload
+                clonedPluginFormError.name = validateDisplayName(payload).message
                 break
             case CreatePluginActionType.UPDATE_PARENT_PLUGIN:
                 clonedPluginForm.id = payload.id
                 clonedPluginForm.name = payload.name
-                // TODO: Make api call
+                clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)
                 break
             case CreatePluginActionType.UPDATE_PLUGIN_ID:
                 clonedPluginForm.pluginIdentifier = payload
+                clonedPluginFormError.pluginIdentifier = validateName(payload).message
                 break
             case CreatePluginActionType.UPDATE_PLUGIN_VERSION:
                 clonedPluginForm.pluginVersion = payload
+                clonedPluginFormError.pluginVersion = validatePluginVersion(payload).message
                 break
             case CreatePluginActionType.UPDATE_DOCUMENTATION_LINK:
                 clonedPluginForm.docLink = payload
+                clonedPluginFormError.docLink = validateDocumentationLink(payload).message
                 break
             case CreatePluginActionType.UPDATE_DESCRIPTION:
                 clonedPluginForm.description = payload
+                clonedPluginFormError.description = validateDescription(payload).message
                 break
             case CreatePluginActionType.UPDATE_TAGS:
-                clonedPluginForm.tags = payload
+                clonedPluginForm.tags = payload.tags
+                clonedPluginFormError.tags = validateTags(payload.tags).message
                 break
             case CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE:
-                clonedPluginForm.inputVariables[payload].allowEmptyValue =
-                    !clonedPluginForm.inputVariables[payload].allowEmptyValue
+                clonedPluginForm.inputVariables[payload.index].allowEmptyValue =
+                    !clonedPluginForm.inputVariables[payload.index].allowEmptyValue
                 break
             case CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK:
                 clonedPluginForm.shouldReplaceCustomTask = !clonedPluginForm.shouldReplaceCustomTask
@@ -112,6 +186,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         })
     }
 
+    // TODO: Add checks for loading state as well
     const handleSubmit = () => {}
 
     return (
@@ -148,6 +223,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         availableTagsError={availableTagsError}
                         reloadAvailableTags={reloadAvailableTags}
                         handleIconError={handleIconError}
+                        arePluginDetailsLoading={arePluginDetailsLoading}
+                        pluginDetailsError={pluginDetailsError}
+                        prefillFormOnPluginSelection={prefillFormOnPluginSelection}
+                        selectedPluginVersions={selectedPluginVersions}
                     />
                 </div>
 

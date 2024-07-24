@@ -1,4 +1,5 @@
 import {
+    CustomInputProps,
     EditImageFormFieldProps,
     PluginDataStoreType,
     PluginDetailType,
@@ -18,7 +19,7 @@ export interface ParentPluginListItemType
     extends Pick<PluginDataStoreType['parentPluginStore'][0], 'id' | 'name' | 'icon'> {}
 
 export enum CreatePluginFormViewType {
-    NEW_PLUGIN = 'New Plugin',
+    NEW_PLUGIN = 'New plugin',
     EXISTING_PLUGIN = 'New version of existing plugin',
 }
 
@@ -74,14 +75,18 @@ type CreatePluginHandleChangeParamsType =
       }
     | {
           action: CreatePluginActionType.UPDATE_TAGS
-          payload: string[]
+          payload: {
+              tags: string[]
+          }
       }
     | {
           action: CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE
           /**
            * Index of the input variable
            */
-          payload: number
+          payload: {
+              index: number
+          }
       }
 
 export type CreatePluginHandleChangeType = (params: CreatePluginHandleChangeParamsType) => void
@@ -131,18 +136,20 @@ export interface CreatePluginFormContentProps {
     availableTagsError: ServerErrors
     reloadAvailableTags: () => void
     handleIconError: EditImageFormFieldProps['handleError']
+    arePluginDetailsLoading: boolean
+    pluginDetailsError: ServerErrors
+    prefillFormOnPluginSelection: (clonedPluginForm: CreatePluginFormType) => Promise<CreatePluginFormType>
+    selectedPluginVersions: string[]
 }
 
-export interface CreatePluginFormFieldProps extends Pick<CreatePluginFormContentProps, 'handleChange'> {
-    label: string
-    value: string
-    error: string
+export interface CreatePluginFormFieldProps
+    extends Pick<CreatePluginFormContentProps, 'handleChange'>,
+        Pick<
+            CustomInputProps,
+            'helperText' | 'autoFocus' | 'placeholder' | 'label' | 'value' | 'error' | 'required' | 'disabled'
+        > {
     action: CreatePluginSingleInputActionType
-    placeholder: string
-    isRequired?: boolean
-    isDisabled?: boolean
     useTextArea?: boolean
-    autoFocus?: boolean
 }
 
 export interface CreatePluginInputVariableContainerProps extends Pick<CreatePluginFormContentProps, 'handleChange'> {

@@ -23,3 +23,5 @@ export const CREATE_PLUGIN_DEFAULT_FORM_ERROR: CreatePluginFormErrorType = {
     description: '',
     tags: '',
 }
+
+export const MAX_TAG_LENGTH = 128

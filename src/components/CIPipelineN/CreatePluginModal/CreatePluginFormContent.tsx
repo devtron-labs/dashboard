@@ -1,23 +1,36 @@
 import CreatableSelect from 'react-select/creatable'
 import {
+    APIResponseHandler,
+    ComponentSizeType,
     EditImageFormField,
     GenericSectionErrorState,
     LoadingIndicator,
-    multiSelectStyles,
-    MultiValueContainer,
+    logExceptionToSentry,
+    MultiValueChipContainer,
+    MultiValueRemove,
     Option,
     OptionType,
     PluginImageContainer,
     SelectPicker,
     SelectPickerOptionType,
+    SelectPickerProps,
+    SEMANTIC_VERSION_DOCUMENTATION_LINK,
     stopPropagation,
     StyledRadioGroup,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
+import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
+import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
+import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
+import { ReactNode } from 'react'
 import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
+import { getIsTagValid, PluginCreatableTagClearIndicator, pluginCreatableTagSelectStyles } from './utils'
 
 const CreatePluginFormContent = ({
     isLoadingParentPluginList,
@@ -32,6 +45,10 @@ const CreatePluginFormContent = ({
     availableTagsError,
     reloadAvailableTags,
     handleIconError,
+    arePluginDetailsLoading,
+    pluginDetailsError,
+    prefillFormOnPluginSelection,
+    selectedPluginVersions,
 }: CreatePluginFormContentProps) => {
     const { currentTab, name, pluginIdentifier, docLink, pluginVersion, description, tags, inputVariables, icon } =
         pluginForm
@@ -46,10 +63,17 @@ const CreatePluginFormContent = ({
         handleChange({ action: CreatePluginActionType.UPDATE_CURRENT_TAB, payload: targetMode })
     }
 
+    const handlePluginSelection: SelectPickerProps['onChange'] = (newValue: SelectPickerOptionType) => {
+        handleChange({
+            action: CreatePluginActionType.UPDATE_PARENT_PLUGIN,
+            payload: { id: +newValue.value, name: newValue.label as string },
+        })
+    }
+
     const renderPluginName = () => {
         if (currentTab === CreatePluginFormViewType.EXISTING_PLUGIN) {
             // TODO: Can make util
-            const { options, selectedOption } = parentPluginList.reduce(
+            const { options, selectedOption } = parentPluginList?.reduce(
                 (acc, plugin) => {
                     const option: SelectPickerOptionType = {
                         label: plugin.name,
@@ -76,7 +100,7 @@ const CreatePluginFormContent = ({
                     return acc
                 },
                 { options: [] as SelectPickerOptionType[], selectedOption: null as SelectPickerOptionType | null },
-            )
+            ) || { options: [], selectedOption: null }
 
             return (
                 <SelectPicker
@@ -92,6 +116,12 @@ const CreatePluginFormContent = ({
                     optionListError={parentPluginListError}
                     reloadOptionList={reloadParentPluginList}
                     autoFocus
+                    placeholder="Select plugin"
+                    size={ComponentSizeType.large}
+                    // FIXME: In case it is disabled, working fine but no options reload moves away from the input field otherwise if i don't disable it.
+                    isDisabled={isLoadingParentPluginList}
+                    onKeyDown={stopPropagation}
+                    onChange={handlePluginSelection}
                 />
             )
         }
@@ -104,7 +134,7 @@ const CreatePluginFormContent = ({
                 action={CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME}
                 handleChange={handleChange}
                 placeholder="Enter plugin name"
-                isRequired
+                required
                 autoFocus
             />
         )
@@ -130,7 +160,10 @@ const CreatePluginFormContent = ({
     }
 
     const handleTagsUpdate = (options: OptionType[]) => {
-        handleChange({ action: CreatePluginActionType.UPDATE_TAGS, payload: options.map((option) => option.value) })
+        handleChange({
+            action: CreatePluginActionType.UPDATE_TAGS,
+            payload: { tags: options.map((option) => option.value) },
+        })
     }
 
     const renderOption = (props) => {
@@ -159,6 +192,63 @@ const CreatePluginFormContent = ({
     const handleURLChange = (url: string) => {
         handleChange({ action: CreatePluginActionType.UPDATE_PLUGIN_ICON, payload: url })
     }
+
+    const handlePluginDetailsReload = async () => {
+        if (currentTab === CreatePluginFormViewType.NEW_PLUGIN) {
+            logExceptionToSentry(new Error('Error: Plugin details reload should not be called for new plugin'))
+            return
+        }
+
+        const clonedPluginForm = structuredClone(pluginForm)
+        await prefillFormOnPluginSelection(clonedPluginForm)
+    }
+
+    const renderMultiValueChip = (props) => <MultiValueChipContainer validator={getIsTagValid} {...props} />
+
+    const renderExistingPluginVersionList = () => (
+        <div className="flexbox-col dc__gap-4">
+            {selectedPluginVersions.map((version) => (
+                <div className="flexbox dc__align-items-center dc__gap-4">
+                    <ICTag className="icon-dim-16 dc__no-shrink" />
+                    <span className="cn-9 fs-13 fw-4 lh-20">{version}</span>
+                </div>
+            ))}
+        </div>
+    )
+
+    const renderPluginVersionLabel = (): ReactNode => {
+        if (currentTab === CreatePluginFormViewType.EXISTING_PLUGIN) {
+            return (
+                <div className="flexbox dc__content-space w-100">
+                    <span className="dc__required-field">New version</span>
+
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        Icon={ICHelp}
+                        className="w-300"
+                        heading="Existing versions"
+                        additionalContent={renderExistingPluginVersionList()}
+                        iconClass="fcv-5"
+                        showCloseButton
+                        trigger="click"
+                        interactive
+                    >
+                        <button
+                            className="flexbox dc__gap-4 dc__align-items-center p-0-imp dc__transparent"
+                            type="button"
+                        >
+                            <span className="cb-5 fs-13 fw-4 lh-20">View existing versions</span>
+                            <ICVisibilityOn className="icon-dim-16 dc__no-shrink scb-5" />
+                        </button>
+                    </TippyCustomized>
+                </div>
+            )
+        }
+
+        return 'Plugin version'
+    }
+
+    const showPluginDetailFields = currentTab !== CreatePluginFormViewType.EXISTING_PLUGIN || !!name
 
     return (
         <div className="flexbox-col flex-grow-1 dc__overflow-scroll p-20 dc__gap-16">
@@ -193,84 +283,126 @@ const CreatePluginFormContent = ({
                 {renderPluginName()}
 
                 {/* Plugin ID */}
-                <CreatePluginFormField
-                    label="Plugin ID"
-                    value={pluginIdentifier}
-                    error={pluginFormError.pluginIdentifier}
-                    action={CreatePluginActionType.UPDATE_PLUGIN_ID}
-                    handleChange={handleChange}
-                    placeholder="Enter plugin ID"
-                    isDisabled={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN}
-                    isRequired
-                />
+                {showPluginDetailFields && !arePluginDetailsLoading && !pluginDetailsError && (
+                    <CreatePluginFormField
+                        label="Plugin ID"
+                        value={pluginIdentifier}
+                        error={pluginFormError.pluginIdentifier}
+                        action={CreatePluginActionType.UPDATE_PLUGIN_ID}
+                        handleChange={handleChange}
+                        placeholder="Enter plugin ID"
+                        disabled={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN}
+                        required
+                    />
+                )}
             </div>
 
-            <div className="dc__grid-row-one-half dc__column-gap-12">
-                {/* New Version / Plugin Version */}
-                <CreatePluginFormField
-                    label={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN ? 'New version' : 'Plugin version'}
-                    value={pluginVersion}
-                    error={pluginFormError.pluginVersion}
-                    action={CreatePluginActionType.UPDATE_PLUGIN_VERSION}
-                    handleChange={handleChange}
-                    placeholder="Eg. 1.0.0"
-                    isRequired
-                />
-
-                {/* Documentation Link */}
-                <CreatePluginFormField
-                    label="Documentation link"
-                    value={docLink}
-                    error={pluginFormError.docLink}
-                    action={CreatePluginActionType.UPDATE_DOCUMENTATION_LINK}
-                    handleChange={handleChange}
-                    placeholder="Documentation link for this plugin version"
-                />
-            </div>
-
-            {/* Description */}
-            <CreatePluginFormField
-                label="Description"
-                value={description}
-                error={pluginFormError.description}
-                action={CreatePluginActionType.UPDATE_DESCRIPTION}
-                handleChange={handleChange}
-                placeholder="Enter a description for this plugin version"
-                useTextArea
-            />
-
-            {/* Tags */}
-            <div className="flexbox-col dc__gap-6">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label htmlFor="select-tags-for-plugin" className="m-0 fs-13 fw-4 lh-20 cn-7 dc_width-max-content">
-                    Tags
-                </label>
-
-                <CreatableSelect
-                    value={selectedTags}
-                    isMulti
-                    isClearable
-                    closeMenuOnSelect={false}
-                    options={tagOptions}
-                    placeholder="Type to select or create"
-                    name="select-tags-for-plugin"
-                    hideSelectedOptions={false}
-                    isLoading={areTagsLoading}
-                    components={{
-                        Option: renderOption,
-                        MultiValueContainer,
-                        NoOptionsMessage: renderNoOptionsMessage,
-                        LoadingIndicator,
+            {!!showPluginDetailFields && (
+                <APIResponseHandler
+                    isLoading={arePluginDetailsLoading}
+                    progressingProps={{
+                        pageLoader: true,
                     }}
-                    onChange={handleTagsUpdate}
-                    styles={multiSelectStyles}
-                    inputId="select-tags-for-plugin"
-                    onKeyDown={stopPropagation}
-                />
-            </div>
+                    error={pluginDetailsError}
+                    genericSectionErrorProps={{
+                        reload: handlePluginDetailsReload,
+                    }}
+                >
+                    <div className="dc__grid-row-one-half dc__column-gap-12">
+                        {/* New Version / Plugin Version */}
+                        <CreatePluginFormField
+                            label={renderPluginVersionLabel()}
+                            value={pluginVersion}
+                            error={pluginFormError.pluginVersion}
+                            action={CreatePluginActionType.UPDATE_PLUGIN_VERSION}
+                            handleChange={handleChange}
+                            helperText={
+                                <span className="fs-11">
+                                    Using
+                                    <a
+                                        href={SEMANTIC_VERSION_DOCUMENTATION_LINK}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="cb-5 dc__no-decor cursor"
+                                    >
+                                        &nbsp;semantic versioning&nbsp;
+                                    </a>
+                                    is recommended for best practices.
+                                </span>
+                            }
+                            placeholder="Eg. 1.0.0"
+                            required
+                        />
 
-            {/* Input variable container */}
-            <CreatePluginInputVariableContainer inputVariables={inputVariables} handleChange={handleChange} />
+                        {/* Documentation Link */}
+                        <CreatePluginFormField
+                            label="Documentation link"
+                            value={docLink}
+                            error={pluginFormError.docLink}
+                            action={CreatePluginActionType.UPDATE_DOCUMENTATION_LINK}
+                            handleChange={handleChange}
+                            placeholder="Documentation link for this plugin version"
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <CreatePluginFormField
+                        label="Description"
+                        value={description}
+                        error={pluginFormError.description}
+                        action={CreatePluginActionType.UPDATE_DESCRIPTION}
+                        handleChange={handleChange}
+                        placeholder="Enter a description for this plugin version"
+                        useTextArea
+                    />
+
+                    {/* TODO: Add newly created tag in options as well */}
+                    {/* Tags */}
+                    <div className="flexbox-col dc__gap-6">
+                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                        <label
+                            htmlFor="select-tags-for-plugin"
+                            className="m-0 fs-13 fw-4 lh-20 cn-7 dc_width-max-content"
+                        >
+                            Tags
+                        </label>
+
+                        <CreatableSelect
+                            value={selectedTags}
+                            isMulti
+                            isClearable
+                            closeMenuOnSelect={false}
+                            options={tagOptions}
+                            placeholder="Type to select or create"
+                            name="select-tags-for-plugin"
+                            hideSelectedOptions={false}
+                            isLoading={areTagsLoading}
+                            components={{
+                                Option: renderOption,
+                                MultiValueContainer: renderMultiValueChip,
+                                NoOptionsMessage: renderNoOptionsMessage,
+                                MultiValueRemove,
+                                LoadingIndicator,
+                                ClearIndicator: PluginCreatableTagClearIndicator,
+                            }}
+                            onChange={handleTagsUpdate}
+                            styles={pluginCreatableTagSelectStyles}
+                            inputId="select-tags-for-plugin"
+                            onKeyDown={stopPropagation}
+                        />
+
+                        {pluginFormError.tags && (
+                            <div className="form__error">
+                                <ICWarning className="form__icon form__icon--error" />
+                                {pluginFormError.tags}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Input variable container */}
+                    <CreatePluginInputVariableContainer inputVariables={inputVariables} handleChange={handleChange} />
+                </APIResponseHandler>
+            )}
         </div>
     )
 }

@@ -4,7 +4,7 @@ import { CreatePluginActionType, CreatePluginInputVariableContainerProps, InputV
 
 const InputVariableItem = ({ handleChange, index, name, allowEmptyValue }: InputVariableItemProps) => {
     const handleAllowEmptyValueToggle = () => {
-        handleChange({ action: CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE, payload: index })
+        handleChange({ action: CreatePluginActionType.TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE, payload: { index } })
     }
 
     return (
