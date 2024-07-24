@@ -15,7 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { AppStatus, Progressing, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE, DATE_TIME_FORMATS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, ErrorScreenManager, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'
@@ -41,7 +41,6 @@ import {
     appListLoading,
 } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-import moment from 'moment'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
