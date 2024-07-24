@@ -216,7 +216,7 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    iconClassName="icon-dim-16 ml-4"
+                    iconClassName="icon-dim-20 ml-4"
                 />
             </div>
             {dockerRegistryList.map((docker) => (
