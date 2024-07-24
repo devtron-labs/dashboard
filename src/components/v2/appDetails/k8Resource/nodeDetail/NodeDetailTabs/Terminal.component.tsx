@@ -184,11 +184,11 @@ const TerminalComponent = ({
         } else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
+        url += `/${isResourceBrowserView ? selectedResource.namespace : selectedNamespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }
