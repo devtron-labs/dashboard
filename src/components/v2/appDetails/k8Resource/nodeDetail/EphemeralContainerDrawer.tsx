@@ -240,8 +240,6 @@ const EphemeralContainerDrawer = ({
         }
     }
 
-    const renderSelectOption = (props) => <SelectOption showTippy tippyClass="default-tt" {...props} />
-
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20">
@@ -290,7 +288,7 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
-                            Option: (props) => renderSelectOption(props),
+                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" {...props} />,
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}

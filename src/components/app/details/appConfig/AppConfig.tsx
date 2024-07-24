@@ -61,6 +61,7 @@ import { getNavItems, isUnlocked } from './AppConfig.utils'
 import AppComposeRouter from './AppComposeRouter'
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { UserRoleType } from '../../../../Pages/GlobalConfigurations/Authorization/constants'
+import { APP_CONFIG_TEXT } from './constants'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const getConfigProtections = importComponentFromFELibrary('getConfigProtections', null, 'function')
@@ -332,7 +333,7 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
             if (state.canDeleteApp) {
                 return (
                     <DeleteDialog
-                        title={`Delete job '${appName}'?`}
+                        title={`Delete ${isJobView ? 'job ' : ''} '${appName}'?`}
                         delete={deleteAppHandler}
                         closeDelete={() => {
                             setState((state) => ({ ...state, showDeleteConfirm: false }))
@@ -340,9 +341,15 @@ export default function AppConfig({ appName, isJobView, filteredEnvIds }: AppCon
                     >
                         <DeleteDialog.Description>
                             <p className="fs-13 cn-7 lh-1-54">
-                            The job and all its pipelines will be deleted. Deleted job pipelines cannot be restore.
+                                {isJobView
+                                    ? APP_CONFIG_TEXT.DELETE_JOBS.SUBTITLE_PARA1
+                                    : APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA1}
                             </p>
-                            <p className="fs-13 cn-7 lh-1-54">Are you sure?</p>
+                            <p className="fs-13 cn-7 lh-1-54">
+                                {isJobView
+                                    ? APP_CONFIG_TEXT.DELETE_JOBS.SUBTITLE_PARA2
+                                    : APP_CONFIG_TEXT.DELETE_APPS.SUBTITLE_PARA2}
+                            </p>
                         </DeleteDialog.Description>
                     </DeleteDialog>
                 )
