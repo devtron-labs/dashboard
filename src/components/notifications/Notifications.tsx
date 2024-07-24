@@ -17,11 +17,11 @@
 import React, { Component } from 'react'
 import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
-import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
-import { DOCUMENTATION } from '../../config'
+import { DOCUMENTATION, HEADER_TEXT } from '../../config'
 import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {
@@ -33,18 +33,13 @@ export default class Notifications extends Component<NotificationsProps, {}> {
         return (
             <div className="notification-page">
                 <div className="notification-page__header">
-                    <h2 className="form__title">Notifications</h2>
-                    <p className="form__subtitle">
-                        Manage notifications for build and deployment pipelines.&nbsp;
-                        <a
-                            className="dc__link"
-                            rel="noreferrer noopener"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
-                            target="_blank"
-                        >
-                            Learn more about notifications
-                        </a>
-                    </p>
+                    <FeatureTitleWithInfo
+                        title={HEADER_TEXT.NOTIFICATIONS.title}
+                        renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
+                        docLink={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
+                        showInfoIconTippy
+                        dataTestId="notifications-feature-title"
+                    />
                     <ul className="tab-list">
                         <li className="tab-list__tab">
                             <NavLink
