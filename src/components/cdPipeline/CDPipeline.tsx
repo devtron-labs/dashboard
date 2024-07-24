@@ -42,7 +42,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     FloatingVariablesSuggestions,
-    getRequiredPluginIdsFromBuildStage,
+    getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
@@ -379,8 +379,8 @@ export default function CDPipeline({
     }
 
     const handlePopulatePluginDataStore = async (form: PipelineFormType) => {
-        const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.preBuildStage)
-        const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(form.postBuildStage)
+        const preBuildPluginIds = getPluginIdsFromBuildStage(form.preBuildStage)
+        const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const pluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
         if (pluginIds.length === 0) {
             return
