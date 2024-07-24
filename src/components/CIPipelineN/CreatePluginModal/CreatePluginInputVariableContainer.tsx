@@ -11,7 +11,7 @@ const InputVariableItem = ({ handleChange, index, name, allowEmptyValue }: Input
         <div className="p-8 flexbox dc__content-space dc__gap-8">
             <h4 className="m-0 dc__truncate cn-9 fw-4 fs-13 lh-20">{name}</h4>
 
-            <div className="w-28 h-18 dc__required-toggle">
+            <div className="w-28 h-18">
                 <Toggle
                     selected={!allowEmptyValue}
                     onSelect={handleAllowEmptyValueToggle}

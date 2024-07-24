@@ -19,6 +19,7 @@ import {
     CreatePluginModalProps,
     CreatePluginModalURLParamsType,
     CreatePluginActionType,
+    CreatePluginFormErrorType,
 } from './types'
 import { getParentPluginList } from './service'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
@@ -40,8 +41,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         () => getAvailablePluginTags(appId ? +appId : null),
         [],
     )
+
     const [pluginForm, setPluginForm] = useState<CreatePluginFormType>(getDefaultPluginFormData(formInputVariables))
-    const [pluginFormError, setPluginFormError] = useState(structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR))
+    const [pluginFormError, setPluginFormError] = useState<CreatePluginFormErrorType>(
+        structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR),
+    )
 
     const handleChange: CreatePluginHandleChangeType = ({ action, payload }) => {
         const clonedPluginForm = structuredClone(pluginForm)
@@ -116,7 +120,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 className="bcn-0 dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
                 onClick={stopPropagation}
             >
-                <div className="flexbox-col dc__overflow-scroll">
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
                     <div className="py-12 px-20 flexbox dc__content-space dc__border-bottom">
                         <h2 className="m-0 cn-9 fs-16 fw-6 lh-24">Save as plugin</h2>
 

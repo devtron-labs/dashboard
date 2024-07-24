@@ -10,6 +10,7 @@ import {
     PluginImageContainer,
     SelectPicker,
     SelectPickerOptionType,
+    stopPropagation,
     StyledRadioGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
@@ -160,7 +161,7 @@ const CreatePluginFormContent = ({
     }
 
     return (
-        <div className="flexbox-col dc__overflow-scroll p-20 dc__gap-16">
+        <div className="flexbox-col flex-grow-1 dc__overflow-scroll p-20 dc__gap-16">
             <StyledRadioGroup
                 className="gui-yaml-switch dc__no-shrink dc__content-start"
                 onChange={handleTabChange}
@@ -241,7 +242,7 @@ const CreatePluginFormContent = ({
             {/* Tags */}
             <div className="flexbox-col dc__gap-6">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label htmlFor="select-tags-for-plugin" className="m-0 fs-13 fw-4 lh-20 cn-7">
+                <label htmlFor="select-tags-for-plugin" className="m-0 fs-13 fw-4 lh-20 cn-7 dc_width-max-content">
                     Tags
                 </label>
 
@@ -264,6 +265,7 @@ const CreatePluginFormContent = ({
                     onChange={handleTagsUpdate}
                     styles={multiSelectStyles}
                     inputId="select-tags-for-plugin"
+                    onKeyDown={stopPropagation}
                 />
             </div>
 
