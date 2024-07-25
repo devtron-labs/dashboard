@@ -259,6 +259,15 @@ const EnvironmentOverrideRouter = () => {
         }
     }
 
+    const reloadEnvData = () => {
+        if (isJobView) {
+            getJobOtherEnvironment()
+                .then(() => {})
+                .catch(() => {})
+        }
+        reloadEnvironments()
+    }
+
     useEffect(() => {
         if (
             previousPathName &&
@@ -268,12 +277,7 @@ const EnvironmentOverrideRouter = () => {
                 (isJobView && previousPathName.includes('/pre-build') && !pathname.includes('/pre-build')) ||
                 (isJobView && previousPathName.includes('/build') && !pathname.includes('/build')))
         ) {
-            if (isJobView) {
-                getJobOtherEnvironment()
-                    .then(() => {})
-                    .catch(() => {})
-            }
-            reloadEnvironments()
+            reloadEnvData()
             getWorkflows()
         }
     }, [pathname])
@@ -293,10 +297,7 @@ const EnvironmentOverrideRouter = () => {
             const requestBody = { envId: selection.id, appId }
             await addJobEnvironment(requestBody)
             toast.success('Saved Successfully')
-            getJobOtherEnvironment()
-                .then(() => {})
-                .catch(() => {})
-            reloadEnvironments()
+            reloadEnvData()
         } catch (error) {
             showError(error)
         } finally {
@@ -306,15 +307,6 @@ const EnvironmentOverrideRouter = () => {
 
     const handleAddEnvironment = () => {
         setEnvironmentView(!addEnvironment)
-    }
-
-    const reloadEnvData = () => {
-        if (isJobView) {
-            getJobOtherEnvironment()
-                .then(() => {})
-                .catch(() => {})
-        }
-        reloadEnvironments()
     }
 
     const renderEnvSelector = (): JSX.Element => {
@@ -364,28 +356,31 @@ const EnvironmentOverrideRouter = () => {
         if (environments.length) {
             return (
                 <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
-                    {environments.map((env) => (
-                        <Fragment key={env.environmentId}>
-                            {isJobView
-                                ? !env.deploymentAppDeleteRequest && (
-                                      <JobEnvOverrideRoute
-                                          key={env.environmentName}
-                                          envOverride={env}
-                                          ciPipelines={ciPipelines}
-                                          reload={reloadEnvData}
-                                          isEnvProtected={env.isProtected}
-                                      />
-                                  )
-                                : renderNavItem(
-                                      {
-                                          title: env.environmentName,
-                                          isProtectionAllowed: env.isProtected,
-                                          href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
-                                      },
-                                      env.isProtected,
-                                  )}
-                        </Fragment>
-                    ))}
+                    {environments.map(
+                        (env) =>
+                            !env.deploymentAppDeleteRequest && (
+                                <Fragment key={env.environmentId}>
+                                    {isJobView ? (
+                                        <JobEnvOverrideRoute
+                                            key={env.environmentName}
+                                            envOverride={env}
+                                            ciPipelines={ciPipelines}
+                                            reload={reloadEnvData}
+                                            isEnvProtected={env.isProtected}
+                                        />
+                                    ) : (
+                                        renderNavItem(
+                                            {
+                                                title: env.environmentName,
+                                                isProtectionAllowed: env.isProtected,
+                                                href: `${URLS.APP_ENV_OVERRIDE_CONFIG}/${env.environmentId}/${EnvResourceType.DeploymentTemplate}`,
+                                            },
+                                            env.isProtected,
+                                        )
+                                    )}
+                                </Fragment>
+                            ),
+                    )}
                 </div>
             )
         }

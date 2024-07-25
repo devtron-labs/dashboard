@@ -28,7 +28,9 @@ import {
     CMSecretProtectedTab,
     DraftState,
     CMSecretDeleteModalType,
+    CMSecretComponentName,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
@@ -75,7 +77,9 @@ export const ConfigMapSecretContainer = ({
 
     // CONSTANTS
     const envConfigData =
-        envConfig.config?.[componentType === CMSecretComponentType.ConfigMap ? 'configmaps' : 'secrets'] || []
+        envConfig.config?.[
+            componentType === CMSecretComponentType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
+        ] || []
     const selectedCMSecret = useMemo(() => envConfigData.find((data) => data.name === name), [envConfig, name])
     const isCreateState = name === 'create'
     const isEmptyState = !name && !envConfigData.length
@@ -93,7 +97,10 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const componentName = componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'
+    const componentName =
+        componentType === CMSecretComponentType.ConfigMap
+            ? CMSecretComponentName.ConfigMap
+            : CMSecretComponentName.Secret
 
     // REFS
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -306,7 +313,7 @@ export const ConfigMapSecretContainer = ({
             generatePath(path, {
                 appId,
                 envId,
-                name: envConfigData.length ? envConfigData[envConfigData.length - 1].name : undefined,
+                name: envConfigData.length ? envConfigData[envConfigData.length - 1].name : null,
             }),
         )
     }

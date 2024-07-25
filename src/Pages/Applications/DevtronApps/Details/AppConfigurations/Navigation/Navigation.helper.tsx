@@ -15,8 +15,19 @@ import {
     EnvironmentOptionType,
     EnvResourceType,
     ExtendedCollapsibleListItem,
+    EnvConfigObjectKey,
 } from '../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
+
+const renderNavItemIcon = (isLocked: boolean, isProtected: boolean, dataTestId: string) => {
+    if (isLocked) {
+        return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
+    }
+    if (!isLocked && isProtected) {
+        return <ProtectedIcon className="icon-dim-20 fcv-5" data-testid={`${dataTestId}-protectedicon`} />
+    }
+    return null
+}
 
 export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: boolean) => {
     const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
@@ -34,12 +45,7 @@ export const renderNavItem = (item: CustomNavItemsType, isBaseConfigProtected?: 
             to={item.href}
         >
             <span className="dc__truncate nav-text">{item.title}</span>
-            {item.isLocked && (
-                <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${linkDataTestName}-lockicon`} />
-            )}
-            {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && (
-                <ProtectedIcon className="icon-dim-20 fcv-5" />
-            )}
+            {renderNavItemIcon(item.isLocked, isBaseConfigProtected && item.isProtectionAllowed, linkDataTestName)}
         </NavLink>
     )
 }
@@ -70,7 +76,7 @@ export const getNavigationPath = (
     return `${generatePath(basePath, {
         ...params,
         resourceType: _resourceType,
-        [paramToCheck]: !isBaseEnv ? id : undefined,
+        [paramToCheck]: !isBaseEnv ? id : null,
     })}${isEnvIdChanged && !isBaseEnv ? `/${resourceType}${additionalPath}` : `${additionalPath}`}`
 }
 
@@ -78,12 +84,9 @@ export const getNavigationPath = (
  * Returns an object containing the appropriate icon, icon properties and tooltip properties based on the resource configuration state.
  *
  * @param configState - The state of the resource configuration.
- * @returns An object containing the icon, props and tooltipProps if conditions are met, otherwise undefined.
+ * @returns An object containing the icon, props and tooltipProps if conditions are met, otherwise null.
  */
-const getIcon = (
-    configState: ResourceConfigState,
-    isProtected: boolean,
-): CollapsibleListItem['iconConfig'] | undefined => {
+const getIcon = (configState: ResourceConfigState, isProtected: boolean): CollapsibleListItem['iconConfig'] => {
     if (isProtected && configState !== ResourceConfigState.Published && configState !== ResourceConfigState.Unnamed) {
         return {
             Icon: configState === ResourceConfigState.ApprovalPending ? ICStamp : ICEditFile,
@@ -98,7 +101,7 @@ const getIcon = (
         }
     }
 
-    return undefined
+    return null
 }
 
 const SUBTITLE: Record<ResourceConfigStage, string> = {
@@ -123,7 +126,7 @@ export const getEnvConfiguration = (
         (acc, curr) => ({
             ...acc,
             [curr]:
-                curr === 'deploymentTemplate'
+                curr === EnvConfigObjectKey.DeploymentTemplate
                     ? {
                           configState: envConfig[curr].configState,
                           title: 'Deployment Template',
@@ -145,7 +148,9 @@ export const getEnvConfiguration = (
                               basePath,
                               params,
                               id,
-                              curr === 'configmaps' ? EnvResourceType.ConfigMap : EnvResourceType.Secret,
+                              curr === EnvConfigObjectKey.ConfigMap
+                                  ? EnvResourceType.ConfigMap
+                                  : EnvResourceType.Secret,
                               name,
                               paramToCheck,
                           ),
@@ -154,7 +159,7 @@ export const getEnvConfiguration = (
                       })),
         }),
         {
-            deploymentTemplate: undefined,
+            deploymentTemplate: null,
             configmaps: [],
             secrets: [],
         },
@@ -171,5 +176,5 @@ export const resourceTypeBasedOnPath = (pathname: string) => {
         return EnvResourceType.DeploymentTemplate
     }
 
-    return undefined
+    return null
 }

@@ -404,11 +404,11 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
 export const transformSecretDataJSON = (jsonObj: any[]) => {
     jsonObj.map((j) => {
         const temp = {
-            isBinary: undefined,
-            fileName: undefined,
-            name: undefined,
-            property: undefined,
-            value: undefined,
+            isBinary: null,
+            fileName: null,
+            name: null,
+            property: null,
+            value: null,
         }
         temp.isBinary = j.isBinary
         if (j.key) {
@@ -430,7 +430,7 @@ const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapActio
             secretStore: json.secretStore,
             secretStoreRef: json.secretStoreRef,
             refreshInterval: json.refreshInterval,
-            esoData: undefined,
+            esoData: null,
         }
         if (Array.isArray(json?.esoData)) {
             payload.esoData = json.esoData

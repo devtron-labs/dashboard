@@ -18,6 +18,7 @@ import { hasApproverAccess, importComponentFromFELibrary } from '@Components/com
 import { prepareHistoryData } from '@Components/app/details/cdDetails/service'
 import { DeploymentHistoryDetail } from '@Components/app/details/cdDetails/cd.type'
 import {
+    CMSecretComponentName,
     CMSecretComponentType,
     CMSecretProtectedTab,
     DraftState,
@@ -140,7 +141,7 @@ export const ProtectedConfigMapSecretDetails = ({
             }
         }
 
-        return undefined
+        return null
     }
 
     const getCurrentConfig = (): DeploymentHistoryDetail => {
@@ -295,7 +296,7 @@ export const ProtectedConfigMapSecretDetails = ({
             cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN
         ) {
             return renderEmptyMessage(
-                `This ${componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'} will be deleted on approval`,
+                `This ${componentType === CMSecretComponentType.ConfigMap ? CMSecretComponentName.ConfigMap : CMSecretComponentName.Secret} will be deleted on approval`,
             )
         }
         return (

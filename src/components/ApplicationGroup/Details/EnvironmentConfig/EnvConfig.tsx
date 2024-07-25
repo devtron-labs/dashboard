@@ -69,7 +69,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
             initDataResults[0].value?.result?.length
         ) {
             const configProtectionMap = initDataResults[1].value?.result ?? {}
-            const _appList = (initDataResults[0]?.value?.result ?? []).map((appData) => ({
+            const _appList = initDataResults[0].value.result.map((appData) => ({
                 ...appData,
                 isProtected: configProtectionMap[appData.id] ?? false,
             }))

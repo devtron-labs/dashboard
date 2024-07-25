@@ -10,7 +10,12 @@ import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/Collapsibl
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
-import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvResourceType } from '../AppConfig.types'
+import {
+    EnvConfigRouteParams,
+    EnvConfigurationsNavProps,
+    EnvResourceType,
+    EnvConfigObjectKey,
+} from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
 import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
 
@@ -38,7 +43,8 @@ export const EnvConfigurationsNav = ({
     const { envId } = params
 
     // STATES
-    const [expandedIds, setExpandedIds] = useState<Record<EnvResourceType, boolean>>()
+    const [expandedIds, setExpandedIds] =
+        useState<Record<Exclude<EnvResourceType, EnvResourceType.DeploymentTemplate>, boolean>>()
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
         deploymentTemplate: null,
         configmaps: [],
@@ -59,7 +65,9 @@ export const EnvConfigurationsNav = ({
     const resourceType = resourceTypeBasedOnPath(pathname)
 
     const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) =>
-        _updatedEnvConfig[resourceType === EnvResourceType.ConfigMap ? 'configmaps' : 'secrets'].push({
+        _updatedEnvConfig[
+            resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
+        ].push({
             title: 'Unnamed',
             href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
             configState: ResourceConfigState.Unnamed,
@@ -81,9 +89,12 @@ export const EnvConfigurationsNav = ({
 
             if (pathname.includes('/create')) {
                 addUnnamedNavLink(newEnvConfig)
+            } else {
+                setExpandedIds({
+                    configmap: !!envConfig.config.configmaps.length,
+                    secrets: !!envConfig.config.secrets.length,
+                })
             }
-
-            setExpandedIds((prevState) => ({ ...prevState, [resourceType]: true }))
             setUpdatedEnvConfig(newEnvConfig)
         }
     }, [envConfig, pathname])
@@ -107,7 +118,13 @@ export const EnvConfigurationsNav = ({
 
     /** Handles collapse button click. */
     const onCollapseBtnClick = (id: string) => {
-        setExpandedIds({ ...expandedIds, [id]: !expandedIds?.[id] })
+        const updatedExpandedIds = { ...expandedIds }
+        if (updatedExpandedIds[id]) {
+            delete updatedExpandedIds[id]
+        } else {
+            updatedExpandedIds[id] = true
+        }
+        setExpandedIds(updatedExpandedIds)
     }
 
     /**
@@ -194,7 +211,6 @@ export const EnvConfigurationsNav = ({
                 </NavLink>
                 <ReactSelect<typeof environmentData>
                     classNamePrefix="env-config-selector"
-                    isSearchable={false}
                     isClearable={false}
                     value={environmentData}
                     options={envOptions}

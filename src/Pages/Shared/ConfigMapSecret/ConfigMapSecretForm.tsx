@@ -67,6 +67,7 @@ import {
     KeyValueValidated,
     CMSecretComponentType,
     CMSecretYamlData,
+    CMSecretComponentName,
 } from './ConfigMapSecret.types'
 import { ConfigMapSecretReducer, initState } from './ConfigMapSecret.reducer'
 import {
@@ -337,7 +338,7 @@ export const ConfigMapSecretForm = React.memo(
 
             if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
                 toast.error(
-                    `Please add ${componentType === CMSecretComponentType.ConfigMap ? 'configmap' : 'secret'} data before saving.`,
+                    `Please add ${componentType === CMSecretComponentType.ConfigMap ? CMSecretComponentName.ConfigMap : CMSecretComponentName.Secret} data before saving.`,
                 )
                 isFormValid = false
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
@@ -385,13 +386,13 @@ export const ConfigMapSecretForm = React.memo(
                 type: state.selectedType,
                 external: state.external,
                 data, // dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
-                roleARN: undefined,
-                externalType: undefined,
-                secretData: undefined,
-                esoSecretData: undefined,
-                mountPath: undefined,
-                subPath: undefined,
-                filePermission: undefined,
+                roleARN: null,
+                externalType: null,
+                secretData: null,
+                esoSecretData: null,
+                mountPath: null,
+                subPath: null,
+                filePermission: null,
             }
             if (
                 (componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
@@ -470,7 +471,7 @@ export const ConfigMapSecretForm = React.memo(
                                 id: id ?? 0,
                                 appId: +appId,
                                 configData: [payloadData],
-                                environmentId: undefined,
+                                environmentId: null,
                             }
                             if (envId) {
                                 _draftPayload.environmentId = +envId
@@ -504,7 +505,7 @@ export const ConfigMapSecretForm = React.memo(
                         id: id ?? 0,
                         appId: +appId,
                         configData: [payloadData],
-                        environmentId: undefined,
+                        environmentId: null,
                     }
                     if (envId) {
                         _draftPayload.environmentId = +envId

@@ -206,6 +206,12 @@ export enum EnvResourceType {
     DeploymentTemplate = 'deployment-template',
 }
 
+export enum EnvConfigObjectKey {
+    ConfigMap = 'configmaps',
+    Secret = 'secrets',
+    DeploymentTemplate = 'deploymentTemplate',
+}
+
 export interface EnvironmentOptionType {
     name: string
     id: number

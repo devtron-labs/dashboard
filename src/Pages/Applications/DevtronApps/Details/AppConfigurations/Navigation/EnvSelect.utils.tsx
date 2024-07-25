@@ -21,6 +21,8 @@ export const envSelectStyles = getCommonSelectStyle({
         ...commonSelectStyles.control(base, state),
         border: 'none',
         flexGrow: 1,
+        maxWidth: '200px',
+        flexWrap: 'nowrap',
         backgroundColor: 'transparent',
         minHeight: '0',
         justifyContent: 'flex-start',
