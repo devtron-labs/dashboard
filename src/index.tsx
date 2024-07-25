@@ -148,6 +148,7 @@ if (!window || !window._env_) {
         HIDE_RESOURCE_WATCHER: true,
         ORGANIZATION_NAME: '',
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
+        FEATURE_STEP_WISE_LOGS_ENABLE: false,
     }
 }
 
