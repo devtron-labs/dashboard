@@ -26,6 +26,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -41,7 +42,14 @@ import {
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS } from '../../config'
+import {
+    PATTERNS,
+    CHART_REPO_TYPE,
+    CHART_REPO_AUTH_TYPE,
+    CHART_REPO_LABEL,
+    URLS,
+    HEADER_TEXT,
+} from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -78,22 +86,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     }
     return (
         <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-            <h2 className="form__title" data-testid="chart-repository-heading">
-                Chart Repository
-            </h2>
-            <p className="form__subtitle">
-                Manage your organization’s chart repositories.
-                <span>
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                    >
-                        LEARN_MORE
-                    </a>
-                </span>
-            </p>
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.CHART_REPOSITORY.title}
+                renderDescriptionContent={() => HEADER_TEXT.CHART_REPOSITORY.description}
+                docLink={HEADER_TEXT.CHART_REPOSITORY.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="chart-repository-heading"
+            />
             <CollapsedList
                 id={null}
                 default
@@ -114,7 +114,14 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map(
                     (chart) =>
-                        chart.id != 1 && <CollapsedList {...chart} allowInsecureConnection={chart.allow_insecure_connection} key={chart.id || getRandomInt()} reload={reload} />,
+                        chart.id != 1 && (
+                            <CollapsedList
+                                {...chart}
+                                allowInsecureConnection={chart.allow_insecure_connection}
+                                key={chart.id || getRandomInt()}
+                                reload={reload}
+                            />
+                        ),
                 )}
         </section>
     )
@@ -143,9 +150,8 @@ const CollapsedList = ({
     }
 
     const handleCollapse = (e) => {
-            e.stopPropagation()
-            toggleCollapse((t) => !t)
-       
+        e.stopPropagation()
+        toggleCollapse((t) => !t)
     }
 
     return (
@@ -233,7 +239,7 @@ const ChartForm = ({
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
     })
-    const [allowInsecure,setAllowInsecure] = useState(allowInsecureConnection)
+    const [allowInsecure, setAllowInsecure] = useState(allowInsecureConnection)
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: '' },
@@ -496,14 +502,14 @@ const ChartForm = ({
                     </>
                 )}
 
-                        <Checkbox
-                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
-                            isChecked={allowInsecure}
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={allowInsecureConnectionHandler}
-                        >
-                            <div className="ml-1">Allow Insecure Connection</div>
-                        </Checkbox>
+                <Checkbox
+                    rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                    isChecked={allowInsecure}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={allowInsecureConnectionHandler}
+                >
+                    <div className="ml-1">Allow Insecure Connection</div>
+                </Checkbox>
             </div>
             <div className={`${!id ? 'form__row--one-third' : ''} pb-16 pt-16 dc__border-top`}>
                 {!id && (
