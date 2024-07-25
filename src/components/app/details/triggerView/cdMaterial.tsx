@@ -65,6 +65,7 @@ import {
     usePrompt,
     getIsRequestAborted,
     GitCommitInfoGeneric,
+    ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -328,6 +329,11 @@ const CDMaterial = ({
     }, [])
 
     useEffect(() => {
+        if (materialsError) {
+            showError(materialsError)
+            return
+        }
+
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
@@ -2024,8 +2030,6 @@ const CDMaterial = ({
     }
 
     if (materialsError) {
-        showError(materialsError)
-
         return (
             <>
                 {!isFromBulkCD && (
@@ -2037,7 +2041,7 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <Reload reload={reloadMaterialsPropagation} />
+                <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
             </>
         )
     }
