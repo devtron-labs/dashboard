@@ -993,10 +993,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.11.tgz#6b3e4d19cdff47c6711dc9ed3c31028ff3b17d9f"
-  integrity sha512-InDiiEyQ6YdkQNIpkdRna70p+2dXm5VHIN+B+evlMChyI8BIb4mAuWgetpDyRAt9tfHvhII83X3bjyuztn/06w==
+"@devtron-labs/devtron-fe-common-lib@0.1.11-beta-2":
+  version "0.1.11-beta-2"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.11-beta-2.tgz#6ac897511cba9709feab119d0ea54742c87f3d29"
+  integrity sha512-keeDvEH5Oz5x8BQteJlV0jj6O+mNWUfBM62fWazDVsLM/CcT1gyMPfFW2v2T+ZP7AQNqW/Fs8qNzwpSBeB+1Sg==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -1375,12 +1375,12 @@
 
 "@jsep-plugin/assignment@^1.2.1":
   version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@jsep-plugin/assignment/-/assignment-1.2.1.tgz#07277bdd7862451a865d391e2142efba33f46c9b"
+  resolved "https://registry.npmjs.org/@jsep-plugin/assignment/-/assignment-1.2.1.tgz"
   integrity sha512-gaHqbubTi29aZpVbBlECRpmdia+L5/lh2BwtIJTmtxdbecEyyX/ejAOg7eQDGNvGOUmPY7Z2Yxdy9ioyH/VJeA==
 
 "@jsep-plugin/regex@^1.0.3":
   version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@jsep-plugin/regex/-/regex-1.0.3.tgz#3aeaa2e5fa45d89de116aeafbfa41c95935b7f6d"
+  resolved "https://registry.npmjs.org/@jsep-plugin/regex/-/regex-1.0.3.tgz"
   integrity sha512-XfZgry4DwEZvSFtS/6Y+R48D7qJYJK6R9/yJFyUFHCIUMEEHuJ4X95TDgJp5QkmzfLYvapMPzskV5HpIDrREug==
 
 "@nodelib/fs.scandir@2.1.5":
@@ -4784,7 +4784,7 @@ jsdom-worker@^0.2.1:
 
 jsep@^1.3.8:
   version "1.3.9"
-  resolved "https://registry.yarnpkg.com/jsep/-/jsep-1.3.9.tgz#8ce42df80ee9c1b39e52d0dd062a465342f35440"
+  resolved "https://registry.npmjs.org/jsep/-/jsep-1.3.9.tgz"
   integrity sha512-i1rBX5N7VPl0eYb6+mHNp52sEuaS2Wi8CDYx1X5sn9naevL78+265XJqy1qENEk7mRKwS06NHpUqiBwR7qeodw==
 
 jsesc@^2.5.1:
@@ -4871,7 +4871,7 @@ jsonfile@^6.0.1:
 
 jsonpath-plus@^9.0.0:
   version "9.0.0"
-  resolved "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-9.0.0.tgz#bb8703ee481531142bca8dee9a42fe72b8358a7f"
+  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-9.0.0.tgz"
   integrity sha512-bqE77VIDStrOTV/czspZhTn+o27Xx9ZJRGVkdVShEtPoqsIx5yALv3lWVU6y+PqYvWPJNWE7ORCQheQkEe0DDA==
   dependencies:
     "@jsep-plugin/assignment" "^1.2.1"
