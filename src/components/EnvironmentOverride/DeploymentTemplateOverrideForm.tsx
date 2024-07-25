@@ -34,6 +34,7 @@ import { DeleteOverrideDialog } from '../deploymentConfig/DeploymentTemplateView
 import DeploymentTemplateReadOnlyEditorView from '../deploymentConfig/DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from '../deploymentConfig/DeploymentTemplateView/DeploymentConfigToolbar'
 import { handleConfigProtectionError } from '../deploymentConfig/DeploymentConfig.utils'
+import { applyCompareDiffOfTempFormDataOnOriginalData } from '@Components/deploymentConfig/utils'
 
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
@@ -63,7 +64,6 @@ export default function DeploymentTemplateOverrideForm({
     setManifestDataRHS,
     setManifestDataLHS,
     convertVariablesOverride,
-    isSuperAdmin,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -96,6 +96,16 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const toggleYamlMode = (yamlMode: boolean) => {
+        if (!state.yamlMode && yamlMode) {
+            // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
+            try {
+                applyCompareDiffOfTempFormDataOnOriginalData(
+                    getCodeEditorValueForReadOnly(true),
+                    getCodeEditorValue(false),
+                    editorOnChange,
+                )
+            } catch {}
+        }
         dispatch({
             type: DeploymentConfigStateActionTypes.yamlMode,
             payload: yamlMode,
@@ -118,15 +128,19 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
-        let valuesOverride = obj || state.duplicate
+        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
+            getCodeEditorValueForReadOnly(true),
+            getCodeEditorValue(false),
+            editorOnChange,
+        )
 
-        if (hideLockedKeys && valuesOverride === obj) {
+        if (hideLockedKeys && typeof valuesOverride === 'object') {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
         }
 
         if (state.showLockedTemplateDiff) {
             const edited = YAML.parse(state.tempFormData)
-            const unedited = YAML.parse(state.data)
+            const unedited = YAML.parse(getCodeEditorValueForReadOnly(true))
             const documentsNPatches = {
                 edited,
                 unedited,
@@ -286,6 +300,7 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const changeEditorMode = (): void => {
+        hideLockKeysToggled.current = true
         toggleYamlMode(!state.yamlMode)
     }
 
@@ -345,12 +360,10 @@ export default function DeploymentTemplateOverrideForm({
     }
 
     const handleTabSelection = (index: number) => {
-        if (state.unableToParseYaml) {
-            return
-        }
-
         // setting true to update codeditor values with current locked keys checkbox value
-        hideLockKeysToggled.current = true
+        if (state.selectedTabIndex !== index) {
+            hideLockKeysToggled.current = true
+        }
 
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedTabIndex,
@@ -359,17 +372,28 @@ export default function DeploymentTemplateOverrideForm({
 
         setConvertVariables(false)
 
+        // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
+        try {
+            applyCompareDiffOfTempFormDataOnOriginalData(
+                getCodeEditorValueForReadOnly(true),
+                getCodeEditorValue(false),
+                editorOnChange,
+            )
+        } catch {}
+
         switch (index) {
             case 1:
             case 3:
                 setIsValuesOverride(true)
-                toggleYamlMode(isGuiModeRef.current)
                 if (state.selectedTabIndex === 2) {
                     handleComparisonClick()
+                    toggleYamlMode(isGuiModeRef.current)
                 }
                 break
             case 2:
-                isGuiModeRef.current = state.yamlMode
+                if (state.selectedTabIndex !== 2) {
+                    isGuiModeRef.current = state.yamlMode
+                }
                 if (!state.openComparison) {
                     if (!state.yamlMode) {
                         if ((!state.latestDraft && state.selectedTabIndex === 1) || state.selectedTabIndex === 3) {
@@ -435,16 +459,16 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToDeleteOverrideDraft = () => prepareDataToSave(true)
 
-    const getCodeEditorValueForReadOnly = () => {
+    const getCodeEditorValueForReadOnly = (fetchUnEdited?: boolean) => {
         if (state.publishedState) {
             if (
                 state.publishedState.isOverride &&
-                (state.selectedCompareOption?.id !== -1 || state.selectedTabIndex === 1)
+                (state.selectedCompareOption?.environmentId !== -1 || state.selectedTabIndex === 1)
             ) {
                 return YAMLStringify(state.publishedState.environmentConfig.envOverrideValues)
             }
         } else if (
-            state.selectedCompareOption?.id === Number(envId) &&
+            (state.selectedCompareOption?.environmentId === Number(envId) || fetchUnEdited) &&
             state.data.environmentConfig.envOverrideValues
         ) {
             return YAMLStringify(state.data.environmentConfig.envOverrideValues)
@@ -499,7 +523,7 @@ export default function DeploymentTemplateOverrideForm({
         return manifestEditorValue
     }
 
-    const getCodeEditorValue = (readOnlyPublishedMode: boolean) => {
+    const getCodeEditorValue = (readOnlyPublishedMode: boolean, notTempFormData = false) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
             codeEditorValue = getCodeEditorValueForReadOnly()
@@ -508,7 +532,7 @@ export default function DeploymentTemplateOverrideForm({
                 state.latestDraft?.action !== 3 || state.showDraftOverriden
                     ? state.draftValues
                     : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData) {
+        } else if (state.tempFormData && !notTempFormData) {
             codeEditorValue = state.tempFormData
         } else {
             const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
@@ -552,6 +576,8 @@ export default function DeploymentTemplateOverrideForm({
                     isEnvOverride
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     hideLockedKeys={hideLockedKeys}
+                    uneditedDocument={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
+                    editedDocument={isValuesOverride ? getCodeEditorValue(true) : manifestDataRHS}
                 />
             )
         }
@@ -582,6 +608,9 @@ export default function DeploymentTemplateOverrideForm({
                     !isValuesOverride ||
                     convertVariablesOverride
                 }
+                uneditedDocument={getCodeEditorValue(false, true)}
+                // FIXME: make sure that the value did not change from hide locked keys logic
+                editedDocument={getCodeEditorValue(false)}
                 globalChartRefId={state.data.globalChartRefId}
                 handleOverride={handleOverride}
                 isValues={isValuesOverride}
@@ -609,7 +638,13 @@ export default function DeploymentTemplateOverrideForm({
         >
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <div className="variables-widget-position">
-                    <FloatingVariablesSuggestions zIndex={1004} appId={appId} envId={envId} clusterId={clusterId} hideObjectVariables={false} />
+                    <FloatingVariablesSuggestions
+                        zIndex={1004}
+                        appId={appId}
+                        envId={envId}
+                        clusterId={clusterId}
+                        hideObjectVariables={false}
+                    />
                 </div>
             )}
 
@@ -617,6 +652,7 @@ export default function DeploymentTemplateOverrideForm({
                 isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
                 codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
+                isValues={isValuesOverride}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
@@ -643,7 +679,6 @@ export default function DeploymentTemplateOverrideForm({
                 convertVariables={convertVariablesOverride}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
-                isSuperAdmin={isSuperAdmin}
                 checkForProtectedLockedChanges={checkForProtectedLockedChanges}
                 showLockedDiffForApproval={showLockedDiffForApproval}
                 handleSaveChanges={handleSaveChanges}
@@ -737,7 +772,7 @@ export default function DeploymentTemplateOverrideForm({
                             YAML.parse(getCodeEditorValue(false)),
                             removedPatches.current,
                         ),
-                        unedited: YAML.parse(getCodeEditorValueForReadOnly()),
+                        unedited: YAML.parse(getCodeEditorValueForReadOnly(true)),
                     }}
                     lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
                     disableSaveEligibleChanges={disableSaveEligibleChanges}

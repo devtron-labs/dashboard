@@ -21,9 +21,10 @@ import {
     showError,
     ButtonWithLoader,
     YAMLStringify,
-    InfoIconTippy
+    InfoIconTippy,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
@@ -37,7 +38,6 @@ import {
     ResponsePayload,
 } from './nodeDetail.type'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import CodeEditor from '../../../../CodeEditor/CodeEditor'
 import {
     convertToOptionsList,
     DevtronSwitch as Switch,
@@ -53,7 +53,7 @@ import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
-import { SwitchItemValues } from '../../../../../config'
+import { DOCUMENTATION, SwitchItemValues } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -179,7 +179,9 @@ const EphemeralContainerDrawer = ({
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        iconClassName="icon-dim-16 fcn-6 ml-8"
+                        iconClassName="icon-dim-20 fcn-6 ml-8"
+                        documentationLink={DOCUMENTATION.APP_EPHEMERAL_CONTAINER}
+                        documentationLinkText="View Documentation"
                     />
                 </h2>
                 <button
