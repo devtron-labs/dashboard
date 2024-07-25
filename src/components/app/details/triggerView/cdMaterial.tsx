@@ -35,7 +35,6 @@ import {
     useAsync,
     genericCDMaterialsService,
     CDMaterialServiceEnum,
-    Reload,
     useSearchString,
     handleUTCTime,
     ServerErrors,
