@@ -17,6 +17,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import { toast } from 'react-toastify'
 import CreatePluginFormContent from './CreatePluginFormContent'
 import {
     CreatePluginFormType,
@@ -58,6 +59,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         CreatePluginFormContentProps['selectedPluginVersions']
     >([])
 
+    // FIXME: Check if abortController is required
     /**
      * @description This method is used to prefill the form with the selected plugin (latest version) details.
      */
@@ -67,6 +69,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         try {
             const { id: parentPluginId } = clonedPluginForm
             setArePluginDetailsLoading(true)
+            // TODO: Can check pluginDataStore before making the API call
             const {
                 pluginStore: { parentPluginStore, pluginVersionStore },
             } = await getPluginsDetail({
@@ -109,6 +112,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         }
     }
 
+    // TODO: Can validate in case of duplicate name
     const handleChange: CreatePluginHandleChangeType = async ({ action, payload }) => {
         let clonedPluginForm = structuredClone(pluginForm)
         let clonedPluginFormError = structuredClone(pluginFormError)
@@ -186,8 +190,26 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         })
     }
 
-    // TODO: Add checks for loading state as well
-    const handleSubmit = () => {}
+    const handleSubmit = async () => {
+        if (Object.values(pluginFormError).some((error) => !!error)) {
+            toast.error('Please fix the errors before saving the plugin')
+            return
+        }
+
+        // Checking required fields
+        if (!pluginForm.name || !pluginForm.pluginIdentifier || !pluginForm.pluginVersion) {
+            setPluginFormError({
+                ...pluginFormError,
+                name: validateDisplayName(pluginForm.name).message,
+                pluginIdentifier: validateName(pluginForm.pluginIdentifier).message,
+                pluginVersion: validatePluginVersion(pluginForm.pluginVersion).message,
+            })
+            toast.error('Please fill the required fields')
+            return
+        }
+
+        handleClose()
+    }
 
     return (
         <VisibleModal2 close={handleClose}>

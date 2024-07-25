@@ -118,7 +118,6 @@ const CreatePluginFormContent = ({
                     autoFocus
                     placeholder="Select plugin"
                     size={ComponentSizeType.large}
-                    // FIXME: In case it is disabled, working fine but no options reload moves away from the input field otherwise if i don't disable it.
                     isDisabled={isLoadingParentPluginList}
                     onKeyDown={stopPropagation}
                     onChange={handlePluginSelection}
@@ -206,7 +205,7 @@ const CreatePluginFormContent = ({
     const renderMultiValueChip = (props) => <MultiValueChipContainer validator={getIsTagValid} {...props} />
 
     const renderExistingPluginVersionList = () => (
-        <div className="flexbox-col dc__gap-4">
+        <div className="flexbox-col dc__gap-4 p-12 mxh-350 dc__overflow-scroll">
             {selectedPluginVersions.map((version) => (
                 <div className="flexbox dc__align-items-center dc__gap-4">
                     <ICTag className="icon-dim-16 dc__no-shrink" />
@@ -224,14 +223,14 @@ const CreatePluginFormContent = ({
 
                     <TippyCustomized
                         theme={TippyTheme.white}
-                        Icon={ICHelp}
                         className="w-300"
-                        heading="Existing versions"
-                        additionalContent={renderExistingPluginVersionList()}
+                        placement="bottom"
+                        Icon={ICHelp}
                         iconClass="fcv-5"
-                        showCloseButton
+                        heading="Existing versions"
                         trigger="click"
                         interactive
+                        additionalContent={renderExistingPluginVersionList()}
                     >
                         <button
                             className="flexbox dc__gap-4 dc__align-items-center p-0-imp dc__transparent"
@@ -306,6 +305,7 @@ const CreatePluginFormContent = ({
                     error={pluginDetailsError}
                     genericSectionErrorProps={{
                         reload: handlePluginDetailsReload,
+                        rootClassName: 'flex-grow-1',
                     }}
                 >
                     <div className="dc__grid-row-one-half dc__column-gap-12">
@@ -332,6 +332,7 @@ const CreatePluginFormContent = ({
                             }
                             placeholder="Eg. 1.0.0"
                             required
+                            labelClassName="w-100"
                         />
 
                         {/* Documentation Link */}

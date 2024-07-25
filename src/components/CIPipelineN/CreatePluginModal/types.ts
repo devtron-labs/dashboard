@@ -4,6 +4,7 @@ import {
     PluginDataStoreType,
     PluginDetailType,
     ServerErrors,
+    StepType,
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -146,7 +147,15 @@ export interface CreatePluginFormFieldProps
     extends Pick<CreatePluginFormContentProps, 'handleChange'>,
         Pick<
             CustomInputProps,
-            'helperText' | 'autoFocus' | 'placeholder' | 'label' | 'value' | 'error' | 'required' | 'disabled'
+            | 'helperText'
+            | 'autoFocus'
+            | 'placeholder'
+            | 'label'
+            | 'value'
+            | 'error'
+            | 'required'
+            | 'disabled'
+            | 'labelClassName'
         > {
     action: CreatePluginSingleInputActionType
     useTextArea?: boolean
@@ -160,4 +169,42 @@ export interface InputVariableItemProps
     extends Pick<CreatePluginInputVariableContainerProps, 'handleChange'>,
         Pick<VariableType, 'name' | 'allowEmptyValue'> {
     index: number
+}
+
+// TODO: Have to change key names
+interface CreatePluginPayloadVariableType extends VariableType {}
+
+interface CreatePluginPayloadPluginStepsType extends Pick<StepType, 'outputDirectoryPath'> {
+    // Should end with s
+    pluginStepVariable: CreatePluginPayloadVariableType[]
+    // TODO: Have to change key names
+    pluginPipelineScript: StepType['inlineStepDetail']
+}
+
+interface CreatePluginPayloadDetailedPluginVersionDataType {
+    // Do we need it?
+    name: string
+    description: string
+    tags: string[]
+    docLink: string
+    pluginVersion: string
+    pluginSteps: CreatePluginPayloadPluginStepsType
+}
+
+interface CreatePluginPayloadParentPluginType {
+    id: number
+    name: string
+    // FIXME: should be same name as in pluginIdentifier
+    identifier: string
+    // Should i send it?
+    description: string
+    icon: string
+
+    pluginVersions: {
+        detailedPluginVersionData: CreatePluginPayloadDetailedPluginVersionDataType[]
+    }
+}
+
+export interface CreatePluginPayloadType {
+    parentPlugins: CreatePluginPayloadParentPluginType[]
 }

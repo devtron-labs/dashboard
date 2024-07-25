@@ -18,6 +18,7 @@ const CreatePluginFormField = ({
      * Not showing helperText in textarea is not required as of now
      */
     helperText,
+    labelClassName,
 }: CreatePluginFormFieldProps) => {
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
@@ -26,7 +27,10 @@ const CreatePluginFormField = ({
     if (useTextArea) {
         return (
             <div className="flexbox-col dc__gap-6 w-100 dc__align-start">
-                <label htmlFor={action} className={`m-0 fs-13 fw-4 lh-20 cn-7 ${required ? 'dc__required-field' : ''}`}>
+                <label
+                    htmlFor={action}
+                    className={`m-0 fs-13 fw-4 lh-20 cn-7 ${required ? 'dc__required-field' : ''} ${labelClassName || ''}`}
+                >
                     {label}
                 </label>
 
@@ -68,6 +72,7 @@ const CreatePluginFormField = ({
             autoFocus={autoFocus}
             helperText={helperText}
             rootClassName="h-36"
+            labelClassName={labelClassName}
         />
     )
 }
