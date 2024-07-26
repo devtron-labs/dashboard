@@ -966,6 +966,10 @@ node-details-full-screen
                     : DEFAULT_CONTAINER_NAME.DEVTRON_DEBUG_TERMINAL,
             },
             {
+                type: TerminalWrapperType.UPLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: !isPodCreated,
+            },
+            {
                 type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
                 hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
                 showInfoTippy: true,
