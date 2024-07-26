@@ -53,7 +53,7 @@ import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
-import { DEFAULT_CONTAINER_NAME, SwitchItemValues } from '../../../../../config'
+import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -179,7 +179,9 @@ const EphemeralContainerDrawer = ({
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
-                        iconClassName="icon-dim-16 fcn-6 ml-8"
+                        iconClassName="icon-dim-20 fcn-6 ml-8"
+                        documentationLink={DOCUMENTATION.APP_EPHEMERAL_CONTAINER}
+                        documentationLinkText="View Documentation"
                     />
                 </h2>
                 <button

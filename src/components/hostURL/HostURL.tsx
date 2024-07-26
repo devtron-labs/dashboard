@@ -22,13 +22,14 @@ import {
     ErrorScreenNotAuthorized,
     InfoColourBar,
     CustomInput,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type'
-import { NO_HOST_URL, ViewType } from '../../config'
+import { HEADER_TEXT, NO_HOST_URL, ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg'
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service'
@@ -191,12 +192,14 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         }
         return (
             <section className="global-configuration__component" data-testid="section-host-url">
-                <h2 className="form__title" data-testid="host-url-heading">
-                    Host URL
-                </h2>
-                <p className="form__subtitle">
-                    Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
-                </p>
+                <FeatureTitleWithInfo
+                    title={HEADER_TEXT.HOST_URL.title}
+                    renderDescriptionContent={() => HEADER_TEXT.HOST_URL.description}
+                    docLink={HEADER_TEXT.HOST_URL.docLink}
+                    showInfoIconTippy
+                    additionalContainerClasses="mb-20"
+                    dataTestId="host-url-heading"
+                />
                 <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url" onSubmit={this.onSave}>
                     <InfoColourBar
                         classname="hosturl__description m-20"
