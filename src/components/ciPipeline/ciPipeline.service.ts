@@ -339,14 +339,12 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
         preBuildStage,
         postBuildStage,
         scanEnabled: formData.scanEnabled,
-        ...(shouldSendDockerArgs && {
-            dockerArgs: formData.args
-                .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
-                .reduce((agg, curr) => {
-                    agg[curr.key] = curr.value
-                    return agg
-                }, {}),
-        }),
+        dockerArgs: shouldSendDockerArgs ? formData.args
+            .filter((arg) => arg.key && arg.key.length && arg.value && arg.value.length)
+            .reduce((agg, curr) => {
+                agg[curr.key] = curr.value
+                return agg
+            }, {}) : {},
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
         dockerConfigOverride: formData.isDockerConfigOverridden
             ? getDockerConfigOverrideData(formData.dockerConfigOverride)
