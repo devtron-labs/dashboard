@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext, Fragment, useEffect } from 'react'
+import { useState, useContext, Fragment, useEffect } from 'react'
 import Tippy from '@tippyjs/react'
+import { VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
@@ -73,7 +74,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                     </div>
                     {formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail[
                         type === PluginVariableType.INPUT ? 'inputVariables' : 'outputVariables'
-                    ]?.map((variable, index) => {
+                    ]?.map((variable: VariableType, index) => {
                         const errorObj =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex]?.pluginRefStepDetail
                                 .inputVariables[index]
@@ -97,7 +98,15 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                             data-testid={`${variable.name}-dropdown`}
                                             className="fs-13 fw-4 lh-28 dc__ellipsis-right"
                                         >
-                                            <span className="text-underline-dashed">{variable.name}</span>
+                                            <span
+                                                className={`text-underline-dashed ${
+                                                    type === PluginVariableType.INPUT && !variable.allowEmptyValue
+                                                        ? 'dc__required-field'
+                                                        : ''
+                                                }`}
+                                            >
+                                                {variable.name}
+                                            </span>
                                         </div>
                                     </Tippy>
                                 ) : (

@@ -4556,11 +4556,7 @@ textarea::placeholder {
 }
 
 .dc__hover-border-n1:hover {
-    border: 1px solid var(--N100);
-
-    &--imp {
-        border: 1px solid var(--N100) !important;
-    }
+    border: 1px solid var(--N100) !important;
 }
 
 .placeholder-cn5::placeholder {

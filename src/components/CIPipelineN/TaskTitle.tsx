@@ -26,7 +26,7 @@ const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayNam
                         backgroundColorClass="bcg-5"
                         iconSizeClass="icon-dim-8"
                     />
-                    <span className="cg-5 fs-12 fw-5 lh-16">New version available</span>
+                    <span className="cg-5 fs-12 fw-6 lh-16">New version available</span>
                 </div>
             </>
         )}

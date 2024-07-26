@@ -57,9 +57,9 @@ const PluginVersionSelect = ({ handlePluginVersionChange }: PluginVersionSelectP
             {!isLatest && (
                 <>
                     <div className="dc__border-right--n1 h-16" />
-                    <div className="flexbox dc__gap-4">
+                    <div className="flexbox dc__gap-6 dc__align-items-center">
                         <ICUpdateAnimated className="dc__no-shrink icon-dim-14" />
-                        <span className="cg-6 fs-12 fw-6 lh-16">New version available</span>
+                        <span className="cg-5 fs-12 fw-5 lh-16">New version available</span>
                     </div>
                 </>
             )}

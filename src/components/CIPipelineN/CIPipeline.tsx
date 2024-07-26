@@ -203,6 +203,8 @@ export default function CIPipeline({
         structuredClone(DEFAULT_PLUGIN_DATA_STORE),
     )
     const [availableTags, setAvailableTags] = useState<string[]>([])
+    const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
+    const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
 
     const selectedBranchRef = useRef(null)
 
@@ -222,6 +224,18 @@ export default function CIPipeline({
         setPluginDataStore((prevPluginDataStore) =>
             getUpdatedPluginStore(prevPluginDataStore, parentPluginStore, pluginVersionStore),
         )
+    }
+
+    const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
+        hideScopedVariableWidgetValue: boolean,
+    ) => {
+        setHideScopedVariableWidget(hideScopedVariableWidgetValue)
+    }
+
+    const handleDisableParentModalCloseUpdate: PipelineContext['handleDisableParentModalCloseUpdate'] = (
+        disableParentModalCloseValue: boolean,
+    ) => {
+        setDisableParentModalClose(disableParentModalCloseValue)
     }
 
     const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
@@ -437,7 +451,9 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore))
+                setMandatoryPluginData(
+                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
+                )
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }
@@ -519,6 +535,10 @@ export default function CIPipeline({
     }, [location.pathname, ciPipeline.pipelineType])
 
     const handleClose = () => {
+        if (disableParentModalClose) {
+            return null
+        }
+
         close()
     }
 
@@ -737,7 +757,7 @@ export default function CIPipeline({
                 <NavLink
                     data-testid={`${toLink}-button`}
                     replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
+                    className="tab-list__tab-link fs-13 pt-0 pb-8 flexbox"
                     activeClassName="active"
                     to={toLink}
                     onClick={() => {
@@ -747,7 +767,7 @@ export default function CIPipeline({
                     {isJobCard ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
                     {(showAlert || showWarning) && (
                         <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
+                            className={`icon-dim-16 mr-5 ml-5 mt-2 ${
                                 showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
                             }`}
                         />
@@ -780,6 +800,8 @@ export default function CIPipeline({
             pageState,
             availableTags,
             handleUpdateAvailableTags,
+            handleHideScopedVariableWidgetUpdate,
+            handleDisableParentModalCloseUpdate,
         }
     }, [
         formData,
@@ -917,7 +939,11 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (
+            !window._env_.ENABLE_SCOPED_VARIABLES ||
+            activeStageName === BuildStageVariable.Build ||
+            hideScopedVariableWidget
+        ) {
             return <></>
         }
 

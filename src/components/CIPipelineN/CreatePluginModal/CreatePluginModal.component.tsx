@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     Checkbox,
@@ -35,7 +35,13 @@ import './CreatePluginModal.scss'
 
 const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const { appId } = useParams<CreatePluginModalURLParamsType>()
-    const { formData, selectedTaskIndex, activeStageName } = useContext(pipelineContext)
+    const {
+        formData,
+        selectedTaskIndex,
+        activeStageName,
+        handleHideScopedVariableWidgetUpdate,
+        handleDisableParentModalCloseUpdate,
+    } = useContext(pipelineContext)
     const formInputVariables: VariableType[] =
         formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables
 
@@ -48,6 +54,16 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         () => getAvailablePluginTags(appId ? +appId : null),
         [],
     )
+
+    useEffect(() => {
+        handleDisableParentModalCloseUpdate(true)
+        handleHideScopedVariableWidgetUpdate(true)
+
+        return () => {
+            handleDisableParentModalCloseUpdate(false)
+            handleHideScopedVariableWidgetUpdate(false)
+        }
+    }, [])
 
     const [pluginForm, setPluginForm] = useState<CreatePluginFormType>(getDefaultPluginFormData(formInputVariables))
     const [pluginFormError, setPluginFormError] = useState<CreatePluginFormErrorType>(

@@ -35,7 +35,7 @@ import {
     getPluginsDetail,
     getUpdatedPluginStore,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -241,6 +241,20 @@ export default function CDPipeline({
     const [pluginDataStore, setPluginDataStore] = useState<PluginDataStoreType>(
         structuredClone(DEFAULT_PLUGIN_DATA_STORE),
     )
+    const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
+    const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
+
+    const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
+        hideScopedVariableWidgetValue: boolean,
+    ) => {
+        setHideScopedVariableWidget(hideScopedVariableWidgetValue)
+    }
+
+    const handleDisableParentModalCloseUpdate: PipelineContext['handleDisableParentModalCloseUpdate'] = (
+        disableParentModalCloseValue: boolean,
+    ) => {
+        setDisableParentModalClose(disableParentModalCloseValue)
+    }
 
     const handlePluginDataStoreUpdate: PipelineContext['handlePluginDataStoreUpdate'] = (updatedPluginDataStore) => {
         const { parentPluginStore, pluginVersionStore } = updatedPluginDataStore
@@ -1014,7 +1028,7 @@ export default function CDPipeline({
                 <NavLink
                     data-testid={`${toLink}-button`}
                     replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
+                    className="tab-list__tab-link fs-13 pt-0 pb-8 flexbox"
                     activeClassName="active"
                     to={`${toLink}?${urlParams}`}
                     onClick={() => {
@@ -1024,7 +1038,7 @@ export default function CDPipeline({
                     {CDDeploymentTabText[stageName]}
                     {showAlert && (
                         <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
+                            className={`icon-dim-16 mr-5 ml-5 mt-2 ${
                                 showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
                             }`}
                         />
@@ -1064,6 +1078,9 @@ export default function CDPipeline({
     }
 
     const closePipelineModal = () => {
+        if (disableParentModalClose) {
+            return
+        }
         close()
     }
 
@@ -1101,6 +1118,8 @@ export default function CDPipeline({
             handlePluginDataStoreUpdate,
             availableTags,
             handleUpdateAvailableTags,
+            handleHideScopedVariableWidgetUpdate,
+            handleDisableParentModalCloseUpdate,
         }
     }, [
         formData,
@@ -1276,7 +1295,11 @@ export default function CDPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (
+            !window._env_.ENABLE_SCOPED_VARIABLES ||
+            activeStageName === BuildStageVariable.Build ||
+            hideScopedVariableWidget
+        ) {
             return <></>
         }
 

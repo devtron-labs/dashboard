@@ -58,7 +58,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
     }
 
     return (
-        <div className="flexbox dc__align-items-center dc__content-space py-12 px-20 dc__border-bottom-n1">
+        <div className="flexbox dc__align-items-center dc__content-space py-10 px-20 dc__border-bottom-n1">
             <div className="flexbox dc__gap-8 dc__align-items-center">
                 {renderPluginImageContainer()}
                 <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155 m-0">{name}</h4>
