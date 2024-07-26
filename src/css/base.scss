@@ -4734,3 +4734,13 @@ textarea::placeholder {
         height: 100%;
     }
 }
+
+.dc__grid-full {
+    display: grid;
+    grid-template-columns: 100% 0;
+}
+
+.dc__grid-half {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
