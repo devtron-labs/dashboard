@@ -139,7 +139,8 @@ const CreatePluginFormContent = ({
         )
     }
 
-    const tagOptions: OptionType[] =
+    // Creating list of unique options from available tags and selected tags
+    const availableTagsOptions: OptionType[] =
         availableTags?.map((tag) => ({
             label: tag,
             value: tag,
@@ -149,6 +150,8 @@ const CreatePluginFormContent = ({
         label: tag,
         value: tag,
     }))
+
+    const tagOptions: OptionType[] = [...new Set([...availableTagsOptions, ...selectedTags])]
 
     const renderNoOptionsMessage = () => {
         if (availableTagsError) {
@@ -258,7 +261,7 @@ const CreatePluginFormContent = ({
                 name="create-plugin-control"
             >
                 {Object.values(CreatePluginFormViewType).map((tab) => (
-                    <StyledRadioGroup.Radio value={tab} key={tab} className="fs-12 cn-7 fw-6 lh-20" canSelect={false}>
+                    <StyledRadioGroup.Radio value={tab} key={tab} className="fs-12 cn-7 fw-6 lh-20">
                         {tab}
                     </StyledRadioGroup.Radio>
                 ))}
@@ -357,7 +360,6 @@ const CreatePluginFormContent = ({
                         useTextArea
                     />
 
-                    {/* TODO: Add newly created tag in options as well */}
                     {/* Tags */}
                     <div className="flexbox-col dc__gap-6">
                         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -390,6 +392,7 @@ const CreatePluginFormContent = ({
                             styles={pluginCreatableTagSelectStyles}
                             inputId="select-tags-for-plugin"
                             onKeyDown={stopPropagation}
+                            menuPosition="fixed"
                         />
 
                         {pluginFormError.tags && (

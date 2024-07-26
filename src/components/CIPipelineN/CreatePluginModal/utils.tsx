@@ -70,6 +70,11 @@ export const pluginCreatableTagSelectStyles = {
         ...commonSelectStyles.control(base, state),
         minHeight: '36px',
     }),
+    menuList: (base) => ({
+        ...base,
+        padding: '4px 0px 0px 0px',
+        cursor: 'pointer',
+    }),
     option: (base, state) => ({
         ...base,
         height: '36px',
