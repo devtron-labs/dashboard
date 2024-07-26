@@ -30,7 +30,6 @@ import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils
 import { PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 import { ChangeCIPayloadType, PipelineBuildStageType } from '../workflowEditor/types'
-import { getDockerConfigOverrideData } from './utils'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -346,9 +345,7 @@ function createCIPatchRequest(ciPipeline, formData, isExternalCI: boolean, webho
                 return agg
             }, {}) : {},
         isDockerConfigOverridden: formData.isDockerConfigOverridden,
-        dockerConfigOverride: formData.isDockerConfigOverridden
-            ? getDockerConfigOverrideData(formData.dockerConfigOverride)
-            : {},
+        dockerConfigOverride: formData.isDockerConfigOverridden ? formData.dockerConfigOverride : {},
         defaultTag: formData.defaultTag,
         customTag: {
             tagPattern: formData.customTag ? formData.customTag.tagPattern : '',
