@@ -3208,6 +3208,10 @@ textarea,
     width: 436px;
 }
 
+.w-450 {
+    width: 450px;
+}
+
 .w-476 {
     width: 476px;
 }
@@ -3646,6 +3650,10 @@ textarea,
     max-height: 504px;
 }
 
+.mxh-600 {
+    max-height: 600px;
+}
+
 .mxh-390-imp {
     max-height: 390px !important;
 }
@@ -3710,6 +3718,10 @@ textarea,
 
 .lh-24 {
     line-height: 24px;
+}
+
+.lh-34 {
+    line-height: 34px;
 }
 
 .lh-28 {
@@ -4159,6 +4171,14 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__bg-n0--opacity-0_5 {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &:hover {
+        background-color: var(--N0);
+    }
 }
 
 .dc__hover-n0:hover {
@@ -4718,4 +4738,11 @@ textarea::placeholder {
 
 .dc__modal-gradient {
     background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
+}
+
+.dc__fill-available-space {
+    > * {
+        width: 100%;
+        height: 100%;
+    }
 }
