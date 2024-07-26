@@ -334,7 +334,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <div className={`${this.props.isJobView ? 'mb-12' : ''}`}>
                         <CustomInput
                             ref={(node) => (this._inputAppName = node)}
-                            data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
+                            dataTestid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
                             name="app-name"
                             label={`${this.props.isJobView ? 'Job' : 'App'} Name`}
                             value={this.state.form.appName}
@@ -443,7 +443,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         </div>
                     </>
                 )}
-                <div className="form__row">
+                <div className="form__row" data-testid="select-project">
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
                         classNamePrefix="create-app__select-project"
