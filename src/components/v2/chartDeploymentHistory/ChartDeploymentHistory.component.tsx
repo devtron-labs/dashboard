@@ -25,6 +25,7 @@ import {
     DeploymentAppTypes,
     YAMLStringify,
     DeploymentDetailSteps,
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -36,7 +37,6 @@ import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
 import { DEPLOYMENT_STATUS, Moment12HourFormat, SERVER_ERROR_CODES, URLS } from '../../../config'
-import CodeEditor from '../../CodeEditor/CodeEditor'
 import '../../app/details/cIDetails/ciDetails.scss'
 import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'

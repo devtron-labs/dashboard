@@ -73,7 +73,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [deleting, setDeleting] = useState<boolean>(false)
-    const [errorStatusCode, setErrorStatusCode] = useState(0)
+    const [apiError, setApiError] = useState(null)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -147,6 +147,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
+            setApiError(null)
             const { result } = await getAppMetaInfo(Number(appId))
             if (result) {
                 setAppName(result.appName)
@@ -155,11 +156,8 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 return result
             }
         } catch (err) {
-            if (err['code'] === 403) {
-                setErrorStatusCode(403)
-            } else {
-                showError(err)
-            }
+            setApiError(err)
+            showError(err)
         }
     }
 
@@ -307,12 +305,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         getPermissionCheck({ resourceIds: selectedGroupId.appIds, groupType: FilterParentType.app }, false, true)
     }
 
-    if (errorStatusCode) {
-        return <ErrorScreenManager code={errorStatusCode} />
-    }
-
     if (appListLoading) {
         return <Progressing pageLoader />
+    }
+
+    if (apiError) {
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
