@@ -28,7 +28,6 @@ export default function TriggerResponseModal({
     onClickRetryBuild,
     isVirtualEnv,
     envName,
-    setDownloadPopupOpen,
 }: TriggerResponseModalType) {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
 
@@ -55,7 +54,6 @@ export default function TriggerResponseModal({
                             index={index}
                             isVirtualEnv={isVirtualEnv}
                             envName={envName}
-                            setDownloadPopupOpen={setDownloadPopupOpen}
                         />
                     ))}
             </div>
