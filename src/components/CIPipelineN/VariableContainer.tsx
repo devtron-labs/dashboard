@@ -82,7 +82,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                             <Fragment key={`variable-container-${index}`}>
                                 {type === PluginVariableType.INPUT && variable.description ? (
                                     <Tippy
-                                        className="default-tt"
+                                        className="default-tt dc__word-break"
                                         arrow={false}
                                         content={
                                             <span style={{ display: 'block', width: '185px' }}>
