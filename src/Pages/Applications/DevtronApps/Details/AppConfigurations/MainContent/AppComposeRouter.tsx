@@ -24,7 +24,7 @@ import { URLS } from '@Config/index'
 import { ErrorBoundary, importComponentFromFELibrary } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-import { ConfigMapSecretContainer } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.container'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
 import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
@@ -128,7 +128,7 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isJob
                             isProtected={false}
                             reloadEnvironments={reloadEnvironments}
@@ -138,7 +138,7 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isJob
                             isProtected={false}
                             componentType={CMSecretComponentType.Secret}
@@ -152,14 +152,17 @@ const AppComposeRouter = () => {
                         key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                         path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                     >
-                        <EnvironmentOverride
-                            isJob
-                            environments={environments}
-                            reloadEnvironments={reloadEnvironments}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={lastUnlockedStage}
-                        />
+                        {({ match }) => (
+                            <EnvironmentOverride
+                                key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
+                                isJob
+                                environments={environments}
+                                reloadEnvironments={reloadEnvironments}
+                                envConfig={envConfig}
+                                fetchEnvConfig={fetchEnvConfig}
+                                onErrorRedirectURL={lastUnlockedStage}
+                            />
+                        )}
                     </Route>,
                 ]}
             </Switch>
@@ -247,7 +250,7 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isProtected={isBaseConfigProtected}
                             reloadEnvironments={reloadEnvironments}
                             envConfig={envConfig}
@@ -256,7 +259,7 @@ const AppComposeRouter = () => {
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isProtected={isBaseConfigProtected}
                             componentType={CMSecretComponentType.Secret}
                             reloadEnvironments={reloadEnvironments}
@@ -265,17 +268,17 @@ const AppComposeRouter = () => {
                             onErrorRedirectURL={lastUnlockedStage}
                         />
                     </Route>,
-                    <Route
-                        key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                    >
-                        <EnvironmentOverride
-                            environments={environments}
-                            reloadEnvironments={reloadEnvironments}
-                            envConfig={envConfig}
-                            fetchEnvConfig={fetchEnvConfig}
-                            onErrorRedirectURL={lastUnlockedStage}
-                        />
+                    <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
+                        {({ match }) => (
+                            <EnvironmentOverride
+                                key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
+                                environments={environments}
+                                reloadEnvironments={reloadEnvironments}
+                                envConfig={envConfig}
+                                fetchEnvConfig={fetchEnvConfig}
+                                onErrorRedirectURL={lastUnlockedStage}
+                            />
+                        )}
                     </Route>,
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}

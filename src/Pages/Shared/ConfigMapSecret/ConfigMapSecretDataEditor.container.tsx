@@ -149,6 +149,10 @@ const ConfigMapSecretDataEditor = ({
     }
 
     const setKeyValueArray = (arr) => {
+        dispatch({
+            type: ConfigMapActionTypes.setFormDirty,
+            payload: state.isFormDirty || !deepEqual(arr, state.currentData),
+        })
         setTempArr(arr)
     }
 
@@ -189,7 +193,7 @@ const ConfigMapSecretDataEditor = ({
                     payload: {
                         currentData: tempArr.current,
                         yamlMode: !state.yamlMode,
-                        isFormDirty: !deepEqual(tempArr.current, state.currentData),
+                        isFormDirty: state.isFormDirty || !deepEqual(tempArr.current, state.currentData),
                     },
                 })
             }

@@ -52,6 +52,7 @@ export const EnvConfigurationsNav = ({
     })
 
     // CONSTANTS
+    const { isLoading, config } = envConfig
     /** Current Environment Data. */
     const environmentData =
         environments.find((environment) => environment.id === +params[paramToCheck]) ||
@@ -65,7 +66,7 @@ export const EnvConfigurationsNav = ({
     const resourceType = resourceTypeBasedOnPath(pathname)
     const isCreate = pathname.includes('/create')
 
-    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) => {
+    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration> = updatedEnvConfig) => {
         const envConfigKey =
             resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
 
@@ -93,17 +94,17 @@ export const EnvConfigurationsNav = ({
     }, [])
 
     useEffect(() => {
-        if (!envConfig.isLoading && envConfig.config) {
-            const newEnvConfig = getEnvConfiguration(envConfig.config, path, params, environmentData, paramToCheck)
+        if (!isLoading && config) {
+            const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
 
             setExpandedIds({
-                configmap: !!envConfig.config.configmaps.length,
-                secrets: !!envConfig.config.secrets.length,
+                configmap: !!config.configmaps.length,
+                secrets: !!config.secrets.length,
                 ...(isCreate ? { [resourceType]: true } : {}),
             })
             setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [envConfig, pathname])
+    }, [isLoading, config, pathname])
 
     // METHODS
     /** Renders the Deployment Template Nav Icon based on `envConfig`. */
@@ -143,8 +144,6 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        setUpdatedEnvConfig(addUnnamedNavLink(updatedEnvConfig))
-
         history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
     }
 
@@ -247,7 +246,7 @@ export const EnvConfigurationsNav = ({
         <>
             {renderEnvSelector()}
             <div className="mw-none p-8">
-                {envConfig.isLoading || !environmentData ? (
+                {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)
                 ) : (
                     <>

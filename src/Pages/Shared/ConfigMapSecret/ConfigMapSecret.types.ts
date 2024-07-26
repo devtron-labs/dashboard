@@ -211,7 +211,7 @@ export interface ConfigDatum {
 
 export type CMSecretResponse = ResponseType<CMSecret>
 
-export interface CMSecretContainerProps
+export interface CMSecretWrapperProps
     extends Pick<
         EnvironmentOverrideComponentProps,
         'reloadEnvironments' | 'envConfig' | 'fetchEnvConfig' | 'isJob' | 'onErrorRedirectURL'
@@ -223,6 +223,11 @@ export interface CMSecretContainerProps
     isOverrideView?: boolean
     clusterId?: string
     isProtected?: boolean
+}
+
+export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'setParentState'> {
+    draftDataMap: Record<string, Record<string, number>>
+    appChartRef: { id: number; version: string; name: string }
 }
 
 export interface CMSecretConfigData extends ConfigDatum {

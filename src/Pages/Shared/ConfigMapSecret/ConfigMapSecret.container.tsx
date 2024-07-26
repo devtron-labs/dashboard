@@ -11,13 +11,11 @@ import {
     Progressing,
     showError,
     ToastBody,
-    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { getAppChartRefForAppAndEnv } from '@Services/service'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
@@ -40,14 +38,12 @@ import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import './ConfigMapSecret.scss'
 
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
-const getAllDrafts = importComponentFromFELibrary('getAllDrafts', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 
 export const ConfigMapSecretContainer = ({
     componentType = CMSecretComponentType.ConfigMap,
     parentState,
-    setParentState,
     isOverrideView,
     clusterId,
     parentName,
@@ -57,6 +53,8 @@ export const ConfigMapSecretContainer = ({
     fetchEnvConfig,
     reloadEnvironments,
     onErrorRedirectURL,
+    appChartRef,
+    draftDataMap,
 }: CMSecretContainerProps) => {
     // HOOKS
     const { path } = useRouteMatch()
@@ -67,17 +65,16 @@ export const ConfigMapSecretContainer = ({
     const [isCMSecretLoading, setIsCMSecretLoading] = useState(false)
     const [cmSecretError, setCmSecretError] = useState(false)
     const [cmSecretData, setCmSecretData] = useState<ConfigMapSecretData>(null)
-    const [draftDataMap, setDraftDataMap] = useState<Record<string, Record<string, number>>>(null)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
     const [draftData, setDraftData] = useState(null)
     const [showComments, setShowComments] = useState(false)
-    const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
     const [selectedTab, setSelectedTab] = useState<CMSecretProtectedTab>(null)
     const [openDeleteModal, setOpenDeleteModal] = useState<CMSecretDeleteModalType>(null)
 
     // CONSTANTS
+    const { config, isLoading: isEnvConfigLoading } = envConfig
     const envConfigData =
-        envConfig.config?.[
+        config?.[
             componentType === CMSecretComponentType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
         ] || []
     const selectedCMSecret = useMemo(() => envConfigData.find((data) => data.name === name), [envConfig, name])
@@ -102,53 +99,8 @@ export const ConfigMapSecretContainer = ({
     // REFS
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    // ASYNC CALLS
-    const [initLoading, initResult, initError] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    Promise.all([
-                        getAppChartRefForAppAndEnv(+appId, +envId),
-                        isProtected && getAllDrafts
-                            ? getAllDrafts(appId, envId ?? -1, componentType, abortControllerRef.current.signal)
-                            : null,
-                    ]),
-                abortControllerRef,
-            ),
-        [],
-    )
-
     // LOADING
-    const loader = isCMSecretLoading || initLoading || getIsRequestAborted(initError) || envConfig.isLoading
-    const cmSecretLoader = initLoading || getIsRequestAborted(initError) || envConfig.isLoading
-
-    useEffect(() => {
-        if (initResult) {
-            const [appChartRes, draftDataRes] = initResult
-            if (draftDataRes?.result?.length) {
-                const _draftDataMap = draftDataRes.result.reduce(
-                    (acc, curr) => ({ ...acc, [curr.resourceName]: curr }),
-                    {},
-                )
-
-                setDraftDataMap(_draftDataMap)
-            }
-
-            if (appChartRes) {
-                setAppChartRef(appChartRes.result)
-            }
-
-            setParentState?.(ComponentStates.loaded)
-        }
-        if (initError && !getIsRequestAborted(initError)) {
-            setParentState?.(ComponentStates.failed)
-            showError(initError)
-        }
-
-        return () => {
-            setParentState?.(ComponentStates.loading)
-        }
-    }, [initResult, initError])
+    const loader = isCMSecretLoading || isEnvConfigLoading
 
     const getCMSecretData = () => {
         abortPreviousRequests(() => {
@@ -316,7 +268,7 @@ export const ConfigMapSecretContainer = ({
     }
 
     useEffect(() => {
-        if (!cmSecretLoader && selectedCMSecret && !isCreateState) {
+        if (!isEnvConfigLoading && selectedCMSecret && !isCreateState) {
             getCMSecretData()
         }
 
@@ -329,7 +281,7 @@ export const ConfigMapSecretContainer = ({
             setDraftData(null)
             setCmSecretError(null)
         }
-    }, [selectedCMSecret, cmSecretLoader])
+    }, [selectedCMSecret, isEnvConfigLoading])
 
     // METHODS
     const updateCMSecret = (_name?: string) => {

@@ -35,7 +35,7 @@ export const envSelectStyles = getCommonSelectStyle({
         fontWeight: 600,
         lineHeight: '20px',
     }),
-    singleValue: (base) => ({ ...base, margin: '0' }),
+    singleValue: (base) => ({ ...base, margin: '0', color: 'var(--N900)' }),
     input: (base) => ({ ...base, margin: '0', padding: '0' }),
     dropdownIndicator: (base, state) => ({
         ...commonSelectStyles.dropdownIndicator(base, state),

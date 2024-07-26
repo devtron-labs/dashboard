@@ -34,7 +34,6 @@ import {
     ServerErrors,
     CustomInput,
     usePrompt,
-    deepEqual,
     ButtonWithLoader,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -164,9 +163,8 @@ export const ConfigMapSecretForm = React.memo(
             }
         }, [envId])
 
-        const shouldPrompt = !deepEqual(state.currentData, tempArr.current) && state.isFormDirty
         usePrompt({
-            shouldPrompt,
+            shouldPrompt: state.isFormDirty,
         })
 
         const handleOverride = async (e) => {
@@ -1184,7 +1182,7 @@ export const ConfigMapSecretForm = React.memo(
                         showAsModal
                     />
                 )}
-                <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+                <Prompt when={state.isFormDirty} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             </>
         )
     },

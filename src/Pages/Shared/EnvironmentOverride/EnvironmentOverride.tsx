@@ -31,7 +31,7 @@ import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
 import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
-import { ConfigMapSecretContainer } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.container'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
@@ -149,7 +149,7 @@ const EnvironmentOverride = ({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
@@ -164,7 +164,7 @@ const EnvironmentOverride = ({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <ConfigMapSecretContainer
+                        <ConfigMapSecretWrapper
                             isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
