@@ -123,8 +123,12 @@ const DeploymentTemplateEditorView = ({
             ...(envId && { envId: +envId })
         }
         const response = await getDeploymentManisfest(request)
-
-        return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
+        try {
+            // In complex objects we are receiving JSON object instead of YAML object in case value is YAML.
+            return { resolvedData: YAMLStringify(YAML.parse(response.result.resolvedData)), variableSnapshot: response.result.variableSnapshot }
+        } catch (error) {
+            return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
+        }
     }
 
     useEffect(() => {
