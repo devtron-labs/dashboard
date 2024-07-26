@@ -399,8 +399,11 @@
 
 .plugin-card {
     &:hover {
-        box-shadow: 0px 0px 4px 1px var(--N200);
-        border-radius: 4px;
+        box-shadow:  0px 2px 8px 0px rgba(0, 0, 0, 0.10);
+
+        .plugin-card__title {
+            color: var(--B500);
+        }
     }
 }
 

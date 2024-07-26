@@ -52,7 +52,6 @@ src/components/CIPipelineN/EnvironmentList.tsx
 src/components/CIPipelineN/InputPluginSelect.tsx
 src/components/CIPipelineN/MultiplsPort.tsx
 src/components/CIPipelineN/OutputDirectoryPath.tsx
-src/components/CIPipelineN/PluginCard.tsx
 src/components/CIPipelineN/PreBuild.tsx
 src/components/CIPipelineN/Sidebar.tsx
 src/components/CIPipelineN/TaskDetailComponent.tsx

@@ -29,8 +29,7 @@ import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
-import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
-import { PluginCard } from './PluginCard'
+import CustomScriptCard from './CustomScriptCard'
 import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -161,12 +160,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
             <div className="px-20 pb-20 dc__overflow-scroll flexbox-col">
                 <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
-                    <PluginCard
-                        dataTestId="execute-custom-script-button"
-                        imgSource={PreBuildIcon}
-                        title={INLINE_PLUGIN_TEXT.TITLE}
-                        subTitle={INLINE_PLUGIN_TEXT.DESCRIPTION}
-                    />
+                    <CustomScriptCard />
                 </div>
                 <PluginListContainer
                     availableTags={availableTags}
