@@ -31,6 +31,10 @@ export interface CollapsibleListItem {
      * The URL of the nav link.
      */
     href?: string
+    /**
+     * The callback function to handle click events on the nav link.
+     */
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }
 
 export interface CollapsibleListConfig {
@@ -58,6 +62,10 @@ export interface CollapsibleListConfig {
          * Properties for the header icon button component.
          */
         btnProps?: React.ButtonHTMLAttributes<HTMLButtonElement>
+        /**
+         * Properties for the tooltip component of the icon.
+         */
+        tooltipProps?: TippyProps
     }
     /**
      * Text to display when there are no items in the list.

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import Tippy, { TippyProps } from '@tippyjs/react'
 
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
@@ -16,11 +16,15 @@ const renderWithTippy = (tippyProps: TippyProps) => (children: React.ReactElemen
 )
 
 export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListProps) => {
+    const { pathname } = useLocation()
+
     return (
         <div className="mw-none bcn-0">
             {config.map(({ id, header, headerIconConfig, items, noItemsText, isExpanded }) => (
                 <Fragment key={id}>
-                    <div className="flexbox dc__align-items-center dc__gap-4 py-6 px-8">
+                    <div
+                        className={`flexbox dc__align-items-center dc__gap-4 py-6 px-8 br-4 ${isExpanded ? 'bcn-50' : ''}`}
+                    >
                         <button
                             type="button"
                             className="dc__unset-button-styles mw-none flexbox dc__align-items-center flex-grow-1 p-0 cn-9 fs-12 lh-1-5 fw-6 dc__gap-4"
@@ -30,42 +34,54 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
                                 className="icon-dim-16 fcn-6 dc__no-shrink cursor rotate"
                                 style={{ ['--rotateBy' as string]: isExpanded ? '90deg' : '0deg' }}
                             />
-                            <span className="flex-grow-1 dc__align-left dc__ellipsis-right">{header}</span>
+                            <span className="flex-grow-1 dc__align-left dc__truncate">{header}</span>
                         </button>
                         {headerIconConfig && (
-                            <button
-                                {...headerIconConfig.btnProps}
-                                type="button"
-                                className={`dc__unset-button-styles dc__no-shrink cursor ${headerIconConfig.btnProps?.className || ''}`}
+                            <ConditionalWrap
+                                condition={!!headerIconConfig.tooltipProps}
+                                wrap={renderWithTippy(headerIconConfig.tooltipProps)}
                             >
-                                <headerIconConfig.Icon
-                                    {...headerIconConfig.props}
-                                    className={`icon-dim-16 ${headerIconConfig.props?.className || ''}`}
-                                />
-                            </button>
+                                <button
+                                    {...headerIconConfig.btnProps}
+                                    type="button"
+                                    className={`dc__unset-button-styles dc__no-shrink cursor br-4 bcn-0 dc__hover-n100 flex ${headerIconConfig.btnProps?.className || ''}`}
+                                >
+                                    <headerIconConfig.Icon
+                                        {...headerIconConfig.props}
+                                        className={`icon-dim-16 ${headerIconConfig.props?.className || ''}`}
+                                    />
+                                </button>
+                            </ConditionalWrap>
                         )}
                     </div>
                     {isExpanded && (
                         <div className="collapsible ml-16 pl-4 dc__border-left">
                             {!items.length ? (
-                                <div className="collapsible__item flexbox dc__gap-8 cn-7 dc__no-decor br-4 py-6 px-8">
-                                    <span className="collapsible__item__title dc__ellipsis-right fs-13 lh-20">
+                                <div className="collapsible__item flexbox dc__gap-8 dc__no-decor no-hover br-4 py-6 px-8">
+                                    <span className="collapsible__item__title dc__truncate fs-13 lh-20 cn-5">
                                         {noItemsText || 'No items found.'}
                                     </span>
                                 </div>
                             ) : (
-                                items.map(({ title, href, iconConfig, subtitle }) => (
+                                items.map(({ title, href, iconConfig, subtitle, onClick }) => (
                                     <NavLink
                                         key={title}
                                         to={href}
-                                        className="collapsible__item flexbox dc__gap-8 cn-7 dc__no-decor br-4 py-6 px-8 cursor"
+                                        className="collapsible__item flexbox dc__gap-8 dc__no-decor br-4 py-6 px-8 cursor"
+                                        onClick={(e) => {
+                                            // Prevent navigation to the same page
+                                            if (href === pathname) {
+                                                e.preventDefault()
+                                            }
+                                            onClick?.(e)
+                                        }}
                                     >
                                         <div className="flexbox-col flex-grow-1 mw-none">
-                                            <span className="collapsible__item__title dc__ellipsis-right fs-13 lh-20">
+                                            <span className="collapsible__item__title dc__truncate fs-13 lh-20">
                                                 {title}
                                             </span>
                                             {subtitle && (
-                                                <span className="dc__ellipsis-right fw-4 lh-1-5 cn-7">{subtitle}</span>
+                                                <span className="dc__truncate fw-4 lh-1-5 cn-7">{subtitle}</span>
                                             )}
                                         </div>
                                         {iconConfig && (

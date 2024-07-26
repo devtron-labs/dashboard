@@ -17,7 +17,7 @@
             background: var(--N50);
         }
 
-        &:not(.active) &__title {
+        &:not(.active):not(.no-hover) &__title {
             color: var(--N900);
         }
     }

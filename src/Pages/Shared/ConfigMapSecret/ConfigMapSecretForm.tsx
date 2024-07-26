@@ -67,7 +67,6 @@ import {
     KeyValueValidated,
     CMSecretComponentType,
     CMSecretYamlData,
-    CMSecretComponentName,
 } from './ConfigMapSecret.types'
 import { ConfigMapSecretReducer, initState } from './ConfigMapSecret.reducer'
 import {
@@ -82,7 +81,12 @@ import {
     CODE_EDITOR_RADIO_STATE,
     ExternalSecretHelpNote,
 } from './Secret.utils'
-import { CM_SECRET_STATE, ConfigMapSecretUsageMap, EXTERNAL_INFO_TEXT } from './ConfigMapSecret.constants'
+import {
+    CM_SECRET_COMPONENT_NAME,
+    CM_SECRET_STATE,
+    ConfigMapSecretUsageMap,
+    EXTERNAL_INFO_TEXT,
+} from './ConfigMapSecret.constants'
 import { ConfigMapSecretDataEditorContainer } from './ConfigMapSecretDataEditor.container'
 
 import '@Pages/Shared/EnvironmentOverride/environmentOverride.scss'
@@ -149,10 +153,6 @@ export const ConfigMapSecretForm = React.memo(
         }, [configMapSecretData])
 
         const setTempArr = (arr: CMSecretYamlData[]) => {
-            dispatch({
-                type: ConfigMapActionTypes.setFormDirty,
-                payload: arr.length && !deepEqual(arr, state.currentData),
-            })
             tempArr.current = arr
         }
 
@@ -164,8 +164,9 @@ export const ConfigMapSecretForm = React.memo(
             }
         }, [envId])
 
+        const shouldPrompt = !deepEqual(state.currentData, tempArr.current) && state.isFormDirty
         usePrompt({
-            shouldPrompt: state.isFormDirty,
+            shouldPrompt,
         })
 
         const handleOverride = async (e) => {
@@ -337,9 +338,7 @@ export const ConfigMapSecretForm = React.memo(
             }
 
             if (dataArray.length === 0 && (!state.external || state.externalType === '')) {
-                toast.error(
-                    `Please add ${componentType === CMSecretComponentType.ConfigMap ? CMSecretComponentName.ConfigMap : CMSecretComponentName.Secret} data before saving.`,
-                )
+                toast.error(`Please add ${CM_SECRET_COMPONENT_NAME[componentType]} data before saving.`)
                 isFormValid = false
             } else if (componentType === CMSecretComponentType.Secret && (isHashiOrAWS || isESO)) {
                 let isValidSecretData = false
@@ -996,9 +995,7 @@ export const ConfigMapSecretForm = React.memo(
                         autoFocus
                         onChange={onConfigNameChange}
                         handleOnBlur={trimConfigMapName}
-                        placeholder={
-                            componentType === CMSecretComponentType.Secret ? 'random-secret' : 'random-configmap'
-                        }
+                        placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
                         isRequiredField
                         disabled={!!configMapSecretData?.name}
                         error={state.configName.error}
@@ -1187,7 +1184,7 @@ export const ConfigMapSecretForm = React.memo(
                         showAsModal
                     />
                 )}
-                <Prompt when={state.isFormDirty} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+                <Prompt when={shouldPrompt} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             </>
         )
     },

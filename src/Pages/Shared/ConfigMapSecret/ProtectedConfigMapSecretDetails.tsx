@@ -18,14 +18,13 @@ import { hasApproverAccess, importComponentFromFELibrary } from '@Components/com
 import { prepareHistoryData } from '@Components/app/details/cdDetails/service'
 import { DeploymentHistoryDetail } from '@Components/app/details/cdDetails/cd.type'
 import {
-    CMSecretComponentName,
     CMSecretComponentType,
     CMSecretProtectedTab,
     DraftState,
     ProtectedConfigMapSecretProps,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 
-import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
+import { CM_SECRET_COMPONENT_NAME, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { getCMSecret } from './ConfigMapSecret.service'
 
@@ -199,7 +198,7 @@ export const ProtectedConfigMapSecretDetails = ({
                     <ApproveRequestTippy
                         draftId={draftData.draftId}
                         draftVersionId={draftData.draftVersionId}
-                        resourceName={componentType}
+                        resourceName={CM_SECRET_COMPONENT_NAME[componentType]}
                         reload={updateCMSecret}
                         envName={parentName}
                     >
@@ -254,7 +253,7 @@ export const ProtectedConfigMapSecretDetails = ({
                     <div className="pl-12 pr-12 pt-6 pb-6 fs-12 fw-6 cn-9">Last saved draft</div>
                 </div>
                 {draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN && (
-                    <div className="en-2 bw-1 mr-20 ml-20 deployment-diff__upper dc__no-bottom-border">
+                    <div className="en-2 bw-1 deployment-diff__upper dc__no-bottom-border">
                         <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-red-diff">Configuration</div>
                         <div className="pl-16 pr-16 pt-8 fs-12 cn-6 code-editor-green-diff">Configuration</div>
                         <div className="pl-16 pr-16 pb-8 fs-13 cn-9 code-editor-red-diff">Override base</div>
@@ -295,9 +294,7 @@ export const ProtectedConfigMapSecretDetails = ({
             draftData.action === 3 &&
             cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN
         ) {
-            return renderEmptyMessage(
-                `This ${componentType === CMSecretComponentType.ConfigMap ? CMSecretComponentName.ConfigMap : CMSecretComponentName.Secret} will be deleted on approval`,
-            )
+            return renderEmptyMessage(`This ${CM_SECRET_COMPONENT_NAME[componentType]} will be deleted on approval`)
         }
         return (
             <ConfigMapSecretForm

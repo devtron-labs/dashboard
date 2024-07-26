@@ -15,6 +15,8 @@
  */
 
 import React from 'react'
+import { Prompt } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 import {
     InfoColourBar,
@@ -23,12 +25,14 @@ import {
     StyledRadioGroup as RadioGroup,
     YAMLStringify,
     CodeEditor,
+    usePrompt,
+    deepEqual,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ShowIcon } from '@Icons/ic-visibility-on.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { PATTERNS } from '@Config/constants'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import { PATTERNS, UNSAVED_CHANGES_PROMPT_MESSAGE } from '@Config/constants'
 import { KeyValueFileInput } from '@Components/util/KeyValueFileInput'
 import { Info } from '@Components/common'
 
@@ -154,6 +158,7 @@ const ConfigMapSecretDataEditor = ({
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
+    usePrompt({ shouldPrompt: !!error })
 
     if (state.isValidateFormError !== !!error) {
         dispatch({
@@ -175,18 +180,24 @@ const ConfigMapSecretDataEditor = ({
     const isESO = componentType === CMSecretComponentType.Secret && hasESO(state.externalType)
 
     const changeEditorMode = () => {
-        if (state.yamlMode) {
+        if (error) {
+            toast.error('Please resolve the errors before switching editor mode.')
+        } else if (state.yamlMode) {
             if (!state.secretMode) {
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
-                    payload: { currentData: tempArr.current, yamlMode: !state.yamlMode },
+                    payload: {
+                        currentData: tempArr.current,
+                        yamlMode: !state.yamlMode,
+                        isFormDirty: !deepEqual(tempArr.current, state.currentData),
+                    },
                 })
-                setTempArr([])
-                return
             }
             setTempArr([])
+        } else {
+            setTempArr(state.currentData)
+            dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
         }
-        dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
     }
 
     const handleAddParam = (): void => {
@@ -271,6 +282,40 @@ const ConfigMapSecretDataEditor = ({
         return state.secretDataYaml
     }
 
+    const renderSecretShowHide = (): JSX.Element =>
+        componentType === CMSecretComponentType.Secret &&
+        !state.external &&
+        !state.unAuthorized && (
+            <>
+                <button
+                    type="button"
+                    className="dc__unset-button-styles edit flex cursor cn-7 dc__gap-6"
+                    onClick={toggleSecretMode}
+                >
+                    {state.secretMode ? (
+                        <>
+                            <ICPencil className="icon-dim-16 scn-7" />
+                            Show/Edit values
+                        </>
+                    ) : (
+                        <>
+                            <HideIcon className="icon-dim-16 fcn-7" />
+                            Hide values
+                        </>
+                    )}
+                </button>
+                <div className="dc__divider" />
+            </>
+        )
+
+    const renderInfotext = () => (
+        <div className="flex top">
+            GUI Recommended for multi-line data.
+            <br />
+            Boolean and numeric values must be wrapped in double quotes Eg. &quot;true&quot;, &quot;123&quot;
+        </div>
+    )
+
     const renderCodeEditor = (
         value: string,
         handleOnChange: (yaml) => void,
@@ -309,9 +354,19 @@ const ConfigMapSecretDataEditor = ({
                         ) : (
                             <CodeEditor.ValidationError />
                         )}
-
-                        <CodeEditor.Clipboard />
+                        <div className="flexbox dc__align-items-center dc__gap-8">
+                            {renderSecretShowHide()}
+                            <CodeEditor.Clipboard />
+                        </div>
                     </CodeEditor.Header>
+                    {!state.external && state.yamlMode && (
+                        <InfoColourBar
+                            message={renderInfotext()}
+                            Icon={InfoIcon}
+                            iconSize={20}
+                            classname="info_bar cn-9 lh-20 dc__no-border-radius dc__no-right-border dc__no-left-border dc__no-top-border"
+                        />
+                    )}
                     {!state.external && error && (
                         <div className="validation-error-block">
                             <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
@@ -376,18 +431,19 @@ const ConfigMapSecretDataEditor = ({
                     state.yamlMode ||
                     state.external
                 }
+                readOnly={
+                    (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
+                    readonlyView ||
+                    state.unAuthorized ||
+                    state.secretMode
+                }
                 isSortable
                 config={config}
                 placeholder={{
                     k: 'Enter Key',
                     v: 'Enter Value',
                 }}
-                onChange={
-                    !draftMode &&
-                    (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView || state.unAuthorized)
-                        ? null
-                        : keyValueTableHandleChange
-                }
+                onChange={keyValueTableHandleChange}
                 maskValue={{
                     v: state.secretMode || state.unAuthorized,
                 }}
@@ -403,35 +459,6 @@ const ConfigMapSecretDataEditor = ({
         return yaml
     }
 
-    const renderSecretShowHide = (): JSX.Element => {
-        if (componentType === CMSecretComponentType.Secret && !state.external && !state.unAuthorized) {
-            return (
-                <div style={{ marginLeft: 'auto' }} className="edit flex cursor" onClick={toggleSecretMode}>
-                    {state.secretMode ? (
-                        <>
-                            <ShowIcon className="icon-dim-16 mr-4 mw-18" />
-                            Show values
-                        </>
-                    ) : (
-                        <>
-                            <HideIcon className="icon-dim-16 mr-4 mw-18" />
-                            Hide values
-                        </>
-                    )}
-                </div>
-            )
-        }
-        return null
-    }
-
-    const renderInfotext = () => (
-        <div className="flex top">
-            GUI Recommended for multi-line data.
-            <br />
-            Boolean and numeric values must be wrapped in double quotes Eg. &quot;true&quot;, &quot;123&quot;
-        </div>
-    )
-
     const renderDataEditorSelector = (): JSX.Element => {
         if (
             (componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
@@ -441,37 +468,31 @@ const ConfigMapSecretDataEditor = ({
         }
 
         return (
-            <>
-                <div className="flex left mb-16">
-                    <b className="mr-5 dc__bold dc__required-field">Data</b>
-                    {!isESO && (
-                        <RadioGroup
-                            className="gui-yaml-switch"
-                            name="yaml-mode"
-                            initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                            disabled={false}
-                            onChange={changeEditorMode}
-                        >
-                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
-                        </RadioGroup>
-                    )}
-                    {renderSecretShowHide()}
-                </div>
-                {componentType !== CMSecretComponentType.Secret && !state.external && state.yamlMode && (
-                    <InfoColourBar
-                        message={renderInfotext()}
-                        Icon={InfoIcon}
-                        iconSize={20}
-                        classname="info_bar cn-9 mt-16 mb-16 lh-20"
-                    />
+            <div className="flex left mb-16">
+                <b className="mr-5 dc__bold dc__required-field">Data</b>
+                {!isESO && (
+                    <RadioGroup
+                        className="gui-yaml-switch"
+                        name="yaml-mode"
+                        initialTab={state.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
+                        disabled={false}
+                        onChange={changeEditorMode}
+                    >
+                        <RadioGroup.Radio value={VIEW_MODE.GUI} canSelect={false}>
+                            {VIEW_MODE.GUI.toUpperCase()}
+                        </RadioGroup.Radio>
+                        <RadioGroup.Radio value={VIEW_MODE.YAML} canSelect={false}>
+                            {VIEW_MODE.YAML.toUpperCase()}
+                        </RadioGroup.Radio>
+                    </RadioGroup>
                 )}
-            </>
+            </div>
         )
     }
 
     return (
         <>
+            <Prompt when={!!error} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             {renderDataEditorSelector()}
             {!state.external &&
                 (state.yamlMode

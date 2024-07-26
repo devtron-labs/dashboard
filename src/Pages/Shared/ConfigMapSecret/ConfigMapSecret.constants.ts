@@ -48,3 +48,23 @@ export const SECRET_TOAST_INFO = {
     BOTH_STORE_UNAVAILABLE: 'Please provide secretStore or secretStoreRef',
     CHECK_KEY_NAME: 'Please check key and name',
 }
+
+export const CM_SECRET_COMPONENT_NAME = {
+    [CMSecretComponentType.ConfigMap]: 'configmap',
+    [CMSecretComponentType.Secret]: 'secret',
+}
+
+export const CM_SECRET_EMPTY_STATE_TEXT = {
+    [CMSecretComponentType.ConfigMap]: {
+        title: 'ConfigMaps',
+        subtitle:
+            'The ConfigMap API resource holds key-value pairs of the configuration data that can be consumed by pods or used to store configuration data for system components such as controllers.',
+        buttonText: 'Create ConfigMap',
+    },
+    [CMSecretComponentType.Secret]: {
+        title: 'Secrets',
+        subtitle:
+            'Secret objects let you store and manage sensitive information, such as passwords, authentication tokens, and ssh keys.',
+        buttonText: 'Create Secret',
+    },
+}

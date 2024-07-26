@@ -258,11 +258,6 @@ export enum CMSecretComponentType {
     Secret = 2,
 }
 
-export enum CMSecretComponentName {
-    ConfigMap = 'configmap',
-    Secret = 'secret',
-}
-
 export enum CMSecretProtectedTab {
     Published = 1,
     Compare = 2,

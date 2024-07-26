@@ -14,6 +14,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { getAppChartRefForAppAndEnv } from '@Services/service'
@@ -28,12 +29,11 @@ import {
     CMSecretProtectedTab,
     DraftState,
     CMSecretDeleteModalType,
-    CMSecretComponentName,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getCMSecret } from './ConfigMapSecret.service'
-import { CM_SECRET_STATE } from './ConfigMapSecret.constants'
+import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 
@@ -97,10 +97,7 @@ export const ConfigMapSecretContainer = ({
         }
     }
 
-    const componentName =
-        componentType === CMSecretComponentType.ConfigMap
-            ? CMSecretComponentName.ConfigMap
-            : CMSecretComponentName.Secret
+    const componentName = CM_SECRET_COMPONENT_NAME[componentType]
 
     // REFS
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -364,6 +361,7 @@ export const ConfigMapSecretContainer = ({
     const showDeleteButton =
         cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
         cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
+        cmSecretStateLabel !== CM_SECRET_STATE.OVERRIDDEN &&
         draftData?.action !== 3 &&
         !isCreateState &&
         !!name
@@ -485,7 +483,10 @@ export const ConfigMapSecretContainer = ({
         return (
             <div className="bcn-0 h-100">
                 <GenericEmptyState
-                    title={`Create ${componentType === CMSecretComponentType.ConfigMap ? 'ConfigMaps' : 'Secrets'}`}
+                    title={CM_SECRET_EMPTY_STATE_TEXT[componentType].title}
+                    subTitle={CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle}
+                    image={EmptyStateImg}
+                    imageType="large"
                     isButtonAvailable
                     renderButton={() => (
                         <button
@@ -493,8 +494,8 @@ export const ConfigMapSecretContainer = ({
                             className="cta flex dc__gap-6"
                             onClick={() => history.push(generatePath(path, { appId, envId, name: 'create' }))}
                         >
-                            <ICAdd />
-                            <span>Create</span>
+                            <ICAdd className="icon-dim-16" />
+                            <span>{CM_SECRET_EMPTY_STATE_TEXT[componentType].buttonText}</span>
                         </button>
                     )}
                 />

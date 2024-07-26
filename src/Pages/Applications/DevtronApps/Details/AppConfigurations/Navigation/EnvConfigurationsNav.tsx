@@ -63,16 +63,25 @@ export const EnvConfigurationsNav = ({
               }
             : null)
     const resourceType = resourceTypeBasedOnPath(pathname)
+    const isCreate = pathname.includes('/create')
 
-    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) =>
-        _updatedEnvConfig[
+    const addUnnamedNavLink = (_updatedEnvConfig: ReturnType<typeof getEnvConfiguration>) => {
+        const envConfigKey =
             resourceType === EnvResourceType.ConfigMap ? EnvConfigObjectKey.ConfigMap : EnvConfigObjectKey.Secret
-        ].push({
-            title: 'Unnamed',
-            href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
-            configState: ResourceConfigState.Unnamed,
-            subtitle: '',
-        })
+
+        return {
+            ..._updatedEnvConfig,
+            [envConfigKey]: [
+                ..._updatedEnvConfig[envConfigKey],
+                {
+                    title: 'Unnamed',
+                    href: getNavigationPath(path, params, environmentData.id, resourceType, 'create', paramToCheck),
+                    configState: ResourceConfigState.Unnamed,
+                    subtitle: '',
+                },
+            ],
+        }
+    }
 
     useEffect(() => {
         // Fetch the env configuration
@@ -87,15 +96,12 @@ export const EnvConfigurationsNav = ({
         if (!envConfig.isLoading && envConfig.config) {
             const newEnvConfig = getEnvConfiguration(envConfig.config, path, params, environmentData, paramToCheck)
 
-            if (pathname.includes('/create')) {
-                addUnnamedNavLink(newEnvConfig)
-            } else {
-                setExpandedIds({
-                    configmap: !!envConfig.config.configmaps.length,
-                    secrets: !!envConfig.config.secrets.length,
-                })
-            }
-            setUpdatedEnvConfig(newEnvConfig)
+            setExpandedIds({
+                configmap: !!envConfig.config.configmaps.length,
+                secrets: !!envConfig.config.secrets.length,
+                ...(isCreate ? { [resourceType]: true } : {}),
+            })
+            setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
     }, [envConfig, pathname])
 
@@ -137,10 +143,7 @@ export const EnvConfigurationsNav = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-
-        const newEnvConfig = updatedEnvConfig
-        addUnnamedNavLink(newEnvConfig)
-        setUpdatedEnvConfig(newEnvConfig)
+        setUpdatedEnvConfig(addUnnamedNavLink(updatedEnvConfig))
 
         history.push(getNavigationPath(path, params, environmentData.id, _resourceType, 'create', paramToCheck))
     }
@@ -158,6 +161,11 @@ export const EnvConfigurationsNav = ({
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
+                tooltipProps: {
+                    content: 'Add ConfigMap',
+                    arrow: false,
+                    placement: 'bottom',
+                },
             },
             items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
@@ -173,6 +181,11 @@ export const EnvConfigurationsNav = ({
                 },
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.Secret),
+                },
+                tooltipProps: {
+                    content: 'Add Secret',
+                    arrow: false,
+                    placement: 'bottom',
                 },
             },
             items: updatedEnvConfig.secrets,
@@ -205,7 +218,7 @@ export const EnvConfigurationsNav = ({
         return (
             <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
                 <NavLink to={goBackURL}>
-                    <div className="dc__border br-4 flex p-1">
+                    <div className="dc__border br-4 flex p-1 dc__hover-n50">
                         <ICBack className="icon-dim-16" />
                     </div>
                 </NavLink>
