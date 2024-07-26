@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { SortableTableHeaderCell, AppStatus, GenericFilterEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'

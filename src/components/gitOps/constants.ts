@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { GitProvider } from './gitops.type'
+import { DOCUMENTATION } from '@Config/constants'
+import { DefaultShortGitOpsType, GitOpsFormErrorType, GitProvider } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
@@ -40,7 +41,7 @@ export const DefaultGitOpsConfig = {
     active: true,
 }
 
-export const DefaultShortGitOps = {
+export const DefaultShortGitOps: DefaultShortGitOpsType = {
     host: '',
     username: '',
     token: '',
@@ -49,6 +50,22 @@ export const DefaultShortGitOps = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
+    authMode: null,
+}
+
+export const DefaultErrorFields: GitOpsFormErrorType = {
+    host: '',
+    username: '',
+    token: '',
+    gitHubOrgId: '',
+    gitLabGroupId: '',
+    azureProjectName: '',
+    bitBucketWorkspaceId: '',
+    bitBucketProjectKey: '',
+    sshHost: '',
+    sshKey: '',
 }
 
 export const LinkAndLabelSpec = {
@@ -79,3 +96,13 @@ export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
     `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
 export const gitOpsRepoNotConfigured =
     'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
+
+export const PROVIDER_DOC_LINK_MAP: Record<
+    Exclude<GitProvider, GitProvider.OTHER_GIT_OPS | GitProvider.AWS_CODE_COMMIT>,
+    string
+> = {
+    [GitProvider.GITHUB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB,
+    [GitProvider.GITLAB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB,
+    [GitProvider.AZURE_DEVOPS]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE,
+    [GitProvider.BITBUCKET_CLOUD]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET,
+}

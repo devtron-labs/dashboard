@@ -89,13 +89,13 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
     GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
-    GLOBAL_CONFIG_SCOPED_VARIABLES: '/global-config/scoped-variables',
     GLOBAL_CONFIG_PULL_IMAGE_DIGEST: '/global-config/pull-image-digest',
     GLOBAL_CONFIG_TAGS: '/global-config/tags',
     GLOBAL_CONFIG_PLUGINS: '/global-config/plugins',
     GLOBAL_CONFIG_FILTER_CONDITION: '/global-config/filter-condition',
     GLOBAL_CONFIG_LOCK_CONFIG: '/global-config/lock-config',
     GLOBAL_CONFIG_BUILD_INFRA: '/global-config/build-infra',
+    GLOBAL_CONFIG_DEPLOYMENT_WINDOW: '/global-config/deployment-window',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     LINKED_CI_DETAILS: 'linked-ci-details',
@@ -115,6 +115,8 @@ export const URLS = {
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
     RESOURCE_WATCHER: '/resource-watcher',
+    RELEASES: '/releases',
+    BUILD: '/build',
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
 }
 

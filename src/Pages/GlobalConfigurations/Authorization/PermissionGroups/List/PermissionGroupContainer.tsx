@@ -23,7 +23,7 @@ import {
     TOAST_ACCESS_DENIED,
     GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
 import { useAuthorizationContext } from '../../AuthorizationProvider'

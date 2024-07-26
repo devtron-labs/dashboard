@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'

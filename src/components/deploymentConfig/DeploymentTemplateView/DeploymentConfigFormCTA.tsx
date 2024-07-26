@@ -21,6 +21,7 @@ import {
     ConditionalWrap,
     Progressing,
     showError,
+    useMainContext,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -49,16 +50,15 @@ export default function DeploymentConfigFormCTA({
     isValues,
     convertVariables,
     handleLockedDiffDrawer,
-    isSuperAdmin,
     setShowLockedDiffForApproval,
     showLockedDiffForApproval,
     checkForProtectedLockedChanges,
-    setLockedOverride,
     handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
     const { state, isConfigProtectionEnabled, dispatch } =
         useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
+    const { isSuperAdmin } = useMainContext()
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart
     const _disabled = disableButton || loading
     const compareTab = state.selectedTabIndex === 2 && !state.showReadme
@@ -99,7 +99,6 @@ export default function DeploymentConfigFormCTA({
                 const deploymentTemplateResp = await checkForProtectedLockedChanges()
                 if (deploymentTemplateResp.result.isLockConfigError) {
                     setShowLockedDiffForApproval(true)
-                    setLockedOverride(deploymentTemplateResp.result.lockedOverride)
                     handleLockedDiffDrawer(true)
                 } else {
                     setShowLockedDiffForApproval(false)

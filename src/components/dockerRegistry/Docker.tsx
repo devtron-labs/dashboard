@@ -38,6 +38,7 @@ import {
     CustomInput,
     noop,
     InfoIconTippy,
+    DEFAULT_SECRET_PLACEHOLDER,
     ClearIndicator,
     MultiValueRemove,
     MultiValueChipContainer,
@@ -70,7 +71,6 @@ import {
     URLS,
     PATTERNS,
     OCIRegistryStorageActionType,
-    DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
@@ -216,7 +216,7 @@ export default function Docker({ ...props }) {
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
                     documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
-                    iconClassName="icon-dim-16 ml-4"
+                    iconClassName="icon-dim-20 ml-4"
                 />
             </div>
             {dockerRegistryList.map((docker) => (

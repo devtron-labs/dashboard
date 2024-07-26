@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/tabindex-no-positive */
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
@@ -56,7 +56,7 @@ export const renderQuestionwithTippy = () => {
         <InfoIconTippy
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
+            documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
             documentationLinkText="View Documentation"
             iconClassName="icon-dim-20 fcn-9 ml-4"
         />

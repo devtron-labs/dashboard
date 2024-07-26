@@ -23,6 +23,8 @@ import {
     Drawer,
     sortCallback,
     noop,
+    DEFAULT_SECRET_PLACEHOLDER,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -53,7 +55,6 @@ import {
     URLS,
     CONFIGURATION_TYPES,
     AppCreationType,
-    DEFAULT_SECRET_PLACEHOLDER,
 } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -255,10 +256,16 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         return (
             <section className="global-configuration__component flex-1">
                 <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
-                    <h2 className="form__title">{moduleBasedTitle}</h2>
+                    <FeatureTitleWithInfo
+                        title={moduleBasedTitle}
+                        renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
+                        docLink={ DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        showInfoIconTippy
+                        additionalContainerClasses="mb-20"
+                    />
                     <button
                         type="button"
-                        className="flex cta h-32 lh-n fcb-5"
+                        className="flex cta h-32 lh-n fcb-5 mb-20"
                         onClick={() =>
                             this.setState({
                                 showAddCluster: true,
@@ -272,17 +279,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         Add cluster
                     </button>
                 </div>
-                <p className="form__subtitle">
-                    Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                        rel="noopener noreferer noreferrer"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
-                </p>
                 {this.state.clusters.map(
                     (cluster) =>
                         cluster.id && (

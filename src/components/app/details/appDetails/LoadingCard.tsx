@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { LoadingCardType } from './appDetails.type'
 
 const LoadingCard = ({ wider }: LoadingCardType) => {

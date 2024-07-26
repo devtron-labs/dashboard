@@ -15,10 +15,10 @@
  */
 
 import moment from 'moment'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { GenericFilterEmptyState, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION, MomentDateFormat } from '../../../../config'
+import { GenericFilterEmptyState, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
+import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
@@ -39,18 +39,6 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     const handleDeleteButton = (_tokenList) => {
         setSelectedToken(_tokenList)
         setDeleteConfirmation(true)
-    }
-
-    const handleQuestion = () => {
-        return (
-            <InfoIconTippy
-                heading="API tokens"
-                infoText="Tokens you have generated that can be used to access the Devtron API."
-                documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
-                documentationLinkText="View Documentation"
-                iconClassName="icon-dim-16 fcn-9 ml-4"
-            />
-        )
     }
 
     const handleGenerateRowAction = () => {
@@ -74,10 +62,13 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
     return (
         <div className="bcn-0">
             <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
-                <div className="flex row ml-0">
-                    <div className="cn-9 fw-6 fs-16">API tokens</div>
-                    {handleQuestion()}
-                </div>
+                <FeatureTitleWithInfo
+                    title={HEADER_TEXT.API_TOKEN.title}
+                    renderDescriptionContent={() => HEADER_TEXT.API_TOKEN.description}
+                    docLink={HEADER_TEXT.API_TOKEN.docLink}
+                    showInfoIconTippy
+                    dataTestId="api-token-feature-title"
+                />
                 <div className="flex dc__align-end dc__content-end">
                     {renderSearchToken()}
                     <button

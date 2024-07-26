@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { MountPathMap } from '../ciPipeline/types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
