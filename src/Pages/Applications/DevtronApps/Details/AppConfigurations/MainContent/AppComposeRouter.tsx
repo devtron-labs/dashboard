@@ -30,14 +30,17 @@ import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 import '../appConfig.scss'
+import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
 const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
+
+const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -89,6 +92,7 @@ const AppComposeRouter = () => {
         lastUnlockedStage,
         envConfig,
         fetchEnvConfig,
+        appName,
     } = useAppConfigurationContext()
 
     const renderJobViewRoutes = (): JSX.Element => {
@@ -280,6 +284,21 @@ const AppComposeRouter = () => {
                             />
                         )}
                     </Route>,
+                    CompareWithButton && (
+                        <Route
+                            key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                            path={`${path}/:envName?/${URLS.APP_ENV_CONFIG_COMPARE}/:resourceType/:resourceName?`}
+                        >
+                            <DeploymentConfigCompare
+                                appName={appName}
+                                environments={environments.map(({ environmentId, environmentName, isProtected }) => ({
+                                    id: environmentId,
+                                    isProtected,
+                                    name: environmentName,
+                                }))}
+                            />
+                        </Route>
+                    ),
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}
                 {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

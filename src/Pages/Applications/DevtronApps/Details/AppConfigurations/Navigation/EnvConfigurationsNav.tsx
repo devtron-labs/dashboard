@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
+import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 
+import { CollapsibleList, CollapsibleListConfig } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { URLS } from '@Config/routes'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
-import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/CollapsibleList'
-import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
+import { AppEnvDeploymentConfigType, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import {
@@ -18,6 +21,8 @@ import {
 } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
 import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
+
+const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -35,6 +40,7 @@ export const EnvConfigurationsNav = ({
     environments,
     goBackURL,
     paramToCheck = 'envId',
+    showComparison,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -242,9 +248,33 @@ export const EnvConfigurationsNav = ({
         )
     }
 
+    const renderCompareWithBtn = () => {
+        const basePath = generatePath(path, {
+            appId: params.appId,
+            envId,
+            resourceType: EnvResourceType.DeploymentTemplate,
+        }).split(EnvResourceType.DeploymentTemplate)[0]
+
+        const searchParams = new URLSearchParams({
+            ...(environmentData.name === BASE_CONFIGURATIONS.name ? { compareWith: environments[0].name } : {}),
+            compareWithConfigType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+            configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+        })
+
+        const envNamePath = envId ? `${environmentData.name}/` : ''
+        const comparePath = `${basePath}${envNamePath}${URLS.APP_ENV_CONFIG_COMPARE}/${EnvResourceType.DeploymentTemplate}?${searchParams.toString()}`
+
+        return (
+            <div className="p-8">
+                <CompareWithButton href={comparePath} />
+            </div>
+        )
+    }
+
     return (
         <>
             {renderEnvSelector()}
+            {showComparison && CompareWithButton && renderCompareWithBtn()}
             <div className="mw-none p-8">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)

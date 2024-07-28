@@ -480,3 +480,23 @@ export interface Schema {
     items: Schema
     properties: Schema
 }
+
+export enum TemplateListType {
+    DefaultVersions = 1,
+    PublishedOnEnvironments = 2,
+    DeployedOnSelfEnvironment = 3,
+    DeployedOnOtherEnvironment = 4,
+}
+
+export interface TemplateListDTO {
+    chartRefId: number
+    chartVersion?: string
+    chartType?: string
+    type: TemplateListType
+    environmentId?: number
+    environmentName?: string
+    deploymentTemplateHistoryId?: number
+    finishedOn?: string
+    status?: string
+    pipelineId?: number
+}

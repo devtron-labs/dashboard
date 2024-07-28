@@ -179,6 +179,7 @@ export interface AppConfigurationContextType extends CommonAppConfigurationProps
     isWorkflowEditorUnlocked: boolean
     getRepo: string
     envConfig: EnvConfigurationState
+    appName: string
 }
 
 export interface AppConfigurationProviderProps extends CommonAppConfigurationProps {
@@ -219,6 +220,7 @@ export interface EnvironmentOptionType {
 }
 
 export interface EnvConfigurationsNavProps {
+    showComparison?: boolean
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     isBaseConfigProtected?: boolean
@@ -238,4 +240,27 @@ export interface EnvConfigRouteParams {
 export interface ExtendedCollapsibleListItem
     extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
     configState: ResourceConfigState
+}
+
+export interface DeploymentConfigParams {
+    appId: string
+    envName: string
+    resourceType: string
+    resourceName: string
+}
+
+export interface DeploymentConfigCompareProps {
+    environments: EnvironmentOptionType[]
+    appName: string
+}
+
+export enum AppEnvDeploymentConfigQueryParams {
+    CONFIG_TYPE = 'configType',
+    COMPARE_WITH = 'compareWith',
+    COMPARE_WITH_CONFIG_TYPE = 'compareWithConfigType',
+    IDENTIFIER_ID = 'identifierId',
+    PIPELINE_ID = 'pipelineId',
+    COMPARE_WITH_IDENTIFIER_ID = 'compareWithIdentifierId',
+    COMPARE_WITH_PIPELINE_ID = 'compareWithPipelineId',
+    CHART_REF_ID = 'chartRefId',
 }

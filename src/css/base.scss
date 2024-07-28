@@ -32,6 +32,7 @@
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
+    --select-picker-menu-index: 20;
 }
 
 body {
@@ -2482,6 +2483,10 @@ button.anchor {
 
 .dc__hide-section {
     display: none;
+
+    &--imp {
+        display: none !important;
+    }
 }
 
 .dark-background {
@@ -4366,6 +4371,10 @@ textarea::placeholder {
 
 .dc__zi-10 {
     z-index: 10;
+}
+
+.dc__zi-11 {
+    z-index: 11;
 }
 
 .dc__zi-20 {

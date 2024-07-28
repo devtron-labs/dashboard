@@ -25,7 +25,7 @@ import {
 
 import { Routes } from '@Config/constants'
 
-import { AppConfigStatusItemType } from './service.types'
+import { AppConfigStatusItemType, AppEnvDeploymentConfigDTO, AppEnvDeploymentConfigPayloadType } from './service.types'
 import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
 import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
 
@@ -49,3 +49,7 @@ export const getEnvConfig = async (appId: number, envId: number) => {
         throw err
     }
 }
+
+export const getAppEnvDeploymentConfig = async (
+    params: AppEnvDeploymentConfigPayloadType,
+): Promise<ResponseType<AppEnvDeploymentConfigDTO>> => get(getUrlWithSearchParams(Routes.ENV_DATA, params))

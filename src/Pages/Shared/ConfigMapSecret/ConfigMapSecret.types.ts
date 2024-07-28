@@ -196,13 +196,14 @@ export interface ConfigDatum {
     name: string
     type: string
     external: boolean
-    data: Record<string, string>
-    defaultData: Record<string, string>
+    data: { [key: string]: string }
+    defaultData: { [key: string]: string }
     global: boolean
     externalType: string
     esoSecretData: {}
     defaultESOSecretData: {}
-    secretData: Record<string, string>
+    secretData: { [key: string]: string }
+    defaultSecretData: { [key: string]: string }
     roleARN: string
     subPath: boolean
     filePermission: string
