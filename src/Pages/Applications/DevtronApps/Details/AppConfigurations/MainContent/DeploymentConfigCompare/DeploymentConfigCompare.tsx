@@ -11,6 +11,7 @@ import {
     ErrorScreenManager,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
+    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -43,6 +44,9 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { appId, resourceType, resourceName, envName } = params
     const { pathname, search } = useLocation()
+    const { sortBy, sortOrder, handleSorting } = useStateFilters({
+        initialSortKey: 'sort-config',
+    })
 
     // SEARCH PARAMS
     const {
@@ -128,12 +132,12 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
             const currentData = comparisonData[0].result
             const compareData = comparisonData[1].result
 
-            const configData = getAppEnvDeploymentConfigList(currentData, compareData, path, params, search)
+            const configData = getAppEnvDeploymentConfigList(currentData, compareData, path, params, search, sortOrder)
             return configData
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData])
+    }, [comparisonDataLoader, comparisonData, sortOrder])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -358,6 +362,8 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
             scrollIntoViewId={`${resourceType}-${resourceName}`}
             navHeading={`Comparing ${envName || BASE_CONFIGURATIONS.name}`}
             navHelpText={`Showing files from ${envName || BASE_CONFIGURATIONS.name} & ${compareWith || BASE_CONFIGURATIONS.name}`}
+            sortOrder={sortOrder}
+            onSortBtnClick={() => handleSorting(sortBy)}
         />
     )
 }

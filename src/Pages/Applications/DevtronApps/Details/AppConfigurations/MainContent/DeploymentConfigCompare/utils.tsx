@@ -7,6 +7,8 @@ import {
     stringComparatorBySortOrder,
     YAMLStringify,
     DeploymentConfigDiffProps,
+    SortingOrder,
+    yamlComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
@@ -126,7 +128,7 @@ const getCodeEditorData = (
     return null
 }
 
-const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null) => {
+const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null, sortOrder: SortingOrder) => {
     const _data =
         JSON.parse(data?.data?.configData?.[0].draftMetadata.data || null)?.envOverrideValues ||
         JSON.parse(data?.deploymentDraftData?.configData[0].draftMetadata.data || null)?.envOverrideValues ||
@@ -135,7 +137,11 @@ const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null) =
 
     const codeEditorValue = {
         displayName: 'data',
-        value: _data ? YAMLStringify(_data) ?? '' : '',
+        value: _data
+            ? YAMLStringify(_data, {
+                  sortMapEntries: (a, b) => yamlComparatorBySortOrder(a, b, sortOrder),
+              }) ?? ''
+            : '',
     }
 
     const diffViewData = prepareHistoryData(
@@ -280,9 +286,10 @@ export const getAppEnvDeploymentConfigList = (
     path: string,
     params: DeploymentConfigParams,
     search: string,
+    sortOrder?: SortingOrder,
 ): Pick<DeploymentConfigDiffProps, 'configList' | 'collapsibleNavList' | 'navList'> => {
-    const currentDeploymentData = getDeploymentTemplateDiffViewData(currentList.deploymentTemplate)
-    const compareDeploymentData = getDeploymentTemplateDiffViewData(compareList.deploymentTemplate)
+    const currentDeploymentData = getDeploymentTemplateDiffViewData(currentList.deploymentTemplate, sortOrder)
+    const compareDeploymentData = getDeploymentTemplateDiffViewData(compareList.deploymentTemplate, sortOrder)
 
     const deploymentTemplateData = {
         id: 'compare-deployment-template',
