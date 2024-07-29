@@ -877,6 +877,7 @@ export const convertToOptionsList = (
     arr: any[],
     customLabel?: string,
     customValue?: string,
+    customDescription?: string,
     customFieldKey?: string,
 ): OptionType[] => {
     if (!Array.isArray(arr) || !arr) {
@@ -886,6 +887,7 @@ export const convertToOptionsList = (
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
+            description: customDescription ? ele[customDescription] : '',
         }
 
         if (customFieldKey) {

@@ -3210,6 +3210,10 @@ textarea,
     width: 436px;
 }
 
+.w-450 {
+    width: 450px;
+}
+
 .w-476 {
     width: 476px;
 }
@@ -3646,6 +3650,10 @@ textarea,
 
 .mxh-504 {
     max-height: 504px;
+}
+
+.mxh-600 {
+    max-height: 600px;
 }
 
 .mxh-390-imp {
@@ -4174,6 +4182,14 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__bg-n0--opacity-0_5 {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &:hover {
+        background-color: var(--N0);
+    }
 }
 
 .dc__hover-n0:hover {

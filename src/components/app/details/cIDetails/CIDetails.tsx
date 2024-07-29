@@ -25,11 +25,11 @@ import {
     ScannedByToolModal,
     Sidebar,
     LogResizeButton,
-    CICDSidebarFilterOptionType, 
-    History, 
-    HistoryComponentType, 
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
     FetchIdDataStatus,
-    Scroller, 
+    Scroller,
     GitChanges,
     TriggerDetails,
     useScrollable,
@@ -38,6 +38,8 @@ import {
     asyncWrap,
     Artifacts,
     LogsRenderer,
+    ModuleNameMap,
+    EMPTY_STATE_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -45,11 +47,10 @@ import {
     getCIPipelines,
     getCIHistoricalStatus,
     getTriggerHistory,
-    getArtifact,
     getTagDetails,
     getArtifactForJobCi,
 } from '../../service'
-import { URLS, ModuleNameMap } from '../../../../config'
+import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -58,7 +59,6 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
@@ -514,9 +514,9 @@ const HistoryLogs = ({
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
-    const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
+    const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
@@ -542,7 +542,7 @@ const HistoryLogs = ({
                 status={triggerDetails.status}
                 artifact={ciJobArtifact[index]}
                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                getArtifactPromise={_getArtifactPromise}
+                downloadArtifactUrl={downloadArtifactUrl}
                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
                 isJobView={isJobView}
                 isJobCI={isJobCI}
@@ -578,7 +578,11 @@ const HistoryLogs = ({
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} renderCIListHeader={renderCIListHeader} />
+                    <GitChanges
+                        gitTriggers={triggerDetails.gitTriggers}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        renderCIListHeader={renderCIListHeader}
+                    />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
@@ -588,7 +592,7 @@ const HistoryLogs = ({
                             status={triggerDetails.status}
                             artifact={triggerDetails.artifact}
                             blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            getArtifactPromise={_getArtifactPromise}
+                            downloadArtifactUrl={downloadArtifactUrl}
                             isArtifactUploaded={triggerDetails.isArtifactUploaded}
                             isJobView={isJobView}
                             isJobCI={isJobCI}

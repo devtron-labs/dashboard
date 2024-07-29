@@ -431,13 +431,6 @@ export function handleTimeWithOffset(ts: string) {
     return timestamp
 }
 
-export function getArtifact(pipelineId, workflowId) {
-    const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${workflowId}`
-    return get(URL).then((response) => {
-        return response
-    })
-}
-
 export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {
     const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${workflowId}/ci-job/artifacts`
     return get(URL)

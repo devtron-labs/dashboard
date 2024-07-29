@@ -457,7 +457,7 @@ const ChartDeploymentHistory = ({
             )
         }
         return (
-            <div className="bcn-0 border-btm">
+            <div className="bcn-0 border-btm h-100">
                 <CodeEditor
                     value={
                         selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
@@ -466,7 +466,7 @@ const ChartDeploymentHistory = ({
                     }
                     noParsing
                     mode="yaml"
-                    height="100vh"
+                    height="100%"
                     readOnly
                 />
             </div>
@@ -486,7 +486,7 @@ const ChartDeploymentHistory = ({
 
         return (
             <div
-                className={`trigger-outputs-container ${
+                className={`trigger-outputs-container h-100 ${
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
                 }`}
                 data-testid="trigger-output-container"
