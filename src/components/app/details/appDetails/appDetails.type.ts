@@ -228,7 +228,7 @@ export interface SecurityVulnerabilityCardType {
     appId?: string
     envId?: string
     installedAppId?: number
-    isExternalApp?: boolean
+    isExternalCI?: boolean
 }
 
 export interface DeployedCommitCardType {
