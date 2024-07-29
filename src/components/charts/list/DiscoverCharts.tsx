@@ -23,6 +23,7 @@ import {
     DevtronProgressing,
     PageHeader,
     useMainContext,
+    DetectBottom,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
@@ -43,7 +44,7 @@ import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
@@ -53,7 +54,6 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
@@ -531,11 +531,15 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                         datatestid={`single-${index}`}
                                                                     />
                                                                 ))}
-                                                            {state.hasMoreCharts && (
-                                                                <DetectBottom callback={reloadNextAfterBottom} />
-                                                            )}
                                                         </div>
                                                         {state.hasMoreCharts && (
+                                                            <DetectBottom
+                                                                callback={reloadNextAfterBottom}
+                                                                hasError={!!state.applyFilterError}
+                                                            />
+                                                        )}
+
+                                                        {state.hasMoreCharts && !state.applyFilterError && (
                                                             <Progressing
                                                                 size={25}
                                                                 styles={{ height: '0%', paddingBottom: '5px' }}

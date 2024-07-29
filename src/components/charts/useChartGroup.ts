@@ -44,7 +44,7 @@ function getSelectedInstances(charts) {
 export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     const { serverMode } = useMainContext()
 
-    const initialState = {
+    const initialState: ChartGroupState = {
         chartGroups: [],
         chartRepos: [],
         charts: [],
@@ -62,6 +62,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         pageOffset: PaginationParams.pageOffset,
         pageSize: PaginationParams.pageSize,
         hasMoreCharts: true,
+        applyFilterError: null
     }
     const [state, setState] = useState<ChartGroupState>(initialState)
 
@@ -182,6 +183,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
 
     async function applyFilterOnCharts(queryString: string, resetPage?: boolean): Promise<any> {
         try {
+            setState((state) => ({ ...state, applyFilterError: null }))
             if (resetPage) {
                 const { result: availableCharts } = await getAvailableCharts(
                     queryString,
@@ -217,6 +219,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
             }
         } catch (err) {
             showError(err)
+            setState((state) => ({ ...state, applyFilterError: err }))
         } finally {
             setState((state) => ({ ...state, loading: false }))
         }

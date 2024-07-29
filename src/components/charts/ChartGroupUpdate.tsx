@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -31,7 +31,6 @@ import { ChartSelector } from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
-import DetectBottom from '../common/DetectBottom'
 import { sortOptionsByLabel } from '../common'
 
 export default function ChartGroupUpdate({}) {
@@ -324,8 +323,8 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
-                                        {state.hasMoreCharts && <Progressing />}
-                                        {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
+                                        {state.hasMoreCharts && !state.applyFilterError && <Progressing />}
+                                        {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} hasError={!!state.applyFilterError} />}
                                     </div>
                                 )}
                             </div>

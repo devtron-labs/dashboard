@@ -308,7 +308,6 @@ src/components/common/DatePickers/Calender.tsx
 src/components/common/DatePickers/DayPickerRangeController.tsx
 src/components/common/DeprecatedUpdateWarn.tsx
 src/components/common/Description/GenericDescription.tsx
-src/components/common/DetectBottom.tsx
 src/components/common/EditableTextArea/EditableTextArea.tsx
 src/components/common/ExportToCsv/ExportToCsv.tsx
 src/components/common/ExportToCsv/constants.ts
