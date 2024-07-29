@@ -26,7 +26,12 @@ import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-termina
 import './ClusterMetaData.scss'
 import { NodeDetailTabs } from '../../app/types'
 
-export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: ClusterMetaDataBarProps) => {
+export const ClusterMetaDataBar = ({
+    clusterName,
+    namespace,
+    clusterId,
+    isVirtualEnvironment,
+}: ClusterMetaDataBarProps) => {
     const { isSuperAdmin } = useMainContext()
     const history = useHistory()
     const { pathname } = history.location
@@ -75,13 +80,19 @@ export const ClusterMetaDataBar = ({ clusterName, namespace, clusterId }: Cluste
             <span className="dc__opacity-0_8"> Cluster: {clusterName}</span>
             <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
             <span className="dc__opacity-0_8">Namespace: {namespace}</span>
-            <ArrowLeft
-                className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
-                style={{ ['--rotateBy' as string]: '180deg' }}
-            />
-            {renderNavigationToAllResources()}
-            <div className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`} />
-            {renderNavigationToAClusterTerminal()}
+            {!isVirtualEnvironment && (
+                <>
+                    <ArrowLeft
+                        className={`${darkTheme ? 'fcn-0 dc__opacity-0_5' : ''} rotate dc__gap-6 icon-dim-16 flex`}
+                        style={{ ['--rotateBy' as string]: '180deg' }}
+                    />
+                    {renderNavigationToAllResources()}
+                    <div
+                        className={`${darkTheme ? 'dc__border-left-n0' : 'dc__border-left-n9'} h-12 dc__opacity-0_2`}
+                    />
+                    {renderNavigationToAClusterTerminal()}
+                </>
+            )}
         </div>
     )
 }
