@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,13 +23,14 @@ import {
     GenericEmptyState,
     AppStatus,
     useMainContext,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
-import { Pagination, LazyImage } from '../../common'
+import { LazyImage } from '../../common'
 import { URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
@@ -395,6 +396,7 @@ export default function ExternalArgoList({
             filteredArgoAppsList.length > 20 &&
             !fetchingExternalApps && (
                 <Pagination
+                    rootClassName="pagination-wrapper"
                     size={filteredArgoAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

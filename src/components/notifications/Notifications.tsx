@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
 import { ErrorScreenNotAuthorized, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
