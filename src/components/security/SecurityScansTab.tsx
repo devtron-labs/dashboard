@@ -506,7 +506,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                     const total = scan.severityCount.critical + scan.severityCount.moderate + scan.severityCount.low
                     return (
                         <div
-                            className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center"
+                            className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.setState({
