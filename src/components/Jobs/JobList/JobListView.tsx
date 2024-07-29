@@ -43,7 +43,7 @@ export default function JobListView(props: JobListViewProps) {
     const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
-        trackByGAEvent('Job', event.currentTarget.dataset.action)
+        trackByGAEvent('Job List', event.currentTarget.dataset.action)
         props.handleEditJob(event.currentTarget.dataset.key)
     }
 
