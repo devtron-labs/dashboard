@@ -19,7 +19,6 @@
 | ENABLE_EXTERNAL_ARGO_CD               | "true"    | Enable External Argo CD                     |
 | ENABLE_SCOPED_VARIABLES            | "false" | For enabling scoped variable from UI, also need to enable it in backend.          |
 | ENABLE_RESTART_WORKLOAD            | "false"    | Show restart pods option in app details page   |
-| ENABLE_RESOURCE_SCAN                    | false         | Enable image scan for resources        |
 | FORCE_SECURITY_SCANNING            | "false"   | Force security scanning                         |
 | GA_ENABLED                         | "true"    | Enable Google Analytics (GA)                   |
 | GA_TRACKING_ID                     | G-XXXXXXXX | Google Analytics tracking ID                 |
