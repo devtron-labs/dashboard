@@ -437,7 +437,10 @@ const GitForm = ({
 
     const [loading, setLoading] = useState(false)
     const [customState, setCustomState] = useState({
-        password: { value: !password && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
+        password: {
+            value: !password && id && authMode === 'USERNAME_PASSWORD' ? DEFAULT_SECRET_PLACEHOLDER : password,
+            error: '',
+        },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
@@ -519,16 +522,16 @@ const GitForm = ({
                       username: customState.username.value,
                       password: parsePassword(customState.password.value),
                       ...getTLSConnectionPayloadValues({
-                        enableTLSVerification: tlsInput.enableTLSVerification,
-                        isCADataPresent: tlsInput.isCADataPresent,
-                        isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
-                        isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
-                        tlsConfig: {
-                            caData: tlsInput.tlsConfig.caData.value,
-                            tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
-                            tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
-                        },
-                    }),
+                          enableTLSVerification: tlsInput.enableTLSVerification,
+                          isCADataPresent: tlsInput.isCADataPresent,
+                          isTLSCertDataPresent: tlsInput.isTLSCertDataPresent,
+                          isTLSKeyDataPresent: tlsInput.isTLSKeyDataPresent,
+                          tlsConfig: {
+                              caData: tlsInput.tlsConfig.caData.value,
+                              tlsCertData: tlsInput.tlsConfig.tlsCertData.value,
+                              tlsKeyData: tlsInput.tlsConfig.tlsKeyData.value,
+                          },
+                      }),
                   }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
@@ -554,11 +557,13 @@ const GitForm = ({
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
-            if ((!id && !customState.password.value) || !customState.username.value) {
+            const isPasswordEmpty = (!id || authMode !== 'USERNAME_PASSWORD') && !customState.password.value
+
+            if (isPasswordEmpty || !customState.username.value) {
                 setCustomState((state) => ({
                     ...state,
-                    password: { value: state.password.value, error: !id ? 'This is a required field' : '' },
-                    username: { value: state.username.value, error: 'Required' },
+                    password: { value: state.password.value, error: isPasswordEmpty ? 'This is a required field' : '' },
+                    username: { value: state.username.value, error: !customState.username.value ? 'Required': '' },
                 }))
                 return
             }
