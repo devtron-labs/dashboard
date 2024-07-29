@@ -1,4 +1,4 @@
-import { SyntheticEvent } from 'react'
+import { SyntheticEvent, useCallback } from 'react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { CreatePluginFormFieldProps } from './types'
@@ -13,13 +13,21 @@ const CreatePluginFormField = ({
     required,
     disabled,
     useTextArea,
-    autoFocus,
     /**
-     * Not showing helperText in textarea is not required as of now
+     * Not using helperText, autofocus in textarea is not required as of now
      */
     helperText,
+    autoFocus,
     labelClassName,
 }: CreatePluginFormFieldProps) => {
+    const callbackRef = useCallback((inputElement) => {
+        if (inputElement && autoFocus) {
+            setTimeout(() => {
+                inputElement.focus()
+            }, 100)
+        }
+    }, [])
+
     const handleInputChange = (e: SyntheticEvent) => {
         handleChange({ action, payload: (e.target as HTMLInputElement).value })
     }
@@ -73,6 +81,7 @@ const CreatePluginFormField = ({
             helperText={helperText}
             rootClassName="h-36"
             labelClassName={labelClassName}
+            inputProps={{ ref: callbackRef } as React.InputHTMLAttributes<HTMLInputElement>}
         />
     )
 }

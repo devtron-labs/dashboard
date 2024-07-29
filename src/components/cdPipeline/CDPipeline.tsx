@@ -1219,7 +1219,7 @@ export default function CDPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pr-20 py-12 pl-20">
+                <div className="flex flex-align-center flex-justify bcn-0 px-20 py-12">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>

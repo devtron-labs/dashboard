@@ -43,7 +43,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handleDisableParentModalCloseUpdate,
     } = useContext(pipelineContext)
     const formInputVariables: VariableType[] =
-        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables
+        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables || []
 
     const [isLoadingParentPluginList, parentPluginList, parentPluginListError, reloadParentPluginList] = useAsync(
         () => getParentPluginList(appId ? +appId : null),
@@ -286,7 +286,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         data-testid="create-plugin-cta"
                         onClick={handleSubmit}
                     >
-                        Create Plugin
+                        Create Plugin Version
                     </button>
                 </div>
             </div>

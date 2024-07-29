@@ -78,7 +78,7 @@ export const pluginCreatableTagSelectStyles = {
     option: (base, state) => ({
         ...base,
         height: '36px',
-        padding: '8px 12px',
+        padding: '8px 0px',
         backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
         color: 'var(--N900)',
         cursor: 'pointer',

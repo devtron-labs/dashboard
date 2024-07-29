@@ -364,7 +364,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GROUPS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/permission-groups`,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
     BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline#build-stage`,
-    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
+    PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/custom-charts`,
     CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/custom-charts#prerequisites`,
     ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/install/install-devtron#devtron-admin-credentials`,

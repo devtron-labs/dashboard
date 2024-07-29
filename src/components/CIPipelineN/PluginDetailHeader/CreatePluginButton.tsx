@@ -37,7 +37,7 @@ const CreatePluginButton = () => {
             <Tippy className="default-tt" arrow={false} content="Save as a reusable plugin">
                 <button
                     type="button"
-                    className="flex h-20 br-4 dc__hover-b50-imp dc__no-shrink dc__gap-4 p-0 dc__no-background dc__no-border dc__outline-none-imp dc__tab-focus"
+                    className="flex br-4 dc__hover-b50-imp dc__no-shrink dc__gap-4 px-6 py-4 dc__no-background dc__no-border dc__outline-none-imp dc__tab-focus"
                     onClick={handleOpenCreatePluginModal}
                     data-testid="open-create-plugin-modal-button"
                 >
