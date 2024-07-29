@@ -189,6 +189,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     removeSearch() {
         const searchParams = new URLSearchParams(this.props.location.search)
         searchParams.set('search', '')
+        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
         this.setState(
             {
                 searchApplied: false,
@@ -199,12 +200,12 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 this.callGetSecurityScanList()
             },
         )
-        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     }
 
     removeFiltersAndSearch() {
         const searchParams = new URLSearchParams(this.props.location.search)
         searchParams.set('search', '')
+        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
         this.setState(
             {
                 filtersApplied: {
@@ -220,7 +221,6 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 this.callGetSecurityScanList()
             },
         )
-        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     }
 
     handleObjectTypeChange(selected) {
