@@ -54,7 +54,7 @@ import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
-import { DOCUMENTATION, SwitchItemValues } from '../../../../../config'
+import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -79,7 +79,7 @@ const EphemeralContainerDrawer = ({
     const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
         basicData: {
             targetContainerName: '',
-            containerName: 'debugger',
+            containerName: DEFAULT_CONTAINER_NAME.DEBUGGER,
             image: '',
         },
     })
