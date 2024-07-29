@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
+import dayjs from 'dayjs'
 import { RouteComponentProps } from 'react-router-dom'
 import {
     showError,
-    Progressing,
     ErrorScreenManager as ErrorScreen,
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
     GenericFilterEmptyState,
+    ZERO_TIME_STRING,
+    DATE_TIME_FORMATS,
+    EMPTY_STATE_STATUS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
-import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
+import { ReactComponent as ICDevtron } from '../../assets/icons/ic-devtron-app.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { getInitData, getSecurityScanList } from './security.service'
@@ -35,7 +38,6 @@ import { ScanDetailsModal, Pagination } from '../common'
 import { ViewType } from '../../config'
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types'
 import AppNotDeployed from '../../assets/img/app-not-deployed.png'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export class SecurityScansTab extends Component<RouteComponentProps<{}>, SecurityScansTabState> {
     constructor(props) {
@@ -109,7 +111,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             })
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (prevProps.location.search !== this.props.location.search) {
             this.callGetSecurityScanList()
         }
@@ -132,7 +134,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             envIds: filtersApplied.environments.map((s) => s.value),
         }
         if (this.state.searchObject) {
-            payload[this.state.searchObject.value] = this.state.searchObjectValue
+            payload[this.state.searchObject.value] = search
         }
         return payload
     }
@@ -185,6 +187,8 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
 
     removeSearch() {
+        const searchParams = new URLSearchParams(this.props.location.search)
+        searchParams.set('search', '')
         this.setState(
             {
                 searchApplied: false,
@@ -195,9 +199,12 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 this.callGetSecurityScanList()
             },
         )
+        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     }
 
     removeFiltersAndSearch() {
+        const searchParams = new URLSearchParams(this.props.location.search)
+        searchParams.set('search', '')
         this.setState(
             {
                 filtersApplied: {
@@ -213,6 +220,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 this.callGetSecurityScanList()
             },
         )
+        this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
     }
 
     handleObjectTypeChange(selected) {
@@ -270,7 +278,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                                         <button
                                             type="button"
                                             className="dc__saved-filter__close-btn pt-4 pb-4"
-                                            onClick={(event) => {
+                                            onClick={() => {
                                                 this.handleFilterRemove(filter, cluster)
                                             }}
                                         >
@@ -298,118 +306,113 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
     }
 
     renderFilters() {
-        if (
-            this.state.size > 0 ||
-            (this.state.size <= 0 &&
-                (this.state.searchApplied ||
-                    this.state.filtersApplied.severity.length ||
-                    this.state.filtersApplied.clusters.length ||
-                    this.state.filtersApplied.environments.length))
-        ) {
-            const filterTypes = ['severity', 'clusters', 'environments']
-            return (
-                <div className="security-scan__filters">
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                            this.search(e)
-                        }}
-                        className="flex-1 flex mr-24"
-                    >
-                        <div className="dc__search-with-dropdown">
+        const filterTypes = ['severity', 'clusters', 'environments']
+        return (
+            <div className="security-scan__filters">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        this.search(e)
+                    }}
+                    className="flex-1 flex mr-24"
+                >
+                    <div className="dc__search-with-dropdown">
+                        <ReactSelect
+                            className="search-with-dropdown__dropdown"
+                            isMulti={false}
+                            isSearchable={false}
+                            isClearable={false}
+                            value={this.state.searchObject}
+                            onChange={this.handleObjectTypeChange}
+                            hideSelectedOptions={false}
+                            options={[
+                                { label: 'Application', value: 'appName' },
+                                { label: 'Vulnerability', value: 'cveName' },
+                                { label: 'Deployment Object', value: 'objectName' },
+                            ]}
+                            components={{
+                                DropdownIndicator,
+                                Option: SelectSingleOption,
+                            }}
+                            styles={{
+                                ...styles,
+                                container: (base) => {
+                                    return {
+                                        ...base,
+                                        height: '36px',
+                                    }
+                                },
+                                control: (base) => ({
+                                    ...base,
+                                    border: 'none',
+                                    minHeight: '36px',
+                                }),
+                            }}
+                        />
+                        <Search className="icon-dim-20 ml-7" />
+                        <input
+                            autoComplete="off"
+                            type="text"
+                            className="search-with-dropdown__search"
+                            data-testid="search-in-security-scan"
+                            tabIndex={1}
+                            value={this.state.searchObjectValue}
+                            placeholder={`Search ${this.state.searchObject.label}`}
+                            onKeyDown={(e) => {
+                                if (e.keyCode === 13) {
+                                    this.search(e)
+                                }
+                            }}
+                            onChange={this.handleSearchChange}
+                        />
+                        {this.state.searchApplied ? (
+                            <Close className="icon-dim-20 cursor icon-n4 mr-5" onClick={this.removeSearch} />
+                        ) : null}
+                    </div>
+                </form>
+                <div className="flexbox">
+                    {filterTypes.map((filter, index) => {
+                        return (
                             <ReactSelect
-                                className="search-with-dropdown__dropdown"
-                                isMulti={false}
-                                isSearchable={false}
+                                key={filter}
+                                className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
+                                name={filter}
+                                tabIndex={index + 2}
+                                isMulti
                                 isClearable={false}
-                                value={this.state.searchObject}
-                                onChange={this.handleObjectTypeChange}
+                                value={this.state.filtersApplied[filter]}
+                                options={this.state.filters[filter]}
+                                placeholder={`${filter}`}
                                 hideSelectedOptions={false}
-                                options={[
-                                    { label: 'Application', value: 'appName' },
-                                    { label: 'Vulnerability', value: 'cveName' },
-                                    { label: 'Deployment Object', value: 'objectName' },
-                                ]}
+                                onChange={(selected) => this.handleFilterChange(filter, selected)}
                                 components={{
                                     DropdownIndicator,
-                                    Option: SelectSingleOption,
+                                    ValueContainer,
+                                    Option,
                                 }}
                                 styles={{
-                                    ...styles,
-                                    container: (base, state) => {
+                                    container: (base) => {
                                         return {
                                             ...base,
                                             height: '36px',
                                         }
                                     },
-                                    control: (base, state) => ({
+                                    control: (base) => ({
                                         ...base,
-                                        border: 'none',
                                         minHeight: '36px',
                                     }),
+                                    ...styles,
                                 }}
                             />
-                            <Search className="icon-dim-20 ml-7" />
-                            <input
-                                autoComplete="off"
-                                type="text"
-                                className="search-with-dropdown__search"
-                                data-testid="search-in-security-scan"
-                                tabIndex={1}
-                                value={this.state.searchObjectValue}
-                                placeholder={`Search ${this.state.searchObject.label}`}
-                                onKeyDown={(e) => {
-                                    if (e.keyCode === 13) {
-                                        this.search(e)
-                                    }
-                                }}
-                                onChange={this.handleSearchChange}
-                            />
-                            {this.state.searchApplied ? (
-                                <Close className="icon-dim-20 cursor icon-n4 mr-5" onClick={this.removeSearch} />
-                            ) : null}
-                        </div>
-                    </form>
-                    <div className="flexbox">
-                        {filterTypes.map((filter, index) => {
-                            return (
-                                <ReactSelect
-                                    key={filter}
-                                    className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
-                                    name={filter}
-                                    tabIndex={index + 2}
-                                    isMulti
-                                    isClearable={false}
-                                    value={this.state.filtersApplied[filter]}
-                                    options={this.state.filters[filter]}
-                                    placeholder={`${filter}`}
-                                    hideSelectedOptions={false}
-                                    onChange={(selected) => this.handleFilterChange(filter, selected)}
-                                    components={{
-                                        DropdownIndicator,
-                                        ValueContainer,
-                                        Option,
-                                    }}
-                                    styles={{
-                                        container: (base, state) => {
-                                            return {
-                                                ...base,
-                                                height: '36px',
-                                            }
-                                        },
-                                        control: (base, state) => ({
-                                            ...base,
-                                            minHeight: '36px',
-                                        }),
-                                        ...styles,
-                                    }}
-                                />
-                            )
-                        })}
-                    </div>
+                        )
+                    })}
                 </div>
-            )
-        }
+            </div>
+        )
+    }
+
+    handleClose = () => {
+        this.setState({ uniqueId: { appId: 0, imageScanDeployInfoId: 0, envId: 0 } })
     }
 
     renderModal() {
@@ -420,9 +423,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                     showAppInfo
                     uniqueId={this.state.uniqueId}
                     name={this.state.name}
-                    close={() => {
-                        this.setState({ uniqueId: { appId: 0, imageScanDeployInfoId: 0, envId: 0 } })
-                    }}
+                    close={this.handleClose}
                 />
             )
         }
@@ -442,12 +443,32 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         }
     }
 
+    renderHeader = () => (
+        <div className="table__row-grid display-grid dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bcn-0">
+            <span className="icon-dim-24" />
+            <span className="fs-12 lh-20 fw-6 cn-7">APP NAME</span>
+            <span className="fs-12 lh-20 fw-6 cn-7">ENVIRONMENTS</span>
+            <span className="fs-12 lh-20 fw-6 cn-7">SECURITY SCAN</span>
+            <span className="fs-12 lh-20 fw-6 cn-7">SCANNED ON</span>
+        </div>
+    )
+
     renderTable() {
         if (this.state.view === ViewType.LOADING) {
+            const arrayLoading = Array.from(Array(3)).map((index) => index)
             return (
-                <div style={{ height: 'calc(100vh - 200px)' }}>
-                    <Progressing pageLoader />
-                </div>
+                <>
+                    {this.renderHeader()}
+                    {arrayLoading.map(() => (
+                        <div className="display-grid table__row-grid show-shimmer-loading dc__gap-16 px-20 py-10">
+                            <span className="child child-shimmer-loading" />
+                            <span className="child child-shimmer-loading" />
+                            <span className="child child-shimmer-loading" />
+                            <span className="child child-shimmer-loading" />
+                            <span className="child child-shimmer-loading w-250" />
+                        </div>
+                    ))}
+                </>
             )
         }
         if (this.state.view === ViewType.ERROR) {
@@ -465,18 +486,9 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                 this.state.filtersApplied.environments.length ||
                 this.state.filtersApplied.clusters.length)
         ) {
-            const handleButton = () => {
-                return (
-                    <button type="button" className="cta ghosted" onClick={this.removeFiltersAndSearch}>
-                        Clear all Filters
-                    </button>
-                )
-            }
             return (
                 <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
-                    <GenericFilterEmptyState
-                        handleClearFilters={this.removeFiltersAndSearch}
-                    />
+                    <GenericFilterEmptyState handleClearFilters={this.removeFiltersAndSearch} />
                 </div>
             )
         }
@@ -488,82 +500,54 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             )
         }
         return (
-            <>
-                <table className="user__table">
-                    <tbody>
-                        <tr className="table__row-head">
-                            <th className="table__title">NAME</th>
-                            <th className="table__title table__cell--type">TYPE</th>
-                            <th className="table__title">SECURITY SCAN</th>
-                            <th className="table__title">ENVIRONMENT</th>
-                            <th className="table__title" data-testid="last-scan-status">
-                                LAST SCANNED
-                            </th>
-                            <th className="table__title">
-                                <div className="icon-dim-20" />
-                            </th>
-                        </tr>
-                        {this.state.securityScans.map((scan) => {
-                            const total =
-                                scan.severityCount.critical + scan.severityCount.moderate + scan.severityCount.low
-                            return (
-                                <tr
-                                    key={scan.name}
-                                    className="table__row"
-                                    onClick={(event) => {
-                                        event.stopPropagation()
-                                        this.setState({
-                                            name: scan.name,
-                                            uniqueId: {
-                                                imageScanDeployInfoId: scan.imageScanDeployInfoId,
-                                                appId: scan.appId,
-                                                envId: scan.envId,
-                                            },
-                                        })
-                                    }}
-                                >
-                                    <td
-                                        className="security__data dc__ellipsis-right"
-                                        data-testid={`scanned-app-list-${scan.name}`}
-                                    >
-                                        {scan.name}
-                                    </td>
-                                    <td className="security__data table__cell--type dc__ellipsis-right">{scan.type}</td>
-                                    <td className="security__data dc__ellipsis-right">
-                                        {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
-                                        {scan.severityCount.critical !== 0 ? (
-                                            <span className="dc__fill-critical">
-                                                {scan.severityCount.critical} Critical
-                                            </span>
-                                        ) : null}
-                                        {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? (
-                                            <span className="dc__fill-moderate">
-                                                {scan.severityCount.moderate} Moderate
-                                            </span>
-                                        ) : null}
-                                        {scan.severityCount.critical === 0 &&
-                                        scan.severityCount.moderate === 0 &&
-                                        scan.severityCount.low !== 0 ? (
-                                            <span className="dc__fill-low">{scan.severityCount.low} Low</span>
-                                        ) : null}
-                                    </td>
-                                    <td className="security__data">{scan.environment}</td>
-                                    <td
-                                        className="security__data table__cell--time dc__ellipsis-right"
-                                        data-testid="image-scan-security-check"
-                                    >
-                                        {scan.lastExecution}
-                                    </td>
-                                    <td className="security__data">
-                                        <Arrow className="table__row-icon dc__align-right icon-dim-20 fcn-6" />
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+            <div>
+                {this.renderHeader()}
+                {this.state.securityScans.map((scan) => {
+                    const total = scan.severityCount.critical + scan.severityCount.moderate + scan.severityCount.low
+                    return (
+                        <div
+                            className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                this.setState({
+                                    name: scan.name,
+                                    uniqueId: {
+                                        imageScanDeployInfoId: scan.imageScanDeployInfoId,
+                                        appId: scan.appId,
+                                        envId: scan.envId,
+                                    },
+                                })
+                            }}
+                        >
+                            <ICDevtron className="icon-dim-24 dc__no-shrink" />
+                            <span className="cb-5 dc__ellipsis-right lh-20" data-testid={`scanned-app-list-${scan.name}`}>
+                                {scan.name}
+                            </span>
+                            <span className="dc__ellipsis-right lh-20">{scan.environment}</span>
+                            <div className="dc__ellipsis-right">
+                                {total === 0 ? <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span> : null}
+                                {scan.severityCount.critical !== 0 ? (
+                                    <span className="severity-chip severity-chip--critical dc__w-fit-content">{scan.severityCount.critical} Critical</span>
+                                ) : null}
+                                {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? (
+                                    <span className="severity-chip severity-chip--medium dc__w-fit-content">{scan.severityCount.moderate} Moderate</span>
+                                ) : null}
+                                {scan.severityCount.critical === 0 &&
+                                scan.severityCount.moderate === 0 &&
+                                scan.severityCount.low !== 0 ? (
+                                    <span className="severity-chip severity-chip--low dc__w-fit-content">{scan.severityCount.low} Low</span>
+                                ) : null}
+                            </div>
+                            <span data-testid="image-scan-security-check lh-20">
+                                {scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
+                                    ? dayjs(scan.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
+                                    : ''}
+                            </span>
+                        </div>
+                    )
+                })}
                 {this.renderPagination()}
-            </>
+            </div>
         )
     }
 

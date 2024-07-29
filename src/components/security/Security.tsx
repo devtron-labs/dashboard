@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab'
@@ -63,14 +63,28 @@ export class Security extends Component<SecurityProps> {
         )
     }
 
+    getTippyContent = () => (
+        <div className="px-12 pt-12 fs-13 fw-4">
+            Devtron provides DevSecOps capabilities across your software development life cycle.
+            <p className="pt-20 m-0">
+            One of the key components of DevSecOps is the detection of security risks. Currently, Devtron supports the following types of scanning:
+            </p>
+            <ul className='pl-20'>
+                <li>Image Scan</li>
+                <li>Code Scan</li>
+                <li>Kubernetes Manifest Scan</li>
+            </ul>
+        </div>
+    )
+
     renderPageheader() {
         return (
             <PageHeader
                 headerName="Security"
                 tippyProps={{
+                    isTippyCustomized: true,
                     tippyRedirectLink: DOCUMENTATION.SECURITY,
-                    tippyMessage: 'Learn more',
-                    TippyIcon: ICHelpOutline,
+                    additionalContent: this.getTippyContent()
                 }}
                 showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
