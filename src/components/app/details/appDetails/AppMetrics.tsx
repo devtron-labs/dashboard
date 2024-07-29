@@ -282,8 +282,7 @@ export const AppMetrics: React.FC<{
     return (
         <section
             data-testid="app-metrices-wrapper"
-            className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
-            style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
+            className="app-summary bcn-0 pl-24 pr-24 pb-20 w-100 dc__border-bottom-n1"
         >
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>

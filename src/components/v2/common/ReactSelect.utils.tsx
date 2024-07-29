@@ -112,6 +112,9 @@ export const styles = {
     },
 }
 
+/**
+ * @deprecated - use SelectOption from fe-common
+ */
 export const Option = (props) => {
     const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)

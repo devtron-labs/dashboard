@@ -77,7 +77,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
                     <span className="fw-6">{props.job.name}</span>
                 </div>
-                <button type="button" className="button-edit button-edit--white" onClick={handleEditJob}>
+                <button type="button" className="button-edit" onClick={handleEditJob}>
                     <Settings className="button-edit__icon" />
                 </button>
             </div>

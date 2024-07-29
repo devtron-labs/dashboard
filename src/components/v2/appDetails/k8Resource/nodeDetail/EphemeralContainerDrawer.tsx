@@ -23,6 +23,7 @@ import {
     YAMLStringify,
     InfoIconTippy,
     CodeEditor,
+    SelectOption,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -53,7 +54,7 @@ import { IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
 import { selectStyles } from './nodeDetail.util'
-import { DOCUMENTATION, SwitchItemValues } from '../../../../../config'
+import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,
@@ -78,7 +79,7 @@ const EphemeralContainerDrawer = ({
     const [ephemeralForm, setEphemeralForm] = useState<EphemeralForm>({
         basicData: {
             targetContainerName: '',
-            containerName: 'debugger',
+            containerName: DEFAULT_CONTAINER_NAME.DEBUGGER,
             image: '',
         },
     })
@@ -140,7 +141,7 @@ const EphemeralContainerDrawer = ({
             if (hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value
                 const filteredImageList = filterImageList(JSON.parse(imageValue), appDetails?.k8sVersion)
-                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
+                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE, IMAGE_LIST.DESCRIPTION)
                 setImageListOption(option)
                 setEphemeralForm({
                     ...ephemeralForm,
@@ -241,6 +242,13 @@ const EphemeralContainerDrawer = ({
         }
     }
 
+    const getImageTippyContent = (data) => {
+        return (
+            <span style={{ display: 'block', width: '220px' }}>
+                <span className="fs-12 fw-4">{data.description}</span>
+            </span>)
+    }
+
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20">
@@ -289,6 +297,7 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
+                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" tippyContent={getImageTippyContent(props.data)} {...props} />,
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}
