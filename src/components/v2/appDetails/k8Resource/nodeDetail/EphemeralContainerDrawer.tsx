@@ -141,7 +141,7 @@ const EphemeralContainerDrawer = ({
             if (hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value
                 const filteredImageList = filterImageList(JSON.parse(imageValue), appDetails?.k8sVersion)
-                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE)
+                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE, IMAGE_LIST.DESCRIPTION)
                 setImageListOption(option)
                 setEphemeralForm({
                     ...ephemeralForm,
@@ -242,6 +242,13 @@ const EphemeralContainerDrawer = ({
         }
     }
 
+    const getImageTippyContent = (data) => {
+        return (
+            <span style={{ display: 'block', width: '220px' }}>
+                <span className="fs-12 fw-4">{data.description}</span>
+            </span>)
+    }
+
     const renderBasicEphemeral = (): JSX.Element => {
         return (
             <div className="p-20">
@@ -290,7 +297,7 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
-                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" {...props} />,
+                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" tippyContent={getImageTippyContent(props.data)} {...props} />,
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}
