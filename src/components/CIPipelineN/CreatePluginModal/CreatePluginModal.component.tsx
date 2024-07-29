@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ReactGA from 'react-ga4'
+import { toast } from 'react-toastify'
 import {
     Checkbox,
     CHECKBOX_VALUE,
@@ -17,7 +19,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-import { toast } from 'react-toastify'
 import CreatePluginFormContent from './CreatePluginFormContent'
 import {
     CreatePluginFormType,
@@ -207,6 +208,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     }
 
     const handleSubmit = async () => {
+        ReactGA.event({
+            category: 'Pipeline configuration',
+            action: 'Save as plugin',
+        })
+
         if (Object.values(pluginFormError).some((error) => !!error)) {
             toast.error('Please fix the errors before saving the plugin')
             return
