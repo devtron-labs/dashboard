@@ -4794,3 +4794,12 @@ textarea::placeholder {
         background: var(--N100, #EDF1F5);
     }
 }
+
+.pagination-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0px 24px;
+    justify-content: space-between;
+    margin: 0px;
+    background-color: white;
+}

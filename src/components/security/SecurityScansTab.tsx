@@ -26,6 +26,7 @@ import {
     ZERO_TIME_STRING,
     DATE_TIME_FORMATS,
     EMPTY_STATE_STATUS,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { ReactComponent as ICDevtron } from '../../assets/icons/ic-devtron-app.svg'
@@ -34,7 +35,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { getInitData, getSecurityScanList } from './security.service'
 import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator, styles, ValueContainer, Option } from './security.util'
-import { ScanDetailsModal, Pagination } from '../common'
+import { ScanDetailsModal } from '../common'
 import { ViewType } from '../../config'
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types'
 import AppNotDeployed from '../../assets/img/app-not-deployed.png'
@@ -433,6 +434,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         if (this.state.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="pagination-wrapper"
                     size={this.state.size}
                     pageSize={this.state.pageSize}
                     offset={this.state.offset}
@@ -520,22 +522,35 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                             }}
                         >
                             <ICDevtron className="icon-dim-24 dc__no-shrink" />
-                            <span className="cb-5 dc__ellipsis-right lh-20" data-testid={`scanned-app-list-${scan.name}`}>
+                            <span
+                                className="cb-5 dc__ellipsis-right lh-20"
+                                data-testid={`scanned-app-list-${scan.name}`}
+                            >
                                 {scan.name}
                             </span>
                             <span className="dc__ellipsis-right lh-20">{scan.environment}</span>
                             <div className="dc__ellipsis-right">
-                                {total === 0 ? <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span> : null}
+                                {total === 0 ? (
+                                    <span className="severity-chip severity-chip--passed dc__w-fit-content">
+                                        Passed
+                                    </span>
+                                ) : null}
                                 {scan.severityCount.critical !== 0 ? (
-                                    <span className="severity-chip severity-chip--critical dc__w-fit-content">{scan.severityCount.critical} Critical</span>
+                                    <span className="severity-chip severity-chip--critical dc__w-fit-content">
+                                        {scan.severityCount.critical} Critical
+                                    </span>
                                 ) : null}
                                 {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? (
-                                    <span className="severity-chip severity-chip--medium dc__w-fit-content">{scan.severityCount.moderate} Moderate</span>
+                                    <span className="severity-chip severity-chip--medium dc__w-fit-content">
+                                        {scan.severityCount.moderate} Moderate
+                                    </span>
                                 ) : null}
                                 {scan.severityCount.critical === 0 &&
                                 scan.severityCount.moderate === 0 &&
                                 scan.severityCount.low !== 0 ? (
-                                    <span className="severity-chip severity-chip--low dc__w-fit-content">{scan.severityCount.low} Low</span>
+                                    <span className="severity-chip severity-chip--low dc__w-fit-content">
+                                        {scan.severityCount.low} Low
+                                    </span>
                                 ) : null}
                             </div>
                             <span data-testid="image-scan-security-check lh-20">

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     showError,
@@ -26,11 +26,12 @@ import {
     Reload,
     GenericEmptyState,
     CiPipelineSourceConfig,
+    EMPTY_STATE_STATUS,
+    Pagination,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { NavLink } from 'react-router-dom'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
-import { Pagination } from '../common'
 import {
     getNotificationConfigurations,
     deleteNotifications,
@@ -53,7 +54,6 @@ import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { HostURLConfig } from '../../services/service.types'
 import { renderPipelineTypeIcon } from './notifications.util'
-import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
 export interface NotificationConfiguration {
     id: number
@@ -758,6 +758,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         if (this.state.pagination.size) {
             return (
                 <Pagination
+                    rootClassName="pagination-wrapper"
                     offset={this.state.pagination.offset}
                     pageSize={this.state.pagination.pageSize}
                     size={this.state.pagination.size}

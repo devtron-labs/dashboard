@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { Progressing, toastAccessDenied, useAsync, DEFAULT_BASE_PAGE_SIZE } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import {
+    Progressing,
+    toastAccessDenied,
+    useAsync,
+    DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
-import { Pagination, useAppContext } from '../../common'
+import { useAppContext } from '../../common'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 import { getEnvAppList } from '../AppGroup.service'
 import { EnvironmentsListViewType, EnvAppList, EnvironmentLinkProps } from '../AppGroup.types'
@@ -103,6 +109,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="pagination-wrapper"
                     size={envCount}
                     pageSize={paginationParamsChange.pageSize}
                     offset={paginationParamsChange.offset}
