@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -162,14 +162,16 @@ const ConfigMapSecretDataEditor = ({
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
-    usePrompt({ shouldPrompt: !!error })
+    usePrompt({ shouldPrompt: state.isValidateFormError })
 
-    if (state.isValidateFormError !== !!error) {
-        dispatch({
-            type: ConfigMapActionTypes.setValidateFormError,
-            payload: !!error,
-        })
-    }
+    useEffect(() => {
+        if (state.isValidateFormError !== !!error) {
+            dispatch({
+                type: ConfigMapActionTypes.setValidateFormError,
+                payload: !!error,
+            })
+        }
+    }, [error])
 
     const { yaml: lockedYaml } = useKeyValueYaml(
         state.currentData?.map(({ k }) => ({ k, v: Array(8).fill('*').join('') })),
@@ -184,7 +186,7 @@ const ConfigMapSecretDataEditor = ({
     const isESO = componentType === CMSecretComponentType.Secret && hasESO(state.externalType)
 
     const changeEditorMode = () => {
-        if (error) {
+        if (state.isValidateFormError) {
             toast.error('Please resolve the errors before switching editor mode.')
         } else if (state.yamlMode) {
             if (!state.secretMode) {
@@ -196,6 +198,8 @@ const ConfigMapSecretDataEditor = ({
                         isFormDirty: state.isFormDirty || !deepEqual(tempArr.current, state.currentData),
                     },
                 })
+            } else {
+                dispatch({ type: ConfigMapActionTypes.toggleYamlMode })
             }
             setTempArr([])
         } else {
@@ -286,14 +290,14 @@ const ConfigMapSecretDataEditor = ({
         return state.secretDataYaml
     }
 
-    const renderSecretShowHide = (): JSX.Element =>
+    const renderSecretShowHide = (showDivider = true): JSX.Element =>
         componentType === CMSecretComponentType.Secret &&
         !state.external &&
         !state.unAuthorized && (
             <>
                 <button
                     type="button"
-                    className="dc__unset-button-styles edit flex cursor cn-7 dc__gap-6"
+                    className="dc__unset-button-styles edit flex cursor cn-7 fw-6 dc__gap-6"
                     onClick={toggleSecretMode}
                 >
                     {state.secretMode ? (
@@ -308,7 +312,7 @@ const ConfigMapSecretDataEditor = ({
                         </>
                     )}
                 </button>
-                <div className="dc__divider" />
+                {showDivider && <div className="dc__divider" />}
             </>
         )
 
@@ -452,6 +456,21 @@ const ConfigMapSecretDataEditor = ({
                     v: state.secretMode || state.unAuthorized,
                 }}
                 onDelete={keyValueRemove}
+                showError
+                validationSchema={(value) => {
+                    const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
+                    return isValid
+                }}
+                errorMessages={['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed']}
+                onError={(err) => {
+                    if (state.isValidateFormError !== err) {
+                        dispatch({
+                            type: ConfigMapActionTypes.setValidateFormError,
+                            payload: err,
+                        })
+                    }
+                }}
+                headerComponent={renderSecretShowHide(false)}
             />
         )
     }
@@ -496,7 +515,7 @@ const ConfigMapSecretDataEditor = ({
 
     return (
         <>
-            <Prompt when={!!error} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt when={state.isValidateFormError} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             {renderDataEditorSelector()}
             {!state.external &&
                 (state.yamlMode

@@ -21,6 +21,7 @@ import {
     AppEnvDeploymentConfigQueryParamsType,
     AppEnvDeploymentConfigType,
     ConfigMapSecretDataConfigDatumDTO,
+    ConfigMapSecretDataDTO,
     ConfigResourceType,
     DeploymentTemplateDTO,
 } from '@Pages/Applications/DevtronApps/service.types'
@@ -247,7 +248,11 @@ const getDiffHeading = <DeploymentTemplate extends boolean>(
     )
 }
 
-const getConfigMapSecretData = (list1, list2, resourceType) => {
+const getConfigMapSecretData = (
+    list1: ConfigMapSecretDataDTO,
+    list2: ConfigMapSecretDataDTO,
+    resourceType: ConfigResourceType,
+) => {
     const combinedList = mergeConfigDataArraysByName(list1?.data.configData || [], list2?.data.configData || [])
 
     const deploymentConfig = combinedList.map(([currentItem, compareItem]) => {
@@ -309,9 +314,13 @@ export const getAppEnvDeploymentConfigList = (
     const cmData = getConfigMapSecretData(
         currentList.configMapData,
         compareList.configMapData,
-        EnvResourceType.ConfigMap,
+        ConfigResourceType.ConfigMap,
     )
-    const secretData = getConfigMapSecretData(currentList.secretsData, compareList.secretsData, EnvResourceType.Secret)
+    const secretData = getConfigMapSecretData(
+        currentList.secretsData,
+        compareList.secretsData,
+        ConfigResourceType.Secret,
+    )
 
     const configList = [deploymentTemplateData, ...cmData, ...secretData]
 
