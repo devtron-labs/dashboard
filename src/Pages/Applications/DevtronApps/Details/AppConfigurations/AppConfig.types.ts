@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
