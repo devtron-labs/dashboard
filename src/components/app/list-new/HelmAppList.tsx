@@ -24,6 +24,7 @@ import {
     Host,
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
+    DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -66,6 +67,7 @@ import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
 import { AppListResponse, HelmApp } from './AppListType'
+import moment from 'moment'
 
 export default function HelmAppList({
     serverMode,
@@ -501,7 +503,7 @@ export default function HelmAppList({
                             className="default-tt"
                             arrow
                             placement="top"
-                            content={handleUTCTime(app.lastDeployedAt, false)}
+                            content={moment(app.lastDeployedAt).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                         >
                             <p className="dc__truncate-text  m-0">{handleUTCTime(app.lastDeployedAt, true)}</p>
                         </Tippy>

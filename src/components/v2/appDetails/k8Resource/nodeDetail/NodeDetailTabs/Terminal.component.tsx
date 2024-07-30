@@ -321,6 +321,14 @@ const TerminalComponent = ({
                     Option,
                 },
             },
+            {
+                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: false,
+                isResourceBrowserView: !!isResourceBrowserView,
+                isClusterTerminalView: false,
+                containerName: selectedContainerName,
+                appDetails,
+            },
         ],
         tabSwitcher: {
             terminalData: {
