@@ -284,21 +284,25 @@ const AppComposeRouter = () => {
                             />
                         )}
                     </Route>,
-                    CompareWithButton && (
-                        <Route
-                            key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                            path={`${path}/:envName?/${URLS.APP_ENV_CONFIG_COMPARE}/:resourceType/:resourceName?`}
-                        >
-                            <DeploymentConfigCompare
-                                appName={appName}
-                                environments={environments.map(({ environmentId, environmentName, isProtected }) => ({
-                                    id: environmentId,
-                                    isProtected,
-                                    name: environmentName,
-                                }))}
-                            />
-                        </Route>
-                    ),
+                    ...(CompareWithButton
+                        ? [
+                              <Route
+                                  key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                                  path={`${path}/:envName?/${URLS.APP_ENV_CONFIG_COMPARE}/:resourceType/:resourceName?`}
+                              >
+                                  <DeploymentConfigCompare
+                                      appName={appName}
+                                      environments={environments.map(
+                                          ({ environmentId, environmentName, isProtected }) => ({
+                                              id: environmentId,
+                                              isProtected,
+                                              name: environmentName,
+                                          }),
+                                      )}
+                                  />
+                              </Route>,
+                          ]
+                        : []),
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}
                 {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

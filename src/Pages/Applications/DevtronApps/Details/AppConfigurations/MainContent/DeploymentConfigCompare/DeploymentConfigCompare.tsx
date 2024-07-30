@@ -11,7 +11,6 @@ import {
     ErrorScreenManager,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
-    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -44,11 +43,8 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
     const { appId, resourceType, resourceName, envName } = params
     const { pathname, search } = useLocation()
-    const { sortBy, sortOrder, handleSorting } = useStateFilters({
-        initialSortKey: 'sort-config',
-    })
 
-    // SEARCH PARAMS
+    // SEARCH PARAMS & SORTING
     const {
         compareWith,
         identifierId,
@@ -59,8 +55,12 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         configType,
         chartRefId,
         updateSearchParams,
-    } = useUrlFilters<never, AppEnvDeploymentConfigQueryParamsType>({
+        sortBy,
+        sortOrder,
+        handleSorting,
+    } = useUrlFilters<string, AppEnvDeploymentConfigQueryParamsType>({
         parseSearchParams: parseCompareWithSearchParams,
+        initialSortKey: 'sort-config',
     })
 
     // Ensure default query parameters are set if they are not already present
@@ -355,17 +355,13 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     }
 
     // ERROR SCREEN
-    if (comparisonDataErr || optionsErr) {
+    if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader)) {
         return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} />
     }
 
     return (
         <DeploymentConfigDiff
-            isLoading={
-                (comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader) &&
-                !comparisonDataErr &&
-                !optionsErr
-            }
+            isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
             {...appEnvDeploymentConfigList}
             goBackURL={getBackURL()}
             selectorsConfig={deploymentConfigDiffSelectors}

@@ -20,7 +20,12 @@ import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import { ResourceConfig, ResourceConfigState } from '../../service.types'
+import {
+    ConfigMapSecretDataConfigDatumDTO,
+    DeploymentTemplateDTO,
+    ResourceConfig,
+    ResourceConfigState,
+} from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -263,3 +268,7 @@ export enum AppEnvDeploymentConfigQueryParams {
     COMPARE_WITH_PIPELINE_ID = 'compareWithPipelineId',
     CHART_REF_ID = 'chartRefId',
 }
+
+export type DiffHeadingDataType<DeploymentTemplate> = DeploymentTemplate extends true
+    ? DeploymentTemplateDTO
+    : ConfigMapSecretDataConfigDatumDTO

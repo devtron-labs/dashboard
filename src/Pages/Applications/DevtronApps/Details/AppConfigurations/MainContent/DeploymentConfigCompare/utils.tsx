@@ -32,6 +32,7 @@ import {
     EnvResourceType,
     AppEnvDeploymentConfigQueryParams,
     DeploymentConfigParams,
+    DiffHeadingDataType,
 } from '../../AppConfig.types'
 
 /**
@@ -173,10 +174,6 @@ const getDiffViewData = (
 
     return diffViewData
 }
-
-export type DiffHeadingDataType<DeploymentTemplate> = DeploymentTemplate extends true
-    ? DeploymentTemplateDTO
-    : ConfigMapSecretDataConfigDatumDTO
 
 const getDiffHeading = <DeploymentTemplate extends boolean>(
     data: DiffHeadingDataType<DeploymentTemplate>,

@@ -65,7 +65,7 @@ export enum AppEnvDeploymentConfigType {
     DEFAULT_VERSION = 'DefaultVersion',
 }
 
-export interface DraftMetadata {
+export interface DraftMetadataDTO {
     appId: number
     envId: number
     resource: number
@@ -86,7 +86,7 @@ export interface DraftMetadata {
 }
 
 export interface ConfigMapSecretDataConfigDatumDTO extends ConfigDatum {
-    draftMetadata: DraftMetadata
+    draftMetadata: DraftMetadataDTO
 }
 
 export interface ConfigMapSecretDataType {
