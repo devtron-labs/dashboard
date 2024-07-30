@@ -90,8 +90,8 @@ const getObfuscatedData = (
 ) => {
     const _codeEditorData = { ...codeEditorData }
     if (type === ConfigResourceType.Secret && unAuthorized && _codeEditorData) {
-        Object.keys(_codeEditorData).reduce(
-            (acc, curr) => ({ ...acc, [acc[curr]]: Array(8).fill('*').join('') }),
+        return Object.keys(_codeEditorData).reduce(
+            (acc, curr) => ({ ...acc, [curr]: Array(8).fill('*').join('') }),
             _codeEditorData,
         )
     }
@@ -105,16 +105,16 @@ const getCodeEditorData = (
 ) => {
     if (type === ConfigResourceType.Secret) {
         if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
-            return cmSecretData.secretData
+            return getObfuscatedData(cmSecretData.secretData, type, isUnAuthorized)
         }
         if (Object.keys(cmSecretData.esoSecretData ?? {}).length > 0) {
-            return cmSecretData.esoSecretData
+            return getObfuscatedData(cmSecretData.esoSecretData, type, isUnAuthorized)
         }
         if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
-            return cmSecretData.defaultSecretData
+            return getObfuscatedData(cmSecretData.defaultSecretData, type, isUnAuthorized)
         }
         if (Object.keys(cmSecretData.defaultESOSecretData ?? {}).length > 0) {
-            return cmSecretData.defaultESOSecretData
+            return getObfuscatedData(cmSecretData.defaultESOSecretData, type, isUnAuthorized)
         }
     }
 
@@ -261,7 +261,7 @@ const getConfigMapSecretData = (
         const hasDiff = currentDiff.codeEditorValue.value !== compareDiff.codeEditorValue.value
 
         return {
-            id: `${resourceType}-${currentItem?.name || compareItem?.name}`,
+            id: `${resourceType === ConfigResourceType.ConfigMap ? EnvResourceType.ConfigMap : EnvResourceType.Secret}-${currentItem?.name || compareItem?.name}`,
             title: currentItem?.name || compareItem?.name,
             primaryConfig: {
                 heading: getDiffHeading(compareItem),
@@ -342,32 +342,20 @@ export const getAppEnvDeploymentConfigList = (
         {
             header: 'Config Maps',
             id: EnvResourceType.ConfigMap,
-            items: cmData.map(({ title, hasDiff, id }) => ({
+            items: cmData.map(({ title, hasDiff }) => ({
                 title,
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
-                onClick: () => {
-                    const element = document.getElementById(id)
-                    element?.scrollIntoView({
-                        behavior: 'smooth',
-                    })
-                },
             })),
             noItemsText: 'No configmaps',
         },
         {
             header: 'Secrets',
             id: EnvResourceType.Secret,
-            items: secretData.map(({ title, hasDiff, id }) => ({
+            items: secretData.map(({ title, hasDiff }) => ({
                 title,
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
-                onClick: () => {
-                    const element = document.getElementById(id)
-                    element?.scrollIntoView({
-                        behavior: 'smooth',
-                    })
-                },
             })),
             noItemsText: 'No secrets',
         },

@@ -344,6 +344,16 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         return `${generatePath(basePath, { appId })}/${additionalPath}`
     }
 
+    const getNavHelpText = () => {
+        const chart = currentEnvOptions?.defaultVersions.find(
+            ({ chartRefId: _chartRefId }) => _chartRefId === chartRefId,
+        )
+        const compareEnvText = `${chart ? `v${chart.chartVersion}(Default)` : compareWith || BASE_CONFIGURATIONS.name}`
+        const currentEnvText = envName || BASE_CONFIGURATIONS.name
+
+        return `Showing files from ${compareEnvText} & ${currentEnvText}`
+    }
+
     // ERROR SCREEN
     if (comparisonDataErr || optionsErr) {
         return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} />
@@ -361,7 +371,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}-${resourceName}`}
             navHeading={`Comparing ${envName || BASE_CONFIGURATIONS.name}`}
-            navHelpText={`Showing files from ${envName || BASE_CONFIGURATIONS.name} & ${compareWith || BASE_CONFIGURATIONS.name}`}
+            navHelpText={getNavHelpText()}
             sortOrder={sortOrder}
             onSortBtnClick={() => handleSorting(sortBy)}
         />

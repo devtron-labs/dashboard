@@ -259,7 +259,9 @@ export const EnvConfigurationsNav = ({
         }).split(EnvResourceType.DeploymentTemplate)[0]
 
         const searchParams = new URLSearchParams({
-            ...(environmentData.name === BASE_CONFIGURATIONS.name ? { compareWith: environments[0].name } : {}),
+            ...(environments.length && environmentData.name === BASE_CONFIGURATIONS.name
+                ? { compareWith: environments[0].name }
+                : {}),
             compareWithConfigType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
             configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
         })

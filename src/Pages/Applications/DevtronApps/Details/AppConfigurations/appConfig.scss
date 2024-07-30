@@ -40,7 +40,7 @@
 
         &.app-compose-env-configurations__nav {
             padding: 0;
-            grid-template-rows: 45px 46px 1fr;
+            display: block
         }
 
         &.app-compose-with-no-gitops-config__nav {

@@ -69,7 +69,7 @@ export const ProtectedConfigMapSecretDetails = ({
         draftData.action === 3 &&
             cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
             componentType === CMSecretComponentType.Secret &&
-            !data.unAuthorized,
+            !data?.unAuthorized,
     )
 
     useEffect(() => {
@@ -103,7 +103,7 @@ export const ProtectedConfigMapSecretDetails = ({
         const _codeEditorData = { ...codeEditorData }
         if (
             componentType === CMSecretComponentType.Secret &&
-            (data.unAuthorized || draftData?.dataEncrypted) &&
+            (data?.unAuthorized || draftData?.dataEncrypted) &&
             _codeEditorData
         ) {
             Object.keys(_codeEditorData).reduce(
@@ -123,7 +123,7 @@ export const ProtectedConfigMapSecretDetails = ({
                 if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultSecretData
                 }
-                if (Object.keys(data.defaultESOSecretData ?? {}).length > 0) {
+                if (Object.keys(cmSecretData.defaultESOSecretData ?? {}).length > 0) {
                     return cmSecretData.defaultESOSecretData
                 }
             }
@@ -160,7 +160,7 @@ export const ProtectedConfigMapSecretDetails = ({
             componentType === CMSecretComponentType.Secret
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === CMSecretComponentType.Secret && (data.unAuthorized ?? draftData?.unAuthorized),
+            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized),
         )
     }
 
@@ -179,7 +179,7 @@ export const ProtectedConfigMapSecretDetails = ({
             componentType === CMSecretComponentType.Secret
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === CMSecretComponentType.Secret && (data.unAuthorized ?? draftData?.unAuthorized),
+            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized),
         )
     }
 

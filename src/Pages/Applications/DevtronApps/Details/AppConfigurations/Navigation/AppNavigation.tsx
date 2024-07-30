@@ -133,7 +133,7 @@ export const AppNavigation = () => {
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
-                        showComparison
+                        showComparison={!isJobView}
                     />
                 )}
             </Route>
