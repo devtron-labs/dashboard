@@ -71,33 +71,17 @@
         position: relative;
         overflow: hidden;
 
-        .trigger-details-container {
-            height: 180px;
+        .trigger-details {
             transition: height 0.3s;
+            display: grid;
+            grid-template-columns: 60px 1fr;
 
-            .trigger-details {
-                height: 137px;
+            .trigger-details__summary {
                 display: grid;
-                grid-template-columns: 60px 1fr;
+                grid-template-rows: 1fr 1fr;
 
-                .trigger-details__summary {
-                    display: grid;
-                    grid-template-rows: 1fr 1fr;
-
-                    .inprogress-status-color {
-                        color: var(--inprogress-orange);
-                    }
-                }
-            }
-            &.with-trigger-metadata {
-                height: 198px;
-                transition: height 0.3s;
-
-                .trigger-details {
-                    height: 168px;
-                    .trigger-details__summary {
-                        grid-template-rows: 1fr 70px;
-                    }
+                .inprogress-status-color {
+                    color: var(--inprogress-orange);
                 }
             }
         }
@@ -121,7 +105,7 @@
             flex-basis: 100%;
             transition: flex-basis 0.3s;
 
-            .trigger-details-container {
+            .trigger-details {
                 overflow: hidden;
                 height: 0px;
                 transition: height 0.3s;
@@ -142,8 +126,6 @@
 
 .trigger-outputs-container {
     width: 100%;
-    overflow: auto;
-    height: 100%;
     background: var(--window-bg);
 
     .hover-trigger {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FetchIdDataStatus, History } from '@devtron-labs/devtron-fe-common-lib'
+import { FetchIdDataStatus, History, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CIPipeline {
     name: string
@@ -35,17 +35,24 @@ export interface BuildDetails {
     tagsEditable: boolean
     hideImageTaggingHardDelete: boolean
     fetchIdData: FetchIdDataStatus
+    scrollToTop: ReturnType<typeof useScrollable>[1]
+    scrollToBottom: ReturnType<typeof useScrollable>[2]
 }
 
-export interface HistoryLogsType {
+export interface HistoryLogsType
+    extends Pick<
+        BuildDetails,
+        | 'scrollToTop'
+        | 'scrollToBottom'
+        | 'isBlobStorageConfigured'
+        | 'isJobView'
+        | 'isJobCI'
+        | 'appIdFromParent'
+        | 'appReleaseTags'
+        | 'tagsEditable'
+        | 'hideImageTaggingHardDelete'
+    > {
     triggerDetails: History
-    isBlobStorageConfigured?: boolean
-    isJobView?: boolean
-    isJobCI?: boolean
-    appIdFromParent?: string
-    appReleaseTags?: []
-    tagsEditable: boolean
-    hideImageTaggingHardDelete: boolean
 }
 
 export interface SecurityTabType {

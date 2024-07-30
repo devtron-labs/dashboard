@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -48,6 +48,12 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+triggerId)
+    const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
+
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
@@ -228,6 +234,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                         renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
                         processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                        scrollToTop={scrollToTop}
+                        scrollToBottom={scrollToBottom}
                     />
                 </Route>
             )
@@ -266,7 +274,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                {renderDetail()}
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                    {renderDetail()}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>
