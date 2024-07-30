@@ -23,6 +23,7 @@ import { ReactComponent as InfoIcon } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as DeleteIcon } from '@Icons/ic-delete-interactive.svg'
 import { PATTERNS } from '@Config/index'
 
+import { CM_SECRET_COMPONENT_NAME } from './ConfigMapSecret.constants'
 import { KeyValue, KeyValueValidated, KeyValueYaml, OverrideProps } from './ConfigMapSecret.types'
 
 export const validateKeyValuePair = (arr: KeyValue[]): KeyValueValidated => {
@@ -155,7 +156,7 @@ export const Override = ({
                     <div className="override-subtitle" data-testid="env-override-subtitle">
                         {overridden
                             ? 'Deleting will discard the current overrides and base configuration will be applicable to this environment.'
-                            : `Overriding will fork the ${type} for this environment. Updating the base values will no longer affect this configuration.`}
+                            : `Overriding will fork the ${CM_SECRET_COMPONENT_NAME[type]} for this environment. Updating the base values will no longer affect this configuration.`}
                     </div>
                 )}
             </div>
