@@ -10,7 +10,7 @@ import { CollapsibleListProps } from './CollapsibleList.types'
 import './CollapsibleList.scss'
 
 const renderWithTippy = (tippyProps: TippyProps) => (children: React.ReactElement) => (
-    <Tippy {...tippyProps}>
+    <Tippy {...tippyProps} className={`default-tt ${tippyProps?.className || ''}`}>
         <div className="dc__align-self-start">{children}</div>
     </Tippy>
 )
@@ -22,9 +22,7 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
         <div className="mw-none bcn-0">
             {config.map(({ id, header, headerIconConfig, items, noItemsText, isExpanded }) => (
                 <Fragment key={id}>
-                    <div
-                        className={`flexbox dc__align-items-center dc__gap-4 py-6 px-8 br-4 ${isExpanded ? 'bcn-50' : ''}`}
-                    >
+                    <div className="flexbox dc__align-items-center dc__gap-4 py-6 px-8 br-4 dc__hover-n50">
                         <button
                             type="button"
                             className="dc__unset-button-styles mw-none flexbox dc__align-items-center flex-grow-1 p-0 cn-9 fs-12 lh-1-5 fw-6 dc__gap-4"
@@ -44,7 +42,7 @@ export const CollapsibleList = ({ config, onCollapseBtnClick }: CollapsibleListP
                                 <button
                                     {...headerIconConfig.btnProps}
                                     type="button"
-                                    className={`dc__unset-button-styles dc__no-shrink cursor br-4 bcn-0 dc__hover-n100 flex ${headerIconConfig.btnProps?.className || ''}`}
+                                    className={`dc__unset-button-styles dc__no-shrink cursor br-4 bcn-0 flex ${headerIconConfig.btnProps?.className || ''}`}
                                 >
                                     <headerIconConfig.Icon
                                         {...headerIconConfig.props}

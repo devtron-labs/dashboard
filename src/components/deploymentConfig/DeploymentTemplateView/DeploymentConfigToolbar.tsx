@@ -124,7 +124,13 @@ export default function DeploymentConfigToolbar({
                     <ReadmeIcon className="icon-dim-16 scn-7 cursor" onClick={handleReadMeClick} />
                 )}
                 {isValues && (
-                    <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                    <Tippy
+                        content={tippyMsg}
+                        placement="bottom-start"
+                        animation="shift-away"
+                        className="default-tt"
+                        arrow={false}
+                    >
                         <li className="flex left dc_width-max-content cursor">
                             <div className="w-40 h-20">
                                 <Toggle

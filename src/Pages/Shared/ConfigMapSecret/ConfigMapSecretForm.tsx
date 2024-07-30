@@ -696,9 +696,7 @@ export const ConfigMapSecretForm = React.memo(
         const renderDeleteModal = (): JSX.Element => {
             return (
                 <DeleteDialog
-                    title={`Delete ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'} '${
-                        configMapSecretData?.name
-                    }' ?`}
+                    title={`Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configMapSecretData?.name}' ?`}
                     description={`'${configMapSecretData?.name}' will not be used in future deployments. Are you sure?`}
                     closeDelete={closeDeleteModal}
                     delete={handleDelete}
@@ -716,7 +714,7 @@ export const ConfigMapSecretForm = React.memo(
                     <DeleteOverrideDraftModal
                         appId={+appId}
                         envId={envId ? +envId : -1}
-                        resourceType={componentType === CMSecretComponentType.Secret ? 2 : 1}
+                        resourceType={componentType}
                         resourceName={state.configName.value}
                         prepareDataToSave={prepareDataToDeleteOverrideDraft}
                         toggleModal={closeProtectedDeleteOverrideModal}
@@ -735,7 +733,7 @@ export const ConfigMapSecretForm = React.memo(
                         id={+id}
                         appId={+appId}
                         envId={envId ? +envId : -1}
-                        resourceType={componentType === CMSecretComponentType.Secret ? 2 : 1}
+                        resourceType={componentType}
                         resourceName={state.configName.value}
                         latestDraft={latestDraftData}
                         toggleModal={closeDeleteModal}
@@ -845,7 +843,7 @@ export const ConfigMapSecretForm = React.memo(
 
         const renderSubPathCheckBoxContent = (): JSX.Element => {
             return (
-                <span data-testid={`${componentType}-sub-path-checkbox`} className="mb-0">
+                <span data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="mb-0">
                     Set SubPath (same as
                     <a
                         href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -926,7 +924,7 @@ export const ConfigMapSecretForm = React.memo(
                     <div className="form__row">
                         <CustomInput
                             name="mountPath"
-                            dataTestid={`${componentType}-volume-path-textbox`}
+                            dataTestid={`${CM_SECRET_COMPONENT_NAME[componentType]}-volume-path-textbox`}
                             value={state.volumeMountPath.value}
                             label="Volume mount path"
                             placeholder="/directory-path"
@@ -959,7 +957,7 @@ export const ConfigMapSecretForm = React.memo(
                             className="radio-group-no-border"
                         >
                             <RadioGroupItem
-                                dataTestId={`${componentType}-${ConfigMapSecretUsageMap.environment.title
+                                dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.environment.title
                                     .toLowerCase()
                                     .split(' ')
                                     .join('-')}-radio-button`}
@@ -968,7 +966,7 @@ export const ConfigMapSecretForm = React.memo(
                                 {ConfigMapSecretUsageMap.environment.title}
                             </RadioGroupItem>
                             <RadioGroupItem
-                                dataTestId={`${componentType}-${ConfigMapSecretUsageMap.volume.title
+                                dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.volume.title
                                     .toLowerCase()
                                     .split(' ')
                                     .join('-')}-radio-button`}
@@ -988,7 +986,7 @@ export const ConfigMapSecretForm = React.memo(
                     <CustomInput
                         name="name"
                         label="Name"
-                        data-testid={`${componentType}-name-textbox`}
+                        data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-name-textbox`}
                         value={state.configName.value}
                         autoFocus
                         onChange={onConfigNameChange}
@@ -1139,7 +1137,7 @@ export const ConfigMapSecretForm = React.memo(
                                     (draftMode && !isAppAdmin) ||
                                     state.isValidateFormError
                                 }
-                                data-testid={`${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}-save-button`}
+                                data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-save-button`}
                                 type="submit"
                                 rootClassName="cta h-32 flex"
                                 onClick={handleSubmit}
@@ -1154,7 +1152,7 @@ export const ConfigMapSecretForm = React.memo(
                                         (draftMode && !isAppAdmin) ||
                                         state.isValidateFormError
                                     }
-                                    data-testid={`${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}-cancel-button`}
+                                    data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-cancel-button`}
                                     type="button"
                                     className="cta cancel h-32 flex"
                                     onClick={onCancel}
@@ -1173,7 +1171,7 @@ export const ConfigMapSecretForm = React.memo(
                     <SaveChangesModal
                         appId={+appId}
                         envId={envId ? +envId : -1}
-                        resourceType={componentType === CMSecretComponentType.Secret ? 2 : 1}
+                        resourceType={componentType}
                         resourceName={state.configName.value}
                         prepareDataToSave={preparePayload}
                         toggleModal={toggleDraftSaveModal}

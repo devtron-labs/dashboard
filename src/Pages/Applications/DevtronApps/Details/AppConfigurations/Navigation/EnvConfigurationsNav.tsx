@@ -214,8 +214,11 @@ export const EnvConfigurationsNav = ({
     ]
 
     const onEnvSelect = ({ id }: typeof environmentData) => {
-        const name = pathname.split(`${resourceType}/`)[1]
+        if (environmentData.id === id) {
+            return
+        }
 
+        const name = pathname.split(`${resourceType}/`)[1]
         history.push(getNavigationPath(path, params, id, resourceType, name, paramToCheck))
     }
 
