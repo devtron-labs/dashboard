@@ -1293,29 +1293,22 @@ button.anchor {
     background-color: $background;
 }
 
-.dc__striped-row {
-    &:nth-child(odd) {
-        @include dc__striped-row(var(--window-bg));
-
-        .app-status__icon {
-            @include dc__app-status-icon(var(--window-bg));
-        }
+.dc__striped-table {
+    div:nth-child(odd) {
+        @include dc__striped-row(var(--N50));
     }
 
-    &:nth-child(even) {
-        @include dc__striped-row(white);
-
-        .app-status__icon {
-            @include dc__app-status-icon(white);
-        }
+    div:nth-child(even) {
+        @include dc__striped-row(var(--N0));
     }
 
-    &:hover {
-        @include dc__striped-row(var(--B100));
+    // NOTE: for the header (1st row)
+    div:first-child {
+        @include dc__striped-row(var(--N0));
+    }
 
-        .app-status__icon {
-            @include dc__app-status-icon(var(--B100));
-        }
+    div:hover {
+        @include dc__striped-row(var(--B50));
     }
 }
 
