@@ -112,7 +112,7 @@
 }
 
 .select-material--trigger-view {
-    height: calc(100vh - 72px);
+    height: calc(100vh - 122px);
 }
 
 .select-material--regex-body {
@@ -132,13 +132,7 @@
     width: 530px;
     border: solid 1px var(--N200);
     background-color: var(--white);
-    margin: 16px 20px;
-    padding-top: 14px;
-    padding-bottom: 14px;
     border-radius: 4px;
-    &:last-child {
-        margin-bottom: 92px;
-    }
 }
 
 .material-history--cd {
@@ -189,7 +183,6 @@
     cursor: pointer;
     border: none;
     background-color: transparent;
-    padding: 2px;
     text-transform: uppercase;
     font-weight: 600;
     color: var(--B500);
@@ -251,18 +244,13 @@
 
 .material-history__text {
     font-size: 12px;
-    font-weight: normal;
-    font-style: normal;
     font-stretch: normal;
     line-height: 1.5;
     letter-spacing: normal;
-    color: var(--N700);
-    padding-top: 4px;
-    padding-bottom: 4px;
+    color: var(--N900);
+    padding-top: 2px;
+    padding-bottom: 2px;
     margin: 0px auto;
-    margin-left: 16px;
-    font-family: monospace;
-    margin-right: 16px;
 }
 
 .material-history__commit-msg {
@@ -292,6 +280,7 @@
     display: flex;
     align-items: center;
     text-transform: lowercase;
+    line-height: 16px;
 }
 
 .commit-hash--cd {
