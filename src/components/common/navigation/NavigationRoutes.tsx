@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
     useUserEmail,
@@ -26,6 +26,7 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -73,6 +74,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
+const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -175,7 +177,7 @@ export default function NavigationRoutes() {
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email, })
+                    scope.setUser({ email })
                 })
             }
             if (window._env_.GA_ENABLED) {
@@ -437,8 +439,17 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []
-                                        ),
+                                            : []),
+                                        ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                      path={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                  >
+                                                      <NetworkStatusInterface isSuperAdmin={isSuperAdmin} />
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -455,8 +466,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>,
                                     ]}
+                                    {/* TODO: Check why its coming as empty in case route is in other library */}
                                     {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB}>
+                                        <Route path={URLS.JOB} key={URLS.JOB}>
                                             <AppContext.Provider value={contextValue}>
                                                 <Jobs />
                                             </AppContext.Provider>
