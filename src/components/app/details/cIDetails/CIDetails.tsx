@@ -526,7 +526,7 @@ const HistoryLogs = ({
     const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-    
+
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
@@ -576,13 +576,11 @@ const HistoryLogs = ({
         <div className="trigger-outputs-container flexbox-col flex-grow-1">
             <Switch>
                 <Route path={`${path}/logs`}>
-                    <div className="dark-background h-100 dc__overflow-auto">
-                        <LogsRenderer
-                            triggerDetails={triggerDetails}
-                            isBlobStorageConfigured={isBlobStorageConfigured}
-                            parentType={HistoryComponentType.CI}
-                        />
-                    </div>
+                    <LogsRenderer
+                        triggerDetails={triggerDetails}
+                        isBlobStorageConfigured={isBlobStorageConfigured}
+                        parentType={HistoryComponentType.CI}
+                    />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
                             style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
