@@ -153,6 +153,7 @@ const newK8sObjectOption = (
     namespaced: boolean,
     grouped: boolean,
     groupName: string,
+    shortNames: GVKType['shortNames'],
 ): K8sObjectOptionType => {
     return {
         label,
@@ -164,6 +165,7 @@ const newK8sObjectOption = (
             kind: gvk.Kind,
             namespaced: `${namespaced}`,
             grouped: `${grouped}`,
+            shortNames,
         },
         groupName,
     }
@@ -186,14 +188,30 @@ export const convertK8sObjectMapToOptionsList = (
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, '', SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.namespaces,
+                            '',
+                            SIDEBAR_KEYS.namespaceGVK,
+                            false,
+                            false,
+                            '',
+                            SIDEBAR_KEYS.namespaceGVK.shortNames,
+                        ),
                     )
                     break
 
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.events, '', SIDEBAR_KEYS.eventGVK, true, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.events,
+                            '',
+                            SIDEBAR_KEYS.eventGVK,
+                            true,
+                            false,
+                            '',
+                            SIDEBAR_KEYS.eventGVK.shortNames,
+                        ),
                     )
                     break
 
@@ -207,6 +225,7 @@ export const convertK8sObjectMapToOptionsList = (
                                 data.namespaced,
                                 k8sObject.child.size > 1,
                                 k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                                data.gvk.shortNames,
                             ),
                         )
                     })
@@ -214,7 +233,17 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, '', SIDEBAR_KEYS.nodeGVK, false, false, ''))
+    _k8sObjectOptionsList.push(
+        newK8sObjectOption(
+            SIDEBAR_KEYS.nodes,
+            '',
+            SIDEBAR_KEYS.nodeGVK,
+            false,
+            false,
+            '',
+            SIDEBAR_KEYS.nodeGVK.shortNames,
+        ),
+    )
 
     return _k8sObjectOptionsList
 }
