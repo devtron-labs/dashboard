@@ -15,15 +15,43 @@
  *   limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { STAGE_NAME } from './Details/AppConfigurations/AppConfig.types'
 
-import { STAGE_NAME } from './Details/AppConfigurations/appConfig.type'
-
-export interface AppConfigStatusResponseItem {
+export interface AppConfigStatusItemType {
     stage: number
     stageName: STAGE_NAME
     status: boolean
     required: boolean
 }
 
-export type AppConfigStatusResponse = ResponseType<AppConfigStatusResponseItem[]>
+export enum ResourceConfigState {
+    Unnamed = 'Unnamed',
+    Draft = 'Draft',
+    ApprovalPending = 'ApprovalPending',
+    Published = 'Published',
+}
+
+export enum ResourceConfigStage {
+    Inheriting = 'Inheriting',
+    Overridden = 'Overridden',
+    Env = 'Env',
+    Unpublished = 'Unpublished',
+}
+
+export enum ConfigResourceType {
+    ConfigMap = 'ConfigMap',
+    Secret = 'Secret',
+    DeploymentTemplate = 'Deployment Template',
+}
+
+export interface ResourceConfig {
+    name: string
+    configState: ResourceConfigState
+    type: ConfigResourceType
+    configStage: ResourceConfigStage
+    id: number
+}
+
+export interface EnvConfigDTO {
+    resourceConfig: ResourceConfig[]
+}

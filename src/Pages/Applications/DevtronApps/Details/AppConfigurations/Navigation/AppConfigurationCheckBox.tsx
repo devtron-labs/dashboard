@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CustomNavItemsType } from '../appConfig.type'
+import { CustomNavItemsType } from '../AppConfig.types'
 
 interface HelpBoxType {
     selectedNav: CustomNavItemsType

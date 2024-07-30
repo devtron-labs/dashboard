@@ -17,7 +17,7 @@
 import React, { useMemo, useState } from 'react'
 
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
-import { AppConfigurationContextType, AppConfigurationProviderProps } from './appConfig.type'
+import { AppConfigurationContextType, AppConfigurationProviderProps } from './AppConfig.types'
 
 export const AppConfigurationContext = React.createContext<AppConfigurationContextType>(null)
 
@@ -39,6 +39,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
         reloadAppConfig,
         filteredEnvIds,
         userRole,
+        fetchEnvConfig,
     } = props
 
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
@@ -46,8 +47,9 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
     const contextValue = useMemo(
         () => ({
             appId,
-            deleteApp,
+            resourceKind,
             navItems: state.navItems,
+            deleteApp,
             canShowExternalLinks,
             showCannotDeleteTooltip,
             isWorkflowEditorUnlocked: state.isUnlocked.workflowEditor,
@@ -71,6 +73,8 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
             filteredEnvIds,
             reloadAppConfig,
             lastUnlockedStage: state.redirectionUrl,
+            envConfig: state.envConfig,
+            fetchEnvConfig,
         }),
         [
             appId,

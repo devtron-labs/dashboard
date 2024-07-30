@@ -16,10 +16,12 @@
 
 import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
-import { AppEnvironment, AppOtherEnvironment } from '../../../../../services/service.types'
+import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
+import { ResourceConfig, ResourceConfigState } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -37,6 +39,7 @@ export enum STAGE_NAME {
     ENV_OVERRIDE = 'ENV_OVERRIDE',
     EXTERNAL_LINKS = 'EXTERNAL_LINKS',
     PROTECT_CONFIGURATION = 'PROTECT_CONFIGURATION',
+    REDIRECT_ITEM = 'REDIRECT_ITEM',
 }
 
 export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'SECRETS' | 'ENV_OVERRIDE'
@@ -48,13 +51,12 @@ export enum DEVTRON_APPS_STEPS {
 
 export enum DEFAULT_LANDING_STAGE {
     JOB_VIEW = 2,
-    DEVTRON_APPS = 5,
+    DEVTRON_APPS = 6,
 }
 
 export interface AppConfigProps {
     appName: string
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
-    isJobView?: boolean
     filteredEnvIds?: string
 }
 
@@ -89,6 +91,8 @@ export interface AppConfigState {
     isBaseConfigProtected?: boolean
     /** Array of configuration protection data which denotes which env is in protected state. */
     configProtectionData?: ConfigProtection[]
+    /** The environment config containing the loading state, configState and title of deployment template, configmaps & secrets. */
+    envConfig: EnvConfigurationState
 }
 
 export interface AppStageUnlockedType {
@@ -104,48 +108,24 @@ export interface AppStageUnlockedType {
 
 export interface CustomNavItemsType {
     title: string
-    href: string
-    stage: string
-    isLocked: boolean
-    supportDocumentURL: string
-    flowCompletionPercent: number
-    currentStep: number
+    href?: string
+    stage?: string
+    isLocked?: boolean
+    supportDocumentURL?: string
+    flowCompletionPercent?: number
+    currentStep?: number
     required?: boolean
     isProtectionAllowed?: boolean
     altNavKey?: string
 }
 
-export interface EnvironmentOverridesProps {
-    environmentResult: AppOtherEnvironment
-    environmentsLoading: boolean
-    environmentList?: AppEnvironment[]
-    isJobView?: boolean
-    // TODO: add proper types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ciPipelines?: any[]
-    reload?: () => void
-    appId?: string
-    workflowsRes?: WorkflowResult
-}
-
-export interface EnvironmentOverrideRouteProps {
+export interface JobEnvOverrideRouteProps {
     envOverride: AppEnvironment
-    isJobView?: boolean
     // TODO: add proper types
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ciPipelines?: any[]
     reload?: () => void
-    appId?: string
-    workflowsRes?: WorkflowResult
     isEnvProtected?: boolean
-}
-
-export interface EnvironmentOverrideRouterProps {
-    isJobView?: boolean
-    workflowsRes?: WorkflowResult
-    getWorkflows: () => void
-    allEnvs?: AppEnvironment[]
-    reloadEnvironments: () => void
 }
 
 export interface NextButtonProps {
@@ -168,6 +148,7 @@ export type ConfigProtection = {
 
 interface CommonAppConfigurationProps {
     appId: string
+    resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
     respondOnSuccess: () => void
     getWorkflows: () => void
     userRole: UserRoleType
@@ -180,6 +161,7 @@ interface CommonAppConfigurationProps {
     deleteApp: () => void
     showCannotDeleteTooltip: boolean
     hideConfigHelp: boolean
+    fetchEnvConfig: (envId: number) => void
 }
 
 export interface AppConfigurationContextType extends CommonAppConfigurationProps {
@@ -196,10 +178,64 @@ export interface AppConfigurationContextType extends CommonAppConfigurationProps
     lastUnlockedStage: string
     isWorkflowEditorUnlocked: boolean
     getRepo: string
+    envConfig: EnvConfigurationState
 }
 
 export interface AppConfigurationProviderProps extends CommonAppConfigurationProps {
     children: JSX.Element
     state: AppConfigState
     resourceKind: Extract<ResourceKindType, ResourceKindType.devtronApplication | ResourceKindType.job>
+}
+
+export interface EnvConfigType {
+    deploymentTemplate: ResourceConfig | null
+    configmaps: ResourceConfig[]
+    secrets: ResourceConfig[]
+}
+
+export interface EnvConfigurationState {
+    /** Indicates if the environment configuration is currently loading. */
+    isLoading: boolean
+    /** Environment Configuration containing Deployment Template, Config Maps & Secrets */
+    config: EnvConfigType
+}
+
+export enum EnvResourceType {
+    ConfigMap = 'configmap',
+    Secret = 'secrets',
+    DeploymentTemplate = 'deployment-template',
+}
+
+export enum EnvConfigObjectKey {
+    ConfigMap = 'configmaps',
+    Secret = 'secrets',
+    DeploymentTemplate = 'deploymentTemplate',
+}
+
+export interface EnvironmentOptionType {
+    name: string
+    id: number
+    isProtected: boolean
+}
+
+export interface EnvConfigurationsNavProps {
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: (envId: number) => void
+    isBaseConfigProtected?: boolean
+    environments: EnvironmentOptionType[]
+    paramToCheck?: 'appId' | 'envId'
+    goBackURL: string
+    showBaseConfigurations?: boolean
+    showDeploymentTemplate?: boolean
+}
+
+export interface EnvConfigRouteParams {
+    appId: string
+    envId: string
+    resourceType: string
+}
+
+export interface ExtendedCollapsibleListItem
+    extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
+    configState: ResourceConfigState
 }

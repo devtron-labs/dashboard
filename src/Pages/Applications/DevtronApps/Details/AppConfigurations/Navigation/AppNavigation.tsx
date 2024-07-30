@@ -16,51 +16,28 @@
  */
 
 import { ReactNode } from 'react'
-
-import { NavLink, useLocation } from 'react-router-dom'
+import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { CustomNavItemsType, DEVTRON_APPS_STEPS, STAGE_NAME } from '../appConfig.type'
+import { DEVTRON_APPS_STEPS, EnvResourceType, STAGE_NAME } from '../AppConfig.types'
+import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE } from '../../../../../../config/constantMessaging'
 import DockerFileInUse from '../../../../../../assets/img/ic-dockerfile-in-use.png'
-import { ReactComponent as Lock } from '../../../../../../assets/icons/ic-locked.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../../../assets/icons/ic-shield-protect-fill.svg'
 
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
+import { renderNavItem } from './Navigation.helper'
+import { EnvConfigurationsNav } from './EnvConfigurationsNav'
 
 const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 
-function renderNavItem(item: CustomNavItemsType, isBaseConfigProtected?: boolean) {
-    const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
-
-    return (
-        <NavLink
-            data-testid={`${linkDataTestName}-link`}
-            key={item.title}
-            onClick={(event) => {
-                if (item.isLocked) {
-                    event.preventDefault()
-                }
-            }}
-            className="app-compose__nav-item cursor"
-            to={item.href}
-        >
-            <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && (
-                <Lock className="app-compose__nav-icon icon-dim-20" data-testid={`${linkDataTestName}-lockicon`} />
-            )}
-            {!item.isLocked && isBaseConfigProtected && item.isProtectionAllowed && (
-                <ProtectedIcon className="icon-dim-20 fcv-5" />
-            )}
-        </NavLink>
-    )
-}
-
 export const AppNavigation = () => {
+    // HOOKS
+    const { path } = useRouteMatch()
     const location = useLocation()
 
+    // CONTEXTS
     const {
         navItems,
         deleteApp,
@@ -71,16 +48,17 @@ export const AppNavigation = () => {
         getRepo,
         isJobView,
         hideConfigHelp,
-        workflowsRes,
-        getWorkflows,
-        environments: environmentList,
         isBaseConfigProtected,
-        reloadEnvironments,
         isGitOpsConfigurationRequired,
+        environments,
+        envConfig,
+        fetchEnvConfig,
+        lastUnlockedStage,
     } = useAppConfigurationContext()
 
+    // CONSTANTS
     const selectedNav = navItems.filter(
-        (navItem) => navItem.stage !== 'REDIRECT_ITEM' && location.pathname.indexOf(navItem.href) >= 0,
+        (navItem) => navItem.stage !== STAGE_NAME.REDIRECT_ITEM && location.pathname.indexOf(navItem.href) >= 0,
     )[0]
     const totalSteps = isGitOpsConfigurationRequired
         ? DEVTRON_APPS_STEPS.GITOPS_CONFIG
@@ -109,75 +87,122 @@ export const AppNavigation = () => {
         </TippyCustomized>
     )
 
+    const getValidBackURL = () => {
+        const isBackURLLocked = location.pathname === lastUnlockedStage
+        const secondLastUnlockedStage = isBackURLLocked
+            ? navItems.reduce(
+                  (acc, curr) => {
+                      if (curr.href === lastUnlockedStage) {
+                          acc.found = true
+                      }
+
+                      if (acc.found) {
+                          acc.href = acc.result[acc.result.length - 1]?.href
+                          return acc
+                      }
+
+                      if (!curr.isLocked) {
+                          acc.result.push(curr)
+                      }
+
+                      return acc
+                  },
+                  { result: [], found: false, href: '' },
+              ).href
+            : ''
+
+        return secondLastUnlockedStage || lastUnlockedStage
+    }
+
     return (
-        <>
-            {!hideConfigHelp && (
-                <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} totalSteps={totalSteps} />
-            )}
-
-            {navItems.map((item) => {
-                if (item.altNavKey) {
-                    return null
-                }
-                if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
-                    return (
-                        canShowExternalLinks && (
-                            <div key={item.stage}>
-                                <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                {renderNavItem(item)}
-                            </div>
-                        )
-                    )
-                }
-                if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
-                    return (
-                        isWorkflowEditorUnlocked &&
-                        ConfigProtectionView && (
-                            <div key={item.stage}>
-                                {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
-                                {renderNavItem(item)}
-                            </div>
-                        )
-                    )
-                }
-
-                if (
-                    item.stage !== STAGE_NAME.ENV_OVERRIDE ||
-                    (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
-                ) {
-                    return (
-                        <ConditionalWrap
-                            key={item.stage}
-                            condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
-                            wrap={getEnvOverrideTippy}
-                        >
-                            {item.required && renderNavItem(item, isBaseConfigProtected)}
-                        </ConditionalWrap>
-                    )
-                }
-
-                return (
-                    <EnvironmentOverrideRouter
-                        key={item.stage}
-                        isJobView={isJobView}
-                        workflowsRes={workflowsRes}
-                        getWorkflows={getWorkflows}
-                        allEnvs={environmentList}
-                        reloadEnvironments={reloadEnvironments}
+        <Switch>
+            <Route
+                path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')}|${URLS.APP_ENV_OVERRIDE_CONFIG})/:envId(\\d+)?`}
+            >
+                {({ match }) => (
+                    <EnvConfigurationsNav
+                        key={`env-configurations-nav-${match.params.envId}`}
+                        envConfig={envConfig}
+                        fetchEnvConfig={fetchEnvConfig}
+                        environments={environments.map(({ environmentName, environmentId, isProtected }) => ({
+                            id: environmentId,
+                            isProtected,
+                            name: environmentName,
+                        }))}
+                        isBaseConfigProtected={isBaseConfigProtected}
+                        showBaseConfigurations
+                        showDeploymentTemplate={!isJobView}
+                        goBackURL={getValidBackURL()}
                     />
-                )
-            })}
-            {isJobView && <div className="h-100" />}
-            <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button
-                    data-testid="delete-job-app-button"
-                    type="button"
-                    className="flex cta delete mt-8 w-100 h-36"
-                    onClick={deleteApp}
-                >
-                    Delete {isJobView ? 'Job' : 'Application'}
-                </button>
-            </div>
-        </>
+                )}
+            </Route>
+            <Route key="default-navigation">
+                <>
+                    {!hideConfigHelp && (
+                        <AppConfigurationCheckBox
+                            selectedNav={selectedNav}
+                            isJobView={isJobView}
+                            totalSteps={totalSteps}
+                        />
+                    )}
+                    {navItems.map((item) => {
+                        if (item.altNavKey) {
+                            return null
+                        }
+
+                        if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
+                            return (
+                                canShowExternalLinks && (
+                                    <div key={item.stage}>
+                                        <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                        {renderNavItem(item)}
+                                    </div>
+                                )
+                            )
+                        }
+
+                        if (item.stage === STAGE_NAME.PROTECT_CONFIGURATION) {
+                            return (
+                                isWorkflowEditorUnlocked &&
+                                ConfigProtectionView && (
+                                    <div key={item.stage}>
+                                        {!canShowExternalLinks && <div className="dc__border-bottom-n1 mt-8 mb-8" />}
+                                        {renderNavItem(item)}
+                                    </div>
+                                )
+                            )
+                        }
+
+                        if (
+                            item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                            (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                        ) {
+                            return (
+                                <ConditionalWrap
+                                    key={item.stage}
+                                    condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
+                                    wrap={getEnvOverrideTippy}
+                                >
+                                    {item.required && renderNavItem(item, isBaseConfigProtected)}
+                                </ConditionalWrap>
+                            )
+                        }
+
+                        return <EnvironmentOverrideRouter key={item.stage} />
+                    })}
+                    {isJobView && <div className="h-100" />}
+                    <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0 dc__align-self-end">
+                        <button
+                            data-testid="delete-job-app-button"
+                            type="button"
+                            className="flex cta delete mt-8 w-100 h-36"
+                            onClick={deleteApp}
+                        >
+                            Delete {isJobView ? 'Job' : 'Application'}
+                        </button>
+                    </div>
+                </>
+            </Route>
+        </Switch>
     )
 }

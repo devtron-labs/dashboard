@@ -14,25 +14,40 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
+import {
+    useParams,
+    useRouteMatch,
+    useHistory,
+    useLocation,
+    Redirect,
+    Route,
+    Switch,
+    generatePath,
+} from 'react-router-dom'
+
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
-import { Redirect, Route, Switch, generatePath } from 'react-router-dom'
-import DeploymentTemplateOverride from './DeploymentTemplateOverride'
-import { mapByKey, ErrorBoundary, useAppContext } from '../common'
-import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '../../config'
-import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.type'
-import ConfigMapList from '../ConfigMapSecret/ConfigMap/ConfigMapList'
-import SecretList from '../ConfigMapSecret/Secret/SecretList'
+
+import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
+import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
+import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
+import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+
+import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
+
 import './environmentOverride.scss'
 
-export default function EnvironmentOverride({
+const EnvironmentOverride = ({
     appList,
-    isJobView,
+    isJob,
     environments,
     reloadEnvironments,
     envName,
-}: EnvironmentOverrideComponentProps) {
+    onErrorRedirectURL,
+    envConfig,
+    fetchEnvConfig,
+}: EnvironmentOverrideComponentProps) => {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path, url } = useRouteMatch()
@@ -53,6 +68,8 @@ export default function EnvironmentOverride({
     useEffect(() => {
         if (!location.pathname.includes(URLS.APP_CM_CONFIG) && !location.pathname.includes(URLS.APP_CS_CONFIG)) {
             setIsDeploymentOverride(true)
+        } else {
+            setIsDeploymentOverride(false)
         }
     }, [location.pathname])
 
@@ -81,7 +98,7 @@ export default function EnvironmentOverride({
     if (viewState === ComponentStates.failed) {
         return (
             <Reload
-                reload={(event) => {
+                reload={() => {
                     setViewState(ComponentStates.reloading)
                 }}
             />
@@ -118,7 +135,7 @@ export default function EnvironmentOverride({
 
     return (
         <ErrorBoundary>
-            <div className={isDeploymentOverride ? 'deployment-template-override' : ''}>
+            <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
                 <Switch>
                     <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
                         <DeploymentTemplateOverride
@@ -132,29 +149,34 @@ export default function EnvironmentOverride({
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
-                        <ConfigMapList
-                            key={`config-map-${params.appId}-${params.envId}`}
+                        <ConfigMapSecretWrapper
                             isOverrideView
                             isProtected={isProtected}
                             parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
-                            isJobView={isJobView}
-                            reloadEnvironments={reloadEnvironments}
                             clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={onErrorRedirectURL}
+                            reloadEnvironments={reloadEnvironments}
+                            isJob={isJob}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
-                        <SecretList
-                            key={`secret-${params.appId}-${params.envId}`}
+                        <ConfigMapSecretWrapper
                             isOverrideView
-                            parentState={viewState}
                             isProtected={isProtected}
+                            parentState={viewState}
                             parentName={getParentName()}
                             setParentState={setViewState}
-                            isJobView={isJobView}
-                            reloadEnvironments={reloadEnvironments}
                             clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                            componentType={CMSecretComponentType.Secret}
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            onErrorRedirectURL={onErrorRedirectURL}
+                            reloadEnvironments={reloadEnvironments}
+                            isJob={isJob}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />
@@ -163,3 +185,5 @@ export default function EnvironmentOverride({
         </ErrorBoundary>
     )
 }
+
+export default EnvironmentOverride

@@ -15,13 +15,37 @@
  *   limitations under the License.
  */
 
-import { ResourceKindType, get } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResourceKindType,
+    ResponseType,
+    get,
+    getUrlWithSearchParams,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '../../../config'
-import { AppConfigStatusResponse } from './service.types'
-import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/appConfig.type'
+import { Routes } from '@Config/constants'
 
-export const getAppConfigStatus = (appId: number, resourceKind?: ResourceKindType): Promise<AppConfigStatusResponse> =>
+import { AppConfigStatusItemType } from './service.types'
+import { DEFAULT_LANDING_STAGE } from './Details/AppConfigurations/AppConfig.types'
+import { transformEnvConfig } from './Details/AppConfigurations/AppConfig.utils'
+
+export const getAppConfigStatus = (
+    appId: number,
+    resourceKind?: ResourceKindType,
+): Promise<ResponseType<AppConfigStatusItemType[]>> =>
     get(
-        `${Routes.APP_CONFIG_STATUS}?app-id=${appId}${resourceKind === ResourceKindType.job ? `&appType=${DEFAULT_LANDING_STAGE.JOB_VIEW}` : ''}`,
+        getUrlWithSearchParams(Routes.APP_CONFIG_STATUS, {
+            'app-id': appId,
+            appType: resourceKind === ResourceKindType.job ? DEFAULT_LANDING_STAGE.JOB_VIEW : undefined,
+        }),
     )
+
+export const getEnvConfig = async (appId: number, envId: number) => {
+    try {
+        const res = await get(getUrlWithSearchParams(Routes.ENV_CONFIG, { appId, envId }))
+        return transformEnvConfig(res.result)
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}
