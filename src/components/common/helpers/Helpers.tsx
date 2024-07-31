@@ -971,7 +971,7 @@ export const processK8SObjects = (
             : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
 
         const shortNames = element.shortNames?.map((name) => name.toLowerCase()) ?? null
-        const k8sObject = { namespaced: element.namespaced, gvk: { ...element.gvk, shortNames } }
+        const k8sObject = { namespaced: element.namespaced, gvk: { ...element.gvk }, shortNames }
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = structuredClone(k8sObject)
         }
@@ -995,13 +995,16 @@ export const processK8SObjects = (
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
-            SIDEBAR_KEYS.eventGVK = { ...element.gvk, shortNames }
+            SIDEBAR_KEYS.shortNames.events = shortNames
+            SIDEBAR_KEYS.eventGVK = { ...element.gvk }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
-            SIDEBAR_KEYS.namespaceGVK = { ...element.gvk, shortNames }
+            SIDEBAR_KEYS.shortNames.namespaces = shortNames
+            SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
-            SIDEBAR_KEYS.nodeGVK = { ...element.gvk, shortNames }
+            SIDEBAR_KEYS.shortNames.nodes = shortNames
+            SIDEBAR_KEYS.nodeGVK = { ...element.gvk }
         }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {

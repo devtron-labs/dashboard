@@ -188,7 +188,7 @@ export interface ConnectingToClusterStateProps {
     requestAbortController: AbortController
 }
 
-interface K8sObjectOptionTypeDataset extends Pick<GVKType, 'shortNames'> {
+interface K8sObjectOptionTypeDataset extends Pick<ApiResourceGroupType, 'shortNames'> {
     group: string
     version: string
     kind: string

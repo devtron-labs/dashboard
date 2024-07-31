@@ -153,7 +153,7 @@ const newK8sObjectOption = (
     namespaced: boolean,
     grouped: boolean,
     groupName: string,
-    shortNames: GVKType['shortNames'],
+    shortNames: ApiResourceGroupType['shortNames'],
 ): K8sObjectOptionType => {
     return {
         label,
@@ -195,7 +195,7 @@ export const convertK8sObjectMapToOptionsList = (
                             false,
                             false,
                             '',
-                            SIDEBAR_KEYS.namespaceGVK.shortNames,
+                            SIDEBAR_KEYS.shortNames.namespaces,
                         ),
                     )
                     break
@@ -210,7 +210,7 @@ export const convertK8sObjectMapToOptionsList = (
                             true,
                             false,
                             '',
-                            SIDEBAR_KEYS.eventGVK.shortNames,
+                            SIDEBAR_KEYS.shortNames.events,
                         ),
                     )
                     break
@@ -225,7 +225,7 @@ export const convertK8sObjectMapToOptionsList = (
                                 data.namespaced,
                                 k8sObject.child.size > 1,
                                 k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
-                                data.gvk.shortNames,
+                                data.shortNames,
                             ),
                         )
                     })
@@ -241,7 +241,7 @@ export const convertK8sObjectMapToOptionsList = (
             false,
             false,
             '',
-            SIDEBAR_KEYS.nodeGVK.shortNames,
+            SIDEBAR_KEYS.shortNames.nodes,
         ),
     )
 

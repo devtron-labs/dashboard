@@ -63,9 +63,11 @@ const Sidebar = ({
             return k8sObjectOptionsList
         }
         const lowerSearchText = searchText.toLowerCase()
-        return k8sObjectOptionsList.sort((a, b) => {
-            const isAMatched = !!a.dataset.shortNames?.includes(lowerSearchText)
-            const isBMatched = !!b.dataset.shortNames?.includes(lowerSearchText)
+        // NOTE: need to make a new copy since sort modifies the array in place
+        // and toSorted is a recent addition (Baseline 2023) thus lacking in typescript 4.6
+        return [...k8sObjectOptionsList].sort((a, b) => {
+            const isAMatched = !!a.dataset.shortNames?.some((name) => name.includes(lowerSearchText))
+            const isBMatched = !!b.dataset.shortNames?.some((name) => name.includes(lowerSearchText))
             if (isAMatched && !isBMatched) {
                 return -1
             }
@@ -316,7 +318,7 @@ const Sidebar = ({
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
                     options={sortedK8sObjectOptionsList}
-                    value={k8sObjectOptionsList[0]} // Just to enable clear indicator
+                    value={sortedK8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}
                     getOptionValue={getOptionLabel}
                     onInputChange={handleInputChange}

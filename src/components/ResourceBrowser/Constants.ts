@@ -182,6 +182,7 @@ export const SIDEBAR_KEYS: {
     namespaceGVK: GVKType
     nodeGVK: GVKType
     overviewGVK: GVKType
+    shortNames: Record<'nodes' | 'events' | 'namespaces', string[]>
 } = {
     nodes: 'Nodes',
     events: 'Events',
@@ -205,6 +206,11 @@ export const SIDEBAR_KEYS: {
         Group: '',
         Version: '',
         Kind: Nodes.Overview as Nodes,
+    },
+    shortNames: {
+        events: null,
+        nodes: ['no'], // NOTE: hardcoding cuz backend doesn't send nodeGVK
+        namespaces: null,
     },
 }
 
