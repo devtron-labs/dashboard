@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
+import { useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -11,7 +11,6 @@ import {
     DeploymentConfigDiffProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import {
     AppEnvDeploymentConfigQueryParamsType,
     AppEnvDeploymentConfigType,
@@ -35,13 +34,21 @@ import {
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
     getEnvironmentConfigTypeOptions,
+    isEnvProtected,
 } from './utils'
 
-export const DeploymentConfigCompare = ({ environments, appName }: DeploymentConfigCompareProps) => {
+export const DeploymentConfigCompare = ({
+    environments,
+    appName,
+    envName,
+    type = 'app',
+    goBackURL = '',
+    isBaseConfigProtected = false,
+}: DeploymentConfigCompareProps) => {
     // HOOKS
     const { path, params } = useRouteMatch<DeploymentConfigParams>()
-    const { appId, resourceType, resourceName, envName } = params
-    const { pathname, search } = useLocation()
+    const { compareTo, resourceType, resourceName, appId, envId } = params
+    const { search } = useLocation()
 
     // SEARCH PARAMS & SORTING
     const {
@@ -58,20 +65,37 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         sortOrder,
         handleSorting,
     } = useUrlFilters<string, AppEnvDeploymentConfigQueryParamsType>({
-        parseSearchParams: parseCompareWithSearchParams,
+        parseSearchParams: parseCompareWithSearchParams({ type, compareTo, environments }),
         initialSortKey: 'sort-config',
     })
 
+    // Set default query parameters
+    useEffect(() => {
+        updateSearchParams({
+            configType,
+            compareWith,
+            compareWithConfigType,
+        })
+    }, [])
+
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
-    const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
-        () =>
-            Promise.all([
-                getOptions(+appId, getEnvironmentIdByEnvironmentName(environments, envName)),
-                getOptions(+appId, getEnvironmentIdByEnvironmentName(environments, compareWith)),
-            ]),
-        [envName, compareWith],
-    )
+    const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(() => {
+        let compareToAppId = +appId
+        let compareWithAppId = +appId
+        let compareToEnvId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+        let compareWithEnvId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+
+        if (type === 'appGroup') {
+            compareToAppId = getEnvironmentIdByEnvironmentName(environments, compareTo)
+            compareWithAppId = getEnvironmentIdByEnvironmentName(environments, compareWith)
+            compareToEnvId = +envId
+            compareWithEnvId = +envId
+        }
+
+        return Promise.all([getOptions(compareToAppId, compareToEnvId), getOptions(compareWithAppId, compareWithEnvId)])
+    }, [compareTo, compareWith])
+
     // Options for previous deployments and default versions
     const currentEnvOptions = useMemo(
         () => (!optionsLoader && options ? getDefaultVersionAndPreviousDeploymentOptions(options[0].result) : null),
@@ -87,22 +111,36 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         () =>
             Promise.all([
                 getAppEnvDeploymentConfig({
-                    appName,
-                    envName: envName || '',
+                    ...(type === 'app'
+                        ? {
+                              appName,
+                              envName: compareTo || '',
+                          }
+                        : {
+                              appName: compareTo || '',
+                              envName,
+                          }),
                     configType,
                     identifierId,
                     pipelineId,
                 }),
                 getAppEnvDeploymentConfig({
-                    appName,
-                    envName: compareWith || '',
+                    ...(type === 'app'
+                        ? {
+                              appName,
+                              envName: compareWith || '',
+                          }
+                        : {
+                              appName: compareWith || '',
+                              envName,
+                          }),
                     configType: compareWithConfigType,
                     identifierId: chartRefId || compareWithIdentifierId,
                     pipelineId: compareWithPipelineId,
                 }),
             ]),
         [
-            appName,
+            compareTo,
             compareWith,
             compareWithConfigType,
             configType,
@@ -138,6 +176,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     const compareEnvironmentSelectorOptions = getCompareEnvironmentSelectorOptions(
         environments,
         currentEnvOptions?.defaultVersions,
+        type,
     )
 
     // METHODS
@@ -224,6 +263,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
         options: getEnvironmentConfigTypeOptions(
             isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
+            isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
         ),
         placeholder: 'Select State',
         classNamePrefix: 'environment-config-type-selector',
@@ -234,6 +274,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         value: getOptionByValue(
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
+                isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
             ),
             !isCompare
                 ? getPreviousDeploymentOptionValue(identifierId, pipelineId) || configType
@@ -266,35 +307,30 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         ],
         secondaryConfig: [
             {
-                id: envName || BASE_CONFIGURATIONS.name,
+                id: compareTo || BASE_CONFIGURATIONS.name,
                 type: 'string',
-                text: envName || BASE_CONFIGURATIONS.name,
+                text: compareTo || BASE_CONFIGURATIONS.name,
             },
-            {
-                id: `environment-config-type-selector-current`,
-                type: 'selectPicker',
-                selectPickerProps: renderEnvironmentConfigTypeSelectorProps(),
-            },
+            ...((isEnvProtected(environments, compareTo, isBaseConfigProtected)
+                ? [
+                      {
+                          id: `environment-config-type-selector-current`,
+                          type: 'selectPicker',
+                          selectPickerProps: renderEnvironmentConfigTypeSelectorProps(),
+                      },
+                  ]
+                : []) as DeploymentConfigDiffProps['selectorsConfig']['secondaryConfig']),
         ],
-    }
-
-    const getBackURL = () => {
-        const envId = getEnvironmentIdByEnvironmentName(environments, envName)
-        const basePath = pathname.split(`/${envName || URLS.APP_ENV_CONFIG_COMPARE}`)[0]
-        const additionalPath =
-            envId !== -1 ? `${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}/${resourceType}/${resourceName}` : resourceType
-
-        return `${generatePath(basePath, { appId })}/${additionalPath}`
     }
 
     const getNavHelpText = () => {
         const chart = currentEnvOptions?.defaultVersions.find(
             ({ chartRefId: _chartRefId }) => _chartRefId === chartRefId,
         )
-        const compareEnvText = `${chart ? `v${chart.chartVersion}(Default)` : compareWith || BASE_CONFIGURATIONS.name}`
-        const currentEnvText = envName || BASE_CONFIGURATIONS.name
+        const compareWithText = `${chart ? `v${chart.chartVersion}(Default)` : compareWith || BASE_CONFIGURATIONS.name}`
+        const compareToText = compareTo || BASE_CONFIGURATIONS.name
 
-        return `Showing files from ${compareEnvText} & ${currentEnvText}`
+        return `Showing files from ${compareWithText} & ${compareToText}`
     }
 
     // ERROR SCREEN
@@ -306,10 +342,10 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         <DeploymentConfigDiff
             isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
             {...appEnvDeploymentConfigList}
-            goBackURL={getBackURL()}
+            goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}-${resourceName}`}
-            navHeading={`Comparing ${envName || BASE_CONFIGURATIONS.name}`}
+            navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
             sortOrder={sortOrder}
             onSortBtnClick={() => handleSorting(sortBy)}

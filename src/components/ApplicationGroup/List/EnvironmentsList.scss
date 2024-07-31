@@ -51,7 +51,7 @@
         grid-template-rows: auto 1fr;
 
         &.env-configurations {
-            grid-template-rows: 45px 1fr;
+            display: block;
         }
     }
 

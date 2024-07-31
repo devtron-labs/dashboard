@@ -219,17 +219,17 @@ export enum EnvConfigObjectKey {
 export interface EnvironmentOptionType {
     name: string
     id: number
-    isProtected: boolean
+    isProtected?: boolean
 }
 
 export interface EnvConfigurationsNavProps {
-    showComparison?: boolean
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     isBaseConfigProtected?: boolean
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
+    showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
 }
@@ -247,15 +247,28 @@ export interface ExtendedCollapsibleListItem
 
 export interface DeploymentConfigParams {
     appId: string
-    envName: string
+    envId: string
+    compareTo: string
     resourceType: string
     resourceName: string
 }
 
-export interface DeploymentConfigCompareProps {
+export type DeploymentConfigCompareProps = {
     environments: EnvironmentOptionType[]
-    appName: string
-}
+    goBackURL?: string
+    isBaseConfigProtected?: boolean
+} & (
+    | {
+          type: 'appGroup'
+          envName: string
+          appName?: never
+      }
+    | {
+          type: 'app'
+          appName: string
+          envName?: never
+      }
+)
 
 export enum AppEnvDeploymentConfigQueryParams {
     CONFIG_TYPE = 'configType',

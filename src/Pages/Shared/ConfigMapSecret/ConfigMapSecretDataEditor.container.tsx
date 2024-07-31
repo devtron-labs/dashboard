@@ -162,7 +162,7 @@ const ConfigMapSecretDataEditor = ({
         PATTERNS.CONFIG_MAP_AND_SECRET_KEY,
         `Key must consist of alphanumeric characters, '.', '-' and '_'`,
     )
-    usePrompt({ shouldPrompt: state.isValidateFormError })
+    usePrompt({ shouldPrompt: state.isValidateFormError || state.isFormDirty })
 
     useEffect(() => {
         if (state.isValidateFormError !== !!error) {
@@ -515,7 +515,7 @@ const ConfigMapSecretDataEditor = ({
 
     return (
         <>
-            <Prompt when={state.isValidateFormError} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            <Prompt when={state.isValidateFormError || state.isFormDirty} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
             {renderDataEditorSelector()}
             {!state.external &&
                 (state.yamlMode

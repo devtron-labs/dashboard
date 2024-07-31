@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteMatch, useLocation, NavLink, useHistory, generatePath } from 'react-router-dom'
+import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 
@@ -10,7 +10,7 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
-import { AppEnvDeploymentConfigType, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
+import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
 import {
@@ -167,7 +167,7 @@ export const EnvConfigurationsNav = ({
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
                 tooltipProps: {
-                    content: 'Add ConfigMap',
+                    content: 'Create ConfigMap',
                     arrow: false,
                     placement: 'bottom',
                 },
@@ -188,7 +188,7 @@ export const EnvConfigurationsNav = ({
                     onClick: onHeaderIconBtnClick(EnvResourceType.Secret),
                 },
                 tooltipProps: {
-                    content: 'Add Secret',
+                    content: 'Create Secret',
                     arrow: false,
                     placement: 'bottom',
                 },
@@ -252,22 +252,23 @@ export const EnvConfigurationsNav = ({
     }
 
     const renderCompareWithBtn = () => {
-        const basePath = generatePath(path, {
-            appId: params.appId,
-            envId,
-            resourceType: EnvResourceType.DeploymentTemplate,
-        }).split(EnvResourceType.DeploymentTemplate)[0]
+        const { name: envName } = environmentData
 
-        const searchParams = new URLSearchParams({
-            ...(environments.length && environmentData.name === BASE_CONFIGURATIONS.name
-                ? { compareWith: environments[0].name }
-                : {}),
-            compareWithConfigType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-            configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-        })
+        // Determine base path based on pathname
+        const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)
+        const basePath = isOverrideConfig
+            ? pathname.split(URLS.APP_ENV_OVERRIDE_CONFIG)[0]
+            : `${pathname.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
 
-        const envNamePath = envId ? `${environmentData.name}/` : ''
-        const comparePath = `${basePath}${envNamePath}${URLS.APP_ENV_CONFIG_COMPARE}/${EnvResourceType.DeploymentTemplate}?${searchParams.toString()}`
+        // Determine comparePath based on paramToCheck
+        let comparePath = ''
+        if (paramToCheck === 'envId') {
+            comparePath = isOverrideConfig
+                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
+                : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
+        } else if (paramToCheck === 'appId') {
+            comparePath = `${basePath}/${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_CONFIG}/${params.appId}`)[1]}`
+        }
 
         return (
             <div className="p-8">

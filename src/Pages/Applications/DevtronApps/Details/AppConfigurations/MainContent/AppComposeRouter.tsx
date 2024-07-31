@@ -15,7 +15,7 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation } from 'react-router-dom'
+import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
 
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -26,7 +26,7 @@ import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
-import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
+import { EnvResourceType, NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 import '../appConfig.scss'
@@ -288,18 +288,36 @@ const AppComposeRouter = () => {
                         ? [
                               <Route
                                   key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
-                                  path={`${path}/:envName?/${URLS.APP_ENV_CONFIG_COMPARE}/:resourceType/:resourceName?`}
+                                  path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
                               >
-                                  <DeploymentConfigCompare
-                                      appName={currentAppName}
-                                      environments={environments.map(
-                                          ({ environmentId, environmentName, isProtected }) => ({
-                                              id: environmentId,
-                                              isProtected,
-                                              name: environmentName,
-                                          }),
-                                      )}
-                                  />
+                                  {({ match }) => {
+                                      const basePath = generatePath(path, match.params)
+                                      const envOverridePath = match.params.envId
+                                          ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                                          : ''
+                                      const resourceTypePath = `/${match.params.resourceType}`
+                                      const resourceNamePath = match.params.resourceName
+                                          ? `/${match.params.resourceName}`
+                                          : ''
+
+                                      const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+
+                                      return (
+                                          <DeploymentConfigCompare
+                                              type="app"
+                                              appName={currentAppName}
+                                              environments={environments.map(
+                                                  ({ environmentId, environmentName, isProtected }) => ({
+                                                      id: environmentId,
+                                                      isProtected,
+                                                      name: environmentName,
+                                                  }),
+                                              )}
+                                              isBaseConfigProtected={isBaseConfigProtected}
+                                              goBackURL={goBackURL}
+                                          />
+                                      )
+                                  }}
                               </Route>,
                           ]
                         : []),

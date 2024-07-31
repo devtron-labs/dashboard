@@ -35,6 +35,7 @@ import {
     AppEnvDeploymentConfigQueryParams,
     DeploymentConfigParams,
     DiffHeadingDataType,
+    DeploymentConfigCompareProps,
 } from '../../AppConfig.types'
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 
@@ -342,20 +343,32 @@ export const getAppEnvDeploymentConfigList = (
         {
             header: 'Config Maps',
             id: EnvResourceType.ConfigMap,
-            items: cmData.map(({ title, hasDiff }) => ({
+            items: cmData.map(({ title, hasDiff, id }) => ({
                 title,
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
+                onClick: () => {
+                    const element = document.getElementById(id)
+                    element?.scrollIntoView({
+                        behavior: 'smooth',
+                    })
+                },
             })),
             noItemsText: 'No configmaps',
         },
         {
             header: 'Secrets',
             id: EnvResourceType.Secret,
-            items: secretData.map(({ title, hasDiff }) => ({
+            items: secretData.map(({ title, hasDiff, id }) => ({
                 title,
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
+                onClick: () => {
+                    const element = document.getElementById(id)
+                    element?.scrollIntoView({
+                        behavior: 'smooth',
+                    })
+                },
             })),
             noItemsText: 'No secrets',
         },
@@ -393,6 +406,12 @@ export const getPreviousDeploymentValue = (value: string) => {
 
 export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptionType[], name: string) =>
     environments.find(({ name: _name }) => name === _name)?.id || BASE_CONFIGURATIONS.id
+
+export const isEnvProtected = (
+    environments: EnvironmentOptionType[],
+    envName: string,
+    isBaseConfigProtected?: boolean,
+) => environments.find(({ name }) => name === envName)?.isProtected || isBaseConfigProtected
 
 export const getDefaultVersionAndPreviousDeploymentOptions = (data: TemplateListDTO[]) =>
     data.reduce<{ previousDeployments: TemplateListDTO[]; defaultVersions: TemplateListDTO[] }>(
@@ -451,37 +470,58 @@ export const getOptionByValue = (
     return foundOption
 }
 
-export const parseCompareWithSearchParams = (searchParams: URLSearchParams): AppEnvDeploymentConfigQueryParamsType => {
-    const compareWith = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH)
-    const identifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID)
-    const compareWithIdentifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID)
-    const pipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.PIPELINE_ID)
-    const compareWithPipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID)
-    const chartRefId = searchParams.get(AppEnvDeploymentConfigQueryParams.CHART_REF_ID)
-    let configType = searchParams.get(AppEnvDeploymentConfigQueryParams.CONFIG_TYPE)
-    let compareWithConfigType = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE)
+export const parseCompareWithSearchParams =
+    ({
+        environments,
+        type,
+        compareTo,
+    }: Pick<DeploymentConfigCompareProps, 'environments' | 'type'> & { compareTo: string }) =>
+    (searchParams: URLSearchParams): AppEnvDeploymentConfigQueryParamsType => {
+        const identifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID)
+        const compareWithIdentifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID)
+        const pipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.PIPELINE_ID)
+        const compareWithPipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID)
+        const chartRefId = searchParams.get(AppEnvDeploymentConfigQueryParams.CHART_REF_ID)
+        let configType = searchParams.get(AppEnvDeploymentConfigQueryParams.CONFIG_TYPE)
+        let compareWithConfigType = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE)
+        let compareWith = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH)
 
-    if ((!chartRefId && !compareWithConfigType) || !configType) {
-        compareWithConfigType = compareWithConfigType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
-        configType = configType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
-    }
+        if ((!chartRefId && !compareWithConfigType) || !configType) {
+            if (!compareWith) {
+                // If `type` is 'app' (Application), set `compareWith` to the first environment if available,
+                // otherwise leave it empty (base configuration).
+                if (type === 'app') {
+                    compareWith = environments.length && !compareTo ? environments[0].name : ''
+                } else {
+                    // If `type` is 'appGroup' (Application Groups), set `compareWith` to the first application.
+                    // If the application to compare (`compareTo`) is the same as the first application,
+                    // set `compareWith` to the second application if it exists; otherwise, set it to the first.
+                    compareWith =
+                        environments.length > 1 && compareTo === environments[0].name
+                            ? environments[1].name
+                            : environments[0].name
+                }
+            }
+            compareWithConfigType = compareWithConfigType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
+            configType = configType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
+        }
 
-    return {
-        [AppEnvDeploymentConfigQueryParams.CONFIG_TYPE]: configType as AppEnvDeploymentConfigType,
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH]: compareWith,
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
-            compareWithConfigType as AppEnvDeploymentConfigType,
-        [AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID]: identifierId ? parseInt(identifierId, 10) : null,
-        [AppEnvDeploymentConfigQueryParams.PIPELINE_ID]: pipelineId ? parseInt(pipelineId, 10) : null,
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID]: compareWithIdentifierId
-            ? parseInt(compareWithIdentifierId, 10)
-            : null,
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID]: compareWithPipelineId
-            ? parseInt(compareWithPipelineId, 10)
-            : null,
-        [AppEnvDeploymentConfigQueryParams.CHART_REF_ID]: chartRefId ? parseInt(chartRefId, 10) : null,
+        return {
+            [AppEnvDeploymentConfigQueryParams.CONFIG_TYPE]: configType as AppEnvDeploymentConfigType,
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH]: compareWith,
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
+                compareWithConfigType as AppEnvDeploymentConfigType,
+            [AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID]: identifierId ? parseInt(identifierId, 10) : null,
+            [AppEnvDeploymentConfigQueryParams.PIPELINE_ID]: pipelineId ? parseInt(pipelineId, 10) : null,
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID]: compareWithIdentifierId
+                ? parseInt(compareWithIdentifierId, 10)
+                : null,
+            [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID]: compareWithPipelineId
+                ? parseInt(compareWithPipelineId, 10)
+                : null,
+            [AppEnvDeploymentConfigQueryParams.CHART_REF_ID]: chartRefId ? parseInt(chartRefId, 10) : null,
+        }
     }
-}
 
 /**
  * Get the options for the compare environment.
@@ -493,26 +533,42 @@ export const parseCompareWithSearchParams = (searchParams: URLSearchParams): App
 export const getCompareEnvironmentSelectorOptions = (
     environmentList: EnvironmentOptionType[] = [],
     defaultValuesList: TemplateListDTO[] = [],
+    type: DeploymentConfigCompareProps['type'] = 'app',
 ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
-    {
-        label: BASE_CONFIGURATIONS.name,
-        value: '',
-    },
-    {
-        label: 'Environments',
-        options: environmentList.map(({ name }) => ({
-            label: name,
-            value: name,
-        })),
-    },
-    {
-        label: 'Default values',
-        options:
-            defaultValuesList.map(({ chartRefId, chartVersion }) => ({
-                label: `v${chartVersion} (Default)`,
-                value: chartRefId,
-            })) || [],
-    },
+    ...(type === 'app'
+        ? [
+              {
+                  label: BASE_CONFIGURATIONS.name,
+                  value: '',
+              },
+          ]
+        : []),
+    ...(type === 'app'
+        ? [
+              {
+                  label: 'Environments',
+                  options: environmentList.map(({ name }) => ({
+                      label: name,
+                      value: name,
+                  })),
+              },
+          ]
+        : environmentList.map(({ name }) => ({
+              label: name,
+              value: name,
+          }))),
+    ...(type === 'app'
+        ? [
+              {
+                  label: 'Chart default values',
+                  options:
+                      defaultValuesList.map(({ chartRefId, chartVersion }) => ({
+                          label: `v${chartVersion} (Default)`,
+                          value: chartRefId,
+                      })) || [],
+              },
+          ]
+        : []),
 ]
 
 /**
@@ -523,24 +579,29 @@ export const getCompareEnvironmentSelectorOptions = (
  */
 export const getEnvironmentConfigTypeOptions = (
     previousDeploymentsList: TemplateListDTO[] = [],
+    isProtected = false,
 ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
     {
         label: 'Published only',
         value: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
         description: 'Configurations that will be deployed in the next deployment',
     },
+    ...(isProtected
+        ? [
+              {
+                  label: 'Drafts only',
+                  value: AppEnvDeploymentConfigType.DRAFT_ONLY,
+                  description: 'Configurations in draft or approval pending state',
+              },
+              {
+                  label: 'Saved (Includes drafts)',
+                  value: AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT,
+                  description: 'Last saved configurations including any drafts',
+              },
+          ]
+        : []),
     {
-        label: 'Drafts only',
-        value: AppEnvDeploymentConfigType.DRAFT_ONLY,
-        description: 'Configurations in draft or approval pending state',
-    },
-    {
-        label: 'Saved (Includes drafts)',
-        value: AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT,
-        description: 'Last saved configurations including any drafts',
-    },
-    {
-        label: 'Previous Deployments',
+        label: 'Previous deployments',
         options: previousDeploymentsList.map(
             ({ finishedOn, chartVersion, pipelineId, deploymentTemplateHistoryId }) => ({
                 label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
