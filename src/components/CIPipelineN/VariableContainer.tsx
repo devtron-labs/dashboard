@@ -64,7 +64,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                     <div className="fs-13 cn-7">No {type} variables</div>
                 )}
             </div>
-            {!collapsedSection && (
+            {!collapsedSection && variableLength > 0 && (
                 <div className="variable-container">
                     <div className="fs-12 fw-6 dc__uppercase">Variable</div>
                     <div className="fs-12 fw-6 dc__uppercase">Format</div>

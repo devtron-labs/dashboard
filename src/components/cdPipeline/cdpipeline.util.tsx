@@ -117,6 +117,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
             const outputVarMap: Map<string, boolean> = new Map()
             const currentStepTypeVariable =
                 taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
+
             taskErrorObj[currentStepTypeVariable].inputVariables = []
             taskData[currentStepTypeVariable].inputVariables?.forEach((element, index) => {
                 taskErrorObj[currentStepTypeVariable].inputVariables.push(
@@ -126,6 +127,7 @@ export const validateTask = (taskData: StepType, taskErrorObj: TaskErrorObj): vo
                     taskErrorObj.isValid && taskErrorObj[currentStepTypeVariable].inputVariables[index].isValid
                 inputVarMap.set(element.name, true)
             })
+
             if (taskData.stepType === PluginType.INLINE) {
                 taskErrorObj.inlineStepDetail.outputVariables = []
                 taskData.inlineStepDetail.outputVariables?.forEach((element, index) => {
@@ -258,6 +260,9 @@ export const checkUniqueness = (formData, isCDPipeline?: boolean): boolean => {
     return checkStepsUniqueness(list)
 }
 
+/**
+ * @description This method adds the output variables of the previous steps to the input variables of the next steps
+ */
 export const calculateLastStepDetailsLogic = (
     _formData: PipelineFormType,
     activeStageName: string,
@@ -368,7 +373,11 @@ export const calculateLastStepDetailsLogic = (
 
 // Handle delete cd node
 
-export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType) => {
+export const handleDeletePipeline = (
+    deleteAction: DELETE_ACTION,
+    deleteCD: (force: boolean, cascadeDelete: boolean) => void,
+    deploymentAppType,
+) => {
     switch (deleteAction) {
         case DELETE_ACTION.DELETE:
             return deleteCD(false, true)
@@ -379,6 +388,40 @@ export const handleDeletePipeline = (deleteAction: DELETE_ACTION, deleteCD: (for
     }
 }
 
-export const handleDeleteCDNodePipeline = (deleteCD: (force: boolean, cascadeDelete: boolean) => void, deploymentAppType: DeploymentAppTypes) => {
+export const handleDeleteCDNodePipeline = (
+    deleteCD: (force: boolean, cascadeDelete: boolean) => void,
+    deploymentAppType: DeploymentAppTypes,
+) => {
     handleDeletePipeline(DELETE_ACTION.DELETE, deleteCD, deploymentAppType)
+}
+
+export const filterInvalidConditionDetails = (
+    conditionDetails: StepType['pluginRefStepDetail']['conditionDetails'],
+    inputVariableCount: number,
+    outputVariableCount: number,
+): StepType['pluginRefStepDetail']['conditionDetails'] => {
+    if (!inputVariableCount && !outputVariableCount) {
+        return []
+    }
+
+    return (
+        conditionDetails?.filter((conditionDetail) => {
+            const isInputVariableCondition =
+                conditionDetail.conditionType === ConditionType.TRIGGER ||
+                conditionDetail.conditionType === ConditionType.SKIP
+            const isOutputVariableCondition =
+                conditionDetail.conditionType === ConditionType.PASS ||
+                conditionDetail.conditionType === ConditionType.FAIL
+
+            if (isInputVariableCondition && !inputVariableCount) {
+                return false
+            }
+
+            if (isOutputVariableCondition && !outputVariableCount) {
+                return false
+            }
+
+            return true
+        }) || []
+    )
 }
