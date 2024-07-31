@@ -505,7 +505,13 @@ export default function TriggerViewConfigDiff({
                         <div className="code-editor-header-value left pt-8 pb-8 pl-16 pr-16 fs-13 fw-6 lh-20 cn-9 bcn-0 dc__top-radius-4 dc__border-bottom">
                             <span>{editorValues.displayName}</span>
                             {isVariableAvailable && (
-                                <Tippy content={tippyMsg} placement="bottom-start" animation="shift-away" arrow={false}>
+                                <Tippy
+                                    content={tippyMsg}
+                                    placement="bottom-start"
+                                    animation="shift-away"
+                                    className="default-tt"
+                                    arrow={false}
+                                >
                                     <li className="flex left dc_width-max-content cursor">
                                         <div className="w-40 h-20">
                                             <Toggle

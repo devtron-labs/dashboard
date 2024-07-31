@@ -195,7 +195,6 @@ const AppDetailsComponent = ({
                         loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         isVirtualEnvironment={isVirtualEnv.current}
-                        isHelmApp
                         refetchDeploymentStatus={getDeploymentDetailStepsData}
                     />
                 )}

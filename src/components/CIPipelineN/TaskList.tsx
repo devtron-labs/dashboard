@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useContext, Fragment } from 'react'
+import { useState, useContext, Fragment } from 'react'
 import {
     PopupMenu,
     BuildStageVariable,
@@ -22,6 +22,7 @@ import {
     RefVariableStageType,
     RefVariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
@@ -54,6 +55,7 @@ export const TaskList = ({
         setFormDataErrorObj,
         validateTask,
         validateStage,
+        pluginDataStore,
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -104,8 +106,15 @@ export const TaskList = ({
         let isMandatoryMissing = false
         if (_taskDetail[0].isMandatory) {
             isMandatoryMissing = true
+            const deletedTaskPluginId = _taskDetail[0].pluginRefStepDetail.pluginId
+            const deletedTaskParentPluginId = pluginDataStore.pluginVersionStore[deletedTaskPluginId]?.parentPluginId
+
             for (const task of newList) {
-                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                const currentTaskPluginId = task.pluginRefStepDetail?.pluginId
+                const currentTaskParentPluginId =
+                    pluginDataStore.pluginVersionStore[currentTaskPluginId]?.parentPluginId
+
+                if (currentTaskParentPluginId === deletedTaskParentPluginId) {
                     task.isMandatory = true
                     isMandatoryMissing = false
                     break
@@ -146,15 +155,19 @@ export const TaskList = ({
         const _taskDetail = newList.splice(taskIndex, 1)
         let isMandatoryMissing = false
         if (_taskDetail[0].pluginRefStepDetail) {
+            const pluginId = _taskDetail[0].pluginRefStepDetail.pluginId
+            const parentPluginId = pluginDataStore.pluginVersionStore[pluginId]?.parentPluginId
             const isPluginRequired =
                 !isJobView &&
                 isRequired &&
                 !isCdPipeline &&
-                isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
+                isRequired(_formData, mandatoryPluginsMap, moveToStage, parentPluginId, pluginDataStore, true)
             if (_taskDetail[0].isMandatory && !isPluginRequired) {
                 isMandatoryMissing = true
                 for (const task of newList) {
-                    if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                    const taskParentPluginId =
+                        pluginDataStore.pluginVersionStore[task.pluginRefStepDetail?.pluginId]?.parentPluginId
+                    if (!!parentPluginId && !!taskParentPluginId && taskParentPluginId === parentPluginId) {
                         task.isMandatory = true
                         isMandatoryMissing = false
                         break
@@ -167,7 +180,7 @@ export const TaskList = ({
 
             _taskDetail[0].pluginRefStepDetail = {
                 id: 0,
-                pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
+                pluginId,
                 conditionDetails: [],
                 inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
                 outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
@@ -315,15 +328,8 @@ export const TaskList = ({
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
-                            <div
-                                className={`flex left ${
-                                    formDataErrorObj[activeStageName].steps[index] &&
-                                    !formDataErrorObj[activeStageName].steps[index].isValid
-                                        ? 'w-70'
-                                        : 'w-80'
-                                }`}
-                            >
-                                <span className="dc__ellipsis-right">{taskDetail.name}</span>
+                            <div className={`flex left dc__gap-6 dc__content-space w-100`}>
+                                <TaskTitle taskDetail={taskDetail} />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
@@ -374,7 +380,11 @@ export const TaskList = ({
                                         MandatoryPluginMenuOptionTippy && (
                                             <MandatoryPluginMenuOptionTippy
                                                 pluginDetail={
-                                                    mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]
+                                                    mandatoryPluginsMap[
+                                                        pluginDataStore.pluginVersionStore[
+                                                            taskDetail.pluginRefStepDetail.pluginId
+                                                        ].parentPluginId
+                                                    ]
                                                 }
                                             />
                                         )}

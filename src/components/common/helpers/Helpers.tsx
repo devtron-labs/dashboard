@@ -26,6 +26,7 @@ import {
     YAMLStringify,
     ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
+    PluginDetailServiceParamsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -43,6 +44,7 @@ import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
+import { PipelineBuildStageType } from '../../workflowEditor/types'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -220,6 +222,9 @@ export function useWhyDidYouUpdate(name, props) {
     })
 }
 
+/**
+ * @deprecated - Use from fe-common-lib
+ */
 export const useIntersection = (
     target: React.RefObject<Element> | Element | null,
     options: IntersectionOptions = {},
@@ -877,6 +882,7 @@ export const convertToOptionsList = (
     arr: any[],
     customLabel?: string,
     customValue?: string,
+    customDescription?: string,
     customFieldKey?: string,
 ): OptionType[] => {
     if (!Array.isArray(arr) || !arr) {
@@ -886,6 +892,7 @@ export const convertToOptionsList = (
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
+            description: customDescription ? ele[customDescription] : '',
         }
 
         if (customFieldKey) {
@@ -1256,6 +1263,22 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     return className
 }
 
+export const getPluginIdsFromBuildStage = (
+    stage: PipelineBuildStageType,
+): PluginDetailServiceParamsType['pluginIds'] => {
+    if (!stage?.steps?.length) {
+        return []
+    }
+
+    const pluginIds = []
+    stage.steps.forEach((step) => {
+        if (step.pluginRefStepDetail?.pluginId) {
+            pluginIds.push(step.pluginRefStepDetail.pluginId)
+        }
+    })
+
+    return pluginIds
+}
 // Should contain git-codecommit.*.amazonaws.com
 export const isAWSCodeCommitURL = (url: string = ''): boolean => {
     return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
