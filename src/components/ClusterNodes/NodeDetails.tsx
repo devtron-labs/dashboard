@@ -25,6 +25,7 @@ import {
     YAMLStringify,
     Nodes,
     CodeEditor,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -73,7 +74,6 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
-import { GVKType } from '../ResourceBrowser/Types'
 
 const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
