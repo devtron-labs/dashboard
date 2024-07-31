@@ -23,7 +23,6 @@ export interface EnvironmentStatusComponentType {
     loadingResourceTree: boolean
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     isVirtualEnvironment?: boolean
-    isHelmApp?: boolean
     refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 export interface AppEnvironment {

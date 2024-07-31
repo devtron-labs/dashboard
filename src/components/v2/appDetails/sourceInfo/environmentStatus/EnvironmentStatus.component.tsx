@@ -46,7 +46,6 @@ const EnvironmentStatusComponent = ({
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
-    isHelmApp,
     refetchDeploymentStatus,
 }: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
