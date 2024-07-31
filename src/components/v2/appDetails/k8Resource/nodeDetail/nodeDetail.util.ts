@@ -15,11 +15,10 @@
  */
 
 import { Moment } from 'moment'
-import { decode, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { decode, DeploymentAppTypes, K8sResourcePayloadAppType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
     EnvType,
-    K8sResourcePayloadAppType,
     LogState,
     Options,
     OptionsBase,

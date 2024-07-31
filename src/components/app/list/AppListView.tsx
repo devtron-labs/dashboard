@@ -20,6 +20,7 @@ import {
     ErrorScreenManager,
     DEFAULT_BASE_PAGE_SIZE,
     AppListConstants,
+    DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -46,6 +47,7 @@ import {
     appListLoading,
 } from '../list-new/Constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
+import moment from 'moment'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -261,7 +263,7 @@ export class AppListView extends Component<AppListViewProps> {
                                                     className="default-tt"
                                                     arrow={true}
                                                     placement="top"
-                                                    content={app.defaultEnv.lastDeployedTime}
+                                                    content={moment(app.defaultEnv.lastDeployedTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                                                 >
                                                     <p
                                                         className="dc__truncate-text  m-0"

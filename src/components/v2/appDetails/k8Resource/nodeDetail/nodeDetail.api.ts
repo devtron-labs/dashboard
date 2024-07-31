@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, post, put, trash, Host } from '@devtron-labs/devtron-fe-common-lib'
-import { toast } from 'react-toastify'
+import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps } from '@devtron-labs/devtron-fe-common-lib'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
 import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
 import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType } from './nodeDetail.type'
@@ -195,8 +194,8 @@ const getFilterWithValue = (type: string, value: string, unit?: string) => {
     }
 }
 
-export const downloadLogs = async (
-    setDownloadInProgress: (downloadInProgress: boolean) => void,
+export const downloadLogs = (
+    handleDownload: (handleDownloadProps: HandleDownloadProps) => void,
     ad: AppDetails,
     nodeName: string,
     container: string,
@@ -229,40 +228,7 @@ export const downloadLogs = async (
         }
     }
     logsURL += `${filter}`
-    setDownloadInProgress(true)
-    await fetch(logsURL)
-        .then(async (response) => {
-            try {
-                if (response.status === 204) {
-                    toast.error('No logs found')
-                    return
-                }
-                const data = await (response as any).blob()
-                // Create a new URL object
-                const blobUrl = URL.createObjectURL(data)
-
-                // Create a link element
-                const a = document.createElement('a')
-                a.href = logsURL
-                a.download = `podlogs-${nodeName}-${new Date().getTime()}.log`
-
-                // Append the link element to the DOM
-                document.body.appendChild(a)
-
-                // Programmatically click the link to start the download
-                a.click()
-
-                setTimeout(() => {
-                    URL.revokeObjectURL(blobUrl)
-                    document.body.removeChild(a)
-                }, 0)
-            } catch (e) {
-                toast.error(e)
-            } finally {
-                setDownloadInProgress(false)
-            }
-        })
-        .catch((e) => toast.error(e))
+    handleDownload({ downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log` })
 }
 
 export const getLogsURL = (

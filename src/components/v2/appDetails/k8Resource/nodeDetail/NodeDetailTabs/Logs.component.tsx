@@ -15,9 +15,17 @@
  */
 
 import Tippy from '@tippyjs/react'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch, useLocation } from 'react-router'
-import { Checkbox, CHECKBOX_VALUE, Host, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    Host,
+    Progressing,
+    useDownload,
+    useMainContext,
+    useKeyDown,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
 import ReactGA from 'react-ga4'
@@ -34,7 +42,6 @@ import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
-import { useKeyDown } from '../../../../../common'
 import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { LogsComponentProps, Options } from '../../../appDetails.type'
 import { ReactComponent as QuestionIcon } from '../../../../assets/icons/ic-question.svg'
@@ -89,6 +96,7 @@ const LogsComponent = ({
         namespace: string
     }>()
     const key = useKeyDown()
+    const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
     const [tempSearch, setTempSearch] = useState<string>('')
     const [highlightString, setHighlightString] = useState('')
@@ -106,7 +114,6 @@ const LogsComponent = ({
     const [showNoPrevContainer, setNoPrevContainer] = useState('')
     const [newFilteredLogs, setNewFilteredLogs] = useState<boolean>(false)
     const [showCustomOptionsModal, setShowCustomOptionsMoadal] = useState(false)
-    const [downloadInProgress, setDownloadInProgress] = useState(false)
     const { isSuperAdmin } = useMainContext()
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -244,7 +251,7 @@ const LogsComponent = ({
             for (const _co of podContainerOptions.containerOptions) {
                 if (_co.selected) {
                     downloadLogs(
-                        setDownloadInProgress,
+                        handleDownload,
                         appDetails,
                         nodeName,
                         _co.name,
@@ -269,7 +276,7 @@ const LogsComponent = ({
 
             for (const _pwc of podsWithContainers) {
                 downloadLogs(
-                    setDownloadInProgress,
+                    handleDownload,
                     appDetails,
                     _pwc[0],
                     _pwc[1],
@@ -689,27 +696,28 @@ const LogsComponent = ({
                                 Option: (props) => <Option {...props} />,
                             }}
                         />
-                        <div className="h-16 dc__border-right ml-8 mr-8" />
-                        {(downloadInProgress ? (
-                            <Progressing
-                                size={16}
-                                styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
-                            />
-                        ) : (
-                            <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                <span>
-                                    <Download
-                                        className={`icon-dim-16 mr-8 cursor ${
-                                            (podContainerOptions?.containerOptions ?? []).length === 0 ||
-                                            (prevContainer && showNoPrevContainer != '')
-                                                ? 'cursor-not-allowed dc__opacity-0_5'
-                                                : ''
-                                        }`}
-                                        onClick={handleDownloadLogs}
-                                    />
-                                </span>
-                            </Tippy>
-                        ))}
+                        {!isExternalApp && <div className="h-16 dc__border-right ml-8 mr-8" />}
+                        {!isExternalApp &&
+                            (isDownloading ? (
+                                <Progressing
+                                    size={16}
+                                    styles={{ display: 'flex', justifyContent: 'flex-start', width: 'max-content' }}
+                                />
+                            ) : (
+                                <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
+                                    <span>
+                                        <Download
+                                            className={`icon-dim-16 mr-8 cursor ${
+                                                (podContainerOptions?.containerOptions ?? []).length === 0 ||
+                                                (prevContainer && showNoPrevContainer != '')
+                                                    ? 'cursor-not-allowed dc__opacity-0_5'
+                                                    : ''
+                                            }`}
+                                            onClick={handleDownloadLogs}
+                                        />
+                                    </span>
+                                </Tippy>
+                            ))}
                     </div>
                     <div className="dc__border-right " />
                     <form
@@ -769,7 +777,8 @@ const LogsComponent = ({
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
-                            height: isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
+                            height:
+                                isResourceBrowserView || isLogAnalyzer ? 'calc(100vh - 152px)' : 'calc(100vh - 187px)',
                         }}
                         className="flex flex-grow-1 column log-viewer-container"
                     >
