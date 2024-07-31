@@ -21,7 +21,7 @@ import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
-import { ErrorBoundary, importComponentFromFELibrary } from '@Components/common'
+import { ErrorBoundary, importComponentFromFELibrary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
@@ -92,8 +92,8 @@ const AppComposeRouter = () => {
         lastUnlockedStage,
         envConfig,
         fetchEnvConfig,
-        appName,
     } = useAppConfigurationContext()
+    const { currentAppName } = useAppContext()
 
     const renderJobViewRoutes = (): JSX.Element => {
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -291,7 +291,7 @@ const AppComposeRouter = () => {
                                   path={`${path}/:envName?/${URLS.APP_ENV_CONFIG_COMPARE}/:resourceType/:resourceName?`}
                               >
                                   <DeploymentConfigCompare
-                                      appName={appName}
+                                      appName={currentAppName}
                                       environments={environments.map(
                                           ({ environmentId, environmentName, isProtected }) => ({
                                               id: environmentId,

@@ -183,7 +183,6 @@ export interface AppConfigurationContextType extends CommonAppConfigurationProps
     isWorkflowEditorUnlocked: boolean
     getRepo: string
     envConfig: EnvConfigurationState
-    appName: string
 }
 
 export interface AppConfigurationProviderProps extends CommonAppConfigurationProps {

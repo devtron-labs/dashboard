@@ -47,7 +47,6 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
     const contextValue = useMemo<AppConfigurationContextType>(
         () => ({
             appId,
-            appName: state.appName,
             resourceKind,
             navItems: state.navItems,
             deleteApp,

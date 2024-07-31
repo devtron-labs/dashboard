@@ -1,7 +1,5 @@
 import { useEffect, useMemo } from 'react'
 import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
-import { GroupBase, OptionsOrGroups } from 'react-select'
-import moment from 'moment'
 
 import {
     useUrlFilters,
@@ -14,7 +12,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
-import { Moment12HourFormat } from '@Config/constants'
 import {
     AppEnvDeploymentConfigQueryParamsType,
     AppEnvDeploymentConfigType,
@@ -29,6 +26,7 @@ import {
     DeploymentConfigParams,
 } from '../../AppConfig.types'
 import {
+    getCompareEnvironmentSelectorOptions,
     getAppEnvDeploymentConfigList,
     getDefaultVersionAndPreviousDeploymentOptions,
     getEnvironmentIdByEnvironmentName,
@@ -36,6 +34,7 @@ import {
     getPreviousDeploymentOptionValue,
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
+    getEnvironmentConfigTypeOptions,
 } from './utils'
 
 export const DeploymentConfigCompare = ({ environments, appName }: DeploymentConfigCompareProps) => {
@@ -63,14 +62,12 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         initialSortKey: 'sort-config',
     })
 
-    // Ensure default query parameters are set if they are not already present
+    // Ensure default query parameters are set
     useEffect(() => {
-        if ((!chartRefId && !compareWithConfigType) || !configType) {
-            updateSearchParams({
-                compareWithConfigType: compareWithConfigType || AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                configType: configType || AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-            })
-        }
+        updateSearchParams({
+            configType,
+            compareWithConfigType,
+        })
     }, [])
 
     // ASYNC CALLS
@@ -141,65 +138,10 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
-    const compareEnvironmentSelectorOptions: OptionsOrGroups<
-        SelectPickerOptionType,
-        GroupBase<SelectPickerOptionType>
-    > = [
-        {
-            label: BASE_CONFIGURATIONS.name,
-            value: '',
-        },
-        {
-            label: 'Environments',
-            options: environments.map(({ name }) => ({
-                label: name,
-                value: name,
-            })),
-        },
-        {
-            label: 'Default values',
-            options:
-                currentEnvOptions?.defaultVersions.map(({ chartRefId: _chartRefId, chartVersion }) => ({
-                    label: `v${chartVersion} (Default)`,
-                    value: _chartRefId,
-                })) || [],
-        },
-    ]
-
-    /**
-     * Get the configuration type options for the current or compare environment.
-     *
-     * @param isCompare - If true, compare env data will be used.
-     * @returns The configuration type options for the select picker.
-     */
-    const getEnvironmentConfigTypeOptions = (
-        isCompare?: boolean,
-    ): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
-        {
-            label: 'Published only',
-            value: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-            description: 'Configurations that will be deployed in the next deployment',
-        },
-        {
-            label: 'Drafts only',
-            value: AppEnvDeploymentConfigType.DRAFT_ONLY,
-            description: 'Configurations in draft or approval pending state',
-        },
-        {
-            label: 'Saved (Includes drafts)',
-            value: AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT,
-            description: 'Last saved configurations including any drafts',
-        },
-        {
-            label: 'Previous Deployments',
-            options: ((isCompare ? compareEnvOptions : currentEnvOptions)?.previousDeployments || []).map(
-                ({ finishedOn, chartVersion, pipelineId: _pipelineId, deploymentTemplateHistoryId }) => ({
-                    label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
-                    value: getPreviousDeploymentOptionValue(deploymentTemplateHistoryId, _pipelineId),
-                }),
-            ),
-        },
-    ]
+    const compareEnvironmentSelectorOptions = getCompareEnvironmentSelectorOptions(
+        environments,
+        currentEnvOptions?.defaultVersions,
+    )
 
     // METHODS
     const onCompareEnvironmentChange = ({ value }: SelectPickerOptionType) => {
@@ -283,7 +225,9 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
 
     const renderEnvironmentConfigTypeSelectorProps = (isCompare?: boolean) => ({
         id: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-        options: getEnvironmentConfigTypeOptions(isCompare),
+        options: getEnvironmentConfigTypeOptions(
+            isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
+        ),
         placeholder: 'Select State',
         classNamePrefix: 'environment-config-type-selector',
         inputId: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
@@ -291,7 +235,9 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         variant: SelectPickerVariantType.BORDERLESS,
         isSearchable: false,
         value: getOptionByValue(
-            getEnvironmentConfigTypeOptions(isCompare),
+            getEnvironmentConfigTypeOptions(
+                isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
+            ),
             !isCompare
                 ? getPreviousDeploymentOptionValue(identifierId, pipelineId) || configType
                 : getPreviousDeploymentOptionValue(compareWithIdentifierId, compareWithPipelineId) ||
@@ -355,7 +301,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     }
 
     // ERROR SCREEN
-    if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader)) {
+    if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader)) {
         return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} />
     }
 

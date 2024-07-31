@@ -1,5 +1,6 @@
 import { generatePath } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
+import moment from 'moment'
 
 import {
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
@@ -14,6 +15,7 @@ import {
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
+import { Moment12HourFormat } from '@Config/constants'
 import { prepareHistoryData } from '@Components/app/details/cdDetails/service'
 import { TemplateListDTO, TemplateListType } from '@Components/deploymentConfig/types'
 import {
@@ -34,6 +36,7 @@ import {
     DeploymentConfigParams,
     DiffHeadingDataType,
 } from '../../AppConfig.types'
+import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 
 /**
  * Retrieves the draft data from the given configuration data object.
@@ -389,7 +392,7 @@ export const getPreviousDeploymentValue = (value: string) => {
 }
 
 export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptionType[], name: string) =>
-    environments.find(({ name: _name }) => name === _name)?.id || -1
+    environments.find(({ name: _name }) => name === _name)?.id || BASE_CONFIGURATIONS.id
 
 export const getDefaultVersionAndPreviousDeploymentOptions = (data: TemplateListDTO[]) =>
     data.reduce<{ previousDeployments: TemplateListDTO[]; defaultVersions: TemplateListDTO[] }>(
@@ -449,18 +452,25 @@ export const getOptionByValue = (
 }
 
 export const parseCompareWithSearchParams = (searchParams: URLSearchParams): AppEnvDeploymentConfigQueryParamsType => {
-    const identifierId = searchParams.get('identifierId')
-    const compareWithIdentifierId = searchParams.get('compareWithIdentifierId')
-    const pipelineId = searchParams.get('pipelineId')
-    const compareWithPipelineId = searchParams.get('compareWithPipelineId')
-    const chartRefId = searchParams.get('chartRefId')
+    const compareWith = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH)
+    const identifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID)
+    const compareWithIdentifierId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID)
+    const pipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.PIPELINE_ID)
+    const compareWithPipelineId = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_PIPELINE_ID)
+    const chartRefId = searchParams.get(AppEnvDeploymentConfigQueryParams.CHART_REF_ID)
+    let configType = searchParams.get(AppEnvDeploymentConfigQueryParams.CONFIG_TYPE)
+    let compareWithConfigType = searchParams.get(AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE)
+
+    if ((!chartRefId && !compareWithConfigType) || !configType) {
+        compareWithConfigType = compareWithConfigType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
+        configType = configType || AppEnvDeploymentConfigType.PUBLISHED_ONLY
+    }
 
     return {
-        [AppEnvDeploymentConfigQueryParams.CONFIG_TYPE]: searchParams.get('configType') as AppEnvDeploymentConfigType,
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH]: searchParams.get('compareWith'),
-        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]: searchParams.get(
-            'compareWithConfigType',
-        ) as AppEnvDeploymentConfigType,
+        [AppEnvDeploymentConfigQueryParams.CONFIG_TYPE]: configType as AppEnvDeploymentConfigType,
+        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH]: compareWith,
+        [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_CONFIG_TYPE]:
+            compareWithConfigType as AppEnvDeploymentConfigType,
         [AppEnvDeploymentConfigQueryParams.IDENTIFIER_ID]: identifierId ? parseInt(identifierId, 10) : null,
         [AppEnvDeploymentConfigQueryParams.PIPELINE_ID]: pipelineId ? parseInt(pipelineId, 10) : null,
         [AppEnvDeploymentConfigQueryParams.COMPARE_WITH_IDENTIFIER_ID]: compareWithIdentifierId
@@ -472,3 +482,70 @@ export const parseCompareWithSearchParams = (searchParams: URLSearchParams): App
         [AppEnvDeploymentConfigQueryParams.CHART_REF_ID]: chartRefId ? parseInt(chartRefId, 10) : null,
     }
 }
+
+/**
+ * Get the options for the compare environment.
+ *
+ * @param environmentList - List of environments.
+ * @param defaultValuesList - List of chart default values.
+ * @returns The environments options for the select picker.
+ */
+export const getCompareEnvironmentSelectorOptions = (
+    environmentList: EnvironmentOptionType[] = [],
+    defaultValuesList: TemplateListDTO[] = [],
+): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
+    {
+        label: BASE_CONFIGURATIONS.name,
+        value: '',
+    },
+    {
+        label: 'Environments',
+        options: environmentList.map(({ name }) => ({
+            label: name,
+            value: name,
+        })),
+    },
+    {
+        label: 'Default values',
+        options:
+            defaultValuesList.map(({ chartRefId, chartVersion }) => ({
+                label: `v${chartVersion} (Default)`,
+                value: chartRefId,
+            })) || [],
+    },
+]
+
+/**
+ * Get the configuration type options for the environment.
+ *
+ * @param previousDeploymentsList - List of previous deployments.
+ * @returns The configuration type options for the select picker.
+ */
+export const getEnvironmentConfigTypeOptions = (
+    previousDeploymentsList: TemplateListDTO[] = [],
+): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
+    {
+        label: 'Published only',
+        value: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+        description: 'Configurations that will be deployed in the next deployment',
+    },
+    {
+        label: 'Drafts only',
+        value: AppEnvDeploymentConfigType.DRAFT_ONLY,
+        description: 'Configurations in draft or approval pending state',
+    },
+    {
+        label: 'Saved (Includes drafts)',
+        value: AppEnvDeploymentConfigType.PUBLISHED_WITH_DRAFT,
+        description: 'Last saved configurations including any drafts',
+    },
+    {
+        label: 'Previous Deployments',
+        options: previousDeploymentsList.map(
+            ({ finishedOn, chartVersion, pipelineId, deploymentTemplateHistoryId }) => ({
+                label: `${moment(finishedOn).format(Moment12HourFormat)} (v${chartVersion})`,
+                value: getPreviousDeploymentOptionValue(deploymentTemplateHistoryId, pipelineId),
+            }),
+        ),
+    },
+]
