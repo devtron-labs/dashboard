@@ -148,6 +148,7 @@ if (!window || !window._env_) {
         ORGANIZATION_NAME: '',
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: false,
         HIDE_NETWORK_STATUS_INTERFACE: true,
+        SYSTEM_CONTROLLER_LISTING_TIMEOUT: 60000 * 5,
     }
 }
 
