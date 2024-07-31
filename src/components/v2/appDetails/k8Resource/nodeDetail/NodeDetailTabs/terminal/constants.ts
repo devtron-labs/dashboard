@@ -93,4 +93,5 @@ export enum TerminalWrapperType {
     DEBUG_MODE_TOGGLE_BUTTON = 'debugModeToggleButton',
     CUSTOM_COMPONENT = 'customComponent',
     DOWNLOAD_FILE_FOLDER = 'downloadFileFolder',
+    UPLOAD_FILE_FOLDER = 'uploadFileFolder'
 }
