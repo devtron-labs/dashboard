@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { SourceTypeMap } from '../../config'
+import { commonSelectStyles, OptionType, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionProps, StylesConfig, components } from 'react-select'
+import { PluginVersionSelectOptionType } from './types'
 
 export const baseSelectStyles = {
     control: (base, state) => ({
@@ -97,29 +97,6 @@ export const pluginSelectStyle = {
         background: 'var(--N50) !important',
         borderTopRightRadius: '4px',
         borderBottomRightRadius: '4px',
-    }),
-}
-
-export const yamlEditorSelectStyle = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        minHeight: 'auto',
-        border: 'none',
-        width: 'max-content',
-    }),
-    option: (base, state) => ({
-        ...base,
-        fontWeight: '500',
-        color: 'var(--N900)',
-        fontSize: '12px',
-        padding: '5px 10px',
-        minWidth: '200px',
-    }),
-    dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-    menu: (base, state) => ({
-        ...base,
-        width: '150px',
     }),
 }
 
@@ -309,4 +286,55 @@ export const getCDStageTypeSelectorValue = (customTagStage: string): OptionType 
         stageTypeSelectorValue = { label: StageTypeMap.PRE_CD, value: StageTypeEnums.PRE_CD }
     }
     return stageTypeSelectorValue
+}
+
+export const PluginVersionSelectOption = (props: OptionProps<PluginVersionSelectOptionType, false>) => {
+    const {
+        data: { isLatest, label },
+    } = props
+
+    return (
+        <components.Option {...props}>
+            <div className="flexbox-col">
+                <span className="cn-9 fs-13 fw-4 lh-20 dc__truncate">{label}</span>
+                {isLatest && <span className="cn-7 fs-12 fw-4 lh-18">Latest</span>}
+            </div>
+        </components.Option>
+    )
+}
+
+export const pluginVersionSelectStyle: StylesConfig<PluginVersionSelectOptionType, false> = {
+    ...commonSelectStyles,
+    control: (base, state) =>
+        state.menuIsOpen
+            ? {
+                  ...commonSelectStyles.control(base, state),
+                  minHeight: '20px',
+                  height: '28px',
+              }
+            : {
+                  border: 'none',
+                  minHeight: '20px',
+                  height: '28px',
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 24px',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+              },
+    singleValue: (base, state) => ({
+        ...base,
+        color: state.selectProps.menuIsOpen ? 'var(--N500)' : 'var(--N900)',
+        fontSize: '14px',
+        fontWeight: '600',
+        lineHeight: '24px',
+    }),
+    valueContainer: (base, state) => ({
+        ...commonSelectStyles.valueContainer(base),
+        padding: state.selectProps.menuIsOpen ? '0 8px' : '0',
+    }),
+    option: (base, state) => ({
+        ...commonSelectStyles.option(base, state),
+        padding: '6px 8px',
+    }),
 }
