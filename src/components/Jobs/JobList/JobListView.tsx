@@ -125,7 +125,7 @@ export default function JobListView(props: JobListViewProps) {
                                     data-key={job.id}
                                     className="button-edit"
                                     onClick={handleEditJob}
-                                    data-action="Edit Configure Clicked"
+                                    data-action="Configure Clicked"
                                 >
                                     <Edit className="button-edit__icon" />
                                 </button>
