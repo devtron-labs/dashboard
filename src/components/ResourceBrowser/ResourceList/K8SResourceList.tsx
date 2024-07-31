@@ -438,13 +438,13 @@ export const K8SResourceList = ({
         return (
             <div
                 ref={resourceListRef}
-                className={getScrollableResourceClass(
+                className={`${getScrollableResourceClass(
                     'scrollable-resource-list',
                     showPaginatedView,
                     showStaleDataWarning,
-                )}
+                )} dc__overflow-scroll`}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList?.headers.map((columnName) => (
                         <div
                             key={columnName}
@@ -510,7 +510,7 @@ export const K8SResourceList = ({
 
     return (
         <div
-            className={`resource-list-container dc__border-left flexbox-col ${
+            className={`resource-list-container dc__border-left flexbox-col dc__overflow-hidden ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
         >

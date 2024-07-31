@@ -31,8 +31,8 @@ export const EventList = ({
     searchText,
 }: EventListType) => {
     return (
-        <div>
-            <div className="event-list-row fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
+        <div className="dc__overflow-scroll">
+            <div className="event-list-row dc__zi-5 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
                 <div>{EVENT_LIST.headerKeys.type}</div>
                 <div>{EVENT_LIST.headerKeys.message}</div>
                 <div>{EVENT_LIST.headerKeys.namespace}</div>
@@ -44,7 +44,7 @@ export const EventList = ({
             </div>
             <div
                 ref={listRef}
-                className={getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)}
+                className={`${getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)} dc__min-width-fit-content`}
             >
                 {filteredData?.map((eventData) => (
                     <div

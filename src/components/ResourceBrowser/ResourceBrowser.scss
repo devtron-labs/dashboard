@@ -130,8 +130,6 @@
                 }
             }
             .scrollable-resource-list {
-                overflow: auto;
-                width: calc(100vw - 277px);
                 height: calc(100vh - 144px);
                 &.paginated-list-view {
                     height: calc(100vh - 201px);
@@ -153,7 +151,6 @@
             }
 
             .scrollable-event-list {
-                overflow: hidden auto;
                 height: calc(100vh - 180px);
                 &.paginated-list-view {
                     height: calc(100vh - 237px);
