@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -62,14 +62,6 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         initialSortKey: 'sort-config',
     })
 
-    // Ensure default query parameters are set
-    useEffect(() => {
-        updateSearchParams({
-            configType,
-            compareWithConfigType,
-        })
-    }, [])
-
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
     const [optionsLoader, options, optionsErr] = useAsync(
@@ -91,7 +83,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
     )
 
     // Load data for comparing the two environments
-    const [comparisonDataLoader, comparisonData, comparisonDataErr] = useAsync(
+    const [comparisonDataLoader, comparisonData, comparisonDataErr, reloadComparisonData] = useAsync(
         () =>
             Promise.all([
                 getAppEnvDeploymentConfig({
@@ -302,7 +294,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
 
     // ERROR SCREEN
     if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader)) {
-        return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} />
+        return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} reload={reloadComparisonData} />
     }
 
     return (

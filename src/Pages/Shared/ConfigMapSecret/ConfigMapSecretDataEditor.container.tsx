@@ -171,7 +171,7 @@ const ConfigMapSecretDataEditor = ({
                 payload: !!error,
             })
         }
-    }, [error])
+    }, [error, state.isValidateFormError])
 
     const { yaml: lockedYaml } = useKeyValueYaml(
         state.currentData?.map(({ k }) => ({ k, v: Array(8).fill('*').join('') })),

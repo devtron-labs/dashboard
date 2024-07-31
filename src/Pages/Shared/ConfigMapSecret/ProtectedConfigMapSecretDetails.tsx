@@ -173,13 +173,15 @@ export const ProtectedConfigMapSecretDetails = ({
             displayName: 'data',
             value: JSON.stringify(getCodeEditorData(_data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
+        const skipDecode =
+            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized)
 
         return prepareHistoryData(
             { ..._data, codeEditorValue },
             componentType === CMSecretComponentType.Secret
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized),
+            skipDecode,
         )
     }
 
