@@ -294,7 +294,7 @@ export const K8SResourceList = ({
         return (
             <div
                 key={`${resourceData.id}-${resourceData.name}`}
-                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
             >
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
@@ -444,15 +444,15 @@ export const K8SResourceList = ({
                     showStaleDataWarning,
                 )} dc__overflow-scroll`}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div className="h-36 fw-6 cn-7 fs-12 flexbox dc__gap-16 dc__border-bottom dc__uppercase list-header bcn-0 dc__position-sticky">
                     {resourceList?.headers.map((columnName) => (
                         <div
                             key={columnName}
-                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
+                            className={`list-title dc__inline-block pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${
                                           fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
+                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right h-35'
                                               : ''
                                       } w-350 pl-20`
                                     : 'w-180'
