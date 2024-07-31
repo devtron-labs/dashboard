@@ -40,7 +40,7 @@ import {
     NodeType,
 } from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
@@ -995,16 +995,12 @@ export const processK8SObjects = (
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
-            SIDEBAR_KEYS.shortNames.events = shortNames
+            JUMP_TO_KIND_SHORT_NAMES.events = shortNames
             SIDEBAR_KEYS.eventGVK = { ...element.gvk }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
-            SIDEBAR_KEYS.shortNames.namespaces = shortNames
+            JUMP_TO_KIND_SHORT_NAMES.namespaces = shortNames
             SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
-        }
-        if (element.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
-            SIDEBAR_KEYS.shortNames.nodes = shortNames
-            SIDEBAR_KEYS.nodeGVK = { ...element.gvk }
         }
     }
     for (const [, _k8sObject] of _k8SObjectMap.entries()) {

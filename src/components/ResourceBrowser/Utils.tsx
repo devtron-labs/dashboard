@@ -23,7 +23,7 @@ import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
     ClusterOptionType,
     K8SObjectChildMapType,
@@ -195,7 +195,7 @@ export const convertK8sObjectMapToOptionsList = (
                             false,
                             false,
                             '',
-                            SIDEBAR_KEYS.shortNames.namespaces,
+                            JUMP_TO_KIND_SHORT_NAMES.namespaces,
                         ),
                     )
                     break
@@ -210,7 +210,7 @@ export const convertK8sObjectMapToOptionsList = (
                             true,
                             false,
                             '',
-                            SIDEBAR_KEYS.shortNames.events,
+                            JUMP_TO_KIND_SHORT_NAMES.events,
                         ),
                     )
                     break
@@ -241,7 +241,7 @@ export const convertK8sObjectMapToOptionsList = (
             false,
             false,
             '',
-            SIDEBAR_KEYS.shortNames.nodes,
+            JUMP_TO_KIND_SHORT_NAMES.nodes,
         ),
     )
 
