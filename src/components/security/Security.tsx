@@ -28,7 +28,7 @@ interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
 }
 
-export class Security extends Component<SecurityProps> {
+export class Security extends React.Component<SecurityProps> {
     renderRouter() {
         const { path } = this.props.match
         return (

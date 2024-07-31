@@ -48,8 +48,13 @@ export class SecurityPolicyEdit extends Component<
             subTitle: 'Exploitation is straightforward and usually results in system-level compromise.',
         },
         {
-            className: 'moderate',
-            title: 'Moderate Vulnerabilities',
+            className: 'high',
+            title: 'High Vulnerabilities',
+            subTitle: 'Exploitation is straightforward and usually results in system-level compromise.',
+        },
+        {
+            className: 'medium',
+            title: 'Medium Vulnerabilities',
             subTitle: 'Vulnerabilities exist but are not exploitable or require extra step such as social engineering.',
         },
         {
@@ -57,6 +62,11 @@ export class SecurityPolicyEdit extends Component<
             title: 'Low Vulnerabilities',
             subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface.",
         },
+        {
+            className: 'unknown',
+            title: 'Unknown Vulnerabilities',
+            subTitle: "Vulnerabilities are not categorized but would reduce your organization's attack surface.", 
+        }
     ]
 
     private permissionText = {
@@ -290,13 +300,17 @@ export class SecurityPolicyEdit extends Component<
 
     private renderVulnerabilitiesCard(v: VulnerabilityPolicy, severities: SeverityPolicy[]) {
         const critical = severities.filter((s) => s.severity === 'critical')[0]
-        const moderate = severities.filter((s) => s.severity === 'moderate')[0]
+        const medium = severities.filter((s) => s.severity === 'medium')[0]
         const low = severities.filter((s) => s.severity === 'low')[0]
+        const high = severities.filter((s) => s.severity === 'high')[0]
+        const unknown = severities.filter((s) => s.severity === 'unknown')[0]  
         return (
-            <>
+            <>s
                 {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}
-                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, moderate)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, high)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, medium)}
                 {this.renderVulnerability(this.vulnerabilityMetaData[2], v, low)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, unknown)}
             </>
         )
     }

@@ -267,7 +267,13 @@
     }
 }
 
-.vulnerability__title--moderate {
+.vulnerability__title--high {
+    &::before {
+        background-color: var(--R200);
+    }
+}
+
+.vulnerability__title--medium {
     &::before {
         background-color: var(--Y500);
     }
@@ -276,6 +282,12 @@
 .vulnerability__title--low {
     &::before {
         background-color: var(--Y200);
+    }
+}
+
+.vulnerability__title--unknown {
+    &::before {
+        background-color: var(--N100);
     }
 }
 
