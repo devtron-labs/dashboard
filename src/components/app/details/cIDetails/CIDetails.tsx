@@ -588,6 +588,7 @@ const HistoryLogs = ({
                     {loading && <Progressing pageLoader />}
                     {isJobCI && !loading && CiArtifactsArrayCards}
                     {!loading && (
+                        <div className='p-16'>
                         <Artifacts
                             status={triggerDetails.status}
                             artifact={triggerDetails.artifact}
@@ -606,6 +607,7 @@ const HistoryLogs = ({
                             type={HistoryComponentType.CI}
                             renderCIListHeader={renderCIListHeader}
                         />
+                        </div>
                     )}
                 </Route>
                 {!isJobCard && (
