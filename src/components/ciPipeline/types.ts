@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import {
     MaterialType,
     DockerConfigOverrideType,
     CiPipelineSourceTypeOption,
     Githost,
     ErrorObj,
-    PluginDetailType,
     MandatoryPluginDetailType,
     RefVariableType,
     ScriptType,
@@ -403,8 +401,6 @@ export interface BuildType {
 }
 
 export interface PreBuildType {
-    presetPlugins: PluginDetailType[]
-    sharedPlugins: PluginDetailType[]
     mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     isJobView?: boolean
 }

@@ -1069,7 +1069,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="flexbox-col h-100">
+        <div className='flexbox-col h-100 dc__overflow-scroll'>
             <HeaderWithCreateButton headerName="Applications" />
             {renderMasterFilters()}
             {renderAppliedFilters()}

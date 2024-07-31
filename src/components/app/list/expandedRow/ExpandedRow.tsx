@@ -82,7 +82,7 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                         <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
                         <span className="fw-6">{this.props.app.name}</span>
                     </div>
-                    <button type="button" className="button-edit button-edit--white" onClick={this.handleEditApp}>
+                    <button type="button" className="button-edit" onClick={this.handleEditApp}>
                         <Settings className="button-edit__icon" />
                     </button>
                 </div>

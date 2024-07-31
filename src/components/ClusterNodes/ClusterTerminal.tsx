@@ -26,7 +26,7 @@ import {
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
-import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
+import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     clusterDisconnectAndRetry,
     clusterManifestEdit,
@@ -954,6 +954,16 @@ node-details-full-screen
                     IndicatorSeparator: null,
                     Option,
                 },
+            },
+            {
+                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: !isPodCreated,
+                isClusterTerminalView: true,
+                isResourceBrowserView: false,
+                podName: resourceData?.podName,
+                containerName: debugMode
+                    ? DEFAULT_CONTAINER_NAME.DEBUGGER
+                    : DEFAULT_CONTAINER_NAME.DEVTRON_DEBUG_TERMINAL,
             },
             {
                 type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
