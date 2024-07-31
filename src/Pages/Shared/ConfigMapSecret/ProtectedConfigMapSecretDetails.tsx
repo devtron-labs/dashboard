@@ -155,12 +155,16 @@ export const ProtectedConfigMapSecretDetails = ({
         } catch (error) {
             // do nothing
         }
+
+        const skipDecode =
+            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized)
+
         return prepareHistoryData(
             { ...currentConfigData, codeEditorValue },
             componentType === CMSecretComponentType.Secret
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-            componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized),
+            skipDecode,
         )
     }
 

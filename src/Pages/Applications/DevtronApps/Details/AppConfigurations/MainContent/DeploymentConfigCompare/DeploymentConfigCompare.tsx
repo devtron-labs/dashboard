@@ -64,7 +64,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
 
     // ASYNC CALLS
     // Load options for dropdown menus of previous deployments and default versions
-    const [optionsLoader, options, optionsErr] = useAsync(
+    const [optionsLoader, options, optionsErr, reloadOptions] = useAsync(
         () =>
             Promise.all([
                 getOptions(+appId, getEnvironmentIdByEnvironmentName(environments, envName)),
@@ -114,6 +114,11 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
         ],
         !!configType && !!compareWithConfigType,
     )
+
+    const reload = () => {
+        reloadOptions()
+        reloadComparisonData()
+    }
 
     // Generate the deployment configuration list for the environments using comparison data
     const appEnvDeploymentConfigList = useMemo(() => {
@@ -294,7 +299,7 @@ export const DeploymentConfigCompare = ({ environments, appName }: DeploymentCon
 
     // ERROR SCREEN
     if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader)) {
-        return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} reload={reloadComparisonData} />
+        return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} reload={reload} />
     }
 
     return (
