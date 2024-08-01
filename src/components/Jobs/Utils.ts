@@ -170,7 +170,7 @@ const handleDeploymentInitiatedStatus = (status: string): string => {
 
 export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams): any => {
     const params = queryString.parse(searchParams)
-    const search = params.search || ''
+    const search = params.searchKey || ''
     const appStatus = params.appStatus || ''
     const teams = params.team || ''
     const environments = params.environment || ''

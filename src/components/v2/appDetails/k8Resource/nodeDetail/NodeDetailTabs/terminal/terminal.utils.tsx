@@ -18,6 +18,7 @@ import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { InfoIconTippy, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
@@ -42,6 +43,8 @@ import {
 } from './terminal.type'
 import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
+
+const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) {
@@ -329,6 +332,22 @@ const manifestEditButtons = ({
     )
 }
 
+const downloadFileFolderButton = (elementData): JSX.Element => {
+    if (elementData.hideTerminalStripComponent || !DownloadFileFolderButton) {
+        return null
+    }
+
+    return (
+        <DownloadFileFolderButton
+            appDetails={elementData.appDetails}
+            containerName={elementData.containerName}
+            isResourceBrowserView={elementData.isResourceBrowserView}
+            isClusterTerminalView={elementData.isClusterTerminalView}
+            clusterViewPodName={elementData.podName}
+        />
+    )
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
         case TerminalWrapperType.CREATABLE_SELECT:
@@ -351,6 +370,8 @@ export default function terminalStripTypeData(elementData) {
             return debugModeToggleButton(elementData)
         case TerminalWrapperType.CUSTOM_COMPONENT:
             return elementData.customComponent()
+        case TerminalWrapperType.DOWNLOAD_FILE_FOLDER:
+            return downloadFileFolderButton(elementData)
         default:
             return null
     }

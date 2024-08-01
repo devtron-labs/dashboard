@@ -89,7 +89,6 @@ export default function BulkCDTrigger({
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
-    const [isDownloadPopupOpen, setDownloadPopupOpen] = useState(false)
     const [tagNotFoundWarningsMap, setTagNotFoundWarningsMap] = useState<Map<number, string>>(new Map())
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -610,25 +609,25 @@ export default function BulkCDTrigger({
                             {(app.warningMessage ||
                                 tagNotFoundWarningsMap.has(app.appId) ||
                                 appDeploymentWindowMap[app.appId]?.warningMessage) && (
-                                    <span
-                                        className={`flex left top fw-4 m-0 fs-12 ${
-                                            tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
+                                <span
+                                    className={`flex left top fw-4 m-0 fs-12 ${
+                                        tagNotFoundWarningsMap.has(app.appId) ? 'cr-5' : 'cy-7'
+                                    }`}
+                                >
+                                    <Error
+                                        className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
+                                            tagNotFoundWarningsMap.has(app.appId)
+                                                ? 'alert-icon-r5-imp'
+                                                : 'warning-icon-y7'
                                         }`}
-                                    >
-                                        <Error
-                                            className={`icon-dim-12 mr-4 dc__no-shrink mt-5 ${
-                                                tagNotFoundWarningsMap.has(app.appId)
-                                                    ? 'alert-icon-r5-imp'
-                                                    : 'warning-icon-y7'
-                                            }`}
-                                        />
-                                        <p className="m-0">
-                                            {app.warningMessage ||
-                                                appDeploymentWindowMap[app.appId]?.warningMessage ||
-                                                tagNotFoundWarningsMap.get(app.appId)}
-                                        </p>
-                                    </span>
-                                )}
+                                    />
+                                    <p className="m-0">
+                                        {app.warningMessage ||
+                                            appDeploymentWindowMap[app.appId]?.warningMessage ||
+                                            tagNotFoundWarningsMap.get(app.appId)}
+                                    </p>
+                                </span>
+                            )}
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
@@ -741,7 +740,6 @@ export default function BulkCDTrigger({
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
-                        setDownloadPopupOpen={setDownloadPopupOpen}
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
@@ -757,7 +755,11 @@ export default function BulkCDTrigger({
                 )}
             </div>
             {showResistanceBox && (
-                <BulkDeployResistanceTippy actionHandler={onClickStartDeploy} handleOnClose={hideResistanceBox} modalType={MODAL_TYPE.DEPLOY} />
+                <BulkDeployResistanceTippy
+                    actionHandler={onClickStartDeploy}
+                    handleOnClose={hideResistanceBox}
+                    modalType={MODAL_TYPE.DEPLOY}
+                />
             )}
         </Drawer>
     )
