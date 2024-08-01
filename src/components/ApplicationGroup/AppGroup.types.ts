@@ -22,17 +22,16 @@ import {
     KeyValueListType,
     MODAL_TYPE,
     ResponseType,
-    ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
     AppInfoListType,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
-import { GVKType } from '../ResourceBrowser/Types'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 

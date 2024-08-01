@@ -21,7 +21,6 @@ import {
     CIBuildType,
     DockerConfigOverrideType,
     MandatoryPluginDataType,
-    PluginDetailType,
     VariableType,
     MandatoryPluginDetailType,
     CommonNodeAttr,
@@ -343,7 +342,6 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
     mandatoryPluginData?: MandatoryPluginDataType
-    pluginList: PluginDetailType[]
     mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
