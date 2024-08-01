@@ -20,27 +20,40 @@ import { Progressing, ErrorScreenManager, Reload, useAsync } from '@devtron-labs
 import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createGroupSelectList, filterImageList } from '../../common'
 import { createTaintsList } from '../../cluster/cluster.util'
-import { getClusterList, clusterNamespaceList } from '../../ClusterNodes/clusterNodes.service'
+import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
 import { getHostURLConfiguration } from '../../../services/service'
 import { AdminTerminalProps, URLParams } from '../Types'
 
-const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTerminalTabUrl }: AdminTerminalProps) => {
+const AdminTerminal: React.FC<AdminTerminalProps> = ({
+    isSuperAdmin,
+    clusterName,
+    updateTerminalTabUrl,
+}: AdminTerminalProps) => {
     const { clusterId } = useParams<URLParams>()
 
     const [loading, data, error] = useAsync(() =>
-        Promise.all([getClusterList(), getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'), clusterNamespaceList()]),
+        Promise.all([
+            getClusterCapacity(clusterId),
+            getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
+            clusterNamespaceList(),
+        ]),
     )
 
-    const [detailClusterList = null, hostUrlConfig = null, _namespaceList = null] = data || []
+    const [clusterDetail = null, hostUrlConfig = null, _namespaceList = null] = data || []
 
-    const selectedDetailsCluster = useMemo(
-        () => detailClusterList?.result.find((cluster) => cluster.id === +clusterId) || null,
-        [detailClusterList, clusterId],
-    )
+    const details = useMemo(() => {
+        const detail = clusterDetail?.result ?? null
 
-    const imageList = useMemo(() => JSON.parse(hostUrlConfig?.result.value || null), [hostUrlConfig])
+        const imageList = JSON.parse(hostUrlConfig?.result.value ?? null)
+        const clusterImageList = filterImageList(imageList, detail?.serverVersion ?? '')
 
-    const namespaceList = _namespaceList?.result[selectedDetailsCluster?.name] || null
+        const nodeGroups = createGroupSelectList(detail?.nodeDetails, 'nodeName')
+        const taints = detail ? createTaintsList(detail.nodeDetails, 'nodeName') : null
+
+        return { ...(detail ?? {}), nodeGroups, taints, clusterImageList }
+    }, [clusterDetail, clusterId])
+
+    const namespaceList = _namespaceList?.result[clusterName] || null
 
     if (loading) {
         return (
@@ -50,7 +63,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
         )
     }
 
-    if (error || !selectedDetailsCluster?.nodeCount || !namespaceList?.length) {
+    if (error || !details.nodeDetails?.length || !namespaceList?.length) {
         /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
         /* NOTE: the above happens in case of bad cluster setup */
         const errCode = error?.code || 403
@@ -64,9 +77,9 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTermi
     return (
         <ClusterTerminal
             clusterId={+clusterId}
-            nodeGroups={createGroupSelectList(selectedDetailsCluster.nodeDetails, 'nodeName')}
-            taints={createTaintsList(selectedDetailsCluster.nodeDetails, 'nodeName')}
-            clusterImageList={filterImageList(imageList, selectedDetailsCluster.serverVersion)}
+            nodeGroups={details.nodeGroups}
+            taints={details.taints}
+            clusterImageList={details.clusterImageList}
             namespaceList={namespaceList}
             updateTerminalTabUrl={updateTerminalTabUrl}
         />
