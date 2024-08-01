@@ -146,6 +146,7 @@ const EnvironmentOverride = ({
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
                     <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>

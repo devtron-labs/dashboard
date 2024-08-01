@@ -88,56 +88,170 @@ export const mergeConfigDataArraysByName = (
     return Array.from(dataMap.values())
 }
 
-const getObfuscatedData = (
-    codeEditorData: { [key: string]: string },
-    type: ConfigResourceType,
-    unAuthorized: boolean,
-) => {
-    const _codeEditorData = { ...codeEditorData }
-    if (type === ConfigResourceType.Secret && unAuthorized && _codeEditorData) {
-        return Object.keys(_codeEditorData).reduce(
-            (acc, curr) => ({ ...acc, [curr]: Array(8).fill('*').join('') }),
-            _codeEditorData,
-        )
-    }
-    return _codeEditorData
-}
-
-const getCodeEditorData = (
+/**
+ * Retrieves data for a given configuration, depending on the type.
+ *
+ * @param cmSecretData - The configuration data containing secret and non-secret data.
+ * @param type - The type of configuration resource (e.g., Secret or ConfigMap).
+ * @returns The config data if found, otherwise null.
+ */
+const getConfigData = (
     cmSecretData: ConfigMapSecretDataConfigDatumDTO,
     type: ConfigResourceType,
-    isUnAuthorized: boolean,
-) => {
+): Record<string, string> | null => {
+    const secretKeys = ['secretData', 'esoSecretData', 'defaultSecretData', 'defaultESOSecretData']
+
     if (type === ConfigResourceType.Secret) {
-        if (Object.keys(cmSecretData.secretData ?? {}).length > 0) {
-            return getObfuscatedData(cmSecretData.secretData, type, isUnAuthorized)
-        }
-        if (Object.keys(cmSecretData.esoSecretData ?? {}).length > 0) {
-            return getObfuscatedData(cmSecretData.esoSecretData, type, isUnAuthorized)
-        }
-        if (Object.keys(cmSecretData.defaultSecretData ?? {}).length > 0) {
-            return getObfuscatedData(cmSecretData.defaultSecretData, type, isUnAuthorized)
-        }
-        if (Object.keys(cmSecretData.defaultESOSecretData ?? {}).length > 0) {
-            return getObfuscatedData(cmSecretData.defaultESOSecretData, type, isUnAuthorized)
+        const data = secretKeys.find((key) => Object.keys(cmSecretData?.[key] ?? {}).length > 0)
+        if (data) {
+            return cmSecretData[data]
         }
     }
 
-    if (Object.keys(cmSecretData.data ?? {}).length > 0) {
-        return getObfuscatedData(cmSecretData.data, type, isUnAuthorized)
-    }
-
-    if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
-        return getObfuscatedData(cmSecretData.defaultData, type, isUnAuthorized)
+    const configmapKeys = ['data', 'defaultData']
+    const data = configmapKeys.find((key) => Object.keys(cmSecretData?.[key] ?? {}).length > 0)
+    if (data) {
+        return cmSecretData[data]
     }
 
     return null
 }
 
+const getObfuscatedData = (
+    compareToData: Record<string, string>,
+    compareWithData: Record<string, string>,
+    compareToIsAdmin: boolean,
+    compareWithIsAdmin: boolean,
+) => {
+    let sameKeys = {}
+    if (compareToData && compareWithData) {
+        sameKeys = Object.keys(compareToData).reduce((acc, curr) => {
+            if (compareWithData[curr] && compareWithData[curr] === compareToData[curr]) {
+                return { ...acc, [curr]: true }
+            }
+            return acc
+        }, {})
+    }
+
+    const compareToObfuscatedData =
+        compareToData && !compareToIsAdmin
+            ? Object.keys(compareToData).reduce(
+                  (acc, curr) => ({
+                      ...acc,
+                      [curr]: Array(sameKeys[curr] ? 8 : 12)
+                          .fill('*')
+                          .join(''),
+                  }),
+                  compareToData,
+              )
+            : compareToData
+
+    const compareWithObfuscatedData =
+        compareWithData && !compareWithIsAdmin
+            ? Object.keys(compareWithData).reduce(
+                  (acc, curr) => ({
+                      ...acc,
+                      [curr]: Array(8).fill('*').join(''),
+                  }),
+                  compareWithData,
+              )
+            : compareWithData
+
+    return {
+        compareToObfuscatedData,
+        compareWithObfuscatedData,
+    }
+}
+
+const getCodeEditorData = (
+    compareToValue: ConfigMapSecretDataConfigDatumDTO,
+    compareWithValue: ConfigMapSecretDataConfigDatumDTO,
+    type: ConfigResourceType,
+    compareToIsAdmin: boolean,
+    compareWithIsAdmin: boolean,
+) => {
+    const compareToConfigData = getConfigData(compareToValue, type)
+    const compareWithConfigData = getConfigData(compareWithValue, type)
+
+    if (type === ConfigResourceType.Secret) {
+        const { compareToObfuscatedData, compareWithObfuscatedData } = getObfuscatedData(
+            compareToConfigData,
+            compareWithConfigData,
+            compareToIsAdmin,
+            compareWithIsAdmin,
+        )
+
+        return {
+            compareToCodeEditorData: {
+                displayName: 'data',
+                value: compareToObfuscatedData ? JSON.stringify(compareToObfuscatedData) ?? '' : '',
+            },
+            compareWithCodeEditorData: {
+                displayName: 'data',
+                value: compareWithObfuscatedData ? JSON.stringify(compareWithObfuscatedData) ?? '' : '',
+            },
+        }
+    }
+
+    return {
+        compareToCodeEditorData: {
+            displayName: 'data',
+            value: compareToConfigData ? JSON.stringify(compareToConfigData) ?? '' : '',
+        },
+        compareWithCodeEditorData: {
+            displayName: 'data',
+            value: compareWithConfigData ? JSON.stringify(compareWithConfigData) ?? '' : '',
+        },
+    }
+}
+
+const getDiffViewData = (
+    currentItem: ConfigMapSecretDataConfigDatumDTO,
+    compareItem: ConfigMapSecretDataConfigDatumDTO,
+    type: ConfigResourceType,
+    compareToIsAdmin: boolean,
+    compareWithIsAdmin: boolean,
+) => {
+    // Prepare the code editor data for current and compare items
+    const { compareToCodeEditorData, compareWithCodeEditorData } = getCodeEditorData(
+        currentItem,
+        compareItem,
+        type,
+        compareToIsAdmin,
+        compareWithIsAdmin,
+    )
+
+    // Prepare the history data for current and compare items
+    const currentDiff = prepareHistoryData(
+        { ...(currentItem || {}), codeEditorValue: compareToCodeEditorData },
+        type === ConfigResourceType.Secret
+            ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
+            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+        type === ConfigResourceType.Secret && !compareToIsAdmin,
+    )
+
+    const compareDiff = prepareHistoryData(
+        { ...(compareItem || {}), codeEditorValue: compareWithCodeEditorData },
+        type === ConfigResourceType.Secret
+            ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
+            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+        type === ConfigResourceType.Secret && !compareWithIsAdmin,
+    )
+
+    // Return the combined data
+    return {
+        currentDiff,
+        compareDiff,
+        hasDiff: compareWithCodeEditorData.value !== compareToCodeEditorData.value,
+    }
+}
+
 const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null, sortOrder: SortingOrder) => {
+    const parsedDraftData = JSON.parse(data?.deploymentDraftData?.configData[0].draftMetadata.data || null)
     const _data =
-        JSON.parse(data?.data?.configData?.[0].draftMetadata.data || null)?.envOverrideValues ||
-        JSON.parse(data?.deploymentDraftData?.configData[0].draftMetadata.data || null)?.envOverrideValues ||
+        parsedDraftData?.envOverrideValues ||
+        parsedDraftData?.valuesOverride ||
+        parsedDraftData?.defaultAppOverride ||
         data?.data ||
         null
 
@@ -153,27 +267,6 @@ const getDeploymentTemplateDiffViewData = (data: DeploymentTemplateDTO | null, s
     const diffViewData = prepareHistoryData(
         { codeEditorValue },
         DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.DEPLOYMENT_TEMPLATE.VALUE,
-    )
-
-    return diffViewData
-}
-
-const getDiffViewData = (
-    data: ConfigMapSecretDataConfigDatumDTO,
-    type: ConfigResourceType,
-    isUnAuthorized: boolean,
-) => {
-    const codeEditorValue = {
-        displayName: 'data',
-        value: data ? JSON.stringify(getCodeEditorData(data, type, isUnAuthorized)) ?? '' : '',
-    }
-
-    const diffViewData = prepareHistoryData(
-        { ...(data || {}), codeEditorValue },
-        type === ConfigResourceType.Secret
-            ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
-            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
-        type === ConfigResourceType.Secret && isUnAuthorized,
     )
 
     return diffViewData
@@ -250,16 +343,25 @@ const getDiffHeading = <DeploymentTemplate extends boolean>(
 }
 
 const getConfigMapSecretData = (
-    list1: ConfigMapSecretDataDTO,
-    list2: ConfigMapSecretDataDTO,
+    compareToList: ConfigMapSecretDataDTO,
+    compareWithList: ConfigMapSecretDataDTO,
     resourceType: ConfigResourceType,
+    compareToIsAdmin: boolean,
+    compareWithIsAdmin: boolean,
 ) => {
-    const combinedList = mergeConfigDataArraysByName(list1?.data.configData || [], list2?.data.configData || [])
+    const combinedList = mergeConfigDataArraysByName(
+        compareToList?.data.configData || [],
+        compareWithList?.data.configData || [],
+    )
 
     const deploymentConfig = combinedList.map(([currentItem, compareItem]) => {
-        const currentDiff = getDiffViewData(currentItem, resourceType, list1?.data.isEncrypted)
-        const compareDiff = getDiffViewData(compareItem, resourceType, list2?.data.isEncrypted)
-        const hasDiff = currentDiff.codeEditorValue.value !== compareDiff.codeEditorValue.value
+        const { compareDiff, currentDiff, hasDiff } = getDiffViewData(
+            currentItem,
+            compareItem,
+            resourceType,
+            compareToIsAdmin,
+            compareWithIsAdmin,
+        )
 
         return {
             id: `${resourceType === ConfigResourceType.ConfigMap ? EnvResourceType.ConfigMap : EnvResourceType.Secret}-${currentItem?.name || compareItem?.name}`,
@@ -316,16 +418,21 @@ export const getAppEnvDeploymentConfigList = (
         currentList.configMapData,
         compareList.configMapData,
         ConfigResourceType.ConfigMap,
+        currentList.isAppAdmin,
+        compareList.isAppAdmin,
     )
+
     const secretData = getConfigMapSecretData(
         currentList.secretsData,
         compareList.secretsData,
         ConfigResourceType.Secret,
+        currentList.isAppAdmin,
+        compareList.isAppAdmin,
     )
 
-    const configList = [deploymentTemplateData, ...cmData, ...secretData]
+    const configList: DeploymentConfigDiffProps['configList'] = [deploymentTemplateData, ...cmData, ...secretData]
 
-    const navList = [
+    const navList: DeploymentConfigDiffProps['navList'] = [
         {
             title: deploymentTemplateData.title,
             hasDiff: deploymentTemplateData.hasDiff,
@@ -339,7 +446,7 @@ export const getAppEnvDeploymentConfigList = (
         },
     ]
 
-    const collapsibleNavList = [
+    const collapsibleNavList: DeploymentConfigDiffProps['collapsibleNavList'] = [
         {
             header: 'Config Maps',
             id: EnvResourceType.ConfigMap,
@@ -348,7 +455,7 @@ export const getAppEnvDeploymentConfigList = (
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
                 onClick: () => {
-                    const element = document.getElementById(id)
+                    const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({
                         behavior: 'smooth',
                     })
@@ -364,7 +471,7 @@ export const getAppEnvDeploymentConfigList = (
                 hasDiff,
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
                 onClick: () => {
-                    const element = document.getElementById(id)
+                    const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({
                         behavior: 'smooth',
                     })

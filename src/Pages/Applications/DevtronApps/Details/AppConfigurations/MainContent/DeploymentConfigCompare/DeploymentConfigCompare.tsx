@@ -295,7 +295,9 @@ export const DeploymentConfigCompare = ({
                 type: 'selectPicker',
                 selectPickerProps: renderCompareEnvironmentSelectorProps(),
             },
-            ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION
+            ...(compareWithConfigType !== AppEnvDeploymentConfigType.DEFAULT_VERSION &&
+            (compareEnvOptions?.previousDeployments.length ||
+                isEnvProtected(environments, compareWith, isBaseConfigProtected))
                 ? [
                       {
                           id: `environment-config-type-selector-compare`,
@@ -311,7 +313,8 @@ export const DeploymentConfigCompare = ({
                 type: 'string',
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
-            ...((isEnvProtected(environments, compareTo, isBaseConfigProtected)
+            ...((currentEnvOptions?.previousDeployments.length ||
+            isEnvProtected(environments, compareTo, isBaseConfigProtected)
                 ? [
                       {
                           id: `environment-config-type-selector-current`,

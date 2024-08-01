@@ -49,6 +49,7 @@ export default function DeploymentTemplateOverride({
     environmentName,
     isProtected,
     reloadEnvironments,
+    fetchEnvConfig,
 }: DeploymentTemplateOverrideProps) {
     const { isSuperAdmin } = useMainContext()
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -393,6 +394,7 @@ export default function DeploymentTemplateOverride({
                         environments={environments}
                         environmentName={environmentName}
                         reloadEnvironments={reloadEnvironments}
+                        fetchEnvConfig={fetchEnvConfig}
                         handleOverride={handleOverride}
                         dispatch={dispatch}
                         initialise={initialise}

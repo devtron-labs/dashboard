@@ -93,13 +93,11 @@ export interface ConfigMapSecretDataType {
     id: number
     appId: number
     configData: ConfigMapSecretDataConfigDatumDTO[]
-    isEncrypted: boolean
 }
 
 export interface DeploymentTemplateDTO {
     resourceType: ConfigResourceType.DeploymentTemplate
     data: { [key: string]: any }
-    // TODO: This needs to be changed at BE.
     deploymentDraftData: ConfigMapSecretDataType | null
 }
 
@@ -112,6 +110,7 @@ export interface AppEnvDeploymentConfigDTO {
     deploymentTemplate: DeploymentTemplateDTO | null
     configMapData: ConfigMapSecretDataDTO | null
     secretsData: ConfigMapSecretDataDTO | null
+    isAppAdmin: boolean
 }
 
 export interface AppEnvDeploymentConfigQueryParamsType {
