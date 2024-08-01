@@ -568,8 +568,17 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     useEffect(() => {
         if (pathname && pathname !== '/') {
-            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+            Sentry.captureMessage(
+                `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
+                'warning',
+            )
         }
+
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE) {
+            push(CommonURLS.NETWORK_STATUS_INTERFACE)
+            return
+        }
+
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {

@@ -102,9 +102,6 @@ const NavigationList = [
         isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_NETWORK_STATUS_INTERFACE',
         hideNav: hideNetworkStatusInterface,
-        isAvailableInDesktop: true,
-        // TODO: ask if screen needs to be shown or directly hide button
-        markOnlyForSuperAdmin: true,
     },
     {
         title: 'Resource Browser',
