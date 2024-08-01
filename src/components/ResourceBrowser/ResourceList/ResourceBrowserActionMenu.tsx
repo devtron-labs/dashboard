@@ -49,10 +49,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     }
 
     const handleShowVulnerabilityModal = () => {
-        /* TODO: stop propagation otherwise it conflicts with useOutsideClick of SecurityModal */
-        setTimeout(() => {
-            setShowVulnerabilityModal(true)
-        }, 100)
+        setShowVulnerabilityModal(true)
     }
 
     const handleCloseVulnerabilityModal = () => {
