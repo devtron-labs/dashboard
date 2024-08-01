@@ -50,6 +50,7 @@ export const getEnvConfig = async (appId: number, envId: number) => {
     }
 }
 
-export const getAppEnvDeploymentConfig = async (
+export const getAppEnvDeploymentConfig = (
     params: AppEnvDeploymentConfigPayloadType,
-): Promise<ResponseType<AppEnvDeploymentConfigDTO>> => get(getUrlWithSearchParams(Routes.ENV_DATA, params))
+    signal?: AbortSignal,
+): Promise<ResponseType<AppEnvDeploymentConfigDTO>> => get(getUrlWithSearchParams(Routes.ENV_DATA, params), { signal })

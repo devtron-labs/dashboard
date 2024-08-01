@@ -102,14 +102,13 @@ export const ConfigMapSecretForm = React.memo(
         id,
         componentType,
         cmSecretStateLabel,
-        isJobView,
+        isJob,
         readonlyView,
         isProtectedView,
         draftMode,
         latestDraftData,
         reloadEnvironments,
         isAppAdmin,
-        name,
         updateCMSecret,
         openDeleteModal,
         setOpenDeleteModal,
@@ -1026,10 +1025,10 @@ export const ConfigMapSecretForm = React.memo(
             return (
                 <ReactSelect
                     placeholder="Select Secret Type"
-                    options={getTypeGroups(isJobView)}
+                    options={getTypeGroups(isJob)}
                     defaultValue={
                         state.externalType && state.externalType !== ''
-                            ? getTypeGroups(isJobView, state.externalType)
+                            ? getTypeGroups(isJob, state.externalType)
                             : getTypeGroups()[0].options[0]
                     }
                     onChange={toggleExternalType}
@@ -1145,7 +1144,7 @@ export const ConfigMapSecretForm = React.memo(
                             >
                                 {submitButtonText()}
                             </ButtonWithLoader>
-                            {!name && (
+                            {!configMapSecretData?.name && (
                                 <button
                                     disabled={
                                         (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||

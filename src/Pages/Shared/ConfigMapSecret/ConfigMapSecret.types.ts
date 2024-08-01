@@ -16,8 +16,6 @@
 
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-
 import {
     ComponentStates,
     EnvironmentOverrideComponentProps,
@@ -41,23 +39,25 @@ export interface KeyValueValidated {
     arr: KeyValue[]
 }
 
-export interface ConfigMapSecretFormProps {
-    name: string
-    appChartRef: { id: number; version: string; name: string }
-    configMapSecretData: any
-    id: number
-    componentType: CMSecretComponentType
-    updateCMSecret: (name?: string) => void
-    cmSecretStateLabel: CM_SECRET_STATE
-    isJobView: boolean
+export interface ConfigMapSecretFormProps
+    extends Pick<
+        ProtectedConfigMapSecretProps,
+        | 'appChartRef'
+        | 'id'
+        | 'componentType'
+        | 'updateCMSecret'
+        | 'cmSecretStateLabel'
+        | 'isJob'
+        | 'reloadEnvironments'
+        | 'openDeleteModal'
+        | 'setOpenDeleteModal'
+    > {
+    configMapSecretData: CMSecretConfigData
     readonlyView: boolean
     isProtectedView: boolean
     draftMode: boolean
     latestDraftData: any
-    reloadEnvironments?: () => void
     isAppAdmin?: boolean
-    openDeleteModal: CMSecretDeleteModalType
-    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
     onCancel?: () => void
 }
 
@@ -77,18 +77,17 @@ export interface DraftDetailsForCommentDrawerType {
     index: number
 }
 
-export interface ProtectedConfigMapSecretProps {
-    appChartRef: { id: number; version: string; name: string }
-    data: any
+export interface ProtectedConfigMapSecretProps
+    extends Pick<
+        CMSecretContainerProps,
+        'appChartRef' | 'componentType' | 'isJob' | 'appName' | 'envName' | 'parentName' | 'reloadEnvironments'
+    > {
+    data: CMSecretConfigData
     id: number
-    componentType: CMSecretComponentType
     updateCMSecret: (name?: string) => void
     cmSecretStateLabel: CM_SECRET_STATE
-    isJobView: boolean
     selectedTab: CMSecretProtectedTab
     draftData
-    parentName: string
-    reloadEnvironments?: () => void
     openDeleteModal: CMSecretDeleteModalType
     setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
 }
@@ -185,13 +184,6 @@ export interface ConfigMapAction {
     payload?: any
 }
 
-export interface CMSecret {
-    id: number
-    appId: number
-    environmentId?: number
-    configData: ConfigDatum[]
-}
-
 export interface ConfigDatum {
     name: string
     type: string
@@ -208,9 +200,9 @@ export interface ConfigDatum {
     subPath: boolean
     filePermission: string
     overridden: boolean
+    mountPath?: string
+    defaultMountPath?: string
 }
-
-export type CMSecretResponse = ResponseType<CMSecret>
 
 export interface CMSecretWrapperProps
     extends Pick<
@@ -224,22 +216,25 @@ export interface CMSecretWrapperProps
     isOverrideView?: boolean
     clusterId?: string
     isProtected?: boolean
+    envName: string
+    appName: string
 }
 
-export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'setParentState'> {
+export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
     draftDataMap: Record<string, Record<string, number>>
     appChartRef: { id: number; version: string; name: string }
 }
 
 export interface CMSecretConfigData extends ConfigDatum {
-    secretMode: boolean
-    unAuthorized: boolean
+    secretMode?: boolean
+    unAuthorized?: boolean
     draftId?: number
     draftState?: number
-    isNew?: boolean
 }
 
-export interface ConfigMapSecretData extends Omit<CMSecret, 'configData'> {
+export interface ConfigMapSecretData {
+    id: number
+    appId: number
     configData: CMSecretConfigData
 }
 

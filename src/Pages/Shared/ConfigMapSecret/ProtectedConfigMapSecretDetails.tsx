@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -19,14 +18,16 @@ import { prepareHistoryData } from '@Components/app/details/cdDetails/service'
 import { DeploymentHistoryDetail } from '@Components/app/details/cdDetails/cd.type'
 import {
     CMSecretComponentType,
+    CMSecretConfigData,
     CMSecretProtectedTab,
     DraftState,
     ProtectedConfigMapSecretProps,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
+import { AppEnvDeploymentConfigType, ConfigResourceType } from '@Pages/Applications/DevtronApps/service.types'
 
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
-import { getCMSecret } from './ConfigMapSecret.service'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
 
@@ -36,7 +37,7 @@ export const ProtectedConfigMapSecretDetails = ({
     id,
     componentType,
     cmSecretStateLabel,
-    isJobView,
+    isJob,
     selectedTab,
     draftData,
     parentName,
@@ -44,9 +45,10 @@ export const ProtectedConfigMapSecretDetails = ({
     updateCMSecret,
     openDeleteModal,
     setOpenDeleteModal,
+    appName,
+    envName,
 }: ProtectedConfigMapSecretProps) => {
     // HOOKS
-    const { appId, name } = useParams<{ appId: string; name: string }>()
     const { email } = useUserEmail()
 
     // STATES
@@ -60,9 +62,17 @@ export const ProtectedConfigMapSecretDetails = ({
         () =>
             abortPreviousRequests(
                 () =>
-                    getCMSecret(componentType, id, appId, data.name, {
-                        signal: abortControllerRef.current.signal,
-                    }),
+                    getAppEnvDeploymentConfig(
+                        {
+                            appName,
+                            envName,
+                            configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                            resourceId: id,
+                            resourceName: data.name,
+                            resourceType: ConfigResourceType.Secret,
+                        },
+                        abortControllerRef.current.signal,
+                    ),
                 abortControllerRef,
             ),
         [],
@@ -73,9 +83,9 @@ export const ProtectedConfigMapSecretDetails = ({
     )
 
     useEffect(() => {
-        if (baseDataRes?.result?.configData?.length) {
-            const _baseData = { ...baseDataRes.result.configData[0], unAuthorized: false }
-            setBaseData(_baseData)
+        const _baseData = baseDataRes?.result?.secretsData.data
+        if (_baseData?.configData?.length) {
+            setBaseData({ ..._baseData.configData[0], unAuthorized: false })
         }
 
         if (baseDataErr && !getIsRequestAborted(baseDataErr)) {
@@ -99,22 +109,18 @@ export const ProtectedConfigMapSecretDetails = ({
         }
     }
 
-    const getObfuscatedData = (codeEditorData) => {
-        const _codeEditorData = { ...codeEditorData }
+    const getObfuscatedData = (codeEditorData: Record<string, string>) => {
         if (
             componentType === CMSecretComponentType.Secret &&
             (data?.unAuthorized || draftData?.dataEncrypted) &&
-            _codeEditorData
+            codeEditorData
         ) {
-            Object.keys(_codeEditorData).reduce(
-                (acc, curr) => ({ ...acc, [acc[curr]]: Array(8).fill('*').join('') }),
-                _codeEditorData,
-            )
+            return Object.keys(codeEditorData).reduce((acc, curr) => ({ ...acc, [curr]: '********' }), codeEditorData)
         }
-        return _codeEditorData
+        return codeEditorData
     }
 
-    const getCodeEditorData = (cmSecretData, isOverridden) => {
+    const getCodeEditorData = (cmSecretData: CMSecretConfigData, isOverridden: boolean) => {
         if (isOverridden) {
             if (Object.keys(cmSecretData.defaultData ?? {}).length > 0) {
                 return getObfuscatedData(cmSecretData.defaultData)
@@ -144,7 +150,7 @@ export const ProtectedConfigMapSecretDetails = ({
     }
 
     const getCurrentConfig = (): DeploymentHistoryDetail => {
-        let currentConfigData = {}
+        let currentConfigData: CMSecretConfigData
         const codeEditorValue = { displayName: 'data', value: '' }
         try {
             currentConfigData =
@@ -160,7 +166,7 @@ export const ProtectedConfigMapSecretDetails = ({
             componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized)
 
         return prepareHistoryData(
-            { ...currentConfigData, codeEditorValue },
+            { ...(currentConfigData || {}), codeEditorValue },
             componentType === CMSecretComponentType.Secret
                 ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
                 : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
@@ -177,6 +183,7 @@ export const ProtectedConfigMapSecretDetails = ({
             displayName: 'data',
             value: JSON.stringify(getCodeEditorData(_data, cmSecretStateLabel === CM_SECRET_STATE.INHERITED)) ?? '',
         }
+
         const skipDecode =
             componentType === CMSecretComponentType.Secret && (data?.unAuthorized ?? draftData?.unAuthorized)
 
@@ -304,7 +311,6 @@ export const ProtectedConfigMapSecretDetails = ({
         }
         return (
             <ConfigMapSecretForm
-                name={name}
                 appChartRef={appChartRef}
                 configMapSecretData={getData()}
                 id={id}
@@ -317,7 +323,7 @@ export const ProtectedConfigMapSecretDetails = ({
                         ? CM_SECRET_STATE.INHERITED
                         : cmSecretStateLabel
                 }
-                isJobView={isJobView}
+                isJob={isJob}
                 readonlyView={selectedTab === CMSecretProtectedTab.Published}
                 isProtectedView
                 draftMode={

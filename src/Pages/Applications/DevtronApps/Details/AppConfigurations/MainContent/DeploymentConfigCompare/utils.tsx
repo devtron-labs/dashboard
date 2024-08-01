@@ -98,7 +98,7 @@ export const mergeConfigDataArraysByName = (
 const getConfigData = (
     cmSecretData: ConfigMapSecretDataConfigDatumDTO,
     type: ConfigResourceType,
-): Record<string, string> | null => {
+): Record<string, string> => {
     const secretKeys = ['secretData', 'esoSecretData', 'defaultSecretData', 'defaultESOSecretData']
 
     if (type === ConfigResourceType.Secret) {
@@ -114,55 +114,65 @@ const getConfigData = (
         return cmSecretData[data]
     }
 
-    return null
+    // Return undefined intentionally, as JSON.stringify converts null to "null" but keeps undefined as undefined.
+    return undefined
 }
 
+/**
+ * Obfuscates the data based on user roles and matching keys.
+ *
+ * @param compareToData - Data to compare against, in the format of a record with string keys and values.
+ * @param compareWithData - Data to compare with, in the format of a record with string keys and values.
+ * @param compareToIsAdmin - Boolean flag indicating if the first dataset belongs to an admin user.
+ * @param compareWithIsAdmin - Boolean flag indicating if the second dataset belongs to an admin user.
+ * @returns An object containing the obfuscated versions of both datasets.
+ */
 const getObfuscatedData = (
     compareToData: Record<string, string>,
     compareWithData: Record<string, string>,
-    compareToIsAdmin: boolean,
-    compareWithIsAdmin: boolean,
+    compareToIsAdmin = false,
+    compareWithIsAdmin = false,
 ) => {
-    let sameKeys = {}
-    if (compareToData && compareWithData) {
-        sameKeys = Object.keys(compareToData).reduce((acc, curr) => {
-            if (compareWithData[curr] && compareWithData[curr] === compareToData[curr]) {
-                return { ...acc, [curr]: true }
-            }
+    // Identify keys with matching values in both datasets
+    const sameKeys: Record<string, boolean> = Object.keys(compareToData).reduce((acc, key) => {
+        if (compareToData[key] === compareWithData[key]) {
+            acc[key] = true
+        }
+        return acc
+    }, {})
+
+    // Function to obfuscate data based on same keys and admin status
+    const obfuscateData = (data: Record<string, string>, isAdmin: boolean): Record<string, string> => {
+        if (isAdmin) return data
+        return Object.keys(data).reduce((acc, key) => {
+            acc[key] = sameKeys[key] ? '********' : '************'
             return acc
         }, {})
     }
 
-    const compareToObfuscatedData =
-        compareToData && !compareToIsAdmin
-            ? Object.keys(compareToData).reduce(
-                  (acc, curr) => ({
-                      ...acc,
-                      [curr]: Array(sameKeys[curr] ? 8 : 12)
-                          .fill('*')
-                          .join(''),
-                  }),
-                  compareToData,
-              )
-            : compareToData
+    const compareToObfuscatedData = obfuscateData(compareToData, compareToIsAdmin)
+    const compareWithObfuscatedData = obfuscateData(compareWithData, compareWithIsAdmin)
 
-    const compareWithObfuscatedData =
-        compareWithData && !compareWithIsAdmin
-            ? Object.keys(compareWithData).reduce(
-                  (acc, curr) => ({
-                      ...acc,
-                      [curr]: Array(8).fill('*').join(''),
-                  }),
-                  compareWithData,
-              )
-            : compareWithData
+    // Return undefined intentionally, as JSON.stringify converts null to "null" but keeps undefined as undefined.
 
     return {
-        compareToObfuscatedData,
-        compareWithObfuscatedData,
+        compareToObfuscatedData: Object.keys(compareToObfuscatedData).length ? compareToObfuscatedData : undefined,
+        compareWithObfuscatedData: Object.keys(compareWithObfuscatedData).length
+            ? compareWithObfuscatedData
+            : undefined,
     }
 }
 
+/**
+ * Retrieves code editor data, potentially obfuscating it based on user roles and resource type.
+ *
+ * @param compareToValue - The first dataset value to compare.
+ * @param compareWithValue - The second dataset value to compare.
+ * @param type - The type of the resource.
+ * @param compareToIsAdmin - Boolean flag indicating if the first dataset belongs to an admin user.
+ * @param compareWithIsAdmin - Boolean flag indicating if the second dataset belongs to an admin user.
+ * @returns An object containing data for the code editor, with obfuscation applied if the type is Secret.
+ */
 const getCodeEditorData = (
     compareToValue: ConfigMapSecretDataConfigDatumDTO,
     compareWithValue: ConfigMapSecretDataConfigDatumDTO,
@@ -173,76 +183,95 @@ const getCodeEditorData = (
     const compareToConfigData = getConfigData(compareToValue, type)
     const compareWithConfigData = getConfigData(compareWithValue, type)
 
+    let compareToCodeEditorData
+    let compareWithCodeEditorData
+
     if (type === ConfigResourceType.Secret) {
         const { compareToObfuscatedData, compareWithObfuscatedData } = getObfuscatedData(
-            compareToConfigData,
-            compareWithConfigData,
+            compareToConfigData ?? {},
+            compareWithConfigData ?? {},
             compareToIsAdmin,
             compareWithIsAdmin,
         )
 
-        return {
-            compareToCodeEditorData: {
-                displayName: 'data',
-                value: compareToObfuscatedData ? JSON.stringify(compareToObfuscatedData) ?? '' : '',
-            },
-            compareWithCodeEditorData: {
-                displayName: 'data',
-                value: compareWithObfuscatedData ? JSON.stringify(compareWithObfuscatedData) ?? '' : '',
-            },
+        compareToCodeEditorData = {
+            displayName: 'data',
+            value: JSON.stringify(compareToObfuscatedData) || '',
+        }
+
+        compareWithCodeEditorData = {
+            displayName: 'data',
+            value: JSON.stringify(compareWithObfuscatedData) || '',
+        }
+    } else {
+        compareToCodeEditorData = {
+            displayName: 'data',
+            value: JSON.stringify(compareToConfigData) || '',
+        }
+
+        compareWithCodeEditorData = {
+            displayName: 'data',
+            value: JSON.stringify(compareWithConfigData) || '',
         }
     }
 
-    return {
-        compareToCodeEditorData: {
-            displayName: 'data',
-            value: compareToConfigData ? JSON.stringify(compareToConfigData) ?? '' : '',
-        },
-        compareWithCodeEditorData: {
-            displayName: 'data',
-            value: compareWithConfigData ? JSON.stringify(compareWithConfigData) ?? '' : '',
-        },
-    }
+    return { compareToCodeEditorData, compareWithCodeEditorData }
 }
 
+/**
+ * Prepares the data for displaying the diff view between two configuration items.
+ *
+ * @param compareTo - The configuration item of compare to.
+ * @param compareWith - The configuration item of compare with.
+ * @param type - The type of the resource, indicating if it's a Secret or another type.
+ * @param compareToIsAdmin - Boolean flag indicating if the compareTo item belongs to an admin user.
+ * @param compareWithIsAdmin - Boolean flag indicating if the compareWith item belongs to an admin user.
+ * @returns An object containing the diff data for both items and a boolean indicating if there is a difference.
+ */
 const getDiffViewData = (
-    currentItem: ConfigMapSecretDataConfigDatumDTO,
-    compareItem: ConfigMapSecretDataConfigDatumDTO,
+    compareTo: ConfigMapSecretDataConfigDatumDTO,
+    compareWith: ConfigMapSecretDataConfigDatumDTO,
     type: ConfigResourceType,
     compareToIsAdmin: boolean,
     compareWithIsAdmin: boolean,
 ) => {
-    // Prepare the code editor data for current and compare items
+    // Prepare the code editor data for compareTo and compareWith items
     const { compareToCodeEditorData, compareWithCodeEditorData } = getCodeEditorData(
-        currentItem,
-        compareItem,
+        compareTo,
+        compareWith,
         type,
         compareToIsAdmin,
         compareWithIsAdmin,
     )
 
-    // Prepare the history data for current and compare items
-    const currentDiff = prepareHistoryData(
-        { ...(currentItem || {}), codeEditorValue: compareToCodeEditorData },
+    // Determine the history data map based on the type of resource
+    const historyDataMap =
         type === ConfigResourceType.Secret
             ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
-            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE
+
+    // Prepare the history data for the compareTo
+    const compareToDiff = prepareHistoryData(
+        { ...(compareTo || {}), codeEditorValue: compareToCodeEditorData },
+        historyDataMap,
         type === ConfigResourceType.Secret && !compareToIsAdmin,
     )
 
-    const compareDiff = prepareHistoryData(
-        { ...(compareItem || {}), codeEditorValue: compareWithCodeEditorData },
-        type === ConfigResourceType.Secret
-            ? DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.SECRET.VALUE
-            : DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP.CONFIGMAP.VALUE,
+    // Prepare the history data for the compareWith
+    const compareWithDiff = prepareHistoryData(
+        { ...(compareWith || {}), codeEditorValue: compareWithCodeEditorData },
+        historyDataMap,
         type === ConfigResourceType.Secret && !compareWithIsAdmin,
     )
 
-    // Return the combined data
+    // Check if there is a difference between the compareTo and compareWith data
+    const hasDiff = compareWithCodeEditorData.value !== compareToCodeEditorData.value
+
+    // Return the combined diff data
     return {
-        currentDiff,
-        compareDiff,
-        hasDiff: compareWithCodeEditorData.value !== compareToCodeEditorData.value,
+        compareToDiff,
+        compareWithDiff,
+        hasDiff,
     }
 }
 
@@ -355,7 +384,7 @@ const getConfigMapSecretData = (
     )
 
     const deploymentConfig = combinedList.map(([currentItem, compareItem]) => {
-        const { compareDiff, currentDiff, hasDiff } = getDiffViewData(
+        const { compareToDiff, compareWithDiff, hasDiff } = getDiffViewData(
             currentItem,
             compareItem,
             resourceType,
@@ -368,11 +397,11 @@ const getConfigMapSecretData = (
             title: currentItem?.name || compareItem?.name,
             primaryConfig: {
                 heading: getDiffHeading(compareItem),
-                list: compareDiff,
+                list: compareWithDiff,
             },
             secondaryConfig: {
                 heading: getDiffHeading(currentItem),
-                list: currentDiff,
+                list: compareToDiff,
             },
             hasDiff,
         }

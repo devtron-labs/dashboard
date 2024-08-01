@@ -84,7 +84,7 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     }
 
     if (initError) {
-        return <ErrorScreenManager code={404} redirectURL={onErrorRedirectURL} />
+        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} />
     }
 
     return (

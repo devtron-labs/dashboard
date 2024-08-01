@@ -54,6 +54,7 @@ export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
     reloadEnvironments: () => void
     envName?: string
+    appName?: string
     isJob?: boolean
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState

@@ -139,6 +139,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -150,6 +152,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -162,6 +166,7 @@ const AppComposeRouter = () => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={lastUnlockedStage}
+                                appName={currentAppName}
                             />
                         )}
                     </Route>,
@@ -257,6 +262,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -267,6 +274,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
@@ -278,6 +287,7 @@ const AppComposeRouter = () => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={lastUnlockedStage}
+                                appName={currentAppName}
                             />
                         )}
                     </Route>,

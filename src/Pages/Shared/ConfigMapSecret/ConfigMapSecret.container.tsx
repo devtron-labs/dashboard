@@ -17,8 +17,11 @@ import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
-import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
-import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
+import {
+    AppEnvDeploymentConfigType,
+    ConfigResourceType,
+    ResourceConfigStage,
+} from '@Pages/Applications/DevtronApps/service.types'
 import {
     CMSecretComponentType,
     DraftDetailsForCommentDrawerType,
@@ -29,8 +32,8 @@ import {
     CMSecretDeleteModalType,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
 
-import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
@@ -41,21 +44,21 @@ const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceN
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
 
-export const ConfigMapSecretContainer = ({
-    componentType = CMSecretComponentType.ConfigMap,
-    parentState,
-    isOverrideView,
-    clusterId,
-    parentName,
-    isProtected,
-    isJob,
-    envConfig,
-    fetchEnvConfig,
-    reloadEnvironments,
-    onErrorRedirectURL,
-    appChartRef,
-    draftDataMap,
-}: CMSecretContainerProps) => {
+export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
+    // PROPS
+    const {
+        componentType = CMSecretComponentType.ConfigMap,
+        isOverrideView,
+        clusterId,
+        isProtected,
+        envConfig,
+        fetchEnvConfig,
+        onErrorRedirectURL,
+        draftDataMap,
+        envName,
+        appName,
+    } = props
+
     // HOOKS
     const { path } = useRouteMatch()
     const history = useHistory()
@@ -110,29 +113,42 @@ export const ConfigMapSecretContainer = ({
                 isProtected && getDraftByResourceName
                     ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef.current.signal)
                     : null,
-                getCMSecret(componentType, selectedCMSecret.id, appId, name, envId, abortControllerRef.current.signal),
+                getAppEnvDeploymentConfig(
+                    {
+                        appName,
+                        envName,
+                        configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                        resourceId: selectedCMSecret.id,
+                        resourceName: name,
+                        resourceType:
+                            componentType === CMSecretComponentType.ConfigMap
+                                ? ConfigResourceType.ConfigMap
+                                : ConfigResourceType.Secret,
+                    },
+                    abortControllerRef.current.signal,
+                ),
             ])
         }, abortControllerRef)
-            .then(([_draftData, _cmSecretData]) => {
+            .then(([draftDataRes, cmSecretDataRes]) => {
                 let draftId: number
                 let draftState: number
-                let _configMap: ConfigMapSecretData
+                let _configMapSecret: ConfigMapSecretData
 
                 if (
-                    _draftData.status === 'fulfilled' &&
-                    _draftData.value?.result &&
-                    (_draftData.value.result.draftState === DraftState.Init ||
-                        _draftData.value.result.draftState === DraftState.AwaitApproval)
+                    draftDataRes.status === 'fulfilled' &&
+                    draftDataRes.value?.result &&
+                    (draftDataRes.value.result.draftState === DraftState.Init ||
+                        draftDataRes.value.result.draftState === DraftState.AwaitApproval)
                 ) {
                     setDraftData({
-                        ..._draftData.value.result,
-                        unAuthorized: _draftData.value.result.dataEncrypted,
+                        ...draftDataRes.value.result,
+                        unAuthorized: draftDataRes.value.result.dataEncrypted,
                     })
-                    draftId = _draftData.value.result.draftId
-                    draftState = _draftData.value.result.draftState
+                    draftId = draftDataRes.value.result.draftId
+                    draftState = draftDataRes.value.result.draftState
 
                     setSelectedTab(
-                        _draftData.value.result.draftState === DraftState.AwaitApproval
+                        draftDataRes.value.result.draftState === DraftState.AwaitApproval
                             ? CMSecretProtectedTab.Compare
                             : CMSecretProtectedTab.Draft,
                     )
@@ -140,19 +156,23 @@ export const ConfigMapSecretContainer = ({
                     setDraftData(null)
                 }
 
-                if (_cmSecretData.status === 'fulfilled') {
-                    if (_cmSecretData.value?.result?.configData?.length) {
-                        _configMap = {
-                            ..._cmSecretData.value.result,
+                if (cmSecretDataRes.status === 'fulfilled') {
+                    const _cmSecretData =
+                        cmSecretDataRes.value?.result[
+                            componentType === CMSecretComponentType.ConfigMap ? 'configMapData' : 'secretsData'
+                        ].data
+
+                    if (_cmSecretData.configData?.length) {
+                        _configMapSecret = {
+                            ..._cmSecretData,
                             configData: {
-                                ..._cmSecretData.value.result.configData[0],
-                                secretMode: _cmSecretData.value.result.configData[0].externalType === '',
+                                ..._cmSecretData.configData[0],
+                                secretMode: _cmSecretData.configData[0].externalType === '',
                                 unAuthorized: true,
-                                ...(draftDataMap?.[_cmSecretData.value.result.configData[0].name]
+                                ...(draftDataMap?.[_cmSecretData.configData[0].name]
                                     ? {
-                                          draftId: draftDataMap[_cmSecretData.value.result.configData[0].name].draftId,
-                                          draftState:
-                                              draftDataMap[_cmSecretData.value.result.configData[0].name].draftState,
+                                          draftId: draftDataMap[_cmSecretData.configData[0].name].draftId,
+                                          draftState: draftDataMap[_cmSecretData.configData[0].name].draftState,
                                       }
                                     : {}),
                             },
@@ -160,10 +180,10 @@ export const ConfigMapSecretContainer = ({
                     }
 
                     if (cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED) {
-                        if (_cmSecretData.value?.result?.configData?.length) {
-                            const _result: any = {
-                                ..._cmSecretData.value.result,
-                                configData: _cmSecretData.value.result.configData[0],
+                        if (_cmSecretData.configData?.length) {
+                            const _result: ConfigMapSecretData = {
+                                ..._cmSecretData,
+                                configData: _cmSecretData.configData[0],
                             }
 
                             _result.configData.overridden =
@@ -176,74 +196,75 @@ export const ConfigMapSecretContainer = ({
 
                             if (
                                 componentType === CMSecretComponentType.Secret &&
-                                _draftData?.status === 'fulfilled' &&
-                                _draftData.value?.result
+                                draftDataRes?.status === 'fulfilled' &&
+                                draftDataRes.value?.result
                             ) {
                                 if (
                                     cmSecretStateLabel === CM_SECRET_STATE.INHERITED &&
-                                    _draftData.value.result.draftState === DraftState.Published &&
-                                    _draftData.value.result.action === 2
+                                    draftDataRes.value.result.draftState === DraftState.Published &&
+                                    draftDataRes.value.result.action === 2
                                 ) {
                                     _result.configData.overridden = true
                                 } else if (
                                     cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN &&
-                                    _draftData.value.result.draftState === DraftState.Published &&
-                                    _draftData.value.result.action === 3
+                                    draftDataRes.value.result.draftState === DraftState.Published &&
+                                    draftDataRes.value.result.action === 3
                                 ) {
                                     _result.configData.overridden = false
                                 }
                             }
-                            _configMap = {
+                            _configMapSecret = {
                                 ..._result,
                                 configData: {
                                     ..._result.configData,
-                                    secretMode: false,
-                                    unAuthorized: false,
-                                    isNew: false,
+                                    unAuthorized:
+                                        componentType === CMSecretComponentType.Secret &&
+                                        !cmSecretDataRes.value.result.isAppAdmin,
                                 },
                             }
+                            setCmSecretData(_configMapSecret)
                         } else {
                             toast.error(`The ${componentName} '${name}' has been deleted`)
                             setCmSecretError(true)
-                            _configMap = null
+                            setCmSecretData(null)
                         }
-                    }
-
-                    setCmSecretData(_configMap)
-                } else if (
-                    cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
-                    _draftData?.status === 'fulfilled' &&
-                    _draftData.value.result
-                ) {
-                    if (_draftData.value.result.draftState === DraftState.Published) {
-                        const dataFromDraft = JSON.parse(_draftData.value.result.data)
-                        setCmSecretData({
-                            ...dataFromDraft,
-                            configData: {
-                                ...dataFromDraft.configData[0],
-                                unAuthorized: dataFromDraft.dataEncrypted,
-                            },
-                        })
-                    } else if (_draftData.value.result.draftState === DraftState.Discarded) {
-                        toast.error(`The ${componentName} '${name}' has been deleted`)
-                        setCmSecretError(true)
-                        setCmSecretData(null)
+                    } else if (
+                        cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED &&
+                        draftDataRes?.status === 'fulfilled' &&
+                        draftDataRes.value.result
+                    ) {
+                        if (draftDataRes.value.result.draftState === DraftState.Published) {
+                            const dataFromDraft = JSON.parse(draftDataRes.value.result.data)
+                            setCmSecretData({
+                                ...dataFromDraft,
+                                configData: {
+                                    ...dataFromDraft.configData[0],
+                                    unAuthorized: dataFromDraft.dataEncrypted,
+                                },
+                            })
+                        } else if (draftDataRes.value.result.draftState === DraftState.Discarded) {
+                            toast.error(`The ${componentName} '${name}' has been deleted`)
+                            setCmSecretError(true)
+                            setCmSecretData(null)
+                        }
                     }
                 }
 
                 if (
-                    (_cmSecretData?.status === 'rejected' && _cmSecretData?.reason?.code === 403) ||
-                    (_draftData?.status === 'rejected' && _draftData?.reason?.code === 403)
+                    (componentType === CMSecretComponentType.Secret &&
+                        cmSecretDataRes.status === 'fulfilled' &&
+                        !cmSecretDataRes.value.result.isAppAdmin) ||
+                    (draftDataRes?.status === 'rejected' && draftDataRes?.reason?.code === 403)
                 ) {
                     toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 }
 
-                if (_cmSecretData.status === 'rejected' || _draftData.status === 'rejected') {
-                    if (_cmSecretData.status === 'rejected') {
-                        setIsCMSecretLoading(getIsRequestAborted(_cmSecretData.reason))
+                if (cmSecretDataRes.status === 'rejected' || draftDataRes.status === 'rejected') {
+                    if (cmSecretDataRes.status === 'rejected') {
+                        setIsCMSecretLoading(getIsRequestAborted(cmSecretDataRes.reason))
                     }
-                    if (_draftData.status === 'rejected') {
-                        setIsCMSecretLoading(getIsRequestAborted(_draftData.reason))
+                    if (draftDataRes.status === 'rejected') {
+                        setIsCMSecretLoading(getIsRequestAborted(draftDataRes.reason))
                     }
                 } else {
                     setIsCMSecretLoading(false)
@@ -375,16 +396,12 @@ export const ConfigMapSecretContainer = ({
                         className="p-0-imp"
                     />
                     <ProtectedConfigMapSecretDetails
-                        appChartRef={appChartRef}
+                        {...props}
                         data={cmSecretData?.configData}
                         id={selectedCMSecret?.id}
-                        componentType={componentType}
                         cmSecretStateLabel={cmSecretStateLabel}
-                        isJobView={isJob}
                         selectedTab={selectedTab}
                         draftData={draftData}
-                        parentName={parentName}
-                        reloadEnvironments={reloadEnvironments}
                         updateCMSecret={updateCMSecret}
                         openDeleteModal={openDeleteModal}
                         setOpenDeleteModal={setOpenDeleteModal}
@@ -395,14 +412,11 @@ export const ConfigMapSecretContainer = ({
 
         return (
             <ConfigMapSecretForm
-                name={!isCreateState ? name : ''}
-                appChartRef={appChartRef}
+                {...props}
                 configMapSecretData={cmSecretData?.configData}
                 id={selectedCMSecret?.id}
-                componentType={componentType}
                 updateCMSecret={updateCMSecret}
                 cmSecretStateLabel={cmSecretStateLabel}
-                isJobView={isJob}
                 readonlyView={false}
                 isProtectedView={isProtected}
                 draftMode={false}
@@ -415,7 +429,6 @@ export const ConfigMapSecretContainer = ({
                           }
                         : null
                 }
-                reloadEnvironments={reloadEnvironments}
                 onCancel={redirectURLToValidPage}
                 openDeleteModal={openDeleteModal}
                 setOpenDeleteModal={setOpenDeleteModal}
@@ -423,7 +436,7 @@ export const ConfigMapSecretContainer = ({
         )
     }
 
-    if (parentState === ComponentStates.loading || loader) {
+    if (loader) {
         return <Progressing fullHeight size={48} styles={{ height: 'calc(100% - 80px)' }} />
     }
 

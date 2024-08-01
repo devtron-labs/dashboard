@@ -128,4 +128,7 @@ export interface AppEnvDeploymentConfigPayloadType
     extends Pick<AppEnvDeploymentConfigQueryParamsType, 'configType' | 'identifierId' | 'pipelineId'> {
     appName: string
     envName: string
+    resourceId?: number
+    resourceName?: string
+    resourceType?: ConfigResourceType
 }

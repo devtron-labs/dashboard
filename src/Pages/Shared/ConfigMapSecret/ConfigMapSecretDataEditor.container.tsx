@@ -54,6 +54,7 @@ import {
     ConfigMapActionTypes,
     ConfigMapSecretDataEditorContainerProps,
     CMSecretComponentType,
+    CMSecretYamlData,
 } from './ConfigMapSecret.types'
 
 const ConfigMapSecretDataEditor = ({
@@ -148,11 +149,13 @@ const ConfigMapSecretDataEditor = ({
         dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
     }
 
-    const setKeyValueArray = (arr) => {
-        dispatch({
-            type: ConfigMapActionTypes.setFormDirty,
-            payload: state.isFormDirty || !deepEqual(arr, state.currentData),
-        })
+    const setKeyValueArray = (arr: CMSecretYamlData[]) => {
+        if (!state.unAuthorized && !state.secretMode) {
+            dispatch({
+                type: ConfigMapActionTypes.setFormDirty,
+                payload: state.isFormDirty || !deepEqual(arr, state.currentData),
+            })
+        }
         setTempArr(arr)
     }
 
