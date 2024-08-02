@@ -321,7 +321,6 @@ const ResourceList = () => {
                   <AdminTerminal
                       key={tabs[FIXED_TABS_INDICES.ADMIN_TERMINAL].componentKey}
                       isSuperAdmin={isSuperAdmin}
-                      clusterName={selectedCluster.label}
                       updateTerminalTabUrl={updateTerminalTabUrl}
                   />,
               ]
