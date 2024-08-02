@@ -15,7 +15,6 @@
  */
 
 import {
-    DATE_TIME_FORMAT_STRING,
     get,
     getClusterListMin,
     getEnvironmentListMinPublic,
@@ -24,7 +23,6 @@ import {
     ResponseType,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
 import { Routes } from '../../config'
 import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse } from './security.types'
 
@@ -81,7 +79,7 @@ export function getVulnerabilityFilterData() {
             ? envResponse.result.map((env) => {
                   return {
                       label: env.environment_name,
-                      value: env.id,
+                      value: `${env.id}`,
                   }
               })
             : []
@@ -89,7 +87,7 @@ export function getVulnerabilityFilterData() {
             ? clusterResponse.result.map((cluster) => {
                   return {
                       label: cluster.cluster_name,
-                      value: cluster.id,
+                      value: `${cluster.id}`,
                   }
               })
             : []
@@ -102,9 +100,11 @@ export function getVulnerabilityFilterData() {
         return {
             filters: {
                 severity: [
-                    { label: 'Crtitical', value: 2 },
-                    { label: 'Moderate', value: 1 },
-                    { label: 'Low', value: 0 },
+                    { label: 'Critical', value: '2' },
+                    { label: 'High', value: '3' },
+                    { label: 'Moderate', value: '1' },
+                    { label: 'Low', value: '0' },
+                    { label: 'Unknown', value: '5' },
                 ],
                 clusters,
                 environments,
@@ -121,7 +121,7 @@ export function getSecurityScanList(payload): Promise<SecurityScanListResponseTy
             responseCode: response.code,
             result: {
                 offset: response.result.offset,
-                size: response.result.total,
+                totalCount: response.result.total,
                 pageSize: response.result.size || 20,
                 securityScans: securityScans.map((scan) => {
                     return {
@@ -133,8 +133,10 @@ export function getSecurityScanList(payload): Promise<SecurityScanListResponseTy
                         environment: scan.environment,
                         severityCount: {
                             critical: scan.severityCount.high,
-                            moderate: scan.severityCount.moderate,
+                            high: scan.severityCount.high,
+                            medium: scan.severityCount.medium,
                             low: scan.severityCount.low,
+                            unknown: scan.severityCount.unknown,
                         },
                         lastExecution: handleUTCTime(scan.lastChecked) || '-',
                     }

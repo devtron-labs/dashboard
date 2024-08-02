@@ -17,11 +17,10 @@
 import { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
-import { SecurityScansTab } from './SecurityScansTab'
+import { SecurityScansTab } from './SecurityScansTab/SecurityScanTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 interface SecurityProps extends RouteComponentProps<{}> {
@@ -107,7 +106,7 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan">
+            <div className="security-scan h-100-imp">
                 {this.renderPageheader()}
                 {this.props.serverMode === SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()

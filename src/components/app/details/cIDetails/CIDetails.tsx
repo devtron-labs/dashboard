@@ -653,8 +653,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         lastExecution: '',
         severityCount: {
             critical: 0,
-            moderate: 0,
+            high: 0,
+            medium: 0,
             low: 0,
+            unknown: 0,
         },
         scanEnabled: false,
         scanned: false,
@@ -709,7 +711,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     }
 
     const { severityCount } = securityData
-    const total = severityCount.critical + severityCount.moderate + severityCount.low
+    const total = severityCount.critical + severityCount.high + severityCount.medium + severityCount.low + severityCount.unknown
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
@@ -755,10 +757,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                     {severityCount.critical !== 0 ? (
                         <span className="dc__fill-critical">{severityCount.critical} Critical</span>
                     ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
+                    {severityCount.critical === 0 && severityCount.medium !== 0 ? (
+                        <span className="dc__fill-moderate">{severityCount.medium} Medium</span>
                     ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
+                    {severityCount.critical === 0 && severityCount.medium === 0 && severityCount.low !== 0 ? (
                         <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type flex">

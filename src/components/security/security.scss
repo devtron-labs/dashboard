@@ -220,7 +220,19 @@
     }
 }
 
-.vulnerability__title--moderate {
+.vulnerability__title--high {
+    &::before {
+        background-color: var(--R200);
+    }
+}
+
+.vulnerability__title--unknown {
+    &::before {
+        background-color: var(--N100);
+    }
+}
+
+.vulnerability__title--medium {
     &::before {
         background-color: var(--Y500);
     }
@@ -375,65 +387,9 @@
 }
 
 .scanned-object {
-    border-radius: 8px;
-    background-color: var(--window-bg);
     margin: 20px;
     padding: 16px;
-}
-
-.scanned-object__label {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N600);
-    margin: 0;
-    margin-bottom: 4px;
-}
-
-.scanned-object__value {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin: 0;
-    margin-bottom: 16px;
-}
-
-.scanned-object__counts {
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1.54;
-    letter-spacing: normal;
-    color: var(--N900);
-}
-
-.scanned-object__icon {
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    margin-right: 5px;
-}
-
-.scanned-object__bar {
-    height: 8px;
-    width: 100%;
-    display: flex;
-    background-color: #e7635d;
-}
-
-.scanned-object__critical-count {
-    background-color: #e7635d;
-}
-
-.scanned-object__moderate-count {
-    background-color: #f0aa65;
-}
-
-.scanned-object__low-count {
-    background-color: var(--Y500);
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.10);
 }
 
 .trigger-modal__body--security-scan {
