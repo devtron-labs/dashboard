@@ -2798,6 +2798,12 @@ textarea,
     }
 }
 
+.dc__fill-transparent {
+    path {
+        fill: transparent !important;
+    }
+}
+
 .icon-color-grey {
     fill: #5a5a5a;
 }
