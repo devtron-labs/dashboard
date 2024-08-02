@@ -204,6 +204,10 @@ export interface ConfigDatum {
     defaultMountPath?: string
 }
 
+export interface CMSecret extends Omit<ConfigMapSecretData, 'configData'> {
+    configData: ConfigDatum[]
+}
+
 export interface CMSecretWrapperProps
     extends Pick<
         EnvironmentOverrideComponentProps,

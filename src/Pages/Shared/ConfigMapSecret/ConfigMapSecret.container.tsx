@@ -18,6 +18,7 @@ import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
 import {
+    AppEnvDeploymentConfigDTO,
     AppEnvDeploymentConfigType,
     ConfigResourceType,
     ResourceConfigStage,
@@ -34,6 +35,7 @@ import {
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
 
+import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
@@ -57,6 +59,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         draftDataMap,
         envName,
         appName,
+        isJob,
     } = props
 
     // HOOKS
@@ -113,20 +116,29 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 isProtected && getDraftByResourceName
                     ? getDraftByResourceName(appId, envId ?? -1, componentType, name, abortControllerRef.current.signal)
                     : null,
-                getAppEnvDeploymentConfig(
-                    {
-                        appName,
-                        envName,
-                        configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                        resourceId: selectedCMSecret.id,
-                        resourceName: name,
-                        resourceType:
-                            componentType === CMSecretComponentType.ConfigMap
-                                ? ConfigResourceType.ConfigMap
-                                : ConfigResourceType.Secret,
-                    },
-                    abortControllerRef.current.signal,
-                ),
+                isJob
+                    ? getCMSecret(
+                          componentType,
+                          selectedCMSecret.id,
+                          appId,
+                          name,
+                          envId,
+                          abortControllerRef.current.signal,
+                      )
+                    : getAppEnvDeploymentConfig(
+                          {
+                              appName,
+                              envName,
+                              configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                              resourceId: selectedCMSecret.id,
+                              resourceName: name,
+                              resourceType:
+                                  componentType === CMSecretComponentType.ConfigMap
+                                      ? ConfigResourceType.ConfigMap
+                                      : ConfigResourceType.Secret,
+                          },
+                          abortControllerRef.current.signal,
+                      ),
             ])
         }, abortControllerRef)
             .then(([draftDataRes, cmSecretDataRes]) => {
@@ -157,10 +169,15 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 }
 
                 if (cmSecretDataRes.status === 'fulfilled') {
-                    const _cmSecretData =
-                        cmSecretDataRes.value?.result[
-                            componentType === CMSecretComponentType.ConfigMap ? 'configMapData' : 'secretsData'
-                        ].data
+                    const _cmSecretData = isJob
+                        ? cmSecretDataRes.value?.result
+                        : cmSecretDataRes.value?.result[
+                              componentType === CMSecretComponentType.ConfigMap ? 'configMapData' : 'secretsData'
+                          ].data
+
+                    const unAuthorized = isJob
+                        ? false
+                        : !(cmSecretDataRes.value.result as AppEnvDeploymentConfigDTO).isAppAdmin
 
                     if (_cmSecretData.configData?.length) {
                         _configMapSecret = {
@@ -217,9 +234,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                                 ..._result,
                                 configData: {
                                     ..._result.configData,
-                                    unAuthorized:
-                                        componentType === CMSecretComponentType.Secret &&
-                                        !cmSecretDataRes.value.result.isAppAdmin,
+                                    unAuthorized,
                                 },
                             }
                             setCmSecretData(_configMapSecret)
@@ -251,9 +266,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 }
 
                 if (
-                    (componentType === CMSecretComponentType.Secret &&
+                    (!isJob &&
                         cmSecretDataRes.status === 'fulfilled' &&
-                        !cmSecretDataRes.value.result.isAppAdmin) ||
+                        !(cmSecretDataRes.value.result as AppEnvDeploymentConfigDTO).isAppAdmin) ||
+                    (cmSecretDataRes.status === 'rejected' && cmSecretDataRes.reason.code === 403) ||
                     (draftDataRes?.status === 'rejected' && draftDataRes?.reason?.code === 403)
                 ) {
                     toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
@@ -262,9 +278,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 if (cmSecretDataRes.status === 'rejected' || draftDataRes.status === 'rejected') {
                     if (cmSecretDataRes.status === 'rejected') {
                         setIsCMSecretLoading(getIsRequestAborted(cmSecretDataRes.reason))
+                        showError(cmSecretDataRes.reason)
                     }
                     if (draftDataRes.status === 'rejected') {
                         setIsCMSecretLoading(getIsRequestAborted(draftDataRes.reason))
+                        showError(draftDataRes.reason)
                     }
                 } else {
                     setIsCMSecretLoading(false)
