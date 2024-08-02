@@ -24,6 +24,7 @@ import {
     VariableType,
     SelectedNode,
     WorkflowType,
+    PluginDataStoreType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -36,10 +37,6 @@ import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPip
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { WorkflowProps } from './Workflow'
-
-export enum DisableType {
-    COMING_SOON = 'COMING SOON',
-}
 
 export interface BlackListedCI {
     [key: number]: CiPipeline
@@ -292,10 +289,8 @@ export interface PipelineContext {
     formDataErrorObj: PipelineFormDataErrorType
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
-    configurationType: string
-    setConfigurationType: React.Dispatch<React.SetStateAction<string>>
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any) => void
+    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any, clonedPluginDataStore?: PluginDataStoreType) => void
     isCdPipeline?: boolean
     configMapAndSecrets?: {
         label: string
@@ -326,6 +321,10 @@ export interface PipelineContext {
     selectedCDStageTypeValue?: OptionType
     setSelectedCDStageTypeValue?: React.Dispatch<React.SetStateAction<OptionType>>
     setReloadNoGitOpsRepoConfiguredModal?: React.Dispatch<React.SetStateAction<boolean>>
+    pluginDataStore: PluginDataStoreType
+    handlePluginDataStoreUpdate: (pluginDataStore: PluginDataStoreType) => void
+    availableTags: string[]
+    handleUpdateAvailableTags: (tags: string[]) => void
 }
 
 export interface SourceTypeCardProps {
@@ -345,6 +344,7 @@ export interface WorkflowOptionsModalProps {
     addWebhookCD: (workflowId?: number | string) => void
     addLinkedCD: (changeCIPayload: ChangeCIPayloadType) => void
     showLinkedCDSource: boolean
+    resetChangeCIPayload: () => void
     // ------------------ Optional types ------------------
     changeCIPayload?: ChangeCIPayloadType
     workflows?: WorkflowType[]

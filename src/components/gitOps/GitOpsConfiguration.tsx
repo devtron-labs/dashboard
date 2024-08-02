@@ -30,8 +30,9 @@ import {
     GitOpsAuthModeType,
     handleDisableSubmitOnEnter,
     DEFAULT_SECRET_PLACEHOLDER,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ViewType, DOCUMENTATION, repoType } from '../../config'
+import { ViewType, repoType, HEADER_TEXT } from '../../config'
 import {
     GitOpsState,
     GitOpsProps,
@@ -64,6 +65,7 @@ import {
     DefaultShortGitOps,
     LinkAndLabelSpec,
     DefaultErrorFields,
+    PROVIDER_DOC_LINK_MAP,
 } from './constants'
 import GitProviderTabIcons from './GitProviderTabIcons'
 import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
@@ -875,26 +877,19 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
+      
+
         return (
             <>
                 <section className="global-configuration__component flex-1">
-                    <h2 className="form__title" data-testid="gitops-heading">
-                        GitOps
-                    </h2>
-                    <p className="form__subtitle" data-testid="gitops-subheading">
-                        Devtron uses GitOps configuration to store kubernetes configuration files of applications.
-                        <span>
-                            <a
-                                rel="noreferrer noopener"
-                                target="_blank"
-                                className="dc__link"
-                                href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
-                            >
-                                &nbsp; Learn more about GitOps&nbsp;
-                            </a>
-                            &nbsp;
-                        </span>
-                    </p>
+                    <FeatureTitleWithInfo
+                        title={HEADER_TEXT.GITOPS.title}
+                        renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
+                        docLink={HEADER_TEXT.GITOPS.docLink}
+                        showInfoIconTippy
+                        additionalContainerClasses="mb-20"
+                        dataTestId="gitops-heading"
+                    />
                     <form
                         className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20"
                         autoComplete="off"
@@ -1149,7 +1144,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                                         ? 'Azure DevOps Access Token '
                                                         : 'Personal Access Token ',
-                                                    DOCUMENTATION.GLOBAL_CONFIG_GIT_ACCESS_LINK,
+                                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
                                                     '(Check permissions required for PAT)',
                                                 )}
                                                 value={this.state.form.token}

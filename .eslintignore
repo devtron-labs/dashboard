@@ -53,7 +53,6 @@ src/components/CIPipelineN/InputPluginSelect.tsx
 src/components/CIPipelineN/MultiplsPort.tsx
 src/components/CIPipelineN/OutputDirectoryPath.tsx
 src/components/CIPipelineN/PluginCard.tsx
-src/components/CIPipelineN/PluginCardListContainer.tsx
 src/components/CIPipelineN/PreBuild.tsx
 src/components/CIPipelineN/Sidebar.tsx
 src/components/CIPipelineN/TaskDetailComponent.tsx
@@ -61,7 +60,7 @@ src/components/CIPipelineN/TaskList.tsx
 src/components/CIPipelineN/TaskTypeDetailComponent.tsx
 src/components/CIPipelineN/VariableContainer.tsx
 src/components/CIPipelineN/YAMLScriptComponent.tsx
-src/components/CIPipelineN/ciPipeline.utils.ts
+src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
@@ -205,7 +204,6 @@ src/components/bulkEdits/bulkedit.utils.tsx
 src/components/bulkEdits/bulkedits.service.tsx
 src/components/cdPipeline/BuildCD.tsx
 src/components/cdPipeline/CDPipeline.tsx
-src/components/cdPipeline/DeleteCDNode.tsx
 src/components/cdPipeline/NewCDPipeline.tsx
 src/components/cdPipeline/cdPipeline.service.ts
 src/components/cdPipeline/cdPipeline.types.ts
@@ -559,10 +557,8 @@ src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
 src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
-src/components/workflowEditor/SourceTypeCard.tsx
 src/components/workflowEditor/ToggleCDSelectButton.tsx
 src/components/workflowEditor/Workflow.tsx
-src/components/workflowEditor/WorkflowOptionsModal.tsx
 src/components/workflowEditor/nodes/CDNode.tsx
 src/components/workflowEditor/nodes/CINode.tsx
 src/components/workflowEditor/nodes/StaticNode.tsx

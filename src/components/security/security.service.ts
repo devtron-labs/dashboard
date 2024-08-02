@@ -19,6 +19,7 @@ import {
     get,
     getClusterListMin,
     getEnvironmentListMinPublic,
+    handleUTCTime,
     post,
     ResponseType,
     sortCallback,
@@ -135,7 +136,7 @@ export function getSecurityScanList(payload): Promise<SecurityScanListResponseTy
                             moderate: scan.severityCount.moderate,
                             low: scan.severityCount.low,
                         },
-                        lastExecution: moment(scan.lastChecked).utc(false).format(DATE_TIME_FORMAT_STRING),
+                        lastExecution: handleUTCTime(scan.lastChecked) || '-',
                     }
                 }),
             },

@@ -22,17 +22,16 @@ import {
     KeyValueListType,
     MODAL_TYPE,
     ResponseType,
-    ServerErrors,
     UserApprovalConfigType,
     WorkflowNodeType,
     WorkflowType,
     AppInfoListType,
+    GVKType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
-import { GVKType } from '../ResourceBrowser/Types'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 
 interface BulkTriggerAppDetailType {
@@ -173,7 +172,6 @@ export interface TriggerResponseModalType {
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
     envName?: string
-    setDownloadPopupOpen?: (e) => void
 }
 
 export interface TriggerModalRowType {
@@ -181,7 +179,6 @@ export interface TriggerModalRowType {
     index: number
     isVirtualEnv?: boolean
     envName?: string
-    setDownloadPopupOpen?: (e) => void
 }
 
 export interface WorkflowNodeSelectionType {

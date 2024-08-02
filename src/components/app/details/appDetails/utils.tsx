@@ -18,7 +18,7 @@ import moment from 'moment'
 import React from 'react'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { Nodes, NodeType, AggregationKeys } from '../../types'
+import { AggregationKeys } from '../../types'
 import {
     getVersionArr,
     isVersionLessThanOrEqualToTarget,
@@ -31,7 +31,7 @@ import {
     StatusType,
     StatusTypes,
 } from './appDetails.type'
-import { ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { ZERO_TIME_STRING, Nodes, NodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export function getAggregator(nodeType: NodeType, defaultAsOtherResources?: boolean): AggregationKeys {
     switch (nodeType) {

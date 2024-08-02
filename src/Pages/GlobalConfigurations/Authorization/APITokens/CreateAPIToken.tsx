@@ -56,7 +56,7 @@ export const renderQuestionwithTippy = () => {
         <InfoIconTippy
             heading={API_COMPONENTS.TITLE}
             infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
+            documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
             documentationLinkText="View Documentation"
             iconClassName="icon-dim-20 fcn-9 ml-4"
         />

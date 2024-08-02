@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// @ts-nocheck
 import yaml from 'yaml'
 import { YAMLStringify, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
@@ -69,7 +68,6 @@ export const validator: ValidatorType = ({ data, type }) => {
             try {
                 const parsedData = yaml.parse(data)
                 if (parsedData && typeof parsedData === 'object') {
-                    debugger
                     const data = YAMLStringify(parsedData, { simpleKeys: true })
                     return {
                         status: FileReaderStatus.SUCCESS,

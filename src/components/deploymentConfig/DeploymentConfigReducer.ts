@@ -132,7 +132,7 @@ export const deploymentConfigReducer = (
         case DeploymentConfigStateActionTypes.toggleDialog:
             return { ...state, dialog: !state.dialog }
         case DeploymentConfigStateActionTypes.reset:
-            return { ...initDeploymentConfigState }
+            return { ...initDeploymentConfigState, yamlMode: action.payload?.isSuperAdmin }
         case DeploymentConfigStateActionTypes.toggleSaveChangesModal:
             return { ...state, showSaveChangesModal: !state.showSaveChangesModal }
         case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:

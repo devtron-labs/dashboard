@@ -2206,6 +2206,10 @@ button.anchor {
     &--b2 {
         border-bottom: solid 1px var(--B200);
     }
+
+    &--n7 {
+        border-bottom: solid 1px var(--N700);
+    }
 }
 
 .dc__border-bottom-dashed {
@@ -2993,6 +2997,10 @@ textarea,
     min-width: 56px;
 }
 
+.mw-84 {
+    min-width: 84px;
+}
+
 .mw-116 {
     min-width: 116px;
 }
@@ -3007,6 +3015,10 @@ textarea,
 
 .mw-400 {
     min-width: 400px;
+}
+
+.mw-600 {
+    min-width: 600px;
 }
 
 .w-auto-imp {
@@ -3211,6 +3223,10 @@ textarea,
 
 .w-436 {
     width: 436px;
+}
+
+.w-450 {
+    width: 450px;
 }
 
 .w-476 {
@@ -3651,6 +3667,10 @@ textarea,
     max-height: 504px;
 }
 
+.mxh-600 {
+    max-height: 600px;
+}
+
 .mxh-390-imp {
     max-height: 390px !important;
 }
@@ -3717,6 +3737,10 @@ textarea,
     line-height: 24px;
 }
 
+.lh-34 {
+    line-height: 34px;
+}
+
 .lh-28 {
     line-height: 28px;
 }
@@ -3760,6 +3784,10 @@ textarea,
 
 .pt-40 {
     padding-top: 40px;
+}
+
+.pt-70 {
+    padding-top: 70px;
 }
 
 .pl-200 {
@@ -4127,6 +4155,13 @@ textarea::placeholder {
     -webkit-line-clamp: 6;
 }
 
+.dc__truncate--clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
 // opacity
 .dc__opacity-0_2 {
     opacity: 0.2;
@@ -4164,6 +4199,14 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__bg-n0--opacity-0_5 {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &:hover {
+        background-color: var(--N0);
+    }
 }
 
 .dc__hover-n0:hover {
@@ -4723,6 +4766,10 @@ textarea::placeholder {
 
 .dc__modal-gradient {
     background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
+}
+
+.bw-1_5 {
+    border-width: 1.5px;
 }
 
 .dc__fill-available-space {

@@ -27,7 +27,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
-import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
@@ -42,7 +41,6 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
         setFormDataErrorObj,
         validateTask,
     } = useContext(pipelineContext)
-    const validationRules = new ValidationRules()
 
     const formatOptions: OptionType[] = ['STRING', 'BOOL', 'NUMBER', 'DATE'].map((format) => ({
         label: format,

@@ -70,6 +70,7 @@ export const SourceInfo = ({
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
+    const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -313,6 +314,7 @@ export const SourceInfo = ({
                                       cardLoading={cardLoading}
                                       appId={params.appId}
                                       envId={params.envId}
+                                      isExternalCI={isExternalCI}
                                   />
                               )}
                           <div className="flex right ml-auto">

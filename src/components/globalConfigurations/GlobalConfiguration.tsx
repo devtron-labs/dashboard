@@ -320,7 +320,7 @@ const NavItem = ({ serverMode }) => {
                         onClose={onTippyClose}
                         {...tippyConfig}
                     >
-                        <div> {children}</div>
+                        {children}
                     </TippyCustomized>
                 )}
             >
