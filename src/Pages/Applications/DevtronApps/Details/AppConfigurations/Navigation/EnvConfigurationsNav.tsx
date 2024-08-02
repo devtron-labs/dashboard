@@ -46,7 +46,7 @@ export const EnvConfigurationsNav = ({
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId } = params
+    const { envId, appId } = params
 
     // STATES
     const [expandedIds, setExpandedIds] =
@@ -267,7 +267,7 @@ export const EnvConfigurationsNav = ({
                 ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
                 : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
         } else if (paramToCheck === 'appId') {
-            comparePath = `${basePath}/${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_CONFIG}/${params.appId}`)[1]}`
+            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
         }
 
         return (
