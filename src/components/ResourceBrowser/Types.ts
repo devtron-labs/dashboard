@@ -229,7 +229,6 @@ export interface K8SResourceTabComponentProps {
 
 export interface AdminTerminalProps {
     isSuperAdmin: boolean
-    clusterName: string
     updateTerminalTabUrl: (queryParams: string) => void
 }
 
