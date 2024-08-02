@@ -4756,3 +4756,7 @@ textarea::placeholder {
         height: 100%;
     }
 }
+
+.dc__search-highlight-bg {
+    background-color: var(--search-highlight-text);
+}
