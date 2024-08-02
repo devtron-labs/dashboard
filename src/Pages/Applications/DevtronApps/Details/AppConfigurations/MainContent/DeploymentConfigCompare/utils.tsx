@@ -429,7 +429,7 @@ export const getAppEnvDeploymentConfigList = (
     const compareDeploymentData = getDeploymentTemplateDiffViewData(compareList.deploymentTemplate, sortOrder)
 
     const deploymentTemplateData = {
-        id: 'compare-deployment-template',
+        id: EnvResourceType.DeploymentTemplate,
         title: 'Deployment Template',
         primaryConfig: {
             heading: getDiffHeading(compareList.deploymentTemplate, true),
@@ -465,12 +465,10 @@ export const getAppEnvDeploymentConfigList = (
         {
             title: deploymentTemplateData.title,
             hasDiff: deploymentTemplateData.hasDiff,
-            href: `${generatePath(path, { ...params, resourceType: EnvResourceType.DeploymentTemplate })}${search}`,
+            href: `${generatePath(path, { ...params, resourceType: EnvResourceType.DeploymentTemplate, resourceName: null })}${search}`,
             onClick: () => {
                 const element = document.getElementById(deploymentTemplateData.id)
-                element?.scrollIntoView({
-                    behavior: 'smooth',
-                })
+                element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
             },
         },
     ]
@@ -485,9 +483,7 @@ export const getAppEnvDeploymentConfigList = (
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
-                    element?.scrollIntoView({
-                        behavior: 'smooth',
-                    })
+                    element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
                 },
             })),
             noItemsText: 'No configmaps',
@@ -501,9 +497,7 @@ export const getAppEnvDeploymentConfigList = (
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
-                    element?.scrollIntoView({
-                        behavior: 'smooth',
-                    })
+                    element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
                 },
             })),
             noItemsText: 'No secrets',

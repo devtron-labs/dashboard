@@ -198,7 +198,9 @@ const ConfigMapSecretDataEditor = ({
                     payload: {
                         currentData: tempArr.current,
                         yamlMode: !state.yamlMode,
-                        isFormDirty: state.isFormDirty || !deepEqual(tempArr.current, state.currentData),
+                        isFormDirty:
+                            !state.unAuthorized &&
+                            (state.isFormDirty || !deepEqual(tempArr.current, state.currentData)),
                     },
                 })
             } else {

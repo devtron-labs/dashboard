@@ -66,7 +66,6 @@ export const DeploymentConfigCompare = ({
         handleSorting,
     } = useUrlFilters<string, AppEnvDeploymentConfigQueryParamsType>({
         parseSearchParams: parseCompareWithSearchParams({ type, compareTo, environments }),
-        initialSortKey: 'sort-config',
     })
 
     // Set default query parameters
@@ -181,6 +180,8 @@ export const DeploymentConfigCompare = ({
 
     // METHODS
     const onCompareEnvironmentChange = ({ value }: SelectPickerOptionType) => {
+        handleSorting('')
+
         if (typeof value === 'number') {
             updateSearchParams({
                 chartRefId: value,
@@ -206,6 +207,8 @@ export const DeploymentConfigCompare = ({
     const onEnvironmentConfigTypeChange =
         (isCompare?: boolean) =>
         ({ value }: SelectPickerOptionType) => {
+            handleSorting('')
+
             if (typeof value === 'string') {
                 const modifiedValue = getPreviousDeploymentValue(value)
                 if (modifiedValue) {
@@ -271,6 +274,7 @@ export const DeploymentConfigCompare = ({
         name: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
         variant: SelectPickerVariantType.BORDERLESS,
         isSearchable: false,
+        disableDescriptionEllipsis: true,
         value: getOptionByValue(
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
@@ -347,11 +351,14 @@ export const DeploymentConfigCompare = ({
             {...appEnvDeploymentConfigList}
             goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
-            scrollIntoViewId={`${resourceType}-${resourceName}`}
+            scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
             navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
-            sortOrder={sortOrder}
-            onSortBtnClick={() => handleSorting(sortBy)}
+            sortingConfig={{
+                handleSorting: () => handleSorting('sort-config'),
+                sortBy,
+                sortOrder,
+            }}
         />
     )
 }
