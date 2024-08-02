@@ -24,24 +24,21 @@ import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clu
 import { getHostURLConfiguration } from '../../../services/service'
 import { AdminTerminalProps, URLParams } from '../Types'
 
-const AdminTerminal: React.FC<AdminTerminalProps> = ({
-    isSuperAdmin,
-    clusterName,
-    updateTerminalTabUrl,
-}: AdminTerminalProps) => {
+const AdminTerminal: React.FC<AdminTerminalProps> = ({ isSuperAdmin, updateTerminalTabUrl }: AdminTerminalProps) => {
     const { clusterId } = useParams<URLParams>()
 
-    const [loading, data, error] = useAsync(() =>
-        Promise.all([
-            getClusterCapacity(clusterId),
-            getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
-            clusterNamespaceList(),
-        ]),
+    const [loading, data, error] = useAsync(
+        () =>
+            Promise.all([
+                getClusterCapacity(clusterId),
+                getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
+                clusterNamespaceList(),
+            ]),
+        [clusterId],
     )
 
-    const [clusterDetail = null, hostUrlConfig = null, _namespaceList = null] = data || []
-
     const details = useMemo(() => {
+        const [clusterDetail = null, hostUrlConfig = null, _namespaceList = null] = data || []
         const detail = clusterDetail?.result ?? null
 
         const imageList = JSON.parse(hostUrlConfig?.result.value ?? null)
@@ -49,11 +46,10 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({
 
         const nodeGroups = createGroupSelectList(detail?.nodeDetails, 'nodeName')
         const taints = detail ? createTaintsList(detail.nodeDetails, 'nodeName') : null
+        const namespaceList = _namespaceList?.result[detail.name] ?? null
 
-        return { ...(detail ?? {}), nodeGroups, taints, clusterImageList }
-    }, [clusterDetail, clusterId])
-
-    const namespaceList = _namespaceList?.result[clusterName] || null
+        return { ...(detail ?? {}), nodeGroups, taints, clusterImageList, namespaceList }
+    }, [data])
 
     if (loading) {
         return (
@@ -63,7 +59,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({
         )
     }
 
-    if (error || !details.nodeDetails?.length || !namespaceList?.length) {
+    if (error || !details.nodeCount || !details.namespaceList?.length) {
         /* NOTE: if nodeCount is 0 show Reload page or show Unauthorized if not SuperAdmin */
         /* NOTE: the above happens in case of bad cluster setup */
         const errCode = error?.code || 403
@@ -80,7 +76,7 @@ const AdminTerminal: React.FC<AdminTerminalProps> = ({
             nodeGroups={details.nodeGroups}
             taints={details.taints}
             clusterImageList={details.clusterImageList}
-            namespaceList={namespaceList}
+            namespaceList={details.namespaceList}
             updateTerminalTabUrl={updateTerminalTabUrl}
         />
     )

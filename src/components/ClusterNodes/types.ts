@@ -66,6 +66,8 @@ export interface NodeDetailsType {
 }
 
 export interface ClusterCapacityType {
+    name: string
+    nodeCount: number
     nodeK8sVersions: string[]
     cpu: ResourceDetail
     memory: ResourceDetail
@@ -76,8 +78,6 @@ export interface ClusterCapacityType {
 
 export interface ClusterDetail extends ClusterCapacityType {
     id: number
-    name: string
-    nodeCount: number
     errorInNodeListing: string
     nodeNames?: string[]
     isVirtualCluster?: boolean
