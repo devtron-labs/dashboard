@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
-import { Progressing, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { handleUTCTime, Progressing, SearchBar, useUrlFilters } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { handleUTCTime } from '../common'
+import dayjs, { Dayjs } from 'dayjs'
+import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
@@ -39,76 +40,26 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 }) => {
     const location = useLocation()
     const history = useHistory()
-    const [minLoader, setMinLoader] = useState(true)
-    const [searchText, setSearchText] = useState('')
-    const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
-    const [clusterList, setClusterList] = useState<ClusterDetail[]>([])
-    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
-    const [lastDataSync, setLastDataSync] = useState(false)
-    const [searchApplied, setSearchApplied] = useState(false)
+    const [lastSyncTime, setLastSyncTime] = useState(dayjs())
 
-    const noResults = searchApplied && filteredClusterList.length === 0
+    const { searchKey, handleSearch, clearFilters } = useUrlFilters()
 
-    useEffect(() => {
-        let filteredClusterOptions = clusterOptions
-        if (window._env_.HIDE_DEFAULT_CLUSTER) {
-            filteredClusterOptions = clusterOptions.filter((item) => item.id !== DEFAULT_CLUSTER_ID)
-        }
-        setClusterList([])
-        setFilteredClusterList([])
-        setLastDataSync(!lastDataSync)
-        setClusterList(filteredClusterOptions)
-        setFilteredClusterList(filteredClusterOptions)
-        setMinLoader(false)
-    }, [clusterOptions])
+    const filteredList = useMemo(() => {
+        return clusterOptions.filter((option) => {
+            if (window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) {
+                return false
+            }
+            return !searchKey || option.name.includes(searchKey)
+        })
+    }, [searchKey])
 
-    useEffect(() => {
-        const _lastDataSyncTime = Date()
-        setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
-        const interval = setInterval(() => {
-            setLastDataSyncTimeString(`Last refreshed ${handleUTCTime(_lastDataSyncTime, true)}`)
-        }, 1000)
-        return () => {
-            clearInterval(interval)
-        }
-    }, [lastDataSync])
-
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
-        setFilteredClusterList(_filteredData)
+    const handleFilterKeyPress = (value: string) => {
+        handleSearch(value)
     }
 
-    const clearSearch = (): void => {
-        if (searchApplied) {
-            handleFilterChanges('')
-            setSearchApplied(false)
-        }
-        setSearchText('')
-    }
-
-    const handleFilterKeyPress = (value): void => {
-        handleFilterChanges(value)
-        setSearchApplied(true)
-    }
-
-    const handleSearchChange = (value): void => {
-        setSearchText(value.trim())
-    }
-
-    const renderSearch = (): JSX.Element => {
-        return (
-            <SearchBar
-                initialSearchText={searchText}
-                handleSearchChange={handleSearchChange}
-                handleEnter={handleFilterKeyPress}
-                containerClassName="w-250-imp"
-                inputProps={{
-                    placeholder: 'Search clusters',
-                    autoFocus: true,
-                    disabled: minLoader,
-                }}
-            />
-        )
+    const handleRefresh = () => {
+        refreshData()
+        setLastSyncTime(dayjs())
     }
 
     const getOpenTerminalHandler = (clusterData) => () =>
@@ -121,11 +72,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return value
     }
 
+    const formatTimeString = (_, now: Dayjs) => handleUTCTime(now.toString(), true)
+
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
             <div
-                key={`cluster-${clusterData.id}`}
+                key={`cluster-${clusterData.id}-${lastSyncTime.toString}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
                     clusterData.nodeCount && !clusterListLoader && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 } ${clusterListLoader ? 'show-shimmer-loading' : ''}`}
@@ -182,7 +135,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     const renderClusterList = (): JSX.Element => {
-        if (minLoader) {
+        if (!clusterOptions.length && clusterListLoader) {
             return (
                 <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 112px)' }}>
                     <Progressing pageLoader />
@@ -204,12 +157,12 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     <div>CPU Capacity</div>
                     <div>Memory Capacity</div>
                 </div>
-                {noResults ? (
+                {!filteredList.length ? (
                     <div className="flex-grow-1">
-                        <ClusterNodeEmptyState actionHandler={clearSearch} />
+                        <ClusterNodeEmptyState actionHandler={clearFilters} />
                     </div>
                 ) : (
-                    filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))
+                    filteredList?.map((clusterData) => renderClusterRow(clusterData))
                 )}
             </div>
         )
@@ -217,25 +170,40 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     return (
         <div>
-            <div className={`cluster-list-main-container flexbox-col bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+            <div
+                className={`cluster-list-main-container flexbox-col bcn-0 ${!filteredList.length ? 'no-result-container' : ''}`}
+            >
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                    {renderSearch()}
+                    <SearchBar
+                        initialSearchText={searchKey}
+                        handleEnter={handleFilterKeyPress}
+                        containerClassName="w-250-imp"
+                        inputProps={{
+                            placeholder: 'Search clusters',
+                            autoFocus: true,
+                            disabled: clusterListLoader,
+                        }}
+                    />
                     <div className="fs-13">
-                        {minLoader
-                            ? 'Syncing...'
-                            : lastDataSyncTimeString && (
-                                  <span>
-                                      {lastDataSyncTimeString}
-                                      <button
-                                          type="button"
-                                          data-testid="cluster-list-refresh-button"
-                                          className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                          onClick={refreshData}
-                                      >
-                                          Refresh
-                                      </button>
-                                  </span>
-                              )}
+                        {clusterListLoader ? (
+                            <span>Syncing...</span>
+                        ) : (
+                            <>
+                                <span>
+                                    Last refreshed&nbsp;
+                                    <Timer start={lastSyncTime} format={formatTimeString} />
+                                    &nbsp;
+                                </span>
+                                <button
+                                    type="button"
+                                    data-testid="cluster-list-refresh-button"
+                                    className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                    onClick={handleRefresh}
+                                >
+                                    Refresh
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
                 {renderClusterList()}
