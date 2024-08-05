@@ -135,26 +135,33 @@ const getObfuscatedData = (
 ) => {
     // Identify keys with matching values in both datasets
     const sameKeys: Record<string, boolean> = Object.keys(compareToData).reduce((acc, key) => {
-        if (compareToData[key] === compareWithData[key]) {
+        if (compareWithData[key] && compareToData[key] === compareWithData[key]) {
             acc[key] = true
         }
         return acc
     }, {})
 
     // Function to obfuscate data based on same keys and admin status
-    const obfuscateData = (data: Record<string, string>, isAdmin: boolean): Record<string, string> => {
+    const obfuscateData = (
+        data: Record<string, string>,
+        isAdmin: boolean,
+        checkSameKeys = false,
+    ): Record<string, string> => {
         if (isAdmin) return data
         return Object.keys(data).reduce((acc, key) => {
-            acc[key] = sameKeys[key] ? '********' : '************'
+            if (checkSameKeys) {
+                acc[key] = sameKeys[key] ? '********' : '************'
+            } else {
+                acc[key] = '********'
+            }
             return acc
         }, {})
     }
 
-    const compareToObfuscatedData = obfuscateData(compareToData, compareToIsAdmin)
+    const compareToObfuscatedData = obfuscateData(compareToData, compareToIsAdmin, true)
     const compareWithObfuscatedData = obfuscateData(compareWithData, compareWithIsAdmin)
 
     // Return undefined intentionally, as JSON.stringify converts null to "null" but keeps undefined as undefined.
-
     return {
         compareToObfuscatedData: Object.keys(compareToObfuscatedData).length ? compareToObfuscatedData : undefined,
         compareWithObfuscatedData: Object.keys(compareWithObfuscatedData).length
@@ -467,8 +474,8 @@ export const getAppEnvDeploymentConfigList = (
             hasDiff: deploymentTemplateData.hasDiff,
             href: `${generatePath(path, { ...params, resourceType: EnvResourceType.DeploymentTemplate, resourceName: null })}${search}`,
             onClick: () => {
-                const element = document.getElementById(deploymentTemplateData.id)
-                element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+                const element = document.querySelector(`#${deploymentTemplateData.id}`)
+                element?.scrollIntoView({ block: 'start' })
             },
         },
     ]
@@ -483,7 +490,7 @@ export const getAppEnvDeploymentConfigList = (
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
-                    element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+                    element?.scrollIntoView({ block: 'start' })
                 },
             })),
             noItemsText: 'No configmaps',
@@ -497,7 +504,7 @@ export const getAppEnvDeploymentConfigList = (
                 href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
-                    element?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+                    element?.scrollIntoView({ block: 'start' })
                 },
             })),
             noItemsText: 'No secrets',

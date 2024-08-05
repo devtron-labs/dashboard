@@ -415,6 +415,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     />
                     <ProtectedConfigMapSecretDetails
                         {...props}
+                        componentType={componentType}
                         data={cmSecretData?.configData}
                         id={selectedCMSecret?.id}
                         cmSecretStateLabel={cmSecretStateLabel}
@@ -431,6 +432,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         return (
             <ConfigMapSecretForm
                 {...props}
+                componentType={componentType}
                 configMapSecretData={cmSecretData?.configData}
                 id={selectedCMSecret?.id}
                 updateCMSecret={updateCMSecret}
