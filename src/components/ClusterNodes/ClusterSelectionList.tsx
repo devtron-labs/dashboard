@@ -16,7 +16,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
-import { handleUTCTime, Progressing, SearchBar, useUrlFilters } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, SearchBar, useUrlFilters } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import dayjs, { Dayjs } from 'dayjs'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
@@ -51,7 +51,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
             }
             return !searchKey || option.name.includes(searchKey)
         })
-    }, [searchKey])
+    }, [searchKey, clusterOptions])
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
@@ -72,7 +72,9 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return value
     }
 
-    const formatTimeString = (_, now: Dayjs) => handleUTCTime(now.toString(), true)
+    const formatTimeString = (start: Dayjs, now: Dayjs) => {
+        return now.to(start)
+    }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
@@ -169,45 +171,43 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     }
 
     return (
-        <div>
-            <div
-                className={`cluster-list-main-container flexbox-col bcn-0 ${!filteredList.length ? 'no-result-container' : ''}`}
-            >
-                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                    <SearchBar
-                        initialSearchText={searchKey}
-                        handleEnter={handleFilterKeyPress}
-                        containerClassName="w-250-imp"
-                        inputProps={{
-                            placeholder: 'Search clusters',
-                            autoFocus: true,
-                            disabled: clusterListLoader,
-                        }}
-                    />
-                    <div className="fs-13">
-                        {clusterListLoader ? (
-                            <span>Syncing...</span>
-                        ) : (
-                            <>
-                                <span>
-                                    Last refreshed&nbsp;
-                                    <Timer start={lastSyncTime} format={formatTimeString} />
-                                    &nbsp;
-                                </span>
-                                <button
-                                    type="button"
-                                    data-testid="cluster-list-refresh-button"
-                                    className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
-                                    onClick={handleRefresh}
-                                >
-                                    Refresh
-                                </button>
-                            </>
-                        )}
-                    </div>
+        <div
+            className={`cluster-list-main-container flexbox-col bcn-0 ${!filteredList.length ? 'no-result-container' : ''}`}
+        >
+            <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
+                <SearchBar
+                    initialSearchText={searchKey}
+                    handleEnter={handleFilterKeyPress}
+                    containerClassName="w-250-imp"
+                    inputProps={{
+                        placeholder: 'Search clusters',
+                        autoFocus: true,
+                        disabled: clusterListLoader,
+                    }}
+                />
+                <div className="fs-13">
+                    {clusterListLoader ? (
+                        <span>Syncing...</span>
+                    ) : (
+                        <>
+                            <span>
+                                Last refreshed&nbsp;
+                                <Timer start={lastSyncTime} format={formatTimeString} />
+                                &nbsp;
+                            </span>
+                            <button
+                                type="button"
+                                data-testid="cluster-list-refresh-button"
+                                className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                onClick={handleRefresh}
+                            >
+                                Refresh
+                            </button>
+                        </>
+                    )}
                 </div>
-                {renderClusterList()}
             </div>
+            {renderClusterList()}
         </div>
     )
 }
