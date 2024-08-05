@@ -32,6 +32,7 @@ import {
     noop,
     SortableTableHeaderCell,
     useStateFilters,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -300,17 +301,13 @@ export const K8SResourceList = ({
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
+                            className={`w-350 flexbox dc__align-items-center dc__content-space dc__visible-hover dc__visible-hover--parent dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
                             }`}
+                            data-testid="created-resource-name"
                         >
-                            <div className="w-100 flexbox dc__content-space" data-testid="created-resource-name">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="right"
-                                    content={resourceData.name}
-                                >
+                            <Tippy className="default-tt" arrow={false} placement="right" content={resourceData.name}>
+                                <>
                                     <button
                                         type="button"
                                         className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
@@ -333,15 +330,18 @@ export const K8SResourceList = ({
                                             }}
                                         />
                                     </button>
-                                </Tippy>
-                                <ResourceBrowserActionMenu
-                                    clusterId={clusterId}
-                                    resourceData={resourceData}
-                                    getResourceListData={reloadResourceListData as () => Promise<void>}
-                                    selectedResource={selectedResource}
-                                    handleResourceClick={handleResourceClick}
-                                />
-                            </div>
+                                    <div className="ml-8 dc__visible-hover--child">
+                                        <ClipboardButton content={String(resourceData.name)} />
+                                    </div>
+                                </>
+                            </Tippy>
+                            <ResourceBrowserActionMenu
+                                clusterId={clusterId}
+                                resourceData={resourceData}
+                                getResourceListData={reloadResourceListData as () => Promise<void>}
+                                selectedResource={selectedResource}
+                                handleResourceClick={handleResourceClick}
+                            />
                         </div>
                     ) : (
                         <div
