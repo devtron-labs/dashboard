@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { VulnerabilityType, Severity } from '@devtron-labs/devtron-fe-common-lib'
+import { VulnerabilityType, Severity, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 
 export interface SecurityPolicyClusterState {
@@ -111,18 +111,14 @@ export interface SecurityScanType {
     imageScanDeployInfoId: number
     type: string
     environment: string
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
+    severityCount: SeverityCount
 }
 
 export interface SecurityScanListResponseType {
     responseCode: number
     result: {
         offset: number
-        size: number
+        totalCount: number
         pageSize: number
         securityScans: SecurityScanType[]
     }
@@ -150,11 +146,7 @@ export interface ScanDetailsModalState {
     envName: string
     pod: string
     replicaSet: string
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
+    severityCount: SeverityCount
     image: string
     vulnerabilities: VulnerabilityType[]
 }

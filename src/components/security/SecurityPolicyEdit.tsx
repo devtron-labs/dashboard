@@ -45,17 +45,31 @@ export class SecurityPolicyEdit extends Component<
         {
             className: 'critical',
             title: 'Critical Vulnerabilities',
-            subTitle: 'Exploitation is straightforward and usually results in system-level compromise.',
+            subTitle:
+                'Immediate threat requiring urgent action. Could lead to complete system or data compromise. Highest priority for investigation and mitigation.',
         },
         {
-            className: 'moderate',
-            title: 'Moderate Vulnerabilities',
-            subTitle: 'Vulnerabilities exist but are not exploitable or require extra step such as social engineering.',
+            className: 'high',
+            title: 'High Vulnerabilities',
+            subTitle:
+                'Risk of unauthorized access to application resources or sensitive data exposure. Significant impact on system security if exploited.',
+        },
+        {
+            className: 'medium',
+            title: 'Medium Vulnerabilities',
+            subTitle:
+                'Often from misconfigurations. May allow limited data access or contribute to larger exploits. Requires attention but less urgent than higher levels.',
         },
         {
             className: 'low',
             title: 'Low Vulnerabilities',
-            subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface.",
+            subTitle:
+                'Not directly exploitable but introduces unnecessary weaknesses. Often due to missing controls or excessive information disclosure.',
+        },
+        {
+            className: 'unknown',
+            title: 'Unknown Vulnerabilities',
+            subTitle: 'Issues identified at this level do not have enough context to clearly demonstrate severity.',
         },
     ]
 
@@ -290,13 +304,17 @@ export class SecurityPolicyEdit extends Component<
 
     private renderVulnerabilitiesCard(v: VulnerabilityPolicy, severities: SeverityPolicy[]) {
         const critical = severities.filter((s) => s.severity === 'critical')[0]
-        const moderate = severities.filter((s) => s.severity === 'moderate')[0]
+        const medium = severities.filter((s) => s.severity === 'medium')[0]
         const low = severities.filter((s) => s.severity === 'low')[0]
+        const high = severities.filter((s) => s.severity === 'high')[0]
+        const unknown = severities.filter((s) => s.severity === 'unknown')[0]
         return (
             <>
                 {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}
-                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, moderate)}
-                {this.renderVulnerability(this.vulnerabilityMetaData[2], v, low)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, high)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[2], v, medium)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[3], v, low)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[4], v, unknown)}
             </>
         )
     }

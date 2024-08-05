@@ -273,11 +273,17 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
     const critical = vulnerabilities
         .filter((v) => v.severity === 'critical')
         .sort((a, b) => sortCallback('cveName', a, b))
-    const moderate = vulnerabilities
-        .filter((v) => v.severity === 'moderate')
+    const high = vulnerabilities
+        .filter((v) => v.severity === 'high')
+        .sort((a, b) => sortCallback('cveName', a, b))
+    const medium = vulnerabilities
+        .filter((v) => v.severity === 'medium')
         .sort((a, b) => sortCallback('cveName', a, b))
     const low = vulnerabilities.filter((v) => v.severity === 'low').sort((a, b) => sortCallback('cveName', a, b))
-    const groupedVulnerabilities = critical.concat(moderate, low)
+    const unknown = vulnerabilities
+        .filter((v) => v.severity === 'unknown')
+        .sort((a, b) => sortCallback('cveName', a, b))
+    const groupedVulnerabilities = critical.concat(high, medium, low, unknown)
     return {
         ...response,
         result: {
@@ -286,9 +292,11 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
             lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
             objectType: response.result.objectType,
             severityCount: {
-                critical: response.result?.severityCount?.high,
-                moderate: response.result?.severityCount?.moderate,
+                critical: response.result?.severityCount?.critical,
+                high: response.result?.severityCount?.high,
+                medium: response.result?.severityCount?.medium,
                 low: response.result?.severityCount?.low,
+                unknown: response.result?.severityCount?.unknown,
             },
             vulnerabilities: groupedVulnerabilities.map((cve) => {
                 return {
@@ -305,6 +313,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
     }
 }
 
+// Might be dead code
 export function getLastExecutionById(scanExecutionId: number | string): Promise<LastExecutionResponseType> {
     const queryString = `executionId=${scanExecutionId}`
     return getLastExecution(queryString).then((response) => {
