@@ -525,16 +525,9 @@ export const ConfigMapSecretForm = React.memo(
                         toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
                     } else {
                         if (componentType === CMSecretComponentType.Secret) {
-                            await overRideSecret(
-                                id,
-                                +appId,
-                                +envId,
-                                [payloadData],
-                                configMapSecretAbortRef.current.signal,
-                            )
+                            await overRideSecret(+appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
                         } else {
                             await overRideConfigMap(
-                                id,
                                 +appId,
                                 +envId,
                                 [payloadData],
