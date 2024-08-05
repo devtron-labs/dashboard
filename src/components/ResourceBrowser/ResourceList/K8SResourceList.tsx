@@ -17,7 +17,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import Tippy from '@tippyjs/react'
 import {
     ConditionalWrap,
     Progressing,
@@ -33,6 +32,7 @@ import {
     SortableTableHeaderCell,
     useStateFilters,
     ClipboardButton,
+    Tippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -307,34 +307,32 @@ export const K8SResourceList = ({
                             data-testid="created-resource-name"
                         >
                             <Tippy className="default-tt" arrow={false} placement="right" content={resourceData.name}>
-                                <>
-                                    <button
-                                        type="button"
-                                        className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
-                                        data-name={resourceData.name}
-                                        data-namespace={resourceData.namespace}
-                                        onClick={handleResourceClick}
-                                        aria-label={`Select ${resourceData.name}`}
-                                    >
-                                        <span
-                                            className="dc__link cursor"
-                                            // eslint-disable-next-line react/no-danger
-                                            dangerouslySetInnerHTML={{
-                                                __html: DOMPurify.sanitize(
-                                                    highlightSearchText({
-                                                        searchText,
-                                                        text: String(resourceData.name),
-                                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                                    }),
-                                                ),
-                                            }}
-                                        />
-                                    </button>
-                                    <div className="ml-8 dc__visible-hover--child">
-                                        <ClipboardButton content={String(resourceData.name)} />
-                                    </div>
-                                </>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                    data-name={resourceData.name}
+                                    data-namespace={resourceData.namespace}
+                                    onClick={handleResourceClick}
+                                    aria-label={`Select ${resourceData.name}`}
+                                >
+                                    <span
+                                        className="dc__link cursor"
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: String(resourceData.name),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </button>
                             </Tippy>
+                            <div className="ml-8 dc__visible-hover--child">
+                                <ClipboardButton content={String(resourceData.name)} />
+                            </div>
                             <ResourceBrowserActionMenu
                                 clusterId={clusterId}
                                 resourceData={resourceData}
