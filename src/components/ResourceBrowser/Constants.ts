@@ -149,15 +149,11 @@ export const EVENT_LIST = {
         type: 'Type',
         message: 'Message',
         namespace: 'Namespace',
-        involvedObject: 'Involved Object',
+        'involved object': 'Involved Object',
         source: 'Source',
         count: 'Count',
         age: 'Age',
-        lastSeen: 'Last Seen',
-    },
-    dataKeys: {
-        involvedObject: 'involved object',
-        lastSeen: 'last seen',
+        'last seen': 'Last Seen',
     },
 }
 
