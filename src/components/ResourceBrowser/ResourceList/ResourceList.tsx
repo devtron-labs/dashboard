@@ -276,6 +276,7 @@ const ResourceList = () => {
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
             <div className="resource-details-container flexbox-col">

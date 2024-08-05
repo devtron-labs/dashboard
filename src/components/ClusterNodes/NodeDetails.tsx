@@ -77,7 +77,7 @@ import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
-const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) => {
+const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -186,6 +186,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                 pathname: location.pathname,
                 search: _searchParam,
             })
+            updateTabUrl(`${location.pathname}${_searchParam}`)
         }
     }
 
