@@ -136,6 +136,7 @@ const ResourceList = () => {
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             node && getDynamicTabData(),
             isTerminalNodeType,
+            isOverviewNodeType,
         )
         initTabs(
             _tabs,

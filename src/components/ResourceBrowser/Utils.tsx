@@ -274,6 +274,7 @@ export const getTabsBasedOnRole = (
     isSuperAdmin: boolean,
     dynamicTabData: InitTabType,
     isTerminalSelected = false,
+    isOverviewSelected = false,
 ): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
@@ -283,7 +284,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: false,
+            isSelected: isOverviewSelected,
             position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
@@ -294,7 +295,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
+            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
             position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
