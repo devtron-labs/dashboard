@@ -27,7 +27,7 @@ export interface ScanDetailsType {
 }
 
 export enum SecurityListSortableKeys {
-    APP_NAME = 'app_name',
-    ENV_NAME = 'env_name',
-    LAST_CHECKED = 'last_checked',
+    APP_NAME = 'appName',
+    ENV_NAME = 'envName',
+    LAST_CHECKED = 'lastChecked',
 }

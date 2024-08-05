@@ -132,7 +132,7 @@ export function getSecurityScanList(payload): Promise<SecurityScanListResponseTy
                         imageScanDeployInfoId: scan.imageScanDeployInfoId,
                         environment: scan.environment,
                         severityCount: {
-                            critical: scan.severityCount.high,
+                            critical: scan.severityCount.critical,
                             high: scan.severityCount.high,
                             medium: scan.severityCount.medium,
                             low: scan.severityCount.low,

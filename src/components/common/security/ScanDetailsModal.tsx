@@ -38,8 +38,6 @@ import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetai
 
 interface ScanDetailsModalProps {
     uniqueId: ExecutionId
-    showAppInfo: boolean
-    name?: string
     close: () => void
 }
 
@@ -144,7 +142,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     }
 
     renderAppEnvInfo = () => {
-        if (!this.props.showAppInfo) return null
         const appEnvConfig = [
             {
                 label: 'App',

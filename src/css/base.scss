@@ -4763,15 +4763,15 @@ textarea::placeholder {
     line-height: 20px;
 
     &--passed {
+        color: var(--G500);
         border: 1px solid var(--G200);
         background: var(--G100);
-        color: var(--G500);
     }
 
     &--critical {
+        color: var(--R700, #B21212);
         border: 1px solid var(--R700, #B21212);
         background: var(--R100, #FDE7E7);
-        color: var(--R700, #B21212);
     }
 
     &--high {

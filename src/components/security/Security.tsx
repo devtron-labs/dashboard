@@ -17,7 +17,7 @@
 import { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
-import { SecurityScansTab } from './SecurityScansTab/SecurityScanTab'
+import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
@@ -106,7 +106,7 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan h-100-imp">
+            <div className="security-scan bcn-0 flexbox-col flex-grow-1">
                 {this.renderPageheader()}
                 {this.props.serverMode === SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()

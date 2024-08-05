@@ -48,9 +48,6 @@
 }
 
 .security-scan {
-    background-color: white;
-    min-height: calc(100vh - 80px);
-
     .tab-list__tab-link {
         padding: 0 0 8px 0;
     }
@@ -216,25 +213,25 @@
 
 .vulnerability__title--critical {
     &::before {
-        background-color: var(--R500);
+        background-color: var(--R700);
     }
 }
 
 .vulnerability__title--high {
     &::before {
-        background-color: var(--R200);
+        background-color: var(--R300);
     }
 }
 
 .vulnerability__title--unknown {
     &::before {
-        background-color: var(--N100);
+        background-color: var(--N200);
     }
 }
 
 .vulnerability__title--medium {
     &::before {
-        background-color: var(--Y500);
+        background-color: var(--O200);
     }
 }
 
