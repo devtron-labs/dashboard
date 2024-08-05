@@ -338,10 +338,7 @@ const ResourceList = () => {
 
         return (
             <>
-                <div
-                    className="h-36 resource-browser-tab flex left w-100"
-                    style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
-                >
+                <div className="h-36 resource-browser-tab flex left w-100 dc__border-bottom">
                     <DynamicTabs
                         tabs={tabs}
                         removeTabByIdentifier={removeTabByIdentifier}
