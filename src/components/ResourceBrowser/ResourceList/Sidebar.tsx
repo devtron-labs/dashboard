@@ -386,7 +386,8 @@ const Sidebar = ({
                             <Fragment key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles"
+                                    className="dc__unset-button-styles dc__zi-5 bcn-0 dc__position-sticky"
+                                    style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}
                                 >
