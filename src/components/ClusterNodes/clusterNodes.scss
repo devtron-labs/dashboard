@@ -69,14 +69,16 @@
     }
     .node-list-row {
         display: grid;
-        grid-template-columns: auto 100px 60px 50px 100px 50px 60px 100px 100px 60px;
+        grid-template-columns: 260px 180px repeat(10, 120px);
         column-gap: 16px;
     }
-
-    .sticky-column {
+    .node-list-row > :first-child {
+        position: sticky;
         left: 0;
         z-index: 1;
+        padding-left: 20px;
         background-color: var(--N0);
+        border-right: 1px solid var(--N200);
     }
 
     .node-actions-menu-icon {
