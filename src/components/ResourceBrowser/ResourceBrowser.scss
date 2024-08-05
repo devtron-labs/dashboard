@@ -111,21 +111,11 @@
                     }
                 }
 
-                .search {
-                    .search__icon {
-                        path:nth-child(2) {
-                            fill: var(--N600);
-                        }
-                    }
-
-                    .search__input:focus {
-                        outline: solid 1px var(--B500);
-                        border: none;
-                    }
-
+                &__search-box {
                     .resource-search-shortcut-key {
                         right: 8px;
-                        top: 5px;
+                        top: 50%;
+                        transform: translateY(-50%);
                     }
                 }
             }
