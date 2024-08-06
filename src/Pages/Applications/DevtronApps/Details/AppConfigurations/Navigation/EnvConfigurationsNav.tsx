@@ -122,7 +122,7 @@ export const EnvConfigurationsNav = ({
                 <div className="flex">
                     <iconConfig.Icon
                         {...iconConfig.props}
-                        className={`icon-dim-16 dc__no-shrink ${iconConfig.props.className}`}
+                        className={`icon-dim-20 dc__no-shrink ${iconConfig.props.className}`}
                     />
                 </div>
             </Tippy>
@@ -156,7 +156,7 @@ export const EnvConfigurationsNav = ({
     /** Collapsible List Config. */
     const collapsibleListConfig: CollapsibleListConfig[] = [
         {
-            header: 'Config Maps',
+            header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
             headerIconConfig: {
                 Icon: ICAdd,

@@ -9,6 +9,7 @@ import {
     ErrorScreenManager,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
+    SortingOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
@@ -340,6 +341,8 @@ export const DeploymentConfigCompare = ({
         return `Showing files from ${compareWithText} & ${compareToText}`
     }
 
+    const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')
+
     // ERROR SCREEN
     if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader)) {
         return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} reload={reload} />
@@ -355,7 +358,7 @@ export const DeploymentConfigCompare = ({
             navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
             sortingConfig={{
-                handleSorting: () => handleSorting('sort-config'),
+                handleSorting: onSorting,
                 sortBy,
                 sortOrder,
             }}

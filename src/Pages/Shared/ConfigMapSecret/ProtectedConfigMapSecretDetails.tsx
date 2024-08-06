@@ -43,8 +43,6 @@ export const ProtectedConfigMapSecretDetails = ({
     parentName,
     reloadEnvironments,
     updateCMSecret,
-    openDeleteModal,
-    setOpenDeleteModal,
     appName,
     envName,
 }: ProtectedConfigMapSecretProps) => {
@@ -342,8 +340,6 @@ export const ProtectedConfigMapSecretDetails = ({
                 }
                 reloadEnvironments={reloadEnvironments}
                 isAppAdmin={draftData.isAppAdmin}
-                openDeleteModal={openDeleteModal}
-                setOpenDeleteModal={setOpenDeleteModal}
             />
         )
     }

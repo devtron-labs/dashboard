@@ -4,6 +4,8 @@ import { toast } from 'react-toastify'
 
 import {
     abortPreviousRequests,
+    DeleteDialog,
+    ERROR_STATUS_CODE,
     ErrorScreenManager,
     GenericEmptyState,
     getIsRequestAborted,
@@ -45,6 +47,7 @@ import './ConfigMapSecret.scss'
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 const DraftComments = importComponentFromFELibrary('DraftComments')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar')
+const DeleteModal = importComponentFromFELibrary('DeleteModal')
 
 export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
     // PROPS
@@ -69,7 +72,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
 
     // STATES
     const [isCMSecretLoading, setIsCMSecretLoading] = useState(false)
-    const [cmSecretError, setCmSecretError] = useState(false)
+    const [cmSecretError, setCmSecretError] = useState<number>()
     const [cmSecretData, setCmSecretData] = useState<ConfigMapSecretData>(null)
     const [selectedDraft, setSelectedDraft] = useState<DraftDetailsForCommentDrawerType>(null)
     const [draftData, setDraftData] = useState(null)
@@ -240,7 +243,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             setCmSecretData(_configMapSecret)
                         } else {
                             toast.error(`The ${componentName} '${name}' has been deleted`)
-                            setCmSecretError(true)
+                            setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }
                     } else if (
@@ -259,7 +262,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             })
                         } else if (draftDataRes.value.result.draftState === DraftState.Discarded) {
                             toast.error(`The ${componentName} '${name}' has been deleted`)
-                            setCmSecretError(true)
+                            setCmSecretError(ERROR_STATUS_CODE.NOT_FOUND)
                             setCmSecretData(null)
                         }
                     }
@@ -269,8 +272,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     (!isJob &&
                         cmSecretDataRes.status === 'fulfilled' &&
                         !(cmSecretDataRes.value.result as AppEnvDeploymentConfigDTO).isAppAdmin) ||
-                    (cmSecretDataRes.status === 'rejected' && cmSecretDataRes.reason.code === 403) ||
-                    (draftDataRes?.status === 'rejected' && draftDataRes?.reason?.code === 403)
+                    (cmSecretDataRes.status === 'rejected' &&
+                        cmSecretDataRes.reason.code === ERROR_STATUS_CODE.PERMISSION_DENIED) ||
+                    (draftDataRes?.status === 'rejected' &&
+                        draftDataRes?.reason?.code === ERROR_STATUS_CODE.PERMISSION_DENIED)
                 ) {
                     toast.warn(<ToastBody title="View-only access" subtitle="You won't be able to make any changes" />)
                 }
@@ -279,10 +284,12 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     if (cmSecretDataRes.status === 'rejected') {
                         setIsCMSecretLoading(getIsRequestAborted(cmSecretDataRes.reason))
                         showError(cmSecretDataRes.reason)
+                        setCmSecretError(cmSecretDataRes.reason.code)
                     }
                     if (draftDataRes.status === 'rejected') {
                         setIsCMSecretLoading(getIsRequestAborted(draftDataRes.reason))
                         showError(draftDataRes.reason)
+                        setCmSecretError(draftDataRes.reason.code)
                     }
                 } else {
                     setIsCMSecretLoading(false)
@@ -359,7 +366,50 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
 
     const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
 
+    const closeDeleteModal = () => {
+        setOpenDeleteModal(null)
+    }
+
     // RENDERERS
+    const renderProtectedDeleteModal = () => {
+        if (DeleteModal) {
+            return (
+                <DeleteModal
+                    id={selectedCMSecret?.id}
+                    appId={+appId}
+                    envId={envId ? +envId : -1}
+                    resourceType={componentType}
+                    resourceName={selectedCMSecret?.name}
+                    latestDraft={
+                        draftData?.draftId
+                            ? {
+                                  draftId: draftData?.draftId,
+                                  draftState: draftData?.draftState,
+                                  draftVersionId: draftData?.draftVersionId,
+                                  action: draftData.action,
+                              }
+                            : null
+                    }
+                    toggleModal={closeDeleteModal}
+                    reload={updateCMSecret}
+                />
+            )
+        }
+
+        return null
+    }
+
+    const renderDeleteModal = () => {
+        return (
+            <DeleteDialog
+                title={`Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${selectedCMSecret?.name}' ?`}
+                description={`'${selectedCMSecret?.name}' will not be used in future deployments. Are you sure?`}
+                closeDelete={closeDeleteModal}
+                delete={handleDelete}
+            />
+        )
+    }
+
     const renderHeader = () => (
         <article className="flexbox dc__align-items-center dc__content-space">
             <div data-testid={`add-${componentType}-button`} className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8">
@@ -384,6 +434,8 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     Delete{isProtected ? '...' : ''}
                 </button>
             )}
+            {selectedCMSecret?.name && openDeleteModal === 'deleteModal' && renderDeleteModal()}
+            {selectedCMSecret?.name && openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
         </article>
     )
 
@@ -422,8 +474,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                         selectedTab={selectedTab}
                         draftData={draftData}
                         updateCMSecret={updateCMSecret}
-                        openDeleteModal={openDeleteModal}
-                        setOpenDeleteModal={setOpenDeleteModal}
                     />
                 </>
             )
@@ -450,8 +500,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                         : null
                 }
                 onCancel={redirectURLToValidPage}
-                openDeleteModal={openDeleteModal}
-                setOpenDeleteModal={setOpenDeleteModal}
             />
         )
     }
@@ -461,7 +509,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
     }
 
     if (cmSecretError) {
-        return <ErrorScreenManager code={404} redirectURL={onErrorRedirectURL} />
+        return <ErrorScreenManager code={cmSecretError} redirectURL={onErrorRedirectURL} />
     }
 
     if (isEmptyState) {

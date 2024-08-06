@@ -29,7 +29,7 @@ import { KeyValue, KeyValueValidated, KeyValueYaml, OverrideProps } from './Conf
 export const validateKeyValuePair = (arr: KeyValue[]): KeyValueValidated => {
     let isValid = true
 
-    const _arr = arr.reduce((agg, { k, v }) => {
+    const _arr = arr.reduce((agg, { k, v, ...res }) => {
         if (!k && typeof v !== 'string') {
             // filter when both are missing
             return agg
@@ -44,7 +44,7 @@ export const validateKeyValuePair = (arr: KeyValue[]): KeyValueValidated => {
             keyError = `Key '${k}' must consist of alphanumeric characters, '.', '-' and '_'`
             isValid = false
         }
-        return [...agg, { k, v, keyError, valueError }]
+        return [...agg, { ...res, k, v, keyError, valueError }]
     }, [])
 
     return { isValid, arr: _arr }

@@ -49,8 +49,6 @@ export interface ConfigMapSecretFormProps
         | 'cmSecretStateLabel'
         | 'isJob'
         | 'reloadEnvironments'
-        | 'openDeleteModal'
-        | 'setOpenDeleteModal'
     > {
     configMapSecretData: CMSecretConfigData
     readonlyView: boolean
@@ -88,8 +86,6 @@ export interface ProtectedConfigMapSecretProps
     cmSecretStateLabel: CM_SECRET_STATE
     selectedTab: CMSecretProtectedTab
     draftData
-    openDeleteModal: CMSecretDeleteModalType
-    setOpenDeleteModal: Dispatch<SetStateAction<CMSecretDeleteModalType>>
 }
 
 interface ValueWithError {

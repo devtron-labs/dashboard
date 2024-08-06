@@ -48,7 +48,11 @@ import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 export const getDraftData = (configData: ConfigMapSecretDataConfigDatumDTO): ConfigMapSecretDataConfigDatumDTO => {
     if (configData?.draftMetadata) {
         const parsedData = JSON.parse(configData.draftMetadata.data)
-        return { ...parsedData.configData[0], draftMetadata: configData.draftMetadata }
+        return {
+            ...(configData.draftMetadata.resourceName ? { name: configData.draftMetadata.resourceName } : {}),
+            ...(parsedData.configData ? parsedData.configData[0] : { data: parsedData }),
+            draftMetadata: configData.draftMetadata,
+        }
     }
 
     return configData
@@ -482,7 +486,7 @@ export const getAppEnvDeploymentConfigList = (
 
     const collapsibleNavList: DeploymentConfigDiffProps['collapsibleNavList'] = [
         {
-            header: 'Config Maps',
+            header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
             items: cmData.map(({ title, hasDiff, id }) => ({
                 title,
