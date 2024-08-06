@@ -457,7 +457,7 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Deployment Window</div>
                         </NavLink>
                     )}
-                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.FEATURE_IMAGE_PROMOTION_LIST_ENABLE  && ImagePromotion && (
+                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.FEATURE_IMAGE_PROMOTION_ENABLE  && ImagePromotion && (
                         <NavLink
                             to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
                             key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
