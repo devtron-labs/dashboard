@@ -141,7 +141,7 @@ const ClusterTerminal = ({
         manifest: manifestData,
         debugNode: debugMode,
         podName: resourceData?.podName || '',
-        taints: (taints as Map<string, NodeTaintType[]>).get(selectedNodeName.value) || [],
+        taints: (taints as Map<string, NodeTaintType[]>)?.get(selectedNodeName.value) || [],
         containerName,
     }
 
