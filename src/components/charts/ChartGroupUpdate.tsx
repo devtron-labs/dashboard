@@ -286,11 +286,9 @@ export default function ChartGroupUpdate({}) {
                             <ChartHeaderFilters
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
-                                setAppStoreName={setAppStoreName}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />

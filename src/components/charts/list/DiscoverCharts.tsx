@@ -439,11 +439,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                             <ChartHeaderFilter
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
-                                setAppStoreName={setAppStoreName}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
@@ -472,7 +470,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details">
+                                    <div className="discover-charts__body-details bcn-0">
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}
@@ -843,7 +841,7 @@ export const ChartGroupListMin = ({
                     </div>
                 </div>
             </div>
-            <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
+            <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
                 {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
             </div>
         </div>
