@@ -191,7 +191,7 @@ export const K8SResourceList = ({
     const handleFilterChanges = (_searchText: string, debounceResult = false) => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
-            searchWorkerRef.current.onmessage = (e: MessageEvent) => setFilteredResourceList(e.data)
+            searchWorkerRef.current.onmessage = (e) => setFilteredResourceList(e.data)
         }
 
         searchWorkerRef.current.postMessage({
@@ -478,9 +478,6 @@ export const K8SResourceList = ({
                         paginatedView={showPaginatedView}
                         syncError={showStaleDataWarning}
                         searchText={searchText}
-                        triggerSortingHandler={triggerSortingHandler}
-                        sortBy={sortBy}
-                        sortOrder={sortOrder}
                     />
                 ) : (
                     renderResourceList()

@@ -17,7 +17,7 @@
 /* eslint-disable react/no-danger */
 import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
-import { highlightSearchText, SortableTableHeaderCell } from '@devtron-labs/devtron-fe-common-lib'
+import { highlightSearchText } from '@devtron-labs/devtron-fe-common-lib'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
 import { getScrollableResourceClass } from '../Utils'
@@ -29,31 +29,24 @@ export const EventList = ({
     paginatedView,
     syncError,
     searchText,
-    triggerSortingHandler,
-    sortBy,
-    sortOrder,
 }: EventListType) => {
     return (
         <div className="dc__overflow-scroll">
             <div className="event-list-row dc__zi-5 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
-                {Object.entries(EVENT_LIST.headerKeys).map(([key, title]) => {
-                    return (
-                        <SortableTableHeaderCell
-                            title={title}
-                            sortOrder={sortOrder}
-                            disabled={false}
-                            isSorted={sortBy === key}
-                            isSortable
-                            triggerSorting={triggerSortingHandler(key)}
-                        />
-                    )
-                })}
+                <div>{EVENT_LIST.headerKeys.type}</div>
+                <div>{EVENT_LIST.headerKeys.message}</div>
+                <div>{EVENT_LIST.headerKeys.namespace}</div>
+                <div>{EVENT_LIST.headerKeys.involvedObject}</div>
+                <div>{EVENT_LIST.headerKeys.source}</div>
+                <div>{EVENT_LIST.headerKeys.count}</div>
+                <div>{EVENT_LIST.headerKeys.age}</div>
+                <div>{EVENT_LIST.headerKeys.lastSeen}</div>
             </div>
             <div
                 ref={listRef}
                 className={`${getScrollableResourceClass('scrollable-event-list', paginatedView, syncError)} dc__min-width-fit-content`}
             >
-                {filteredData?.map((eventData: typeof EVENT_LIST.headerKeys) => (
+                {filteredData?.map((eventData) => (
                     <div
                         key={Object.values(eventData).join('-')}
                         className="event-list-row cn-9 fs-13 dc__border-bottom-n1 pl-20 pr-8 pt-12 pb-12 hover-class"
@@ -104,12 +97,12 @@ export const EventList = ({
                                 className="default-tt"
                                 placement="left"
                                 arrow={false}
-                                content={eventData['involved object']}
+                                content={eventData[EVENT_LIST.dataKeys.involvedObject]}
                             >
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__ellipsis-right"
-                                    data-name={eventData['involved object']}
+                                    data-name={eventData[EVENT_LIST.dataKeys.involvedObject]}
                                     data-namespace={eventData.namespace}
                                     data-origin="event"
                                     onClick={handleResourceClick}
@@ -121,7 +114,7 @@ export const EventList = ({
                                             __html: DOMPurify.sanitize(
                                                 highlightSearchText({
                                                     searchText,
-                                                    text: eventData['involved object'] as string,
+                                                    text: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
                                                     highlightClasses: 'p-0 fw-6 bcy-2',
                                                 }),
                                             ),
@@ -158,7 +151,7 @@ export const EventList = ({
                                 }}
                             />
                         </div>
-                        <div>{eventData['last seen']}</div>
+                        <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
                     </div>
                 ))}
             </div>

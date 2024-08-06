@@ -77,7 +77,6 @@ export default () => {
         cpu: numberInStringComparator,
         memory: numberInStringComparator,
         window: durationComparator,
-        'last seen': durationComparator,
     }
 
     /**

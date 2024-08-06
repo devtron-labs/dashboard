@@ -21,7 +21,6 @@ import {
     OptionType,
     ApiResourceGroupType,
     GVKType,
-    UseStateFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 import { ClusterDetail } from '../ClusterNodes/types'
@@ -172,14 +171,13 @@ export interface ResourceListEmptyStateType {
     actionHandler?: () => void
 }
 
-export interface EventListType extends Pick<UseStateFiltersReturnType<string>, 'sortBy' | 'sortOrder'> {
+export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: ResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     paginatedView: boolean
     syncError: boolean
     searchText: string
-    triggerSortingHandler: (columnName: string) => () => void
 }
 
 export interface ConnectingToClusterStateProps {
