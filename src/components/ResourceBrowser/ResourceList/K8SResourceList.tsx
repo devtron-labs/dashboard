@@ -322,9 +322,10 @@ export const K8SResourceList = ({
                                     />
                                 </button>
                             </Tippy>
-                            <div className="ml-8 dc__visible-hover--child">
-                                <ClipboardButton content={String(resourceData.name)} />
-                            </div>
+                            <ClipboardButton
+                                content={String(resourceData.name)}
+                                rootClassName="p-4 dc__visible-hover--child"
+                            />
                             <ResourceBrowserActionMenu
                                 clusterId={clusterId}
                                 resourceData={resourceData}

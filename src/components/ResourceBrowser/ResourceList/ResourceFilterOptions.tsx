@@ -126,7 +126,7 @@ const ResourceFilterOptions = ({
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="resource-filter-options-container__search-box dc__position-rel flex-grow-1">
+                <div className="resource-filter-options-container__search-box dc__position-rel">
                     <SearchBar
                         inputProps={{
                             value: searchText,

@@ -112,6 +112,7 @@
                 }
 
                 &__search-box {
+                    width: 250px;
                     .resource-search-shortcut-key {
                         right: 8px;
                         top: 50%;
@@ -134,6 +135,7 @@
                 }
                 &__row {
                     width: max-content;
+                    min-width: 100%;
                     display: grid;
 
                     & > :first-child {
