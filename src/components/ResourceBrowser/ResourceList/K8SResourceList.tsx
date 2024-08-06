@@ -101,6 +101,8 @@ export const K8SResourceList = ({
 
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
 
+    const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
+
     /* NOTE: _filters is an object */
     const _filters = getFilterOptionsFromSearchParams?.(location.search)
     const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
@@ -156,12 +158,12 @@ export const K8SResourceList = ({
      * we switch to the key 'name', which will always be present.
      */
     const initialSortKey = useMemo(() => {
-        if (resourceList) {
+        if (resourceList && !isEventList) {
             const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
             return isNameSpaceColumnPresent ? 'namespace' : 'name'
         }
         return ''
-    }, [resourceList])
+    }, [resourceList, isEventList])
 
     // SORTING HOOK
     const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })
@@ -471,7 +473,7 @@ export const K8SResourceList = ({
         }
         return (
             <>
-                {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
+                {isEventList ? (
                     <EventList
                         listRef={resourceListRef}
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
