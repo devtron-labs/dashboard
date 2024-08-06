@@ -21,7 +21,7 @@ import { ExtendedOptionType } from '../app/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { excludeVariables } from './Constants'
 import { InputPluginSelection } from './InputPluginSelect'
-import { SuggestedTagOptionType } from '../ConfigMapSecret/Types'
+import { SuggestedTagOptionType } from './types'
 
 const CustomInputVariableSelect = ({ selectedVariableIndex }: { selectedVariableIndex: number }) => {
     const refVar = useRef(null)

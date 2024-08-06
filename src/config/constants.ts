@@ -265,13 +265,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete'
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -747,9 +748,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -773,9 +774,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',

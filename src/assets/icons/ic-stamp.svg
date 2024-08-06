@@ -1,0 +1,9 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -->
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <path d="M2.66675 14.6667H13.3334" stroke="#664BEE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="2.66675" y="8.66675" width="10.6667" height="3.33333" rx="1" stroke="#664BEE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M5.88853 3.7765C5.6041 2.52497 6.55536 1.33325 7.8388 1.33325H8.16104C9.44448 1.33325 10.3957 2.52497 10.1113 3.77649L8.99992 8.66659H6.99992L5.88853 3.7765Z" stroke="#664BEE" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

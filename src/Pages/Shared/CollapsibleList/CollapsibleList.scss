@@ -1,0 +1,24 @@
+.collapsible {
+    &__item {
+        &.active {
+            color: var(--B500);
+            font-weight: 600;
+            background: var(--B100);
+
+            &:hover:not(.no-hover) {
+                color: var(--B500);
+                background: var(--B100);
+            }
+        }
+
+        &:hover:not(.no-hover) {
+            color: var(--N700);
+            text-decoration: none;
+            background: var(--N50);
+        }
+
+        &:not(.active):not(.no-hover) &__title {
+            color: var(--N900);
+        }
+    }
+}
