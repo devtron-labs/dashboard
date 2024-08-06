@@ -23,6 +23,7 @@ import {
     DevtronProgressing,
     PageHeader,
     useMainContext,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
@@ -315,11 +316,11 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 {chartList.length > 0 && serverMode == SERVER_MODE.FULL && state.charts.length === 0 && (
                     <button
                         type="button"
-                        className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n"
+                        className="bcn-0 en-2 bw-1 cursor cb-5 fw-6 fs-13 br-4 pr-12 pl-12 fcb-5 flex h-32 lh-n cta small dc__gap-6"
                         onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
                         data-testid="create-button-group-present"
                     >
-                        <Add className="icon-dim-18 mr-5" />
+                        <Add className="icon-dim-18" />
                         Create Group
                     </button>
                 )}
@@ -819,25 +820,26 @@ export const ChartGroupListMin = ({
     return (
         <div className="chart-group">
             <div className="chart-group__header">
-                <div className="">
-                    <h2 className="chart-grid__title">Chart Groups</h2>
-                    <p className="mb-16 mt-4">
-                        Use chart groups to preconfigure and deploy frequently used charts together.&nbsp;
-                        <a
-                            href={DOCUMENTATION.CHART_GROUP}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
+                <div className="flex dc__content-space dc__gap-8">
+                    <FeatureTitleWithInfo
+                        title="Chart Groups"
+                        renderDescriptionContent={() =>
+                            'Use chart groups to pre-configure and deploy frequently used charts together.'
+                        }
+                        docLink={DOCUMENTATION.CHART_GROUP}
+                        docLinkText="Learn more"
+                        dataTestId="chart-store"
+                        showInfoIconTippy
+                    />
+                    <div className="flex dc__content-space dc__gap-8 h-32">
+                        <button
+                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor dc__transparent dc__gap-6 en-2 bw-1 px-10 py-6 br-4"
+                            onClick={redirectToGroup}
                         >
-                            Learn more
-                        </a>
-                    </p>
-                    <div className="flex dc__content-space">
+                            <span className="lh-20">View all chart groups</span>
+                            <Next className="icon-dim-16" />
+                        </button>
                         {renderCreateGroupButton()}
-                        <div className="cb-5 fw-6 fs-13 flex fcb-5 cursor" onClick={redirectToGroup}>
-                            View all chart groups
-                            <Next className="ml-8 sicon-dim-16" />
-                        </div>
                     </div>
                 </div>
             </div>

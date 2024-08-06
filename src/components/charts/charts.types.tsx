@@ -396,7 +396,7 @@ export interface ChartHeaderFilterProps {
     selectedChartRepo: SelectedChartRepositoryType[]
     includeDeprecated: number
     chartRepoList: SelectedChartRepositoryType[]
-    setSelectedChartRepo: (chartRepoList: any[]) => void
+    setSelectedChartRepo: (chartRepoList: SelectedChartRepositoryType[]) => void
     appStoreName: string
     isGrid: boolean
     setIsGrid: (isGrid: boolean) => void

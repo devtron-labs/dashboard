@@ -54,7 +54,7 @@ const ChartListPopUp = ({
     const isEmpty = chartList.length && !filteredChartList.length
 
     const closeChartPopUpModalOnBlur = (e) => {
-        e.stopPropagation()
+        stopPropagation(e)
         if (showAddPopUp) {
             setShowAddPopUp(false)
         } else {
@@ -62,13 +62,13 @@ const ChartListPopUp = ({
         }
     }
 
-    const closeChartPopUpModalOnly = (e) => {
-        e.stopPropagation()
+    const closeChartPopUpOnly = (e) => {
+        stopPropagation(e)
         setShowAddPopUp(false)
     }
 
     const toggleAddPopUp = (event: React.MouseEvent): void => {
-        event.stopPropagation()
+        stopPropagation(event)
         setShowAddPopUp(!showAddPopUp)
     }
 
@@ -228,7 +228,7 @@ const ChartListPopUp = ({
 
     const onClickChartListPopUp = (e) => {
         stopPropagation(e)
-        closeChartPopUpModalOnly(e)
+        closeChartPopUpOnly(e)
     }
 
     return (
