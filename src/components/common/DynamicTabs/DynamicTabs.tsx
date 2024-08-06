@@ -314,10 +314,7 @@ const DynamicTabs = ({
         )
 
     return (
-        <div
-            ref={tabsSectionRef}
-            className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp dc__window-bg"
-        >
+        <div ref={tabsSectionRef} className="dynamic-tabs-section flexbox pl-12 pr-12 w-100 dc__outline-none-imp">
             {tabsData.fixedTabs.length > 0 && (
                 <div ref={fixedContainerRef} className="fixed-tabs-container">
                     {tabsData.fixedTabs.map((tab, idx) => renderTab(tab, idx, true))}
