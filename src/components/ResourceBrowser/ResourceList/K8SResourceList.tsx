@@ -90,7 +90,6 @@ export const K8SResourceList = ({
 
     // STATES
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
-    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
@@ -173,20 +172,6 @@ export const K8SResourceList = ({
             clearFilters()
         }
     }, [initialSortKey])
-
-    useEffect(() => {
-        if (resourceList?.headers.length) {
-            /**
-             * 166 is standard with of every column for calculations
-             * 295 is width of left nav + sidebar
-             * 200 is the diff of name column
-             */
-            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
-            const windowWidth = window.innerWidth
-            const clientWidth = 0
-            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
-        }
-    }, [resourceList?.headers])
 
     useEffect(() => {
         return () => {
@@ -291,22 +276,29 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
+    const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
+
     const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
         return (
             <div
                 key={`${resourceData.id}-${resourceData.name}`}
-                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+                style={{ gridTemplateColumns }}
             >
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`w-350 flexbox dc__align-items-center dc__content-space dc__visible-hover dc__visible-hover--parent dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
-                            }`}
+                            className="flexbox dc__align-items-center dc__gap-8 dc__content-space dc__visible-hover dc__visible-hover--parent"
                             data-testid="created-resource-name"
                         >
-                            <Tippy className="default-tt" arrow={false} placement="right" content={resourceData.name}>
+                            <Tippy
+                                showOnTruncate
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={resourceData.name}
+                            >
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
@@ -344,7 +336,7 @@ export const K8SResourceList = ({
                     ) : (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center pt-12 pb-12 w-180 ${
+                            className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
@@ -354,20 +346,28 @@ export const K8SResourceList = ({
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <span
-                                    className="dc__ellipsis-right"
-                                    data-testid={`${columnName}-count`}
-                                    // eslint-disable-next-line react/no-danger
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(
-                                            highlightSearchText({
-                                                searchText,
-                                                text: renderResourceValue(resourceData[columnName]?.toString()),
-                                                highlightClasses: 'p-0 fw-6 bcy-2',
-                                            }),
-                                        ),
-                                    }}
-                                />
+                                <Tippy
+                                    showOnTruncate
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={resourceData[columnName]}
+                                >
+                                    <span
+                                        className="dc__ellipsis-right"
+                                        data-testid={`${columnName}-count`}
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: renderResourceValue(resourceData[columnName]?.toString()),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </Tippy>
                                 <span>
                                     {columnName === 'restarts' &&
                                         Number(resourceData.restarts) !== 0 &&
@@ -442,28 +442,19 @@ export const K8SResourceList = ({
                     showStaleDataWarning,
                 )} dc__overflow-scroll`}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 flexbox dc__gap-16 dc__border-bottom dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div
+                    className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-5 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                    style={{ gridTemplateColumns }}
+                >
                     {resourceList?.headers.map((columnName) => (
-                        <div
-                            key={columnName}
-                            className={`list-title dc__inline-block pt-8 pb-8 dc__ellipsis-right ${
-                                columnName === 'name'
-                                    ? `${
-                                          fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right h-35'
-                                              : ''
-                                      } w-350 pl-20`
-                                    : 'w-180'
-                            }`}
-                        >
-                            <SortableTableHeaderCell
-                                title={columnName}
-                                triggerSorting={triggerSortingHandler(columnName)}
-                                isSorted={sortBy === columnName}
-                                sortOrder={sortOrder}
-                                disabled={false}
-                            />
-                        </div>
+                        <SortableTableHeaderCell
+                            showTippyOnTruncate
+                            title={columnName}
+                            triggerSorting={triggerSortingHandler(columnName)}
+                            isSorted={sortBy === columnName}
+                            sortOrder={sortOrder}
+                            disabled={false}
+                        />
                     ))}
                 </div>
                 {filteredResourceList

@@ -16,7 +16,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation, useRouteMatch, useHistory, useParams } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import * as queryString from 'query-string'
 import { MultiValue } from 'react-select'
 import {
@@ -29,6 +28,7 @@ import {
     Pagination,
     SortableTableHeaderCell,
     SortingOrder,
+    Tippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -375,16 +375,15 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
-        <Tippy className="default-tt" arrow={false} placement="top" content={column.label}>
-            <SortableTableHeaderCell
-                disabled={false}
-                triggerSorting={handleSortClick(column)}
-                title={column.label}
-                isSorted={sortByColumn.value === column.value}
-                sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-                isSortable={column.isSortingAllowed}
-            />
-        </Tippy>
+        <SortableTableHeaderCell
+            showTippyOnTruncate
+            disabled={false}
+            triggerSorting={handleSortClick(column)}
+            title={column.label}
+            isSorted={sortByColumn.value === column.value}
+            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+            isSortable={column.isSortingAllowed}
+        />
     )
 
     const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
@@ -468,6 +467,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
     }
 
+    const gridTemplateColumns = `260px 180px repeat(${appliedColumns.length - 2}, 120px)`
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
@@ -476,26 +477,29 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 className={`dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
+                style={{ gridTemplateColumns }}
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space left pr-8 pt-12 pb-12">
-                            <div className="pr-4 dc__ellipsis-right">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="right"
-                                    content={nodeData[column.value]}
-                                >
+                            <Tippy
+                                showOnTruncate
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={nodeData[column.value]}
+                            >
+                                <div className="pr-4 dc__ellipsis-right">
                                     <NavLink
                                         data-testid="cluster-node-link"
                                         to={`${match.url}/${nodeData[column.value]}`}
                                         onClick={clusterNodeClickEvent(nodeData, column)}
+                                        className="dc__link dc__no-decor"
                                     >
                                         {nodeData[column.value]}
                                     </NavLink>
-                                </Tippy>
-                            </div>
+                                </div>
+                            </Tippy>
                             <NodeActionsMenu
                                 nodeData={nodeData as NodeDetail}
                                 openTerminal={openTerminalComponent}
@@ -507,9 +511,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     ) : (
                         <div
                             className={`dc__inline-block dc__ellipsis-right list-title pt-12 pb-12 ${
-                                column.value === 'status'
-                                    ? `${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : ''
+                                column.value === 'status' ? `${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}` : ''
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}
@@ -614,7 +616,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                             <div
                                 data-testid="node-status"
                                 className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row"
-                                style={{ width: 'max-content', minWidth: '100%', zIndex: 5 }}
+                                style={{ gridTemplateColumns }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}
                             </div>

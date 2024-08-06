@@ -28,9 +28,9 @@ import {
     GVKType,
     SortableTableHeaderCell,
     SortingOrder,
+    Tippy,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
-import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
@@ -640,20 +640,15 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         handleSortClick(...props)
     }
 
-    const renderPodHeaderCell = (
-        columnName: string,
-        sortingFieldName: string,
-        columnType: string,
-    ): JSX.Element => (
-        <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-            <SortableTableHeaderCell
-                title={columnName}
-                triggerSorting={getTriggerSortingHandler(sortingFieldName, columnType)}
-                isSorted={sortByColumnName === sortingFieldName}
-                sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-                disabled={false}
-            />
-        </Tippy>
+    const renderPodHeaderCell = (columnName: string, sortingFieldName: string, columnType: string): JSX.Element => (
+        <SortableTableHeaderCell
+            showTippyOnTruncate
+            title={columnName}
+            triggerSorting={getTriggerSortingHandler(sortingFieldName, columnType)}
+            isSorted={sortByColumnName === sortingFieldName}
+            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+            disabled={false}
+        />
     )
 
     const getPodListData = async (): Promise<void> => {
