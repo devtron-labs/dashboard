@@ -29,6 +29,7 @@ import {
     SortableTableHeaderCell,
     SortingOrder,
     Tippy,
+    ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
@@ -481,7 +482,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div className="flex dc__content-space left pr-8 pt-12 pb-12">
+                        <div className="flex dc__content-space dc__gap-8 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
                             <Tippy
                                 showOnTruncate
                                 className="default-tt"
@@ -489,17 +490,19 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                                 placement="top"
                                 content={nodeData[column.value]}
                             >
-                                <div className="pr-4 dc__ellipsis-right">
-                                    <NavLink
-                                        data-testid="cluster-node-link"
-                                        to={`${match.url}/${nodeData[column.value]}`}
-                                        onClick={clusterNodeClickEvent(nodeData, column)}
-                                        className="dc__link dc__no-decor"
-                                    >
-                                        {nodeData[column.value]}
-                                    </NavLink>
-                                </div>
+                                <NavLink
+                                    data-testid="cluster-node-link"
+                                    to={`${match.url}/${nodeData[column.value]}`}
+                                    onClick={clusterNodeClickEvent(nodeData, column)}
+                                    className="dc__link dc__no-deco dc__ellipsis-right"
+                                >
+                                    {nodeData[column.value]}
+                                </NavLink>
                             </Tippy>
+                            <ClipboardButton
+                                content={nodeData[column.value]}
+                                rootClassName="p-4 dc__visible-hover--child"
+                            />
                             <NodeActionsMenu
                                 nodeData={nodeData as NodeDetail}
                                 openTerminal={openTerminalComponent}
