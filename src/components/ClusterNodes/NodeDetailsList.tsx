@@ -482,7 +482,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             >
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
-                        <div className="flex dc__content-space dc__gap-8 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
+                        <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
                             <Tippy
                                 showOnTruncate
                                 className="default-tt"

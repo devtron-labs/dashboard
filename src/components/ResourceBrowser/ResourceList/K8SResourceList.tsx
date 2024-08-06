@@ -291,7 +291,7 @@ export const K8SResourceList = ({
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className="flexbox dc__align-items-center dc__gap-8 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                             data-testid="created-resource-name"
                         >
                             <Tippy
