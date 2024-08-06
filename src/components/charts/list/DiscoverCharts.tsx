@@ -348,7 +348,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         }
 
         return (
-            <>
+            <div className='bcn-0'>
                 <div className="m-0 flex left ">
                     {state.charts.length > 0 && (
                         <>
@@ -389,7 +389,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                         />
                     )}
                 </div>
-            </>
+            </div>
         )
     }
 
@@ -425,7 +425,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     return (
         <>
-            <div className={`discover-charts ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
+            <div className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
                     <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>

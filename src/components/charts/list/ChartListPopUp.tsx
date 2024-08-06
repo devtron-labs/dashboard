@@ -183,15 +183,18 @@ const ChartListPopUp = ({
 
     const renderChartListSearch = () => {
         return (
-            <SearchBar
-                initialSearchText={searchText}
-                containerClassName="dc__mxw-250 flex-grow-1 m-12"
-                handleEnter={handleFilterKeyPress}
-                inputProps={{
-                    placeholder: 'Search charts',
-                }}
-                data-testid="chart-store-search-box"
-            />
+            <div className="p-12">
+                <SearchBar
+                    initialSearchText={searchText}
+                    containerClassName="dc__mxw-250 flex-grow-1 max-w-100"
+                    handleEnter={handleFilterKeyPress}
+                    inputProps={{
+                        placeholder: 'Search by repository or registry',
+                        autoFocus: true,
+                    }}
+                    data-testid="chart-store-search-box"
+                />
+            </div>
         )
     }
 
