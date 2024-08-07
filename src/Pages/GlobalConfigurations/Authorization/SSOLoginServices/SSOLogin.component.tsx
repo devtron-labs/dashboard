@@ -76,7 +76,14 @@ const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizat
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
     return (
         <label className="dc__tertiary-tab__radio">
-            <input type="radio" value={value} checked={checked} name="status" onChange={handleSSOClick} />
+            <input
+                className="dc__hide-section"
+                type="radio"
+                value={value}
+                checked={checked}
+                name="status"
+                onChange={handleSSOClick}
+            />
             <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
                 <aside className="login__icon-alignment">
                     <SSOTabIcons provider={value} />
