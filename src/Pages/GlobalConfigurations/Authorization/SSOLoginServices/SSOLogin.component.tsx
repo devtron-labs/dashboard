@@ -661,7 +661,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             <div className="code-editor-container">
                 <CodeEditor
                     value={codeEditorBody}
-                    height={300}
+                    height={500}
                     mode="yaml"
                     noParsing={this.state.sso === OIDCType}
                     lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
@@ -703,7 +703,11 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     render() {
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return (
+                <div className="bcn-0 h-100">
+                    <Progressing pageLoader />
+                </div>
+            )
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -712,6 +716,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 </div>
             )
         }
+
         const renderInfoText = (): JSX.Element => {
             return (
                 <div className="flex left column dc__gap-24">
