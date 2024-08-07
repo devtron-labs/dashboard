@@ -993,14 +993,15 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.1.8-beta-24":
-  version "0.1.8-beta-24"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.8-beta-24.tgz#bd3be70afab3c06bc0f7465ca70eae5fec91e803"
-  integrity sha512-BY+q+nKpHIr6+yn9Vh/o5cNUdb+9Pyfs4RxcpQ9vNianshQ9Snr8zOVeK2PH6Gc2rPjjlzHW3tRj100esOjRFg==
+"@devtron-labs/devtron-fe-common-lib@0.1.16-beta-3":
+  version "0.1.16-beta-3"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.1.16-beta-3.tgz#f56054be4bd6c9bdc930bf137e95ccd06eabe0dc"
+  integrity sha512-1iumsZzmpvRtM8NHsl8b10fnGXDMroonKW22BoACV2nNB/jBwx3uuiNdvp1ftuENbKS7UfGxttUDqDR/Q3hqgw==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
     fast-json-patch "^3.1.1"
+    jsonpath-plus "^9.0.0"
     react-dates "^21.8.0"
     react-monaco-editor "^0.54.0"
     sass "^1.69.7"
@@ -1371,6 +1372,16 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@jsep-plugin/assignment@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@jsep-plugin/assignment/-/assignment-1.2.1.tgz"
+  integrity sha512-gaHqbubTi29aZpVbBlECRpmdia+L5/lh2BwtIJTmtxdbecEyyX/ejAOg7eQDGNvGOUmPY7Z2Yxdy9ioyH/VJeA==
+
+"@jsep-plugin/regex@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@jsep-plugin/regex/-/regex-1.0.3.tgz"
+  integrity sha512-XfZgry4DwEZvSFtS/6Y+R48D7qJYJK6R9/yJFyUFHCIUMEEHuJ4X95TDgJp5QkmzfLYvapMPzskV5HpIDrREug==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -4771,6 +4782,11 @@ jsdom-worker@^0.2.1:
     mitt "^1.1.3"
     uuid-v4 "^0.1.0"
 
+jsep@^1.3.8:
+  version "1.3.9"
+  resolved "https://registry.npmjs.org/jsep/-/jsep-1.3.9.tgz"
+  integrity sha512-i1rBX5N7VPl0eYb6+mHNp52sEuaS2Wi8CDYx1X5sn9naevL78+265XJqy1qENEk7mRKwS06NHpUqiBwR7qeodw==
+
 jsesc@^2.5.1:
   version "2.5.2"
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz"
@@ -4852,6 +4868,15 @@ jsonfile@^6.0.1:
     universalify "^2.0.0"
   optionalDependencies:
     graceful-fs "^4.1.6"
+
+jsonpath-plus@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/jsonpath-plus/-/jsonpath-plus-9.0.0.tgz"
+  integrity sha512-bqE77VIDStrOTV/czspZhTn+o27Xx9ZJRGVkdVShEtPoqsIx5yALv3lWVU6y+PqYvWPJNWE7ORCQheQkEe0DDA==
+  dependencies:
+    "@jsep-plugin/assignment" "^1.2.1"
+    "@jsep-plugin/regex" "^1.0.3"
+    jsep "^1.3.8"
 
 jsonpointer@^5.0.0, jsonpointer@^5.0.1:
   version "5.0.1"

@@ -68,6 +68,7 @@ const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
+const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -320,7 +321,7 @@ const NavItem = ({ serverMode }) => {
                         onClose={onTippyClose}
                         {...tippyConfig}
                     >
-                        <div> {children}</div>
+                        {children}
                     </TippyCustomized>
                 )}
             >
@@ -454,6 +455,15 @@ const NavItem = ({ serverMode }) => {
                             activeClassName="active-route"
                         >
                             <div className="flexbox flex-justify">Deployment Window</div>
+                        </NavLink>
+                    )}
+                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.FEATURE_IMAGE_PROMOTION_ENABLE  && ImagePromotion && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                            key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Image Promotion</div>
                         </NavLink>
                     )}
                     <NavLink
@@ -674,6 +684,13 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
                     <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                         <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                    </Route>
+                )
+            },
+            {
+                serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
+                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
                     </Route>
                 )
             },

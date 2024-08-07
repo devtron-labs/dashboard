@@ -41,7 +41,7 @@ import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import {
     FloatingVariablesSuggestions,
-    getRequiredPluginIdsFromBuildStage,
+    getPluginIdsFromBuildStage,
     importComponentFromFELibrary,
     sortObjectArrayAlphabetically,
 } from '../common'
@@ -297,8 +297,8 @@ export default function CIPipeline({
 
     // NOTE: Wrap this component in try catch block to handle error
     const getInitialPlugins = async (_formData: PipelineFormType): Promise<void> => {
-        const preBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.preBuildStage)
-        const postBuildPluginIds = getRequiredPluginIdsFromBuildStage(_formData.postBuildStage)
+        const preBuildPluginIds = getPluginIdsFromBuildStage(_formData.preBuildStage)
+        const postBuildPluginIds = getPluginIdsFromBuildStage(_formData.postBuildStage)
 
         const uniquePluginIds = [...new Set([...preBuildPluginIds, ...postBuildPluginIds])]
 
@@ -562,8 +562,6 @@ export default function CIPipeline({
             })
             .catch((error: ServerErrors) => {
                 showError(error)
-                setPageState(ViewType.ERROR)
-                setErrorCode(error?.code)
             })
     }
 
@@ -818,7 +816,7 @@ export default function CIPipeline({
 
     const renderCIPipelineModalContent = () => {
         if (pageState === ViewType.ERROR) {
-            return <ErrorScreenManager code={errorCode} />
+            return <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
         }
 
         return (

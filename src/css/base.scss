@@ -352,6 +352,10 @@ a:focus {
     top: 0;
 }
 
+.dc__top-8 {
+    top: 8px;
+}
+
 .dc__top-9 {
     top: 9px;
 }
@@ -406,6 +410,10 @@ a:focus {
 
 .dc__right-0 {
     right: 0;
+}
+
+.dc__right-10 {
+    right: 10px;
 }
 
 .dc__left-0 {
@@ -2281,6 +2289,14 @@ button.anchor {
     }
 }
 
+.dc__border-bottom-n0 {
+    border-bottom: solid 1px var(--N0);
+
+    &--important {
+        border-bottom: solid 1px var(--N0) !important;
+    }
+}
+
 .dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
 
@@ -2339,6 +2355,10 @@ button.anchor {
 
 .dc__box-shadow-top {
     box-shadow: inset 0 1px 0 0 #d6dbdf;
+}
+
+.dc__box-shadow-bottom-n2 {
+    box-shadow: inset 0 -1px 0 0 var(--N200);
 }
 
 .dc__cluster-error {
@@ -3220,6 +3240,10 @@ textarea,
     width: 436px;
 }
 
+.w-450 {
+    width: 450px;
+}
+
 .w-476 {
     width: 476px;
 }
@@ -3658,6 +3682,10 @@ textarea,
     max-height: 504px;
 }
 
+.mxh-600 {
+    max-height: 600px;
+}
+
 .mxh-390-imp {
     max-height: 390px !important;
 }
@@ -3708,6 +3736,9 @@ textarea,
     line-height: 18px;
 }
 
+.lh-18-imp {
+    line-height: 18px !important;
+}
 .lh-20 {
     line-height: 20px;
 }
@@ -3722,6 +3753,10 @@ textarea,
 
 .lh-24 {
     line-height: 24px;
+}
+
+.lh-34 {
+    line-height: 34px;
 }
 
 .lh-28 {
@@ -4182,6 +4217,14 @@ textarea::placeholder {
 
 .dc__bg-g5 {
     background-color: var(--G500) !important;
+}
+
+.dc__bg-n0--opacity-0_5 {
+    background-color: rgba(255, 255, 255, 0.5);
+
+    &:hover {
+        background-color: var(--N0);
+    }
 }
 
 .dc__hover-n0:hover {

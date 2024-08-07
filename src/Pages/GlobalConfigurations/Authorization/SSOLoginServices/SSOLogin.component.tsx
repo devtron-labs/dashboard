@@ -34,12 +34,13 @@ import {
     YAMLStringify,
     DEFAULT_SECRET_PLACEHOLDER,
     CodeEditor,
+    FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
 import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, DOCUMENTATION, URLS, SwitchItemValues } from '../../../../config'
+import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
@@ -764,25 +765,16 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         )
         // The assignment confirmation modal has precedence over SSO change confirmation modal
         const showSSOChangeConfirmationModal = this.state.showToggling && !this.state.showAutoAssignConfirmationModal
-
         return (
             <section className="global-configuration__component">
-                <h2 className="form__title" data-testid="sso-login-heading">
-                    SSO Login Services
-                </h2>
-                <p className="form__subtitle">
-                    Configure and manage login service for your organization.
-                    <span>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="dc__link"
-                            href={DOCUMENTATION.GLOBAL_CONFIG_SSO}
-                        >
-                            Learn more about SSO Login
-                        </a>
-                    </span>
-                </p>
+                <FeatureTitleWithInfo
+                    title={HEADER_TEXT.SSO_LOGIN.title}
+                    renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
+                    docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                    showInfoIconTippy
+                    additionalContainerClasses="mb-20"
+                    dataTestId="sso-login-heading"
+                />
 
                 <div className="bcn-0 bw-1 en-2 br-8 pb-22">
                     <div className="login__sso-flex pl-24">

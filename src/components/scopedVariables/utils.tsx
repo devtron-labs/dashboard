@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// @ts-nocheck
 import yaml from 'yaml'
 import { YAMLStringify, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
