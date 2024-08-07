@@ -348,8 +348,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         }
 
         return (
-            <div className='bcn-0'>
-                <div className="m-0 flex left ">
+            <div className="bcn-0">
+                <div className="m-0 flex left">
                     {state.charts.length > 0 && (
                         <>
                             <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
