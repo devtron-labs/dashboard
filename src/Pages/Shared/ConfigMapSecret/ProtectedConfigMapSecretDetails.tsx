@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -52,6 +52,19 @@ export const ProtectedConfigMapSecretDetails = ({
     // STATES
     const [baseData, setBaseData] = useState(data)
 
+    // CONFIGMAP SECRET DATA
+    const configMapSecretData = useMemo(() => {
+        if (selectedTab === CMSecretProtectedTab.Draft) {
+            return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
+                ? baseData
+                : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
+        }
+        if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
+            return null
+        }
+        return data
+    }, [selectedTab, draftData, cmSecretStateLabel, baseData, data])
+
     // REFS
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
@@ -90,22 +103,6 @@ export const ProtectedConfigMapSecretDetails = ({
             showError(baseDataErr)
         }
     }, [baseDataRes, baseDataErr])
-
-    const getData = () => {
-        try {
-            if (selectedTab === CMSecretProtectedTab.Draft) {
-                return draftData.action === 3 && cmSecretStateLabel === CM_SECRET_STATE.OVERRIDDEN
-                    ? baseData
-                    : { ...JSON.parse(draftData.data).configData[0], unAuthorized: draftData?.dataEncrypted }
-            }
-            if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {
-                return null
-            }
-            return data
-        } catch (error) {
-            return null
-        }
-    }
 
     const getObfuscatedData = (codeEditorData: Record<string, string>) => {
         if (
@@ -310,7 +307,7 @@ export const ProtectedConfigMapSecretDetails = ({
         return (
             <ConfigMapSecretForm
                 appChartRef={appChartRef}
-                configMapSecretData={getData()}
+                configMapSecretData={configMapSecretData}
                 id={id}
                 componentType={componentType}
                 updateCMSecret={updateCMSecret}
