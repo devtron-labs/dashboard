@@ -31,14 +31,14 @@ export const EventList = ({
 }: EventListType) => {
     return (
         <div className="dc__overflow-scroll">
-            <div className="event-list-row dc__zi-5 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
-                {Object.values(EVENT_LIST.headerKeys).map((title) => {
-                    return (
-                        <Tippy showOnTruncate className="default-tt" arrow={false} placement="top" content={title}>
-                            <span className="dc__ellipsis-right">{title}</span>
-                        </Tippy>
-                    )
-                })}
+            <div className="event-list-row dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
+                {Object.values(EVENT_LIST.headerKeys).map((title) => (
+                    <Tippy showOnTruncate className="default-tt" arrow={false} placement="top" content={title}>
+                        <span key={title} className="dc__ellipsis-right">
+                            {title}
+                        </span>
+                    </Tippy>
+                ))}
             </div>
             <div
                 ref={listRef}

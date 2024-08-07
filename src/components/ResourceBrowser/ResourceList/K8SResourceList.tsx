@@ -158,6 +158,7 @@ export const K8SResourceList = ({
      * we switch to the key 'name', which will always be present.
      */
     const initialSortKey = useMemo(() => {
+        // NOTE: if isEventList don't initiate sort since we already sort it; therefore return empty initialSortKey
         if (resourceList && !isEventList) {
             const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
             return isNameSpaceColumnPresent ? 'namespace' : 'name'
@@ -446,11 +447,12 @@ export const K8SResourceList = ({
                 )} dc__overflow-scroll`}
             >
                 <div
-                    className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-5 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                    className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
                     style={{ gridTemplateColumns }}
                 >
                     {resourceList?.headers.map((columnName) => (
                         <SortableTableHeaderCell
+                            key={columnName}
                             showTippyOnTruncate
                             title={columnName}
                             triggerSorting={triggerSortingHandler(columnName)}

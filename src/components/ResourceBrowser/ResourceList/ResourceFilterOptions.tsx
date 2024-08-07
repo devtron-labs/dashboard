@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
 import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -90,14 +90,17 @@ const ResourceFilterOptions = ({
         }
     }, [registerShortcut, isOpen])
 
-    const handleFilterKeyUp = (e: React.KeyboardEvent): void => {
+    const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
             searchInputRef.current?.blur()
         }
     }
 
-    const handleOnChangeSearchText: React.ComponentProps<typeof SearchBar>['handleSearchChange'] = (text) => {
+    const handleOnChangeSearchText: ComponentProps<typeof SearchBar>['handleSearchChange'] = (text) => {
         setSearchText(text)
+        if (!text) {
+            searchInputRef.current?.focus()
+        }
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {

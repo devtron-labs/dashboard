@@ -15,10 +15,6 @@
  */
 
 .cluster-list-main-container {
-    &.no-result-container {
-        height: calc(100vh - 48px);
-        overflow: hidden;
-    }
     .cluster-list-row {
         display: grid;
         grid-template-columns: auto 150px 50px 90px 100px 100px 120px;
@@ -73,6 +69,7 @@
         column-gap: 16px;
         z-index: 5;
         width: max-content;
+        min-width: 100%;
 
         & > :first-child {
             position: sticky;

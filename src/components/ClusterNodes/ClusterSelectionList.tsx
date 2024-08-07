@@ -16,21 +16,22 @@
 
 import React, { useState, useMemo } from 'react'
 import { useHistory, useLocation, Link } from 'react-router-dom'
-import { Progressing, SearchBar, useUrlFilters } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, SearchBar, useUrlFilters } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import dayjs, { Dayjs } from 'dayjs'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
+import { ReactComponent as NoClusterEmptyState } from '@Images/no-cluster-empty-state.svg'
+import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
+import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as TerminalIcon } from '@Icons/ic-terminal-fill.svg'
 import { ClusterDetail } from './types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import { ClusterSelectionType } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { ALL_NAMESPACE_OPTION, K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
-import './clusterNodes.scss'
-import { DEFAULT_CLUSTER_ID } from '../cluster/cluster.type'
 import { URLS } from '../../config'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as Success } from '../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import './clusterNodes.scss'
 
 const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
@@ -40,16 +41,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 }) => {
     const location = useLocation()
     const history = useHistory()
-    const [lastSyncTime, setLastSyncTime] = useState(dayjs())
+    const [lastSyncTime, setLastSyncTime] = useState<Dayjs>(dayjs())
 
     const { searchKey, handleSearch, clearFilters } = useUrlFilters()
 
     const filteredList = useMemo(() => {
         return clusterOptions.filter((option) => {
-            if (window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) {
-                return false
-            }
-            return !searchKey || option.name.includes(searchKey)
+            return !searchKey || option.name.toLowerCase().includes(searchKey.toLowerCase())
         })
     }, [searchKey, clusterOptions])
 
@@ -136,44 +134,19 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         )
     }
 
-    const renderClusterList = (): JSX.Element => {
-        if (!clusterOptions.length && clusterListLoader) {
-            return (
-                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 112px)' }}>
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
+    if (!clusterOptions.length) {
         return (
-            <div
-                data-testid="cluster-list-container"
-                className="dc__overflow-scroll flexbox-col"
-                style={{ height: '100vh - 112px)' }}
-            >
-                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                    <div>Cluster</div>
-                    <div data-testid="cluster-list-connection-status">Connection status</div>
-                    <div>Nodes</div>
-                    <div>NODE Errors</div>
-                    <div>K8S version</div>
-                    <div>CPU Capacity</div>
-                    <div>Memory Capacity</div>
-                </div>
-                {!filteredList.length ? (
-                    <div className="flex-grow-1">
-                        <ClusterNodeEmptyState actionHandler={clearFilters} />
-                    </div>
-                ) : (
-                    filteredList?.map((clusterData) => renderClusterRow(clusterData))
-                )}
-            </div>
+            <GenericEmptyState
+                SvgImage={NoClusterEmptyState}
+                title="No clusters found"
+                subTitle="Add a cluster to view and debug Kubernetes resources in the cluster"
+                renderButton={AddClusterButton}
+            />
         )
     }
 
     return (
-        <div
-            className={`cluster-list-main-container flexbox-col bcn-0 ${!filteredList.length ? 'no-result-container' : ''}`}
-        >
+        <div className="cluster-list-main-container flexbox-col bcn-0 h-100">
             <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                 <SearchBar
                     initialSearchText={searchKey}
@@ -187,7 +160,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                 />
                 <div className="fs-13">
                     {clusterListLoader ? (
-                        <span>Syncing...</span>
+                        <span className="dc__loading-dots mr-20">Syncing</span>
                     ) : (
                         <>
                             <span>
@@ -207,7 +180,24 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     )}
                 </div>
             </div>
-            {renderClusterList()}
+            <div data-testid="cluster-list-container" className="dc__overflow-scroll flexbox-col flex-grow-1">
+                <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bcn-0 dc__position-sticky dc__top-0">
+                    <div>Cluster</div>
+                    <div data-testid="cluster-list-connection-status">Connection status</div>
+                    <div>Nodes</div>
+                    <div>NODE Errors</div>
+                    <div>K8S version</div>
+                    <div>CPU Capacity</div>
+                    <div>Memory Capacity</div>
+                </div>
+                {!filteredList.length ? (
+                    <div className="flex-grow-1">
+                        <ClusterNodeEmptyState actionHandler={clearFilters} />
+                    </div>
+                ) : (
+                    filteredList?.map((clusterData) => renderClusterRow(clusterData))
+                )}
+            </div>
         </div>
     )
 }

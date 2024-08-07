@@ -383,7 +383,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             title={column.label}
             isSorted={sortByColumn.value === column.value}
             sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
-            isSortable={column.isSortingAllowed}
+            isSortable={!!column.isSortingAllowed}
         />
     )
 
@@ -475,7 +475,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
             <div
                 key={nodeData['name']}
                 ref={nodeListRef}
-                className={`dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
+                className={`fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class lh-20 flexbox node-list-row dc__visible-hover ${
                     isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
                 style={{ gridTemplateColumns }}
@@ -494,7 +494,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                                     data-testid="cluster-node-link"
                                     to={`${match.url}/${nodeData[column.value]}`}
                                     onClick={clusterNodeClickEvent(nodeData, column)}
-                                    className="dc__link dc__no-deco dc__ellipsis-right"
+                                    className="dc__link dc__no-decor dc__truncate"
                                 >
                                     {nodeData[column.value]}
                                 </NavLink>
@@ -541,7 +541,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
     const renderPagination = (): JSX.Element => {
         return (
-            filteredFlattenNodeList.length > pageSize && (
+            filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
                 <Pagination
                     rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
                     size={filteredFlattenNodeList.length}
@@ -586,9 +586,13 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
 
     return (
-        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left" style={{
-            height: 'calc(100vh - 84px)'
-        }}>
+        <div
+            data-testid="cluster_name_info_page"
+            className="node-list dc__overflow-hidden dc__border-left"
+            style={{
+                height: 'calc(100vh - 84px)',
+            }}
+        >
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
                 className={`bcn-0 pt-16 h-100 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${
@@ -615,7 +619,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                     <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
                 ) : (
                     <>
-                        <div className="mt-16 dc__overflow-scroll h-100" style={{ width: '100%' }}>
+                        <div className="mt-16 dc__overflow-scroll h-100 w-100">
                             <div
                                 data-testid="node-status"
                                 className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row"
