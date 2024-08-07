@@ -1,11 +1,12 @@
 import { NavLink, generatePath } from 'react-router-dom'
 
+import { CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ReactComponent as ICEditFile } from '@Icons/ic-edit-file.svg'
 import { URLS } from '@Config/routes'
-import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import {

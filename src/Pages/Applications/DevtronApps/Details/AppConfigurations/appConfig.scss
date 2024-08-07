@@ -21,6 +21,14 @@
     background: white;
     overflow: hidden;
 
+    &.app-compose-for-env-compare {
+        grid-template-columns: 0 1fr;
+
+        & .app-compose__nav {
+            border-right: none;
+        }
+    }
+
     .app-compose__nav {
         padding: 16px 12px 0;
         border-right: solid 1px #d6dbdf;
@@ -32,7 +40,7 @@
 
         &.app-compose-env-configurations__nav {
             padding: 0;
-            grid-template-rows: 45px 44px 1fr;
+            display: block
         }
 
         &.app-compose-with-no-gitops-config__nav {

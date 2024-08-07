@@ -40,6 +40,7 @@ const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: Application
                     goBackURL={generatePath(path, { envId })}
                     showDeploymentTemplate
                     paramToCheck="appId"
+                    showComparison
                 />
             </Route>
             <Route key="default-navigation">

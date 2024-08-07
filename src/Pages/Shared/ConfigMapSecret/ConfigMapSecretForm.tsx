@@ -30,11 +30,11 @@ import {
     ToastBody,
     RadioGroup,
     RadioGroupItem,
-    DeleteDialog,
     ServerErrors,
     CustomInput,
     usePrompt,
     ButtonWithLoader,
+    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -92,7 +92,6 @@ import '@Pages/Shared/EnvironmentOverride/environmentOverride.scss'
 import './ConfigMapSecret.scss'
 
 const SaveChangesModal = importComponentFromFELibrary('SaveChangesModal')
-const DeleteModal = importComponentFromFELibrary('DeleteModal')
 const DeleteOverrideDraftModal = importComponentFromFELibrary('DeleteOverrideDraftModal')
 
 export const ConfigMapSecretForm = React.memo(
@@ -102,18 +101,17 @@ export const ConfigMapSecretForm = React.memo(
         id,
         componentType,
         cmSecretStateLabel,
-        isJobView,
+        isJob,
         readonlyView,
         isProtectedView,
         draftMode,
         latestDraftData,
         reloadEnvironments,
         isAppAdmin,
-        name,
         updateCMSecret,
-        openDeleteModal,
-        setOpenDeleteModal,
         onCancel,
+        openDeleteModal,
+        closeDeleteModal = () => {},
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapSecretReducer, [])
         const tempArr = useRef<CMSecretYamlData[]>([])
@@ -526,16 +524,9 @@ export const ConfigMapSecretForm = React.memo(
                         toastTitle = `${payloadData.name ? 'Updated' : 'Saved'}`
                     } else {
                         if (componentType === CMSecretComponentType.Secret) {
-                            await overRideSecret(
-                                id,
-                                +appId,
-                                +envId,
-                                [payloadData],
-                                configMapSecretAbortRef.current.signal,
-                            )
+                            await overRideSecret(+appId, +envId, [payloadData], configMapSecretAbortRef.current.signal)
                         } else {
                             await overRideConfigMap(
-                                id,
                                 +appId,
                                 +envId,
                                 [payloadData],
@@ -588,7 +579,6 @@ export const ConfigMapSecretForm = React.memo(
                         overrideLoading: false,
                     },
                 })
-                setOpenDeleteModal(null)
 
                 updateCMSecret()
             } catch (err) {
@@ -652,10 +642,6 @@ export const ConfigMapSecretForm = React.memo(
 
         const closeProtectedDeleteOverrideModal = (): void => {
             dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
-        }
-
-        const closeDeleteModal = (): void => {
-            setOpenDeleteModal(null)
         }
 
         const toggleDraftSaveModal = (): void => {
@@ -726,23 +712,6 @@ export const ConfigMapSecretForm = React.memo(
             return null
         }
 
-        const renderProtectedDeleteModal = (): JSX.Element => {
-            if (DeleteModal) {
-                return (
-                    <DeleteModal
-                        id={+id}
-                        appId={+appId}
-                        envId={envId ? +envId : -1}
-                        resourceType={componentType}
-                        resourceName={state.configName.value}
-                        latestDraft={latestDraftData}
-                        toggleModal={closeDeleteModal}
-                        reload={updateCMSecret}
-                    />
-                )
-            }
-            return null
-        }
         const trimConfigMapName = (): void => {
             dispatch({
                 type: ConfigMapActionTypes.setConfigName,
@@ -1026,10 +995,10 @@ export const ConfigMapSecretForm = React.memo(
             return (
                 <ReactSelect
                     placeholder="Select Secret Type"
-                    options={getTypeGroups(isJobView)}
+                    options={getTypeGroups(isJob)}
                     defaultValue={
                         state.externalType && state.externalType !== ''
-                            ? getTypeGroups(isJobView, state.externalType)
+                            ? getTypeGroups(isJob, state.externalType)
                             : getTypeGroups()[0].options[0]
                     }
                     onChange={toggleExternalType}
@@ -1145,7 +1114,7 @@ export const ConfigMapSecretForm = React.memo(
                             >
                                 {submitButtonText()}
                             </ButtonWithLoader>
-                            {!name && (
+                            {!configMapSecretData?.name && (
                                 <button
                                     disabled={
                                         (!draftMode && state.cmSecretState === CM_SECRET_STATE.INHERITED) ||
@@ -1163,9 +1132,8 @@ export const ConfigMapSecretForm = React.memo(
                         </div>
                     )}
                 </div>
-                {configMapSecretData?.name && openDeleteModal === 'deleteModal' && renderDeleteModal()}
+                {configMapSecretData?.name && openDeleteModal && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
-                {openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
                 {state.showProtectedDeleteOverrideModal && renderProtectedDeleteOverRideModal()}
                 {state.showDraftSaveModal && (
                     <SaveChangesModal

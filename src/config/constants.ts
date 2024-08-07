@@ -265,7 +265,8 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
-    ENV_CONFIG: 'config/autocomplete'
+    ENV_CONFIG: 'config/autocomplete',
+    ENV_DATA: 'config/data',
 }
 
 export enum ViewType {

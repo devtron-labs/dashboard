@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CollapsibleListItem } from '@Pages/Shared/CollapsibleList'
 import { ViewType } from '../../../../../config'
 import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
 import { AppEnvironment } from '../../../../../services/service.types'
 import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import { ResourceConfig, ResourceConfigState } from '../../service.types'
+import {
+    ConfigMapSecretDataConfigDatumDTO,
+    DeploymentTemplateDTO,
+    ResourceConfig,
+    ResourceConfigState,
+} from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -215,7 +219,7 @@ export enum EnvConfigObjectKey {
 export interface EnvironmentOptionType {
     name: string
     id: number
-    isProtected: boolean
+    isProtected?: boolean
 }
 
 export interface EnvConfigurationsNavProps {
@@ -225,8 +229,10 @@ export interface EnvConfigurationsNavProps {
     environments: EnvironmentOptionType[]
     paramToCheck?: 'appId' | 'envId'
     goBackURL: string
+    showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
+    isCMSecretLocked?: boolean
 }
 
 export interface EnvConfigRouteParams {
@@ -239,3 +245,43 @@ export interface ExtendedCollapsibleListItem
     extends Pick<CollapsibleListItem, 'title' | 'subtitle' | 'href' | 'iconConfig'> {
     configState: ResourceConfigState
 }
+
+export interface DeploymentConfigParams {
+    appId: string
+    envId: string
+    compareTo: string
+    resourceType: string
+    resourceName: string
+}
+
+export type DeploymentConfigCompareProps = {
+    environments: EnvironmentOptionType[]
+    goBackURL?: string
+    isBaseConfigProtected?: boolean
+} & (
+    | {
+          type: 'appGroup'
+          envName: string
+          appName?: never
+      }
+    | {
+          type: 'app'
+          appName: string
+          envName?: never
+      }
+)
+
+export enum AppEnvDeploymentConfigQueryParams {
+    CONFIG_TYPE = 'configType',
+    COMPARE_WITH = 'compareWith',
+    COMPARE_WITH_CONFIG_TYPE = 'compareWithConfigType',
+    IDENTIFIER_ID = 'identifierId',
+    PIPELINE_ID = 'pipelineId',
+    COMPARE_WITH_IDENTIFIER_ID = 'compareWithIdentifierId',
+    COMPARE_WITH_PIPELINE_ID = 'compareWithPipelineId',
+    CHART_REF_ID = 'chartRefId',
+}
+
+export type DiffHeadingDataType<DeploymentTemplate> = DeploymentTemplate extends true
+    ? DeploymentTemplateDTO
+    : ConfigMapSecretDataConfigDatumDTO

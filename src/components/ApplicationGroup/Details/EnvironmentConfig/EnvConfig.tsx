@@ -15,14 +15,17 @@
  */
 
 import { useEffect, useState } from 'react'
-import { generatePath, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
+import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
+import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
+import { EnvResourceType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
@@ -88,29 +91,60 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     }
 
     return (
-        <div className="env-compose">
-            <div className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}>
-                <ApplicationRoute key={appId} envAppList={envAppList} envConfig={envConfig} fetchEnvConfig={refetch} />
-            </div>
-            {appId ? (
-                <div className="env-compose__main">
-                    <EnvironmentOverride
-                        appList={envAppList}
-                        environments={[]}
-                        reloadEnvironments={noop}
-                        envName={envName}
-                        envConfig={envConfig}
-                        fetchEnvConfig={refetch}
-                        onErrorRedirectURL={generatePath(path, { envId })}
-                    />
+        <Switch>
+            <Route
+                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+            >
+                {({ match }) => {
+                    const basePath = generatePath(path, match.params)
+                    const resourceTypePath = `/${match.params.resourceType}`
+                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+
+                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+
+                    return (
+                        <DeploymentConfigCompare
+                            type="appGroup"
+                            envName={envName}
+                            environments={envAppList}
+                            goBackURL={goBackURL}
+                        />
+                    )
+                }}
+            </Route>
+            <Route>
+                <div className="env-compose">
+                    <div
+                        className={`env-compose__nav ${pathname.match(ENV_CONFIG_PATH_REG) ? 'env-configurations' : ''}`}
+                    >
+                        <ApplicationRoute
+                            key={appId}
+                            envAppList={envAppList}
+                            envConfig={envConfig}
+                            fetchEnvConfig={refetch}
+                        />
+                    </div>
+                    {appId ? (
+                        <div className="env-compose__main">
+                            <EnvironmentOverride
+                                appList={envAppList}
+                                environments={[]}
+                                reloadEnvironments={noop}
+                                envName={envName}
+                                envConfig={envConfig}
+                                fetchEnvConfig={refetch}
+                                onErrorRedirectURL={generatePath(path, { envId })}
+                            />
+                        </div>
+                    ) : (
+                        <GenericEmptyState
+                            title="Select an application to view & edit its configurations"
+                            subTitle="You can view and edit configurations for all applications deployed on this environment"
+                        />
+                    )}
                 </div>
-            ) : (
-                <GenericEmptyState
-                    title="Select an application to view & edit its configurations"
-                    subTitle="You can view and edit configurations for all applications deployed on this environment"
-                />
-            )}
-        </div>
+            </Route>
+        </Switch>
     )
 }
 

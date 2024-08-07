@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 import { getEnvironmentConfigs, getEnvironmentSecrets } from '@Services/service'
-
-import { CMSecretComponentType, CMSecretResponse } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
+import { CMSecret, CMSecretComponentType } from './ConfigMapSecret.types'
 
 export function updateConfig(id, appId, configData, signal?) {
     return post(
@@ -41,11 +40,10 @@ export function deleteEnvConfigMap(id, appId, envId, name) {
     return trash(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}/${id}?name=${name}`)
 }
 
-export function overRideConfigMap(id, appId, environmentId, configData, signal?) {
+export function overRideConfigMap(appId, environmentId, configData, signal?) {
     return post(
         `${Routes.APP_CREATE_ENV_CONFIG_MAP}`,
         {
-            id,
             appId,
             environmentId,
             configData,
@@ -88,7 +86,7 @@ export const getCMSecret = (
     name,
     envId?,
     signal?,
-): Promise<CMSecretResponse> => {
+): Promise<ResponseType<CMSecret>> => {
     let url = ''
     if (envId !== null && envId !== undefined) {
         url = `${
@@ -109,11 +107,10 @@ export function getSecretList(appId, envId?, signal?) {
     return get(`${Routes.APP_CREATE_SECRET}/${appId}`, { signal })
 }
 
-export function overRideSecret(id, appId, environmentId, configData, signal?) {
+export function overRideSecret(appId, environmentId, configData, signal?) {
     return post(
         `${Routes.APP_CREATE_ENV_SECRET}`,
         {
-            id,
             appId,
             environmentId,
             configData,

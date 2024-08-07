@@ -449,6 +449,10 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const getAdditionalParentClass = () => {
+        if (location.pathname.match(URLS.APP_ENV_CONFIG_COMPARE)) {
+            return 'app-compose-for-env-compare'
+        }
+
         return location.pathname.includes(`/${URLS.APP_DOCKER_CONFIG}`) ||
             (typeof Storage !== 'undefined' && localStorage.getItem('takeMeThereClicked') === '1')
             ? 'dc__position-rel'

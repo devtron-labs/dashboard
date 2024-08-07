@@ -44,6 +44,7 @@ const EnvironmentOverride = ({
     environments,
     reloadEnvironments,
     envName,
+    appName,
     onErrorRedirectURL,
     envConfig,
     fetchEnvConfig,
@@ -133,6 +134,16 @@ const EnvironmentOverride = ({
         return ''
     }
 
+    const getAppName = (): string => {
+        if (appName) {
+            return appName
+        }
+        if (appMap.has(+params.appId)) {
+            return appMap.get(+params.appId).name
+        }
+        return ''
+    }
+
     return (
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
@@ -146,9 +157,10 @@ const EnvironmentOverride = ({
                             environmentName={getEnvName()}
                             isProtected={isProtected}
                             reloadEnvironments={reloadEnvironments}
+                            fetchEnvConfig={fetchEnvConfig}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <Route key={`${path}/${URLS.APP_CM_CONFIG}`} path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isOverrideView
                             isProtected={isProtected}
@@ -161,9 +173,11 @@ const EnvironmentOverride = ({
                             onErrorRedirectURL={onErrorRedirectURL}
                             reloadEnvironments={reloadEnvironments}
                             isJob={isJob}
+                            appName={getAppName()}
+                            envName={getEnvName()}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             isOverrideView
                             isProtected={isProtected}
@@ -177,6 +191,8 @@ const EnvironmentOverride = ({
                             onErrorRedirectURL={onErrorRedirectURL}
                             reloadEnvironments={reloadEnvironments}
                             isJob={isJob}
+                            appName={getAppName()}
+                            envName={getEnvName()}
                         />
                     </Route>
                     <Redirect to={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`} />

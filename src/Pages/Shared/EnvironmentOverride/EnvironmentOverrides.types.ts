@@ -54,6 +54,7 @@ export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
     reloadEnvironments: () => void
     envName?: string
+    appName?: string
     isJob?: boolean
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState
@@ -71,6 +72,7 @@ export interface DeploymentTemplateOverrideProps extends CommonEnvironmentOverri
     environmentName: string
     isProtected: boolean
     reloadEnvironments: () => void
+    fetchEnvConfig: (envId: number) => void
 }
 export interface ListComponentType {
     name: string
