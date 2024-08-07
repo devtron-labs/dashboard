@@ -93,7 +93,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
                     {lastActiveSSO?.name === value ? (
                         <aside className="dc__position-abs dc__right-0 dc__top-0">
                             {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                            <img src={Check} className="h-32" />
+                            <img src={Check} className="h-32 dc__top-right-radius-3" />
                         </aside>
                     ) : (
                         ''
@@ -795,7 +795,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                     {this.renderSSOCodeEditor()}
                     {this.isAutoAssignPermissionFlowActive && (
-                        <div className="mb-12 ml-24 mr-24">
+                        <div className="w-100">
                             <AutoAssignToggleTile
                                 ssoType={this.state.sso}
                                 isSelected={this.state.shouldAutoAssignPermissions}
