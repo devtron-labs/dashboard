@@ -53,6 +53,7 @@ export const AppNavigation = () => {
         environments,
         envConfig,
         fetchEnvConfig,
+        isUnlocked,
         lastUnlockedStage,
     } = useAppConfigurationContext()
 
@@ -133,7 +134,8 @@ export const AppNavigation = () => {
                         showBaseConfigurations
                         showDeploymentTemplate={!isJobView}
                         goBackURL={getValidBackURL()}
-                        showComparison={!isJobView}
+                        showComparison={!isJobView && isUnlocked.workflowEditor}
+                        isCMSecretLocked={!isUnlocked.workflowEditor}
                     />
                 )}
             </Route>

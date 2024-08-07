@@ -232,6 +232,7 @@ export interface EnvConfigurationsNavProps {
     showComparison?: boolean
     showBaseConfigurations?: boolean
     showDeploymentTemplate?: boolean
+    isCMSecretLocked?: boolean
 }
 
 export interface EnvConfigRouteParams {

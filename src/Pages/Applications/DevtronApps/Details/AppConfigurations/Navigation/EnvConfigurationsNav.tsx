@@ -7,6 +7,7 @@ import { CollapsibleList, CollapsibleListConfig } from '@devtron-labs/devtron-fe
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
@@ -41,6 +42,7 @@ export const EnvConfigurationsNav = ({
     goBackURL,
     paramToCheck = 'envId',
     showComparison,
+    isCMSecretLocked,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
@@ -135,6 +137,9 @@ export const EnvConfigurationsNav = ({
 
     /** Handles collapse button click. */
     const onCollapseBtnClick = (id: string) => {
+        if (isCMSecretLocked) {
+            return
+        }
         const updatedExpandedIds = { ...expandedIds }
         if (updatedExpandedIds[id]) {
             delete updatedExpandedIds[id]
@@ -150,7 +155,7 @@ export const EnvConfigurationsNav = ({
      * @param _resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`${_resourceType}/create`)) {
+        if (pathname.includes(`${_resourceType}/create`) || isCMSecretLocked) {
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
@@ -163,18 +168,22 @@ export const EnvConfigurationsNav = ({
             header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
             headerIconConfig: {
-                Icon: ICAdd,
+                Icon: isCMSecretLocked ? ICLocked : ICAdd,
                 props: {
                     className: 'fcn-6',
                 },
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
-                tooltipProps: {
-                    content: 'Create ConfigMap',
-                    arrow: false,
-                    placement: 'bottom',
-                },
+                ...(!isCMSecretLocked
+                    ? {
+                          tooltipProps: {
+                              content: 'Create ConfigMap',
+                              arrow: false,
+                              placement: 'bottom',
+                          },
+                      }
+                    : {}),
             },
             items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
@@ -184,18 +193,22 @@ export const EnvConfigurationsNav = ({
             header: 'Secrets',
             id: EnvResourceType.Secret,
             headerIconConfig: {
-                Icon: ICAdd,
+                Icon: isCMSecretLocked ? ICLocked : ICAdd,
                 props: {
                     className: 'fcn-6',
                 },
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.Secret),
                 },
-                tooltipProps: {
-                    content: 'Create Secret',
-                    arrow: false,
-                    placement: 'bottom',
-                },
+                ...(!isCMSecretLocked
+                    ? {
+                          tooltipProps: {
+                              content: 'Create Secret',
+                              arrow: false,
+                              placement: 'bottom',
+                          },
+                      }
+                    : {}),
             },
             items: updatedEnvConfig.secrets,
             noItemsText: 'No secrets',
