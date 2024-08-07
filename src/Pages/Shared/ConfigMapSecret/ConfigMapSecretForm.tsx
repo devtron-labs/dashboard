@@ -34,6 +34,7 @@ import {
     CustomInput,
     usePrompt,
     ButtonWithLoader,
+    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -109,6 +110,8 @@ export const ConfigMapSecretForm = React.memo(
         isAppAdmin,
         updateCMSecret,
         onCancel,
+        openDeleteModal,
+        closeDeleteModal = () => {},
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapSecretReducer, [])
         const tempArr = useRef<CMSecretYamlData[]>([])
@@ -676,6 +679,17 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
+        const renderDeleteModal = (): JSX.Element => {
+            return (
+                <DeleteDialog
+                    title={`Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configMapSecretData?.name}' ?`}
+                    description={`'${configMapSecretData?.name}' will not be used in future deployments. Are you sure?`}
+                    closeDelete={closeDeleteModal}
+                    delete={handleDelete}
+                />
+            )
+        }
+
         const prepareDataToDeleteOverrideDraft = () => {
             return { id }
         }
@@ -1118,6 +1132,7 @@ export const ConfigMapSecretForm = React.memo(
                         </div>
                     )}
                 </div>
+                {configMapSecretData?.name && openDeleteModal && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
                 {state.showProtectedDeleteOverrideModal && renderProtectedDeleteOverRideModal()}
                 {state.showDraftSaveModal && (

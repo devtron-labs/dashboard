@@ -102,15 +102,19 @@ export const EnvConfigurationsNav = ({
     useEffect(() => {
         if (!isLoading && config) {
             const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
+            setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
+        }
+    }, [isLoading, config, pathname])
 
+    useEffect(() => {
+        if (!isLoading && config) {
             setExpandedIds({
                 configmap: !!config.configmaps.length,
                 secrets: !!config.secrets.length,
                 ...(isCreate ? { [resourceType]: true } : {}),
             })
-            setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname])
+    }, [isLoading, config])
 
     // METHODS
     /** Renders the Deployment Template Nav Icon based on `envConfig`. */

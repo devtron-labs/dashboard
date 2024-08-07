@@ -174,7 +174,7 @@ const ConfigMapSecretDataEditor = ({
                 payload: !!error,
             })
         }
-    }, [error, state.isValidateFormError])
+    }, [error])
 
     const { yaml: lockedYaml } = useKeyValueYaml(
         state.currentData?.map(({ k }) => ({ k, v: Array(8).fill('*').join('') })),
@@ -462,7 +462,10 @@ const ConfigMapSecretDataEditor = ({
                 }}
                 onDelete={keyValueRemove}
                 showError
-                validationSchema={(value) => {
+                validationSchema={(value, key) => {
+                    if (key === 'v' && !value) {
+                        return true
+                    }
                     const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
                     return isValid
                 }}

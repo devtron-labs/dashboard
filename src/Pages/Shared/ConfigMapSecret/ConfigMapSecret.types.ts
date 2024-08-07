@@ -57,6 +57,8 @@ export interface ConfigMapSecretFormProps
     latestDraftData: any
     isAppAdmin?: boolean
     onCancel?: () => void
+    openDeleteModal?: boolean
+    closeDeleteModal?: () => void
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {

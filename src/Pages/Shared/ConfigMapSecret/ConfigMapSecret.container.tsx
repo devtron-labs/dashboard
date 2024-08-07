@@ -4,7 +4,6 @@ import { toast } from 'react-toastify'
 
 import {
     abortPreviousRequests,
-    DeleteDialog,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
     GenericEmptyState,
@@ -133,7 +132,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                               appName,
                               envName,
                               configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                              resourceId: selectedCMSecret.id,
+                              resourceId: cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? selectedCMSecret.id : null,
                               resourceName: name,
                               resourceType:
                                   componentType === CMSecretComponentType.ConfigMap
@@ -399,17 +398,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         return null
     }
 
-    const renderDeleteModal = () => {
-        return (
-            <DeleteDialog
-                title={`Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${selectedCMSecret?.name}' ?`}
-                description={`'${selectedCMSecret?.name}' will not be used in future deployments. Are you sure?`}
-                closeDelete={closeDeleteModal}
-                delete={handleDelete}
-            />
-        )
-    }
-
     const renderHeader = () => (
         <article className="flexbox dc__align-items-center dc__content-space">
             <div data-testid={`add-${componentType}-button`} className="flex left lh-32 fs-14 cb-5 fw-6 cn-9 dc__gap-8">
@@ -434,7 +422,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                     Delete{isProtected ? '...' : ''}
                 </button>
             )}
-            {selectedCMSecret?.name && openDeleteModal === 'deleteModal' && renderDeleteModal()}
             {selectedCMSecret?.name && openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
         </article>
     )
@@ -500,6 +487,8 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                         : null
                 }
                 onCancel={redirectURLToValidPage}
+                openDeleteModal={openDeleteModal === 'deleteModal'}
+                closeDeleteModal={() => setOpenDeleteModal(null)}
             />
         )
     }
