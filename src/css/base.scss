@@ -2071,15 +2071,6 @@ button.anchor {
     }
 }
 
-.dc__sso-description {
-    margin: 20px 24px;
-    padding: 16px;
-    border-radius: 4px;
-    border: solid 1px var(--B200);
-    background-color: var(--B50);
-    font-size: 14px;
-}
-
 .dc__hosturl-error {
     border-radius: 4px;
     border: solid 1px var(--R200);
@@ -3872,6 +3863,10 @@ textarea,
 
 .p-0-8-imp {
     padding: 0px 8px !important;
+}
+
+.pb-64 {
+    padding-bottom: 64px;
 }
 
 .pb-160 {
