@@ -2191,6 +2191,10 @@ button.anchor {
     border: 1px solid var(--N700);
 }
 
+.dc__border-b2 {
+    border: solid 1px var(--B200);
+}
+
 .dc__border-transparent {
     border: 1px solid transparent;
 }
@@ -3604,6 +3608,10 @@ textarea,
 
 .mh-200 {
     min-height: 200px;
+}
+
+.mh-210 {
+    min-height: 210px;
 }
 
 .mh-250 {
