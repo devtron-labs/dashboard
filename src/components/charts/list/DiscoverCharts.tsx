@@ -471,7 +471,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details bcn-0">
+                                    <div className="discover-charts__body-details bcn-50">
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}
@@ -833,7 +833,7 @@ export const ChartGroupListMin = ({
                     />
                     <div className="flex dc__content-space dc__gap-8 h-32">
                         <button
-                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor dc__transparent dc__gap-6 en-2 bw-1 px-10 py-6 br-4"
+                            className="cb-5 fw-6 fs-13 flex fcb-5 cursor dc__transparent dc__gap-6 en-2 bw-1 px-10 py-6 br-4 bcn-0"
                             onClick={redirectToGroup}
                         >
                             <span className="lh-20">View all chart groups</span>
@@ -843,7 +843,7 @@ export const ChartGroupListMin = ({
                     </div>
                 </div>
             </div>
-            <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
+            <div className={`chart-grid ${!isGrid ? 'list-view' : ''} chart-grid--chart-group-snapshot`}>
                 {chartGroups?.map((chartGroup, idx) => <ChartGroupCard key={idx} chartGroup={chartGroup} />)}
             </div>
         </div>
