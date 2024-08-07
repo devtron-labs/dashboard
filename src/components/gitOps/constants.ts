@@ -39,6 +39,13 @@ export const DefaultGitOpsConfig = {
     id: null,
     provider: GitProvider.GITHUB,
     active: true,
+    enableTLSVerification: false,
+    isCADataPresent: false,
+    isTLSCertDataPresent: false,
+    isTLSKeyDataPresent: false,
+    isCADataClearedAfterInitialConfig: false,
+    isTLSCertDataClearedAfterInitialConfig: false,
+    isTLSKeyDataClearedAfterInitialConfig: false,
 }
 
 export const DefaultShortGitOps: DefaultShortGitOpsType = {
@@ -50,6 +57,9 @@ export const DefaultShortGitOps: DefaultShortGitOpsType = {
     azureProjectName: '',
     bitBucketWorkspaceId: '',
     bitBucketProjectKey: '',
+    caData: '',
+    tlsCertData: '',
+    tlsKeyData: '',
     sshHost: '',
     sshKey: '',
     authMode: null,
@@ -66,6 +76,9 @@ export const DefaultErrorFields: GitOpsFormErrorType = {
     bitBucketProjectKey: '',
     sshHost: '',
     sshKey: '',
+    caData: '',
+    tlsCertData: '',
+    tlsKeyData: '',
 }
 
 export const LinkAndLabelSpec = {
