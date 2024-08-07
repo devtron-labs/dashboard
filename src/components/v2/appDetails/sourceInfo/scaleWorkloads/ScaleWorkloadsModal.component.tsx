@@ -210,7 +210,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const renderScaleWorkloadTabs = (): JSX.Element => {
         return (
-            <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
+            <ul className="tab-list pl-20 dc__border-bottom mr-20">
                 {scaleWorkloadTabs.map((tab, index) => {
                     return (
                         <li
