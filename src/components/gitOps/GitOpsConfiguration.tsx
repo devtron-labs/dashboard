@@ -24,7 +24,6 @@ import {
     RadioGroup,
     RadioGroupItem,
     CustomInput,
-    noop,
     InfoColourBar,
     GitOpsFieldKeyType,
     GitOpsAuthModeType,
@@ -49,11 +48,8 @@ import {
     GitOpsProps,
     GitOpsConfig,
     GitOpsOrganisationIdType,
-    GitProvider,
-    GitProviderTabProps,
     GitProviderType,
 } from './gitops.type'
-import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import {
     updateGitOpsConfiguration,
@@ -77,9 +73,10 @@ import {
     DefaultErrorFields,
     PROVIDER_DOC_LINK_MAP,
 } from './constants'
-import GitProviderTabIcons from './GitProviderTabIcons'
-import { getGitOpsLabelText, getProviderNameFromEnum } from './utils'
+import { getGitOpsLabelText } from './utils'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
+import { GitProviderTab } from '../common/GitTabs/GitProviderTab'
+import { GitProvider } from '@Components/common/GitTabs/constants'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')
@@ -88,47 +85,6 @@ const BitbucketCloudAndServerToggleSection = importComponentFromFELibrary(
     null,
     'function',
 )
-
-const GitProviderTab: React.FC<GitProviderTabProps> = ({
-    providerTab,
-    handleGitopsTab,
-    lastActiveGitOp,
-    provider,
-    saveLoading,
-    dataTestId,
-}) => {
-    const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
-    const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
-    const displayName = getProviderNameFromEnum(provider, !!BitBucketDCCredentials)
-
-    return (
-        <label className="dc__tertiary-tab__radio">
-            <input
-                type="radio"
-                name="status"
-                value={provider}
-                checked={providerTab === provider}
-                onChange={!saveLoading ? handleGitopsTab : noop}
-                className="dc__hide-section"
-            />
-            <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={dataTestId}>
-                <aside className="login__icon-alignment">
-                    <GitProviderTabIcons provider={provider} />
-                </aside>
-                <aside className="login__text-alignment" style={{ lineHeight: 1.2 }}>
-                    {displayName}
-                </aside>
-                {showCheck && (
-                    <div>
-                        <aside className="dc__position-abs dc__right-0 dc__top-0">
-                            <img src={Check} className="h-32" alt="saved-provider-check" />
-                        </aside>
-                    </div>
-                )}
-            </span>
-        </label>
-    )
-}
 
 const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGroupAlias: string }> = ({
     gitLink,
@@ -1059,7 +1015,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const isTLSConfigFormVisible = formAuthMode === GitOpsAuthModeType.PASSWORD
 
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return (
+                <div className="bcn-0 h-100">
+                    <Progressing pageLoader />
+                </div>
+            )
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -1094,7 +1054,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 <form className="flex column left w-100" autoComplete="off" onKeyDown={handleDisableSubmitOnEnter}>
                     <div className="pb-64 flex left column dc__gap-16 w-100 dc__mxw-1000">
                         <div className="login__sso-flex dc__gap-12">
-                            {Object.values(GitProvider).map((provider) => {
+                            {Object.values(GitProvider).map((provider: GitProvider) => {
                                 const isOtherGitOpsFormRequired =
                                     provider === GitProvider.OTHER_GIT_OPS || provider === GitProvider.AWS_CODE_COMMIT
                                 if (isOtherGitOpsFormRequired && !OtherGitOpsForm) {
@@ -1105,9 +1065,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
                                 return (
                                     <GitProviderTab
-                                        providerTab={this.state.providerTab}
+                                        isTabChecked={this.state.providerTab === provider}
                                         handleGitopsTab={this.handleGitopsTab}
-                                        lastActiveGitOp={this.state.lastActiveGitOp}
+                                        lastActiveTabName={this.state.lastActiveGitOp?.provider}
                                         provider={provider}
                                         saveLoading={this.state.saveLoading}
                                         dataTestId={dataTestId}

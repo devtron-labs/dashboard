@@ -183,7 +183,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
             )
         }
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return <div className='bcn-0 h-100'><Progressing pageLoader /></div>
         }
         if (this.state.view === ViewType.ERROR) {
             return (
