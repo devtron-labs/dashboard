@@ -58,7 +58,7 @@ const ChartGroupList = () => {
         )
     }
     return (
-        <div className="chart-group-list-page">
+        <div className="chart-group-list-page bcn-0">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} renderActionButtons={renderCreateGroupButton} />
             <div className="chart-group-list-page__body">
                 {loading ? (
