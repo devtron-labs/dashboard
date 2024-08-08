@@ -26,6 +26,7 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
 import * as Sentry from '@sentry/browser'
@@ -55,6 +56,21 @@ import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/a
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { AppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
+
+// Monaco Editor worker dependency
+import 'monaco-editor'
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import YamlWorker from '../../../yaml.worker.js?worker'
+
+// Monaco Editor worker initialization
+self.MonacoEnvironment = {
+    getWorker(_, label) {
+        if (label === MODES.YAML) {
+            return new YamlWorker()
+        }
+        return new editorWorker()
+    },
+}
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
