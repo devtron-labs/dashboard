@@ -1,6 +1,7 @@
 import { components } from 'react-select'
 import {
     commonSelectStyles,
+    InlineStepDetailType,
     requiredField,
     validateSemanticVersioning,
     validateURL,
@@ -8,7 +9,13 @@ import {
     VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { CreatePluginFormType } from './types'
+import {
+    CreatePluginFormType,
+    CreatePluginPayloadPipelineScriptDTO,
+    PathPortMappingType,
+    GetCreatePluginPayloadParamsType,
+    CreatePluginPayloadType,
+} from './types'
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 
 export const getDefaultPluginFormData = (currentInputVariables: VariableType[]): CreatePluginFormType => {
@@ -108,3 +115,87 @@ export const PluginCreatableTagClearIndicator = (props) => (
         <ICClose className="icon-dim-16 fcn-6 dc__no-shrink" />
     </components.ClearIndicator>
 )
+
+const getCreatePluginPathArgPortMapping = (
+    inlineStepDetail: InlineStepDetailType,
+): CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] => {
+    const portMapList: CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] =
+        inlineStepDetail.portMap?.map((portMap) => ({
+            typeOfMapping: PathPortMappingType.PORT,
+            portOnContainer: portMap.portOnContainer,
+            portOnLocal: portMap.portOnLocal,
+        })) || []
+
+    const filePathMapList: CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] =
+        inlineStepDetail.mountPathMap?.map((filePathMap) => ({
+            typeOfMapping: PathPortMappingType.FILE_PATH,
+            filePathOnDisk: filePathMap.filePathOnDisk,
+            filePathOnContainer: filePathMap.filePathOnContainer,
+        })) || []
+
+    const dockerArgMapList: CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] =
+        inlineStepDetail.commandArgsMap?.map((commandArg) => ({
+            typeOfMapping: PathPortMappingType.DOCKER_ARG,
+            command: commandArg.command,
+            args: commandArg.args,
+        })) || []
+
+    return portMapList.concat(filePathMapList).concat(dockerArgMapList)
+}
+
+export const getCreatePluginPayload = ({
+    stepData,
+    pluginForm,
+    availableTags,
+}: GetCreatePluginPayloadParamsType): CreatePluginPayloadType => {
+    const isCreateView = !pluginForm.id
+    const availableTagsMap = availableTags.reduce(
+        (acc, tag) => {
+            acc[tag] = true
+            return acc
+        },
+        {} as Record<string, boolean>,
+    )
+
+    const inlineStepDetail: InlineStepDetailType = stepData.inlineStepDetail || ({} as InlineStepDetailType)
+
+    const pluginInputVariables = inlineStepDetail.inputVariables || []
+    const pluginOutputVariables = inlineStepDetail.outputVariables || []
+
+    return {
+        id: pluginForm.id || 0,
+        name: isCreateView ? pluginForm.name : '',
+        pluginIdentifier: isCreateView ? pluginForm.pluginIdentifier : '',
+        icon: isCreateView ? pluginForm.icon : null,
+        pluginVersions: {
+            detailedPluginVersionData: [
+                {
+                    tags: pluginForm.tags,
+                    description: pluginForm.description,
+                    docLink: pluginForm.docLink,
+                    pluginVersion: pluginForm.pluginVersion,
+                    areNewTagsPresent: pluginForm.tags.some((tag) => !availableTagsMap[tag]),
+                    pluginSteps: [
+                        {
+                            outputDirectoryPath: stepData.outputDirectoryPath,
+                            pluginStepVariable: [...pluginInputVariables, ...pluginOutputVariables],
+                            pluginPipelineScript: {
+                                script: inlineStepDetail.script,
+                                storeScriptAt: inlineStepDetail.storeScriptAt,
+                                dockerFileExists: inlineStepDetail.dockerFileExists,
+                                mountPath: inlineStepDetail.mountPath,
+                                mountCodeToContainer: inlineStepDetail.mountCodeToContainer,
+                                mountCodeToContainerPath: inlineStepDetail.mountCodeToContainerPath,
+                                mountDirectoryFromHost: inlineStepDetail.mountDirectoryFromHost,
+                                containerImagePath: inlineStepDetail.containerImagePath,
+                                imagePullSecret: inlineStepDetail.imagePullSecret,
+                                type: inlineStepDetail.scriptType,
+                                pathArgPortMapping: getCreatePluginPathArgPortMapping(inlineStepDetail),
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    }
+}

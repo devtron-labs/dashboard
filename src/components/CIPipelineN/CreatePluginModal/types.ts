@@ -1,8 +1,11 @@
 import {
     CustomInputProps,
     EditImageFormFieldProps,
+    InlineStepDetailType,
+    ParentPluginDTO,
     PluginDataStoreType,
     PluginDetailType,
+    PortMapType,
     ServerErrors,
     StepType,
     VariableType,
@@ -171,40 +174,69 @@ export interface InputVariableItemProps
     index: number
 }
 
-// TODO: Have to change key names
-interface CreatePluginPayloadVariableType extends VariableType {}
-
-interface CreatePluginPayloadPluginStepsType extends Pick<StepType, 'outputDirectoryPath'> {
-    // Should end with s
-    pluginStepVariable: CreatePluginPayloadVariableType[]
-    // TODO: Have to change key names
-    pluginPipelineScript: StepType['inlineStepDetail']
+export interface CreatePluginServiceParamsType {
+    stepData: StepType
+    appId: number
+    pluginForm: CreatePluginFormType
+    availableTags: string[]
 }
 
-interface CreatePluginPayloadDetailedPluginVersionDataType {
-    // Do we need it?
-    name: string
-    description: string
-    tags: string[]
-    docLink: string
-    pluginVersion: string
-    pluginSteps: CreatePluginPayloadPluginStepsType
+export interface GetCreatePluginPayloadParamsType
+    extends Pick<CreatePluginServiceParamsType, 'stepData' | 'pluginForm' | 'availableTags'> {}
+
+export enum PathPortMappingType {
+    PORT = 'PORT',
+    FILE_PATH = 'FILE_PATH',
+    DOCKER_ARG = 'DOCKER_ARG',
 }
 
-interface CreatePluginPayloadParentPluginType {
-    id: number
-    name: string
-    // FIXME: should be same name as in pluginIdentifier
-    identifier: string
-    // Should i send it?
-    description: string
-    icon: string
+type CreatePluginPayloadPathArgPortMappingDTO =
+    | ({
+          typeOfMapping: PathPortMappingType.PORT
+      } & PortMapType)
+    | ({
+          typeOfMapping: PathPortMappingType.FILE_PATH
+      } & InlineStepDetailType['mountPathMap'][0])
+    | ({
+          typeOfMapping: PathPortMappingType.DOCKER_ARG
+      } & InlineStepDetailType['commandArgsMap'][0])
 
-    pluginVersions: {
-        detailedPluginVersionData: CreatePluginPayloadDetailedPluginVersionDataType[]
-    }
+export interface CreatePluginPayloadPipelineScriptDTO
+    extends Pick<
+        InlineStepDetailType,
+        | 'script'
+        | 'storeScriptAt'
+        | 'dockerFileExists'
+        | 'mountPath'
+        | 'mountCodeToContainer'
+        | 'mountCodeToContainerPath'
+        | 'mountDirectoryFromHost'
+        | 'containerImagePath'
+        | 'imagePullSecret'
+    > {
+    type: InlineStepDetailType['scriptType']
+    pathArgPortMapping: CreatePluginPayloadPathArgPortMappingDTO[]
 }
 
-export interface CreatePluginPayloadType {
-    parentPlugins: CreatePluginPayloadParentPluginType[]
+interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath'> {
+    pluginStepVariable: VariableType[]
+    pluginPipelineScript: CreatePluginPayloadPipelineScriptDTO
+}
+
+interface CreatePluginDetailedPluginVersionDataItemDTO
+    extends Pick<PluginDetailType, 'tags' | 'description' | 'docLink' | 'pluginVersion'> {
+    areNewTagsPresent: boolean
+    pluginSteps: [CreatePluginPayloadPluginStepsDTO]
+}
+
+interface CreatePluginDetailedPluginVersionDataDTO {
+    detailedPluginVersionData: [CreatePluginDetailedPluginVersionDataItemDTO]
+}
+
+export interface CreatePluginPayloadType extends Pick<ParentPluginDTO, 'id' | 'name' | 'pluginIdentifier' | 'icon'> {
+    pluginVersions: CreatePluginDetailedPluginVersionDataDTO
+}
+
+export interface CreatePluginParamsType {
+    appId: number
 }

@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
 import {
+    ButtonWithLoader,
     Checkbox,
     CHECKBOX_VALUE,
     EditImageFormFieldProps,
     getAvailablePluginTags,
     getPluginsDetail,
     ServerErrors,
+    showError,
     stopPropagation,
     useAsync,
     validateDescription,
@@ -29,7 +31,7 @@ import {
     CreatePluginFormErrorType,
     CreatePluginFormContentProps,
 } from './types'
-import { getParentPluginList } from './service'
+import { createPlugin, getParentPluginList } from './service'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import { getDefaultPluginFormData, validateDocumentationLink, validatePluginVersion, validateTags } from './utils'
 import './CreatePluginModal.scss'
@@ -43,8 +45,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handleHideScopedVariableWidgetUpdate,
         handleDisableParentModalCloseUpdate,
     } = useContext(pipelineContext)
-    const formInputVariables: VariableType[] =
-        formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.inputVariables || []
+
+    const currentStepData = formData[activeStageName].steps[selectedTaskIndex]
+    const formInputVariables: VariableType[] = currentStepData.inlineStepDetail?.inputVariables || []
 
     const [isLoadingParentPluginList, parentPluginList, parentPluginListError, reloadParentPluginList] = useAsync(
         () => getParentPluginList(appId ? +appId : null),
@@ -75,6 +78,16 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const [selectedPluginVersions, setSelectedPluginVersions] = useState<
         CreatePluginFormContentProps['selectedPluginVersions']
     >([])
+    // FIXME: Change name since going to replace task as well
+    const [isCreatingPlugin, setIsCreatingPlugin] = useState<boolean>(false)
+
+    const handleCloseModal = () => {
+        if (isCreatingPlugin) {
+            return
+        }
+
+        handleClose()
+    }
 
     // FIXME: Check if abortController is required
     /**
@@ -93,7 +106,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 appId: appId ? +appId : null,
                 parentPluginIds: [parentPluginId],
             })
-            const { latestVersionId, pluginVersions } = parentPluginStore[parentPluginId]
+            const { latestVersionId, pluginVersions, icon } = parentPluginStore[parentPluginId]
             const { pluginIdentifier, pluginVersion, docLink, description, tags, inputVariables } =
                 pluginVersionStore[latestVersionId]
             const latestVersionInputVariablesMap = inputVariables.reduce((acc, inputVariable) => {
@@ -105,6 +118,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
 
             return {
                 ...clonedPluginForm,
+                icon,
                 pluginIdentifier,
                 pluginVersion,
                 docLink,
@@ -230,11 +244,25 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             return
         }
 
-        handleClose()
+        try {
+            setIsCreatingPlugin(true)
+            await createPlugin({
+                stepData: currentStepData,
+                appId: +appId || null,
+                pluginForm,
+                availableTags,
+            })
+            // TODO: add replace custom task logic
+            handleCloseModal()
+            setIsCreatingPlugin(false)
+        } catch (error) {
+            setIsCreatingPlugin(false)
+            showError(error)
+        }
     }
 
     return (
-        <VisibleModal2 close={handleClose}>
+        <VisibleModal2 close={handleCloseModal}>
             <div
                 className="bcn-0 dc__position-fixed dc__right-0 dc__top-0 h-100 flexbox-col dc__content-space w-800"
                 onClick={stopPropagation}
@@ -246,7 +274,8 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         <button
                             type="button"
                             className="p-0 flex dc__no-border dc__no-background dc__outline-none-imp dc__tab-focus h-20 w-20 dc__tab-focus"
-                            onClick={handleClose}
+                            onClick={handleCloseModal}
+                            disabled={isCreatingPlugin}
                             aria-label="Close create plugin modal"
                             data-testid="close-create-plugin-modal"
                         >
@@ -286,14 +315,16 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         <span className="cn-9 fs-13 fw-4 lh-20">Create and replace custom task with this plugin</span>
                     </Checkbox>
 
-                    <button
+                    <ButtonWithLoader
                         type="button"
-                        className="cta flex h-32"
-                        data-testid="create-plugin-cta"
+                        rootClassName="cta flex h-32 w-160"
+                        dataTestId="create-plugin-cta"
                         onClick={handleSubmit}
+                        disabled={isCreatingPlugin}
+                        isLoading={isCreatingPlugin}
                     >
                         Create Plugin Version
-                    </button>
+                    </ButtonWithLoader>
                 </div>
             </div>
         </VisibleModal2>

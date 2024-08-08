@@ -1,5 +1,13 @@
-import { getParentPluginList as getParentPluginListService, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { ParentPluginListItemType } from './types'
+import {
+    getParentPluginList as getParentPluginListService,
+    getUrlWithSearchParams,
+    post,
+    ResponseType,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '@Config/constants'
+import { CreatePluginParamsType, CreatePluginServiceParamsType, ParentPluginListItemType } from './types'
+import { getCreatePluginPayload } from './utils'
 
 export const getParentPluginList = async (appId: number): Promise<ParentPluginListItemType[]> => {
     try {
@@ -9,12 +17,12 @@ export const getParentPluginList = async (appId: number): Promise<ParentPluginLi
         }
 
         const parentPluginList: ParentPluginListItemType[] = []
-        result.forEach((plugin) => {
-            if (plugin.id && plugin.pluginName) {
+        result.forEach(({ id, name, icon }) => {
+            if (id && name) {
                 parentPluginList.push({
-                    id: plugin.id,
-                    name: plugin.pluginName,
-                    icon: plugin.icon || '',
+                    id,
+                    name: name || '-',
+                    icon: icon || '',
                 })
             }
         })
@@ -24,4 +32,24 @@ export const getParentPluginList = async (appId: number): Promise<ParentPluginLi
         showError(error)
         throw error
     }
+}
+
+export const createPlugin = async ({
+    stepData,
+    appId,
+    pluginForm,
+    availableTags,
+}: CreatePluginServiceParamsType): Promise<ResponseType> => {
+    const queryParams: CreatePluginParamsType = {
+        appId,
+    }
+
+    return post(
+        getUrlWithSearchParams(Routes.PLUGIN_GLOBAL_CREATE, queryParams),
+        getCreatePluginPayload({
+            stepData,
+            pluginForm,
+            availableTags,
+        }),
+    )
 }
