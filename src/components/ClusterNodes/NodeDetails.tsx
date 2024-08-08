@@ -28,7 +28,7 @@ import {
     GVKType,
     SortableTableHeaderCell,
     SortingOrder,
-    Tippy,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
 import YAML from 'yaml'
@@ -288,9 +288,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div>{key}</div>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
+                <Tooltip
+                    alwaysShowTippyOnHover
                     placement="bottom"
                     content={copied ? 'Copied!' : 'Copy'}
                     trigger="mouseenter click"
@@ -302,7 +301,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                     <div className="ml-8 flex dc__visible-hover--child">
                         <ClipboardButton content={key} />
                     </div>
-                </Tippy>
+                </Tooltip>
             </div>
         )
     }
@@ -682,10 +681,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                                 <div className="row-wrapper" key={pod.name}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
                                     <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
+                                        <Tooltip
+                                            showOnTruncate
                                             content={pod.name}
                                             interactive
                                         >
@@ -698,7 +695,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                                             >
                                                 {pod.name}
                                             </span>
-                                        </Tippy>
+                                        </Tooltip>
                                         <div className="ml-8 dc__visible-hover--child">
                                             <ClipboardButton content={pod.name} />
                                         </div>

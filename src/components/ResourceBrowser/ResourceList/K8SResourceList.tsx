@@ -32,7 +32,7 @@ import {
     SortableTableHeaderCell,
     useStateFilters,
     ClipboardButton,
-    Tippy,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -295,13 +295,7 @@ export const K8SResourceList = ({
                             className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                             data-testid="created-resource-name"
                         >
-                            <Tippy
-                                showOnTruncate
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={resourceData.name}
-                            >
+                            <Tooltip showOnTruncate content={resourceData.name}>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
@@ -324,7 +318,7 @@ export const K8SResourceList = ({
                                         }}
                                     />
                                 </button>
-                            </Tippy>
+                            </Tooltip>
                             <ClipboardButton
                                 content={String(resourceData.name)}
                                 rootClassName="p-4 dc__visible-hover--child"
@@ -350,13 +344,7 @@ export const K8SResourceList = ({
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <Tippy
-                                    showOnTruncate
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content={resourceData[columnName]}
-                                >
+                                <Tooltip showOnTruncate content={resourceData[columnName]}>
                                     <span
                                         className="dc__ellipsis-right"
                                         data-testid={`${columnName}-count`}
@@ -371,7 +359,7 @@ export const K8SResourceList = ({
                                             ),
                                         }}
                                     />
-                                </Tippy>
+                                </Tooltip>
                                 <span>
                                     {columnName === 'restarts' &&
                                         Number(resourceData.restarts) !== 0 &&

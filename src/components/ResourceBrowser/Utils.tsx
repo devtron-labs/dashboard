@@ -17,7 +17,7 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType, Tippy } from '@devtron-labs/devtron-fe-common-lib'
+import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
@@ -350,17 +350,15 @@ export const getRenderNodeButton =
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
-        <Tippy showOnTruncate className="default-tt" arrow={false} placement="top" content={resourceData[columnName]}>
-            <button
-                type="button"
-                className="dc__unset-button-styles dc__ellipsis-right dc__block"
-                data-name={resourceData[columnName]}
-                onClick={handleNodeClick}
-                aria-label={`Select ${resourceData[columnName]}`}
-            >
-                <span className="dc__link">{children}</span>
-            </button>
-        </Tippy>
+        <button
+            type="button"
+            className="dc__unset-button-styles dc__ellipsis-right dc__block"
+            data-name={resourceData[columnName]}
+            onClick={handleNodeClick}
+            aria-label={`Select ${resourceData[columnName]}`}
+        >
+            <span className="dc__link">{children}</span>
+        </button>
     )
 
 export const renderResourceValue = (value: string) => {

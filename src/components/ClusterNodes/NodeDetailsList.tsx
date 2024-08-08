@@ -28,7 +28,7 @@ import {
     Pagination,
     SortableTableHeaderCell,
     SortingOrder,
-    Tippy,
+    Tooltip,
     ClipboardButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeList, getClusterCapacity } from './clusterNodes.service'
@@ -74,7 +74,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [sortOrder, setSortOrder] = useState<string>(OrderBy.ASC)
     const [noResults, setNoResults] = useState(false)
     const [appliedColumns, setAppliedColumns] = useState<MultiValue<ColumnMetadataType>>([])
-    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const abortControllerRef = useRef(new AbortController())
     const nodeListRef = useRef(null)
 
@@ -129,23 +128,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     const [searchedTextMap, setSearchedTextMap] = useState<Map<string, string>>(getSearchTextMap(searchText))
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value)
-
-    useEffect(() => {
-        if (appliedColumns.length > 0) {
-            /*
-          136 is standard with of every column for calculations
-          65 is width of left nav
-          220 is width of resource
-          160 is the diff of node column
-          60 is the diff of status column
-          */
-
-            const appliedColumnDerivedWidth = appliedColumns.length * 136 + 65 + 160 + 60 + 220
-            const windowWidth = window.innerWidth
-            const clientWidth = 0
-            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
-        }
-    }, [appliedColumns])
 
     useEffect(() => {
         const qs = queryString.parse(location.search)
@@ -389,10 +371,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const renderPercentageTippy = (nodeData: Object, column: ColumnMetadataType, children: any): JSX.Element => {
         return (
-            <Tippy
-                className="default-tt"
-                arrow={false}
-                placement="top"
+            <Tooltip
+                alwaysShowTippyOnHover
                 content={
                     <>
                         <span style={{ display: 'block' }}>
@@ -409,7 +389,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 }
             >
                 <div>{children}</div>
-            </Tippy>
+            </Tooltip>
         )
     }
 
@@ -425,9 +405,9 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
         if (column.value === 'k8sVersion') {
             return (
-                <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                <Tooltip showOnTruncate content={nodeData[column.value]}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
-                </Tippy>
+                </Tooltip>
             )
         }
         return nodeData[column.value]
@@ -483,11 +463,8 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
-                            <Tippy
+                            <Tooltip
                                 showOnTruncate
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
                                 content={nodeData[column.value]}
                             >
                                 <NavLink
@@ -498,7 +475,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                                 >
                                     {nodeData[column.value]}
                                 </NavLink>
-                            </Tippy>
+                            </Tooltip>
                             <ClipboardButton
                                 content={nodeData[column.value]}
                                 rootClassName="p-4 dc__visible-hover--child"

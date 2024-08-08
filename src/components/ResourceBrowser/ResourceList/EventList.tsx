@@ -16,7 +16,7 @@
 
 /* eslint-disable react/no-danger */
 import DOMPurify from 'dompurify'
-import { highlightSearchText, Tippy } from '@devtron-labs/devtron-fe-common-lib'
+import { highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
 import { getScrollableResourceClass } from '../Utils'
@@ -33,11 +33,11 @@ export const EventList = ({
         <div className="dc__overflow-scroll">
             <div className="event-list-row dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
                 {Object.values(EVENT_LIST.headerKeys).map((title) => (
-                    <Tippy showOnTruncate className="default-tt" arrow={false} placement="top" content={title}>
+                    <Tooltip showOnTruncate content={title}>
                         <span key={title} className="dc__ellipsis-right">
                             {title}
                         </span>
-                    </Tippy>
+                    </Tooltip>
                 ))}
             </div>
             <div
@@ -77,13 +77,7 @@ export const EventList = ({
                                 }}
                             />
                         </div>
-                        <Tippy
-                            showOnTruncate
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={eventData.namespace}
-                        >
+                        <Tooltip showOnTruncate content={eventData.namespace}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{
@@ -97,15 +91,9 @@ export const EventList = ({
                                     }}
                                 />
                             </div>
-                        </Tippy>
+                        </Tooltip>
                         <div className="flexbox dc__align-start">
-                            <Tippy
-                                showOnTruncate
-                                className="default-tt"
-                                placement="top"
-                                arrow={false}
-                                content={eventData[EVENT_LIST.dataKeys.involvedObject]}
-                            >
+                            <Tooltip showOnTruncate content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__ellipsis-right"
@@ -128,16 +116,10 @@ export const EventList = ({
                                         }}
                                     />
                                 </button>
-                            </Tippy>
+                            </Tooltip>
                         </div>
 
-                        <Tippy
-                            showOnTruncate
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={eventData.source}
-                        >
+                        <Tooltip showOnTruncate content={eventData.source}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{
@@ -151,7 +133,7 @@ export const EventList = ({
                                     }}
                                 />
                             </div>
-                        </Tippy>
+                        </Tooltip>
                         <div>{eventData.count}</div>
                         <div className="dc__highlight-text">
                             <span
