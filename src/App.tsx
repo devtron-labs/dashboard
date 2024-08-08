@@ -31,7 +31,6 @@ import {
     DevtronProgressing,
     APPROVAL_MODAL_TYPE,
     useUserEmail,
-    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
