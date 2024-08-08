@@ -346,7 +346,7 @@ export const K8SResourceList = ({
                             >
                                 <Tooltip showOnTruncate content={resourceData[columnName]}>
                                     <span
-                                        className="dc__ellipsis-right"
+                                        className="dc__truncate"
                                         data-testid={`${columnName}-count`}
                                         // eslint-disable-next-line react/no-danger
                                         dangerouslySetInnerHTML={{

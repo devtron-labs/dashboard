@@ -352,7 +352,7 @@ export const getRenderNodeButton =
     (children: React.ReactNode) => (
         <button
             type="button"
-            className="dc__unset-button-styles dc__ellipsis-right dc__block"
+            className="dc__unset-button-styles dc__no-decor flex"
             data-name={resourceData[columnName]}
             onClick={handleNodeClick}
             aria-label={`Select ${resourceData[columnName]}`}
