@@ -109,6 +109,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
                 value={provider}
                 checked={providerTab === provider}
                 onChange={!saveLoading ? handleGitopsTab : noop}
+                className="dc__hide-section"
             />
             <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={datatestid}>
                 <aside className="login__icon-alignment">
@@ -135,7 +136,7 @@ const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGr
     gitProviderGroupAlias,
 }) => {
     return (
-        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
+        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col w-100">
             <div className="flex left ">
                 <Info className="icon-dim-20" style={{ marginTop: 1 }} />
                 <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
@@ -1069,10 +1070,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const getGitOpsLabel = () => (
-            <span>
-                <span className="dc__required-field">{getGitOpsLabelText(this.state.providerTab)} </span>&nbsp;(Use
-                https://)
-            </span>
+            <div className="w-100">
+                <span className="dc__required-field w-100">{getGitOpsLabelText(this.state.providerTab)} </span>
+                &nbsp;(Use https://)
+            </div>
         )
 
         const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
@@ -1088,25 +1089,15 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
-      
-
-        return (
-            <>
-                <section className="global-configuration__component flex-1">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.GITOPS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
-                        docLink={HEADER_TEXT.GITOPS.docLink}
-                        showInfoIconTippy
-                        additionalContainerClasses="mb-20"
-                        dataTestId="gitops-heading"
-                    />
+        const renderGitOpsBody = () => {
+            return (
+                <div className="w-100">
                     <form
-                        className="bcn-0 bw-1 en-2 br-8 pb-22 pl-20 pr-20"
+                        className="flex column left dc__gap-16"
                         autoComplete="off"
                         onKeyDown={handleDisableSubmitOnEnter}
                     >
-                        <div className="login__sso-flex">
+                        <div className="login__sso-flex dc__gap-12">
                             {Object.values(GitProvider).map((provider) => {
                                 const isOtherGitOpsFormRequired =
                                     provider === GitProvider.OTHER_GIT_OPS || provider === GitProvider.AWS_CODE_COMMIT
@@ -1192,29 +1183,29 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         onClickValidate={() => this.validateGitOps(this.state.providerTab)}
                                         validationError={this.state.validationError}
                                         validationStatus={this.state.validationStatus}
-                                        configName="gitops "
+                                        configName="gitops"
                                         warning={this.state.deleteRepoError ? warning : ''}
                                     />
                                 )}
-
-                                <CustomInput
-                                    value={this.state.form.host}
-                                    onChange={(event) => this.handleChange(event, 'host')}
-                                    name="Enter host"
-                                    error={this.state.isError.host}
-                                    label={getGitOpsLabel()}
-                                    placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
-                                    labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
-                                    dataTestid={
-                                        this.state.providerTab === GitProvider.AZURE_DEVOPS
-                                            ? 'gitops-azure-organisation-url-textbox'
-                                            : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
-                                              ? 'gitops-bitbucket-host-url-textbox'
-                                              : 'gitops-github-gitlab-host-url-textbox'
-                                    }
-                                    autoFocus
-                                />
-
+                                <div className="w-100">
+                                    <CustomInput
+                                        value={this.state.form.host}
+                                        onChange={(event) => this.handleChange(event, 'host')}
+                                        name="Enter host"
+                                        error={this.state.isError.host}
+                                        label={getGitOpsLabel()}
+                                        placeholder={`Enter ${getGitOpsLabelText(this.state.providerTab)}`}
+                                        labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                                        dataTestid={
+                                            this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                                ? 'gitops-azure-organisation-url-textbox'
+                                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                                  ? 'gitops-bitbucket-host-url-textbox'
+                                                  : 'gitops-github-gitlab-host-url-textbox'
+                                        }
+                                        autoFocus
+                                    />
+                                </div>
                                 {/* To display URL validation like http instead of https */}
                                 {this.state.isUrlValidationError && this.state.form.host.length ? (
                                     <div className="flex fs-12 left pt-4">
@@ -1237,13 +1228,11 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                             </>
                                         )}
                                     </div>
-                                ) : (
-                                    <></>
-                                )}
+                                ) : null}
 
-                                <div className="mt-16">
-                                    {this.state.providerTab === GitProvider.BITBUCKET_CLOUD &&
-                                        this.state.isBitbucketCloud && (
+                                {this.state.providerTab === GitProvider.BITBUCKET_CLOUD &&
+                                    this.state.isBitbucketCloud && (
+                                        <div className="w-100">
                                             <CustomInput
                                                 name="workspaceID"
                                                 placeholder="Enter Bitbucket Workspace ID"
@@ -1259,9 +1248,9 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                 dataTestid="gitops-bitbucket-workspace-id-textbox"
                                                 isRequiredField
                                             />
-                                        )}
-                                </div>
-                                <div className="mt-16">
+                                        </div>
+                                    )}
+                                <div className="w-100">
                                     <CustomInput
                                         name="groupID"
                                         label={renderInputLabels(
@@ -1288,11 +1277,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         isRequiredField
                                     />
                                 </div>
-                                <hr />
-                                <div
-                                    className="fw-6 cn-9 fs-14 mb-16"
-                                    data-testid="gitops-gitaccess-credentials-heading"
-                                >
+                                <div className="fw-6 cn-9 fs-14" data-testid="gitops-gitaccess-credentials-heading">
                                     Git access credentials
                                 </div>
 
@@ -1319,7 +1304,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="form__row--two-third gitops__id mb-20 fs-13">
+                                    <div className="form__row--two-third gitops__id fs-13 w-100">
                                         <div>
                                             <CustomInput
                                                 value={this.state.form.username}
@@ -1357,7 +1342,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                                         ? 'Azure DevOps Access Token '
                                                         : 'Personal Access Token ',
-                                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
+                                                    PROVIDER_DOC_LINK_MAP[this.state.providerTab],
                                                     '(Check permissions required for PAT)',
                                                 )}
                                                 value={this.state.form.token}
@@ -1403,55 +1388,52 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 isCADataPresent={this.state.form.isCADataPresent}
                                 isTLSCertDataPresent={this.state.form.isTLSCertDataPresent}
                                 isTLSKeyDataPresent={this.state.form.isTLSKeyDataPresent}
-                                rootClassName="mb-16"
+                                rootClassName="w-100"
                             />
                         ) : (
                             <hr />
                         )}
 
-                        <div>
-                            <div className="form__row flex left">
-                                <div className="fw-6 cn-9 fs-14 mb-16">Directory management in Git</div>
-                                {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
-                                    <RadioGroup
-                                        className="radio-group-no-border"
-                                        name="trigger-type"
-                                        value={this.state.selectedRepoType}
-                                        onChange={this.repoTypeChange}
-                                    >
-                                        <div className={isAuthModeSSH ? 'dc__disabled' : ''}>
-                                            <RadioGroupItem value={repoType.DEFAULT} disabled={isAuthModeSSH}>
-                                                Auto-create git repository for each application
-                                            </RadioGroupItem>
-                                            <div className="ml-26 cn-7">
-                                                Repository will be created automatically with application name to store
-                                                deployment manifests for each application
-                                            </div>
+                        <div className="flex column left w-100 dc__gap-16">
+                            <div className="fw-6 cn-9 fs-14">Directory management in Git</div>
+                            {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
+                                <RadioGroup
+                                    className="radio-group-no-border"
+                                    name="trigger-type"
+                                    value={this.state.selectedRepoType}
+                                    onChange={this.repoTypeChange}
+                                >
+                                    <div className={isAuthModeSSH ? 'dc__disabled' : ''}>
+                                        <RadioGroupItem value={repoType.DEFAULT} disabled={isAuthModeSSH}>
+                                            Auto-create git repository for each application
+                                        </RadioGroupItem>
+                                        <div className="ml-26 cn-7">
+                                            Repository will be created automatically with application name to store
+                                            deployment manifests for each application
                                         </div>
-                                        <div className="mt-10">
-                                            <RadioGroupItem value={repoType.CONFIGURE}>
-                                                Ask git repository for each application
-                                            </RadioGroupItem>
-                                            <div className="ml-26 cn-7">
-                                                Desired git repository can be provided to store deployment manifests for
-                                                each application
-                                            </div>
+                                    </div>
+                                    <div className="mt-10">
+                                        <RadioGroupItem value={repoType.CONFIGURE}>
+                                            Ask git repository for each application
+                                        </RadioGroupItem>
+                                        <div className="ml-26 cn-7">
+                                            Desired git repository can be provided to store deployment manifests for
+                                            each application
                                         </div>
-                                    </RadioGroup>
-                                ) : (
-                                    <InfoColourBar
-                                        classname="eb-2 bw-1 bcb-1"
-                                        Icon={ICInfoFilled}
-                                        iconClass="dc__no-shrink"
-                                        message={
-                                            this.state.selectedRepoType === repoType.DEFAULT
-                                                ? 'Repository will be created automatically with application name to store deployment manifests for each application'
-                                                : 'Desired git repository can be provided to store deployment manifests for each application'
-                                        }
-                                    />
-                                )}
-                            </div>
-                            <hr />
+                                    </div>
+                                </RadioGroup>
+                            ) : (
+                                <InfoColourBar
+                                    classname="eb-2 bw-1 bcb-1 w-100"
+                                    Icon={ICInfoFilled}
+                                    iconClass="dc__no-shrink"
+                                    message={
+                                        this.state.selectedRepoType === repoType.DEFAULT
+                                            ? 'Repository will be created automatically with application name to store deployment manifests for each application'
+                                            : 'Desired git repository can be provided to store deployment manifests for each application'
+                                    }
+                                />
+                            )}
                         </div>
 
                         <div className="form__buttons flex left">
@@ -1463,7 +1445,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     this.saveGitOps()
                                 }}
                                 data-testid="gitops-save-button"
-                                className={`cta m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
+                                className={`cta small m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
                             >
                                 {this.state.saveLoading && !this.state.validateLoading ? (
                                     <Progressing />
@@ -1475,6 +1457,20 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             </button>
                         </div>
                     </form>
+                </div>
+            )
+        }
+        return (
+            <div className="bcn-0 px-20 py-16">
+                <section className="flex-1 bcn-0 flex left column dc__gap-24 dc__mxw-1000">
+                    <FeatureTitleWithInfo
+                        title={HEADER_TEXT.GITOPS.title}
+                        renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
+                        docLink={HEADER_TEXT.GITOPS.docLink}
+                        showInfoIconTippy
+                        dataTestId="gitops-heading"
+                    />
+                    {renderGitOpsBody()}
                 </section>
 
                 {this.state.showUpdateConfirmationDialog && (
@@ -1487,7 +1483,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         enableBitBucketSource={!!BitBucketDCCredentials}
                     />
                 )}
-            </>
+            </div>
         )
     }
 }
