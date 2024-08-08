@@ -57,12 +57,14 @@ import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
+import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 
+
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
-const ManualApproval = importComponentFromFELibrary('ManualApproval')
+const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
 
 export default function BuildCD({
     isAdvanced,
@@ -768,15 +770,8 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
-                {isAdvanced && ManualApproval && (
-                    <>
-                        <div className="divider mt-12 mb-12" />
-                        <ManualApproval
-                            requiredApprovals={formData.requiredApprovals}
-                            currentRequiredCount={formData.userApprovalConfig?.requiredCount}
-                            onChangeRequiredApprovals={onChangeRequiredApprovals}
-                        />
-                    </>
+                {isAdvanced && getBuildCDManualApproval && (
+                   getBuildCDManualApproval(formData.requiredApprovals, formData.userApprovalConfig?.requiredCount, onChangeRequiredApprovals)
                 )}
                 {isAdvanced && (
                     <>
