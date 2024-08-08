@@ -218,7 +218,7 @@ export interface CreatePluginPayloadPipelineScriptDTO
     pathArgPortMapping: CreatePluginPayloadPathArgPortMappingDTO[]
 }
 
-interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath'> {
+interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {
     pluginStepVariable: VariableType[]
     pluginPipelineScript: CreatePluginPayloadPipelineScriptDTO
 }
@@ -239,4 +239,12 @@ export interface CreatePluginPayloadType extends Pick<ParentPluginDTO, 'id' | 'n
 
 export interface CreatePluginParamsType {
     appId: number
+}
+
+export interface CreatePluginSuccessResponseType {
+    pluginVersionId: number
+}
+
+export interface HandleCreatePluginReturnType extends CreatePluginSuccessResponseType {
+    hasError: boolean
 }

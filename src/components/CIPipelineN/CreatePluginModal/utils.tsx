@@ -178,6 +178,8 @@ export const getCreatePluginPayload = ({
                     pluginSteps: [
                         {
                             outputDirectoryPath: stepData.outputDirectoryPath,
+                            name: stepData.name,
+                            description: stepData.description,
                             pluginStepVariable: [...pluginInputVariables, ...pluginOutputVariables],
                             pluginPipelineScript: {
                                 script: inlineStepDetail.script,

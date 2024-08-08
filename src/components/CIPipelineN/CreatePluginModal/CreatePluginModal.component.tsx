@@ -9,8 +9,11 @@ import {
     EditImageFormFieldProps,
     getAvailablePluginTags,
     getPluginsDetail,
+    getUpdatedPluginStore,
+    PluginType,
     ServerErrors,
     showError,
+    StepType,
     stopPropagation,
     useAsync,
     validateDescription,
@@ -30,6 +33,7 @@ import {
     CreatePluginActionType,
     CreatePluginFormErrorType,
     CreatePluginFormContentProps,
+    HandleCreatePluginReturnType,
 } from './types'
 import { createPlugin, getParentPluginList } from './service'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
@@ -40,13 +44,17 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const { appId } = useParams<CreatePluginModalURLParamsType>()
     const {
         formData,
+        setFormData,
         selectedTaskIndex,
         activeStageName,
         handleHideScopedVariableWidgetUpdate,
         handleDisableParentModalCloseUpdate,
+        handleUpdateAvailableTags,
+        pluginDataStore,
+        handlePluginDataStoreUpdate,
     } = useContext(pipelineContext)
 
-    const currentStepData = formData[activeStageName].steps[selectedTaskIndex]
+    const currentStepData: StepType = formData[activeStageName].steps[selectedTaskIndex]
     const formInputVariables: VariableType[] = currentStepData.inlineStepDetail?.inputVariables || []
 
     const [isLoadingParentPluginList, parentPluginList, parentPluginListError, reloadParentPluginList] = useAsync(
@@ -143,7 +151,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         }
     }
 
-    // TODO: Can validate in case of duplicate name
     const handleChange: CreatePluginHandleChangeType = async ({ action, payload }) => {
         let clonedPluginForm = structuredClone(pluginForm)
         let clonedPluginFormError = structuredClone(pluginFormError)
@@ -221,6 +228,34 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         })
     }
 
+    const handleCreatePlugin = async (): Promise<HandleCreatePluginReturnType> => {
+        try {
+            setIsCreatingPlugin(true)
+            const {
+                result: { pluginVersionId },
+            } = await createPlugin({
+                stepData: currentStepData,
+                appId: +appId || null,
+                pluginForm,
+                availableTags,
+            })
+
+            toast.success(pluginForm.id ? 'Plugin version created successfully' : 'Plugin created successfully')
+
+            return {
+                pluginVersionId,
+                hasError: false,
+            }
+        } catch (error) {
+            setIsCreatingPlugin(false)
+            showError(error)
+            return {
+                pluginVersionId: null,
+                hasError: true,
+            }
+        }
+    }
+
     const handleSubmit = async () => {
         ReactGA.event({
             category: 'Pipeline configuration',
@@ -244,21 +279,53 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             return
         }
 
-        try {
-            setIsCreatingPlugin(true)
-            await createPlugin({
-                stepData: currentStepData,
-                appId: +appId || null,
-                pluginForm,
-                availableTags,
-            })
-            // TODO: add replace custom task logic
-            handleCloseModal()
-            setIsCreatingPlugin(false)
-        } catch (error) {
-            setIsCreatingPlugin(false)
-            showError(error)
+        const { pluginVersionId, hasError } = await handleCreatePlugin()
+
+        if (hasError) {
+            return
         }
+
+        try {
+            const [
+                newTags,
+                {
+                    pluginStore: { parentPluginStore, pluginVersionStore },
+                },
+            ] = await Promise.all([
+                getAvailablePluginTags(appId ? +appId : null),
+                getPluginsDetail({
+                    appId: appId ? +appId : null,
+                    pluginIds: [pluginVersionId],
+                }),
+            ])
+
+            handleUpdateAvailableTags(newTags)
+            handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+
+            if (pluginForm.shouldReplaceCustomTask) {
+                const clonedFormData = structuredClone(formData)
+                const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
+                selectedTask.name = pluginForm.name
+                selectedTask.description = pluginForm.description
+                selectedTask.stepType = PluginType.PLUGIN_REF
+                selectedTask.outputDirectoryPath = null
+                selectedTask.inlineStepDetail = null
+                selectedTask.pluginRefStepDetail = {
+                    id: pluginVersionId,
+                    pluginId: pluginForm.id,
+                    inputVariables: pluginForm.inputVariables,
+                    outputVariables: selectedTask.inlineStepDetail?.outputVariables || [],
+                    conditionDetails: [],
+                }
+                // FIXME: add validations and isMandatory
+                setFormData(clonedFormData)
+            }
+        } catch (error) {
+            toast.error('Unable to retrieve data for newly created plugin')
+        }
+
+        setIsCreatingPlugin(false)
+        handleClose()
     }
 
     return (
