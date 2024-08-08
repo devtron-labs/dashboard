@@ -1,13 +1,15 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
 import {
+    BuildStageVariable,
     ButtonWithLoader,
     Checkbox,
     CHECKBOX_VALUE,
     EditImageFormFieldProps,
     getAvailablePluginTags,
+    getIsRequestAborted,
     getPluginsDetail,
     getUpdatedPluginStore,
     PluginType,
@@ -24,6 +26,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+import { importComponentFromFELibrary } from '@Components/common'
 import CreatePluginFormContent from './CreatePluginFormContent'
 import {
     CreatePluginFormType,
@@ -40,6 +43,8 @@ import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
 import { getDefaultPluginFormData, validateDocumentationLink, validatePluginVersion, validateTags } from './utils'
 import './CreatePluginModal.scss'
 
+const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
+
 const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const { appId } = useParams<CreatePluginModalURLParamsType>()
     const {
@@ -52,6 +57,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handleUpdateAvailableTags,
         pluginDataStore,
         handlePluginDataStoreUpdate,
+        calculateLastStepDetail,
+        validateStage,
+        mandatoryPluginsMap,
     } = useContext(pipelineContext)
 
     const currentStepData: StepType = formData[activeStageName].steps[selectedTaskIndex]
@@ -61,7 +69,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         () => getParentPluginList(appId ? +appId : null),
         [],
     )
-    // TODO: Make sure to re-fetch the data on save
     const [areTagsLoading, availableTags, availableTagsError, reloadAvailableTags] = useAsync(
         () => getAvailablePluginTags(appId ? +appId : null),
         [],
@@ -86,18 +93,17 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const [selectedPluginVersions, setSelectedPluginVersions] = useState<
         CreatePluginFormContentProps['selectedPluginVersions']
     >([])
-    // FIXME: Change name since going to replace task as well
-    const [isCreatingPlugin, setIsCreatingPlugin] = useState<boolean>(false)
+    const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false)
+    const pluginDetailsAbortControllerRef = useRef<AbortController>(new AbortController())
 
     const handleCloseModal = () => {
-        if (isCreatingPlugin) {
+        if (isSubmitLoading) {
             return
         }
 
         handleClose()
     }
 
-    // FIXME: Check if abortController is required
     /**
      * @description This method is used to prefill the form with the selected plugin (latest version) details.
      */
@@ -113,6 +119,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             } = await getPluginsDetail({
                 appId: appId ? +appId : null,
                 parentPluginIds: [parentPluginId],
+                signal: pluginDetailsAbortControllerRef.current.signal,
             })
             const { latestVersionId, pluginVersions, icon } = parentPluginStore[parentPluginId]
             const { pluginIdentifier, pluginVersion, docLink, description, tags, inputVariables } =
@@ -144,7 +151,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 }),
             }
         } catch (error) {
-            setPluginDetailsError(error)
+            if (!getIsRequestAborted(error)) {
+                setPluginDetailsError(error)
+            }
             return clonedPluginForm
         } finally {
             setArePluginDetailsLoading(false)
@@ -230,7 +239,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
 
     const handleCreatePlugin = async (): Promise<HandleCreatePluginReturnType> => {
         try {
-            setIsCreatingPlugin(true)
+            setIsSubmitLoading(true)
             const {
                 result: { pluginVersionId },
             } = await createPlugin({
@@ -247,7 +256,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 hasError: false,
             }
         } catch (error) {
-            setIsCreatingPlugin(false)
+            setIsSubmitLoading(false)
             showError(error)
             return {
                 pluginVersionId: null,
@@ -299,8 +308,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 }),
             ])
 
+            const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
+            const { parentPluginId } = clonedPluginDataStore.pluginVersionStore[pluginVersionId]
             handleUpdateAvailableTags(newTags)
-            handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
+            handlePluginDataStoreUpdate(clonedPluginDataStore)
 
             if (pluginForm.shouldReplaceCustomTask) {
                 const clonedFormData = structuredClone(formData)
@@ -317,14 +328,27 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                     outputVariables: selectedTask.inlineStepDetail?.outputVariables || [],
                     conditionDetails: [],
                 }
-                // FIXME: add validations and isMandatory
+                selectedTask.isMandatory =
+                    isRequired &&
+                    mandatoryPluginsMap &&
+                    isRequired(
+                        clonedFormData,
+                        mandatoryPluginsMap,
+                        activeStageName,
+                        parentPluginId,
+                        clonedPluginDataStore,
+                        false,
+                    )
+                calculateLastStepDetail(false, clonedFormData, activeStageName)
+                validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, clonedPluginDataStore)
+                validateStage(BuildStageVariable.PostBuild, clonedFormData, undefined, clonedPluginDataStore)
                 setFormData(clonedFormData)
             }
         } catch (error) {
             toast.error('Unable to retrieve data for newly created plugin')
         }
 
-        setIsCreatingPlugin(false)
+        setIsSubmitLoading(false)
         handleClose()
     }
 
@@ -342,7 +366,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                             type="button"
                             className="p-0 flex dc__no-border dc__no-background dc__outline-none-imp dc__tab-focus h-20 w-20 dc__tab-focus"
                             onClick={handleCloseModal}
-                            disabled={isCreatingPlugin}
+                            disabled={isSubmitLoading}
                             aria-label="Close create plugin modal"
                             data-testid="close-create-plugin-modal"
                         >
@@ -387,8 +411,8 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                         rootClassName="cta flex h-32 w-160"
                         dataTestId="create-plugin-cta"
                         onClick={handleSubmit}
-                        disabled={isCreatingPlugin}
-                        isLoading={isCreatingPlugin}
+                        disabled={isSubmitLoading}
+                        isLoading={isSubmitLoading}
                     >
                         Create Plugin Version
                     </ButtonWithLoader>

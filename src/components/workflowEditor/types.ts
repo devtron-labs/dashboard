@@ -25,6 +25,7 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
+    MandatoryPluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -334,6 +335,10 @@ export interface PipelineContext {
      * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
+    /**
+     * Would be available only for CI/Job pipeline
+     */
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
 }
 
 export interface SourceTypeCardProps {

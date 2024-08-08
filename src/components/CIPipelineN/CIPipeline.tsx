@@ -208,8 +208,9 @@ export default function CIPipeline({
 
     const selectedBranchRef = useRef(null)
 
-    const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
-        const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
+    // TODO: Can remove all the existing props and use context for all the components
+    const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
+        const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
         if (mandatoryPluginData?.pluginData.length) {
             for (const plugin of mandatoryPluginData.pluginData) {
                 _mandatoryPluginsMap[plugin.parentPluginId] = plugin
@@ -800,6 +801,7 @@ export default function CIPipeline({
             handleUpdateAvailableTags,
             handleHideScopedVariableWidgetUpdate,
             handleDisableParentModalCloseUpdate,
+            mandatoryPluginsMap,
         }
     }, [
         formData,
@@ -812,6 +814,7 @@ export default function CIPipeline({
         globalVariables,
         pluginDataStore,
         availableTags,
+        mandatoryPluginsMap,
     ])
 
     const renderCIPipelineModalContent = () => {
