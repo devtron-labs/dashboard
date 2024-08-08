@@ -186,7 +186,7 @@ export interface GitProviderTabProps {
      * If true would disable radio tab
      */
     saveLoading: boolean
-    datatestid: string
+    dataTestId: string
 }
 
 export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'provider'> {

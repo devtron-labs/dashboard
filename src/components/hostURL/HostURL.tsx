@@ -247,7 +247,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                             </button>
                         </div>
                     </div>
-                    <div className="flex right w-100 dc__border-top-n1 pt-16">
+                    <div className="flex left w-100 dc__border-top-n1 pt-16">
                             <button
                                 type="submit"
                                 tabIndex={2}

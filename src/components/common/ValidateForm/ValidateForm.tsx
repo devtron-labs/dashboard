@@ -161,16 +161,16 @@ export const ValidateForm = ({
     showValidate = true,
 }) => {
     return (
-        <div className="w-100">
+        <>
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
             {id && validationStatus === VALIDATION_STATUS.DRY_RUN && (
-                <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />
+             <div className="w-100">  <ValidateDryRun onClickValidate={onClickValidate} configName={configName} /></div>
             )}
             {validationStatus === VALIDATION_STATUS.LOADER && (
-                <ValidateLoading message="Validating repo configuration. Please wait… " />
+               <div className="w-100"> <ValidateLoading message="Validating repo configuration. Please wait… " /></div>
             )}
             {validationStatus === VALIDATION_STATUS.FAILURE && (
-                <ValidateFailure
+              <div className='w-100'> <ValidateFailure
                     validationError={validationError}
                     onClickValidate={onClickValidate}
                     formId={id}
@@ -178,10 +178,11 @@ export const ValidateForm = ({
                     warning={warning}
                     showValidate={showValidate}
                 />
+                </div> 
             )}
             {validationStatus === VALIDATION_STATUS.SUCCESS && (
-                <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />
+               <div className='w-100'><ValidateSuccess onClickValidate={onClickValidate} warning={warning} /></div> 
             )}
-        </div>
+        </>
     )
 }

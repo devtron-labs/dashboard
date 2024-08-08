@@ -95,7 +95,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
     lastActiveGitOp,
     provider,
     saveLoading,
-    datatestid,
+    dataTestId,
 }) => {
     const isBitbucketDC = lastActiveGitOp?.provider === 'BITBUCKET_DC' && provider === GitProvider.BITBUCKET_CLOUD
     const showCheck = lastActiveGitOp?.provider === provider || isBitbucketDC
@@ -111,7 +111,7 @@ const GitProviderTab: React.FC<GitProviderTabProps> = ({
                 onChange={!saveLoading ? handleGitopsTab : noop}
                 className="dc__hide-section"
             />
-            <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={datatestid}>
+            <span className={`dc__tertiary-tab sso-icons ${OtherGitOpsForm ? 'h-90' : ''}`} data-testid={dataTestId}>
                 <aside className="login__icon-alignment">
                     <GitProviderTabIcons provider={provider} />
                 </aside>
@@ -1091,12 +1091,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
         const renderGitOpsBody = () => {
             return (
-                <div className="w-100">
-                    <form
-                        className="flex column left dc__gap-16"
-                        autoComplete="off"
-                        onKeyDown={handleDisableSubmitOnEnter}
-                    >
+                <form className="flex column left w-100" autoComplete="off" onKeyDown={handleDisableSubmitOnEnter}>
+                    <div className="pb-64 flex left column dc__gap-16 w-100 dc__mxw-1000">
                         <div className="login__sso-flex dc__gap-12">
                             {Object.values(GitProvider).map((provider) => {
                                 const isOtherGitOpsFormRequired =
@@ -1114,7 +1110,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         lastActiveGitOp={this.state.lastActiveGitOp}
                                         provider={provider}
                                         saveLoading={this.state.saveLoading}
-                                        datatestid={dataTestId}
+                                        dataTestId={dataTestId}
                                         key={provider}
                                     />
                                 )
@@ -1277,7 +1273,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         isRequiredField
                                     />
                                 </div>
-                                <div className="fw-6 cn-9 fs-14" data-testid="gitops-gitaccess-credentials-heading">
+                                <div
+                                    className="fw-6 cn-9 fs-14 dc__border-top-n1 w-100 pt-16"
+                                    data-testid="gitops-gitaccess-credentials-heading"
+                                >
                                     Git access credentials
                                 </div>
 
@@ -1391,10 +1390,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 rootClassName="w-100"
                             />
                         ) : (
-                            <hr />
+                            <div className="dc__border-top-n1 w-100" />
                         )}
 
-                        <div className="flex column left w-100 dc__gap-16">
+                        <div className="flex column left w-100 dc__gap-16 pb-16">
                             <div className="fw-6 cn-9 fs-14">Directory management in Git</div>
                             {window._env_.FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE ? (
                                 <RadioGroup
@@ -1435,42 +1434,43 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 />
                             )}
                         </div>
-
-                        <div className="form__buttons flex left">
-                            <button
-                                type="submit"
-                                disabled={this.state.saveLoading}
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    this.saveGitOps()
-                                }}
-                                data-testid="gitops-save-button"
-                                className={`cta small m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
-                            >
-                                {this.state.saveLoading && !this.state.validateLoading ? (
-                                    <Progressing />
-                                ) : this.state.form.id ? (
-                                    'Update'
-                                ) : (
-                                    'Save'
-                                )}
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             )
         }
         return (
-            <div className="bcn-0 px-20 py-16">
-                <section className="flex-1 bcn-0 flex left column dc__gap-24 dc__mxw-1000">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.GITOPS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
-                        docLink={HEADER_TEXT.GITOPS.docLink}
-                        showInfoIconTippy
-                        dataTestId="gitops-heading"
-                    />
-                    {renderGitOpsBody()}
+            <div className="bcn-0 w-100">
+                <section className="flex-1 bcn-0 flex left column">
+                    <div className="flex left column px-20 py-16 dc__gap-24 w-100">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.GITOPS.title}
+                            renderDescriptionContent={() => HEADER_TEXT.GITOPS.description}
+                            docLink={HEADER_TEXT.GITOPS.docLink}
+                            showInfoIconTippy
+                            dataTestId="gitops-heading"
+                        />
+                        {renderGitOpsBody()}
+                    </div>
+                    <div className="form__buttons flex left dc__position-fixed bcn-0 w-100 dc__bottom-0 px-20 py-16 dc__border-top-n1">
+                        <button
+                            type="submit"
+                            disabled={this.state.saveLoading}
+                            onClick={(e) => {
+                                e.preventDefault()
+                                this.saveGitOps()
+                            }}
+                            data-testid="gitops-save-button"
+                            className={`cta small m-0-imp ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
+                        >
+                            {this.state.saveLoading && !this.state.validateLoading ? (
+                                <Progressing />
+                            ) : this.state.form.id ? (
+                                'Update'
+                            ) : (
+                                'Save'
+                            )}
+                        </button>
+                    </div>
                 </section>
 
                 {this.state.showUpdateConfirmationDialog && (
