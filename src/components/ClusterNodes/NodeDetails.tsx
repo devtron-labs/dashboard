@@ -85,7 +85,6 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
-    const [copied, setCopied] = useState(false)
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
@@ -288,20 +287,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div>{key}</div>
-                <Tooltip
-                    alwaysShowTippyOnHover
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(instance) => {
-                        setCopied(false)
-                    }}
-                    interactive
-                >
-                    <div className="ml-8 flex dc__visible-hover--child">
-                        <ClipboardButton content={key} />
-                    </div>
-                </Tooltip>
+                <div className="ml-8 flex dc__visible-hover--child">
+                    <ClipboardButton content={key} />
+                </div>
             </div>
         )
     }
@@ -682,7 +670,6 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
                                     <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
                                         <Tooltip
-                                            showOnTruncate
                                             content={pod.name}
                                             interactive
                                         >

@@ -33,10 +33,8 @@ export const EventList = ({
         <div className="dc__overflow-scroll">
             <div className="event-list-row dc__zi-1 dc__min-width-fit-content dc__position-sticky bcn-0 dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom pl-20 pr-8 pt-8 pb-8 dc__uppercase h-36">
                 {Object.values(EVENT_LIST.headerKeys).map((title) => (
-                    <Tooltip showOnTruncate content={title}>
-                        <span key={title} className="dc__ellipsis-right">
-                            {title}
-                        </span>
+                    <Tooltip key={title} content={title}>
+                        <span className="dc__ellipsis-right">{title}</span>
                     </Tooltip>
                 ))}
             </div>
@@ -77,7 +75,7 @@ export const EventList = ({
                                 }}
                             />
                         </div>
-                        <Tooltip showOnTruncate content={eventData.namespace}>
+                        <Tooltip content={eventData.namespace}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{
@@ -93,7 +91,7 @@ export const EventList = ({
                             </div>
                         </Tooltip>
                         <div className="flexbox dc__align-start">
-                            <Tooltip showOnTruncate content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
+                            <Tooltip content={eventData[EVENT_LIST.dataKeys.involvedObject]}>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__ellipsis-right"
@@ -119,7 +117,7 @@ export const EventList = ({
                             </Tooltip>
                         </div>
 
-                        <Tooltip showOnTruncate content={eventData.source}>
+                        <Tooltip content={eventData.source}>
                             <div className="dc__ellipsis-right dc__highlight-text">
                                 <span
                                     dangerouslySetInnerHTML={{

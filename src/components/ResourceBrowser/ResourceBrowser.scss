@@ -37,6 +37,7 @@
     .resource-browser {
         display: grid;
         grid-template-columns: 220px auto;
+        height: calc(100vh - 84px);
 
         .k8s-object-container {
             .k8s-object-kind-search {

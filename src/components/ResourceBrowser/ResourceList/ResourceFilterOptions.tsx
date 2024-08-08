@@ -19,16 +19,21 @@ import { useLocation, useParams, useHistory } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import {
-    ConditionalWrap,
     useAsync,
     useRegisterShortcut,
     OptionType,
     SearchBar,
     Option,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import { ResourceValueContainerWithIcon } from './ResourceList.component'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    NAMESPACE_NOT_APPLICABLE_TEXT,
+} from '../Constants'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
@@ -132,7 +137,6 @@ const ResourceFilterOptions = ({
                 <div className="resource-filter-options-container__search-box dc__position-rel">
                     <SearchBar
                         inputProps={{
-                            value: searchText,
                             placeholder: `Search ${selectedResource?.gvk?.Kind || ''}`,
                             disabled: isSearchInputDisabled,
                             onBlur: handleInputBlur,
@@ -141,6 +145,7 @@ const ResourceFilterOptions = ({
                             onKeyUp: handleFilterKeyUp,
                         }}
                         handleSearchChange={handleOnChangeSearchText}
+                        initialSearchText={searchText}
                     />
                     {showShortcutKey && (
                         <ShortcutKeyBadge
@@ -159,8 +164,11 @@ const ResourceFilterOptions = ({
                         setShowModal={setShowFilterModal}
                     />
                 )}
-                <div className="resource-filter-options-wrapper flex">
-                    <ConditionalWrap condition={selectedResource && !selectedResource.namespaced} wrap={tippyWrapper}>
+                <Tooltip
+                    alwaysShowTippyOnHover={!!selectedResource && !selectedResource.namespaced}
+                    content={NAMESPACE_NOT_APPLICABLE_TEXT}
+                >
+                    <div className="resource-filter-options-wrapper flex">
                         <ReactSelect
                             placeholder="Select Namespace"
                             className="w-220 ml-8"
@@ -177,8 +185,8 @@ const ResourceFilterOptions = ({
                                 ValueContainer: ResourceValueContainerWithIcon,
                             }}
                         />
-                    </ConditionalWrap>
-                </div>
+                    </div>
+                </Tooltip>
             </div>
         </>
     )

@@ -295,7 +295,7 @@ export const K8SResourceList = ({
                             className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
                             data-testid="created-resource-name"
                         >
-                            <Tooltip showOnTruncate content={resourceData.name}>
+                            <Tooltip content={resourceData.name}>
                                 <button
                                     type="button"
                                     className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
@@ -344,7 +344,7 @@ export const K8SResourceList = ({
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <Tooltip showOnTruncate content={resourceData[columnName]}>
+                                <Tooltip content={resourceData[columnName]}>
                                     <span
                                         className="dc__truncate"
                                         data-testid={`${columnName}-count`}

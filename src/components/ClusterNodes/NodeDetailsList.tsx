@@ -300,6 +300,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
         setFilteredFlattenNodeList(_flattenNodeList)
         setNoResults(_flattenNodeList.length === 0)
+        setNodeListOffset(0)
     }
 
     const numericComparatorMethod = (a, b) => {
@@ -359,6 +360,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => (
         <SortableTableHeaderCell
+            key={column.label}
             showTippyOnTruncate
             disabled={false}
             triggerSorting={handleSortClick(column)}
@@ -405,7 +407,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         }
         if (column.value === 'k8sVersion') {
             return (
-                <Tooltip showOnTruncate content={nodeData[column.value]}>
+                <Tooltip content={nodeData[column.value]}>
                     <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
                 </Tooltip>
             )
@@ -463,10 +465,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                 {appliedColumns.map((column) => {
                     return column.label === 'Node' ? (
                         <div className="flex dc__content-space dc__gap-4 left pr-8 dc__visible-hover dc__visible-hover--parent pt-12 pb-12">
-                            <Tooltip
-                                showOnTruncate
-                                content={nodeData[column.value]}
-                            >
+                            <Tooltip content={nodeData[column.value]}>
                                 <NavLink
                                     data-testid="cluster-node-link"
                                     to={`${match.url}/${nodeData[column.value]}`}
@@ -566,9 +565,6 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         <div
             data-testid="cluster_name_info_page"
             className="node-list dc__overflow-hidden dc__border-left"
-            style={{
-                height: 'calc(100vh - 84px)',
-            }}
         >
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
@@ -599,7 +595,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
                         <div className="mt-16 dc__overflow-scroll h-100 w-100">
                             <div
                                 data-testid="node-status"
-                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row"
+                                className="fw-6 cn-7 fs-12 lh-32 dc__border-bottom dc__uppercase bcn-0 dc__position-sticky dc__top-0 node-list-row dc__zi-2"
                                 style={{ gridTemplateColumns }}
                             >
                                 {appliedColumns.map((column) => renderNodeListHeader(column))}
