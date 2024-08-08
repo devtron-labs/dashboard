@@ -38,6 +38,7 @@ export default function AboutTagEditModal({
     appMetaInfo,
     currentLabelTags,
     getAppMetaInfoRes,
+    appType
 }: AboutAppInfoModalProps) {
     const editLabelRef = useRef(null)
     const [submitting, setSubmitting] = useState(false)
@@ -125,6 +126,7 @@ export default function AboutTagEditModal({
                         setLabelTags={setLabelTags}
                         selectedProjectId={appMetaInfo.projectId}
                         reloadProjectTags={reloadMandatoryProjects}
+                        appType={appType}
                     />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

@@ -24,6 +24,7 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
+    APP_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
@@ -367,7 +368,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
-                                appType="app"
+                                appType={APP_TYPE.DEVTRON_APPS}
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+import { APP_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { AppMetaInfo } from '../../app/types'
 import { getHelmAppOverviewInfo } from '../../app/service'
 import AppOverview from '../../app/Overview/Overview'
@@ -25,6 +25,7 @@ export const HelmAppOverview = (props: { appId: string; setErrorResponseCode: (c
     const [appOverviewInfo, setAppOverviewInfo] = useState<AppMetaInfo>()
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
+    // eslint-disable-next-line consistent-return
     const getInstalledAppOverview = async (): Promise<AppMetaInfo> => {
         try {
             const { result } = await getHelmAppOverviewInfo(appId)
@@ -41,12 +42,17 @@ export const HelmAppOverview = (props: { appId: string; setErrorResponseCode: (c
     }
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getInstalledAppOverview()
     }, [])
 
     return isLoading ? (
         <Progressing />
     ) : (
-        <AppOverview appType="helm-chart" appMetaInfo={appOverviewInfo} getAppMetaInfoRes={getInstalledAppOverview} />
+        <AppOverview
+            appType={APP_TYPE.HELM_CHART}
+            appMetaInfo={appOverviewInfo}
+            getAppMetaInfoRes={getInstalledAppOverview}
+        />
     )
 }
