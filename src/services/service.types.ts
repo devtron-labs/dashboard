@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, DeploymentStrategy, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -24,14 +24,6 @@ export interface RootObject {
 
 export interface CDPipelines {
     pipelines: CDPipeline[]
-}
-
-type DeploymentStrategyType = 'CANARY' | 'ROLLING' | 'RECREATE' | 'BLUE_GREEN'
-
-export interface DeploymentStrategy {
-    deploymentTemplate: DeploymentStrategyType
-    config: any
-    default: boolean
 }
 
 export interface PrePostStage {

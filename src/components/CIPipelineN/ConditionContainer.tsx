@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useContext, Fragment } from 'react'
-import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
@@ -26,7 +26,6 @@ import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineFormType } from '../workflowEditor/types'
 
 export const ConditionContainer = ({ type }: { type: ConditionContainerType }) => {
     const {

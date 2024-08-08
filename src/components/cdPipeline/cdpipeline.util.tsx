@@ -27,12 +27,13 @@ import {
     StepType,
     TaskErrorObj,
     VariableType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'
 
 export const styles = {

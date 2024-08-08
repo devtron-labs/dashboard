@@ -17,7 +17,6 @@
 import {
     CommonNodeAttr,
     DeploymentAppTypes,
-    FormType,
     OptionType,
     StepType,
     TaskErrorObj,
@@ -25,6 +24,7 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -33,7 +33,7 @@ import {
     CdPipelineResult,
     CiPipeline,
 } from '../app/details/triggerView/types'
-import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { WorkflowProps } from './Workflow'
@@ -219,29 +219,6 @@ export interface CDNodeState {
     deleteInProgress: boolean
     showDeploymentConfirmationDeleteDialog: boolean
     deploymentWindowConfimationValue: string
-}
-
-export interface PipelineBuildStageType {
-    id: number
-    triggerType?: string
-    steps: StepType[]
-}
-
-export interface CustomTagType {
-    tagPattern: string
-    counterX: string
-}
-export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
-    name: string
-    triggerType: string
-    preBuildStage?: PipelineBuildStageType
-    postBuildStage?: PipelineBuildStageType
-    defaultTag?: string[]
-    customTag?: CustomTagType
-    enableCustomTag?: boolean
-    customTagStage?: string
-    isDigestEnforcedForPipeline?: boolean
-    isDigestEnforcedForEnv?: boolean
 }
 
 export interface PipelineFormDataErrorType {

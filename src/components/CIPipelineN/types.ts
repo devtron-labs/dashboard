@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionType, PluginDetailType, StepType } from '@devtron-labs/devtron-fe-common-lib'
-import { PipelineFormType } from '../workflowEditor/types'
+import { OptionType, PluginDetailType, StepType, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum DockerArgsAction {
     ADD = 'add_docker_arg',

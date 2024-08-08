@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes, ReleaseMode, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -71,6 +71,8 @@ export const SourceInfo = ({
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
+    // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
+    const helmMigratedAppNotTriggered = appDetails?.releaseMode === ReleaseMode.LINK && !appDetails?.isPipelineTriggered
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -277,7 +279,7 @@ export const SourceInfo = ({
                               />
                           )}
                           {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                          {!loadingResourceTree && (
+                          {!loadingResourceTree && !helmMigratedAppNotTriggered && (
                               <IssuesCard
                                   cardLoading={cardLoading}
                                   toggleIssuesModal={toggleIssuesModal}
@@ -285,14 +287,14 @@ export const SourceInfo = ({
                                   setDetailed={setDetailed}
                               />
                           )}
-                          <DeploymentStatusCard
+                          {!helmMigratedAppNotTriggered && (<DeploymentStatusCard
                               deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                               cardLoading={cardLoading}
                               hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
                               isVirtualEnvironment={isVirtualEnvironment}
                               refetchDeploymentStatus={refetchDeploymentStatus}
-                          />
-                          {appDetails?.dataSource !== 'EXTERNAL' && (
+                          />)}
+                          {appDetails?.dataSource !== 'EXTERNAL' && !helmMigratedAppNotTriggered && (
                               <DeployedCommitCard
                                   cardLoading={cardLoading}
                                   showCommitInfoDrawer={onClickShowCommitInfo}
@@ -308,7 +310,7 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest &&
+                          {!appDetails?.deploymentAppDeleteRequest && !helmMigratedAppNotTriggered &&
                               (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
                                   <SecurityVulnerabilityCard
                                       cardLoading={cardLoading}
