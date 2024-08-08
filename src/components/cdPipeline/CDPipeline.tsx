@@ -512,7 +512,7 @@ export default function CDPipeline({
         const env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         form.name = pipelineConfigFromRes.name
         form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
-        formData.releaseMode = pipelineConfigFromRes.releaseMode
+        form.releaseMode = pipelineConfigFromRes.releaseMode
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -1212,10 +1212,12 @@ export default function CDPipeline({
             title = CREATE_DEPLOYMENT_PIPELINE
         }
 
-        const getButtonDisabledState = () =>
-            !formData.environmentId ||
-            isEnvUsedState ||
-            (formData.releaseMode === ReleaseMode.LINK && !formData.deploymentAppName)
+        // Disable button if environment or release name is not selected
+        const getButtonDisabledMessage = (): string => {
+            if (!formData.environmentId) return 'Please select an environment'
+            if (formData.releaseMode === ReleaseMode.LINK && !formData.deploymentAppName) return 'Please select a release'
+            return ''
+        }
 
         return (
             <div
@@ -1255,7 +1257,7 @@ export default function CDPipeline({
                                     dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}
-                                    disabled={getButtonDisabledState()}
+                                    disabled={!!getButtonDisabledMessage()}
                                 >
                                     {text}
                                 </ButtonWithLoader>

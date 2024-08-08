@@ -143,7 +143,7 @@ export default function BuildCD({
     }
 
     const selectEnvironment = (selection: Environment): void => {
-        const _form = { ...formData }
+        const _form = { ...formData, deploymentAppName: '' }
         const _formDataErrorObj = { ...formDataErrorObj }
 
         if (selection) {
@@ -679,7 +679,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current) {
+        if (noStrategyAvailable.current || releaseMode === ReleaseMode.LINK) {
             return null
         }
 
@@ -787,7 +787,6 @@ export default function BuildCD({
                 {isAdvanced && renderPipelineNameInput()}
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
-
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&

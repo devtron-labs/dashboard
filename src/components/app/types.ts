@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum } from '@devtron-labs/devtron-fe-common-lib'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -114,6 +114,8 @@ export interface AppDetails extends CDModalProps {
     clusterId?: number
     deploymentAppDeleteRequest: boolean
     imageTag?: string
+    isPipelineTriggered?: boolean
+    releaseMode: ReleaseMode
 }
 
 export interface LabelTag {

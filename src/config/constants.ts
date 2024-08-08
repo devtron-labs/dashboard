@@ -56,7 +56,6 @@ export const Routes = {
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
