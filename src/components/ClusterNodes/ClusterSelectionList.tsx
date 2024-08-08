@@ -45,11 +45,13 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
 
     const { searchKey, handleSearch, clearFilters } = useUrlFilters()
 
-    const filteredList = useMemo(() => {
-        return clusterOptions.filter((option) => {
-            return !searchKey || option.name.toLowerCase().includes(searchKey.toLowerCase())
-        })
-    }, [searchKey, clusterOptions])
+    const filteredList = useMemo(
+        () =>
+            clusterOptions.filter((option) => {
+                return !searchKey || option.name.toLowerCase().includes(searchKey.toLowerCase())
+            }),
+        [searchKey, clusterOptions],
+    )
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
