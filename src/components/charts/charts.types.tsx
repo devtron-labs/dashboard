@@ -15,7 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router'
-import { ResponseType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
@@ -268,7 +268,6 @@ export interface ChartGroupState {
     pageOffset?: number
     pageSize?: number
     hasMoreCharts?: boolean
-    applyFilterError?: ServerErrors
 }
 
 export interface ChartGroupHelpers extends ChartSummaryHelpers, AdvancedConfigHelpers {

@@ -16,18 +16,24 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader, DetectBottom } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    PageHeader,
+    DetectBottom,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ChartSelect from './util/ChartSelect'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
-import { updateChartGroupEntries, getChartGroups, getChartProviderList } from './charts.service'
+import { updateChartGroupEntries, getChartProviderList } from './charts.service'
 import useChartGroup from './useChartGroup'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
-import { ChartSelector } from '../AppSelector'
 import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './charts.util'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
@@ -323,8 +329,8 @@ export default function ChartGroupUpdate({}) {
                                             selectedInstances={state.selectedInstances}
                                             isGrid={isGrid}
                                         />
-                                        {state.hasMoreCharts && !state.applyFilterError && <Progressing />}
-                                        {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} hasError={!!state.applyFilterError} />}
+                                        {state.hasMoreCharts && <Progressing />}
+                                        {state.hasMoreCharts && <DetectBottom callback={reloadNextAfterBottom} />}
                                     </div>
                                 )}
                             </div>

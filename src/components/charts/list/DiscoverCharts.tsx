@@ -531,15 +531,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                         datatestid={`single-${index}`}
                                                                     />
                                                                 ))}
+                                                            {state.hasMoreCharts && (
+                                                                <DetectBottom callback={reloadNextAfterBottom} />
+                                                            )}
                                                         </div>
-                                                        {state.hasMoreCharts && (
-                                                            <DetectBottom
-                                                                callback={reloadNextAfterBottom}
-                                                                hasError={!!state.applyFilterError}
-                                                            />
-                                                        )}
 
-                                                        {state.hasMoreCharts && !state.applyFilterError && (
+                                                        {state.hasMoreCharts && (
                                                             <Progressing
                                                                 size={25}
                                                                 styles={{ height: '0%', paddingBottom: '5px' }}
