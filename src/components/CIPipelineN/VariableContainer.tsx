@@ -96,7 +96,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                     >
                                         <div
                                             data-testid={`${variable.name}-dropdown`}
-                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right"
+                                            className="fs-13 fw-4 lh-28 dc__ellipsis-right dc_max-width__max-content"
                                         >
                                             <span
                                                 className={`text-underline-dashed ${

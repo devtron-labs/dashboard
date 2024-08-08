@@ -36,7 +36,6 @@ import { TaskDetailComponent } from './TaskDetailComponent'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { INLINE_PLUGIN_TEXT } from './Constants'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({

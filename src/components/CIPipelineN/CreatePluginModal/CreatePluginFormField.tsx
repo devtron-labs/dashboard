@@ -14,7 +14,7 @@ const CreatePluginFormField = ({
     disabled,
     useTextArea,
     /**
-     * Not using helperText, autofocus in textarea is not required as of now
+     * Not using helperText, autofocus in textarea as not required as of now
      */
     helperText,
     autoFocus,

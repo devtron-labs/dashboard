@@ -309,7 +309,8 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             ])
 
             const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
-            const { parentPluginId } = clonedPluginDataStore.pluginVersionStore[pluginVersionId]
+            const { parentPluginId, inputVariables, outputVariables } =
+                clonedPluginDataStore.pluginVersionStore[pluginVersionId]
             handleUpdateAvailableTags(newTags)
             handlePluginDataStoreUpdate(clonedPluginDataStore)
 
@@ -322,10 +323,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 selectedTask.outputDirectoryPath = null
                 selectedTask.inlineStepDetail = null
                 selectedTask.pluginRefStepDetail = {
-                    id: pluginVersionId,
-                    pluginId: pluginForm.id,
-                    inputVariables: pluginForm.inputVariables,
-                    outputVariables: selectedTask.inlineStepDetail?.outputVariables || [],
+                    id: 0,
+                    pluginId: pluginVersionId,
+                    // TODO: Ask should input variables be updated from plugin or inline?
+                    inputVariables,
+                    outputVariables: outputVariables || [],
                     conditionDetails: [],
                 }
                 selectedTask.isMandatory =

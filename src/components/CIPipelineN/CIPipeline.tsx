@@ -27,7 +27,6 @@ import {
     RefVariableType,
     VariableType,
     MandatoryPluginDataType,
-    MandatoryPluginDetailType,
     ButtonWithLoader,
     PluginDataStoreType,
     ProcessPluginDataReturnType,
@@ -36,6 +35,11 @@ import {
     getPluginsDetail,
     ErrorScreenManager,
     getUpdatedPluginStore,
+    ModuleNameMap,
+    SourceTypeMap,
+    DEFAULT_ENV,
+    getEnvironmentListMinPublic,
+    ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -49,11 +53,9 @@ import {
     BuildStageVariable,
     BuildTabText,
     JobPipelineTabText,
-    ModuleNameMap,
     TriggerType,
     URLS,
     ViewType,
-    SourceTypeMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -70,15 +72,12 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
 import { Environment } from '../cdPipeline/cdPipeline.types'
-import { getEnvironmentListMinPublic } from '../../services/service'
-import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
