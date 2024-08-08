@@ -17,7 +17,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import Tippy from '@tippyjs/react'
 import {
     ConditionalWrap,
     Progressing,
@@ -32,6 +31,8 @@ import {
     noop,
     SortableTableHeaderCell,
     useStateFilters,
+    ClipboardButton,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import WebWorker from '../../app/WebWorker'
 import searchWorker from '../../../config/searchWorker'
@@ -89,7 +90,6 @@ export const K8SResourceList = ({
 
     // STATES
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
-    const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
     const [filteredResourceList, setFilteredResourceList] = useState<ResourceDetailType['data']>(null)
@@ -100,6 +100,8 @@ export const K8SResourceList = ({
     const abortControllerRef = useRef(new AbortController())
 
     const searchText = searchParams[SEARCH_QUERY_PARAM_KEY] || ''
+
+    const isEventList = selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind
 
     /* NOTE: _filters is an object */
     const _filters = getFilterOptionsFromSearchParams?.(location.search)
@@ -156,12 +158,13 @@ export const K8SResourceList = ({
      * we switch to the key 'name', which will always be present.
      */
     const initialSortKey = useMemo(() => {
-        if (resourceList) {
+        // NOTE: if isEventList don't initiate sort since we already sort it; therefore return empty initialSortKey
+        if (resourceList && !isEventList) {
             const isNameSpaceColumnPresent = resourceList.headers.some((header) => header === 'namespace')
             return isNameSpaceColumnPresent ? 'namespace' : 'name'
         }
         return ''
-    }, [resourceList])
+    }, [resourceList, isEventList])
 
     // SORTING HOOK
     const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })
@@ -172,20 +175,6 @@ export const K8SResourceList = ({
             clearFilters()
         }
     }, [initialSortKey])
-
-    useEffect(() => {
-        if (resourceList?.headers.length) {
-            /**
-             * 166 is standard with of every column for calculations
-             * 295 is width of left nav + sidebar
-             * 200 is the diff of name column
-             */
-            const appliedColumnDerivedWidth = resourceList.headers.length * 166 + 295 + 200
-            const windowWidth = window.innerWidth
-            const clientWidth = 0
-            setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
-        }
-    }, [resourceList?.headers])
 
     useEffect(() => {
         return () => {
@@ -290,63 +279,62 @@ export const K8SResourceList = ({
         return `f-${statusPostfix}`
     }
 
+    const gridTemplateColumns = `350px repeat(${(resourceList?.headers.length ?? 1) - 1}, 180px)`
+
     const renderResourceRow = (resourceData: ResourceDetailDataType): JSX.Element => {
         return (
             <div
                 key={`${resourceData.id}-${resourceData.name}`}
-                className="dc__min-width-fit-content fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+                style={{ gridTemplateColumns }}
             >
                 {resourceList?.headers.map((columnName) =>
                     columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`w-350 dc__inline-flex dc__no-shrink pl-20 pr-8 pt-12 pb-12 ${
-                                fixedNodeNameColumn ? 'dc__position-sticky sticky-column dc__border-right' : ''
-                            }`}
+                            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent"
+                            data-testid="created-resource-name"
                         >
-                            <div className="w-100 flexbox dc__content-space" data-testid="created-resource-name">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="right"
-                                    content={resourceData.name}
+                            <Tooltip content={resourceData.name}>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
+                                    data-name={resourceData.name}
+                                    data-namespace={resourceData.namespace}
+                                    onClick={handleResourceClick}
+                                    aria-label={`Select ${resourceData.name}`}
                                 >
-                                    <button
-                                        type="button"
-                                        className="dc__unset-button-styles dc__align-left dc__ellipsis-right"
-                                        data-name={resourceData.name}
-                                        data-namespace={resourceData.namespace}
-                                        onClick={handleResourceClick}
-                                        aria-label={`Select ${resourceData.name}`}
-                                    >
-                                        <span
-                                            className="dc__link cursor"
-                                            // eslint-disable-next-line react/no-danger
-                                            dangerouslySetInnerHTML={{
-                                                __html: DOMPurify.sanitize(
-                                                    highlightSearchText({
-                                                        searchText,
-                                                        text: String(resourceData.name),
-                                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                                    }),
-                                                ),
-                                            }}
-                                        />
-                                    </button>
-                                </Tippy>
-                                <ResourceBrowserActionMenu
-                                    clusterId={clusterId}
-                                    resourceData={resourceData}
-                                    getResourceListData={reloadResourceListData as () => Promise<void>}
-                                    selectedResource={selectedResource}
-                                    handleResourceClick={handleResourceClick}
-                                />
-                            </div>
+                                    <span
+                                        className="dc__link cursor"
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: String(resourceData.name),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </button>
+                            </Tooltip>
+                            <ClipboardButton
+                                content={String(resourceData.name)}
+                                rootClassName="p-4 dc__visible-hover--child"
+                            />
+                            <ResourceBrowserActionMenu
+                                clusterId={clusterId}
+                                resourceData={resourceData}
+                                getResourceListData={reloadResourceListData as () => Promise<void>}
+                                selectedResource={selectedResource}
+                                handleResourceClick={handleResourceClick}
+                            />
                         </div>
                     ) : (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center pt-12 pb-12 w-180 ${
+                            className={`flexbox dc__align-items-center ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(String(resourceData[columnName]))}`
                                     : ''
@@ -356,20 +344,22 @@ export const K8SResourceList = ({
                                 condition={columnName === 'node'}
                                 wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
                             >
-                                <span
-                                    className="dc__ellipsis-right"
-                                    data-testid={`${columnName}-count`}
-                                    // eslint-disable-next-line react/no-danger
-                                    dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(
-                                            highlightSearchText({
-                                                searchText,
-                                                text: renderResourceValue(resourceData[columnName]?.toString()),
-                                                highlightClasses: 'p-0 fw-6 bcy-2',
-                                            }),
-                                        ),
-                                    }}
-                                />
+                                <Tooltip content={resourceData[columnName]}>
+                                    <span
+                                        className="dc__truncate"
+                                        data-testid={`${columnName}-count`}
+                                        // eslint-disable-next-line react/no-danger
+                                        dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(
+                                                highlightSearchText({
+                                                    searchText,
+                                                    text: renderResourceValue(resourceData[columnName]?.toString()),
+                                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                                }),
+                                            ),
+                                        }}
+                                    />
+                                </Tooltip>
                                 <span>
                                     {columnName === 'restarts' &&
                                         Number(resourceData.restarts) !== 0 &&
@@ -438,34 +428,26 @@ export const K8SResourceList = ({
         return (
             <div
                 ref={resourceListRef}
-                className={getScrollableResourceClass(
+                className={`${getScrollableResourceClass(
                     'scrollable-resource-list',
                     showPaginatedView,
                     showStaleDataWarning,
-                )}
+                )} dc__overflow-scroll`}
             >
-                <div className="h-36 fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header bcn-0 dc__position-sticky">
+                <div
+                    className="scrollable-resource-list__row h-36 fw-6 cn-7 fs-12 dc__gap-16 dc__zi-2 dc__position-sticky dc__border-bottom dc__uppercase bcn-0 dc__top-0"
+                    style={{ gridTemplateColumns }}
+                >
                     {resourceList?.headers.map((columnName) => (
-                        <div
+                        <SortableTableHeaderCell
                             key={columnName}
-                            className={`list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
-                                columnName === 'name'
-                                    ? `${
-                                          fixedNodeNameColumn
-                                              ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right dc__border-bottom h-35'
-                                              : ''
-                                      } w-350 pl-20`
-                                    : 'w-180'
-                            }`}
-                        >
-                            <SortableTableHeaderCell
-                                title={columnName}
-                                triggerSorting={triggerSortingHandler(columnName)}
-                                isSorted={sortBy === columnName}
-                                sortOrder={sortOrder}
-                                disabled={false}
-                            />
-                        </div>
+                            showTippyOnTruncate
+                            title={columnName}
+                            triggerSorting={triggerSortingHandler(columnName)}
+                            isSorted={sortBy === columnName}
+                            sortOrder={sortOrder}
+                            disabled={false}
+                        />
                     ))}
                 </div>
                 {filteredResourceList
@@ -481,7 +463,7 @@ export const K8SResourceList = ({
         }
         return (
             <>
-                {selectedResource?.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind ? (
+                {isEventList ? (
                     <EventList
                         listRef={resourceListRef}
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
@@ -510,7 +492,7 @@ export const K8SResourceList = ({
 
     return (
         <div
-            className={`resource-list-container dc__border-left flexbox-col ${
+            className={`resource-list-container dc__border-left flexbox-col dc__overflow-hidden ${
                 filteredResourceList?.length === 0 ? 'no-result-container' : ''
             }`}
         >

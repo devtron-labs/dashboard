@@ -45,7 +45,6 @@ const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     k8SObjectMapRaw,
-    addTab,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,

@@ -193,6 +193,7 @@ export interface ClusterListType {
     isSuperAdmin: boolean
     k8SObjectMapRaw: ApiResourceGroupType[]
     addTab?: ReturnType<typeof useTabs>['addTab']
+    updateTabUrl: (url: string) => void
 }
 
 export interface ClusterAboutPropType {

@@ -17,7 +17,6 @@
 import React from 'react'
 import queryString from 'query-string'
 import { useLocation } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import { ApiResourceGroupType, DATE_TIME_FORMAT_STRING, GVKType } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
@@ -274,6 +273,7 @@ export const getTabsBasedOnRole = (
     isSuperAdmin: boolean,
     dynamicTabData: InitTabType,
     isTerminalSelected = false,
+    isOverviewSelected = false,
 ): InitTabType[] => {
     const clusterId = selectedCluster.value
     const tabs = [
@@ -283,7 +283,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: false,
+            isSelected: isOverviewSelected,
             position: FIXED_TABS_INDICES.OVERVIEW,
             iconPath: ClusterIcon,
             showNameOnSelect: false,
@@ -294,7 +294,7 @@ export const getTabsBasedOnRole = (
             url: `${
                 URLS.RESOURCE_BROWSER
             }/${clusterId}/${namespace}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`,
-            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData,
+            isSelected: (!isSuperAdmin || !isTerminalSelected) && !dynamicTabData && !isOverviewSelected,
             position: FIXED_TABS_INDICES.K8S_RESOURCE_LIST,
             iconPath: K8ResourceIcon,
             showNameOnSelect: false,
@@ -350,17 +350,15 @@ export const getRenderNodeButton =
         handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
-        <Tippy className="default-tt" arrow={false} placement="top" content={resourceData[columnName]}>
-            <button
-                type="button"
-                className="dc__unset-button-styles dc__ellipsis-right dc__block"
-                data-name={resourceData[columnName]}
-                onClick={handleNodeClick}
-                aria-label={`Select ${resourceData[columnName]}`}
-            >
-                <span className="dc__link">{children}</span>
-            </button>
-        </Tippy>
+        <button
+            type="button"
+            className="dc__unset-button-styles dc__no-decor flex"
+            data-name={resourceData[columnName]}
+            onClick={handleNodeClick}
+            aria-label={`Select ${resourceData[columnName]}`}
+        >
+            <span className="dc__link">{children}</span>
+        </button>
     )
 
 export const renderResourceValue = (value: string) => {
