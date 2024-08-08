@@ -31,6 +31,7 @@ import {
     DevtronProgressing,
     APPROVAL_MODAL_TYPE,
     useUserEmail,
+    MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
@@ -44,6 +45,21 @@ import {
 import { URLS } from './config'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
+
+//Monaco Editor worker dependency
+import 'monaco-editor'
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import YamlWorker from './yaml.worker.js?worker'
+
+//Monaco Editor worker initialization
+self.MonacoEnvironment = {
+    getWorker(_, label) {
+        if (label === MODES.YAML) {
+            return new YamlWorker()
+        }
+        return new editorWorker()
+    },
+}
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
