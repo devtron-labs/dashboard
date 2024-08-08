@@ -2,7 +2,7 @@ import { components } from 'react-select'
 import {
     commonSelectStyles,
     requiredField,
-    validateSematicVersioning,
+    validateSemanticVersioning,
     validateURL,
     ValidationResponseType,
     VariableType,
@@ -56,7 +56,7 @@ export const validatePluginVersion = (version: string): ValidationResponseType =
         return requiredFieldValidation
     }
 
-    return validateSematicVersioning(version)
+    return validateSemanticVersioning(version)
 }
 
 export const pluginCreatableTagSelectStyles = {
