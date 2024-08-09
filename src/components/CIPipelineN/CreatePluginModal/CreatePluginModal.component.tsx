@@ -60,7 +60,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handlePluginDataStoreUpdate,
         calculateLastStepDetail,
         validateStage,
-        mandatoryPluginsMap,
+        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
 
     const currentStepData: StepType = formData[activeStageName].steps[selectedTaskIndex]
@@ -344,7 +344,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 }
                 selectedTask.isMandatory =
                     isRequired &&
-                    mandatoryPluginsMap &&
                     isRequired(
                         clonedFormData,
                         mandatoryPluginsMap,

@@ -849,7 +849,6 @@ export default function CIPipeline({
                                     isJobCI={isJobCI}
                                     mandatoryPluginData={mandatoryPluginData}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
                                     environments={environments}
                                     selectedEnv={selectedEnv}
                                     setSelectedEnv={setSelectedEnv}
@@ -859,12 +858,12 @@ export default function CIPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild isJobView={isJobCard} mandatoryPluginsMap={mandatoryPluginsMap} />
+                                    <PreBuild isJobView={isJobCard} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild mandatoryPluginsMap={mandatoryPluginsMap} />
+                                    <PreBuild />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

@@ -38,7 +38,6 @@ const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPl
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const TaskList = ({
     withWarning,
-    mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     isJobView,
 }: TaskListType) => {
@@ -56,6 +55,7 @@ export const TaskList = ({
         validateTask,
         validateStage,
         pluginDataStore,
+        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)

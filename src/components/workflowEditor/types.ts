@@ -336,7 +336,7 @@ export interface PipelineContext {
      */
     handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
     /**
-     * Would be available only for CI/Job pipeline
+     * Would be available only for CI pipeline
      */
     mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
 }
