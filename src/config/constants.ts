@@ -504,6 +504,12 @@ export enum ACCESS_TYPE_MAP {
     JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
+export enum APP_TYPE {
+    HELM_CHART = 'helm-chart',
+    DEVTRON_APPS = 'app',
+    JOB = 'job',
+}
+
 export enum MODES {
     YAML = 'yaml',
     JSON = 'json',

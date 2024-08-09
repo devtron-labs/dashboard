@@ -18,7 +18,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -30,7 +30,6 @@ import {
     noop,
     StyledRadioGroup as RadioGroup,
     EditableTextArea,
-    APP_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { handleUTCTime, importComponentFromFELibrary } from '../../common'

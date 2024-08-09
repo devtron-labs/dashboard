@@ -27,8 +27,8 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
-import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader, APP_TYPE } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
+import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'

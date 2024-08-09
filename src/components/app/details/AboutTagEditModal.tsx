@@ -22,7 +22,6 @@ import {
     TagLabelSelect,
     TagType,
     DEFAULT_TAG_DATA,
-    APP_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
@@ -30,6 +29,7 @@ import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
+import { APP_TYPE } from '@Config/constants'
 
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({

@@ -15,7 +15,8 @@
  */
 
 import { useEffect, useState } from 'react'
-import { APP_TYPE, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { APP_TYPE } from '@Config/constants'
 import { AppMetaInfo } from '../../app/types'
 import { getHelmAppOverviewInfo } from '../../app/service'
 import AppOverview from '../../app/Overview/Overview'

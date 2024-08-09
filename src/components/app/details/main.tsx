@@ -24,12 +24,11 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
-    APP_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { URLS } from '../../../config'
+import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from './appConfig/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
