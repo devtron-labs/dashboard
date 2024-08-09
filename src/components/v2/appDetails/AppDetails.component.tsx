@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
 import {
@@ -66,6 +66,8 @@ const AppDetailsComponent = ({
     // State to track the loading state for the timeline data when the detailed status modal opens
     const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const shouldFetchTimelineRef = useRef(false)
+    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -92,11 +94,9 @@ const AppDetailsComponent = ({
     }, [location.search])
 
     useEffect(() => {
-        // Get deployment status timeline on argocd apps
-        if (
-            appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS ||
-            appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
-        ) {
+        // Get deployment status timeline on ArgoCD apps in devtron helm apps
+        // i.e. Devtron Helm app deployed through GitOps /Manifest Download
+        if ((isGitOps || isManifestDownload) && !isExternalApp) {
             getDeploymentDetailStepsData()
         }
         isVirtualEnv.current = appDetails?.isVirtualEnvironment

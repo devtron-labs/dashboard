@@ -21,8 +21,10 @@ import {
     useAsync,
     useMainContext,
     noop,
+    DeploymentAppTypes,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ExternalFluxAppDetailParams } from './types'
 import { getExternalFluxCDAppDetails } from './service'
@@ -35,6 +37,7 @@ let initTimer = null
 
 const ExternalFluxAppDetails = () => {
     const { clusterId, appName, namespace, templateType } = useParams<ExternalFluxAppDetailParams>()
+    const [isPublishing, setIsPublishing] = useState<boolean>(true)
     const { isSuperAdmin } = useMainContext()
     const isKustomization = templateType === FluxCDTemplateType.KUSTOMIZATION
 
@@ -56,12 +59,15 @@ const ExternalFluxAppDetails = () => {
 
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
-            initTimer = setTimeout(reloadAppDetails, 30000)
-            const genericAppDetail = {
+            initTimer = setTimeout(reloadAppDetails, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+            const genericAppDetail: AppDetails = {
                 ...appDetailsResult.result,
                 appStatus: getAppStatus(appDetailsResult.result.appStatus),
+                deploymentAppType: DeploymentAppTypes.FLUX,
+                fluxTemplateType: templateType,
             }
             IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_FLUX_APP)
+            setIsPublishing(false)
         }
     }, [appDetailsResult])
 
@@ -73,9 +79,21 @@ const ExternalFluxAppDetails = () => {
         return <ErrorScreenManager code={appDetailsError.code} reload={reloadAppDetails} />
     }
 
-    const isLoading = isAppDetailsLoading && !appDetailsResult
+    // To show loader on first render only
+    const isLoadingOnMount = isAppDetailsLoading && !appDetailsResult
 
-    return <AppDetailsComponent isExternalApp _init={noop} loadingDetails={isLoading} loadingResourceTree={isLoading} />
+    if (isLoadingOnMount || isPublishing) {
+        return <Progressing pageLoader />
+    }
+
+    return (
+        <AppDetailsComponent
+            isExternalApp
+            _init={noop}
+            loadingDetails={isLoadingOnMount}
+            loadingResourceTree={isLoadingOnMount}
+        />
+    )
 }
 
 export default ExternalFluxAppDetails

@@ -58,6 +58,7 @@ export const APPLIST_EMPTY_STATE_MESSAGING = {
     connectClusterLabel: 'Connect a cluster',
     noAppsFound: 'No apps found',
     noAppsFoundInfoText: `We couldn't find any matching applications.`,
+    argoCDInfoText: 'ArgoCD based applications deployed in your cluster will be shown here',
     fluxCDInfoText: 'FluxCD based applications deployed in your cluster will be shown here',
 }
 export const ClearFiltersLabel = 'Clear filters'

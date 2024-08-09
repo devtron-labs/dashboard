@@ -48,6 +48,7 @@ import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 import { getEnvironmentName } from './utils'
+import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -65,7 +66,7 @@ const EnvironmentSelectorComponent = ({
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
-    const [showWorkloadsModal, setWorkloadsModal] = useState(false)
+    const [showWorkloadsModal, setShowWorkloadsModal] = useState(false)
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
@@ -76,8 +77,9 @@ const EnvironmentSelectorComponent = ({
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-    const isExternalArgoOrFlux =
-        appDetails.appType === AppType.EXTERNAL_ARGO_APP || appDetails.appType === AppType.EXTERNAL_FLUX_APP
+    const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
+    const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
+
     useEffect(() => {
         if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
@@ -204,8 +206,15 @@ const EnvironmentSelectorComponent = ({
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     const handleScaleWorkloads = () => {
-        setWorkloadsModal(true)
+        setShowWorkloadsModal(true)
     }
+
+    const appIdentifier = getAppId({
+        clusterId: appDetails.clusterId,
+        namespace: appDetails.namespace,
+        appName: appDetails.appName,
+        templateType: appDetails.fluxTemplateType,
+    })
 
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
@@ -323,7 +332,7 @@ const EnvironmentSelectorComponent = ({
                 </div>
             </div>
 
-            {!loadingResourceTree && !isExternalArgoOrFlux && (
+            {!loadingResourceTree && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
@@ -350,7 +359,10 @@ const EnvironmentSelectorComponent = ({
                                 deployedAppDetail[2],
                                 deployedAppDetail[1],
                                 deployedAppDetail[0],
-                            ))
+                            )) ||
+                        // To hide delete application button in argo and flux app details
+                        isExternalFlux ||
+                        isExternalArgo
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
@@ -399,14 +411,19 @@ const EnvironmentSelectorComponent = ({
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}
-                    isEAMode={appDetails.appType === AppType.EXTERNAL_HELM_CHART}
-                    appId={appDetails.appType === AppType.EXTERNAL_HELM_CHART ? params.appId : ''}
+                    isExternalApp={isExternalApp}
+                    appId={appIdentifier}
                     envId={params.envId}
                     close={closeUrlInfo}
+                    appType={appDetails.appType}
                 />
             )}
             {showWorkloadsModal && (
-                <ScaleWorkloadsModal appId={params.appId} onClose={() => setWorkloadsModal(false)} history={history} />
+                <ScaleWorkloadsModal
+                    appId={appIdentifier}
+                    onClose={() => setShowWorkloadsModal(false)}
+                    history={history}
+                />
             )}
         </div>
     )

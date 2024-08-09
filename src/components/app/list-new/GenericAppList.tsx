@@ -94,7 +94,7 @@ const GenericAppList = ({
         _sseConnection.onmessage = (message) => {
             try {
                 const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
-                externalAppData.result.fluxApplication.forEach((fluxApp) => {
+                externalAppData.result.fluxApplication?.forEach((fluxApp) => {
                     if (fluxApp.appStatus === 'True') {
                         fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
                     } else if (fluxApp.appStatus === 'False') {
@@ -366,7 +366,7 @@ const GenericAppList = ({
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
+                    subTitle={isArgoCDAppList ? APPLIST_EMPTY_STATE_MESSAGING.argoCDInfoText : APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
                 />
             </div>
         )

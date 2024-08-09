@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { AppListConstants, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { lazy, Suspense } from 'react'
+import { AppListConstants, Progressing, URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
-import ExternalFluxAppDetails from './ExternalFluxAppDetails'
+
+const ExternalFluxAppDetails = lazy(() => import('./ExternalFluxAppDetails'))
 
 const ExternalFluxAppDetailsRoute = () => {
     const { path } = useRouteMatch()
@@ -30,12 +31,14 @@ const ExternalFluxAppDetailsRoute = () => {
                 redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
                 showAppDetailsOnly
             />
-            <Switch>
-                <Route path={`${path}${URLS.DETAILS}`}>
-                    <ExternalFluxAppDetails />
-                </Route>
-                <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-            </Switch>
+            <Suspense fallback={<Progressing pageLoader />}>
+                <Switch>
+                    <Route path={`${path}${URLS.DETAILS}`}>
+                        <ExternalFluxAppDetails />
+                    </Route>
+                    <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
+                </Switch>
+            </Suspense>
         </>
     )
 }

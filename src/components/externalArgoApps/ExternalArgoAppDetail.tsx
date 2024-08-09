@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router'
-import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import AppDetailsComponent from '../v2/appDetails/AppDetails.component'
@@ -66,7 +66,11 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
         isAPICallInProgress = true
         getArgoAppDetail(appName, clusterId, namespace)
             .then((appDetailResponse) => {
-                IndexStore.publishAppDetails(appDetailResponse.result, AppType.EXTERNAL_ARGO_APP)
+                const genericAppDetail: AppDetails = {
+                    ...appDetailResponse.result,
+                    deploymentAppType: DeploymentAppTypes.GITOPS,
+                }
+                IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_ARGO_APP)
                 setErrorResponseCode(undefined)
                 setIsLoading(false)
             })
