@@ -1399,7 +1399,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
         return (
-            <div className="bcn-0 w-100">
+            <div className="bcn-0 w-100 h-100">
                 <section className="flex-1 bcn-0 flex left column">
                     <div className="flex left column px-20 py-16 dc__gap-24 w-100">
                         <FeatureTitleWithInfo

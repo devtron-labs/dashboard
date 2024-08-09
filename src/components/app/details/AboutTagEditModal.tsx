@@ -22,6 +22,7 @@ import {
     TagLabelSelect,
     TagType,
     DEFAULT_TAG_DATA,
+    APP_TYPE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
@@ -127,6 +128,7 @@ export default function AboutTagEditModal({
                         selectedProjectId={appMetaInfo.projectId}
                         reloadProjectTags={reloadMandatoryProjects}
                         appType={appType}
+                        hidePropagateTag={appType === APP_TYPE.HELM_CHART}
                     />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
