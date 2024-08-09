@@ -17,22 +17,31 @@ import {
     OptionType,
     FilterChips,
     SortableTableHeaderCell,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useMemo, useState } from 'react'
-import { ScanDetailsModal } from '@Components/common'
+import { useMemo, useRef, useState } from 'react'
+import { ScanDetailsModal, getSeverityWithCount } from '@Components/common'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
-import { ScanDetailsType, SearchType, ScanListUrlFiltersType, SecurityListSortableKeys } from './types'
-import { getSearchLabelFromValue, getSeverityWithCount, parseSearchParams } from './utils'
+import {
+    ScanDetailsType,
+    SearchType,
+    ScanListUrlFiltersType,
+    SecurityListSortableKeys,
+    SecurityScansTabMultiFilterKeys,
+    ScanListPayloadType,
+    SeverityFilterValues,
+} from './types'
+import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchParams } from './utils'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
-import { InitialScanDetails } from './constants'
+import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import { SecurityScanType } from '../security.types'
 
 export const SecurityScansTab = () => {
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
         parseSearchParams,
     })
-    const [scanDetails, setScanDetails] = useState<ScanDetailsType>(InitialScanDetails)
+    const [scanDetails, setScanDetails] = useState<ScanDetailsType>(INITIAL_SCAN_DETAILS)
     const {
         searchKey,
         pageSize,
@@ -51,12 +60,12 @@ export const SecurityScansTab = () => {
         updateSearchParams,
     } = urlFilters
 
-    const payload = {
+    const payload: ScanListPayloadType = {
         offset,
         size: pageSize,
         appName: searchType === SearchType.APPLICATION ? searchKey : '',
         cveName: searchType === SearchType.VULNERABILITY ? searchKey : '',
-        severity: severity.map((severityId) => +severityId),
+        severity: severity.map((severityFilterValue) => SeverityFilterValues[severityFilterValue]),
         clusterIds: cluster.map((clusterId) => +clusterId),
         envIds: environment.map((envId) => +envId),
         sortBy,
@@ -84,33 +93,26 @@ export const SecurityScansTab = () => {
         return clusterEnvListResult?.filters?.clusters.find((clusterOption) => clusterOption.value === clusterId).label
     }
 
-    const getEnvLabelFromId = (envId: string) => {
-        return clusterEnvListResult?.filters?.environments.find((envOption) => envOption.value === envId).label
-    }
+    const getEnvLabelFromId = (envId: string) =>
+        clusterEnvListResult?.filters?.environments.find((envOption) => envOption.value === envId).label
 
     const getLabelFromValue = (filterLabel: string, filterValue: string): string => {
-        if (filterLabel === 'severity') {
-            switch (filterValue) {
-                case '5':
-                    return 'Unknown'
-                case '3':
-                    return 'High'
-                case '2':
-                    return 'Critical'
-                case '1':
-                    return 'Medium'
-                default:
-                    return 'Low'
-            }
-        }
-        if (filterLabel === 'environment') {
+        if (filterLabel === SecurityScansTabMultiFilterKeys.environment) {
             return getEnvLabelFromId(filterValue)
         }
-        return getClusterLabelFromId(filterValue)
+        if (filterLabel === SecurityScansTabMultiFilterKeys.cluster) {
+            return getClusterLabelFromId(filterValue)
+        }
+        return getSeverityFilterLabelFromValue(filterValue)
     }
 
+    const abortControllerRef = useRef(new AbortController())
     const [scanListLoading, securityScansResult, scanListError] = useAsync(
-        () => getSecurityScanList(payload),
+        () =>
+            abortPreviousRequests(
+                () => getSecurityScanList(payload, abortControllerRef.current.signal),
+                abortControllerRef,
+            ),
         [filterConfig],
     )
 
@@ -134,8 +136,12 @@ export const SecurityScansTab = () => {
         updateSearchParams({ searchType: selectedOption.value })
     }
 
+    const handleAppNameSorting = () => handleSorting(SecurityListSortableKeys.APP_NAME)
+    const handleEnvNameSorting = () => handleSorting(SecurityListSortableKeys.ENV_NAME)
+    const handleLastCheckedSorting = () => handleSorting(SecurityListSortableKeys.LAST_CHECKED)
+
     const handleCloseScanDetailsModal = () => {
-        setScanDetails(InitialScanDetails)
+        setScanDetails(INITIAL_SCAN_DETAILS)
     }
 
     const handleOpenScanDetailsModal = (event: React.MouseEvent, scan: SecurityScanType) => {
@@ -160,7 +166,7 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={() => handleSorting(SecurityListSortableKeys.APP_NAME)}
+                    triggerSorting={handleAppNameSorting}
                 />
             </span>
             <span className="fs-12 lh-20 fw-6 cn-7">
@@ -170,7 +176,7 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={() => handleSorting(SecurityListSortableKeys.ENV_NAME)}
+                    triggerSorting={handleEnvNameSorting}
                 />
             </span>
             <span className="fs-12 lh-20 fw-6 cn-7">SECURITY SCAN</span>
@@ -181,7 +187,7 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={() => handleSorting(SecurityListSortableKeys.LAST_CHECKED)}
+                    triggerSorting={handleLastCheckedSorting}
                 />
             </span>
         </div>
@@ -189,16 +195,12 @@ export const SecurityScansTab = () => {
 
     const renderFilters = () => {
         return (
-            <div className="flexbox dc__content-space px-20 py-12">
-                <div className="flexbox">
+            <div className="flexbox dc__content-space px-20 py-12 dc__gap-16">
+                <div className="flexbox flex-grow-1">
                     <div className="w-150">
                         <SelectPicker
-                            label=""
                             value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
-                            options={[
-                                { label: 'Application', value: 'appName' },
-                                { label: 'Vulnerability', value: 'cveName' },
-                            ]}
+                            options={SEARCH_TYPE_OPTIONS}
                             classNamePrefix="search-type__select-picker"
                             inputId="search-type__select-picker"
                             name="search-type__select-picker"
@@ -206,15 +208,13 @@ export const SecurityScansTab = () => {
                             onChange={updateSearchType}
                         />
                     </div>
-                    <div style={{ width: 700 }}>
-                        <SearchBar
-                            containerClassName=""
-                            initialSearchText={searchKey}
-                            inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
-                            handleEnter={handleSearch}
-                            height="36"
-                        />
-                    </div>
+                    <SearchBar
+                        containerClassName="flex-grow-1"
+                        initialSearchText={searchKey}
+                        inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
+                        handleEnter={handleSearch}
+                        componentSize={ComponentSizeType.large}
+                    />
                 </div>
                 <div className="flexbox dc__gap-8">
                     <FilterButton
@@ -267,8 +267,11 @@ export const SecurityScansTab = () => {
             const arrayLoading = Array.from(Array(3)).map((index) => index)
             return (
                 <div>
-                    {arrayLoading.map(() => (
-                        <div className="display-grid table__row-grid show-shimmer-loading dc__gap-16 px-20 py-10">
+                    {arrayLoading.map((value) => (
+                        <div
+                            className="display-grid table__row-grid show-shimmer-loading dc__gap-16 px-20 py-10"
+                            key={value}
+                        >
                             <span className="child child-shimmer-loading" />
                             <span className="child child-shimmer-loading" />
                             <span className="child child-shimmer-loading" />
@@ -281,7 +284,8 @@ export const SecurityScansTab = () => {
         }
 
         if (!securityScansResult.result.securityScans.length) {
-            if (searchKey || severity.length || cluster.length || environment.length) {
+            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
+            if (areFiltersActive) {
                 return <GenericFilterEmptyState handleClearFilters={clearFilters} />
             }
 
@@ -295,6 +299,7 @@ export const SecurityScansTab = () => {
                         <div
                             className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
                             onClick={(event) => handleOpenScanDetailsModal(event, scan)}
+                            key={`${scan.name}-${scan.environment}`}
                         >
                             <ICDevtron className="icon-dim-24 dc__no-shrink" />
                             <span
@@ -329,7 +334,7 @@ export const SecurityScansTab = () => {
 
     const renderScanDetailsModal = () => {
         if (scanDetails.uniqueId.appId) {
-            return <ScanDetailsModal uniqueId={scanDetails.uniqueId} close={handleCloseScanDetailsModal} />
+            return <ScanDetailsModal showAppInfo uniqueId={scanDetails.uniqueId} close={handleCloseScanDetailsModal} />
         }
         return null
     }

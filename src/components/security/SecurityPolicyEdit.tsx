@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import ReactSelect from 'react-select'
 import { showError, Progressing, Reload, Severity } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
@@ -303,11 +303,11 @@ export class SecurityPolicyEdit extends Component<
     }
 
     private renderVulnerabilitiesCard(v: VulnerabilityPolicy, severities: SeverityPolicy[]) {
-        const critical = severities.filter((s) => s.severity === 'critical')[0]
-        const medium = severities.filter((s) => s.severity === 'medium')[0]
-        const low = severities.filter((s) => s.severity === 'low')[0]
-        const high = severities.filter((s) => s.severity === 'high')[0]
-        const unknown = severities.filter((s) => s.severity === 'unknown')[0]
+        const critical = severities.filter((s) => s.severity === Severity.CRITICAL)[0]
+        const medium = severities.filter((s) => s.severity === Severity.MEDIUM)[0]
+        const low = severities.filter((s) => s.severity === Severity.LOW)[0]
+        const high = severities.filter((s) => s.severity === Severity.HIGH)[0]
+        const unknown = severities.filter((s) => s.severity === Severity.UNKNOWN)[0]
         return (
             <>
                 {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}

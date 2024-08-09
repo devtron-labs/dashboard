@@ -106,7 +106,7 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan bcn-0 flexbox-col flex-grow-1">
+            <div className="security-scan bcn-0 flexbox-col min-h-100">
                 {this.renderPageheader()}
                 {this.props.serverMode === SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()

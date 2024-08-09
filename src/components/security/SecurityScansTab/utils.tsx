@@ -1,5 +1,5 @@
-import { SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
-import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
+import { Severity } from '@devtron-labs/devtron-fe-common-lib'
+import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys, SeverityMapping } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
@@ -15,31 +15,17 @@ export const getSearchLabelFromValue = (searchType: string) => {
     return 'Application'
 }
 
-export const getSeverityWithCount = (severityCount: SeverityCount) => {
-    if (severityCount.critical) {
-        return (
-            <span className="severity-chip severity-chip--critical dc__w-fit-content">
-                {severityCount.critical} Critical
-            </span>
-        )
+export const getSeverityFilterLabelFromValue = (severity: string) => {
+    switch (severity) {
+        case Severity.CRITICAL:
+            return SeverityMapping.critical
+        case Severity.HIGH:
+            return SeverityMapping.high
+        case Severity.MEDIUM:
+            return SeverityMapping.medium
+        case Severity.LOW:
+            return SeverityMapping.low
+        default:
+            return SeverityMapping.unknown
     }
-    if (severityCount.high) {
-        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
-    }
-    if (severityCount.medium) {
-        return (
-            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
-        )
-    }
-    if (severityCount.low) {
-        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
-    }
-    if (severityCount.unknown) {
-        return (
-            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
-                {severityCount.unknown} Unknown
-            </span>
-        )
-    }
-    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }

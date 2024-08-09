@@ -25,6 +25,7 @@ import {
     LastExecutionResponseType,
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
+    getSortedVulnerabilities,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -270,20 +271,7 @@ function getLastExecution(queryString: number | string): Promise<ResponseType> {
 
 function parseLastExecutionResponse(response): LastExecutionResponseType {
     const vulnerabilities = response.result.vulnerabilities || []
-    const critical = vulnerabilities
-        .filter((v) => v.severity === 'critical')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const high = vulnerabilities
-        .filter((v) => v.severity === 'high')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const medium = vulnerabilities
-        .filter((v) => v.severity === 'medium')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const low = vulnerabilities.filter((v) => v.severity === 'low').sort((a, b) => sortCallback('cveName', a, b))
-    const unknown = vulnerabilities
-        .filter((v) => v.severity === 'unknown')
-        .sort((a, b) => sortCallback('cveName', a, b))
-    const groupedVulnerabilities = critical.concat(high, medium, low, unknown)
+    const groupedVulnerabilities = getSortedVulnerabilities(vulnerabilities)
     return {
         ...response,
         result: {
@@ -292,11 +280,11 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
             lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
             objectType: response.result.objectType,
             severityCount: {
-                critical: response.result?.severityCount?.critical,
-                high: response.result?.severityCount?.high,
-                medium: response.result?.severityCount?.medium,
-                low: response.result?.severityCount?.low,
-                unknown: response.result?.severityCount?.unknown,
+                critical: response.result?.severityCount?.critical ?? 0,
+                high: response.result?.severityCount?.high ?? 0,
+                medium: response.result?.severityCount?.medium ?? 0,
+                low: response.result?.severityCount?.low ?? 0,
+                unknown: response.result?.severityCount?.unknown ?? 0,
             },
             vulnerabilities: groupedVulnerabilities.map((cve) => {
                 return {
@@ -311,24 +299,6 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
             scanToolId: response.result.scanToolId,
         },
     }
-}
-
-// Might be dead code
-export function getLastExecutionById(scanExecutionId: number | string): Promise<LastExecutionResponseType> {
-    const queryString = `executionId=${scanExecutionId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
-}
-
-export function getLastExecutionByAppAndEnv(
-    appId: number | string,
-    envId: number | string,
-): Promise<LastExecutionResponseType> {
-    const queryString = `envId=${envId}&appId=${appId}`
-    return getLastExecution(queryString).then((response) => {
-        return parseLastExecutionResponse(response)
-    })
 }
 
 export function getLastExecutionByImage(image: string): Promise<LastExecutionResponseType> {

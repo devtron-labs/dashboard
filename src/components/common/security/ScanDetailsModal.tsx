@@ -37,6 +37,7 @@ import { getLastExecutionByImageScanDeploy } from '../../../services/service'
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
 interface ScanDetailsModalProps {
+    showAppInfo?: boolean
     uniqueId: ExecutionId
     close: () => void
 }
@@ -133,7 +134,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     renderHeader() {
         return (
             <div className="trigger-modal__header">
-                <span className="fs-16 lh-24 fw-6 cn-9">Security Vulnerabilities</span>
+                <h2 className="fs-16 lh-24 fw-6 cn-9 m-0-imp">Security Vulnerabilities</h2>
                 <button type="button" className="dc__transparent p-0 h-20" onClick={this.props.close}>
                     <Close className="icon-dim-20" />
                 </button>
@@ -159,7 +160,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
             <div className="px-20 py-10 flexbox dc__align-items-center dc__gap-12 justify-start dc__border-bottom-n1 dc__position-sticky dc__top-0 bcn-0">
                 {appEnvConfig.map((data) =>
                     data.value ? (
-                        <div className="flexbox dc__align-items-center dc__gap-4">
+                        <div className="flexbox dc__align-items-center dc__gap-4" key={data.label}>
                             <span className="fw-6 fs-13 lh-20 cn-9">{`${data.label}:`}</span>
                             {data.link ? (
                                 <Link to={data.link} className="dc__no-decor">
@@ -212,6 +213,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
             <Drawer position="right" width="800px" onEscape={this.props.close}>
                 <div className="modal-body--scan-details" ref={this.scanDetailsRef} onClick={stopPropagation}>
                     {this.renderHeader()}
+                    {this.renderAppEnvInfo()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (
                             <Progressing pageLoader />
@@ -221,7 +223,6 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                             <NoVulnerabilityViewWithTool scanToolId={this.state.scanToolId} />
                         ) : (
                             <div className="trigger-modal__body trigger-modal__body--security-scan">
-                                {this.renderAppEnvInfo()}
                                 {this.renderScannedObjectInfo()}
                                 {this.renderTable()}
                             </div>
