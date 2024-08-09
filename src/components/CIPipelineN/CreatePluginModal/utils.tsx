@@ -2,6 +2,8 @@ import { components } from 'react-select'
 import {
     commonSelectStyles,
     InlineStepDetailType,
+    PluginImageContainer,
+    SelectPickerOptionType,
     validateURL,
     ValidationResponseType,
     VariableType,
@@ -13,6 +15,8 @@ import {
     PathPortMappingType,
     GetCreatePluginPayloadParamsType,
     CreatePluginPayloadType,
+    ParentPluginListItemType,
+    GetSelectPickerOptionsFromParentPluginListReturnType,
 } from './types'
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 
@@ -194,3 +198,36 @@ export const getCreatePluginPayload = ({
         },
     }
 }
+
+export const getSelectPickerOptionsFromParentPluginList = (
+    parentPluginList: ParentPluginListItemType[],
+    pluginName: string,
+): GetSelectPickerOptionsFromParentPluginListReturnType =>
+    parentPluginList?.reduce(
+        (acc, plugin) => {
+            const option: SelectPickerOptionType = {
+                label: plugin.name,
+                value: plugin.id,
+                startIcon: (
+                    <PluginImageContainer
+                        fallbackImageClassName="icon-dim-24 p-2"
+                        imageProps={{
+                            src: plugin.icon,
+                            alt: pluginName,
+                            width: 20,
+                            height: 20,
+                            className: 'p-2 dc__no-shrink',
+                        }}
+                    />
+                ),
+            }
+
+            acc.options.push(option)
+            if (plugin.name === pluginName) {
+                acc.selectedOption = option
+            }
+
+            return acc
+        },
+        { options: [] as SelectPickerOptionType[], selectedOption: null as SelectPickerOptionType | null },
+    ) || { options: [], selectedOption: null }

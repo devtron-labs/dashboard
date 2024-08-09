@@ -6,6 +6,7 @@ import {
     PluginDataStoreType,
     PluginDetailType,
     PortMapType,
+    SelectPickerOptionType,
     ServerErrors,
     StepType,
     VariableType,
@@ -40,11 +41,12 @@ export enum CreatePluginActionType {
     UPDATE_PLUGIN_ICON = 'updatePluginIcon',
     UPDATE_NEW_PLUGIN_NAME = 'updateNewPluginName',
     UPDATE_PARENT_PLUGIN = 'updateParentPlugin',
-    UPDATE_PLUGIN_ID = 'updatePluginId',
+    UPDATE_PLUGIN_IDENTIFIER = 'updatePluginIdentifier',
     UPDATE_PLUGIN_VERSION = 'updatePluginVersion',
     UPDATE_DOCUMENTATION_LINK = 'updateDocumentationLink',
     UPDATE_DESCRIPTION = 'updateDescription',
     UPDATE_TAGS = 'updateTags',
+    UPDATE_ICON_ERROR = 'updateIconError',
     TOGGLE_INPUT_VARIABLE_ALLOW_EMPTY_VALUE = 'toggleInputVariableAllowEmptyValue',
     TOGGLE_REPLACE_CUSTOM_TASK = 'toggleReplaceCustomTask',
 }
@@ -52,10 +54,11 @@ export enum CreatePluginActionType {
 type CreatePluginSingleInputActionType =
     | CreatePluginActionType.UPDATE_PLUGIN_ICON
     | CreatePluginActionType.UPDATE_NEW_PLUGIN_NAME
-    | CreatePluginActionType.UPDATE_PLUGIN_ID
+    | CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER
     | CreatePluginActionType.UPDATE_PLUGIN_VERSION
     | CreatePluginActionType.UPDATE_DOCUMENTATION_LINK
     | CreatePluginActionType.UPDATE_DESCRIPTION
+    | CreatePluginActionType.UPDATE_ICON_ERROR
 
 type CreatePluginHandleChangeParamsType =
     | {
@@ -247,4 +250,9 @@ export interface CreatePluginSuccessResponseType {
 
 export interface HandleCreatePluginReturnType extends CreatePluginSuccessResponseType {
     hasError: boolean
+}
+
+export interface GetSelectPickerOptionsFromParentPluginListReturnType {
+    options: SelectPickerOptionType[]
+    selectedOption: SelectPickerOptionType
 }

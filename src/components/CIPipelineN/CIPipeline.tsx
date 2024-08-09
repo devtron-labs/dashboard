@@ -207,7 +207,6 @@ export default function CIPipeline({
 
     const selectedBranchRef = useRef(null)
 
-    // TODO: Can remove all the existing props and use context for all the components
     const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
         const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
         if (mandatoryPluginData?.pluginData.length) {

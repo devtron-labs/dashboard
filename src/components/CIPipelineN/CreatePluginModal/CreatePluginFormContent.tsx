@@ -10,7 +10,6 @@ import {
     MultiValueRemove,
     Option,
     OptionType,
-    PluginImageContainer,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
@@ -30,7 +29,12 @@ import { ReactNode } from 'react'
 import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
-import { getIsTagValid, PluginCreatableTagClearIndicator, pluginCreatableTagSelectStyles } from './utils'
+import {
+    getIsTagValid,
+    getSelectPickerOptionsFromParentPluginList,
+    PluginCreatableTagClearIndicator,
+    pluginCreatableTagSelectStyles,
+} from './utils'
 
 const CreatePluginFormContent = ({
     isLoadingParentPluginList,
@@ -72,35 +76,7 @@ const CreatePluginFormContent = ({
 
     const renderPluginName = () => {
         if (currentTab === CreatePluginFormViewType.EXISTING_PLUGIN) {
-            // TODO: Can make util
-            const { options, selectedOption } = parentPluginList?.reduce(
-                (acc, plugin) => {
-                    const option: SelectPickerOptionType = {
-                        label: plugin.name,
-                        value: plugin.id,
-                        startIcon: (
-                            <PluginImageContainer
-                                fallbackImageClassName="icon-dim-24 p-2"
-                                imageProps={{
-                                    src: plugin.icon,
-                                    alt: name,
-                                    width: 20,
-                                    height: 20,
-                                    className: 'p-2 dc__no-shrink',
-                                }}
-                            />
-                        ),
-                    }
-
-                    acc.options.push(option)
-                    if (plugin.name === name) {
-                        acc.selectedOption = option
-                    }
-
-                    return acc
-                },
-                { options: [] as SelectPickerOptionType[], selectedOption: null as SelectPickerOptionType | null },
-            ) || { options: [], selectedOption: null }
+            const { options, selectedOption } = getSelectPickerOptionsFromParentPluginList(parentPluginList, name)
 
             return (
                 <SelectPicker
@@ -290,7 +266,7 @@ const CreatePluginFormContent = ({
                         label="Plugin ID"
                         value={pluginIdentifier}
                         error={pluginFormError.pluginIdentifier}
-                        action={CreatePluginActionType.UPDATE_PLUGIN_ID}
+                        action={CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER}
                         handleChange={handleChange}
                         placeholder="Enter plugin ID"
                         disabled={currentTab === CreatePluginFormViewType.EXISTING_PLUGIN}

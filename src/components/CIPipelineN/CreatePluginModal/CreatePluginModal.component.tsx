@@ -24,6 +24,8 @@ import {
     VariableType,
     VisibleModal2,
     validateSemanticVersioning,
+    PluginDataStoreType,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
@@ -89,6 +91,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const [pluginFormError, setPluginFormError] = useState<CreatePluginFormErrorType>(
         structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR),
     )
+    // TODO: Load on abortController as well
     const [arePluginDetailsLoading, setArePluginDetailsLoading] = useState<boolean>(false)
     const [pluginDetailsError, setPluginDetailsError] = useState<ServerErrors>(null)
     const [selectedPluginVersions, setSelectedPluginVersions] = useState<
@@ -105,6 +108,35 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         handleClose()
     }
 
+    const handleUpdateFormWithPluginData = (
+        clonedPluginForm: CreatePluginFormType,
+        pluginDetails: PluginDataStoreType['pluginVersionStore'][0],
+    ): CreatePluginFormType => {
+        const { pluginIdentifier, pluginVersion, docLink, description, tags, inputVariables, icon } = pluginDetails
+        const latestVersionInputVariablesMap = inputVariables.reduce((acc, inputVariable) => {
+            acc[inputVariable.name] = inputVariable
+            return acc
+        }, {})
+
+        return {
+            ...clonedPluginForm,
+            icon,
+            pluginIdentifier,
+            pluginVersion,
+            docLink,
+            description,
+            tags,
+            // traversing on our input variables and setting allowEmptyValue on basis of latest plugin's input variables
+            inputVariables: clonedPluginForm.inputVariables.map((inputVariable) => {
+                const latestVersionInputVariable = latestVersionInputVariablesMap[inputVariable.name]
+                return {
+                    ...inputVariable,
+                    allowEmptyValue: latestVersionInputVariable ? latestVersionInputVariable.allowEmptyValue : false,
+                }
+            }),
+        }
+    }
+
     /**
      * @description This method is used to prefill the form with the selected plugin (latest version) details.
      */
@@ -113,44 +145,31 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     ) => {
         try {
             const { id: parentPluginId } = clonedPluginForm
+            if (pluginDataStore.parentPluginStore[parentPluginId]) {
+                const { latestVersionId, pluginVersions } = pluginDataStore.parentPluginStore[parentPluginId]
+                setSelectedPluginVersions(pluginVersions.map((pluginVersionData) => pluginVersionData.pluginVersion))
+                const latestPluginDetails = pluginDataStore.pluginVersionStore[latestVersionId]
+                return handleUpdateFormWithPluginData(clonedPluginForm, latestPluginDetails)
+            }
+
             setArePluginDetailsLoading(true)
-            // TODO: Can check pluginDataStore before making the API call
+
             const {
                 pluginStore: { parentPluginStore, pluginVersionStore },
-            } = await getPluginsDetail({
-                appId: appId ? +appId : null,
-                parentPluginIds: [parentPluginId],
-                signal: pluginDetailsAbortControllerRef.current.signal,
-            })
-            const { latestVersionId, pluginVersions, icon } = parentPluginStore[parentPluginId]
-            const { pluginIdentifier, pluginVersion, docLink, description, tags, inputVariables } =
-                pluginVersionStore[latestVersionId]
-            const latestVersionInputVariablesMap = inputVariables.reduce((acc, inputVariable) => {
-                acc[inputVariable.name] = inputVariable
-                return acc
-            }, {})
+            } = await abortPreviousRequests(
+                () =>
+                    getPluginsDetail({
+                        appId: appId ? +appId : null,
+                        parentPluginIds: [parentPluginId],
+                        signal: pluginDetailsAbortControllerRef.current.signal,
+                    }),
+                pluginDetailsAbortControllerRef,
+            )
 
+            const { latestVersionId, pluginVersions } = parentPluginStore[parentPluginId]
             setSelectedPluginVersions(pluginVersions.map((pluginVersionData) => pluginVersionData.pluginVersion))
 
-            return {
-                ...clonedPluginForm,
-                icon,
-                pluginIdentifier,
-                pluginVersion,
-                docLink,
-                description,
-                tags,
-                // traversing on our input variables and setting allowEmptyValue on basis of latest plugin's input variables
-                inputVariables: clonedPluginForm.inputVariables.map((inputVariable) => {
-                    const latestVersionInputVariable = latestVersionInputVariablesMap[inputVariable.name]
-                    return {
-                        ...inputVariable,
-                        allowEmptyValue: latestVersionInputVariable
-                            ? latestVersionInputVariable.allowEmptyValue
-                            : false,
-                    }
-                }),
-            }
+            return handleUpdateFormWithPluginData(clonedPluginForm, pluginVersionStore[latestVersionId])
         } catch (error) {
             if (!getIsRequestAborted(error)) {
                 setPluginDetailsError(error)
@@ -188,7 +207,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 clonedPluginForm.name = payload.name
                 clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)
                 break
-            case CreatePluginActionType.UPDATE_PLUGIN_ID:
+            case CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER:
                 clonedPluginForm.pluginIdentifier = payload
                 clonedPluginFormError.pluginIdentifier = validateName(payload).message
                 break
@@ -212,6 +231,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 clonedPluginForm.inputVariables[payload.index].allowEmptyValue =
                     !clonedPluginForm.inputVariables[payload.index].allowEmptyValue
                 break
+            case CreatePluginActionType.UPDATE_ICON_ERROR:
+                clonedPluginFormError.icon = payload
+                break
             case CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK:
                 clonedPluginForm.shouldReplaceCustomTask = !clonedPluginForm.shouldReplaceCustomTask
                 break
@@ -223,13 +245,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         setPluginFormError(clonedPluginFormError)
     }
 
-    /* Have to make an exception (i.e, having a separate handler for form error update) 
-     for icon error since it is being handled by component itself 
-    */
     const handleIconError: EditImageFormFieldProps['handleError'] = (errorMessage) => {
-        const clonedPluginFormError = structuredClone(pluginFormError)
-        clonedPluginFormError.icon = errorMessage
-        setPluginFormError(clonedPluginFormError)
+        handleChange({
+            action: CreatePluginActionType.UPDATE_ICON_ERROR,
+            payload: errorMessage,
+        })
     }
 
     const handleToggleShouldReplaceCustomTask = () => {
@@ -266,6 +286,52 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         }
     }
 
+    const handleReplacePluginAfterCreation = (pluginVersionId: number, updatedPluginDataStore: PluginDataStoreType) => {
+        const clonedFormData = structuredClone(formData)
+
+        const pluginFormInputVariableMap: Record<string, string> = pluginForm.inputVariables.reduce(
+            (acc, inputVariable) => {
+                acc[inputVariable.name] = inputVariable.value
+                return acc
+            },
+            {} as Record<string, string>,
+        )
+        const { parentPluginId, inputVariables, outputVariables } =
+            updatedPluginDataStore.pluginVersionStore[pluginVersionId]
+
+        const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
+        selectedTask.name = pluginForm.name
+        selectedTask.description = pluginForm.description
+        selectedTask.stepType = PluginType.PLUGIN_REF
+        selectedTask.outputDirectoryPath = null
+        selectedTask.inlineStepDetail = null
+        selectedTask.pluginRefStepDetail = {
+            id: 0,
+            pluginId: pluginVersionId,
+            inputVariables:
+                inputVariables?.map((inputVariable) => ({
+                    ...inputVariable,
+                    value: pluginFormInputVariableMap[inputVariable.name] || '',
+                })) || [],
+            outputVariables: outputVariables || [],
+            conditionDetails: [],
+        }
+        selectedTask.isMandatory =
+            isRequired &&
+            isRequired(
+                clonedFormData,
+                mandatoryPluginsMap,
+                activeStageName,
+                parentPluginId,
+                updatedPluginDataStore,
+                false,
+            )
+        calculateLastStepDetail(false, clonedFormData, activeStageName)
+        validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, updatedPluginDataStore)
+        validateStage(BuildStageVariable.PostBuild, clonedFormData, undefined, updatedPluginDataStore)
+        setFormData(clonedFormData)
+    }
+
     const handleSubmit = async () => {
         ReactGA.event({
             category: 'Pipeline configuration',
@@ -297,7 +363,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
 
         try {
             const [
-                newTags,
+                updatedTags,
                 {
                     pluginStore: { parentPluginStore, pluginVersionStore },
                 },
@@ -310,52 +376,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             ])
 
             const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
-            const pluginFormInputVariableMap: Record<string, string> = pluginForm.inputVariables.reduce(
-                (acc, inputVariable) => {
-                    acc[inputVariable.name] = inputVariable.value
-                    return acc
-                },
-                {} as Record<string, string>,
-            )
-            const { parentPluginId, inputVariables, outputVariables } =
-                clonedPluginDataStore.pluginVersionStore[pluginVersionId]
-            handleUpdateAvailableTags(newTags)
+            handleUpdateAvailableTags(updatedTags)
             handlePluginDataStoreUpdate(clonedPluginDataStore)
 
             if (pluginForm.shouldReplaceCustomTask) {
-                const clonedFormData = structuredClone(formData)
-                const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
-                // FIXME: Verify again with product
-                selectedTask.name = pluginForm.name
-                selectedTask.description = pluginForm.description
-                selectedTask.stepType = PluginType.PLUGIN_REF
-                selectedTask.outputDirectoryPath = null
-                selectedTask.inlineStepDetail = null
-                selectedTask.pluginRefStepDetail = {
-                    id: 0,
-                    pluginId: pluginVersionId,
-                    inputVariables:
-                        inputVariables?.map((inputVariable) => ({
-                            ...inputVariable,
-                            value: pluginFormInputVariableMap[inputVariable.name] || '',
-                        })) || [],
-                    outputVariables: outputVariables || [],
-                    conditionDetails: [],
-                }
-                selectedTask.isMandatory =
-                    isRequired &&
-                    isRequired(
-                        clonedFormData,
-                        mandatoryPluginsMap,
-                        activeStageName,
-                        parentPluginId,
-                        clonedPluginDataStore,
-                        false,
-                    )
-                calculateLastStepDetail(false, clonedFormData, activeStageName)
-                validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, clonedPluginDataStore)
-                validateStage(BuildStageVariable.PostBuild, clonedFormData, undefined, clonedPluginDataStore)
-                setFormData(clonedFormData)
+                handleReplacePluginAfterCreation(pluginVersionId, clonedPluginDataStore)
             }
         } catch (error) {
             toast.error('Unable to retrieve data for newly created plugin')
