@@ -277,7 +277,7 @@ function parseLastExecutionResponse(response): LastExecutionResponseType {
         result: {
             ...response.result,
             scanExecutionId: response.result.ScanExecutionId,
-            lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
+            lastExecution: response.result.executionTime,
             objectType: response.result.objectType,
             severityCount: {
                 critical: response.result?.severityCount?.critical ?? 0,

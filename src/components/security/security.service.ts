@@ -87,7 +87,6 @@ export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: A
                         appId: scan.appId,
                         envId: scan.envId,
                         name: scan.name,
-                        type: scan.type,
                         imageScanDeployInfoId: scan.imageScanDeployInfoId,
                         environment: scan.environment,
                         severityCount: {
@@ -97,7 +96,7 @@ export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: A
                             low: scan.severityCount.low,
                             unknown: scan.severityCount.unknown,
                         },
-                        lastExecution: handleUTCTime(scan.lastChecked) || '-',
+                        lastExecution: scan.lastChecked || '-',
                     }
                 }),
             },

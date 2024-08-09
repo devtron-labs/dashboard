@@ -761,7 +761,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                     ''
                 ) : (
                     <div className='px-24 security-scan-table'>
-                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} />
+                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
                     </div>
                 )}
             </div>

@@ -300,6 +300,8 @@ export const SecurityScansTab = () => {
                             className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
                             onClick={(event) => handleOpenScanDetailsModal(event, scan)}
                             key={`${scan.name}-${scan.environment}`}
+                            role="button"
+                            tabIndex={0}
                         >
                             <ICDevtron className="icon-dim-24 dc__no-shrink" />
                             <span
