@@ -26,7 +26,8 @@ const CreatePluginButton = () => {
             toast.error('Please ensure the task is valid before saving it as a plugin.')
             return
         }
-        const inputVariables: VariableType[] = formData[activeStageName].steps[selectedTaskIndex].inputVariables || []
+        const inputVariables: VariableType[] =
+            formData[activeStageName].steps[selectedTaskIndex]?.inlineStepDetail?.inputVariables || []
 
         const isAnyInputVariableFromPreviousStage = inputVariables.some(
             (variable) => variable.variableType === RefVariableType.FROM_PREVIOUS_STEP,
