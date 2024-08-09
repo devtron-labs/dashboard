@@ -6,7 +6,6 @@ import {
     PluginDataStoreType,
     PluginDetailType,
     PortMapType,
-    RefVariableType,
     SelectPickerOptionType,
     ServerErrors,
     StepType,
@@ -227,9 +226,14 @@ export enum CreatePluginVariableType {
     OUTPUT = 'OUTPUT',
 }
 
-export interface CreatePluginPayloadPluginStepVariableItemType extends Omit<VariableType, 'variableType'> {
+export interface CreatePluginPayloadPluginStepVariableItemType
+    extends Pick<
+        VariableType,
+        'id' | 'name' | 'format' | 'description' | 'allowEmptyValue' | 'defaultValue' | 'value'
+    > {
     variableType: CreatePluginVariableType
-    valueType: RefVariableType
+    valueType: VariableType['variableType']
+    referenceVariableName: VariableType['refVariableName']
     isExposed: true
 }
 

@@ -147,9 +147,16 @@ const parseInputVariablesIntoCreatePluginPayload = (
     variableType: CreatePluginVariableType,
 ): CreatePluginPayloadPluginStepVariableItemType[] =>
     variableList?.map((variable) => ({
-        ...variable,
+        id: variable.id,
+        name: variable.name,
+        format: variable.format,
+        description: variable.description,
+        allowEmptyValue: variable.allowEmptyValue,
+        defaultValue: variable.defaultValue,
+        value: variable.value,
         variableType,
         valueType: variable.variableType,
+        referenceVariableName: variable.refVariableName,
         isExposed: true,
     })) || []
 
