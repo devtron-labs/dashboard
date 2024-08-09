@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { ConfigMapRequest, TemplateListDTO } from './types'
+import { ConfigMapRequest } from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
 export async function getDeploymentTemplate(

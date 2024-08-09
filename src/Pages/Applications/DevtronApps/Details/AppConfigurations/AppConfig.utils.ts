@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ResourceKindType, stringComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, stringComparatorBySortOrder, ConfigResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS, DOCUMENTATION } from '@Config/index'
 
-import { AppConfigStatusItemType, EnvConfigDTO, ConfigResourceType } from '../../service.types'
+import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'
 
 // stage: last configured stage

@@ -12,29 +12,27 @@ import {
     Progressing,
     showError,
     ToastBody,
+    AppEnvDeploymentConfigDTO,
+    AppEnvDeploymentConfigType,
+    ConfigResourceType,
+    DraftState,
+    getAppEnvDeploymentConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import EmptyStateImg from '@Images/cm-cs-empty-state.png'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary } from '@Components/common'
-import {
-    AppEnvDeploymentConfigDTO,
-    AppEnvDeploymentConfigType,
-    ConfigResourceType,
-    ResourceConfigStage,
-} from '@Pages/Applications/DevtronApps/service.types'
+import { ResourceConfigStage } from '@Pages/Applications/DevtronApps/service.types'
 import {
     CMSecretComponentType,
     DraftDetailsForCommentDrawerType,
     CMSecretContainerProps,
     ConfigMapSecretData,
     CMSecretProtectedTab,
-    DraftState,
     CMSecretDeleteModalType,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { EnvConfigObjectKey } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
 
 import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'

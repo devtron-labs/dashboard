@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react'
 import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -25,7 +25,6 @@ import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
-import { EnvResourceType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'

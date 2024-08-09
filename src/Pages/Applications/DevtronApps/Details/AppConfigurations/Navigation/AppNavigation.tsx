@@ -17,8 +17,8 @@
 
 import { ReactNode } from 'react'
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
-import { ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_APPS_STEPS, EnvResourceType, STAGE_NAME } from '../AppConfig.types'
+import { ConditionalWrap, EnvResourceType, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { DEVTRON_APPS_STEPS, STAGE_NAME } from '../AppConfig.types'
 import { URLS } from '../../../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
 import { importComponentFromFELibrary } from '../../../../../../components/common'

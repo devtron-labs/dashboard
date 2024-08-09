@@ -10,27 +10,25 @@ import {
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
     SortingOrder,
+    AppEnvDeploymentConfigType,
+    getAppEnvDeploymentConfig,
+    getDefaultVersionAndPreviousDeploymentOptions,
+    getAppEnvDeploymentConfigList,
+    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    AppEnvDeploymentConfigQueryParamsType,
-    AppEnvDeploymentConfigType,
-} from '@Pages/Applications/DevtronApps/service.types'
-import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
 import { getOptions } from '@Components/deploymentConfig/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
     AppEnvDeploymentConfigQueryParams,
+    AppEnvDeploymentConfigQueryParamsType,
     DeploymentConfigCompareProps,
     DeploymentConfigParams,
 } from '../../AppConfig.types'
 import {
     getCompareEnvironmentSelectorOptions,
-    getAppEnvDeploymentConfigList,
-    getDefaultVersionAndPreviousDeploymentOptions,
     getEnvironmentIdByEnvironmentName,
-    getOptionByValue,
     getPreviousDeploymentOptionValue,
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
@@ -256,7 +254,7 @@ export const DeploymentConfigCompare = ({
         inputId: 'compare-with-environment-selector',
         name: 'compare-with-environment-selector',
         variant: SelectPickerVariantType.BORDERLESS,
-        value: getOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
+        value: getSelectPickerOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
             label: BASE_CONFIGURATIONS.name,
             value: '',
         }),
@@ -276,7 +274,7 @@ export const DeploymentConfigCompare = ({
         variant: SelectPickerVariantType.BORDERLESS,
         isSearchable: false,
         disableDescriptionEllipsis: true,
-        value: getOptionByValue(
+        value: getSelectPickerOptionByValue(
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
                 isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),

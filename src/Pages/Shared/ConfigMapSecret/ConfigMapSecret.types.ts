@@ -243,13 +243,6 @@ export interface ConfigMapSecretData {
     configData: CMSecretConfigData
 }
 
-export enum DraftState {
-    Init = 1,
-    Discarded = 2,
-    Published = 3,
-    AwaitApproval = 4,
-}
-
 export interface OverrideProps {
     overridden: boolean
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void

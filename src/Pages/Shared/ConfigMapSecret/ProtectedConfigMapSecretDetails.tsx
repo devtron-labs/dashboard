@@ -3,8 +3,12 @@ import Tippy from '@tippyjs/react'
 
 import {
     abortPreviousRequests,
+    AppEnvDeploymentConfigType,
+    ConfigResourceType,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
     DeploymentHistoryDiffView,
+    DraftState,
+    getAppEnvDeploymentConfig,
     getIsRequestAborted,
     Progressing,
     showError,
@@ -20,11 +24,8 @@ import {
     CMSecretComponentType,
     CMSecretConfigData,
     CMSecretProtectedTab,
-    DraftState,
     ProtectedConfigMapSecretProps,
 } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
-import { AppEnvDeploymentConfigType, ConfigResourceType } from '@Pages/Applications/DevtronApps/service.types'
 
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
