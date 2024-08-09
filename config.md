@@ -47,5 +47,6 @@
 | SIDEBAR_DT_LOGO                              | ""         | Devtron logo for sidebar (would work if ORGANIZATION_NAME is not given)                                          |
 | SERVICE_WORKER_TIMEOUT                       | "1"        | Timeout value (in minutes) to fetch update for dashboard, change it cautiously as might hamper your update cycle |
 | TRIGGER_API_TIMEOUT                          | 60000      | Default timeout for all API requests for Trigger calls (Deploy artifacts, charts) in DASHBOARD                   |
+| FEATURE_STEP_WISE_LOGS_ENABLE                      | true         | Would segregate logs into tasks     |
 
 # DASHBOARD CONFIG SECRET
