@@ -91,8 +91,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
                 <label>
                     {lastActiveSSO?.name === value ? (
                         <aside className="dc__position-abs dc__right-0 dc__top-0">
-                            {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                            <img src={Check} className="h-32 dc__top-right-radius-3" />
+                            <img src={Check} className="h-32 dc__top-right-radius-3" alt="saved-provider-check" />
                         </aside>
                     ) : (
                         ''
