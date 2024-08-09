@@ -21,6 +21,7 @@ import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
 import { buildClusterVsNamespace } from './AppListService'
 import { OrderBy, SortBy } from '../list/types'
+import { AppListAppliedFilters, AppListPayloadType } from './AppListType'
 
 export const getCurrentTabName = (appType: string): string => {
     switch (appType) {
@@ -55,7 +56,11 @@ export const renderIcon = (appType: string): string => {
     return ArgoCDAppIcon
 }
 
-export const getPayloadFromUrl = (searchQuery: string, appCount: number, showExportCsvButton: boolean) => {
+export const getPayloadFromUrl = (
+    searchQuery: string,
+    appCount: number,
+    showExportCsvButton: boolean,
+): { payload: AppListPayloadType; filterApplied: AppListAppliedFilters } => {
     const params = queryString.parse(searchQuery)
     const search = (params.search as string) || ''
     const environments = params.environment || ''
@@ -86,7 +91,7 @@ export const getPayloadFromUrl = (searchQuery: string, appCount: number, showExp
         .filter((type) => !!type)
 
     // update master filters data (check/uncheck)
-    const filterApplied = {
+    const filterApplied: AppListAppliedFilters = {
         environments: new Set<number>(environmentsArr),
         teams: new Set<number>(teamsArr),
         appStatus: new Set<string>(appStatusArr),
@@ -114,7 +119,7 @@ export const getPayloadFromUrl = (searchQuery: string, appCount: number, showExp
         hOffset = 0
     }
 
-    const payload = {
+    const payload: AppListPayloadType = {
         environments: environmentsArr,
         teams: teamsArr,
         namespaces: clustersAndNamespaces
