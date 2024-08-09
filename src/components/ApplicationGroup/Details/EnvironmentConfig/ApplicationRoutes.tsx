@@ -17,9 +17,10 @@
 import { Fragment } from 'react'
 import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
 import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
-import { EnvResourceType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { ApplicationRouteType } from '../../AppGroup.types'
 
