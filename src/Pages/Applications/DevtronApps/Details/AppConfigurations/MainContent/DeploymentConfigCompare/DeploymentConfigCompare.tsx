@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useLocation, useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -43,11 +43,10 @@ export const DeploymentConfigCompare = ({
     type = 'app',
     goBackURL = '',
     isBaseConfigProtected = false,
+    getNavItemHref,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
-    const { path, params } = useRouteMatch<DeploymentConfigParams>()
-    const { compareTo, resourceType, resourceName, appId, envId } = params
-    const { search } = useLocation()
+    const { compareTo, resourceType, resourceName, appId, envId } = useParams<DeploymentConfigParams>()
 
     // SEARCH PARAMS & SORTING
     const {
@@ -162,7 +161,7 @@ export const DeploymentConfigCompare = ({
             const currentData = comparisonData[0].result
             const compareData = comparisonData[1].result
 
-            const configData = getAppEnvDeploymentConfigList(currentData, compareData, path, params, search, sortOrder)
+            const configData = getAppEnvDeploymentConfigList(currentData, compareData, getNavItemHref, sortOrder)
             return configData
         }
 

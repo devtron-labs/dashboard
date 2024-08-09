@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { ResourceKindType, CollapsibleListItem, AppEnvDeploymentConfigType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ResourceKindType,
+    CollapsibleListItem,
+    AppEnvDeploymentConfigType,
+    EnvResourceType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ViewType } from '@Config/constants'
 import { WorkflowResult } from '@Components/app/details/triggerView/types'
@@ -248,6 +253,7 @@ export type DeploymentConfigCompareProps = {
     environments: EnvironmentOptionType[]
     goBackURL?: string
     isBaseConfigProtected?: boolean
+    getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
 } & (
     | {
           type: 'appGroup'

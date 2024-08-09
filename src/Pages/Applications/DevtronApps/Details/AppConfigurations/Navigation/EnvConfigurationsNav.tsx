@@ -264,7 +264,7 @@ export const EnvConfigurationsNav = ({
     }
 
     const renderCompareWithBtn = () => {
-        const { name: envName } = environmentData
+        const { name: compareTo } = environmentData
 
         // Determine base path based on pathname
         const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)
@@ -276,10 +276,10 @@ export const EnvConfigurationsNav = ({
         let comparePath = ''
         if (paramToCheck === 'envId') {
             comparePath = isOverrideConfig
-                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
+                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
                 : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
         } else if (paramToCheck === 'appId') {
-            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
+            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${compareTo}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
         }
 
         return (
