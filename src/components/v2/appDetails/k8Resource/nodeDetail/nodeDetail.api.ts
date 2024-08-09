@@ -216,7 +216,7 @@ export const downloadLogs = (
     const isExternalArgoApp = ad.appType === AppType.EXTERNAL_ARGO_APP
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId = generateAppIdentifier(ad, applicationObject)
-    let logsURL = `${Host}/${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {

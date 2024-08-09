@@ -366,7 +366,7 @@ const GenericAppList = ({
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
+                    subTitle={isArgoCDAppList ? APPLIST_EMPTY_STATE_MESSAGING.argoCDInfoText : APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
                 />
             </div>
         )
