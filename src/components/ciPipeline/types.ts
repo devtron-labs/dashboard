@@ -401,7 +401,6 @@ export interface BuildType {
 }
 
 export interface PreBuildType {
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     isJobView?: boolean
 }
 

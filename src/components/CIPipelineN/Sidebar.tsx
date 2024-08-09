@@ -45,7 +45,6 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    mandatoryPluginsMap = {},
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -357,7 +356,6 @@ export const Sidebar = ({
                     <div className="pb-16 sidebar-action-container-border">
                         <TaskList
                             withWarning={showMandatoryWarning()}
-                            mandatoryPluginsMap={mandatoryPluginsMap}
                             setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                             isJobView={isJobCard}
                         />

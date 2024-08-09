@@ -29,8 +29,7 @@ import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import EmptyPreDeployment from '../../assets/img/pre-deployment-empty.png'
 import EmptyPostDeployment from '../../assets/img/post-deployment-empty.png'
-import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
-import { PluginCard } from './PluginCard'
+import CustomScriptCard from './CustomScriptCard'
 import { BuildStageVariable, ViewType } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -40,7 +39,6 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const PreBuild: React.FC<PreBuildType> = ({
-    mandatoryPluginsMap = {},
     isJobView,
 }) => {
     const {
@@ -60,6 +58,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
         handlePluginDataStoreUpdate,
         availableTags,
         handleUpdateAvailableTags,
+        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
 
     useEffect(() => {
@@ -157,15 +156,10 @@ export const PreBuild: React.FC<PreBuildType> = ({
 
     function renderPluginList(): JSX.Element {
         return (
-            <div className="px-20 dc__overflow-scroll flexbox-col">
+            <div className="px-20 pb-20 dc__overflow-scroll flexbox-col">
                 <div className="cn-9 fw-6 fs-14 pb-10 pt-20">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
-                    <PluginCard
-                        dataTestId="execute-custom-script-button"
-                        imgSource={PreBuildIcon}
-                        title="Execute custom script"
-                        subTitle="Write a script to perform custom tasks."
-                    />
+                    <CustomScriptCard />
                 </div>
                 <PluginListContainer
                     availableTags={availableTags}
@@ -221,7 +215,7 @@ export const PreBuild: React.FC<PreBuildType> = ({
         }
 
         return (
-            <div className="h-100 dc__overflow-scroll">
+            <div className="flexbox-col flex-grow-1 dc__overflow-scroll">
                 <TaskDetailComponent />
             </div>
         )
