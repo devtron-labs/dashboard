@@ -683,20 +683,16 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
-                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
-                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
-                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
+            {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                    <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            {serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
+                <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                    <ImagePromotion />
+                </Route>
+            )}
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />
