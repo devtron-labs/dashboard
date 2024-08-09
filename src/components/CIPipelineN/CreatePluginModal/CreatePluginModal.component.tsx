@@ -164,6 +164,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                     }),
                 pluginDetailsAbortControllerRef,
             )
+            handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
 
             const { latestVersionId, pluginVersions } = parentPluginStore[parentPluginId]
             setSelectedPluginVersions(pluginVersions.map((pluginVersionData) => pluginVersionData.pluginVersion))
