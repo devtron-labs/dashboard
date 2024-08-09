@@ -177,7 +177,7 @@ export const getCreatePluginPayload = ({
     const inlineStepDetail: InlineStepDetailType = stepData.inlineStepDetail || ({} as InlineStepDetailType)
 
     const pluginInputVariables = parseInputVariablesIntoCreatePluginPayload(
-        inlineStepDetail.inputVariables,
+        pluginForm.inputVariables,
         CreatePluginVariableType.INPUT,
     )
     const pluginOutputVariables = parseInputVariablesIntoCreatePluginPayload(
