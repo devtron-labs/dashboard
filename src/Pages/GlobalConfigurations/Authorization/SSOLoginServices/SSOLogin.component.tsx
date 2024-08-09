@@ -39,24 +39,24 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOConfigType, SSOLoginTabType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
+import Check from '@Icons/ic-selected-corner.png'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
+import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
-} from '../../../../components/common'
+} from '@Components/common'
+import { OIDCType, SSOLoginProps, SSOLoginState, SSOConfigType, SSOLoginTabType } from './ssoConfig.types'
+import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
+import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
 
-import '../../../../components/login/login.scss'
+import '@Components/login/login.scss'
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 
 import sample from './sampleSSOConfig.json'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as UsersIcon } from '../../../../assets/icons/ic-users.svg'
-
-import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/ic-info-warn.svg'
 
 import {
     AUTHORIZATION_CONFIG_TYPES,
@@ -66,9 +66,8 @@ import {
     ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
 } from './constants'
-import { getCodeEditorTextStyles } from './utils'
 import { SSOTabIcons } from './SSOTabIcons'
-import Check from '../../../../assets/icons/ic-selected-corner.png'
+import './ssoLogin.scss'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
@@ -636,7 +635,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div style={getCodeEditorTextStyles()} className="w-100">
+            <div className="w-100 code-editor__text">
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -647,7 +646,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div style={getCodeEditorTextStyles()} className="w-100">
+                <div className="w-100 code-editor__text">
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -836,7 +835,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
         return (
-            <section className="bcn-0">
+            <section className="bcn-0 sso-login__wrapper">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (

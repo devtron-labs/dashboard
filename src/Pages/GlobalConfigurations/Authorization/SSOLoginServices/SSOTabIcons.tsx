@@ -8,9 +8,7 @@ import { ReactComponent as Openshift } from '../../../../assets/icons/ic-openshi
 import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Google } from '../../../../assets/icons/ic-google.svg'
 
-// eslint-disable-next-line consistent-return
 export const SSOTabIcons = ({ provider }: SSOTabIconsTypes) => {
-    // eslint-disable-next-line default-case
     switch (provider) {
         case SSOProvider.google:
             return <Google />
@@ -26,6 +24,8 @@ export const SSOTabIcons = ({ provider }: SSOTabIconsTypes) => {
             return <OIDC />
         case SSOProvider.openshift:
             return <Openshift />
+        default:
+            return null
     }
 }
 

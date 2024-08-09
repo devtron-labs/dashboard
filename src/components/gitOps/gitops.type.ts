@@ -26,15 +26,6 @@ export type GitOpsOrganisationIdType =
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
 
-// export enum GitProvider {
-//     GITHUB = 'GITHUB',
-//     GITLAB = 'GITLAB',
-//     AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
-//     AZURE_DEVOPS = 'AZURE_DEVOPS',
-//     BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
-//     OTHER_GIT_OPS = 'OTHER_GIT_OPS',
-// }
-
 export type GitProviderType = GitProvider | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
