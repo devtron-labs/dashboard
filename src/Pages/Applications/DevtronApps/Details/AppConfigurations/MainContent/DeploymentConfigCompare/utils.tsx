@@ -1,4 +1,3 @@
-import { generatePath } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
 
@@ -33,7 +32,6 @@ import {
     EnvironmentOptionType,
     EnvResourceType,
     AppEnvDeploymentConfigQueryParams,
-    DeploymentConfigParams,
     DiffHeadingDataType,
     DeploymentConfigCompareProps,
 } from '../../AppConfig.types'
@@ -431,9 +429,7 @@ const getConfigMapSecretData = (
 export const getAppEnvDeploymentConfigList = (
     currentList: AppEnvDeploymentConfigDTO,
     compareList: AppEnvDeploymentConfigDTO,
-    path: string,
-    params: DeploymentConfigParams,
-    search: string,
+    getNavItemHref: DeploymentConfigCompareProps['getNavItemHref'],
     sortOrder?: SortingOrder,
 ): Pick<DeploymentConfigDiffProps, 'configList' | 'collapsibleNavList' | 'navList'> => {
     const currentDeploymentData = getDeploymentTemplateDiffViewData(currentList.deploymentTemplate, sortOrder)
@@ -476,7 +472,7 @@ export const getAppEnvDeploymentConfigList = (
         {
             title: deploymentTemplateData.title,
             hasDiff: deploymentTemplateData.hasDiff,
-            href: `${generatePath(path, { ...params, resourceType: EnvResourceType.DeploymentTemplate, resourceName: null })}${search}`,
+            href: getNavItemHref(EnvResourceType.DeploymentTemplate, null),
             onClick: () => {
                 const element = document.querySelector(`#${deploymentTemplateData.id}`)
                 element?.scrollIntoView({ block: 'start' })
@@ -491,7 +487,7 @@ export const getAppEnvDeploymentConfigList = (
             items: cmData.map(({ title, hasDiff, id }) => ({
                 title,
                 hasDiff,
-                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
+                href: getNavItemHref(EnvResourceType.ConfigMap, title),
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({ block: 'start' })
@@ -505,7 +501,7 @@ export const getAppEnvDeploymentConfigList = (
             items: secretData.map(({ title, hasDiff, id }) => ({
                 title,
                 hasDiff,
-                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
+                href: getNavItemHref(EnvResourceType.Secret, title),
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({ block: 'start' })

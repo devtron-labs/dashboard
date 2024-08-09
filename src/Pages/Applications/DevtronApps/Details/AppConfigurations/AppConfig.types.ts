@@ -258,6 +258,7 @@ export type DeploymentConfigCompareProps = {
     environments: EnvironmentOptionType[]
     goBackURL?: string
     isBaseConfigProtected?: boolean
+    getNavItemHref: (resourceType: EnvResourceType, resourceName: string) => string
 } & (
     | {
           type: 'appGroup'
