@@ -150,6 +150,7 @@ const parseInputVariablesIntoCreatePluginPayload = (
         ...variable,
         variableType,
         valueType: variable.variableType,
+        isExposed: true,
     })) || []
 
 export const getCreatePluginPayload = ({

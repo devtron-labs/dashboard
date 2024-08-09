@@ -230,6 +230,7 @@ export enum CreatePluginVariableType {
 export interface CreatePluginPayloadPluginStepVariableItemType extends Omit<VariableType, 'variableType'> {
     variableType: CreatePluginVariableType
     valueType: RefVariableType
+    isExposed: true
 }
 
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {
