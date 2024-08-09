@@ -178,7 +178,7 @@ export interface CreatePluginServiceParamsType {
     stepData: StepType
     appId: number
     pluginForm: CreatePluginFormType
-    availableTags: string[]
+    availableTags?: string[]
 }
 
 export interface GetCreatePluginPayloadParamsType
@@ -237,7 +237,7 @@ export interface CreatePluginPayloadType extends Pick<ParentPluginDTO, 'id' | 'n
     pluginVersions: CreatePluginDetailedPluginVersionDataDTO
 }
 
-export interface CreatePluginParamsType {
+export interface CreatePluginAPIParamsType {
     appId: number
 }
 

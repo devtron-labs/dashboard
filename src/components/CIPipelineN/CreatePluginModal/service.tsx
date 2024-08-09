@@ -7,7 +7,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '@Config/constants'
 import {
-    CreatePluginParamsType,
+    CreatePluginAPIParamsType,
     CreatePluginServiceParamsType,
     CreatePluginSuccessResponseType,
     ParentPluginListItemType,
@@ -26,7 +26,7 @@ export const getParentPluginList = async (appId: number): Promise<ParentPluginLi
             if (id && name) {
                 parentPluginList.push({
                     id,
-                    name: name || '-',
+                    name,
                     icon: icon || '',
                 })
             }
@@ -45,7 +45,7 @@ export const createPlugin = async ({
     pluginForm,
     availableTags,
 }: CreatePluginServiceParamsType): Promise<ResponseType<CreatePluginSuccessResponseType>> => {
-    const queryParams: CreatePluginParamsType = {
+    const queryParams: CreatePluginAPIParamsType = {
         appId,
     }
 

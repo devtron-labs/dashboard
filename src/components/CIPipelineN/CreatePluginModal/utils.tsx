@@ -2,8 +2,6 @@ import { components } from 'react-select'
 import {
     commonSelectStyles,
     InlineStepDetailType,
-    requiredField,
-    validateSemanticVersioning,
     validateURL,
     ValidationResponseType,
     VariableType,
@@ -57,15 +55,6 @@ export const validateDocumentationLink = (docLink: string): ValidationResponseTy
     return validateURL(docLink)
 }
 
-export const validatePluginVersion = (version: string): ValidationResponseType => {
-    const requiredFieldValidation = requiredField(version)
-    if (!requiredFieldValidation.isValid) {
-        return requiredFieldValidation
-    }
-
-    return validateSemanticVersioning(version)
-}
-
 export const pluginCreatableTagSelectStyles = {
     ...commonSelectStyles,
     valueContainer: (base) => ({
@@ -116,9 +105,13 @@ export const PluginCreatableTagClearIndicator = (props) => (
     </components.ClearIndicator>
 )
 
-const getCreatePluginPathArgPortMapping = (
+const getCreatePluginPayloadPathArgPortMapping = (
     inlineStepDetail: InlineStepDetailType,
 ): CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] => {
+    if (!inlineStepDetail) {
+        return []
+    }
+
     const portMapList: CreatePluginPayloadPipelineScriptDTO['pathArgPortMapping'] =
         inlineStepDetail.portMap?.map((portMap) => ({
             typeOfMapping: PathPortMappingType.PORT,
@@ -146,7 +139,7 @@ const getCreatePluginPathArgPortMapping = (
 export const getCreatePluginPayload = ({
     stepData,
     pluginForm,
-    availableTags,
+    availableTags = [],
 }: GetCreatePluginPayloadParamsType): CreatePluginPayloadType => {
     const isCreateView = !pluginForm.id
     const availableTagsMap = availableTags.reduce(
@@ -166,7 +159,7 @@ export const getCreatePluginPayload = ({
         id: pluginForm.id || 0,
         name: isCreateView ? pluginForm.name : '',
         pluginIdentifier: isCreateView ? pluginForm.pluginIdentifier : '',
-        icon: isCreateView ? pluginForm.icon : null,
+        icon: isCreateView ? pluginForm.icon : '',
         pluginVersions: {
             detailedPluginVersionData: [
                 {
@@ -192,7 +185,7 @@ export const getCreatePluginPayload = ({
                                 containerImagePath: inlineStepDetail.containerImagePath,
                                 imagePullSecret: inlineStepDetail.imagePullSecret,
                                 type: inlineStepDetail.scriptType,
-                                pathArgPortMapping: getCreatePluginPathArgPortMapping(inlineStepDetail),
+                                pathArgPortMapping: getCreatePluginPayloadPathArgPortMapping(inlineStepDetail),
                             },
                         },
                     ],

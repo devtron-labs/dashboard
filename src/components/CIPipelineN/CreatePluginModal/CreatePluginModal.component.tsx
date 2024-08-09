@@ -23,6 +23,7 @@ import {
     validateName,
     VariableType,
     VisibleModal2,
+    validateSemanticVersioning,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
@@ -40,7 +41,7 @@ import {
 } from './types'
 import { createPlugin, getParentPluginList } from './service'
 import { CREATE_PLUGIN_DEFAULT_FORM_ERROR } from './constants'
-import { getDefaultPluginFormData, validateDocumentationLink, validatePluginVersion, validateTags } from './utils'
+import { getDefaultPluginFormData, validateDocumentationLink, validateTags } from './utils'
 import './CreatePluginModal.scss'
 
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
@@ -193,7 +194,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 break
             case CreatePluginActionType.UPDATE_PLUGIN_VERSION:
                 clonedPluginForm.pluginVersion = payload
-                clonedPluginFormError.pluginVersion = validatePluginVersion(payload).message
+                clonedPluginFormError.pluginVersion = validateSemanticVersioning(payload).message
                 break
             case CreatePluginActionType.UPDATE_DOCUMENTATION_LINK:
                 clonedPluginForm.docLink = payload
@@ -282,7 +283,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 ...pluginFormError,
                 name: validateDisplayName(pluginForm.name).message,
                 pluginIdentifier: validateName(pluginForm.pluginIdentifier).message,
-                pluginVersion: validatePluginVersion(pluginForm.pluginVersion).message,
+                pluginVersion: validateSemanticVersioning(pluginForm.pluginVersion).message,
             })
             toast.error('Please fill the required fields')
             return
