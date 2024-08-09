@@ -17,7 +17,7 @@
 .white-card {
     border-radius: 8px;
     padding: 16px 20px;
-    border: solid 1px #d6dbdf;
+    border: solid 1px var(--N100);
     background-color: var(--N000);
 
     &.white-card--no-padding {
