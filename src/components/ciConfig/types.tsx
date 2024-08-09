@@ -22,7 +22,6 @@ import {
     DockerConfigOverrideType,
     MandatoryPluginDataType,
     VariableType,
-    MandatoryPluginDetailType,
     CommonNodeAttr,
     WorkflowType,
     Material,

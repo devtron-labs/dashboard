@@ -4,6 +4,7 @@ import {
     ComponentSizeType,
     EditImageFormField,
     GenericSectionErrorState,
+    getIsRequestAborted,
     LoadingIndicator,
     logExceptionToSentry,
     MultiValueChipContainer,
@@ -54,6 +55,8 @@ const CreatePluginFormContent = ({
     prefillFormOnPluginSelection,
     selectedPluginVersions,
 }: CreatePluginFormContentProps) => {
+    const arePluginDetailsLoadingOrAborted = arePluginDetailsLoading || getIsRequestAborted(pluginDetailsError)
+
     const { currentTab, name, pluginIdentifier, docLink, pluginVersion, description, tags, inputVariables, icon } =
         pluginForm
 
@@ -94,7 +97,8 @@ const CreatePluginFormContent = ({
                     autoFocus
                     placeholder="Select plugin"
                     size={ComponentSizeType.large}
-                    isDisabled={isLoadingParentPluginList}
+                    // Should we disable this or allow user to select the plugin since we already have abortController?
+                    isDisabled={isLoadingParentPluginList || arePluginDetailsLoadingOrAborted}
                     onKeyDown={stopPropagation}
                     onChange={handlePluginSelection}
                 />
@@ -186,7 +190,7 @@ const CreatePluginFormContent = ({
     const renderExistingPluginVersionList = () => (
         <div className="flexbox-col dc__gap-4 p-12 mxh-350 dc__overflow-scroll">
             {selectedPluginVersions.map((version) => (
-                <div className="flexbox dc__align-items-center dc__gap-4">
+                <div className="flexbox dc__align-items-center dc__gap-4" key={version}>
                     <ICTag className="icon-dim-16 dc__no-shrink" />
                     <span className="cn-9 fs-13 fw-4 lh-20">{version}</span>
                 </div>
@@ -261,7 +265,7 @@ const CreatePluginFormContent = ({
                 {renderPluginName()}
 
                 {/* Plugin ID */}
-                {showPluginDetailFields && !arePluginDetailsLoading && !pluginDetailsError && (
+                {showPluginDetailFields && !arePluginDetailsLoadingOrAborted && !pluginDetailsError && (
                     <CreatePluginFormField
                         label="Plugin ID"
                         value={pluginIdentifier}
@@ -277,7 +281,7 @@ const CreatePluginFormContent = ({
 
             {!!showPluginDetailFields && (
                 <APIResponseHandler
-                    isLoading={arePluginDetailsLoading}
+                    isLoading={arePluginDetailsLoadingOrAborted}
                     progressingProps={{
                         pageLoader: true,
                     }}
@@ -297,16 +301,16 @@ const CreatePluginFormContent = ({
                             handleChange={handleChange}
                             helperText={
                                 <span className="fs-11">
-                                    Using
+                                    Using&nbsp;
                                     <a
                                         href={SEMANTIC_VERSION_DOCUMENTATION_LINK}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="cb-5 dc__no-decor cursor"
+                                        className="anchor"
                                     >
-                                        &nbsp;semantic versioning&nbsp;
+                                        semantic versioning
                                     </a>
-                                    is recommended for best practices.
+                                    &nbsp;is recommended for best practices.
                                 </span>
                             }
                             placeholder="Eg. 1.0.0"

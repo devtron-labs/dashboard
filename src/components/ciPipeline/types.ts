@@ -20,7 +20,6 @@ import {
     CiPipelineSourceTypeOption,
     Githost,
     ErrorObj,
-    MandatoryPluginDetailType,
     RefVariableType,
     ScriptType,
     PluginType,

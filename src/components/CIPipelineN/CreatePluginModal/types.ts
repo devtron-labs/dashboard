@@ -159,7 +159,7 @@ type PluginTextFieldFieldType =
           autoFocus?: never
       }
     | ({
-          useTextArea?: false | undefined
+          useTextArea?: false
       } & Pick<CustomInputProps, 'helperText' | 'autoFocus'>)
 
 export type CreatePluginFormFieldProps = Pick<CreatePluginFormContentProps, 'handleChange'> &

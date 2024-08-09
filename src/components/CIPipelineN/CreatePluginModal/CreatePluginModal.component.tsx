@@ -91,7 +91,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     const [pluginFormError, setPluginFormError] = useState<CreatePluginFormErrorType>(
         structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR),
     )
-    // TODO: Load on abortController as well
     const [arePluginDetailsLoading, setArePluginDetailsLoading] = useState<boolean>(false)
     const [pluginDetailsError, setPluginDetailsError] = useState<ServerErrors>(null)
     const [selectedPluginVersions, setSelectedPluginVersions] = useState<
@@ -205,6 +204,9 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             case CreatePluginActionType.UPDATE_PARENT_PLUGIN:
                 clonedPluginForm.id = payload.id
                 clonedPluginForm.name = payload.name
+
+                setPluginForm(clonedPluginForm)
+
                 clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)
                 clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
                 break
@@ -317,16 +319,14 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             outputVariables: outputVariables || [],
             conditionDetails: [],
         }
-        selectedTask.isMandatory =
-            isRequired &&
-            isRequired(
-                clonedFormData,
-                mandatoryPluginsMap,
-                activeStageName,
-                parentPluginId,
-                updatedPluginDataStore,
-                false,
-            )
+        selectedTask.isMandatory = isRequired?.(
+            clonedFormData,
+            mandatoryPluginsMap,
+            activeStageName,
+            parentPluginId,
+            updatedPluginDataStore,
+            false,
+        )
         calculateLastStepDetail(false, clonedFormData, activeStageName)
         validateStage(BuildStageVariable.PreBuild, clonedFormData, undefined, updatedPluginDataStore)
         validateStage(BuildStageVariable.PostBuild, clonedFormData, undefined, updatedPluginDataStore)
