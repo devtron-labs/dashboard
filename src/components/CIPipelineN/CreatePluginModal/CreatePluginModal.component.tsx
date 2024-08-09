@@ -206,6 +206,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 clonedPluginForm.id = payload.id
                 clonedPluginForm.name = payload.name
                 clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)
+                clonedPluginFormError = structuredClone(CREATE_PLUGIN_DEFAULT_FORM_ERROR)
                 break
             case CreatePluginActionType.UPDATE_PLUGIN_IDENTIFIER:
                 clonedPluginForm.pluginIdentifier = payload
