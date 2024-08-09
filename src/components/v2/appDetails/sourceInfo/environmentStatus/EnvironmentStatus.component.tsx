@@ -78,7 +78,6 @@ const EnvironmentStatusComponent = ({
 
         return <div className="flex left ml-20 mb-16">{loadingCards}</div>
     }
-
     const renderStatusBlock = () => {
         if (!status) {
             return null
@@ -89,6 +88,7 @@ const EnvironmentStatusComponent = ({
                 status={status}
                 setDetailed={setShowAppStatusDetail}
                 cardLoading={cardLoading}
+                message={appDetails.FluxAppStatusDetail?.message} // Show Message in case of FluxCD Apps
             />
         )
     }

@@ -16,7 +16,8 @@
 
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { URLS, AppListConstants } from '../../config'
+import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS } from '../../config'
 import Deploy from '../../assets/img/ic-checklist-app@2x.png'
 
 interface CustomAppDeployType {

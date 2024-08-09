@@ -66,7 +66,6 @@ const NodeDeleteComponent = ({
     }
 
     const { queryParams } = useSearchString()
-    const isExternalArgoApp = appDetails?.appType === AppType.EXTERNAL_ARGO_APP
 
     function describeNodeWrapper(tab) {
         queryParams.set('kind', params.podName)
@@ -164,7 +163,6 @@ const NodeDeleteComponent = ({
                         kind={nodeDetails?.kind}
                         describeNode={describeNodeWrapper}
                         toggleShowDeleteConfirmation={toggleShowDeleteConfirmation}
-                        isExternalArgoApp={isExternalArgoApp}
                         handleShowVulnerabilityModal={handleShowVulnerabilityModal}
                     />
                 </PopupMenu.Body>

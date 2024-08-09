@@ -66,6 +66,7 @@ const ManifestComponent = ({
     selectedResource,
     manifestViewRef,
     getComponentKey,
+    isExternalApp,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -493,11 +494,13 @@ const ManifestComponent = ({
             )}
             {!error && (
                 <div className="bcn-0 h-100">
-                    {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                    {(isExternalApp ||
                         isResourceBrowserView ||
                         (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
                             appDetails.deploymentAppDeleteRequest)) && (
-                        <div className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky': ''}`}>
+                        <div
+                            className={`flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row ${!isResourceBrowserView ? 'manifest-tabs-row__position-sticky' : ''}`}
+                        >
                             {tabs.map((tab: iLink, index) => {
                                 return (!showDesiredAndCompareManifest &&
                                     (tab.name == 'Helm generated manifest' || tab.name == 'Compare')) ||
