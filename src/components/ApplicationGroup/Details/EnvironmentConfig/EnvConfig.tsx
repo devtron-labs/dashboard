@@ -96,7 +96,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 <Route
                     path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
                 >
-                    {({ match }) => {
+                    {({ match, location }) => {
                         const basePath = generatePath(path, match.params)
                         const resourceTypePath = `/${match.params.resourceType}`
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
@@ -109,6 +109,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 envName={envName}
                                 environments={envAppList}
                                 goBackURL={goBackURL}
+                                getNavItemHref={(resourceType, resourceName) =>
+                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                }
                             />
                         )
                     }}

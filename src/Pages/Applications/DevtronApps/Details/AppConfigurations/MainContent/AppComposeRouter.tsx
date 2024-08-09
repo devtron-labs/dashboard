@@ -325,6 +325,9 @@ const AppComposeRouter = () => {
                                               )}
                                               isBaseConfigProtected={isBaseConfigProtected}
                                               goBackURL={goBackURL}
+                                              getNavItemHref={(resourceType, resourceName) =>
+                                                  `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                              }
                                           />
                                       )
                                   }}
