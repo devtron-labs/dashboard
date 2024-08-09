@@ -127,7 +127,6 @@ export default function AboutTagEditModal({
                         setLabelTags={setLabelTags}
                         selectedProjectId={appMetaInfo.projectId}
                         reloadProjectTags={reloadMandatoryProjects}
-                        appType={appType}
                         hidePropagateTag={appType === APP_TYPE.HELM_CHART}
                     />
                 </div>

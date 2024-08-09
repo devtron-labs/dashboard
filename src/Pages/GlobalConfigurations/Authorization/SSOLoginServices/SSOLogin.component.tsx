@@ -66,8 +66,8 @@ import {
     ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
 } from './constants'
-import { SSOTabIcons } from './SSOTabIcons'
 import './ssoLogin.scss'
+import { SSOTabIcons } from './utils'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
