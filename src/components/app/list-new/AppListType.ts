@@ -67,3 +67,25 @@ interface HelmAppsListResult {
 export interface HelmAppListResponse extends ResponseType {
     result?: HelmAppsListResult
 }
+
+export interface AppListAppliedFilters {
+    environments: Set<number>
+    teams: Set<number>
+    appStatus: Set<string>
+    templateType: Set<string>
+    clusterVsNamespaceMap
+}
+
+export interface AppListPayloadType {
+    environments: number[]
+    teams: number[]
+    namespaces: string[]
+    appNameSearch: string
+    appStatuses: string[]
+    templateType: string[]
+    sortBy: string
+    sortOrder: string
+    offset: number
+    hOffset: number
+    size: number
+}
