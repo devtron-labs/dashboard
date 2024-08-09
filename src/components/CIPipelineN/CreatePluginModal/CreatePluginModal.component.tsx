@@ -309,6 +309,13 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             ])
 
             const clonedPluginDataStore = getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore)
+            const pluginFormInputVariableMap: Record<string, string> = pluginForm.inputVariables.reduce(
+                (acc, inputVariable) => {
+                    acc[inputVariable.name] = inputVariable.value
+                    return acc
+                },
+                {} as Record<string, string>,
+            )
             const { parentPluginId, inputVariables, outputVariables } =
                 clonedPluginDataStore.pluginVersionStore[pluginVersionId]
             handleUpdateAvailableTags(newTags)
@@ -317,6 +324,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             if (pluginForm.shouldReplaceCustomTask) {
                 const clonedFormData = structuredClone(formData)
                 const selectedTask: StepType = clonedFormData[activeStageName].steps[selectedTaskIndex]
+                // FIXME: Verify again with product
                 selectedTask.name = pluginForm.name
                 selectedTask.description = pluginForm.description
                 selectedTask.stepType = PluginType.PLUGIN_REF
@@ -325,8 +333,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 selectedTask.pluginRefStepDetail = {
                     id: 0,
                     pluginId: pluginVersionId,
-                    // TODO: Ask should input variables be updated from plugin or inline?
-                    inputVariables,
+                    inputVariables:
+                        inputVariables?.map((inputVariable) => ({
+                            ...inputVariable,
+                            value: pluginFormInputVariableMap[inputVariable.name] || '',
+                        })) || [],
                     outputVariables: outputVariables || [],
                     conditionDetails: [],
                 }
