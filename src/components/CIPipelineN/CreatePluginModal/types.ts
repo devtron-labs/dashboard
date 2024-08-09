@@ -146,23 +146,23 @@ export interface CreatePluginFormContentProps {
     selectedPluginVersions: string[]
 }
 
-export interface CreatePluginFormFieldProps
-    extends Pick<CreatePluginFormContentProps, 'handleChange'>,
-        Pick<
-            CustomInputProps,
-            | 'helperText'
-            | 'autoFocus'
-            | 'placeholder'
-            | 'label'
-            | 'value'
-            | 'error'
-            | 'required'
-            | 'disabled'
-            | 'labelClassName'
-        > {
-    action: CreatePluginSingleInputActionType
-    useTextArea?: boolean
-}
+type PluginTextFieldFieldType =
+    | {
+          useTextArea: true
+          /**
+           * Not using helperText, autofocus in textarea as not required as of now
+           */
+          helperText?: never
+          autoFocus?: never
+      }
+    | ({
+          useTextArea?: false | undefined
+      } & Pick<CustomInputProps, 'helperText' | 'autoFocus'>)
+
+export type CreatePluginFormFieldProps = Pick<CreatePluginFormContentProps, 'handleChange'> &
+    Pick<CustomInputProps, 'placeholder' | 'label' | 'value' | 'error' | 'required' | 'disabled' | 'labelClassName'> & {
+        action: CreatePluginSingleInputActionType
+    } & PluginTextFieldFieldType
 
 export interface CreatePluginInputVariableContainerProps extends Pick<CreatePluginFormContentProps, 'handleChange'> {
     inputVariables: PluginDetailType['inputVariables']

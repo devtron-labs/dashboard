@@ -13,9 +13,6 @@ const CreatePluginFormField = ({
     required,
     disabled,
     useTextArea,
-    /**
-     * Not using helperText, autofocus in textarea as not required as of now
-     */
     helperText,
     autoFocus,
     labelClassName,
@@ -52,8 +49,6 @@ const CreatePluginFormField = ({
                     id={action}
                     data-testid={action}
                     disabled={disabled}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus={autoFocus}
                 />
 
                 {error && (
