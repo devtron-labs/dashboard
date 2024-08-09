@@ -48,7 +48,6 @@ import {
     GitOpsProps,
     GitOpsConfig,
     GitOpsOrganisationIdType,
-    GitProviderType,
 } from './gitops.type'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import {
@@ -77,6 +76,7 @@ import { getGitOpsLabelText } from './utils'
 import UpdateConfirmationDialog from './UpdateConfirmationDialog'
 import { GitProviderTab } from '../common/GitTabs/GitProviderTab'
 import { GitProvider } from '@Components/common/GitTabs/constants'
+import { GitProviderType } from '@Components/common/GitTabs/types'
 
 const OtherGitOpsForm = importComponentFromFELibrary('OtherGitOpsForm', null, 'function')
 const BitBucketDCCredentials = importComponentFromFELibrary('BitBucketDCCredentials', null, 'function')

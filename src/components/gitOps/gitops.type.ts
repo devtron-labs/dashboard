@@ -18,6 +18,7 @@ import { RouteComponentProps } from 'react-router'
 import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 import { GitProvider } from '@Components/common/GitTabs/constants'
+import { GitProviderTabProps, GitProviderType } from '@Components/common/GitTabs/types'
 
 export type GitOpsOrganisationIdType =
     | 'gitHubOrgId'
@@ -25,8 +26,6 @@ export type GitOpsOrganisationIdType =
     | 'azureProjectName'
     | 'bitBucketWorkspaceId'
     | 'bitBucketProjectKey'
-
-export type GitProviderType = GitProvider | 'BITBUCKET_DC'
 
 export interface CustomGitOpsState {
     username: {
@@ -155,30 +154,6 @@ export interface UserGitRepoProps {
     selectedRepoType: string
     staleData?: boolean
     authMode: GitOpsAuthModeType
-}
-
-export interface GitProviderTabProps {
-    /**
-     * Currently selected tab
-     */
-    providerTab: GitProviderType
-    /**
-     * Acts as handleChange on radio tab
-     */
-    handleGitopsTab: (e) => void
-    /**
-     * Based on this would showCheck of previous selected on tab
-     */
-    lastActiveGitOp: undefined | GitOpsConfig
-    /**
-     * Value of tab to be rendered
-     */
-    provider: GitProvider
-    /**
-     * If true would disable radio tab
-     */
-    saveLoading: boolean
-    dataTestId: string
 }
 
 export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'provider'> {
