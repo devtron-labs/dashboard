@@ -147,9 +147,16 @@ const parseInputVariablesIntoCreatePluginPayload = (
     variableType: CreatePluginVariableType,
 ): CreatePluginPayloadPluginStepVariableItemType[] =>
     variableList?.map((variable) => ({
-        ...variable,
+        id: variable.id,
+        name: variable.name,
+        format: variable.format,
+        description: variable.description,
+        allowEmptyValue: variable.allowEmptyValue,
+        defaultValue: variable.defaultValue,
+        value: variable.value,
         variableType,
         valueType: variable.variableType,
+        referenceVariableName: variable.refVariableName,
         isExposed: true,
     })) || []
 
@@ -170,7 +177,7 @@ export const getCreatePluginPayload = ({
     const inlineStepDetail: InlineStepDetailType = stepData.inlineStepDetail || ({} as InlineStepDetailType)
 
     const pluginInputVariables = parseInputVariablesIntoCreatePluginPayload(
-        inlineStepDetail.inputVariables,
+        pluginForm.inputVariables,
         CreatePluginVariableType.INPUT,
     )
     const pluginOutputVariables = parseInputVariablesIntoCreatePluginPayload(
