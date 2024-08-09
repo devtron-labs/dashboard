@@ -3,7 +3,7 @@ import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-do
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 
-import { CollapsibleList, CollapsibleListConfig } from '@devtron-labs/devtron-fe-common-lib'
+import { CollapsibleList, CollapsibleListConfig, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
@@ -14,12 +14,7 @@ import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.s
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
-import {
-    EnvConfigRouteParams,
-    EnvConfigurationsNavProps,
-    EnvResourceType,
-    EnvConfigObjectKey,
-} from '../AppConfig.types'
+import { EnvConfigRouteParams, EnvConfigurationsNavProps, EnvConfigObjectKey } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
 import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
 

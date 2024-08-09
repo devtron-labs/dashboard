@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import { ResourceKindType, CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
+import { ResourceKindType, CollapsibleListItem, AppEnvDeploymentConfigType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ViewType } from '../../../../../config'
-import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
-import { AppEnvironment } from '../../../../../services/service.types'
-import { WorkflowResult } from '../../../../../components/app/details/triggerView/types'
-import {
-    ConfigMapSecretDataConfigDatumDTO,
-    DeploymentTemplateDTO,
-    ResourceConfig,
-    ResourceConfigState,
-} from '../../service.types'
+import { ViewType } from '@Config/constants'
+import { WorkflowResult } from '@Components/app/details/triggerView/types'
+import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
+import { AppEnvironment } from '@Services/service.types'
+
+import { ResourceConfig, ResourceConfigState } from '../../service.types'
 
 export enum STAGE_NAME {
     LOADING = 'LOADING',
@@ -204,12 +200,6 @@ export interface EnvConfigurationState {
     config: EnvConfigType
 }
 
-export enum EnvResourceType {
-    ConfigMap = 'configmap',
-    Secret = 'secrets',
-    DeploymentTemplate = 'deployment-template',
-}
-
 export enum EnvConfigObjectKey {
     ConfigMap = 'configmaps',
     Secret = 'secrets',
@@ -282,6 +272,13 @@ export enum AppEnvDeploymentConfigQueryParams {
     CHART_REF_ID = 'chartRefId',
 }
 
-export type DiffHeadingDataType<DeploymentTemplate> = DeploymentTemplate extends true
-    ? DeploymentTemplateDTO
-    : ConfigMapSecretDataConfigDatumDTO
+export interface AppEnvDeploymentConfigQueryParamsType {
+    configType: AppEnvDeploymentConfigType
+    compareWith: string
+    compareWithConfigType: AppEnvDeploymentConfigType
+    identifierId?: number
+    pipelineId?: number
+    compareWithIdentifierId?: number
+    compareWithPipelineId?: number
+    chartRefId?: number
+}

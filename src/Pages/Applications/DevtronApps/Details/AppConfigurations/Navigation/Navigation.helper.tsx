@@ -1,6 +1,6 @@
 import { NavLink, generatePath } from 'react-router-dom'
 
-import { CollapsibleListItem } from '@devtron-labs/devtron-fe-common-lib'
+import { CollapsibleListItem, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
@@ -14,7 +14,6 @@ import {
     EnvConfigRouteParams,
     EnvConfigType,
     EnvironmentOptionType,
-    EnvResourceType,
     ExtendedCollapsibleListItem,
     EnvConfigObjectKey,
 } from '../AppConfig.types'

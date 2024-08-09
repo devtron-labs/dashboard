@@ -1,4 +1,4 @@
-import { EnvResourceType } from './AppConfig.types'
+import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const BASE_CONFIGURATIONS = {
     id: -1,
