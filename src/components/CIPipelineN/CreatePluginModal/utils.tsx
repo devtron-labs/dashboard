@@ -17,6 +17,8 @@ import {
     CreatePluginPayloadType,
     ParentPluginListItemType,
     GetSelectPickerOptionsFromParentPluginListReturnType,
+    CreatePluginVariableType,
+    CreatePluginPayloadPluginStepVariableItemType,
 } from './types'
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 
@@ -140,6 +142,16 @@ const getCreatePluginPayloadPathArgPortMapping = (
     return portMapList.concat(filePathMapList).concat(dockerArgMapList)
 }
 
+const parseInputVariablesIntoCreatePluginPayload = (
+    variableList: VariableType[],
+    variableType: CreatePluginVariableType,
+): CreatePluginPayloadPluginStepVariableItemType[] =>
+    variableList?.map((variable) => ({
+        ...variable,
+        variableType,
+        valueType: variable.variableType,
+    })) || []
+
 export const getCreatePluginPayload = ({
     stepData,
     pluginForm,
@@ -156,8 +168,14 @@ export const getCreatePluginPayload = ({
 
     const inlineStepDetail: InlineStepDetailType = stepData.inlineStepDetail || ({} as InlineStepDetailType)
 
-    const pluginInputVariables = inlineStepDetail.inputVariables || []
-    const pluginOutputVariables = inlineStepDetail.outputVariables || []
+    const pluginInputVariables = parseInputVariablesIntoCreatePluginPayload(
+        inlineStepDetail.inputVariables,
+        CreatePluginVariableType.INPUT,
+    )
+    const pluginOutputVariables = parseInputVariablesIntoCreatePluginPayload(
+        inlineStepDetail.outputVariables,
+        CreatePluginVariableType.OUTPUT,
+    )
 
     return {
         id: pluginForm.id || 0,

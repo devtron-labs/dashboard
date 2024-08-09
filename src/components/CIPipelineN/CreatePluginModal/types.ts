@@ -6,6 +6,7 @@ import {
     PluginDataStoreType,
     PluginDetailType,
     PortMapType,
+    RefVariableType,
     SelectPickerOptionType,
     ServerErrors,
     StepType,
@@ -221,8 +222,18 @@ export interface CreatePluginPayloadPipelineScriptDTO
     pathArgPortMapping: CreatePluginPayloadPathArgPortMappingDTO[]
 }
 
+export enum CreatePluginVariableType {
+    INPUT = 'INPUT',
+    OUTPUT = 'OUTPUT',
+}
+
+export interface CreatePluginPayloadPluginStepVariableItemType extends Omit<VariableType, 'variableType'> {
+    variableType: CreatePluginVariableType
+    valueType: RefVariableType
+}
+
 interface CreatePluginPayloadPluginStepsDTO extends Pick<StepType, 'outputDirectoryPath' | 'name' | 'description'> {
-    pluginStepVariable: VariableType[]
+    pluginStepVariable: CreatePluginPayloadPluginStepVariableItemType[]
     pluginPipelineScript: CreatePluginPayloadPipelineScriptDTO
 }
 
