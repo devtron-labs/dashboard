@@ -39,7 +39,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                     const materials = result?.materials
                     if (materials && materials.length > 0) {
                         const lastCommit = materials[0]?.history[0]
-                        const shortenCommitId = lastCommit?.commit?.slice(0, 8)
+                        const shortenCommitId = lastCommit?.commit?.slice(0, 7)
                         setCommitId(shortenCommitId)
                         setCommitMessage(lastCommit?.message)
                     } else {

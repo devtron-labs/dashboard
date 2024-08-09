@@ -1596,8 +1596,7 @@ const ChartValuesView = ({
             !isCreateValueView &&
             !isVirtualEnvironmentOnSelector &&
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-            !appDetails?.isVirtualEnvironment &&
-            !commonState.installedConfig?.isOCICompliantChart
+            !appDetails?.isVirtualEnvironment
         return (
             <div
                 className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
@@ -1684,7 +1683,6 @@ const ChartValuesView = ({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
