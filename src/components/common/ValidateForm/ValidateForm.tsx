@@ -38,7 +38,7 @@ function renderOnClickValidate(onClickValidate) {
 
 const ValidateDryRun = ({ onClickValidate, configName }) => {
     return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
             <div className="flex flex-justify">
                 <div className="flex">
                     <img src={Help} className="icon-dim-20" />
@@ -56,7 +56,7 @@ const ValidateDryRun = ({ onClickValidate, configName }) => {
 
 const ValidateLoading = ({ message }) => {
     return (
-        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className="eb-2 pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col w-100">
             <div className="flex left">
                 <div>
                     <Progressing />
@@ -71,7 +71,7 @@ const ValidateLoading = ({ message }) => {
 
 const ValidateSuccess = ({ onClickValidate, warning }) => {
     return (
-        <div className="mb-16">
+        <div className="w-100">
             <div
                 className={`${warning ? 'success-no-border' : 'success-border_rad'} git_success pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcn-0 flexbox-col bcg-1`}
             >
@@ -104,7 +104,7 @@ const ValidateFailure = ({
     showValidate,
 }) => {
     return (
-        <div className=" br-4 bw-1 bcn-0 flexbox-col mb-16">
+        <div className=" br-4 bw-1 bcn-0 flexbox-col w-100">
             <div className="flex config_failure er-2 bcr-1 pt-10 pb-10 pl-13 pr-16 br-4 bw-1 flex-justify">
                 <div className="flex">
                     <Error className="icon-dim-20 ml--3 stroke_width" />
@@ -161,16 +161,16 @@ export const ValidateForm = ({
     showValidate = true,
 }) => {
     return (
-        <div className="mt-16">
+        <>
             {!id && configName === 'chart repo' && validationStatus != VALIDATION_STATUS.LOADER}
             {id && validationStatus === VALIDATION_STATUS.DRY_RUN && (
-                <ValidateDryRun onClickValidate={onClickValidate} configName={configName} />
+             <div className="w-100">  <ValidateDryRun onClickValidate={onClickValidate} configName={configName} /></div>
             )}
             {validationStatus === VALIDATION_STATUS.LOADER && (
-                <ValidateLoading message="Validating repo configuration. Please wait… " />
+               <div className="w-100"> <ValidateLoading message="Validating repo configuration. Please wait… " /></div>
             )}
             {validationStatus === VALIDATION_STATUS.FAILURE && (
-                <ValidateFailure
+              <div className='w-100'> <ValidateFailure
                     validationError={validationError}
                     onClickValidate={onClickValidate}
                     formId={id}
@@ -178,10 +178,11 @@ export const ValidateForm = ({
                     warning={warning}
                     showValidate={showValidate}
                 />
+                </div> 
             )}
             {validationStatus === VALIDATION_STATUS.SUCCESS && (
-                <ValidateSuccess onClickValidate={onClickValidate} warning={warning} />
+               <div className='w-100'><ValidateSuccess onClickValidate={onClickValidate} warning={warning} /></div> 
             )}
-        </div>
+        </>
     )
 }

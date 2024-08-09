@@ -196,8 +196,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: row;
-	margin-top: 4px;
-	margin-bottom: 24px;
 }
 
 .login__flex {
@@ -209,7 +207,6 @@
 .sso-icons {
 	position: relative;
 	border-radius: 4px;
-	margin-right: 12px;
 	border: solid 1px var(--N200);
 	cursor: pointer;
 	box-sizing: border-box;

@@ -29,6 +29,7 @@ import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
 import { importComponentFromFELibrary } from '../../common'
 import '../create/createApp.scss'
+import { APP_TYPE } from '@Config/constants'
 
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({
@@ -38,6 +39,7 @@ export default function AboutTagEditModal({
     appMetaInfo,
     currentLabelTags,
     getAppMetaInfoRes,
+    appType
 }: AboutAppInfoModalProps) {
     const editLabelRef = useRef(null)
     const [submitting, setSubmitting] = useState(false)
@@ -125,6 +127,7 @@ export default function AboutTagEditModal({
                         setLabelTags={setLabelTags}
                         selectedProjectId={appMetaInfo.projectId}
                         reloadProjectTags={reloadMandatoryProjects}
+                        hidePropagateTag={appType === APP_TYPE.HELM_CHART}
                     />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

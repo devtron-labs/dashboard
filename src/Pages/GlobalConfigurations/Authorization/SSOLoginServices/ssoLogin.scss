@@ -13,27 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.hosturl__description {
-    padding: 16px;
-    border-radius: 4px;
-    border: solid 1px var(--B200);
-    background-color: var(--B50);
-    font-size: 14px;
-}
-
-.hosturl__container {
-    color: #404040;
-}
-
-.hosturl__autodetection {
-    color: #6b778c;
-}
-
-.hosturl__url {
-    background: none;
-    border: none;
-    &:focus {
-        outline: 0;
+ 
+ .sso-login__wrapper {
+    .code-editor__text {
+        resize: none;
+        line-height: 1.4;
+        border: none;
+        padding: 0 35px;
+        overflow: hidden;
+        color: #f32e2e;
+        font-size: 14px;
+        font-family: Consolas, "Courier New", monospace;
     }
 }

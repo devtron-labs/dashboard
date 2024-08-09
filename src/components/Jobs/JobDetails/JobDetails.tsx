@@ -28,7 +28,7 @@ import {
     useRouteMatch,
 } from 'react-router-dom'
 import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
+import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
@@ -75,7 +75,7 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview appType={APP_TYPE.JOB} appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView />

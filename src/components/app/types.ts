@@ -20,6 +20,7 @@ import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+import { APP_TYPE } from '@Config/constants'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -499,7 +500,7 @@ export interface AppOverviewProps {
      *
      * @default 'app'
      */
-    appType: 'job' | 'app' | 'helm-chart'
+    appType: APP_TYPE.JOB | APP_TYPE.DEVTRON_APPS | APP_TYPE.HELM_CHART
 }
 
 export interface OverviewConfig {

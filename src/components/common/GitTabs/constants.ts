@@ -15,15 +15,11 @@
  *   limitations under the License.
  */
 
-import { GitProvider } from '@Components/common/GitTabs/constants'
-
-export const getGitOpsLabelText = (providerTab: GitProvider): string => {
-    switch (providerTab) {
-        case GitProvider.AZURE_DEVOPS:
-            return 'Azure DevOps Organization Url'
-        case GitProvider.BITBUCKET_CLOUD:
-            return 'Bitbucket Host'
-        default:
-            return 'Git Host'
-    }
+export enum GitProvider {
+    GITHUB = 'GITHUB',
+    GITLAB = 'GITLAB',
+    AWS_CODE_COMMIT = 'AWS_CODE_COMMIT',
+    AZURE_DEVOPS = 'AZURE_DEVOPS',
+    BITBUCKET_CLOUD = 'BITBUCKET_CLOUD',
+    OTHER_GIT_OPS = 'OTHER_GIT_OPS',
 }
