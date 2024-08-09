@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
 import {
@@ -74,7 +74,6 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { DELETE_ACTION, repoType } from '../../../../config'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/appstatus/info-filled.svg'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
@@ -90,7 +89,6 @@ export const ChartEnvironmentSelector = ({
     invalidaEnvironment,
     isVirtualEnvironmentOnSelector,
     isVirtualEnvironment,
-    isOCICompliantChart,
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -99,17 +97,6 @@ export const ChartEnvironmentSelector = ({
     const renderVirtualEnvironmentInfoText = (): JSX.Element => {
         if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
             return <VirtualEnvSelectionInfoText />
-        }
-    }
-
-    const renderOCIContainerRegistryText = () => {
-        if (isOCICompliantChart) {
-            return (
-                <div className="cn-7 fs-12 pt-16 flexbox">
-                    <InfoIcon className="icon-dim-20 mr-4" />
-                    Charts from container registries can be deployed via helm only.
-                </div>
-            )
         }
     }
 
@@ -170,7 +157,6 @@ export const ChartEnvironmentSelector = ({
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
             {renderVirtualEnvironmentInfoText()}
-            {renderOCIContainerRegistryText()}
         </div>
     )
 }

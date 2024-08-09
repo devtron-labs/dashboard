@@ -286,11 +286,9 @@ export default function ChartGroupUpdate({}) {
                             <ChartHeaderFilters
                                 chartRepoList={chartRepos}
                                 setSelectedChartRepo={setSelectedChartRepo}
-                                searchApplied={searchApplied}
                                 appStoreName={appStoreName}
                                 includeDeprecated={includeDeprecated}
                                 selectedChartRepo={selectedChartRepo}
-                                setAppStoreName={setAppStoreName}
                                 isGrid={isGrid}
                                 setIsGrid={setIsGrid}
                             />
@@ -371,7 +369,7 @@ export default function ChartGroupUpdate({}) {
 
 const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart, isGrid }) => {
     return (
-        <div className={`chart-grid ${!isGrid ? 'list-view' : ''}`}>
+        <div className={`chart-grid bcn-0 ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
                 <ChartSelect
                     key={chart.id}
