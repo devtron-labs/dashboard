@@ -116,6 +116,7 @@ export const QueryParams = {
     IncludeDeprecated: 'includeDeprecated',
     AppStoreName: 'appStoreName',
     RegistryId: 'registryId',
+    SearchKey: 'searchKey',
 }
 
 export const PaginationParams = {

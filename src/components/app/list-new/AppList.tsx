@@ -26,6 +26,8 @@ import {
     useAsync,
     useMainContext,
     HeaderWithCreateButton,
+    AppListConstants,
+    ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
@@ -33,7 +35,7 @@ import { Filter, FilterOption, handleUTCTime, useAppContext } from '../../common
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -45,17 +47,12 @@ import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { APP_LIST_HEADERS, StatusConstants } from './Constants'
+import { APP_LIST_HEADERS, InitialEmptyMasterFilters, InitialEmptyUrlFilters, StatusConstants } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { createAppListPayload } from '../list/appList.modal'
-import {
-    buildArgoAppListUrl,
-    buildDevtronAppListUrl,
-    buildHelmAppListUrl,
-    getChangeAppTabURL,
-    getCurrentTabName,
-} from './list.utils'
-import ExternalArgoList from './ExternalArgoList'
+import { getChangeAppTabURL, getCurrentTabName, getPayloadFromUrl } from './list.utils'
+import GenericAppList from './GenericAppList'
+import { PayloadParsedFromURL } from '../types'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -70,13 +67,20 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
-    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
     const [projectMap, setProjectMap] = useState(new Map())
 
     // check for external argoCD app
-    const isExternalArgo = location.pathname === `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_ARGO}`
+    const isExternalArgo =
+        window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS
+
+    // check for external fluxCD app
+    const isExternalFlux =
+        window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && params.appType === AppListConstants.AppType.FLUX_APPS
+
+    // view other than devtron or helm app list
+    const isGenericAppListView = isExternalArgo || isExternalFlux
 
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
@@ -86,21 +90,16 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [searchApplied, setSearchApplied] = useState(false)
 
     // filters
-    const [masterFilters, setMasterFilters] = useState({
-        appStatus: [],
-        projects: [],
-        environments: [],
-        clusters: [],
-        namespaces: [],
-    })
+    const [masterFilters, setMasterFilters] = useState(structuredClone(InitialEmptyMasterFilters))
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
+    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState<PayloadParsedFromURL>(getPayloadFromUrl(location.search, appCount, true).payload)
 
     // on page load
     useEffect(() => {
-        setCurrentTab(getCurrentTabName(params.appType, isExternalArgo))
+        setCurrentTab(getCurrentTabName(params.appType))
 
         // set search data
         const searchQuery = location.search
@@ -111,7 +110,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         }
 
         // set payload parsed from url
-        const payloadParsedFromUrl = onRequestUrlChange()
+        const payloadParsedFromUrl = onRequestUrlChange(false)
         setParsedPayloadOnUrlChange(payloadParsedFromUrl)
 
         // fetch master filters data and some master data
@@ -124,7 +123,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(
                         initData.filters.clusters,
-                        getCurrentTabName(params.appType, isExternalArgo),
+                        getCurrentTabName(params.appType),
                     )
                     getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
                 }
@@ -159,7 +158,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }, [isDataSyncing])
 
     useEffect(() => {
-        setParsedPayloadOnUrlChange(onRequestUrlChange())
+        setParsedPayloadOnUrlChange(onRequestUrlChange(false))
     }, [location.search])
 
     const applyClusterSelectionFilterOnPageLoadIfSingle = (clusterFilters: any[], currentTab: string): void => {
@@ -191,39 +190,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const onRequestUrlChange = (showExportCsvButton?: boolean): any => {
         const searchQuery = location.search
 
-        const params = queryString.parse(searchQuery)
-        const search = params.search || ''
-        const environments = params.environment || ''
-        const appStatus = params.appStatus || ''
-        const teams = params.team || ''
-        const clustersAndNamespaces = params.namespace || ''
+        const { payload, filterApplied } = getPayloadFromUrl(searchQuery, appCount, showExportCsvButton)
 
-        const _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
-        const environmentsArr = environments
-            .toString()
-            .split(',')
-            .map((env) => +env)
-            .filter((item) => item != 0)
-        const teamsArr = teams
-            .toString()
-            .split(',')
-            .filter((team) => team != '')
-            .map((team) => Number(team))
-        const appStatusArr = appStatus
-            .toString()
-            .split(',')
-            .filter((status) => status != '')
-            .map((status) => status)
-
-        // update master filters data (check/uncheck)
-        const filterApplied = {
-            environments: new Set<number>(environmentsArr),
-            teams: new Set<number>(teamsArr),
-            appStatus: new Set<string>(appStatusArr),
-            clusterVsNamespaceMap: _clusterVsNamespaceMap,
-        }
-
-        const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
+        const _masterFilters = structuredClone(InitialEmptyMasterFilters)
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -234,7 +203,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.teams.has(project.key),
             }
         })
-
         // set clusters (check/uncheck)
         _masterFilters.clusters = masterFilters.clusters.map((cluster) => {
             return {
@@ -242,6 +210,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 label: cluster.label,
                 isSaved: true,
                 isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString()),
+                optionMetadata: cluster.optionMetadata,
             }
         })
 
@@ -283,44 +252,15 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.environments.has(env.key),
             }
         })
+
+        _masterFilters.templateType = masterFilters.templateType.map((templateType) => ({
+            key: templateType.key,
+            label: templateType.label,
+            isSaved: true,
+            isChecked: filterApplied.templateType.has(templateType.key),
+        }))
         setMasterFilters(_masterFilters)
-        /// /// update master filters data ends (check/uncheck)
-
-        const sortBy = params.orderBy || SortBy.APP_NAME
-        const sortOrder = params.sortOrder || OrderBy.ASC
-        let offset = +params.offset || 0
-        let hOffset = +params.hOffset || 0
-        let pageSize: number = +params.pageSize || 20
-        const pageSizes = new Set([20, 40, 50])
-
-        if (!pageSizes.has(pageSize)) {
-            // handle invalid pageSize
-            pageSize = 20
-        }
-        if (offset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            offset = 0
-        }
-        if (hOffset % pageSize != 0) {
-            // pageSize must be a multiple of offset
-            hOffset = 0
-        }
-
-        const payload = {
-            environments: environmentsArr,
-            teams: teamsArr,
-            namespaces: clustersAndNamespaces
-                .toString()
-                .split(',')
-                .filter((item) => item != ''),
-            appNameSearch: search,
-            appStatuses: appStatusArr,
-            sortBy,
-            sortOrder,
-            offset,
-            hOffset,
-            size: showExportCsvButton ? appCount : +pageSize,
-        }
+        // update master filters data ends (check/uncheck)
 
         // check whether to fetch namespaces from backend if any cluster is selected and not same as old
         // do it only for non page load, as on pageload getInitData is handling this logic
@@ -373,7 +313,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     function openDevtronAppCreateModel() {
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
 
@@ -385,11 +325,13 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         let url = ''
         const _currentTab = selectedAppTab || currentTab
         if (_currentTab === AppListConstants.AppTabs.DEVTRON_APPS) {
-            url = buildDevtronAppListUrl()
+            url = URLS.DEVTRON_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.ARGO_APPS) {
-            url = buildArgoAppListUrl()
+            url = URLS.ARGO_APP_LIST
         } else if (_currentTab === AppListConstants.AppTabs.HELM_APPS) {
-            url = buildHelmAppListUrl()
+            url = URLS.HELM_APP_LIST
+        } else if (_currentTab === AppListConstants.AppTabs.FLUX_APPS) {
+            url = URLS.FLUX_APP_LIST
         }
 
         history.push(`${url}${queryStr ? `?${queryStr}` : ''}`)
@@ -573,6 +515,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         delete query['namespace']
         delete query['appStatus']
         delete query['search']
+        delete query['templateType']
 
         // delete search string
         setSearchApplied(false)
@@ -599,7 +542,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         if (appTabType == currentTab) {
             return
         }
-        history.push(`${getChangeAppTabURL(appTabType)}${location.search}`)
+        setParsedPayloadOnUrlChange(InitialEmptyUrlFilters)
+        history.push(getChangeAppTabURL(appTabType))
         setCurrentTab(appTabType)
     }
 
@@ -706,6 +650,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             currentTab === AppListConstants.AppTabs.DEVTRON_APPS &&
             serverMode !== SERVER_MODE.EA_ONLY
 
+        // In case of apps other than devtron apps, we are hiding virtual clusters from filters
+        const clusterFilters =
+            isExternalArgo || isExternalFlux
+                ? masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
+                : masterFilters.clusters
+
         return (
             <div className="search-filter-section">
                 <form style={{ display: 'inline' }} onSubmit={searchApp}>
@@ -733,7 +683,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {!isExternalArgo && (
+                    {!isGenericAppListView && (
                         <>
                             {isArgoInstalled && (
                                 <>
@@ -788,8 +738,26 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span className="filter-divider" />
                         </>
                     )}
+                    {isExternalFlux && (
+                        <>
+                            <Filter
+                                labelKey="label"
+                                buttonText="Template Type"
+                                multi
+                                isDisabled={dataStateType === AppListViewType.LOADING}
+                                list={masterFilters.templateType}
+                                placeholder="Search Template Type"
+                                type={AppListConstants.FilterType.TEMPLATE_TYPE}
+                                applyFilter={applyFilter}
+                                searchable
+                                isFirstLetterCapitalize
+                            />
+                            <span className="filter-divider" />
+                        </>
+                    )}
                     <Filter
-                        list={masterFilters.clusters}
+                        list={clusterFilters}
+                        position={isGenericAppListView ? 'right' : 'left'}
                         labelKey="label"
                         buttonText="Cluster"
                         searchable
@@ -803,7 +771,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         dataTestId="cluster-filter"
                         appType={params.appType}
                     />
-                    {!isExternalArgo && (
+                    {!isGenericAppListView && (
                         <Filter
                             rootClassName="ml-0-imp"
                             position={showExportCsvButton ? 'left' : 'right'}
@@ -866,6 +834,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
                         filterType = AppListConstants.FilterType.APP_STATUS
                         _filterKey = StatusConstants.APP_STATUS.normalText
+                    } else if (key == StatusConstants.TEMPLATE_TYPE.noSpaceLower) {
+                        filterType = AppListConstants.FilterType.TEMPLATE_TYPE
+                        _filterKey = StatusConstants.TEMPLATE_TYPE.normalCase
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
@@ -940,9 +911,22 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                     currentTab === AppListConstants.AppTabs.ARGO_APPS ? 'active' : ''
                                 }`}
                                 onClick={() => changeAppTab(AppListConstants.AppTabs.ARGO_APPS)}
-                                data-testid="helm-app-list-button"
+                                data-testid="argo-app-list-button"
                             >
                                 {AppListConstants.AppTabs.ARGO_APPS}
+                            </a>
+                        </li>
+                    )}
+                    {window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+                        <li className="tab-list__tab">
+                            <a
+                                className={`tab-list__tab-link ${
+                                    currentTab === AppListConstants.AppTabs.FLUX_APPS ? 'active' : ''
+                                }`}
+                                onClick={() => changeAppTab(AppListConstants.AppTabs.FLUX_APPS)}
+                                data-testid="flux-app-list-button"
+                            >
+                                {AppListConstants.AppTabs.FLUX_APPS}
                             </a>
                         </li>
                     )}
@@ -975,7 +959,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}${location.search}`)
     }
 
@@ -983,7 +967,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return (
             <Switch>
                 <Route
-                    path={`${buildDevtronAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.DEVTRON_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -994,7 +978,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 />
                 <Route
-                    path={`${buildHelmAppListUrl()}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    path={`${URLS.HELM_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     render={(props) => (
                         <AddNewApp
                             close={closeDevtronAppCreateModal}
@@ -1066,20 +1050,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     )}
                 </>
             )}
-            {window._env_?.ENABLE_EXTERNAL_ARGO_CD && params.appType === AppListConstants.AppType.ARGO_APPS && (
+            {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used
+                for further app lists too  */}
+            {isGenericAppListView && (
                 <>
-                    <ExternalArgoList
-                        serverMode={serverMode}
+                    <GenericAppList
+                        key={params.appType}
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         sortApplicationList={sortApplicationList}
                         clearAllFilters={removeAllFilters}
-                        fetchingExternalApps={fetchingExternalApps}
-                        setFetchingExternalAppsState={setFetchingExternalAppsState}
-                        updateDataSyncing={updateDataSyncing}
                         setShowPulsatingDotState={setShowPulsatingDotState}
                         masterFilters={masterFilters}
-                        syncListData={syncListData}
-                        isArgoInstalled={isArgoInstalled}
+                        isSSE={isExternalFlux}
+                        appType={params.appType}
                     />
                     {fetchingExternalApps && (
                         <div className="mt-16">

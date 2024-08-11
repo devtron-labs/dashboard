@@ -16,16 +16,22 @@
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ArgoAppListResult {
+export enum FluxCDTemplateType {
+    KUSTOMIZATION = 'Kustomization',
+    HELM_RELEASE = 'HelmRelease',
+}
+export interface GenericAppType {
     appName: string
+    appStatus: string
     clusterName: string
     namespace: string
-    appStatus: string
     syncStatus?: string
     clusterId?: string
+    fluxAppDeploymentType?: FluxCDTemplateType
 }
-export interface ArgoAppListResponse extends ArgoAppListResult {
-    result?: ArgoAppListResult
+export interface GenericAppListResponse {
+    clusterIds?: string
+    fluxApplication?: GenericAppType[]
 }
 
 export interface AppEnvironmentDetail {
@@ -50,7 +56,7 @@ export interface HelmApp {
     appStatus: string
 }
 
-interface AppsListResult {
+interface HelmAppsListResult {
     clusterIds: number[]
     applicationType: string // DEVTRON-CHART-STORE, DEVTRON-APP ,HELM-APP
     errored: boolean
@@ -58,6 +64,28 @@ interface AppsListResult {
     helmApps: HelmApp[]
 }
 
-export interface AppListResponse extends ResponseType {
-    result?: AppsListResult
+export interface HelmAppListResponse extends ResponseType {
+    result?: HelmAppsListResult
+}
+
+export interface AppListAppliedFilters {
+    environments: Set<number>
+    teams: Set<number>
+    appStatus: Set<string>
+    templateType: Set<string>
+    clusterVsNamespaceMap
+}
+
+export interface AppListPayloadType {
+    environments: number[]
+    teams: number[]
+    namespaces: string[]
+    appNameSearch: string
+    appStatuses: string[]
+    templateType: string[]
+    sortBy: string
+    sortOrder: string
+    offset: number
+    hOffset: number
+    size: number
 }
