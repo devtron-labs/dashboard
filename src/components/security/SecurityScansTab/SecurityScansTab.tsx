@@ -214,7 +214,7 @@ export const SecurityScansTab = () => {
                         initialSearchText={searchKey}
                         inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
                         handleEnter={handleSearch}
-                        componentSize={ComponentSizeType.large}
+                        size={ComponentSizeType.large}
                     />
                 </div>
                 <div className="flexbox dc__gap-8">
@@ -287,10 +287,16 @@ export const SecurityScansTab = () => {
         if (!securityScansResult.result.securityScans.length) {
             const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
             if (areFiltersActive) {
-                return <GenericFilterEmptyState handleClearFilters={clearFilters} />
+                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
             }
 
-            return <GenericEmptyState image={AppNotDeployed} title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE} />
+            return (
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            )
         }
 
         return (
