@@ -666,7 +666,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                         </header>
                         <main>
                             {sortedPodList.map((pod) => (
-                                <div className="row-wrapper" key={pod.name}>
+                                <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
                                     <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
                                         <Tooltip
