@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 
-import {
-    DeploymentAppTypes,
-    post,
-    put,
-    trash,
-    K8sResourcePayloadAppType,
-    HandleDownloadProps,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, post, put, trash, Host, HandleDownloadProps } from '@devtron-labs/devtron-fe-common-lib'
 import { CUSTOM_LOGS_FILTER, Routes } from '../../../../../config'
-import { AppDetails, AppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
-import { ParamsType } from './nodeDetail.type'
-import { getK8sResourcePayloadAppType } from './nodeDetail.util'
+import { AppDetails, AppType, SelectedResourceType } from '../../appDetails.type'
+import { AppDetailsAppIdentifierProps, EphemeralContainerProps, ParamsType } from './nodeDetail.type'
+import { getDeploymentType, getK8sResourcePayloadAppType } from './nodeDetail.util'
+import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 
-export const getAppId = (clusterId: number, namespace: string, appName: string) => {
+export const getAppId = ({ clusterId, namespace, appName, templateType }: AppDetailsAppIdentifierProps) => {
+    if (templateType) {
+        return `${clusterId}|${namespace}|${appName}|${templateType === FluxCDTemplateType.KUSTOMIZATION}`
+    }
     return `${clusterId}|${namespace}|${appName}`
 }
 export const generateDevtronAppIdentiferForK8sRequest = (clusterId: number, appId: number, envId: number) => {
     return `${clusterId}|${appId}|${envId}`
 }
+
+export const generateAppIdentifier = (appDetails: AppDetails, appName: string) =>
+    appDetails.appType === AppType.DEVTRON_APP
+        ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+        : getAppId({
+              clusterId: appDetails.clusterId,
+              namespace: appDetails.namespace,
+              appName,
+              templateType: appDetails.fluxTemplateType ?? null,
+          })
 
 export const getManifestResource = (
     ad: AppDetails,
@@ -45,12 +52,7 @@ export const getManifestResource = (
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, podName, nodeType)
-    const url =
-        Routes.MANIFEST +
-        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
-            ? `?externalArgoApplicationName=${ad.appName}`
-            : '')
-    return post(url, requestData, { signal })
+    return post(Routes.MANIFEST, requestData, { signal })
 }
 
 export const getDesiredManifestResource = (
@@ -63,7 +65,11 @@ export const getDesiredManifestResource = (
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
     const requestData = {
-        appId: getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName),
+        appId: getAppId({
+            clusterId: appDetails.clusterId,
+            namespace: appDetails.namespace,
+            appName: appDetails.appName,
+        }),
         resource: {
             Group: selectedResource.group ? selectedResource.group : '',
             Version: selectedResource.version ? selectedResource.version : 'v1',
@@ -112,19 +118,13 @@ export const getAppDetailsForManifest = (appDetails: AppDetails) => {
     const applicationObject =
         appDetails.deploymentAppType === DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
-    const appId =
-        appDetails.appType === AppType.DEVTRON_APP
-            ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
+    const appId = generateAppIdentifier(appDetails, applicationObject)
 
     return {
-        appId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? appId : '',
+        appId,
         clusterId: appDetails.appType !== AppType.EXTERNAL_ARGO_APP ? 0 : appDetails.clusterId,
         appType: getK8sResourcePayloadAppType(appDetails.appType),
-        deploymentType:
-            appDetails.deploymentAppType === DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED,
+        deploymentType: getDeploymentType(appDetails.deploymentAppType),
     }
 }
 
@@ -178,12 +178,7 @@ function getEventHelmApps(
     const requestData = isResourceBrowserView
         ? createResourceRequestBody(selectedResource)
         : createBody(ad, nodeName, nodeType)
-    const url =
-        Routes.EVENTS +
-        (ad.appType === AppType.EXTERNAL_ARGO_APP && !isResourceBrowserView
-            ? `?externalArgoApplicationName=${ad.appName}`
-            : '')
-    return post(url, requestData)
+    return post(Routes.EVENTS, requestData)
 }
 
 const getFilterWithValue = (type: string, value: string, unit?: string) => {
@@ -217,27 +212,20 @@ export const downloadLogs = (
     } else {
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
-    let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
+    const selectedNamespace = ad.resourceTree?.nodes?.find((node) => node.name === nodeName)?.namespace
+    const isExternalArgoApp = ad.appType === AppType.EXTERNAL_ARGO_APP
     const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
-    const appId =
-        ad.appType == AppType.DEVTRON_APP
-            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+    const appId = generateAppIdentifier(ad, applicationObject)
+    let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
-        const appType =
-            ad.appType == AppType.DEVTRON_APP
-                ? K8sResourcePayloadAppType.DEVTRON_APP
-                : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType =
-            ad.deploymentAppType == DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
-        if (appType === 0) {
-            logsURL += `&namespace=${ad.namespace}`
+        const appType = getK8sResourcePayloadAppType(ad.appType)
+        const deploymentType = getDeploymentType(ad.deploymentAppType)
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
+        if (isExternalArgoApp) {
+            logsURL += `&externalArgoApplicationName=${ad.appName}`
         }
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     logsURL += `${filter}`
     handleDownload({ downloadUrl: logsURL, fileName: `podlogs-${nodeName}-${new Date().getTime()}.log` })
@@ -267,27 +255,19 @@ export const getLogsURL = (
     const selectedNamespace = ad.resourceTree?.nodes?.find(
         (nd) => nd.name === podName || nd.name === nodeName,
     )?.namespace
-
-    const appId =
-        ad.appType === AppType.DEVTRON_APP
-            ? generateDevtronAppIdentiferForK8sRequest(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, applicationObject)
+    const isExternalArgoApp = ad.appType === AppType.EXTERNAL_ARGO_APP
+    const appId = generateAppIdentifier(ad, applicationObject)
 
     let logsURL = `${window.location.protocol}//${window.location.host}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
-    } else if (ad.appType === AppType.EXTERNAL_ARGO_APP) {
-        logsURL += `&clusterId=${ad.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&namespace=${selectedNamespace}&externalArgoApplicationName=${ad.appName}`
     } else {
         const appType = getK8sResourcePayloadAppType(ad.appType)
-        const deploymentType =
-            ad.deploymentAppType === DeploymentAppTypes.HELM
-                ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-                : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
-        if (appType === 0) {
-            logsURL += `&namespace=${ad.namespace}`
+        const deploymentType = getDeploymentType(ad.deploymentAppType)
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}&namespace=${selectedNamespace}`
+        if (isExternalArgoApp) {
+            logsURL += `&externalArgoApplicationName=${ad.appName}`
         }
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     return `${logsURL}&follow=true${filter}`
 }
@@ -300,16 +280,9 @@ export const getPodRestartRBACPayload = (appDetails?: AppDetails) => {
     const applicationObject =
         appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
-    const appId =
-        appDetails.appType === AppType.DEVTRON_APP
-            ? generateDevtronAppIdentiferForK8sRequest(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(appDetails.clusterId, appDetails.namespace, applicationObject)
-
+    const appId = generateAppIdentifier(appDetails, applicationObject)
     const appType = getK8sResourcePayloadAppType(appDetails.appType)
-    const deploymentType =
-        appDetails.deploymentAppType === DeploymentAppTypes.HELM
-            ? K8sResourcePayloadDeploymentType.HELM_INSTALLED
-            : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
+    const deploymentType = getDeploymentType(appDetails.deploymentAppType)
 
     return {
         appId,
@@ -331,60 +304,54 @@ export const createResource = (
     return post(Routes.CREATE_RESOURCE, requestData)
 }
 
-const getEphemeralURL = (
-    isResourceBrowserView: boolean,
-    params: ParamsType,
-    appType: string,
-    appIds: string,
-    appName: string,
-) => {
+const getEphemeralURL = (isResourceBrowserView: boolean, params: ParamsType, appType: string, appIds: string) => {
     let url: string = Routes.EPHEMERAL_CONTAINERS
     if (isResourceBrowserView) {
         url += `?identifier=${params.clusterId}`
-    } else if (appType === AppType.EXTERNAL_ARGO_APP) {
-        url += `?identifier=${params.clusterId}&clusterId=${params.clusterId}&appType=${K8sResourcePayloadAppType.EXTERNAL_ARGO_APP}&externalArgoApplicationName=${appName}`
     } else {
         url += `?identifier=${appIds}&appType=${getK8sResourcePayloadAppType(appType)}`
     }
     return url
 }
 
-export const generateEphemeralUrl = (
+export const generateEphemeralUrl = ({
     requestData,
-    clusterId: number,
-    environmentId: number,
-    namespace: string,
-    appName: string,
-    appId: number,
-    appType: string,
-    isResourceBrowserView: boolean,
-    params: ParamsType,
-) => {
+    clusterId,
+    environmentId,
+    namespace,
+    appName,
+    appId,
+    appType,
+    fluxTemplateType,
+    isResourceBrowserView,
+    params,
+}: EphemeralContainerProps) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName)
+            : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })
 
-    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
+    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return post(url, requestData)
 }
 
-export const deleteEphemeralUrl = (
+export const deleteEphemeralUrl = ({
     requestData,
-    clusterId: number,
-    environmentId: number,
-    namespace: string,
-    appName: string,
-    appId: number,
-    appType: string,
-    isResourceBrowserView: boolean,
-    params: ParamsType,
-) => {
+    clusterId,
+    environmentId,
+    namespace,
+    appName,
+    appId,
+    appType,
+    fluxTemplateType,
+    isResourceBrowserView,
+    params,
+}: EphemeralContainerProps) => {
     const appIds =
         appType == AppType.DEVTRON_APP
             ? generateDevtronAppIdentiferForK8sRequest(clusterId, appId, environmentId)
-            : getAppId(clusterId, namespace, appName)
+            : getAppId({ clusterId, namespace, appName, templateType: fluxTemplateType })
 
-    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds, appName)
+    const url = getEphemeralURL(isResourceBrowserView, params, appType, appIds)
     return trash(url, requestData)
 }

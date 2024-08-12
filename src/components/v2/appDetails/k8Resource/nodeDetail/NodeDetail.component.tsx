@@ -415,6 +415,7 @@ const NodeDetailComponent = ({
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

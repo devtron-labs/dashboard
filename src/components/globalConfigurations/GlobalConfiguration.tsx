@@ -64,7 +64,7 @@ const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfr
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
-const LockConfiguration = importComponentFromFELibrary('LockConfiguration')
+const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
@@ -324,10 +324,10 @@ const NavItem = ({ serverMode }) => {
                         {children}
                     </TippyCustomized>
                 )}
+                key={`${route.name}-${route.href}`}
             >
                 <NavLink
                     to={`${route.href}`}
-                    key={`${route.name}-${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
                     className={`${
@@ -532,13 +532,13 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Filter Condition</div>
                         </NavLink>
                     )}
-                    {LockConfiguration && (
+                    {LockDeploymentConfiguration && (
                         <NavLink
-                            to={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
-                            key={URLS.GLOBAL_CONFIG_LOCK_CONFIG}
+                            to={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
+                            key={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
                             activeClassName="active-route"
                         >
-                            <div className="flexbox flex-justify">Lock Deployment Config</div>
+                            <div className="flexbox flex-justify">Lock Deployment Configuration</div>
                         </NavLink>
                     )}
 
@@ -559,8 +559,7 @@ const NavItem = ({ serverMode }) => {
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
-
-    const defaultRoute = (): string => {
+        const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
         }
@@ -671,7 +670,10 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
             ]}
             {serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES && (
-                <Route key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`} path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}>
+                <Route
+                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
+                    path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                >
                     <ScopedVariables isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
@@ -714,9 +716,9 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <FilterConditions isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {LockConfiguration && (
-                <Route path={URLS.GLOBAL_CONFIG_LOCK_CONFIG}>
-                    <LockConfiguration isSuperAdmin={isSuperAdmin} />
+            {LockDeploymentConfiguration && (
+                <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
+                    <LockDeploymentConfiguration />
                 </Route>
             )}
             <Redirect to={defaultRoute()} />
