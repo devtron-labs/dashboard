@@ -40,7 +40,7 @@ const TargetPlatformSelector = ({
         }
     }
 
-    const handleCreateNewOption: SelectPickerProps['multiSelectProps']['onCreateOption'] = (inputValue): void => {
+    const handleCreateNewOption: SelectPickerProps<string, true>['multiSelectProps']['onCreateOption'] = (inputValue): void => {
         if (inputValue) {
             const _selectedTargetPlatforms = [
                 ...selectedTargetPlatforms,
