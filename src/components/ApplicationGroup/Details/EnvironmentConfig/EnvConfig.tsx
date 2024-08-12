@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react'
 import { generatePath, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, GenericEmptyState, Progressing, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -25,7 +25,6 @@ import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
 import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
 import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
-import { EnvResourceType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
@@ -97,7 +96,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 <Route
                     path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
                 >
-                    {({ match }) => {
+                    {({ match, location }) => {
                         const basePath = generatePath(path, match.params)
                         const resourceTypePath = `/${match.params.resourceType}`
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
@@ -110,6 +109,9 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                 envName={envName}
                                 environments={envAppList}
                                 goBackURL={goBackURL}
+                                getNavItemHref={(resourceType, resourceName) =>
+                                    `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                }
                             />
                         )
                     }}

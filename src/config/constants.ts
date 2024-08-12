@@ -266,7 +266,6 @@ export const Routes = {
     GVK: 'gvk',
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
-    ENV_DATA: 'config/data',
 }
 
 export enum ViewType {

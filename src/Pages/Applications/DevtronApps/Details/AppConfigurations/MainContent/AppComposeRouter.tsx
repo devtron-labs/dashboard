@@ -17,7 +17,7 @@
 import React, { lazy, Suspense } from 'react'
 import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
 
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
@@ -26,7 +26,7 @@ import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
-import { EnvResourceType, NextButtonProps, STAGE_NAME } from '../AppConfig.types'
+import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 import '../appConfig.scss'
@@ -325,6 +325,9 @@ const AppComposeRouter = () => {
                                               )}
                                               isBaseConfigProtected={isBaseConfigProtected}
                                               goBackURL={goBackURL}
+                                              getNavItemHref={(resourceType, resourceName) =>
+                                                  `${generatePath(match.path, { ...match.params, resourceType, resourceName })}${location.search}`
+                                              }
                                           />
                                       )
                                   }}

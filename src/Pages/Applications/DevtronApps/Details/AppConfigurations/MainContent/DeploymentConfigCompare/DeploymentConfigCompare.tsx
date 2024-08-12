@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useLocation, useRouteMatch } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import {
     useUrlFilters,
@@ -10,27 +10,25 @@ import {
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
     SortingOrder,
+    AppEnvDeploymentConfigType,
+    getAppEnvDeploymentConfig,
+    getDefaultVersionAndPreviousDeploymentOptions,
+    getAppEnvDeploymentConfigList,
+    getSelectPickerOptionByValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    AppEnvDeploymentConfigQueryParamsType,
-    AppEnvDeploymentConfigType,
-} from '@Pages/Applications/DevtronApps/service.types'
-import { getAppEnvDeploymentConfig } from '@Pages/Applications/DevtronApps/service'
 import { getOptions } from '@Components/deploymentConfig/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
 import {
     AppEnvDeploymentConfigQueryParams,
+    AppEnvDeploymentConfigQueryParamsType,
     DeploymentConfigCompareProps,
     DeploymentConfigParams,
 } from '../../AppConfig.types'
 import {
     getCompareEnvironmentSelectorOptions,
-    getAppEnvDeploymentConfigList,
-    getDefaultVersionAndPreviousDeploymentOptions,
     getEnvironmentIdByEnvironmentName,
-    getOptionByValue,
     getPreviousDeploymentOptionValue,
     getPreviousDeploymentValue,
     parseCompareWithSearchParams,
@@ -45,11 +43,10 @@ export const DeploymentConfigCompare = ({
     type = 'app',
     goBackURL = '',
     isBaseConfigProtected = false,
+    getNavItemHref,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
-    const { path, params } = useRouteMatch<DeploymentConfigParams>()
-    const { compareTo, resourceType, resourceName, appId, envId } = params
-    const { search } = useLocation()
+    const { compareTo, resourceType, resourceName, appId, envId } = useParams<DeploymentConfigParams>()
 
     // SEARCH PARAMS & SORTING
     const {
@@ -164,7 +161,7 @@ export const DeploymentConfigCompare = ({
             const currentData = comparisonData[0].result
             const compareData = comparisonData[1].result
 
-            const configData = getAppEnvDeploymentConfigList(currentData, compareData, path, params, search, sortOrder)
+            const configData = getAppEnvDeploymentConfigList(currentData, compareData, getNavItemHref, sortOrder)
             return configData
         }
 
@@ -256,7 +253,7 @@ export const DeploymentConfigCompare = ({
         inputId: 'compare-with-environment-selector',
         name: 'compare-with-environment-selector',
         variant: SelectPickerVariantType.BORDERLESS,
-        value: getOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
+        value: getSelectPickerOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
             label: BASE_CONFIGURATIONS.name,
             value: '',
         }),
@@ -276,7 +273,7 @@ export const DeploymentConfigCompare = ({
         variant: SelectPickerVariantType.BORDERLESS,
         isSearchable: false,
         disableDescriptionEllipsis: true,
-        value: getOptionByValue(
+        value: getSelectPickerOptionByValue(
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
                 isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
