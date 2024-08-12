@@ -1,4 +1,4 @@
-import { ScanDetailsType, SearchType } from './types'
+import { ScanDetailsType, SearchType, SearchTypeOptionType } from './types'
 
 export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     name: '',
@@ -9,7 +9,7 @@ export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     },
 }
 
-export const SEARCH_TYPE_OPTIONS = [
+export const SEARCH_TYPE_OPTIONS: SearchTypeOptionType[] = [
     { label: 'Application', value: SearchType.APPLICATION },
     { label: 'Vulnerability', value: SearchType.VULNERABILITY },
 ]

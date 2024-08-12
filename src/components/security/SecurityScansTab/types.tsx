@@ -62,3 +62,8 @@ export enum SeverityMapping {
     'low' = 'Low',
     'unknown' = 'Unknown',
 }
+
+export interface SearchTypeOptionType {
+    label: string
+    value: SearchType
+}
