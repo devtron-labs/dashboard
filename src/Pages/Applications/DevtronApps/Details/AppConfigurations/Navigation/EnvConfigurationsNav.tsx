@@ -180,7 +180,7 @@ export const EnvConfigurationsNav = ({
                           tooltipProps: {
                               content: 'Create ConfigMap',
                               arrow: false,
-                              placement: 'bottom',
+                              placement: 'right',
                           },
                       }
                     : {}),
@@ -205,7 +205,7 @@ export const EnvConfigurationsNav = ({
                           tooltipProps: {
                               content: 'Create Secret',
                               arrow: false,
-                              placement: 'bottom',
+                              placement: 'right',
                           },
                       }
                     : {}),

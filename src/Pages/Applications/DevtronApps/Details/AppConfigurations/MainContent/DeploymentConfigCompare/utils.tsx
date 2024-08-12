@@ -320,7 +320,7 @@ const getDiffHeading = <DeploymentTemplate extends boolean>(
 
     if (deploymentTemplate) {
         const _data = data as DeploymentTemplateDTO
-        if (!_data?.deploymentDraftData && !_data.data) {
+        if (!_data) {
             doesNotExist = true
         } else if (_data?.deploymentDraftData?.configData[0].draftMetadata.draftState === DraftState.Init) {
             isDraft = true
@@ -329,7 +329,7 @@ const getDiffHeading = <DeploymentTemplate extends boolean>(
         }
     } else {
         const _data = data as ConfigMapSecretDataConfigDatumDTO
-        if (!_data?.draftMetadata && !_data?.data && !_data?.defaultData) {
+        if (!_data) {
             doesNotExist = true
         } else if (_data?.draftMetadata?.draftState === DraftState.Init) {
             isDraft = true
