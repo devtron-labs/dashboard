@@ -42,17 +42,20 @@ export enum AppType {
     DEVTRON_HELM_CHART = 'devtron_helm_chart',
     EXTERNAL_HELM_CHART = 'external_helm_chart',
     EXTERNAL_ARGO_APP = 'external_argo_app',
+    EXTERNAL_FLUX_APP = 'external_flux_app',
 }
 
 export enum K8sResourcePayloadAppType {
     DEVTRON_APP = 0,
     HELM_APP = 1,
     EXTERNAL_ARGO_APP = 2,
+    EXTERNAL_FLUX_APP = 3,
 }
 
 export enum K8sResourcePayloadDeploymentType {
     HELM_INSTALLED = 0,
     ARGOCD_INSTALLED = 1,
+    FLUXCD_INSTALLED = 2,
 }
 
 export interface EnvDetails {
@@ -358,7 +361,6 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
-    addTab?: ReturnType<typeof useTabs>['addTab']
     selectedResource?: SelectedResourceType
     k8SObjectMapRaw?: ApiResourceGroupType[]
     removeTabByIdentifier?: ReturnType<typeof useTabs>['removeTabByIdentifier']
@@ -474,6 +476,7 @@ export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
     getComponentKey: () => string
+    isExternalApp: boolean
 }
 
 export interface NodeTreeDetailTabProps {

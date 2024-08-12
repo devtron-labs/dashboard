@@ -35,7 +35,6 @@ import {
     useAsync,
     genericCDMaterialsService,
     CDMaterialServiceEnum,
-    Reload,
     useSearchString,
     handleUTCTime,
     ServerErrors,
@@ -65,6 +64,8 @@ import {
     usePrompt,
     getIsRequestAborted,
     GitCommitInfoGeneric,
+    ErrorScreenManager,
+    useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -121,7 +122,7 @@ const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 const FilterActionBar = importComponentFromFELibrary('FilterActionBar')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
@@ -161,6 +162,7 @@ const CDMaterial = ({
     // FIXME: the query params returned by useSearchString seems faulty
     const history = useHistory()
     const { searchParams } = useSearchString()
+    const { handleDownload } = useDownload()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
 
@@ -328,6 +330,11 @@ const CDMaterial = ({
     }, [])
 
     useEffect(() => {
+        if (materialsError) {
+            showError(materialsError)
+            return
+        }
+
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
@@ -882,15 +889,21 @@ const CDMaterial = ({
     }
 
     const onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
+        if (!getDownloadManifestUrl) {
+            return
+        }
         const downloadManifestDownload = {
             appId,
             envId,
             appName: getHelmPackageName(helmPackageName, cdWorkflowType),
             cdWorkflowType,
         }
-        if (getDeployManifestDownload) {
-            getDeployManifestDownload(downloadManifestDownload)
-        }
+        const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
+        handleDownload({
+            downloadUrl,
+            fileName: downloadManifestDownload.appName,
+            downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+        })
     }
 
     const showErrorIfNotAborted = (errors: ServerErrors) => {
@@ -1256,7 +1269,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
+                        <div className="bcn-0 br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1841,7 +1854,7 @@ const CDMaterial = ({
                             <>
                                 {getDeployButtonIcon()}
                                 {buttonLabel}
-                                {isVirtualEnvironment && 'to virtual env'}
+                                {isVirtualEnvironment && ' to virtual env'}
                                 {deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED && (
                                     <InfoOutline className="icon-dim-16 ml-5" />
                                 )}
@@ -2024,8 +2037,6 @@ const CDMaterial = ({
     }
 
     if (materialsError) {
-        showError(materialsError)
-
         return (
             <>
                 {!isFromBulkCD && (
@@ -2037,7 +2048,7 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <Reload reload={reloadMaterialsPropagation} />
+                <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
             </>
         )
     }

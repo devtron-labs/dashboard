@@ -405,6 +405,8 @@ export const Details: React.FC<DetailsType> = ({
     async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
+                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
+
                 if (!response.result.appName && !response.result.environmentName) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
@@ -416,7 +418,6 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
-                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
@@ -773,7 +774,7 @@ export const Details: React.FC<DetailsType> = ({
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
+            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} appType={appDetails.appType} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <ArtifactInfoModal
                     envId={appDetails?.environmentId}
@@ -789,6 +790,7 @@ export const Details: React.FC<DetailsType> = ({
                     clusterName={appDetails?.clusterName}
                     namespace={appDetails?.namespace}
                     clusterId={appDetails?.clusterId}
+                    isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             }
         </>
@@ -1500,29 +1502,6 @@ export const SyncStatusMessage = (app: Application) => {
         default:
             return <span>{message}</span>
     }
-}
-
-const getOperationStateTitle = (app: Application) => {
-    const appOperationState = getAppOperationState(app)
-    const operationType = getOperationType(app)
-    switch (operationType) {
-        case 'Delete':
-            return 'Deleting'
-        case 'Sync':
-            switch (appOperationState.phase) {
-                case 'Running':
-                    return 'Syncing'
-                case 'Error':
-                    return 'Sync error'
-                case 'Failed':
-                    return 'Sync failed'
-                case 'Succeeded':
-                    return 'Sync OK'
-                case 'Terminating':
-                    return 'Terminated'
-            }
-    }
-    return 'Unknown'
 }
 
 export const getAppOperationState = (app: Application) => {

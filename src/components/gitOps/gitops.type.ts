@@ -15,6 +15,7 @@
  */
 
 import { RouteComponentProps } from 'react-router'
+import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export type GitOpsOrganisationIdType =
@@ -46,7 +47,10 @@ export interface CustomGitOpsState {
     }
 }
 
-export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
+export interface GitOpsConfig
+    extends TLSConfigDTO,
+        Pick<TLSConnectionDTO, 'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'>,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType
     host: string
@@ -57,9 +61,14 @@ export interface GitOpsConfig extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' 
     bitBucketWorkspaceId: string
     bitBucketProjectKey: string
     allowCustomRepository?: boolean
+    isCADataClearedAfterInitialConfig: boolean
+    isTLSCertDataClearedAfterInitialConfig: boolean
+    isTLSKeyDataClearedAfterInitialConfig: boolean
 }
 
-export interface DefaultShortGitOpsType extends Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
+export interface DefaultShortGitOpsType
+    extends Pick<GitOpsConfig, 'caData' | 'tlsCertData' | 'tlsKeyData'>,
+        Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'token' | 'username' | 'authMode'> {
     host: string
     gitHubOrgId: string
     gitLabGroupId: string
@@ -184,7 +193,8 @@ export interface GitProviderTabIconsProps extends Pick<GitProviderTabProps, 'pro
     rootClassName?: string
 }
 
-export interface UpdateConfirmationDialogProps extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
+export interface UpdateConfirmationDialogProps
+    extends Pick<GitOpsState, 'lastActiveGitOp' | 'providerTab' | 'saveLoading'> {
     handleUpdate: () => void
     handleCancel: () => void
     /**

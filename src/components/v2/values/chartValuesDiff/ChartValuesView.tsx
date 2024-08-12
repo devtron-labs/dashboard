@@ -35,6 +35,7 @@ import {
     usePrompt,
     getIsRequestAborted,
     deepEqual,
+    useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -141,7 +142,7 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
+const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
 const ToggleSecurityScan = importComponentFromFELibrary('ToggleSecurityScan', null, 'function')
 
 const ChartValuesView = ({
@@ -165,6 +166,7 @@ const ChartValuesView = ({
         envId: string
     }>()
     const { serverMode } = useMainContext()
+    const { handleDownload } = useDownload()
     const chartValuesAbortRef = useRef<AbortController>(new AbortController())
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -816,11 +818,11 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                commonState.selectedEnvironment.clusterId,
-                commonState.selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: commonState.selectedEnvironment.clusterId,
+                namespace: commonState.selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
 
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
@@ -929,15 +931,21 @@ const ChartValuesView = ({
         }
 
         const onClickManifestDownload = (appId: number, envId: number, appName: string, helmPackageName: string) => {
-            const downloadManifetsDownload = {
+            if (!getDownloadManifestUrl) {
+                return
+            }
+            const downloadManifestDownload = {
                 appId,
                 envId,
                 appName: helmPackageName ?? appName,
                 isHelmApp: true,
             }
-            if (getDeployManifestDownload) {
-                getDeployManifestDownload(downloadManifetsDownload)
-            }
+            const downloadUrl = getDownloadManifestUrl(downloadManifestDownload)
+            handleDownload({
+                downloadUrl,
+                fileName: downloadManifestDownload.appName,
+                downloadSuccessToastContent: 'Manifest Downloaded Successfully',
+            })
         }
 
         try {
@@ -1588,11 +1596,10 @@ const ChartValuesView = ({
             !isCreateValueView &&
             !isVirtualEnvironmentOnSelector &&
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-            !appDetails?.isVirtualEnvironment &&
-            !commonState.installedConfig?.isOCICompliantChart
+            !appDetails?.isVirtualEnvironment
         return (
             <div
-                className={`chart-values-view__container bcn-0 ${
+                className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
                     isDeployChartView || isCreateValueView ? 'chart-values-view__deploy-chart' : ''
                 } ${commonState.openReadMe ? 'readmeOpened' : ''} ${
                     commonState.openComparison ? 'comparisonOpened' : ''
@@ -1676,7 +1683,6 @@ const ChartValuesView = ({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
@@ -1763,12 +1769,15 @@ const ChartValuesView = ({
                                 hideCreateNewOption={isCreateValueView}
                             />
                         )}
-                        {window._env_.ENABLE_RESOURCE_SCAN_V2 && !isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
-                            <ToggleSecurityScan
-                                isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                handleToggleSecurityScan={handleToggleSecurityScan}
-                            />
-                        )}
+                        {window._env_.ENABLE_RESOURCE_SCAN_V2 &&
+                            !isExternalApp &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(

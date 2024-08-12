@@ -26,23 +26,27 @@ import {
     YAMLStringify,
     ACTION_STATE,
     DEFAULT_SECRET_PLACEHOLDER,
+    ApiResourceGroupType,
+    PluginDetailServiceParamsType,
+    SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
-import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
+import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
     getAggregator as getAppDetailsAggregator,
     AggregationKeys,
     NodeType,
 } from '../../v2/appDetails/appDetails.type'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
+import { PipelineBuildStageType } from '../../workflowEditor/types'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -220,6 +224,9 @@ export function useWhyDidYouUpdate(name, props) {
     })
 }
 
+/**
+ * @deprecated - Use from fe-common-lib
+ */
 export const useIntersection = (
     target: React.RefObject<Element> | Element | null,
     options: IntersectionOptions = {},
@@ -859,6 +866,10 @@ export const createGroupedItemsByKey = (arr: any[], key: string) => {
 }
 
 export const filterImageList = (imageList: ClusterImageList[], serverVersion: string): ImageList[] => {
+    if (!imageList) {
+        return []
+    }
+
     let nodeImageList = imageList.find((imageObj) => {
         const regex = new RegExp(imageObj.groupRegex)
         return regex.test(serverVersion)
@@ -877,6 +888,7 @@ export const convertToOptionsList = (
     arr: any[],
     customLabel?: string,
     customValue?: string,
+    customDescription?: string,
     customFieldKey?: string,
 ): OptionType[] => {
     if (!Array.isArray(arr) || !arr) {
@@ -886,6 +898,7 @@ export const convertToOptionsList = (
         const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
+            description: customDescription ? ele[customDescription] : '',
         }
 
         if (customFieldKey) {
@@ -961,16 +974,16 @@ export const processK8SObjects = (
 ): { k8SObjectMap: Map<string, K8SObjectType>; selectedResource: ApiResourceGroupType } => {
     const _k8SObjectMap = new Map<string, K8SObjectType>()
     let _selectedResource: ApiResourceGroupType
-    const isShowNamespace = false
-    const isShowEvent = false
     for (let index = 0; index < k8sObjects.length; index++) {
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
             ? element.gvk.Group
             : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
 
+        const shortNames = element.shortNames?.map((name) => name.toLowerCase()) ?? null
+        const k8sObject = { namespaced: element.namespaced, gvk: { ...element.gvk }, shortNames }
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-            _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
+            _selectedResource = structuredClone(k8sObject)
         }
         const currentData = _k8SObjectMap.get(groupParent)
         if (!currentData) {
@@ -980,10 +993,10 @@ export const processK8SObjects = (
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                     element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
                     element.gvk.Kind.toLowerCase() === selectedResourceKind,
-                child: [{ namespaced: element.namespaced, gvk: element.gvk }],
+                child: [k8sObject],
             })
         } else {
-            currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
+            currentData.child = [...currentData.child, k8sObject]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
                 currentData.isExpanded =
                     element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
@@ -992,9 +1005,11 @@ export const processK8SObjects = (
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.events = shortNames
             SIDEBAR_KEYS.eventGVK = { ...element.gvk }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.namespaceGVK.Kind) {
+            JUMP_TO_KIND_SHORT_NAMES.namespaces = shortNames
             SIDEBAR_KEYS.namespaceGVK = { ...element.gvk }
         }
     }
@@ -1256,6 +1271,22 @@ export const getCTAClass = (userActionState: string, disableDeployButton?: boole
     return className
 }
 
+export const getPluginIdsFromBuildStage = (
+    stage: PipelineBuildStageType,
+): PluginDetailServiceParamsType['pluginIds'] => {
+    if (!stage?.steps?.length) {
+        return []
+    }
+
+    const pluginIds = []
+    stage.steps.forEach((step) => {
+        if (step.pluginRefStepDetail?.pluginId) {
+            pluginIds.push(step.pluginRefStepDetail.pluginId)
+        }
+    })
+
+    return pluginIds
+}
 // Should contain git-codecommit.*.amazonaws.com
 export const isAWSCodeCommitURL = (url: string = ''): boolean => {
     return url.includes('git-codecommit.') && url.includes('.amazonaws.com')
@@ -1279,4 +1310,33 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     return <Git className="dc__vertical-align-middle icon-dim-20" />
+}
+
+export const getSeverityWithCount = (severityCount: SeverityCount) => {
+    if (severityCount.critical) {
+        return (
+            <span className="severity-chip severity-chip--critical dc__w-fit-content">
+                {severityCount.critical} Critical
+            </span>
+        )
+    }
+    if (severityCount.high) {
+        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
+    }
+    if (severityCount.medium) {
+        return (
+            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
+        )
+    }
+    if (severityCount.low) {
+        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
+    }
+    if (severityCount.unknown) {
+        return (
+            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
+                {severityCount.unknown} Unknown
+            </span>
+        )
+    }
+    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }

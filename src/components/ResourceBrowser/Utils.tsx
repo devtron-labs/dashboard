@@ -23,7 +23,7 @@ import moment from 'moment'
 import { URLS, LAST_SEEN } from '../../config'
 import { eventAgeComparator, processK8SObjects } from '../common'
 import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../v2/appDetails/appDetails.store'
-import { K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
+import { JUMP_TO_KIND_SHORT_NAMES, K8S_EMPTY_GROUP, ORDERED_AGGREGATORS, SIDEBAR_KEYS } from './Constants'
 import {
     ClusterOptionType,
     K8SObjectChildMapType,
@@ -153,6 +153,7 @@ const newK8sObjectOption = (
     namespaced: boolean,
     grouped: boolean,
     groupName: string,
+    shortNames: ApiResourceGroupType['shortNames'],
 ): K8sObjectOptionType => {
     return {
         label,
@@ -164,6 +165,7 @@ const newK8sObjectOption = (
             kind: gvk.Kind,
             namespaced: `${namespaced}`,
             grouped: `${grouped}`,
+            shortNames,
         },
         groupName,
     }
@@ -186,14 +188,30 @@ export const convertK8sObjectMapToOptionsList = (
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.namespaces, '', SIDEBAR_KEYS.namespaceGVK, false, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.namespaces,
+                            '',
+                            SIDEBAR_KEYS.namespaceGVK,
+                            false,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.namespaces,
+                        ),
                     )
                     break
 
                 /* this is a special item in the sidebar added based on presence of a key */
                 case SIDEBAR_KEYS.eventGVK.Kind.toLowerCase():
                     _k8sObjectOptionsList.push(
-                        newK8sObjectOption(SIDEBAR_KEYS.events, '', SIDEBAR_KEYS.eventGVK, true, false, ''),
+                        newK8sObjectOption(
+                            SIDEBAR_KEYS.events,
+                            '',
+                            SIDEBAR_KEYS.eventGVK,
+                            true,
+                            false,
+                            '',
+                            JUMP_TO_KIND_SHORT_NAMES.events,
+                        ),
                     )
                     break
 
@@ -207,6 +225,7 @@ export const convertK8sObjectMapToOptionsList = (
                                 data.namespaced,
                                 k8sObject.child.size > 1,
                                 k8sObjectChild.data.length === 1 ? k8sObject.name : `${k8sObject.name}/${key}`,
+                                data.shortNames,
                             ),
                         )
                     })
@@ -214,7 +233,17 @@ export const convertK8sObjectMapToOptionsList = (
         })
     })
 
-    _k8sObjectOptionsList.push(newK8sObjectOption(SIDEBAR_KEYS.nodes, '', SIDEBAR_KEYS.nodeGVK, false, false, ''))
+    _k8sObjectOptionsList.push(
+        newK8sObjectOption(
+            SIDEBAR_KEYS.nodes,
+            '',
+            SIDEBAR_KEYS.nodeGVK,
+            false,
+            false,
+            '',
+            JUMP_TO_KIND_SHORT_NAMES.nodes,
+        ),
+    )
 
     return _k8sObjectOptionsList
 }

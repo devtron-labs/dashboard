@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
     showError,
     Progressing,
@@ -25,11 +25,11 @@ import {
     ScannedByToolModal,
     Sidebar,
     LogResizeButton,
-    CICDSidebarFilterOptionType, 
-    History, 
-    HistoryComponentType, 
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
     FetchIdDataStatus,
-    Scroller, 
+    Scroller,
     GitChanges,
     TriggerDetails,
     useScrollable,
@@ -38,6 +38,9 @@ import {
     asyncWrap,
     Artifacts,
     LogsRenderer,
+    ModuleNameMap,
+    EMPTY_STATE_STATUS,
+    ScanVulnerabilitiesTable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -45,11 +48,10 @@ import {
     getCIPipelines,
     getCIHistoricalStatus,
     getTriggerHistory,
-    getArtifact,
     getTagDetails,
     getArtifactForJobCi,
 } from '../../service'
-import { URLS, ModuleNameMap } from '../../../../config'
+import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
@@ -58,10 +60,10 @@ import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
+import { getSeverityWithCount } from '@Components/common'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -514,9 +516,9 @@ const HistoryLogs = ({
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
-    const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
+    const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
     useEffect(() => {
         if (isJobCI) {
             setLoading(true)
@@ -542,7 +544,7 @@ const HistoryLogs = ({
                 status={triggerDetails.status}
                 artifact={ciJobArtifact[index]}
                 blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                getArtifactPromise={_getArtifactPromise}
+                downloadArtifactUrl={downloadArtifactUrl}
                 isArtifactUploaded={triggerDetails.isArtifactUploaded}
                 isJobView={isJobView}
                 isJobCI={isJobCI}
@@ -572,36 +574,42 @@ const HistoryLogs = ({
                     </div>
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
-                            style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                            style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
                             {...{ scrollToTop, scrollToBottom }}
                         />
                     )}
                 </Route>
                 <Route path={`${path}/source-code`}>
-                    <GitChanges gitTriggers={triggerDetails.gitTriggers} ciMaterials={triggerDetails.ciMaterials} renderCIListHeader={renderCIListHeader} />
+                    <GitChanges
+                        gitTriggers={triggerDetails.gitTriggers}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        renderCIListHeader={renderCIListHeader}
+                    />
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
                     {isJobCI && !loading && CiArtifactsArrayCards}
                     {!loading && (
-                        <Artifacts
-                            status={triggerDetails.status}
-                            artifact={triggerDetails.artifact}
-                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            getArtifactPromise={_getArtifactPromise}
-                            isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                            isJobView={isJobView}
-                            isJobCI={isJobCI}
-                            imageComment={triggerDetails.imageComment}
-                            imageReleaseTags={triggerDetails.imageReleaseTags}
-                            ciPipelineId={triggerDetails.ciPipelineId}
-                            artifactId={triggerDetails.artifactId}
-                            tagsEditable={tagsEditable}
-                            appReleaseTagNames={appReleaseTags}
-                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                            type={HistoryComponentType.CI}
-                            renderCIListHeader={renderCIListHeader}
-                        />
+                        <div className="p-16">
+                            <Artifacts
+                                status={triggerDetails.status}
+                                artifact={triggerDetails.artifact}
+                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                downloadArtifactUrl={downloadArtifactUrl}
+                                isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                                isJobView={isJobView}
+                                isJobCI={isJobCI}
+                                imageComment={triggerDetails.imageComment}
+                                imageReleaseTags={triggerDetails.imageReleaseTags}
+                                ciPipelineId={triggerDetails.ciPipelineId}
+                                artifactId={triggerDetails.artifactId}
+                                tagsEditable={tagsEditable}
+                                appReleaseTagNames={appReleaseTags}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                type={HistoryComponentType.CI}
+                                renderCIListHeader={renderCIListHeader}
+                            />
+                        </div>
                     )}
                 </Route>
                 {!isJobCard && (
@@ -649,8 +657,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         lastExecution: '',
         severityCount: {
             critical: 0,
-            moderate: 0,
+            high: 0,
+            medium: 0,
             low: 0,
+            unknown: 0,
         },
         scanEnabled: false,
         scanned: false,
@@ -704,9 +714,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const { severityCount } = securityData
-    const total = severityCount.critical + severityCount.moderate + severityCount.low
-
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
             <GenericEmptyState
@@ -747,16 +754,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
                     <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
-                    {severityCount.critical !== 0 ? (
-                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="dc__fill-low">{severityCount.low} Low</span>
-                    ) : null}
+                    {getSeverityWithCount(securityData.severityCount)}
                     <div className="security-scan__type flex">
                         <ScannedByToolModal scanToolId={scanToolId} />
                     </div>
@@ -764,44 +762,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <table className="security-scan-table">
-                        <tr className="security-scan-table__header">
-                            <th className="security-scan-table__title security-scan-table__cve">CVE</th>
-                            <th className="security-scan-table__title">SEVERITY</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">PACKAGE</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">CURRENT VERSION</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">FIXED IN VERSION</th>
-                        </tr>
-                        {securityData.vulnerabilities.map((item) => {
-                            return (
-                                <tr className="security-scan-table__row">
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
-                                        <a
-                                            href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            {item.name}
-                                        </a>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl">
-                                        <span className={`fill-${item.severity}`} data-testid="severity-check">
-                                            {item.severity}
-                                        </span>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.package}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.version}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.fixedVersion}
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </table>
+                    <div className='px-24 security-scan-table'>
+                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
+                    </div>
                 )}
             </div>
         </>

@@ -98,17 +98,18 @@ const TerminalComponent = ({
         }
 
         const deleteEphemeralContainer = (containerName: string) => {
-            deleteEphemeralUrl(
-                getPayload(containerName),
-                appDetails.clusterId,
-                appDetails.environmentId,
-                appDetails.namespace,
-                appDetails.appName,
-                appDetails.appId,
-                appDetails.appType,
+            deleteEphemeralUrl({
+                requestData: getPayload(containerName),
+                clusterId: appDetails.clusterId,
+                environmentId: appDetails.environmentId,
+                namespace: appDetails.namespace,
+                appName: appDetails.appName,
+                appId: appDetails.appId,
+                appType: appDetails.appType,
+                fluxTemplateType: appDetails.fluxTemplateType,
                 isResourceBrowserView,
                 params,
-            )
+            })
                 .then((response: any) => {
                     const _containers: Options[] = []
                     const containerName = response.result
@@ -170,21 +171,24 @@ const TerminalComponent = ({
                       appDetails.appId,
                       appDetails.environmentId,
                   )
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+                : getAppId({
+                      clusterId: appDetails.clusterId,
+                      namespace: appDetails.namespace,
+                      appName: appDetails.appName,
+                      templateType: appDetails.fluxTemplateType ?? null,
+                  })
         const isExternalArgoApp = appDetails.appType === AppType.EXTERNAL_ARGO_APP
         let url: string = 'k8s/pod/exec/session/'
         if (isResourceBrowserView) {
             url += `${selectedResource.clusterId}`
-        } else if (isExternalArgoApp) {
-            url += `${appDetails.clusterId}`
         } else {
             url += `${appId}`
         }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : isExternalArgoApp ? selectedNamespace : appDetails.namespace}/${nodeName}/${
+        url += `/${isResourceBrowserView ? selectedResource.namespace : selectedNamespace}/${nodeName}/${
             selectedTerminalType.value
         }/${selectedContainerName}`
         if (!isResourceBrowserView) {
-            return `${url}?${isExternalArgoApp ? `externalArgoApplicationName=${appDetails.appName}&` : ''}appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
+            return `${url}?appType=${getK8sResourcePayloadAppType(appDetails.appType)}`
         }
         return url
     }
@@ -320,6 +324,14 @@ const TerminalComponent = ({
                     IndicatorSeparator: null,
                     Option,
                 },
+            },
+            {
+                type: TerminalWrapperType.DOWNLOAD_FILE_FOLDER,
+                hideTerminalStripComponent: false,
+                isResourceBrowserView: !!isResourceBrowserView,
+                isClusterTerminalView: false,
+                containerName: selectedContainerName,
+                appDetails,
             },
         ],
         tabSwitcher: {

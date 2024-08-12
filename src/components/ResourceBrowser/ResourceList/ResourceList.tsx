@@ -283,7 +283,6 @@ const ResourceList = () => {
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}

@@ -505,7 +505,7 @@ export const MarkDown = ({ markdown = '', className = '', breaks = false, disabl
         <article
             {...props}
             ref={mdeRef}
-            className={`deploy-chart__readme-markdown  ${className}`}
+            className={`deploy-chart__readme-markdown mr-20 ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
         />

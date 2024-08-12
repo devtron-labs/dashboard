@@ -1,0 +1,61 @@
+<!--
+  - Copyright (c) 2024. Devtron Inc.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>
+  .ic-update__arrow1 {
+    animation: ic-update__move-arrow1 3s infinite ease-out;
+  }
+   
+@keyframes ic-update__move-arrow1 {
+    0% {
+      transform: translateY(0px);
+    }
+    75% {
+      transform: translateY(0px);
+    }
+    100% {
+      transform: translateY(-25px);
+    }
+  }
+
+  .ic-update__arrow2 {
+    animation: ic-update__move-arrow2 3s infinite ease-out;
+  }
+   
+@keyframes ic-update__move-arrow2 {
+    0% {
+      transform: translateY(25px);
+    }
+    75% {
+      transform: translateY(25px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+</style>
+<g clip-path="url(#clip0_4038_792)">
+<rect width="24" height="24" rx="6" fill="#1DAD70"/>
+<path class="ic-update__arrow1" d="M12.0008 17.004V7.004M12.0008 7.004L7.90991 11.0949M12.0008 7.004L16.0917 11.0949" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="ic-update__arrow2" d="M12.0008 17.004V7.004M12.0008 7.004L7.90991 11.0949M12.0008 7.004L16.0917 11.0949" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_4038_792">
+<rect width="24" height="24" rx="4" fill="white"/>
+</clipPath>
+</defs>
+</svg>
