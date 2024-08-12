@@ -66,9 +66,6 @@ const AppStatusDetailModal = ({
     const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
-        ['progressing', 'degraded'].includes(
-            _appDetails?.resourceTree?.status?.toLowerCase() || _appDetails?.appStatus?.toLowerCase(),
-        ) &&
         Array.isArray(conditions) &&
         conditions.length > 0 &&
         conditions[0].message
@@ -76,6 +73,8 @@ const AppStatusDetailModal = ({
         message = conditions[0].message
     } else if (Rollout?.health?.message) {
         message = Rollout.health.message
+    } else if (_appDetails.FluxAppStatusDetail) {
+        message = _appDetails.FluxAppStatusDetail.message
     }
 
     function handleShowMoreButton() {
@@ -130,7 +129,7 @@ const AppStatusDetailModal = ({
                                 appStatus || _appDetails.resourceTree?.status?.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase()}
+                            {appStatusText || _appDetails.resourceTree?.status?.toUpperCase() || _appDetails.appStatus}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-details-cross">

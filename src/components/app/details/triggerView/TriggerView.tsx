@@ -944,7 +944,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             )
                             toast.error(errorToastBody)
                         } else {
-                            toast.error(error)
+                            showError(errors)
                         }
                     })
                 }

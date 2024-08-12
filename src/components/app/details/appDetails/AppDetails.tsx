@@ -775,7 +775,7 @@ export const Details: React.FC<DetailsType> = ({
             {showIssuesModal && (
                 <IssuesListingModal errorsList={errorsList} closeIssuesListingModal={() => toggleIssuesModal(false)} />
             )}
-            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
+            {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} appType={appDetails.appType} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <ArtifactInfoModal
                     envId={appDetails?.environmentId}

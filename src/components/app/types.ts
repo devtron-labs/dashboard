@@ -614,6 +614,7 @@ export interface PayloadParsedFromURL {
     appNameSearch?: string
     appStatuses?
     environments?
+    templateType?: string[]
     hOffset?: number
     namespaces?
     offset?: number
@@ -623,18 +624,14 @@ export interface PayloadParsedFromURL {
     teams?
 }
 
-export interface ExternalArgoListType {
-    serverMode?: string
+export interface GenericAppListProps {
     payloadParsedFromUrl: PayloadParsedFromURL
     sortApplicationList
     clearAllFilters
-    fetchingExternalApps
-    setFetchingExternalAppsState
-    updateDataSyncing
     setShowPulsatingDotState
     masterFilters
-    syncListData
-    isArgoInstalled: boolean
+    appType: string,
+    isSSE?: boolean
 }
 export interface EditDescRequest {
     id: number
