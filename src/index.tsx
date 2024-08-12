@@ -20,12 +20,8 @@ import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import dayjs from 'dayjs'
 import App from './App'
 import { UserEmailProvider, customEnv } from '@devtron-labs/devtron-fe-common-lib'
-
-dayjs.extend(relativeTime)
 
 declare global {
     interface Window {

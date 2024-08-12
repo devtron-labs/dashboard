@@ -68,10 +68,6 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
         return value
     }
 
-    const formatTimeString = (start: Dayjs, now: Dayjs) => {
-        return now.to(start)
-    }
-
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
@@ -166,8 +162,8 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                         <>
                             <span>
                                 Last refreshed&nbsp;
-                                <Timer start={lastSyncTime} format={formatTimeString} />
-                                &nbsp;
+                                <Timer start={lastSyncTime} />
+                                &nbsp;ago
                             </span>
                             <button
                                 type="button"
@@ -196,7 +192,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                         <ClusterNodeEmptyState actionHandler={clearFilters} />
                     </div>
                 ) : (
-                    filteredList?.map((clusterData) => renderClusterRow(clusterData))
+                    filteredList.map((clusterData) => renderClusterRow(clusterData))
                 )}
             </div>
         </div>
