@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
 import { ReactComponent as ArgoCD } from '../../../assets/icons/argo-cd-app.svg'
+import { ReactComponent as FluxCD } from '../../../assets/icons/ic-fluxcd.svg'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 
 function DeploymentTypeIcon({
     deploymentAppType,
-    isExternalArgoApp,
+    appType,
 }: {
     deploymentAppType: string
-    isExternalArgoApp?: boolean
+    appType: string
 }): JSX.Element {
     const renderDeploymentTypeIcon = () => {
         if (
@@ -36,8 +37,11 @@ function DeploymentTypeIcon({
         ) {
             return <VirtualEnvHelpTippy isVirtualIcon />
         }
-        if (deploymentAppType === DeploymentAppTypes.GITOPS || isExternalArgoApp) {
+        if (deploymentAppType === DeploymentAppTypes.GITOPS || appType === AppType.EXTERNAL_ARGO_APP) {
             return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
+        }
+        if (appType === AppType.EXTERNAL_FLUX_APP) {
+            return <FluxCD data-testid="flux-cd-app-logo" className="icon-dim-32 ml-16" />
         }
         if (deploymentAppType === DeploymentAppTypes.HELM) {
             return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />

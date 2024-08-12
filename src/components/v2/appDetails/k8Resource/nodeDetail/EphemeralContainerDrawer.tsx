@@ -449,17 +449,18 @@ const EphemeralContainerDrawer = ({
             }
         }
 
-        generateEphemeralUrl(
-            payload,
-            appDetails.clusterId,
-            appDetails.environmentId,
-            appDetails.namespace,
-            appDetails.appName,
-            appDetails.appId,
-            appDetails.appType,
+        generateEphemeralUrl({
+            requestData: payload,
+            clusterId: appDetails.clusterId,
+            environmentId: appDetails.environmentId,
+            namespace: appDetails.namespace,
+            appName: appDetails.appName,
+            appId: appDetails.appId,
+            appType: appDetails.appType,
+            fluxTemplateType: appDetails.fluxTemplateType,
             isResourceBrowserView,
             params,
-        )
+        })
             .then((response: any) => {
                 toast.success('Launched Container Successfully ')
                 setShowEphemeralContainerDrawer(false)

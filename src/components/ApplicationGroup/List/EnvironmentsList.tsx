@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { DevtronProgressing, useAsync, useMainContext, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { DevtronProgressing, useAsync, useMainContext, PageHeader, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch } from 'react-router'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
@@ -25,7 +25,6 @@ import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
-import { AppListConstants } from '../../../config'
 import { AppGroupAdminType } from '../AppGroup.types'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {

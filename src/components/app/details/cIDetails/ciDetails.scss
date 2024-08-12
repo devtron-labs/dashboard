@@ -35,12 +35,12 @@
 
     .zoom {
         position: absolute;
-        top: 200px;
-        right: 32px;
+        bottom: 12px;
+        right: 12px;
         transition: top 0.3s;
         padding: 6px;
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border-radius: 4px;
         box-shadow:
             0 0 4px 0 rgba(0, 10, 20, 0.5),
@@ -129,7 +129,6 @@
         }
 
         .zoom {
-            top: 30px;
             transition: top 0.3s;
         }
     }

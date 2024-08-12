@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import K8ResourceComponent from './k8Resource/K8Resource.component'
 import './appDetails.scss'

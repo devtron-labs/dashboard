@@ -372,6 +372,14 @@ a:focus {
     top: 26px;
 }
 
+.dc__top-40 {
+    top: 40px;
+}
+
+.dc__top-44 {
+    top: 44px;
+}
+
 .dc__top-46 {
     top: 46px;
 }
@@ -430,6 +438,10 @@ a:focus {
 
 .dc__left-35 {
     left: 35px;
+}
+
+.dc__left-55 {
+    left: 55px;
 }
 
 .dc__left-150 {
@@ -624,7 +636,7 @@ a:focus {
     }
 
     .white-card {
-        border-radius: 8px;
+        border-radius: 4px;
         border: solid 1px var(--N100);
         background-color: var(--white);
     }
@@ -1152,23 +1164,17 @@ button.anchor {
 }
 
 .dc__element-scroller {
-    width: 40px;
-    height: 80px;
-    border-radius: 50px;
     opacity: 0.8;
-    box-shadow:
-        0 0 4px 0 rgba(0, 10, 20, 0.5),
-        0 0 4px 0 rgba(0, 10, 20, 0.5);
+    background: #2C3354;
+    box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
     border: unset;
     overflow: hidden;
 
     button {
         background: #2c3354;
-        height: 50%;
         outline: unset;
         border: unset;
-        padding: unset;
-
+        padding: 4px;
         &:first-child {
             border-bottom: 1px solid var(--N900);
         }
@@ -1178,20 +1184,15 @@ button.anchor {
         }
 
         svg path {
-            stroke: white;
+            fill: white;
         }
 
         &:disabled {
             cursor: not-allowed;
 
             svg path {
-                stroke: var(--N400);
+                fill: var(--N400);
             }
-        }
-
-        svg {
-            height: 32px;
-            width: 32px;
         }
     }
 
@@ -1227,6 +1228,12 @@ button.anchor {
         background-size: contain, contain;
     }
 
+    &.not-ready {
+        background: url('../assets//icons/ic-error.svg');
+        background-size: contain, contain;
+    }
+
+    &.ready,
     &.healthy,
     &.synced,
     &.sync.ok,
@@ -1297,29 +1304,22 @@ button.anchor {
     background-color: $background;
 }
 
-.dc__striped-row {
-    &:nth-child(odd) {
-        @include dc__striped-row(var(--window-bg));
-
-        .app-status__icon {
-            @include dc__app-status-icon(var(--window-bg));
-        }
+.dc__striped-table {
+    div:nth-child(odd) {
+        @include dc__striped-row(var(--N50));
     }
 
-    &:nth-child(even) {
-        @include dc__striped-row(white);
-
-        .app-status__icon {
-            @include dc__app-status-icon(white);
-        }
+    div:nth-child(even) {
+        @include dc__striped-row(var(--N0));
     }
 
-    &:hover {
-        @include dc__striped-row(var(--B100));
+    // NOTE: for the header (1st row)
+    div:first-child {
+        @include dc__striped-row(var(--N0));
+    }
 
-        .app-status__icon {
-            @include dc__app-status-icon(var(--B100));
-        }
+    div:hover {
+        @include dc__striped-row(var(--B50));
     }
 }
 
@@ -2148,9 +2148,14 @@ button.anchor {
     text-align: left !important;
 }
 
+// Use text-align-end instead for internationalization
 .dc__align-right {
     text-align: right;
     margin-left: auto;
+}
+
+.dc__text-align-end {
+    text-align: end;
 }
 
 .dc__align-baseline {
@@ -2165,6 +2170,10 @@ button.anchor {
 // Border
 .dc__border {
     border: 1px solid var(--N200);
+
+    &--n9 {
+        border: 1px solid var(--N900);
+    }
 }
 
 .dc__border-dashed {
@@ -2289,6 +2298,14 @@ button.anchor {
     }
 }
 
+.dc__border-bottom-n0 {
+    border-bottom: solid 1px var(--N0);
+
+    &--important {
+        border-bottom: solid 1px var(--N0) !important;
+    }
+}
+
 .dc__border-bottom-n1 {
     border-bottom: solid 1px var(--N100);
 
@@ -2349,6 +2366,10 @@ button.anchor {
     box-shadow: inset 0 1px 0 0 #d6dbdf;
 }
 
+.dc__box-shadow-bottom-n2 {
+    box-shadow: inset 0 -1px 0 0 var(--N200);
+}
+
 .dc__cluster-error {
     border: solid 1px #ffcb5d;
 }
@@ -2398,6 +2419,10 @@ button.anchor {
 
 .dc__mxw-160 {
     max-width: 160px;
+}
+
+.dc__mxw-175 {
+    max-width: 175px;
 }
 
 .dc__mxw-178 {
@@ -2482,6 +2507,10 @@ button.anchor {
 
 .dc__mxw-155 {
     max-width: 155px;
+}
+
+.dc__mxw-80-per {
+    max-width: 80%;
 }
 
 .fw-n {
@@ -3127,6 +3156,9 @@ textarea,
 .w-126 {
     width: 126px;
 }
+.w-130 {
+    width: 130px;
+}
 
 .w-150 {
     width: 150px;
@@ -3724,6 +3756,9 @@ textarea,
     line-height: 18px;
 }
 
+.lh-18-imp {
+    line-height: 18px !important;
+}
 .lh-20 {
     line-height: 20px;
 }
@@ -4017,6 +4052,10 @@ textarea,
     column-gap: 8px;
 }
 
+.dc__column-gap-10 {
+    column-gap: 10px;
+}
+
 .dc__column-gap-12 {
     column-gap: 12px;
 }
@@ -4099,6 +4138,11 @@ textarea,
 
 .dc__flip-270 {
     transform: rotate(270deg);
+}
+
+// Helpful in case of transition transform
+.dc__flip-n90 {
+    transform: rotate(-90deg);
 }
 
 .dc__flip {
@@ -4498,8 +4542,6 @@ textarea::placeholder {
 .dc__dashed_icon_grid-container {
     display: grid;
     grid-template-columns: 48% 4% 48%;
-    padding-left: 20px;
-    padding-right: 20px;
     gap: 0;
     width: 100%;
 }
@@ -4828,4 +4870,13 @@ textarea::placeholder {
         border: 1px solid var(--N200, #D0D4D9);
         background: var(--N100, #EDF1F5);
     }
+}
+.dc__grid-full {
+    display: grid;
+    grid-template-columns: 100% 0;
+}
+
+.dc__grid-half {
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
