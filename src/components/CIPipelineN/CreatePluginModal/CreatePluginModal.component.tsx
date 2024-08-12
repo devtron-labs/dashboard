@@ -235,9 +235,6 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 clonedPluginForm.inputVariables[payload.index].allowEmptyValue =
                     !clonedPluginForm.inputVariables[payload.index].allowEmptyValue
                 break
-            case CreatePluginActionType.UPDATE_ICON_ERROR:
-                clonedPluginFormError.icon = payload
-                break
             case CreatePluginActionType.TOGGLE_REPLACE_CUSTOM_TASK:
                 clonedPluginForm.shouldReplaceCustomTask = !clonedPluginForm.shouldReplaceCustomTask
                 break
@@ -250,10 +247,10 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
     }
 
     const handleIconError: EditImageFormFieldProps['handleError'] = (errorMessage) => {
-        handleChange({
-            action: CreatePluginActionType.UPDATE_ICON_ERROR,
-            payload: errorMessage,
-        })
+        setPluginFormError((prevPluginFormError) => ({
+            ...prevPluginFormError,
+            icon: errorMessage,
+        }))
     }
 
     const handleToggleShouldReplaceCustomTask = () => {
