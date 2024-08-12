@@ -178,9 +178,7 @@ export default function GitInfoMaterial({
     const renderBranchChangeHeader = (selectedMaterial: CIMaterialType): JSX.Element => {
         return (
             <div
-                className={`fs-13 lh-20 pl-20 pr-20 pt-12 pb-12 fw-6 flex ${
-                    selectedMaterial.regex ? 'cursor' : ''
-                } cn-9`}
+                className={`fs-13 lh-20 fw-6 flex ${selectedMaterial.regex ? 'cursor' : ''} cn-9`}
                 style={{ background: 'var(--window-bg)' }}
                 onClick={onClickHeader}
             >
@@ -256,7 +254,7 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
+            <div className="search dc__position-rel en-2 bw-1 br-4 h-32 mr-0-imp">
                 <Search className="search__icon icon-dim-18" />
                 <input
                     data-testid="ci-trigger-search-by-commit-hash"
@@ -338,12 +336,12 @@ export default function GitInfoMaterial({
 
         return (
             <div
-                className="flex dc__content-space dc__position-sticky "
+                className="flex dc__content-space dc__position-sticky py-8 px-16"
                 style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
             >
                 <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                 {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                    <div className={`flex right ${excludeIncludeEnv && 'mr-20'}`}>
+                    <div className="flex right">
                         {renderSearch()}
                         {excludeIncludeEnv && renderExcludedCommitsOption()}
                     </div>
@@ -431,13 +429,14 @@ export default function GitInfoMaterial({
                         </span>
                     </div>
                 )}
-
-                <MaterialHistory
-                    material={selectedMaterial}
-                    pipelineName={pipelineName}
-                    ciPipelineId={pipelineId}
-                    selectCommit={triggerViewContext.selectCommit}
-                />
+                <div className="flexbox-col dc__gap-12 py-12 px-16">
+                    <MaterialHistory
+                        material={selectedMaterial}
+                        pipelineName={pipelineName}
+                        ciPipelineId={pipelineId}
+                        selectCommit={triggerViewContext.selectCommit}
+                    />
+                </div>
             </div>
         )
     }

@@ -35,7 +35,6 @@ import {
     useAsync,
     genericCDMaterialsService,
     CDMaterialServiceEnum,
-    Reload,
     useSearchString,
     handleUTCTime,
     ServerErrors,
@@ -65,6 +64,7 @@ import {
     usePrompt,
     getIsRequestAborted,
     GitCommitInfoGeneric,
+    ErrorScreenManager,
     useDownload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -330,6 +330,11 @@ const CDMaterial = ({
     }, [])
 
     useEffect(() => {
+        if (materialsError) {
+            showError(materialsError)
+            return
+        }
+
         if (!loadingMaterials && materialsResult) {
             if (selectedImageFromBulk) {
                 const selectedImageIndex = materialsResult.materials.findIndex(
@@ -1264,7 +1269,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
+                        <div className="bcn-0 br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -2032,8 +2037,6 @@ const CDMaterial = ({
     }
 
     if (materialsError) {
-        showError(materialsError)
-
         return (
             <>
                 {!isFromBulkCD && (
@@ -2045,7 +2048,7 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <Reload reload={reloadMaterialsPropagation} />
+                <ErrorScreenManager code={materialsError.code} reload={reloadMaterialsPropagation} />
             </>
         )
     }

@@ -559,8 +559,7 @@ const NavItem = ({ serverMode }) => {
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
-
-    const defaultRoute = (): string => {
+        const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
         }

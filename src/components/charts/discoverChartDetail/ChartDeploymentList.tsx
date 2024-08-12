@@ -150,7 +150,7 @@ export const DeploymentRow = ({
 
     function _buildAppDetailUrl() {
         if (appOfferingMode == SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(clusterId, namespace, appName)}/${appName}`
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
         }
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
     }
