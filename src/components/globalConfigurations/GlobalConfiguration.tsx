@@ -324,10 +324,10 @@ const NavItem = ({ serverMode }) => {
                         {children}
                     </TippyCustomized>
                 )}
+                key={`${route.name}-${route.href}`}
             >
                 <NavLink
                     to={`${route.href}`}
-                    key={`${route.name}-${route.href}`}
                     activeClassName="active-route"
                     data-testid={route.dataTestId}
                     className={`${
