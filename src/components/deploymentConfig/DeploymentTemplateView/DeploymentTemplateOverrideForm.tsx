@@ -64,6 +64,7 @@ export default function DeploymentTemplateOverrideForm({
     setManifestDataRHS,
     setManifestDataLHS,
     convertVariablesOverride,
+    fetchEnvConfig,
 }) {
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const { appId, envId } = useParams<{ appId; envId }>()
@@ -282,6 +283,7 @@ export default function DeploymentTemplateOverrideForm({
                 payload: { fetchedValues: {}, fetchedValuesManifest: {} },
             })
             initialise(null, false, true)
+            fetchEnvConfig(envId)
         } catch (err) {
             handleConfigProtectionError(2, err, dispatch, reloadEnvironments)
         } finally {
@@ -552,6 +554,7 @@ export default function DeploymentTemplateOverrideForm({
             },
         })
         initialise(state.selectedChartRefId, true, false)
+        fetchEnvConfig(envId)
     }
 
     const fetchManifestData = async (data) => {

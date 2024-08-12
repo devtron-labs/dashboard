@@ -59,6 +59,7 @@ export const URLS = {
     APP_CM_CONFIG: 'configmap',
     APP_CS_CONFIG: 'secrets',
     APP_ENV_OVERRIDE_CONFIG: 'env-override',
+    APP_ENV_CONFIG_COMPARE: 'config-compare',
     APP_EXTERNAL_LINKS: 'external-links',
     APP_CONFIG_PROTECTION: 'config-protection',
     APP_CI_CONFIG: 'ci-pipeline',

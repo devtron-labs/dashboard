@@ -15,29 +15,32 @@
  */
 
 import React, { lazy, Suspense } from 'react'
-import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation } from 'react-router-dom'
+import { useRouteMatch, useHistory, Route, Switch, Redirect, useLocation, generatePath } from 'react-router-dom'
 
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Next } from '@Icons/ic-arrow-forward.svg'
 import { URLS } from '@Config/index'
-import { ErrorBoundary, importComponentFromFELibrary } from '@Components/common'
+import { ErrorBoundary, importComponentFromFELibrary, useAppContext } from '@Components/common'
 import ExternalLinks from '@Components/externalLinks/ExternalLinks'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
-import { NextButtonProps, STAGE_NAME } from '../AppConfig.types'
+import { EnvResourceType, NextButtonProps, STAGE_NAME } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
 import '../appConfig.scss'
+import { DeploymentConfigCompare } from './DeploymentConfigCompare'
 
 const MaterialList = lazy(() => import('@Components/material/MaterialList'))
 const CIConfig = lazy(() => import('@Components/ciConfig/CIConfig'))
 const DeploymentConfig = lazy(() => import('@Components/deploymentConfig/DeploymentConfig'))
 const WorkflowEdit = lazy(() => import('@Components/workflowEditor/workflowEditor'))
 const EnvironmentOverride = lazy(() => import('@Pages/Shared/EnvironmentOverride/EnvironmentOverride'))
-const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
 const UserGitRepoConfiguration = lazy(() => import('@Components/gitOps/UserGitRepConfiguration'))
+
+const ConfigProtectionView = importComponentFromFELibrary('ConfigProtectionView')
+const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, currentStageName, isDisabled }) => {
     const history = useHistory()
@@ -90,6 +93,7 @@ const AppComposeRouter = () => {
         envConfig,
         fetchEnvConfig,
     } = useAppConfigurationContext()
+    const { currentAppName } = useAppContext()
 
     const renderJobViewRoutes = (): JSX.Element => {
         // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
@@ -135,6 +139,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -146,12 +152,11 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
-                    <Route
-                        key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
-                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                    >
+                    <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
                         {({ match }) => (
                             <EnvironmentOverride
                                 key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
@@ -161,6 +166,7 @@ const AppComposeRouter = () => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={lastUnlockedStage}
+                                appName={currentAppName}
                             />
                         )}
                     </Route>,
@@ -256,6 +262,8 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
                     <Route key={`${path}/${URLS.APP_CS_CONFIG}`} path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
@@ -266,9 +274,14 @@ const AppComposeRouter = () => {
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
                             onErrorRedirectURL={lastUnlockedStage}
+                            appName={currentAppName}
+                            envName=""
                         />
                     </Route>,
-                    <Route path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}>
+                    <Route
+                        key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
+                        path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                    >
                         {({ match }) => (
                             <EnvironmentOverride
                                 key={`${URLS.APP_ENV_OVERRIDE_CONFIG}-${match.params.envId}`}
@@ -277,9 +290,47 @@ const AppComposeRouter = () => {
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}
                                 onErrorRedirectURL={lastUnlockedStage}
+                                appName={currentAppName}
                             />
                         )}
                     </Route>,
+                    ...(CompareWithButton
+                        ? [
+                              <Route
+                                  key={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}`}
+                                  path={`${path}/:envId(\\d+)?/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                              >
+                                  {({ match }) => {
+                                      const basePath = generatePath(path, match.params)
+                                      const envOverridePath = match.params.envId
+                                          ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
+                                          : ''
+                                      const resourceTypePath = `/${match.params.resourceType}`
+                                      const resourceNamePath = match.params.resourceName
+                                          ? `/${match.params.resourceName}`
+                                          : ''
+
+                                      const goBackURL = `${basePath}${envOverridePath}${resourceTypePath}${resourceNamePath}`
+
+                                      return (
+                                          <DeploymentConfigCompare
+                                              type="app"
+                                              appName={currentAppName}
+                                              environments={environments.map(
+                                                  ({ environmentId, environmentName, isProtected }) => ({
+                                                      id: environmentId,
+                                                      isProtected,
+                                                      name: environmentName,
+                                                  }),
+                                              )}
+                                              isBaseConfigProtected={isBaseConfigProtected}
+                                              goBackURL={goBackURL}
+                                          />
+                                      )
+                                  }}
+                              </Route>,
+                          ]
+                        : []),
                 ]}
                 {/* Redirect route is there when current path url has something after /edit */}
                 {location.pathname !== url && <Redirect to={lastUnlockedStage} />}

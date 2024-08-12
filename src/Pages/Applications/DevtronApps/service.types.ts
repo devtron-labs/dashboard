@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+import { ConfigDatum } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
 import { STAGE_NAME } from './Details/AppConfigurations/AppConfig.types'
 
 export interface AppConfigStatusItemType {
@@ -54,4 +55,80 @@ export interface ResourceConfig {
 
 export interface EnvConfigDTO {
     resourceConfig: ResourceConfig[]
+}
+
+export enum AppEnvDeploymentConfigType {
+    PUBLISHED_ONLY = 'PublishedOnly',
+    DRAFT_ONLY = 'DraftOnly',
+    PUBLISHED_WITH_DRAFT = 'PublishedWithDraft',
+    PREVIOUS_DEPLOYMENTS = 'PreviousDeployments',
+    DEFAULT_VERSION = 'DefaultVersion',
+}
+
+export interface DraftMetadataDTO {
+    appId: number
+    envId: number
+    resource: number
+    resourceName: string
+    action: number
+    data: string
+    userComment: string
+    changeProposed: boolean
+    protectNotificationConfig: { [key: string]: null }
+    draftId: number
+    draftVersionId: number
+    draftState: number
+    approvers: string[]
+    canApprove: boolean
+    commentsCount: number
+    dataEncrypted: boolean
+    isAppAdmin: boolean
+}
+
+export interface ConfigMapSecretDataConfigDatumDTO extends ConfigDatum {
+    draftMetadata: DraftMetadataDTO
+}
+
+export interface ConfigMapSecretDataType {
+    id: number
+    appId: number
+    configData: ConfigMapSecretDataConfigDatumDTO[]
+}
+
+export interface DeploymentTemplateDTO {
+    resourceType: ConfigResourceType.DeploymentTemplate
+    data: { [key: string]: any }
+    deploymentDraftData: ConfigMapSecretDataType | null
+}
+
+export interface ConfigMapSecretDataDTO {
+    resourceType: Extract<ConfigResourceType, ConfigResourceType.ConfigMap | ConfigResourceType.Secret>
+    data: ConfigMapSecretDataType
+}
+
+export interface AppEnvDeploymentConfigDTO {
+    deploymentTemplate: DeploymentTemplateDTO | null
+    configMapData: ConfigMapSecretDataDTO | null
+    secretsData: ConfigMapSecretDataDTO | null
+    isAppAdmin: boolean
+}
+
+export interface AppEnvDeploymentConfigQueryParamsType {
+    configType: AppEnvDeploymentConfigType
+    compareWith: string
+    compareWithConfigType: AppEnvDeploymentConfigType
+    identifierId?: number
+    pipelineId?: number
+    compareWithIdentifierId?: number
+    compareWithPipelineId?: number
+    chartRefId?: number
+}
+
+export interface AppEnvDeploymentConfigPayloadType
+    extends Pick<AppEnvDeploymentConfigQueryParamsType, 'configType' | 'identifierId' | 'pipelineId'> {
+    appName: string
+    envName: string
+    resourceId?: number
+    resourceName?: string
+    resourceType?: ConfigResourceType
 }

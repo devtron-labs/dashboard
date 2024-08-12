@@ -3,10 +3,14 @@ import { useRouteMatch, useLocation, NavLink, useHistory } from 'react-router-do
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 
+import { CollapsibleList, CollapsibleListConfig } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
+import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { URLS } from '@Config/routes'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
-import { CollapsibleList, CollapsibleListConfig } from '@Pages/Shared/CollapsibleList'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
 
 import { BASE_CONFIGURATIONS } from '../AppConfig.constants'
@@ -18,6 +22,8 @@ import {
 } from '../AppConfig.types'
 import { getEnvConfiguration, getNavigationPath, resourceTypeBasedOnPath } from './Navigation.helper'
 import { EnvSelectDropdownIndicator, envSelectStyles, EnvSelectOption } from './EnvSelect.utils'
+
+const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 // LOADING SHIMMER
 const ShimmerText = ({ width }: { width: string }) => (
@@ -35,12 +41,14 @@ export const EnvConfigurationsNav = ({
     environments,
     goBackURL,
     paramToCheck = 'envId',
+    showComparison,
+    isCMSecretLocked,
 }: EnvConfigurationsNavProps) => {
     // HOOKS
     const history = useHistory()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId } = params
+    const { envId, appId } = params
 
     // STATES
     const [expandedIds, setExpandedIds] =
@@ -96,15 +104,19 @@ export const EnvConfigurationsNav = ({
     useEffect(() => {
         if (!isLoading && config) {
             const newEnvConfig = getEnvConfiguration(config, path, params, environmentData, paramToCheck)
+            setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
+        }
+    }, [isLoading, config, pathname])
 
+    useEffect(() => {
+        if (!isLoading && config) {
             setExpandedIds({
                 configmap: !!config.configmaps.length,
                 secrets: !!config.secrets.length,
                 ...(isCreate ? { [resourceType]: true } : {}),
             })
-            setUpdatedEnvConfig(isCreate ? addUnnamedNavLink(newEnvConfig) : newEnvConfig)
         }
-    }, [isLoading, config, pathname])
+    }, [isLoading, config])
 
     // METHODS
     /** Renders the Deployment Template Nav Icon based on `envConfig`. */
@@ -116,7 +128,7 @@ export const EnvConfigurationsNav = ({
                 <div className="flex">
                     <iconConfig.Icon
                         {...iconConfig.props}
-                        className={`icon-dim-16 dc__no-shrink ${iconConfig.props.className}`}
+                        className={`icon-dim-20 dc__no-shrink ${iconConfig.props.className}`}
                     />
                 </div>
             </Tippy>
@@ -125,6 +137,9 @@ export const EnvConfigurationsNav = ({
 
     /** Handles collapse button click. */
     const onCollapseBtnClick = (id: string) => {
+        if (isCMSecretLocked) {
+            return
+        }
         const updatedExpandedIds = { ...expandedIds }
         if (updatedExpandedIds[id]) {
             delete updatedExpandedIds[id]
@@ -140,7 +155,7 @@ export const EnvConfigurationsNav = ({
      * @param _resourceType - The type of resource
      */
     const onHeaderIconBtnClick = (_resourceType: EnvResourceType) => () => {
-        if (pathname.includes(`${_resourceType}/create`)) {
+        if (pathname.includes(`${_resourceType}/create`) || isCMSecretLocked) {
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
@@ -150,21 +165,25 @@ export const EnvConfigurationsNav = ({
     /** Collapsible List Config. */
     const collapsibleListConfig: CollapsibleListConfig[] = [
         {
-            header: 'Config Maps',
+            header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
             headerIconConfig: {
-                Icon: ICAdd,
+                Icon: isCMSecretLocked ? ICLocked : ICAdd,
                 props: {
                     className: 'fcn-6',
                 },
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.ConfigMap),
                 },
-                tooltipProps: {
-                    content: 'Add ConfigMap',
-                    arrow: false,
-                    placement: 'bottom',
-                },
+                ...(!isCMSecretLocked
+                    ? {
+                          tooltipProps: {
+                              content: 'Create ConfigMap',
+                              arrow: false,
+                              placement: 'right',
+                          },
+                      }
+                    : {}),
             },
             items: updatedEnvConfig.configmaps,
             noItemsText: 'No configmaps',
@@ -174,18 +193,22 @@ export const EnvConfigurationsNav = ({
             header: 'Secrets',
             id: EnvResourceType.Secret,
             headerIconConfig: {
-                Icon: ICAdd,
+                Icon: isCMSecretLocked ? ICLocked : ICAdd,
                 props: {
                     className: 'fcn-6',
                 },
                 btnProps: {
                     onClick: onHeaderIconBtnClick(EnvResourceType.Secret),
                 },
-                tooltipProps: {
-                    content: 'Add Secret',
-                    arrow: false,
-                    placement: 'bottom',
-                },
+                ...(!isCMSecretLocked
+                    ? {
+                          tooltipProps: {
+                              content: 'Create Secret',
+                              arrow: false,
+                              placement: 'right',
+                          },
+                      }
+                    : {}),
             },
             items: updatedEnvConfig.secrets,
             noItemsText: 'No secrets',
@@ -245,9 +268,36 @@ export const EnvConfigurationsNav = ({
         )
     }
 
+    const renderCompareWithBtn = () => {
+        const { name: envName } = environmentData
+
+        // Determine base path based on pathname
+        const isOverrideConfig = pathname.includes(URLS.APP_ENV_OVERRIDE_CONFIG)
+        const basePath = isOverrideConfig
+            ? pathname.split(URLS.APP_ENV_OVERRIDE_CONFIG)[0]
+            : `${pathname.split(URLS.APP_CONFIG)[0]}${URLS.APP_CONFIG}`
+
+        // Determine comparePath based on paramToCheck
+        let comparePath = ''
+        if (paramToCheck === 'envId') {
+            comparePath = isOverrideConfig
+                ? `${basePath}${envId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)[1]}`
+                : `${basePath}/${URLS.APP_ENV_CONFIG_COMPARE}${pathname.split(URLS.APP_CONFIG)[1]}`
+        } else if (paramToCheck === 'appId') {
+            comparePath = `${basePath}/${appId}/${URLS.APP_ENV_CONFIG_COMPARE}/${envName}${pathname.split(`${URLS.APP_CONFIG}/${appId}`)[1]}`
+        }
+
+        return (
+            <div className="p-8">
+                <CompareWithButton href={comparePath} />
+            </div>
+        )
+    }
+
     return (
         <>
             {renderEnvSelector()}
+            {showComparison && CompareWithButton && renderCompareWithBtn()}
             <div className="mw-none p-8">
                 {isLoading || !environmentData ? (
                     ['90', '70', '50'].map((item) => <ShimmerText key={item} width={item} />)

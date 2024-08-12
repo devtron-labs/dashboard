@@ -44,7 +44,7 @@ export const AppConfigurationProvider = (props: AppConfigurationProviderProps) =
 
     const [showRepoOnDelete, setShowRepoOnDelete] = useState('')
 
-    const contextValue = useMemo(
+    const contextValue = useMemo<AppConfigurationContextType>(
         () => ({
             appId,
             resourceKind,

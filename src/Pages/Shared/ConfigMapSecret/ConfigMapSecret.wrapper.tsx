@@ -55,6 +55,9 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     )
 
     useEffect(() => {
+        if (initResult) {
+            setParentState?.(ComponentStates.loaded)
+        }
         if (initError && !getIsRequestAborted(initError)) {
             setParentState?.(ComponentStates.failed)
             showError(initError)
@@ -63,7 +66,7 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
         return () => {
             setParentState?.(ComponentStates.loading)
         }
-    }, [initError])
+    }, [initResult, initError])
 
     const draftDataMap = useMemo(() => {
         if (initResult?.[1]?.result?.length) {
@@ -72,7 +75,6 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
                 {},
             )
 
-            setParentState?.(ComponentStates.loaded)
             return _draftDataMap
         }
 
@@ -84,7 +86,7 @@ export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     }
 
     if (initError) {
-        return <ErrorScreenManager code={404} redirectURL={onErrorRedirectURL} />
+        return <ErrorScreenManager code={initError.code} redirectURL={onErrorRedirectURL} />
     }
 
     return (

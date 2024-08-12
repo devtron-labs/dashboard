@@ -32,6 +32,7 @@
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
+    --select-picker-menu-index: 20;
 }
 
 body {
@@ -2494,6 +2495,10 @@ button.anchor {
 
 .dc__hide-section {
     display: none;
+
+    &--imp {
+        display: none !important;
+    }
 }
 
 .dark-background {
@@ -2678,6 +2683,18 @@ button.anchor {
 
 .dc__top-left-radius {
     border-top-left-radius: 4px;
+}
+
+.dc__top-right-radius {
+    border-top-right-radius: 4px;
+}
+
+.dc__bottom-left-radius {
+    border-bottom-left-radius: 4px;
+}
+
+.dc__bottom-right-radius {
+    border-bottom-right-radius: 4px;
 }
 
 .dc__bottom-left-radius-8 {
@@ -4397,6 +4414,10 @@ textarea::placeholder {
 
 .dc__zi-10 {
     z-index: 10;
+}
+
+.dc__zi-11 {
+    z-index: 11;
 }
 
 .dc__zi-20 {
