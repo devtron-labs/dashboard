@@ -440,6 +440,10 @@ a:focus {
     left: 35px;
 }
 
+.dc__left-55 {
+    left: 55px;
+}
+
 .dc__left-150 {
     left: 150px;
 }
@@ -1300,29 +1304,22 @@ button.anchor {
     background-color: $background;
 }
 
-.dc__striped-row {
-    &:nth-child(odd) {
-        @include dc__striped-row(var(--window-bg));
-
-        .app-status__icon {
-            @include dc__app-status-icon(var(--window-bg));
-        }
+.dc__striped-table {
+    div:nth-child(odd) {
+        @include dc__striped-row(var(--N50));
     }
 
-    &:nth-child(even) {
-        @include dc__striped-row(white);
-
-        .app-status__icon {
-            @include dc__app-status-icon(white);
-        }
+    div:nth-child(even) {
+        @include dc__striped-row(var(--N0));
     }
 
-    &:hover {
-        @include dc__striped-row(var(--B100));
+    // NOTE: for the header (1st row)
+    div:first-child {
+        @include dc__striped-row(var(--N0));
+    }
 
-        .app-status__icon {
-            @include dc__app-status-icon(var(--B100));
-        }
+    div:hover {
+        @include dc__striped-row(var(--B50));
     }
 }
 
@@ -2173,6 +2170,10 @@ button.anchor {
 // Border
 .dc__border {
     border: 1px solid var(--N200);
+
+    &--n9 {
+        border: 1px solid var(--N900);
+    }
 }
 
 .dc__border-dashed {
@@ -2506,6 +2507,10 @@ button.anchor {
 
 .dc__mxw-155 {
     max-width: 155px;
+}
+
+.dc__mxw-80-per {
+    max-width: 80%;
 }
 
 .fw-n {
@@ -4817,4 +4822,14 @@ textarea::placeholder {
         width: 100%;
         height: 100%;
     }
+}
+
+.dc__grid-full {
+    display: grid;
+    grid-template-columns: 100% 0;
+}
+
+.dc__grid-half {
+    display: grid;
+    grid-template-columns: 50% 50%;
 }
