@@ -595,6 +595,7 @@ const ChartDeploymentHistory = ({
     function renderSelectedDeploymentDetailHeader() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
 
+        // TODO: Test this
         return (
             <div className="trigger-details ml-20 mr-20 pb-20">
                 <div className="flex dc__content-space trigger-details__summary">

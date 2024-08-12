@@ -73,13 +73,12 @@
 
         .trigger-details {
             transition: height 0.3s;
-            display: grid;
-            grid-template-columns: 60px 1fr;
+
+            &__grid {
+                grid-template-columns: 50px 1fr;
+            }
 
             .trigger-details__summary {
-                display: grid;
-                grid-template-rows: 1fr 1fr;
-
                 .inprogress-status-color {
                     color: var(--inprogress-orange);
                 }

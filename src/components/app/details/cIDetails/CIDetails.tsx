@@ -443,7 +443,7 @@ export const Details = ({
                         workerPodName={triggerDetails.podName}
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                     />
-                    <ul className="tab-list dc__border-bottom px-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                    <ul className="tab-list dc__border-bottom pl-50 pr-20 pt-8 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
                         <li className="tab-list__tab">
                             <NavLink
                                 replace
