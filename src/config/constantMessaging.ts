@@ -171,6 +171,8 @@ export const BUTTON_TEXT = {
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
+    ArgoCD = 'ArgoCD',
+    FluxCD = 'FluxCD',
 }
 
 export const APP_GROUP_CD_DETAILS = {

@@ -647,11 +647,7 @@ export default function DeploymentConfig({
     }
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
-        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
-            state.data,
-            state.tempFormData,
-            editorOnChange,
-        )
+        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(state.publishedState?.tempFormData ?? state.data, state.tempFormData, editorOnChange)
 
         if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)

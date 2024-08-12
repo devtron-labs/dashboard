@@ -45,7 +45,6 @@ const NodeDetailComponent = ({
     loadingResources,
     isResourceBrowserView,
     k8SObjectMapRaw,
-    addTab,
     logSearchTerms,
     setLogSearchTerms,
     removeTabByIdentifier,
@@ -416,6 +415,7 @@ const NodeDetailComponent = ({
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
+                            isExternalApp={isExternalApp}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

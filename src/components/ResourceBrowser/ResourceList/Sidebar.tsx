@@ -383,10 +383,11 @@ const Sidebar = ({
                     [...list.values()].map((k8sObject) =>
                         k8sObject.name === AggregationKeys.Events ||
                         k8sObject.name === AggregationKeys.Namespaces ? null : (
-                            <Fragment key={`${k8sObject.name}-parent`}>
+                            <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles"
+                                    className={`dc__unset-button-styles dc__zi-1 bcn-0 w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
+                                    style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}
                                 >
@@ -412,7 +413,7 @@ const Sidebar = ({
                                         )}
                                     </div>
                                 )}
-                            </Fragment>
+                            </div>
                         ),
                     )}
             </div>

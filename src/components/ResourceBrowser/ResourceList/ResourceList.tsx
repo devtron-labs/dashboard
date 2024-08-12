@@ -136,6 +136,7 @@ const ResourceList = () => {
             /* NOTE: if node is available in url but no associated dynamicTab we create a dynamicTab */
             node && getDynamicTabData(),
             isTerminalNodeType,
+            isOverviewNodeType,
         )
         initTabs(
             _tabs,
@@ -275,6 +276,7 @@ const ResourceList = () => {
                 isSuperAdmin={isSuperAdmin}
                 addTab={addTab}
                 k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
+                updateTabUrl={getUpdateTabUrlForId(tabId)}
             />
         ) : (
             <div className="resource-details-container flexbox-col">
@@ -283,7 +285,6 @@ const ResourceList = () => {
                     loadingResources={rawGVKLoader}
                     isResourceBrowserView
                     k8SObjectMapRaw={k8SObjectMapRaw?.result.apiResources || null}
-                    addTab={addTab}
                     logSearchTerms={logSearchTerms}
                     setLogSearchTerms={setLogSearchTerms}
                     removeTabByIdentifier={getRemoveTabByIdentifierForId(tabId)}
@@ -339,7 +340,7 @@ const ResourceList = () => {
         return (
             <>
                 <div
-                    className="h-36 resource-browser-tab flex left w-100"
+                    className="h-36 resource-browser-tab flex left w-100 dc__window-bg"
                     style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}
                 >
                     <DynamicTabs

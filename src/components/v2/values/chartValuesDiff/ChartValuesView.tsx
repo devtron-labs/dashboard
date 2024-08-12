@@ -818,11 +818,11 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                commonState.selectedEnvironment.clusterId,
-                commonState.selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: commonState.selectedEnvironment.clusterId,
+                namespace: commonState.selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
 
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
@@ -1596,8 +1596,7 @@ const ChartValuesView = ({
             !isCreateValueView &&
             !isVirtualEnvironmentOnSelector &&
             (!isDeployChartView || allowedDeploymentTypes.length > 0) &&
-            !appDetails?.isVirtualEnvironment &&
-            !commonState.installedConfig?.isOCICompliantChart
+            !appDetails?.isVirtualEnvironment
         return (
             <div
                 className={`chart-values-view__container bcn-0 dc__overflow-hidden ${
@@ -1684,7 +1683,6 @@ const ChartValuesView = ({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                                 isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                isOCICompliantChart={!!commonState.installedConfig?.isOCICompliantChart}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { post } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, post } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../../../config'
 import { HibernateRequest, HibernateResponse } from './scaleWorkloadsModal.type'
+import { getK8sResourcePayloadAppType } from '../../k8Resource/nodeDetail/nodeDetail.util'
 
-export function hibernateApp(request: HibernateRequest): Promise<HibernateResponse> {
-    return post(Routes.HELM_APP_HIBERNATE_API, request)
+export function hibernateApp(request: HibernateRequest, appType: AppType): Promise<HibernateResponse> {
+    const url = `${Routes.HELM_APP_HIBERNATE_API}?appType=${getK8sResourcePayloadAppType(appType)}`
+    return post(url, request)
 }
 
-export function unhibernateApp(request: HibernateRequest): Promise<HibernateResponse> {
-    return post(Routes.HELM_APP_UNHIBERNATE_API, request)
+export function unhibernateApp(request: HibernateRequest, appType: AppType): Promise<HibernateResponse> {
+    const url = `${Routes.HELM_APP_UNHIBERNATE_API}?appType=${getK8sResourcePayloadAppType(appType)}`
+    return post(url, request)
 }
