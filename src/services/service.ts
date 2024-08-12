@@ -342,9 +342,11 @@ export function getLastExecutionMinByAppAndEnv(
                 lastExecution: moment(response.result.executionTime).utc(false).format(DATE_TIME_FORMAT_STRING),
                 imageScanDeployInfoId: response.result.imageScanDeployInfoId,
                 severityCount: {
-                    critical: response.result.severityCount.high,
-                    moderate: response.result.severityCount.moderate,
+                    critical: response.result.severityCount.critical,
+                    high: response.result.severityCount.high,
+                    medium: response.result.severityCount.medium,
                     low: response.result.severityCount.low,
+                    unknown: response.result.severityCount.unknown,
                 },
             },
         }
