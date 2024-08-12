@@ -117,7 +117,7 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
-    if (!scanListLoading && !getIsRequestAborted(scanListError)) {
+    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
         return <ErrorScreenManager code={securityScansResult?.responseCode} />
     }
 
