@@ -103,23 +103,21 @@ const getConfigData = (
     cmSecretData: ConfigMapSecretDataConfigDatumDTO,
     type: ConfigResourceType,
 ): Record<string, string> => {
+    if (!cmSecretData) {
+        // Return undefined intentionally, as JSON.stringify converts null to "null" but keeps undefined as undefined.
+        return undefined
+    }
+
     const secretKeys = ['secretData', 'esoSecretData', 'defaultSecretData', 'defaultESOSecretData']
 
     if (type === ConfigResourceType.Secret) {
         const data = secretKeys.find((key) => Object.keys(cmSecretData?.[key] ?? {}).length > 0)
-        if (data) {
-            return cmSecretData[data]
-        }
+        return cmSecretData[data]
     }
 
     const configmapKeys = ['data', 'defaultData']
     const data = configmapKeys.find((key) => Object.keys(cmSecretData?.[key] ?? {}).length > 0)
-    if (data) {
-        return cmSecretData[data]
-    }
-
-    // Return undefined intentionally, as JSON.stringify converts null to "null" but keeps undefined as undefined.
-    return undefined
+    return cmSecretData[data]
 }
 
 /**
@@ -322,32 +320,20 @@ const getDiffHeading = <DeploymentTemplate extends boolean>(
 
     if (deploymentTemplate) {
         const _data = data as DeploymentTemplateDTO
-        if (!_data?.deploymentDraftData && !_data?.data) {
+        if (!_data?.deploymentDraftData && !_data.data) {
             doesNotExist = true
-        } else if (
-            _data?.deploymentDraftData?.configData[0].draftMetadata.draftState === DraftState.Init ||
-            _data?.data?.configData?.[0].draftMetadata.draftState === DraftState.Init
-        ) {
+        } else if (_data?.deploymentDraftData?.configData[0].draftMetadata.draftState === DraftState.Init) {
             isDraft = true
-        } else if (
-            _data?.deploymentDraftData?.configData[0].draftMetadata.draftState === DraftState.AwaitApproval ||
-            _data?.data?.configData?.[0].draftMetadata.draftState === DraftState.AwaitApproval
-        ) {
+        } else if (_data?.deploymentDraftData?.configData[0].draftMetadata.draftState === DraftState.AwaitApproval) {
             isApprovalPending = true
         }
     } else {
         const _data = data as ConfigMapSecretDataConfigDatumDTO
         if (!_data?.draftMetadata && !_data?.data && !_data?.defaultData) {
             doesNotExist = true
-        } else if (
-            _data?.draftMetadata?.draftState === DraftState.Init ||
-            _data?.draftMetadata?.draftState === DraftState.Init
-        ) {
+        } else if (_data?.draftMetadata?.draftState === DraftState.Init) {
             isDraft = true
-        } else if (
-            _data?.draftMetadata?.draftState === DraftState.AwaitApproval ||
-            _data?.draftMetadata?.draftState === DraftState.AwaitApproval
-        ) {
+        } else if (_data?.draftMetadata?.draftState === DraftState.AwaitApproval) {
             isApprovalPending = true
         }
     }
@@ -405,7 +391,8 @@ const getConfigMapSecretData = (
 
         return {
             id: `${resourceType === ConfigResourceType.ConfigMap ? EnvResourceType.ConfigMap : EnvResourceType.Secret}-${currentItem?.name || compareItem?.name}`,
-            title: currentItem?.name || compareItem?.name,
+            title: `${resourceType === ConfigResourceType.ConfigMap ? 'ConfigMap' : 'Secret'} / ${currentItem?.name || compareItem?.name}`,
+            name: currentItem?.name || compareItem?.name,
             primaryConfig: {
                 heading: getDiffHeading(compareItem),
                 list: compareWithDiff,
@@ -488,10 +475,10 @@ export const getAppEnvDeploymentConfigList = (
         {
             header: 'ConfigMaps',
             id: EnvResourceType.ConfigMap,
-            items: cmData.map(({ title, hasDiff, id }) => ({
-                title,
+            items: cmData.map(({ name, hasDiff, id }) => ({
+                title: name,
                 hasDiff,
-                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: title })}${search}`,
+                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.ConfigMap, resourceName: name })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({ block: 'start' })
@@ -502,10 +489,10 @@ export const getAppEnvDeploymentConfigList = (
         {
             header: 'Secrets',
             id: EnvResourceType.Secret,
-            items: secretData.map(({ title, hasDiff, id }) => ({
-                title,
+            items: secretData.map(({ name, hasDiff, id }) => ({
+                title: name,
                 hasDiff,
-                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: title })}${search}`,
+                href: `${generatePath(path, { ...params, resourceType: EnvResourceType.Secret, resourceName: name })}${search}`,
                 onClick: () => {
                     const element = document.querySelector(`#${id}`)
                     element?.scrollIntoView({ block: 'start' })

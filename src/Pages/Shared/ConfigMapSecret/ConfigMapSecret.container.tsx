@@ -40,6 +40,7 @@ import { getCMSecret } from './ConfigMapSecret.service'
 import { CM_SECRET_COMPONENT_NAME, CM_SECRET_EMPTY_STATE_TEXT, CM_SECRET_STATE } from './ConfigMapSecret.constants'
 import { ProtectedConfigMapSecretDetails } from './ProtectedConfigMapSecretDetails'
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
+import { ConfigMapSecretDeleteModal } from './ConfigMapSecretDeleteModal'
 
 import './ConfigMapSecret.scss'
 
@@ -177,9 +178,10 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                               componentType === CMSecretComponentType.ConfigMap ? 'configMapData' : 'secretsData'
                           ].data
 
+                    // Since, jobs can only be created by super-admin users, modify this once API support is available.
                     const unAuthorized = isJob
                         ? false
-                        : !(cmSecretDataRes.value.result as AppEnvDeploymentConfigDTO).isAppAdmin
+                        : !(cmSecretDataRes.value?.result as AppEnvDeploymentConfigDTO).isAppAdmin
 
                     if (_cmSecretData.configData?.length) {
                         _configMapSecret = {
@@ -363,13 +365,27 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
         !isCreateState &&
         !!name
 
-    const handleDelete = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
+    const onDeleteBtnClick = () => setOpenDeleteModal(isProtected ? 'protectedDeleteModal' : 'deleteModal')
 
     const closeDeleteModal = () => {
         setOpenDeleteModal(null)
     }
 
     // RENDERERS
+    const renderDeleteModal = (): JSX.Element => {
+        return (
+            <ConfigMapSecretDeleteModal
+                appId={+appId}
+                envId={envId ? +envId : null}
+                componentType={componentType}
+                id={selectedCMSecret?.id}
+                configMapSecretData={cmSecretData?.configData}
+                updateCMSecret={updateCMSecret}
+                closeDeleteModal={closeDeleteModal}
+            />
+        )
+    }
+
     const renderProtectedDeleteModal = () => {
         if (DeleteModal) {
             return (
@@ -416,12 +432,13 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                 <button
                     type="button"
                     className="override-button cta delete m-0-imp h-32 lh-20-imp p-6-12-imp"
-                    onClick={handleDelete}
+                    onClick={onDeleteBtnClick}
                 >
                     <Trash className="icon-dim-16 mr-4" />
                     Delete{isProtected ? '...' : ''}
                 </button>
             )}
+            {selectedCMSecret?.name && openDeleteModal && renderDeleteModal()}
             {selectedCMSecret?.name && openDeleteModal === 'protectedDeleteModal' && renderProtectedDeleteModal()}
         </article>
     )
@@ -487,8 +504,6 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                         : null
                 }
                 onCancel={redirectURLToValidPage}
-                openDeleteModal={openDeleteModal === 'deleteModal'}
-                closeDeleteModal={() => setOpenDeleteModal(null)}
             />
         )
     }

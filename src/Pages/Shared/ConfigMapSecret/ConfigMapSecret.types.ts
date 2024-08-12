@@ -57,8 +57,6 @@ export interface ConfigMapSecretFormProps
     latestDraftData: any
     isAppAdmin?: boolean
     onCancel?: () => void
-    openDeleteModal?: boolean
-    closeDeleteModal?: () => void
 }
 
 export interface ConfigMapSecretDataEditorContainerProps {
@@ -169,8 +167,6 @@ export enum ConfigMapActionTypes {
     toggleSecretMode = 'toggleSecretMode',
     toggleUnAuthorized = 'toggleUnAuthorized',
     toggleDialog = 'toggleDialog',
-    toggleDeleteModal = 'toggleDeleteModal',
-    toggleProtectedDeleteModal = 'setShowProtectedDeleteModal',
     toggleProtectedDeleteOverrideModal = 'toggleProtectedDeleteOverrideModal',
     toggleDraftSaveModal = 'toggleDraftSaveModal',
     setValidateFormError = 'setValidateFormError',
@@ -225,6 +221,13 @@ export interface CMSecretWrapperProps
 export interface CMSecretContainerProps extends Omit<CMSecretWrapperProps, 'parentState' | 'setParentState'> {
     draftDataMap: Record<string, Record<string, number>>
     appChartRef: { id: number; version: string; name: string }
+}
+
+export interface ConfigMapSecretDeleteModalProps
+    extends Pick<ConfigMapSecretFormProps, 'componentType' | 'configMapSecretData' | 'id' | 'updateCMSecret'> {
+    appId: number
+    envId: number
+    closeDeleteModal: () => void
 }
 
 export interface CMSecretConfigData extends ConfigDatum {

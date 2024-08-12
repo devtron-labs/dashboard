@@ -34,7 +34,6 @@ import {
     CustomInput,
     usePrompt,
     ButtonWithLoader,
-    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import warningIcon from '@Images/warning-medium.svg'
@@ -110,8 +109,6 @@ export const ConfigMapSecretForm = React.memo(
         isAppAdmin,
         updateCMSecret,
         onCancel,
-        openDeleteModal,
-        closeDeleteModal = () => {},
     }: ConfigMapSecretFormProps): JSX.Element => {
         const memoizedReducer = React.useCallback(ConfigMapSecretReducer, [])
         const tempArr = useRef<CMSecretYamlData[]>([])
@@ -455,12 +452,8 @@ export const ConfigMapSecretForm = React.memo(
             if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                 err.errors.forEach((error) => {
                     if (error.code === 423) {
-                        if (actionType === 3) {
-                            if (state.dialog) {
-                                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
-                            } else {
-                                dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteModal })
-                            }
+                        if (actionType === 3 && state.dialog) {
+                            dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
                         } else {
                             const _draftPayload = {
                                 id: id ?? 0,
@@ -554,6 +547,7 @@ export const ConfigMapSecretForm = React.memo(
             }
         }
 
+        // Handle Delete for DeleteOverrideModal
         const handleDelete = async () => {
             try {
                 if (draftMode) {
@@ -570,7 +564,7 @@ export const ConfigMapSecretForm = React.memo(
                     await deleteEnvConfigMap(id, appId, envId, configMapSecretData?.name)
                 }
 
-                toast.success(configMapSecretData.overridden ? 'Restored to global.' : 'Successfully deleted')
+                toast.success('Restored to global.')
                 dispatch({
                     type: ConfigMapActionTypes.multipleOptions,
                     payload: {
@@ -676,17 +670,6 @@ export const ConfigMapSecretForm = React.memo(
                         </button>
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
-            )
-        }
-
-        const renderDeleteModal = (): JSX.Element => {
-            return (
-                <DeleteDialog
-                    title={`Delete ${CM_SECRET_COMPONENT_NAME[componentType]} '${configMapSecretData?.name}' ?`}
-                    description={`'${configMapSecretData?.name}' will not be used in future deployments. Are you sure?`}
-                    closeDelete={closeDeleteModal}
-                    delete={handleDelete}
-                />
             )
         }
 
@@ -1132,7 +1115,6 @@ export const ConfigMapSecretForm = React.memo(
                         </div>
                     )}
                 </div>
-                {configMapSecretData?.name && openDeleteModal && renderDeleteModal()}
                 {state.dialog && renderDeleteOverRideModal()}
                 {state.showProtectedDeleteOverrideModal && renderProtectedDeleteOverRideModal()}
                 {state.showDraftSaveModal && (

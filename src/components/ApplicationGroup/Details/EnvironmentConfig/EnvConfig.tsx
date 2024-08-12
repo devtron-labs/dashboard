@@ -32,6 +32,7 @@ import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
 const getEnvConfigProtections = importComponentFromFELibrary('getEnvConfigProtections', null, 'function')
+const CompareWithButton = importComponentFromFELibrary('CompareWithButton', null, 'function')
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
@@ -92,26 +93,28 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     return (
         <Switch>
-            <Route
-                path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
-            >
-                {({ match }) => {
-                    const basePath = generatePath(path, match.params)
-                    const resourceTypePath = `/${match.params.resourceType}`
-                    const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
+            {CompareWithButton && (
+                <Route
+                    path={`${path}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/:resourceType(${Object.values(EnvResourceType).join('|')})/:resourceName?`}
+                >
+                    {({ match }) => {
+                        const basePath = generatePath(path, match.params)
+                        const resourceTypePath = `/${match.params.resourceType}`
+                        const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
-                    const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
+                        const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`
 
-                    return (
-                        <DeploymentConfigCompare
-                            type="appGroup"
-                            envName={envName}
-                            environments={envAppList}
-                            goBackURL={goBackURL}
-                        />
-                    )
-                }}
-            </Route>
+                        return (
+                            <DeploymentConfigCompare
+                                type="appGroup"
+                                envName={envName}
+                                environments={envAppList}
+                                goBackURL={goBackURL}
+                            />
+                        )
+                    }}
+                </Route>
+            )}
             <Route>
                 <div className="env-compose">
                     <div
