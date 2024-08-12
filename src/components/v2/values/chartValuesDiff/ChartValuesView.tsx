@@ -818,11 +818,11 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                commonState.selectedEnvironment.clusterId,
-                commonState.selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: commonState.selectedEnvironment.clusterId,
+                namespace: commonState.selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
 
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
