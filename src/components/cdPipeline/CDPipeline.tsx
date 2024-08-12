@@ -158,7 +158,7 @@ export default function CDPipeline({
         namespace: '',
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         deploymentAppName: '',
-        releaseMode: ReleaseMode.CREATE,
+        releaseMode: ReleaseMode.NEW_DEPLOYMENT,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -639,7 +639,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.LINK ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_HELM ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -1077,11 +1077,11 @@ export default function CDPipeline({
     }
 
     const handleSelectMigrateHelmRelease = () => {
-        setFormData({ ...formData, releaseMode: ReleaseMode.LINK, deploymentAppType: DeploymentAppTypes.HELM })
+        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_HELM, deploymentAppType: DeploymentAppTypes.HELM })
     }
 
     const handleSelectNewDeployment = () => {
-        setFormData({ ...formData, releaseMode: ReleaseMode.CREATE })
+        setFormData({ ...formData, releaseMode: ReleaseMode.NEW_DEPLOYMENT })
     }
 
     const contextValue = useMemo(() => {
@@ -1214,8 +1214,12 @@ export default function CDPipeline({
 
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
-            if (!formData.environmentId) return 'Please select an environment'
-            if (formData.releaseMode === ReleaseMode.LINK && !formData.deploymentAppName) return 'Please select a release'
+            if (!formData.environmentId) {
+                return 'Please select an environment'
+            }
+            if (formData.releaseMode === ReleaseMode.MIGRATE_HELM && !formData.deploymentAppName) {
+                return 'Please select a release'
+            }
             return ''
         }
 
@@ -1244,14 +1248,14 @@ export default function CDPipeline({
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
                         className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            !isWebhookCD && (cdPipelineId || !isAdvanced) && formData.releaseMode !== ReleaseMode.LINK
+                            !isWebhookCD && (cdPipelineId || !isAdvanced) && formData.releaseMode !== ReleaseMode.MIGRATE_HELM
                                 ? 'flex-justify'
                                 : 'justify-right'
                         } `}
                     >
                         {formData && (
                             <>
-                                {formData.releaseMode !== ReleaseMode.LINK && renderSecondaryButton()}
+                                {formData.releaseMode !== ReleaseMode.MIGRATE_HELM && renderSecondaryButton()}
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"
                                     dataTestId="build-pipeline-button"

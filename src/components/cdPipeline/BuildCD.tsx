@@ -53,7 +53,7 @@ import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { styles, Option } from './cdpipeline.util'
+import { styles, Option, getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
@@ -63,7 +63,6 @@ import { getGitOpsRepoConfig } from '../../services/service'
 import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
-
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -364,7 +363,7 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const  renderEnvSelector = () => {
+    const renderEnvSelector = () => {
         const envId = formData.environmentId
         const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
         const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
@@ -396,7 +395,9 @@ export default function BuildCD({
                     isDisabled={!!cdPipelineId}
                     classNamePrefix="cd-pipeline-environment-dropdown"
                     placeholder="Select Environment"
-                    options={releaseMode === ReleaseMode.LINK ? envList.filter((env) => !env.isVirtualEnvironment) : envList}
+                    options={
+                        releaseMode === ReleaseMode.MIGRATE_HELM ? envList.filter((env) => !env.isVirtualEnvironment) : envList
+                    }
                     value={selectedEnv}
                     getOptionLabel={(option) => `${option.name}`}
                     getOptionValue={(option) => `${option.id}`}
@@ -436,16 +437,6 @@ export default function BuildCD({
         const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
         const namespaceEditable = false
 
-        const getNamespaceplaceholder = (): string => {
-            if (isVirtualEnvironment) {
-                if (formData.namespace) {
-                    return 'Will be auto-populated based on environment'
-                }
-                return 'Not available'
-            }
-            return 'Will be auto-populated based on environment'
-        }
-
         const isHelmEnforced =
             formData.allowedDeploymentTypes.length === 1 &&
             formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
@@ -464,9 +455,9 @@ export default function BuildCD({
                     <div className="flex-1 ml-8">
                         <CustomInput
                             name="namespace"
-                            rootClassName='h-36'
+                            rootClassName="h-36"
                             label="Namespace"
-                            placeholder={getNamespaceplaceholder()}
+                            placeholder={getNamespacePlaceholder(isVirtualEnvironment, formData.namespace)}
                             data-testid="cd-pipeline-namespace-textbox"
                             disabled={!namespaceEditable}
                             value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
@@ -679,7 +670,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current || releaseMode === ReleaseMode.LINK) {
+        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_HELM) {
             return null
         }
 
@@ -776,7 +767,7 @@ export default function BuildCD({
     const renderBuild = () => {
         return (
             <>
-                {isAdvanced && formData.releaseMode === ReleaseMode.LINK && (
+                {isAdvanced && formData.releaseMode === ReleaseMode.MIGRATE_HELM && (
                     <div className="flexbox px-12 py-8 dc__gap-8 bcb-1 br-4 mb-16">
                         <ICInfo className="dc__no-shrink icon-dim-20" />
                         <span className="fs=13 fw-4 lh-20 cn-9">
@@ -793,9 +784,13 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
-                {isAdvanced && getBuildCDManualApproval && (
-                   getBuildCDManualApproval(formData.requiredApprovals, formData.userApprovalConfig?.requiredCount, onChangeRequiredApprovals)
-                )}
+                {isAdvanced &&
+                    getBuildCDManualApproval &&
+                    getBuildCDManualApproval(
+                        formData.requiredApprovals,
+                        formData.userApprovalConfig?.requiredCount,
+                        onChangeRequiredApprovals,
+                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags
@@ -821,18 +816,16 @@ export default function BuildCD({
         </div>
     ) : (
         <div className="cd-pipeline-body p-20 ci-scrollable-content">
-            <>
-                {releaseMode === ReleaseMode.LINK && !isAdvanced ? (
-                    <MigrateHelmReleaseBody
-                        renderTriggerType={renderTriggerType}
-                        formData={formData}
-                        setFormData={setFormData}
-                        renderEnvSelector={renderEnvSelector}
-                    />
-                ) : (
-                    renderBuild()
-                )}
-            </>
+            {releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced ? (
+                <MigrateHelmReleaseBody
+                    renderTriggerType={renderTriggerType}
+                    formData={formData}
+                    setFormData={setFormData}
+                    renderEnvSelector={renderEnvSelector}
+                />
+            ) : (
+                renderBuild()
+            )}
         </div>
     )
 }

@@ -72,7 +72,7 @@ export const SourceInfo = ({
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
     // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
-    const helmMigratedAppNotTriggered = appDetails?.releaseMode === ReleaseMode.LINK && !appDetails?.isPipelineTriggered
+    const helmMigratedAppNotTriggered = appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&

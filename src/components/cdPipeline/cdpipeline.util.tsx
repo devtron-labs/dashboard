@@ -426,3 +426,13 @@ export const filterInvalidConditionDetails = (
         }) || []
     )
 }
+
+export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace: string): string => {
+    if (isVirtualEnvironment) {
+        if (namespace) {
+            return 'Will be auto-populated based on environment'
+        }
+        return 'Not available'
+    }
+    return 'Will be auto-populated based on environment'
+}

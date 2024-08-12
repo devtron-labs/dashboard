@@ -408,7 +408,7 @@ export const Details: React.FC<DetailsType> = ({
             .then((response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.CREATE  ) {
+                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)
