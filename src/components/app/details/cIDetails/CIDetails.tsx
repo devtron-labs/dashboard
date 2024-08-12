@@ -447,7 +447,7 @@ export const Details = ({
                         <li className="tab-list__tab">
                             <NavLink
                                 replace
-                                className="tab-list__tab-link"
+                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
                                 activeClassName="active"
                                 to="logs"
                                 data-testid="logs-link"
@@ -458,7 +458,7 @@ export const Details = ({
                         <li className="tab-list__tab">
                             <NavLink
                                 replace
-                                className="tab-list__tab-link"
+                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
                                 activeClassName="active"
                                 to="source-code"
                                 data-testid="source-code-link"
@@ -469,7 +469,7 @@ export const Details = ({
                         <li className="tab-list__tab">
                             <NavLink
                                 replace
-                                className="tab-list__tab-link"
+                                className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
                                 activeClassName="active"
                                 to="artifacts"
                                 data-testid="artifacts-link"
@@ -481,7 +481,7 @@ export const Details = ({
                             <li className="tab-list__tab">
                                 <NavLink
                                     replace
-                                    className="tab-list__tab-link"
+                                    className="tab-list__tab-link fs-13-imp pb-8 pt-0-imp"
                                     activeClassName="active"
                                     to="security"
                                     data-testid="security_link"
