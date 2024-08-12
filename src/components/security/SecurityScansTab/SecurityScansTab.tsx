@@ -18,6 +18,7 @@ import {
     FilterChips,
     SortableTableHeaderCell,
     abortPreviousRequests,
+    getIsRequestAborted,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
 import { ScanDetailsModal, getSeverityWithCount } from '@Components/common'
@@ -116,7 +117,7 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
-    if (!scanListLoading && scanListError) {
+    if (!scanListLoading && !getIsRequestAborted(scanListError)) {
         return <ErrorScreenManager code={securityScansResult?.responseCode} />
     }
 
@@ -158,8 +159,8 @@ export const SecurityScansTab = () => {
 
     const renderHeader = () => (
         <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bcn-0">
-            <span className="icon-dim-24" />
-            <span className="fs-12 lh-20 fw-6 cn-7">
+            <div className="icon-dim-24" />
+            <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell
                     title="APP NAME"
                     isSorted={sortBy === SecurityListSortableKeys.APP_NAME}
@@ -168,8 +169,8 @@ export const SecurityScansTab = () => {
                     disabled={false}
                     triggerSorting={handleAppNameSorting}
                 />
-            </span>
-            <span className="fs-12 lh-20 fw-6 cn-7">
+            </div>
+            <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell
                     title="ENVIRONMENT"
                     isSorted={sortBy === SecurityListSortableKeys.ENV_NAME}
@@ -178,9 +179,9 @@ export const SecurityScansTab = () => {
                     disabled={false}
                     triggerSorting={handleEnvNameSorting}
                 />
-            </span>
-            <span className="fs-12 lh-20 fw-6 cn-7">SECURITY SCAN</span>
-            <span className="fs-12 lh-20 fw-6 cn-7">
+            </div>
+            <div className="fs-12 lh-20 fw-6 cn-7">SECURITY SCAN</div>
+            <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell
                     title="SCANNED ON"
                     isSorted={sortBy === SecurityListSortableKeys.LAST_CHECKED}
@@ -189,7 +190,7 @@ export const SecurityScansTab = () => {
                     disabled={false}
                     triggerSorting={handleLastCheckedSorting}
                 />
-            </span>
+            </div>
         </div>
     )
 
@@ -209,7 +210,7 @@ export const SecurityScansTab = () => {
                         />
                     </div>
                     <SearchBar
-                        containerClassName="flex-grow-1"
+                        containerClassName="flex-grow-1 dc__mxw-800"
                         initialSearchText={searchKey}
                         inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
                         handleEnter={handleSearch}
@@ -263,7 +264,7 @@ export const SecurityScansTab = () => {
     )
 
     const renderScanList = () => {
-        if (scanListLoading) {
+        if (scanListLoading || getIsRequestAborted(scanListError)) {
             const arrayLoading = Array.from(Array(3)).map((index) => index)
             return (
                 <div>
