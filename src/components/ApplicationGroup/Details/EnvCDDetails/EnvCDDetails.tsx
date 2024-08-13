@@ -15,7 +15,24 @@
  */
 
 import { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory, useScrollable } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    showError,
+    sortCallback,
+    useAsync,
+    Sidebar,
+    TriggerOutput,
+    LogResizeButton,
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
+    FetchIdDataStatus,
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    getTriggerHistory,
+    useScrollable,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -29,7 +46,14 @@ import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
-import { processVirtualEnvironmentDeploymentData, renderCIListHeader, renderDeploymentApprovalInfo, renderDeploymentHistoryTriggerMetaText, renderRunSource, renderVirtualHistoryArtifacts } from '../../../app/details/cdDetails/utils'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderCIListHeader,
+    renderDeploymentApprovalInfo,
+    renderDeploymentHistoryTriggerMetaText,
+    renderRunSource,
+    renderVirtualHistoryArtifacts,
+} from '../../../app/details/cdDetails/utils'
 
 export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -63,7 +87,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
-        () => getTriggerHistory({appId: Number(appId), envId: Number(envId), pagination}),
+        () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
         [pagination, appId, envId],
         !!appId && !!pipelineId,
     )
@@ -141,7 +165,11 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
         const [error, result] = await asyncWrap(
-            getTriggerHistory({appId: +appId, envId: +envId, pagination: { offset: 0, size: pagination.offset + pagination.size }}),
+            getTriggerHistory({
+                appId: +appId,
+                envId: +envId,
+                pagination: { offset: 0, size: pagination.offset + pagination.size },
+            }),
         )
         if (error) {
             showError(error)
