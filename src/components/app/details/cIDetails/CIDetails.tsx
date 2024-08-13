@@ -567,7 +567,7 @@ const HistoryLogs = ({
                 appReleaseTagNames={appReleaseTags}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 type={HistoryComponentType.CI}
-                jobCIClass="pb-0-imp"
+                rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
             />
         )
@@ -597,6 +597,7 @@ const HistoryLogs = ({
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
+                    {/* TODO: Should replicate this case as well to check if p-16 is present? */}
                     {isJobCI && !loading && CiArtifactsArrayCards}
                     {!loading && (
                         <div className="p-16">
