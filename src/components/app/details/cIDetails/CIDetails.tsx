@@ -603,7 +603,7 @@ const HistoryLogs = ({
                     {/* TODO: Should replicate this case as well to check if p-16 is present? */}
                     {isJobCI && !loading && CiArtifactsArrayCards}
                     {!loading && (
-                        <div className="p-16">
+                        <div className="p-16 flex-grow-1">
                             <Artifacts
                                 status={triggerDetails.status}
                                 artifact={triggerDetails.artifact}
