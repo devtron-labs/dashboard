@@ -21,6 +21,10 @@ import { TARGET_PLATFORM_LIST } from './CIConfig.utils'
 import { SelectorMessaging } from './ciConfigConstant'
 import { TargetPlatformSelectorType } from './types'
 
+const renderMenuListFooter = () => (
+    <div className="cn-5 px-12 py-4 dc__italic-font-style">{SelectorMessaging.TARGET_SELECTOR_MENU}</div>
+)
+
 const TargetPlatformSelector = ({
     allowOverride,
     selectedTargetPlatforms,
@@ -118,6 +122,7 @@ const TargetPlatformSelector = ({
                     inputId="target-platform__select"
                     onChange={handlePlatformChange}
                     hideSelectedOptions={false}
+                    renderMenuListFooter={renderMenuListFooter}
                 />
             )}
             {showCustomPlatformWarning && (
