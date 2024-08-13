@@ -412,7 +412,7 @@ const EnvironmentSelectorComponent = ({
                 <TriggerUrlModal
                     installedAppId={params.appId}
                     isExternalApp={isExternalApp}
-                    appId={appIdentifier}
+                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : '' }
                     envId={params.envId}
                     close={closeUrlInfo}
                     appType={appDetails.appType}
