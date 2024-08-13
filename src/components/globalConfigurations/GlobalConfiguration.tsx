@@ -15,8 +15,7 @@
  */
 
 import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
-import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
+import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     Progressing,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 
 export interface MaterialListProps extends RouteComponentProps<{ appId: string }> {
     respondOnSuccess: () => void

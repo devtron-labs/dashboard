@@ -15,8 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CIMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     DeleteDialog,

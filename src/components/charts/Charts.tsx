@@ -15,12 +15,11 @@
  */
 
 import React from 'react'
-import { Route, Switch, Redirect, NavLink } from 'react-router-dom'
 import DiscoverCharts from './list/DiscoverCharts'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
-import { useRouteMatch } from 'react-router'
+import { Route, Switch, Redirect, NavLink, useRouteMatch } from 'react-router-dom'
 
 export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const { path } = useRouteMatch()

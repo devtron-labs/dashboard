@@ -25,8 +25,7 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useHistory } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps } from './AppListService'

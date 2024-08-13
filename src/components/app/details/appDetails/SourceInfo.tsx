@@ -16,7 +16,7 @@
 
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'

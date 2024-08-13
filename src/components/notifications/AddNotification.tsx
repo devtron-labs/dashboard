@@ -15,7 +15,6 @@
  */
 
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
 import {
     showError,
     Progressing,
@@ -29,7 +28,7 @@ import {
     getIsRequestAborted,
     CiPipelineSourceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'

@@ -25,8 +25,7 @@ import {
     useMainContext,
     FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, NavLink } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
+import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'

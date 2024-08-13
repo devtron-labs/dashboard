@@ -16,8 +16,16 @@
 
 import React, { useState, useEffect } from 'react'
 import { Reload } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
-import { Redirect, Route, Switch, generatePath } from 'react-router-dom'
+import {
+    useParams,
+    useRouteMatch,
+    useHistory,
+    useLocation,
+    Redirect,
+    Route,
+    Switch,
+    generatePath,
+} from 'react-router-dom'
 import DeploymentTemplateOverride from './DeploymentTemplateOverride'
 import { mapByKey, ErrorBoundary, useAppContext } from '../common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '../../config'

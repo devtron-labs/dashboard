@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory } from 'react-router'
+import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
 import {
     TippyCustomized,
     TippyTheme,

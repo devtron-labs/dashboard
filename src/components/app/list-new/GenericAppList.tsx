@@ -26,8 +26,7 @@ import {
     useMainContext,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useHistory } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'

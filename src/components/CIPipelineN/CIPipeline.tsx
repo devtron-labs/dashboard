@@ -15,8 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation, NavLink } from 'react-router-dom'
 import {
     ServerErrors,
     showError,

@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams, useHistory, RouteComponentProps } from 'react-router'
+import { useParams, useHistory, RouteComponentProps } from 'react-router-dom'
 import {
     showError,
     Progressing,

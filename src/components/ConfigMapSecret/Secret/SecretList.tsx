@@ -16,7 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { showError, Progressing, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { getAppChartRefForAppAndEnv } from '../../../services/service'
 import { URLS } from '../../../config'
 import { ConfigMapSecretContainer } from '../ConfigMapSecret.components'

@@ -32,9 +32,8 @@ import {
     aggregateNodes,
     ArtifactInfoModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import Select, { components } from 'react-select'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'

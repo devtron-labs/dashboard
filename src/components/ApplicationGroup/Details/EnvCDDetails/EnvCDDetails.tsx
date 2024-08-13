@@ -16,8 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
-import { Route } from 'react-router-dom'
+import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'

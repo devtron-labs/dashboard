@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { TLSConfigDTO, TLSConnectionDTO } from '../common/TLSConnectionForm/types'
 import { BaseGitOpsType, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'
 

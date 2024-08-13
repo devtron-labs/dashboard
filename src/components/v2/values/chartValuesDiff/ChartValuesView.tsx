@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useReducer, useRef } from 'react'
-import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router'
+import { useHistory, useRouteMatch, useParams, Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {

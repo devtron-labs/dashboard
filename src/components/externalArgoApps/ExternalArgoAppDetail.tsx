@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useLocation, useHistory } from 'react-router'
+import { useLocation, useHistory } from 'react-router-dom'
 import { showError, Progressing, ErrorScreenManager, ServerErrors, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
