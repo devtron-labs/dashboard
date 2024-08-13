@@ -119,19 +119,16 @@ const CreatePluginFormContent = ({
         )
     }
 
-    // Creating list of unique options from available tags and selected tags
-    const availableTagsOptions: OptionType[] =
-        availableTags?.map((tag) => ({
-            label: tag,
-            value: tag,
-        })) ?? []
+    const uniqueTagNames = [...new Set([...(availableTags || []), ...tags])]
 
     const selectedTags: OptionType[] = tags.map((tag) => ({
         label: tag,
         value: tag,
     }))
-
-    const tagOptions: OptionType[] = [...new Set([...availableTagsOptions, ...selectedTags])]
+    const tagOptions: OptionType[] = uniqueTagNames.map((tag) => ({
+        label: tag,
+        value: tag,
+    }))
 
     const renderNoOptionsMessage = () => {
         if (availableTagsError) {

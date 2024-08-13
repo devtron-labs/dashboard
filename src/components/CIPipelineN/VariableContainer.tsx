@@ -110,10 +110,10 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                         </div>
                                     </Tippy>
                                 ) : (
-                                    <div className="fs-13 fw-4 lh-28">{variable.name}</div>
+                                    <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.name}</span>
                                 )}
 
-                                <div className="fs-13 fw-4 lh-28">{variable.format}</div>
+                                <span className="fs-13 fw-4 lh-28 dc__truncate">{variable.format}</span>
                                 {type === PluginVariableType.INPUT ? (
                                     <div className="fs-14 dc__position-rel">
                                         <CustomInputVariableSelect selectedVariableIndex={index} />
@@ -125,7 +125,7 @@ export const VariableContainer = ({ type }: { type: PluginVariableType }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="fs-13 fw-4 lh-28">{variable.description}</div>
+                                    <p className="m-0 fs-13 fw-4 lh-28 dc__truncate">{variable.description}</p>
                                 )}
                             </Fragment>
                         )

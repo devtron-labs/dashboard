@@ -74,7 +74,9 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     className="w-300"
                     heading={name}
                     infoText={description}
-                    additionalContent={<PluginTagsContainer tags={tags} rootClassName="px-12 pb-12" />}
+                    additionalContent={
+                        <PluginTagsContainer tags={tags} rootClassName={`px-12 ${description ? 'pb-12' : 'py-12'}`} />
+                    }
                     iconClass="fcv-5"
                     showCloseButton
                     trigger="click"

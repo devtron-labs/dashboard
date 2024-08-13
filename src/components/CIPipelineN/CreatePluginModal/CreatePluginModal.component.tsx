@@ -206,6 +206,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
                 clonedPluginForm.id = payload.id
                 clonedPluginForm.name = payload.name
 
+                // Changing the plugin id and name so that in case of loading can show the correct plugin name
                 setPluginForm(clonedPluginForm)
 
                 clonedPluginForm = await prefillFormOnPluginSelection(clonedPluginForm)

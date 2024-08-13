@@ -187,9 +187,9 @@ export const getCreatePluginPayload = ({
 
     return {
         id: pluginForm.id || 0,
-        name: isCreateView ? pluginForm.name : '',
-        pluginIdentifier: isCreateView ? pluginForm.pluginIdentifier : '',
-        icon: isCreateView ? pluginForm.icon : '',
+        name: isCreateView ? pluginForm.name : null,
+        pluginIdentifier: isCreateView ? pluginForm.pluginIdentifier : null,
+        icon: isCreateView ? pluginForm.icon : null,
         pluginVersions: {
             detailedPluginVersionData: [
                 {
