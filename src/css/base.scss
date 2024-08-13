@@ -4860,25 +4860,3 @@ textarea::placeholder {
     display: grid;
     grid-template-columns: 50% 50%;
 }
-
-@keyframes pulsate-animation {
-    0% {
-        -moz-box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
-        box-shadow: 0 0 0 0 rgba(255, 131, 0, 0.4);
-    }
-
-    70% {
-        -moz-box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
-        box-shadow: 0 0 0 10px rgba(204, 169, 44, 0);
-    }
-
-    100% {
-        -moz-box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
-        box-shadow: 0 0 0 0 rgba(204, 169, 44, 0);
-    }
-}
-
-.dc__pulsate {
-    box-shadow: 0 0 0 rgba(255, 126, 91, 0.4);
-    animation: pulsate-animation 2s infinite;
-}
