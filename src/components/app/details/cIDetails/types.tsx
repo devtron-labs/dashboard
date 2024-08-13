@@ -51,6 +51,7 @@ export interface HistoryLogsType
         | 'appReleaseTags'
         | 'tagsEditable'
         | 'hideImageTaggingHardDelete'
+        | 'fullScreenView'
     > {
     triggerDetails: History
 }

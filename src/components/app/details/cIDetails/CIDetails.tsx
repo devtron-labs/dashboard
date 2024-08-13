@@ -506,6 +506,7 @@ export const Details = ({
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 scrollToTop={scrollToTop}
                 scrollToBottom={scrollToBottom}
+                fullScreenView={fullScreenView}
             />
         </>
     )
@@ -522,6 +523,7 @@ const HistoryLogs = ({
     hideImageTaggingHardDelete,
     scrollToTop,
     scrollToBottom,
+    fullScreenView,
 }: HistoryLogsType) => {
     const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
@@ -580,6 +582,7 @@ const HistoryLogs = ({
                         triggerDetails={triggerDetails}
                         isBlobStorageConfigured={isBlobStorageConfigured}
                         parentType={HistoryComponentType.CI}
+                        fullScreenView={fullScreenView}
                     />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
