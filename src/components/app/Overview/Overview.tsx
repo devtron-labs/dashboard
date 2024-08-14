@@ -328,7 +328,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             </div>
                         </div>
                     )}
-                    {PartOfReleaseTrack && <PartOfReleaseTrack appId={+appId} />}
+                    {PartOfReleaseTrack && appType === 'app' && <PartOfReleaseTrack appId={+appId} />}
                 </div>
                 <div className="dc__border-top-n1" />
                 {renderLabelTags()}
