@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react'
 import {
     AppStatus,
     showError,
-    Progressing,
     ErrorScreenManager,
     ServerErrors,
     Host,
@@ -66,7 +65,7 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { AppListColumnSort } from '../types'
-import { AppListResponse, HelmApp } from './AppListType'
+import { HelmAppListResponse, HelmApp } from './AppListType'
 import moment from 'moment'
 
 export default function HelmAppList({
@@ -139,7 +138,7 @@ export default function HelmAppList({
             }
         } else {
             getDevtronInstalledHelmApps(clusterIdsCsv, appStatus)
-                .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
+                .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
                             ? devtronInstalledHelmAppsListResponse.result.helmApps
@@ -219,35 +218,39 @@ export default function HelmAppList({
         _externalAppFetchErrors: string[],
         _sseConnection: EventSource,
     ) {
-        const externalAppData: AppListResponse = JSON.parse(message.data)
-        if (!externalAppData.result.clusterIds?.length) {
-            return
-        }
-
-        const _clusterId = externalAppData.result.clusterIds[0].toString()
-        if (_externalAppRecievedClusterIds.includes(_clusterId)) {
-            return
-        }
-
-        if (externalAppData.result.errored) {
-            const _cluster = masterFilters.clusters.find((cluster) => {
-                return cluster.key == _clusterId
-            })
-            let _errorMsg = ''
-            if (_cluster) {
-                _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
+        try {
+            const externalAppData: HelmAppListResponse = JSON.parse(message.data)
+            if (!externalAppData.result.clusterIds?.length) {
+                return
             }
-            _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
-            _externalAppFetchErrors.push(_errorMsg)
-            setExternalHelmListFetchErrors([..._externalAppFetchErrors])
+
+            const _clusterId = externalAppData.result.clusterIds[0].toString()
+            if (_externalAppRecievedClusterIds.includes(_clusterId)) {
+                return
+            }
+
+            if (externalAppData.result.errored) {
+                const _cluster = masterFilters.clusters.find((cluster) => {
+                    return cluster.key == _clusterId
+                })
+                let _errorMsg = ''
+                if (_cluster) {
+                    _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster.label}". ERROR: `
+                }
+                _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
+                _externalAppFetchErrors.push(_errorMsg)
+                setExternalHelmListFetchErrors([..._externalAppFetchErrors])
+            }
+
+            _externalAppRecievedClusterIds.push(_clusterId)
+            const _newExternalAppList = externalAppData.result.helmApps || []
+            _newExternalAppList.every((element) => (element.isExternal = true))
+
+            _externalAppRecievedHelmApps.push(..._newExternalAppList)
+            setExternalHelmAppsList([..._externalAppRecievedHelmApps])
+        } catch (err) {
+            showError(err)
         }
-
-        _externalAppRecievedClusterIds.push(_clusterId)
-        const _newExternalAppList = externalAppData.result.helmApps || []
-        _newExternalAppList.every((element) => (element.isExternal = true))
-
-        _externalAppRecievedHelmApps.push(..._newExternalAppList)
-        setExternalHelmAppsList([..._externalAppRecievedHelmApps])
 
         // Show guided content card for connecting cluster or installing CI/CD integration
         // when there's only one cluster & no app other than devtron-operator is installed

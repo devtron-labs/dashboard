@@ -572,7 +572,7 @@ const HistoryLogs = ({
                     </div>
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
-                            style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                            style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
                             {...{ scrollToTop, scrollToBottom }}
                         />
                     )}
@@ -588,24 +588,26 @@ const HistoryLogs = ({
                     {loading && <Progressing pageLoader />}
                     {isJobCI && !loading && CiArtifactsArrayCards}
                     {!loading && (
-                        <Artifacts
-                            status={triggerDetails.status}
-                            artifact={triggerDetails.artifact}
-                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                            downloadArtifactUrl={downloadArtifactUrl}
-                            isArtifactUploaded={triggerDetails.isArtifactUploaded}
-                            isJobView={isJobView}
-                            isJobCI={isJobCI}
-                            imageComment={triggerDetails.imageComment}
-                            imageReleaseTags={triggerDetails.imageReleaseTags}
-                            ciPipelineId={triggerDetails.ciPipelineId}
-                            artifactId={triggerDetails.artifactId}
-                            tagsEditable={tagsEditable}
-                            appReleaseTagNames={appReleaseTags}
-                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                            type={HistoryComponentType.CI}
-                            renderCIListHeader={renderCIListHeader}
-                        />
+                        <div className="p-16">
+                            <Artifacts
+                                status={triggerDetails.status}
+                                artifact={triggerDetails.artifact}
+                                blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                downloadArtifactUrl={downloadArtifactUrl}
+                                isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                                isJobView={isJobView}
+                                isJobCI={isJobCI}
+                                imageComment={triggerDetails.imageComment}
+                                imageReleaseTags={triggerDetails.imageReleaseTags}
+                                ciPipelineId={triggerDetails.ciPipelineId}
+                                artifactId={triggerDetails.artifactId}
+                                tagsEditable={tagsEditable}
+                                appReleaseTagNames={appReleaseTags}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                type={HistoryComponentType.CI}
+                                renderCIListHeader={renderCIListHeader}
+                            />
+                        </div>
                     )}
                 </Route>
                 {!isJobCard && (

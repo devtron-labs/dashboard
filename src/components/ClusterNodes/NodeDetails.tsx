@@ -25,9 +25,12 @@ import {
     YAMLStringify,
     Nodes,
     CodeEditor,
+    GVKType,
+    SortableTableHeaderCell,
+    SortingOrder,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router'
-import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'
@@ -73,9 +76,8 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import { getResourceFromK8SObjectMap } from '../ResourceBrowser/Utils'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
-import { GVKType } from '../ResourceBrowser/Types'
 
-const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType) => {
+const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
@@ -83,7 +85,6 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
-    const [copied, setCopied] = useState(false)
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [cpuData, setCpuData] = useState<ResourceDetail>(null)
     const [memoryData, setMemoryData] = useState<ResourceDetail>(null)
@@ -184,6 +185,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                 pathname: location.pathname,
                 search: _searchParam,
             })
+            updateTabUrl(`${location.pathname}${_searchParam}`)
         }
     }
 
@@ -285,21 +287,9 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
         return (
             <div className="dc__visible-hover dc__visible-hover--parent flexbox mb-8 hover-trigger dc__position-rel dc__align-items-center">
                 <div>{key}</div>
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={copied ? 'Copied!' : 'Copy'}
-                    trigger="mouseenter click"
-                    onShow={(instance) => {
-                        setCopied(false)
-                    }}
-                    interactive
-                >
-                    <div className="ml-8 flex dc__visible-hover--child">
-                        <ClipboardButton content={key} />
-                    </div>
-                </Tippy>
+                <div className="ml-8 flex dc__visible-hover--child">
+                    <ClipboardButton content={key} />
+                </div>
             </div>
         )
     }
@@ -633,37 +623,20 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
         })
     }
 
-    const renderPodHeaderCell = (
-        columnName: string,
-        sortingFieldName: string,
-        columnType: string,
-        className: string,
-    ): JSX.Element => {
-        return (
-            <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
-                    sortByColumnName === sortingFieldName ? 'sort-by' : ''
-                } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
-                onClick={() => {
-                    handleSortClick(sortingFieldName, columnType)
-                }}
-            >
-                <Tippy className="default-tt" arrow={false} placement="top" content={columnName}>
-                    <span
-                        className="dc__inline-block dc__ellipsis-right lh-20"
-                        style={{ maxWidth: 'calc(100% - 20px)' }}
-                    >
-                        {columnName}
-                    </span>
-                </Tippy>
-                {sortByColumnName === sortingFieldName ? (
-                    <span className={`sort-icon ${sortOrder == OrderBy.DESC ? 'desc' : ''} ml-4`} />
-                ) : (
-                    <span className="sort-column dc__opacity-0_5 ml-4" />
-                )}
-            </div>
-        )
+    const getTriggerSortingHandler = (...props: Parameters<typeof handleSortClick>) => () => {
+        handleSortClick(...props)
     }
+
+    const renderPodHeaderCell = (columnName: string, sortingFieldName: string, columnType: string): JSX.Element => (
+        <SortableTableHeaderCell
+            showTippyOnTruncate
+            title={columnName}
+            triggerSorting={getTriggerSortingHandler(sortingFieldName, columnType)}
+            isSorted={sortByColumnName === sortingFieldName}
+            sortOrder={sortOrder === OrderBy.DESC ? SortingOrder.DESC : SortingOrder.ASC}
+            disabled={false}
+        />
+    )
 
     const getPodListData = async (): Promise<void> => {
         getData([])
@@ -681,32 +654,27 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bcn-0 mb-20">
-                    <div className="pods-grid">
-                        <header className="bcn-0">
-                            {renderPodHeaderCell('Namespace', 'namespace', 'string', 'pt-8 pr-8 pb-8 pl-20')}
-                            {renderPodHeaderCell('Pod', 'name', 'string', 'p-8')}
-                            {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Mem Requests', 'memory.requestPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Mem Limit', 'memory.limitPercentage', 'number', 'p-8')}
-                            {renderPodHeaderCell('Age', 'createdAt', 'string', 'pt-8 pr-20 pb-8 pl-8')}
+                    <div className="pods-grid fw-4 fs-13 cn-9">
+                        <header className="bcn-0 dc__border-bottom-n1 fw-6">
+                            {renderPodHeaderCell('Namespace', 'namespace', 'string')}
+                            {renderPodHeaderCell('Pod', 'name', 'string')}
+                            {renderPodHeaderCell('CPU Requests', 'cpu.requestPercentage', 'number')}
+                            {renderPodHeaderCell('CPU Limit', 'cpu.limitPercentage', 'number')}
+                            {renderPodHeaderCell('Mem Requests', 'memory.requestPercentage', 'number')}
+                            {renderPodHeaderCell('Mem Limit', 'memory.limitPercentage', 'number')}
+                            {renderPodHeaderCell('Age', 'createdAt', 'string')}
                         </header>
                         <main>
                             {sortedPodList.map((pod) => (
-                                <div className="row-wrapper" key={pod.name}>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-8 pb-8 pl-20 fw-4 fs-13 cn-9 dc__ellipsis-right">
-                                        {pod.namespace}
-                                    </div>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9 dc__align-items-center">
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
+                                <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
+                                    <span className="dc__ellipsis-right">{pod.namespace}</span>
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
+                                        <Tooltip
                                             content={pod.name}
                                             interactive
                                         >
                                             <span
-                                                className="dc__inline-block dc__ellipsis-right lh-20 cb-5 cursor"
+                                                className="dc__inline-block dc__ellipsis-right cb-5 cursor"
                                                 style={{ maxWidth: 'calc(100% - 20px)' }}
                                                 data-name={pod.name}
                                                 data-namespace={pod.namespace}
@@ -714,7 +682,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                                             >
                                                 {pod.name}
                                             </span>
-                                        </Tippy>
+                                        </Tooltip>
                                         <div className="ml-8 dc__visible-hover--child">
                                             <ClipboardButton content={pod.name} />
                                         </div>
@@ -727,21 +695,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw }: ClusterListType)
                                             handleResourceClick={handleResourceClick}
                                         />
                                     </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.cpu.requestPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.cpu.limitPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.memory.requestPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 p-8 fw-4 fs-13 cn-9">
-                                        {pod.memory.limitPercentage || '-'}
-                                    </div>
-                                    <div className="dc__border-bottom-n1 pt-8 pr-20 pb-8 pl-8 fw-4 fs-13 cn-9">
-                                        {pod.age}
-                                    </div>
+                                    <span>{pod.cpu.requestPercentage || '-'}</span>
+                                    <span>{pod.cpu.limitPercentage || '-'}</span>
+                                    <span>{pod.memory.requestPercentage || '-'}</span>
+                                    <span>{pod.memory.limitPercentage || '-'}</span>
+                                    <span>{pod.age}</span>
                                 </div>
                             ))}
                         </main>

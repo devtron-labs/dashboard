@@ -123,7 +123,7 @@ export default function NodeActionsMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab>
+                <PopupMenu.Button rootClassName="flex p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

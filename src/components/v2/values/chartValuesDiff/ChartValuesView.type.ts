@@ -97,7 +97,6 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     invalidaEnvironment: boolean
     isVirtualEnvironmentOnSelector?: boolean
     isVirtualEnvironment?: boolean
-    isOCICompliantChart?: boolean
 }
 
 export interface DeploymentAppSelectorType {

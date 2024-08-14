@@ -21,7 +21,6 @@ import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import { withShortcut, IWithShortcut } from 'react-keybind'
 import DOMPurify from 'dompurify'
 import {
-    useAsync,
     highlightSearchText,
     ReactSelectInputAction,
     useRegisterShortcut,
@@ -34,8 +33,6 @@ import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarTy
 import { AggregationKeys } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
-import { getK8Abbreviates } from '../ResourceBrowser.service'
-import { swap } from '../../common/helpers/util'
 import {
     convertK8sObjectMapToOptionsList,
     convertResourceGroupListToK8sObjectList,
@@ -58,10 +55,28 @@ const Sidebar = ({
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))
-    const [, k8Abbreviates] = useAsync(getK8Abbreviates)
     const preventScrollRef = useRef(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
     const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
+    const sortedK8sObjectOptionsList = useMemo(() => {
+        if (!searchText) {
+            return k8sObjectOptionsList
+        }
+        const lowerSearchText = searchText.toLowerCase()
+        // NOTE: need to make a new copy since sort modifies the array in place
+        // and toSorted is a recent addition (Baseline 2023) thus lacking in typescript 4.6
+        return [...k8sObjectOptionsList].sort((a, b) => {
+            const isAMatched = !!a.dataset.shortNames?.includes(lowerSearchText)
+            const isBMatched = !!b.dataset.shortNames?.includes(lowerSearchText)
+            if (isAMatched && !isBMatched) {
+                return -1
+            }
+            if (!isAMatched && isBMatched) {
+                return 1
+            }
+            return 0
+        })
+    }, [searchText])
 
     const handleInputShortcut = (e: React.KeyboardEvent<HTMLDivElement>) => {
         switch (e.key) {
@@ -241,20 +256,6 @@ const Sidebar = ({
         setSearchText(newValue)
     }
 
-    const bringMatchedAbbreviatedOptionToFront = (options: K8sObjectOptionType[]): K8sObjectOptionType[] => {
-        const lowerSearchText = searchText.toLowerCase()
-        if (!searchText || !k8Abbreviates?.[lowerSearchText]) {
-            return options
-        }
-        const loc = k8sObjectOptionsList.findIndex(
-            (option) => k8Abbreviates[lowerSearchText] === option.label.toLowerCase(),
-        )
-        if (loc > -1) {
-            swap(options, loc, 0)
-        }
-        return options
-    }
-
     const hideMenu = () => {
         setSearchText('')
     }
@@ -303,8 +304,9 @@ const Sidebar = ({
     const getOptionLabel = (option: K8sObjectOptionType) => {
         const lowerLabel = option.label.toLowerCase()
         const lowerSearchText = searchText.toLowerCase()
-        const expandedAbbreviateValue = k8Abbreviates?.[lowerSearchText]
-        return expandedAbbreviateValue === lowerLabel ? lowerSearchText : lowerLabel
+        // NOTE: it is given that shortNames will all be lowercase
+        // see @processK8SObjects
+        return option.dataset.shortNames?.some((name) => name.includes(lowerSearchText)) ? lowerSearchText : lowerLabel
     }
 
     const noOptionsMessage = () => 'No matching kind'
@@ -315,8 +317,8 @@ const Sidebar = ({
                 <ReactSelect
                     ref={searchInputRef}
                     placeholder="Jump to Kind"
-                    options={bringMatchedAbbreviatedOptionToFront(k8sObjectOptionsList)}
-                    value={k8sObjectOptionsList[0]} // Just to enable clear indicator
+                    options={sortedK8sObjectOptionsList}
+                    value={sortedK8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}
                     getOptionValue={getOptionLabel}
                     onInputChange={handleInputChange}
@@ -381,10 +383,11 @@ const Sidebar = ({
                     [...list.values()].map((k8sObject) =>
                         k8sObject.name === AggregationKeys.Events ||
                         k8sObject.name === AggregationKeys.Namespaces ? null : (
-                            <Fragment key={`${k8sObject.name}-parent`}>
+                            <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className="dc__unset-button-styles"
+                                    className={`dc__unset-button-styles dc__zi-1 bcn-0 w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
+                                    style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}
                                 >
@@ -410,7 +413,7 @@ const Sidebar = ({
                                         )}
                                     </div>
                                 )}
-                            </Fragment>
+                            </div>
                         ),
                     )}
             </div>
