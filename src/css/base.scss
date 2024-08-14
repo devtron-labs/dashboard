@@ -2834,6 +2834,16 @@ textarea,
     }
 }
 
+.ic-error-cross-red {
+    g {
+        g {
+            rect {
+                fill: var(--R500);
+            }
+        }
+    }
+}
+
 .alert-icon-r5-imp {
     path {
         &:nth-child(1) {
