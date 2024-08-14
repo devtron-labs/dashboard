@@ -93,13 +93,25 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const [hideLockedKeys, _setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
 
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
     const baseDeploymentAbortController = new AbortController()
     const removedPatches = useRef<Array<Operation>>([])
+
+    const setHideLockedKeys = (value: boolean) => {
+        if (!state.wasGuiOrHideLockedKeysEdited) {
+            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+        }
+        // NOTE: since we are removing/patching for hide locked keys feature during the render
+        // of EditorView, through getLockFilteredTemplate, we need to set the following ref to true
+        // for hide logic to work. Therefore, whenever hideLockedKeys is changed we should update
+        // the following ref to true. Internally getLockFilteredTemplate will set it to false.
+        hideLockKeysToggled.current = true
+        _setHideLockedKeys(value)
+    }
 
     const setIsValues = (value: boolean) => {
         dispatch({
@@ -302,7 +314,9 @@ export default function DeploymentConfig({
         // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
         if (!state.yamlMode && yamlMode) {
             try {
-                applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+                if (state.wasGuiOrHideLockedKeysEdited) {
+                    applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+                }
             } catch {}
         }
         dispatch({
@@ -587,7 +601,9 @@ export default function DeploymentConfig({
 
         // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
         try {
-            applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+            if (state.wasGuiOrHideLockedKeysEdited) {
+                applyCompareDiffOfTempFormDataOnOriginalData(state.data, state.tempFormData, editorOnChange)
+            }
         } catch {}
 
         switch (index) {
@@ -644,10 +660,21 @@ export default function DeploymentConfig({
     }
 
     const prepareDataToSave = (skipReadmeAndSchema?: boolean) => {
-        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(state.publishedState?.tempFormData ?? state.data, state.tempFormData, editorOnChange)
+        let valuesOverride = obj
+        const shouldReapplyRemovedLockedKeys = hideLockedKeys && reapplyRemovedLockedKeysToYaml
 
-        if (hideLockedKeys && reapplyRemovedLockedKeysToYaml) {
+        if (shouldReapplyRemovedLockedKeys) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
+        }
+
+        if (state.wasGuiOrHideLockedKeysEdited) {
+            valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
+                state.publishedState?.tempFormData ?? state.data,
+                YAMLStringify(valuesOverride),
+                // NOTE: if shouldReapplyRemovedLockedKeys is true we don't want to save these changes to state.tempFormData
+                // thus sending in null; because in this case we reapply only to make the payload for save
+                shouldReapplyRemovedLockedKeys ? null : editorOnChange,
+            )
         }
 
         // NOTE: toggleLockedTemplateDiff in the reducer will trigger this

@@ -376,10 +376,6 @@ export default function DeploymentTemplateOverride({
         dispatch({ type: DeploymentConfigStateActionTypes.toggleDraftComments })
     }
 
-    if (state.loading || parentState === ComponentStates.loading) {
-        return <Progressing size={48} fullHeight />
-    }
-
     return (
         <div
             className={`app-compose__deployment-config dc__window-bg ${

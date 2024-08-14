@@ -53,7 +53,8 @@ const DeploymentTemplateGUIView = ({
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading, guiSchema, selectedChart },
+        state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
+        dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
@@ -110,6 +111,9 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
+        if (!wasGuiOrHideLockedKeysEdited) {
+            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+        }
         editorOnChange?.(YAML.stringify(data.formData))
     }
 

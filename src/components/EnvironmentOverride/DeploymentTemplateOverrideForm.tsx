@@ -75,7 +75,7 @@ export default function DeploymentTemplateOverrideForm({
         allowed: false,
     })
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
-    const [hideLockedKeys, setHideLockedKeys] = useState(false)
+    const [hideLockedKeys, _setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
     const removedPatches = useRef<Array<Operation>>([])
@@ -86,6 +86,18 @@ export default function DeploymentTemplateOverrideForm({
             editorOnChange('')
         }
     }, [state.duplicate])
+
+    const setHideLockedKeys = (value: boolean) => {
+        if (!state.wasGuiOrHideLockedKeysEdited) {
+            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+        }
+        // NOTE: since we are removing/patching for hide locked keys feature during the render
+        // of EditorView, through getLockFilteredTemplate, we need to set the following ref to true
+        // for hide logic to work. Therefore, whenever hideLockedKeys is changed we should update
+        // the following ref to true. Internally getLockFilteredTemplate will set it to false.
+        hideLockKeysToggled.current = true
+        _setHideLockedKeys(value)
+    }
 
     const toggleSaveChangesModal = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
@@ -99,11 +111,13 @@ export default function DeploymentTemplateOverrideForm({
         if (!state.yamlMode && yamlMode) {
             // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
             try {
-                applyCompareDiffOfTempFormDataOnOriginalData(
-                    getCodeEditorValueForReadOnly(true),
-                    getCodeEditorValue(false),
-                    editorOnChange,
-                )
+                if (state.wasGuiOrHideLockedKeysEdited) {
+                    applyCompareDiffOfTempFormDataOnOriginalData(
+                        getCodeEditorValueForReadOnly(true),
+                        getCodeEditorValue(false),
+                        editorOnChange,
+                    )
+                }
             } catch {}
         }
         dispatch({
@@ -128,14 +142,23 @@ export default function DeploymentTemplateOverrideForm({
 
     const prepareDataToSave = (includeInDraft?: boolean) => {
         // FIXME: duplicate is of type string while obj is of type object. Bad!!
-        let valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
-            getCodeEditorValueForReadOnly(true),
-            getCodeEditorValue(false),
-            editorOnChange,
-        )
+        let valuesOverride = obj ?? state.duplicate
 
-        if (hideLockedKeys && typeof valuesOverride === 'object') {
+        const isValuesOverrideObject = typeof valuesOverride === 'object'
+        const shouldReapplyRemovedLockedKeys = hideLockedKeys && isValuesOverrideObject
+
+        if (shouldReapplyRemovedLockedKeys) {
             valuesOverride = reapplyRemovedLockedKeysToYaml(valuesOverride, removedPatches.current)
+        }
+
+        if (state.wasGuiOrHideLockedKeysEdited && isValuesOverrideObject) {
+            valuesOverride = applyCompareDiffOfTempFormDataOnOriginalData(
+                getCodeEditorValueForReadOnly(true),
+                YAMLStringify(valuesOverride),
+                // NOTE: if shouldReapplyRemovedLockedKeys is true we don't want to save these changes to state.tempFormData
+                // thus sending in null; because in this case we are reapply only to make the payload for save
+                shouldReapplyRemovedLockedKeys ? null : editorOnChange,
+            )
         }
 
         if (state.showLockedTemplateDiff) {
@@ -374,11 +397,13 @@ export default function DeploymentTemplateOverrideForm({
 
         // NOTE: if we are on invalid yaml then this will fail thus wrapping it with try catch
         try {
-            applyCompareDiffOfTempFormDataOnOriginalData(
-                getCodeEditorValueForReadOnly(true),
-                getCodeEditorValue(false),
-                editorOnChange,
-            )
+            if (state.wasGuiOrHideLockedKeysEdited) {
+                applyCompareDiffOfTempFormDataOnOriginalData(
+                    getCodeEditorValueForReadOnly(true),
+                    getCodeEditorValue(false),
+                    editorOnChange,
+                )
+            }
         } catch {}
 
         switch (index) {

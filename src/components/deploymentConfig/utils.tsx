@@ -79,9 +79,9 @@ export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
 export const applyCompareDiffOfTempFormDataOnOriginalData = (
     unedited: string,
     edited: string,
-    updateTempFormData: (data: string) => void,
+    updateTempFormData?: (data: string) => void,
 ) => {
     const updated = applyCompareDiffOnUneditedDocument(YAML.parse(unedited), YAML.parse(edited))
-    updateTempFormData(YAMLStringify(updated))
+    updateTempFormData?.(YAMLStringify(updated))
     return updated
 }
