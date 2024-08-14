@@ -36,21 +36,3 @@ export const DefaultViewTabsJSON = [
         isSelected: false,
     },
 ]
-
-export const ManifestTabJSON = [
-    {
-        name: 'Live manifest',
-        isSelected: true,
-        isDisabled: false,
-    },
-    {
-        name: 'Compare',
-        isSelected: false,
-        isDisabled: false,
-    },
-    {
-        name: 'Helm generated manifest',
-        isSelected: false,
-        isDisabled: false,
-    },
-] as const

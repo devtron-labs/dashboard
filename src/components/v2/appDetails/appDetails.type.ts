@@ -15,12 +15,17 @@
  */
 
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
-import { OptionType, AppDetails as CommonAppDetails, Node as CommonNode, iNode as CommoniNode, ApiResourceGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    OptionType,
+    AppDetails as CommonAppDetails,
+    Node as CommonNode,
+    iNode as CommoniNode,
+    ApiResourceGroupType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
 import { useTabs } from '../../common/DynamicTabs/useTabs'
-import { ManifestTabJSON } from '../utils/tabUtils/tab.json'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -465,18 +470,27 @@ export interface ManifestViewRefType {
         manifest: string
         activeManifestEditorData: string
         modifiedManifest: string
-        isEditmode: boolean
-        activeTab: (typeof ManifestTabJSON)[number]['name']
     }
     id: string
 }
+
+export enum ManifestCodeEditorMode {
+    READ = 'read',
+    EDIT = 'edit',
+    APPLY_CHANGES = 'applyChanges',
+    CANCEL = 'cancel',
+}
+
 
 export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
     getComponentKey: () => string
-    isExternalApp: boolean
+    showManifestCompareView: boolean
+    setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
+    manifestCodeEditorMode: ManifestCodeEditorMode
+    setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
 }
 
 export interface NodeTreeDetailTabProps {
