@@ -60,13 +60,6 @@ export interface CDMaterialProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy?: (
-        stageType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        wfrId?: number,
-    ) => void
     selectImage?: (
         index: number,
         materialType: string,

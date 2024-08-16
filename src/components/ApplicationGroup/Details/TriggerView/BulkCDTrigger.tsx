@@ -656,8 +656,6 @@ export default function BulkCDTrigger({
                                     />
                                 )}
                             <CDMaterial
-                                // TODO: Handle this
-                                triggerDeploy={onClickStartDeploy}
                                 key={selectedApp.appId}
                                 materialType={MATERIAL_TYPE.inputMaterialList}
                                 appId={selectedApp.appId}

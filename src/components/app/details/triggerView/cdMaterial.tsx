@@ -151,7 +151,6 @@ const CDMaterial = ({
     isVirtualEnvironment,
     parentEnvironmentName,
     isLoading,
-    triggerDeploy,
     // Handle the case of external pipeline, it might be undefined or zero in that case
     ciPipelineId,
     updateCurrentAppMaterial,
@@ -1016,12 +1015,6 @@ const CDMaterial = ({
         handleConfirmationClose(e)
         // Blocking the deploy action if already deploying or config is not available
         if (isLoading || isDeployButtonDisabled()) {
-            return
-        }
-
-        if (isFromBulkCD) {
-            // It doesn't need any params btw
-            triggerDeploy(stageType, appId, Number(getCDArtifactId()))
             return
         }
 
