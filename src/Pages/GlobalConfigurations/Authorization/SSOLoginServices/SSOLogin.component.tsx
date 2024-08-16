@@ -718,7 +718,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         minHeight={250}
                     >
                         <CodeEditor.Header>
-                            <div className="flex dc__content-space">
+                            <div className="flex dc__content-space dc__gap-6">
                                 <CodeEditor.ValidationError />
                                 <div className="dc__no-shrink">
                                     <Switch
