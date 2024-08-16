@@ -233,6 +233,7 @@ const CDMaterial = ({
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -609,13 +610,14 @@ const CDMaterial = ({
 
     const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
         let isIdPresent: boolean = false
+        const trimmedValue = value.trim()
         const updatedVariables = runtimeParamsList.map((param) => {
             if (param.id === rowId) {
                 if (headerKey === RuntimeParamsHeadingType.KEY) {
                     isIdPresent = true
                     return {
                         ...param,
-                        key: value,
+                        key: trimmedValue,
                     }
                 }
 
@@ -623,7 +625,7 @@ const CDMaterial = ({
                     isIdPresent = true
                     return {
                         ...param,
-                        value,
+                        value: trimmedValue,
                     }
                 }
             }
@@ -634,8 +636,8 @@ const CDMaterial = ({
         if (!isIdPresent) {
             updatedVariables.push({
                 id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? value : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? value : '',
+                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
             })
         }
 
@@ -645,6 +647,10 @@ const CDMaterial = ({
     const handleRuntimeParamDelete = (rowId: number) => {
         const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
         setRuntimeParamsList(updatedVariables)
+    }
+
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState(errorState)
     }
 
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
@@ -779,6 +785,11 @@ const CDMaterial = ({
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
         setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
@@ -1671,9 +1682,11 @@ const CDMaterial = ({
                     ) : (
                         // TODO: Test slow internet
                         <RuntimeParameters
+                            rootClassName=""
                             parameters={runtimeParamsList}
                             onChange={handleRuntimeParamChange}
                             onDelete={handleRuntimeParamDelete}
+                            onError={handleRuntimeParamError}
                         />
                     )}
                 </ConditionalWrap>
