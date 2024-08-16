@@ -108,6 +108,11 @@ export interface CDMaterialProps {
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
     isRedirectedFromAppDetails?:  boolean
+    /**
+     * App name coming from app group view
+     * To be consumed through variable called appName
+     */
+    selectedAppName?: string
 }
 
 export interface ConfigToDeployOptionType {

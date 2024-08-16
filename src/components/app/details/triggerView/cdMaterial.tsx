@@ -162,6 +162,7 @@ const CDMaterial = ({
     deploymentAppType,
     selectedImageFromBulk,
     isRedirectedFromAppDetails,
+    selectedAppName,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -171,7 +172,10 @@ const CDMaterial = ({
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
     // NOTE: Won't be available in app group will use data from props for that
+    // DO Not consume directly, use appName variable instead
     const { currentAppName } = useAppContext()
+
+    const appName = selectedAppName || currentAppName
 
     const searchImageTag = searchParams.search
 
@@ -219,6 +223,7 @@ const CDMaterial = ({
             ),
         // NOTE: Add state.filterView if want to add filtering support from backend
         [pipelineId, stageType, materialType, searchImageTag],
+        !!pipelineId,
     )
 
     const materialsResult: CDMaterialResponseType = responseList?.[0]
@@ -1627,7 +1632,7 @@ const CDMaterial = ({
                         </div>
 
                         <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
-                            <span className="cn-9 fs-13 fw-6 lh-16">{currentAppName}</span>
+                            <span className="cn-9 fs-13 fw-6 lh-16">{appName}</span>
                         </div>
                     </div>
                 )}

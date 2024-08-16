@@ -2071,6 +2071,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
             let node: CommonNodeAttr
             let _appID
+            let selectedAppName: string
+
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
                     node = _wf.nodes.find((el) => {
@@ -2078,6 +2080,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     })
                     if (node) {
                         _appID = _wf.appId
+                        selectedAppName = _wf.name
                         break
                     }
                 }
@@ -2119,6 +2122,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 isLoading={isCILoading}
                                 ciPipelineId={node?.connectingCiPipelineId}
                                 deploymentAppType={node?.deploymentAppType}
+                                selectedAppName={selectedAppName}
                             />
                         )}
                     </div>
