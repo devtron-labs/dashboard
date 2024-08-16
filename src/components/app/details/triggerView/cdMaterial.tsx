@@ -66,6 +66,10 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    CDMaterialSidebarType,
+    RuntimeParamsListItemType,
+    CDMaterialResponseType,
+    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -90,7 +94,7 @@ import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import { getCTAClass, importComponentFromFELibrary } from '../../../common'
+import { getCTAClass, importComponentFromFELibrary, useAppContext } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     getLatestDeploymentConfig,
@@ -131,6 +135,8 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -165,6 +171,8 @@ const CDMaterial = ({
     const { handleDownload } = useDownload()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
+    // NOTE: Won't be available in app group will use data from props for that
+    const { currentAppName } = useAppContext()
 
     const searchImageTag = searchParams.search
 
@@ -175,6 +183,8 @@ const CDMaterial = ({
     // Should be able to abort request using useAsync
     const abortControllerRef = useRef(new AbortController())
     const abortDeployRef = useRef(null)
+
+    const showRuntimeParams = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -212,7 +222,7 @@ const CDMaterial = ({
         [pipelineId, stageType, materialType, searchImageTag],
     )
 
-    const materialsResult = responseList?.[0]
+    const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
 
     const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
@@ -222,6 +232,8 @@ const CDMaterial = ({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
+    const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
     const [value, setValue] = useState()
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
 
@@ -360,6 +372,7 @@ const CDMaterial = ({
                     setTagsEditable(materialsResult.tagsEditable)
                     setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                     setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
+                    setRuntimeParamsList(materialsResult.runtimeParams || [])
 
                     setMaterial(_newMaterials)
                     const _isConsumedImageAvailable =
@@ -594,6 +607,35 @@ const CDMaterial = ({
         }))
     }
 
+    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        const updatedVariables = runtimeParamsList.map((param) => {
+            if (param.id === rowId) {
+                if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    return {
+                        ...param,
+                        key: value,
+                    }
+                }
+
+                if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    return {
+                        ...param,
+                        value,
+                    }
+                }
+            }
+
+            return param
+        })
+
+        setRuntimeParamsList(updatedVariables)
+    }
+
+    const handleRuntimeParamDelete = (rowId: number) => {
+        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
+        setRuntimeParamsList(updatedVariables)
+    }
+
     const clearSearch = (e: React.MouseEvent<HTMLButtonElement>): void => {
         stopPropagation(e)
         if (state.searchText) {
@@ -723,6 +765,10 @@ const CDMaterial = ({
             ...prevState,
             showConfiguredFilters: true,
         }))
+    }
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
     }
 
     const handleFilterTabsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1524,6 +1570,10 @@ const CDMaterial = ({
         </div>
     )
 
+    const renderMaterialListBodyWrapper = (children: JSX.Element) => (
+        <div className="flexbox-col py-16 px-20 dc__overflow-scroll">{children}</div>
+    )
+
     const renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList, eligibleImagesCount } =
             getConsumedAndAvailableMaterialList(isApprovalConfigured)
@@ -1533,44 +1583,94 @@ const CDMaterial = ({
             FilterActionBar && !state.searchApplied && !!resourceFilters?.length && !state.showConfiguredFilters
 
         return (
-            <>
-                {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
-                <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                    {showActionBar ? (
-                        <FilterActionBar
-                            tabs={getFilterActionBarTabs(eligibleImagesCount, consumedImage.length)}
-                            onChange={handleFilterTabsChange}
-                            handleEnableFiltersView={handleEnableFiltersView}
-                            initialTab={state.filterView}
-                        />
-                    ) : (
-                        <span className="flex dc__align-start">{titleText}</span>
-                    )}
+            <div
+                className={`flex-grow-1 dc__overflow-scroll ${showRuntimeParams && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
+            >
+                {showRuntimeParams && !isFromBulkCD && (
+                    <div className="flexbox-col bcn-0">
+                        <div className="px-16 py-12 flex">
+                            {GitInfoMaterialTabs ? (
+                                // TODO: Change name
+                                <GitInfoMaterialTabs
+                                    // FIXME: Make a constant
+                                    tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
+                                        value: tabValue,
+                                        label: tabValue,
+                                    }))}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                />
+                            ) : (
+                                'PLACEHOLDER TEXT'
+                            )}
+                        </div>
 
-                    <span className="flexbox dc__align-items-center h-32 dc__gap-16">
-                        {state.showSearch ? (
-                            renderSearch()
-                        ) : (
-                            <SearchIcon onClick={handleSearchClick} className="icon-dim-16 icon-color-n6 cursor" />
-                        )}
-                        <RefreshIcon onClick={handleRefresh} className="icon-dim-16 scn-6 cursor" />
-                    </span>
-                </div>
+                        <div className="flexbox dc__align-items-center px-16 py-8">
+                            <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
+                        </div>
 
-                {materialList.length <= 0
-                    ? renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
-                    : renderMaterial(materialList, false, isApprovalConfigured)}
-
-                {!noMoreImages && !!materialList?.length && (
-                    <button
-                        className="show-older-images-cta cta ghosted flex h-32"
-                        onClick={loadOlderImages}
-                        type="button"
-                    >
-                        {state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Fetch more images'}
-                    </button>
+                        <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
+                            <span className="cn-9 fs-13 fw-6 lh-16">{currentAppName}</span>
+                        </div>
+                    </div>
                 )}
-            </>
+
+                <ConditionalWrap condition={showRuntimeParams && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
+                    {currentSidebarTab === CDMaterialSidebarType.IMAGE || !RuntimeParameters ? (
+                        <>
+                            {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
+                            <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                                {showActionBar ? (
+                                    <FilterActionBar
+                                        tabs={getFilterActionBarTabs(eligibleImagesCount, consumedImage.length)}
+                                        onChange={handleFilterTabsChange}
+                                        handleEnableFiltersView={handleEnableFiltersView}
+                                        initialTab={state.filterView}
+                                    />
+                                ) : (
+                                    <span className="flex dc__align-start">{titleText}</span>
+                                )}
+
+                                <span className="flexbox dc__align-items-center h-32 dc__gap-16">
+                                    {state.showSearch ? (
+                                        renderSearch()
+                                    ) : (
+                                        <SearchIcon
+                                            onClick={handleSearchClick}
+                                            className="icon-dim-16 icon-color-n6 cursor"
+                                        />
+                                    )}
+                                    <RefreshIcon onClick={handleRefresh} className="icon-dim-16 scn-6 cursor" />
+                                </span>
+                            </div>
+
+                            {materialList.length <= 0
+                                ? renderEmptyState(isApprovalConfigured, consumedImage.length > 0, !eligibleImagesCount)
+                                : renderMaterial(materialList, false, isApprovalConfigured)}
+
+                            {!noMoreImages && !!materialList?.length && (
+                                <button
+                                    className="show-older-images-cta cta ghosted flex h-32"
+                                    onClick={loadOlderImages}
+                                    type="button"
+                                >
+                                    {state.loadingMore ? (
+                                        <Progressing styles={{ height: '32px' }} />
+                                    ) : (
+                                        'Fetch more images'
+                                    )}
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        <RuntimeParameters
+                            parameters={runtimeParamsList}
+                            onChange={handleRuntimeParamChange}
+                            onDelete={handleRuntimeParamDelete}
+                        />
+                    )}
+                </ConditionalWrap>
+            </div>
         )
     }
 
@@ -1748,9 +1848,10 @@ const CDMaterial = ({
                 deploymentWindowMetadata.userActionState !== ACTION_STATE.ALLOWED
             ) {
                 setShowDeploymentWindowConfirmation(true)
-            } else {
-                deployTrigger(e)
+                return
             }
+
+            deployTrigger(e)
         }
     }
 
@@ -1888,7 +1989,7 @@ const CDMaterial = ({
 
     const renderTriggerBody = (isApprovalConfigured: boolean) => (
         <div
-            className={`trigger-modal__body ${showConfigDiffView && canReviewConfig() ? 'p-0' : ''}`}
+            className="trigger-modal__body p-0"
             style={{
                 height: getTriggerBodyHeight(isApprovalConfigured),
             }}
