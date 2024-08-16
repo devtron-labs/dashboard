@@ -705,7 +705,6 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="code-editor-container">
                     <CodeEditor
                         value={codeEditorBody}
-                        height={250}
                         mode="yaml"
                         noParsing={this.state.sso === OIDCType}
                         lineDecorationsWidth={
@@ -716,6 +715,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         onChange={this.handleConfigChange}
                         onBlur={this.handleOnBlur}
                         adjustEditorHeightToContent
+                        minHeight={250}
                     >
                         <CodeEditor.Header>
                             <div className="flex dc__content-space">
