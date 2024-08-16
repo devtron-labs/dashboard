@@ -705,7 +705,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="code-editor-container">
                     <CodeEditor
                         value={codeEditorBody}
-                        height={300}
+                        height={250}
                         mode="yaml"
                         noParsing={this.state.sso === OIDCType}
                         lineDecorationsWidth={
@@ -715,19 +715,24 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                         onChange={this.handleConfigChange}
                         onBlur={this.handleOnBlur}
+                        adjustEditorHeightToContent
                     >
                         <CodeEditor.Header>
-                            <Switch
-                                value={this.state.configMap}
-                                name="tab"
-                                onChange={(event) => {
-                                    this.handleCodeEditorTab(event.target.value)
-                                }}
-                            >
-                                <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
-                                <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-                            </Switch>
-                            <CodeEditor.ValidationError />
+                            <div className="flex dc__content-space">
+                                <CodeEditor.ValidationError />
+                                <div className="dc__no-shrink">
+                                    <Switch
+                                        value={this.state.configMap}
+                                        name="tab"
+                                        onChange={(event) => {
+                                            this.handleCodeEditorTab(event.target.value)
+                                        }}
+                                    >
+                                        <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
+                                        <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                                    </Switch>
+                                </div>
+                            </div>
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>

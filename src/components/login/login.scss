@@ -269,3 +269,7 @@
 		outline: 0;
 	}
 }
+
+.code-editor-container > .react-monaco-editor-container {
+	min-height: 250px;
+}
