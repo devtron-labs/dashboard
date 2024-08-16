@@ -48,7 +48,7 @@ export interface MaterialListState {
 
 export interface CreateMaterialState {
     material: {
-        gitProvider: { id: number; name: string, url?: string }
+        gitProvider: { id: number; name: string; url?: string }
         url: string
         checkoutPath: string
         active: boolean

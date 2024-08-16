@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-.test-details{
+.test-details {
     width: 100%;
-    &.app-details{
+    &.app-details {
         overflow: visible;
     }
 }
 
-.test--list{
+.test--list {
     border: 1px solid var(--N200);
     border-radius: 4px;
     background: white;
@@ -35,64 +35,59 @@
     grid-column-gap: 8px;
     align-items: center;
     padding: 0 20px;
-    &:last-child{
+    &:last-child {
         margin-bottom: 20px;
     }
 
-    &.not-collapsible{
+    &.not-collapsible {
         grid-template-columns: 24px 1fr auto;
     }
 
-    &.testsuites{
+    &.testsuites {
         grid-template-rows: 72px auto;
     }
 
-    &.testsuite{
+    &.testsuite {
         grid-template-rows: 56px auto;
     }
 
-    &.testsuites{
-        margin-left:0;
+    &.testsuites {
+        margin-left: 0;
         margin-right: 0;
     }
 }
 
-@mixin testcase-status($border, $background){
+@mixin testcase-status($border, $background) {
     border: 1px solid $border;
     background: $background;
     color: $border;
 }
 
-.testcase-status{
-    &.passed{ @include testcase-status(
-        var(--G500),
-        var(--G100)
-    )}
+.testcase-status {
+    &.passed {
+        @include testcase-status(var(--G500), var(--G100));
+    }
 
-    &.error, &.errors{ @include testcase-status(
-        #ffcb5d,
-        var(--Y100)
-    )}
-    &.failure, &.failed{ @include testcase-status(
-        var(--R500),
-        var(--R100)
-    )}
+    &.error,
+    &.errors {
+        @include testcase-status(#ffcb5d, var(--Y100));
+    }
+    &.failure,
+    &.failed {
+        @include testcase-status(var(--R500), var(--R100));
+    }
 
-    &.skipped{ @include testcase-status(
-        var(--N500),
-        var(--N100)
-    )}
+    &.skipped {
+        @include testcase-status(var(--N500), var(--N100));
+    }
 
-    &.unknown{ @include testcase-status(
-        var(--N900),
-        white
-    );
-    background-image: unset;
-
-}
+    &.unknown {
+        @include testcase-status(var(--N900), white);
+        background-image: unset;
+    }
 }
 
-li.testcase{
+li.testcase {
     height: 56px;
     border-radius: 4px;
     padding: 0 16px;
@@ -104,13 +99,13 @@ li.testcase{
     border: 1px solid var(--N200);
     background: white;
 
-    &:not(:first-child){
+    &:not(:first-child) {
         margin-top: 16px;
     }
 }
 
-.test--detail{
-    width: calc( 100% + 40px );
+.test--detail {
+    width: calc(100% + 40px);
     margin: 0 -20px;
     border-top: 1px solid var(--N200);
     grid-row: 2 / span 1;
@@ -120,22 +115,22 @@ li.testcase{
         color: unset;
     }
 
-    svg.folder-icon{
-        path{
+    svg.folder-icon {
+        path {
             fill: #959ba1;
         }
     }
 }
 
-ul.test--detail{
+ul.test--detail {
     padding: 16px 20px;
     margin-block-start: unset;
     margin-block-end: unset;
 }
 
-.testcase--detail{
+.testcase--detail {
     overflow: auto;
-    .testcase--title{
+    .testcase--title {
         display: grid;
         grid-template-columns: auto 1fr 24px;
         height: 68px;
@@ -146,13 +141,13 @@ ul.test--detail{
         position: sticky;
         top: 0;
         background-color: white;
-        h1{
+        h1 {
             margin: unset;
             line-height: unset;
             font-weight: 600;
         }
 
-        .status{
+        .status {
             height: 24px;
             padding: 2px 8px;
             border-radius: 2px;
@@ -161,31 +156,31 @@ ul.test--detail{
             font-weight: 600;
         }
     }
-    .testcase--body{
+    .testcase--body {
         padding: 20px;
 
-        section{
+        section {
             margin-bottom: 16px;
             width: 100%;
             overflow: auto;
-            label{
+            label {
                 display: block;
                 margin-bottom: unset;
-                &.light{
+                &.light {
                     font-size: 14px;
                     color: #404040;
                     font-weight: normal;
                 }
             }
-            b{
+            b {
                 display: block;
             }
-            p{
+            p {
                 color: var(--N900);
                 font-size: 14px;
             }
 
-            samp{
+            samp {
                 width: 100%;
                 overflow: auto;
                 white-space: pre-wrap;
@@ -194,33 +189,33 @@ ul.test--detail{
     }
 }
 
-ul.test-stats{
+ul.test-stats {
     padding-inline-start: 0px;
     margin-bottom: 0px;
     margin-top: 4px;
-    li.testcase-status{
+    li.testcase-status {
         margin-right: 16px;
         border: unset;
         background: unset;
         font-size: 12px;
         line-height: 16px;
-        span{
+        span {
             margin-left: 2px;
         }
     }
 }
 
-table.properties-table{
+table.properties-table {
     width: 100%;
-    thead{
+    thead {
         box-shadow: inset 0 -1px 0 0 var(--N200);
     }
-    tbody{
-        tr{
+    tbody {
+        tr {
             box-shadow: inset 0 -1px 0 0 var(--N100);
         }
     }
-    th{
+    th {
         height: 40px;
         position: sticky;
         top: 0;
@@ -229,88 +224,89 @@ table.properties-table{
         font-weight: 600px;
         background-color: white;
     }
-    td{
+    td {
         height: 48px;
         color: var(--N900);
         font-size: 14px;
     }
-    th, td{
+    th,
+    td {
         padding-left: 20px;
     }
 }
 
-li.suite-meta{
+li.suite-meta {
     height: 56px;
     width: 100%;
     list-style: none;
-    .suite-meta-container{
-        display:grid;
-        grid-auto-columns:1fr;
-        grid-auto-flow:column;
+    .suite-meta-container {
+        display: grid;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
         height: 100%;
         grid-column-gap: 12px;
     }
 
-    .testsuite-meta{
+    .testsuite-meta {
         padding: 0 20px;
         border: 1px solid var(--N200);
         border-radius: 4px;
-        svg{
+        svg {
             margin-right: 20px;
         }
     }
 }
 
 .testcase--detail.testsuite {
-    .testsuite-detail--body{
+    .testsuite-detail--body {
         padding: 20px;
 
-        samp{
+        samp {
             white-space: pre-wrap;
         }
     }
 }
 
-.trigger-table-container{
+.trigger-table-container {
     border: 1px solid var(--N200);
-    width:100%;
+    width: 100%;
     background: var(--N000);
     border-radius: 8px;
 }
-.trigger-table{
+.trigger-table {
     width: 100%;
 
-    thead{
+    thead {
         border-bottom: 1px solid var(--N200);
     }
 
-    th, td{
-        &:first-child{
+    th,
+    td {
+        &:first-child {
             padding-left: 20px;
         }
     }
 
-    th{
+    th {
         height: 40px;
         color: var(--N500);
         font-weight: 600;
     }
 
-    td{
+    td {
         height: 56px;
         vertical-align: center;
         color: var(--N900);
     }
-    tbody{
-        tr{
-        &:hover{
-            background: var(--window-bg);
+    tbody {
+        tr {
+            &:hover {
+                background: var(--window-bg);
+            }
         }
     }
-    }
-    
 
-    .count{
+    .count {
         height: 24px;
         padding: 0 6px;
         min-width: 24px;
@@ -318,39 +314,39 @@ li.suite-meta{
         border-radius: 6px;
         color: white;
 
-        &.failureCount{
+        &.failureCount {
             background-color: var(--R500);
         }
-        &.skippedCount{
+        &.skippedCount {
             background-color: #d8d8d8;
         }
-        &.errorCount{
+        &.errorCount {
             background-color: var(--Y500);
         }
-        &.unknownCount{
+        &.unknownCount {
             background-color: #58508d;
         }
 
-        &.disabledCount{
+        &.disabledCount {
             background-color: var(--N500);
         }
 
-        &.successCount{
+        &.successCount {
             background-color: var(--G500);
         }
     }
 
-    .hover-only{
+    .hover-only {
         visibility: hidden;
     }
 
-    .hover-trigger:hover{
-        .hover-only{
+    .hover-trigger:hover {
+        .hover-only {
             visibility: visible;
         }
     }
 
-    svg path:nth-child(2){
+    svg path:nth-child(2) {
         stroke: var(--N500);
     }
 }

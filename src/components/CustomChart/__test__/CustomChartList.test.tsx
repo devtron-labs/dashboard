@@ -19,7 +19,11 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import '@testing-library/jest-dom'
 import { act, fireEvent, render } from '@testing-library/react'
-import { mockSuccessResponseWithEmptyChartList, mockSuccessResponseWithChartList, chartListData } from '../__mocks__/CustomChartList.mock'
+import {
+    mockSuccessResponseWithEmptyChartList,
+    mockSuccessResponseWithChartList,
+    chartListData,
+} from '../__mocks__/CustomChartList.mock'
 import CustomChartList from '../CustomChartList'
 import ApiMethods from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
@@ -34,7 +38,7 @@ describe('Test CustomChartList Component', () => {
         const mockJsonPromise = Promise.resolve(mockSuccessResponseWithEmptyChartList)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<CustomChartList/>, { wrapper: BrowserRouter })
+            component = render(<CustomChartList />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith(Routes.CUSTOM_CHART_LIST)
@@ -47,7 +51,7 @@ describe('Test CustomChartList Component', () => {
         const mockJsonPromise = Promise.resolve(mockSuccessResponseWithChartList)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<CustomChartList/>, { wrapper: BrowserRouter })
+            component = render(<CustomChartList />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith(Routes.CUSTOM_CHART_LIST)
@@ -62,7 +66,7 @@ describe('Test CustomChartList Component', () => {
         const mockJsonPromise = Promise.resolve(mockSuccessResponseWithChartList)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<CustomChartList/>, { wrapper: BrowserRouter })
+            component = render(<CustomChartList />, { wrapper: BrowserRouter })
         })
         fireEvent.click(component.getByTestId(`download-${chartListData[0].name}`))
         expect(component.getByTestId('chart-versions-modal')).toBeVisible()

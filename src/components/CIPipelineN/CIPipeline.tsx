@@ -436,7 +436,9 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore))
+                setMandatoryPluginData(
+                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
+                )
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }

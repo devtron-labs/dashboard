@@ -42,14 +42,7 @@ import {
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
-import {
-    PATTERNS,
-    CHART_REPO_TYPE,
-    CHART_REPO_AUTH_TYPE,
-    CHART_REPO_LABEL,
-    URLS,
-    HEADER_TEXT,
-} from '../../config'
+import { PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL, URLS, HEADER_TEXT } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'

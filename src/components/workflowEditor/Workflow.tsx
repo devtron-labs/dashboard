@@ -696,7 +696,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return this.props.nodes
         }
 
-        const originalNodes = structuredClone((this.props.nodes))
+        const originalNodes = structuredClone(this.props.nodes)
         const bufferHeight = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
         const bufferNodes = this.props.workflowPositionState?.nodes ?? []
         // would traverse through nodes if type and id matches with bufferNodes then would add bufferHeight to y

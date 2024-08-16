@@ -176,10 +176,9 @@ const ChartListPopUp = ({
     }
 
     const handleFilterKeyPress = (searchKey: string): void => {
-            handleFilterChanges(searchKey)
-            setSearchText(searchKey)
+        handleFilterChanges(searchKey)
+        setSearchText(searchKey)
     }
-
 
     const renderChartListSearch = () => {
         return (

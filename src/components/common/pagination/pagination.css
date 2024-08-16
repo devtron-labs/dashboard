@@ -107,14 +107,12 @@
     color: var(--B500);
 }
 
-
 /* MODIFIERS */
 
 .page__button--selected {
     color: var(--white);
     background-color: var(--B500);
 }
-
 
 /* States and Selectorys */
 
@@ -126,7 +124,7 @@
     background-color: #f2f2f2;
 }
 
-.page__button:hover~:disabled {
+.page__button:hover ~ :disabled {
     background-color: var(--B100);
 }
 
@@ -135,7 +133,7 @@
     background-color: var(--B500);
 }
 
-@media(min-width: 1024px) {
+@media (min-width: 1024px) {
     .pagination {
         margin: 16px auto;
     }

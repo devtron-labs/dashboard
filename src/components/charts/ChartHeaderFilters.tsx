@@ -33,7 +33,7 @@ const ChartHeaderFilter = ({
     appStoreName,
     isGrid,
     setIsGrid,
-}: ChartHeaderFilterProps ) => {
+}: ChartHeaderFilterProps) => {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()

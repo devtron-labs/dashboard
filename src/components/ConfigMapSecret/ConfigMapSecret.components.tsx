@@ -795,9 +795,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             setError('')
             return
         }
-        setYaml(
-            YAMLStringify( keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}))
-        )
+        setYaml(YAMLStringify(keyValueArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {})))
     }, [keyValueArray])
 
     function handleYamlChange(yamlConfig) {
@@ -818,10 +816,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                 if (!k && !obj[k]) {
                     return agg
                 }
-                const v =
-                    obj[k] && typeof obj[k] === 'object'
-                        ? YAMLStringify(obj[k])
-                        : obj[k].toString()
+                const v = obj[k] && typeof obj[k] === 'object' ? YAMLStringify(obj[k]) : obj[k].toString()
                 let keyErr: string
                 let valErr: string
                 if (k && keyPattern.test(k)) {
@@ -831,10 +826,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                     errorneousKeys.push(k)
                 }
 
-                if (
-                    v &&
-                    (typeof obj[k] === 'boolean' || typeof obj[k] === 'number')
-                ) {
+                if (v && (typeof obj[k] === 'boolean' || typeof obj[k] === 'number')) {
                     errorneousValues.push(v)
                 }
                 return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
@@ -848,7 +840,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
             }
             if (errorneousValues.length > 0) {
                 if (error !== '') {
-                    error += '\n';
+                    error += '\n'
                 }
                 error += `Error: Boolean and numeric values must be wrapped in double quotes Eg. ${errorneousValues
                     .map((e) => `"${e}"`)

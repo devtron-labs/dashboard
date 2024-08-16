@@ -787,7 +787,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -1070,7 +1069,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1169,7 +1167,7 @@ button.anchor {
 
 .dc__element-scroller {
     opacity: 0.8;
-    background: #2C3354;
+    background: #2c3354;
     box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
     border: unset;
     overflow: hidden;
@@ -1376,12 +1374,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1410,19 +1408,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1441,12 +1439,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             color: var(--N900);
             background-color: var(--N0);
@@ -1476,12 +1474,12 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
                 border: 1px solid var(--N200);
@@ -1492,7 +1490,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1521,7 +1519,7 @@ button.anchor {
         &.radio-group {
             height: 30px;
 
-            input+.radio__item-label {
+            input + .radio__item-label {
                 padding-inline: 8px;
             }
         }
@@ -1530,7 +1528,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1538,7 +1536,7 @@ button.anchor {
             }
         }
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             padding: 4px 8px;
         }
 
@@ -1549,12 +1547,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1778,7 +1776,6 @@ button.anchor {
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover {
-
             // If we give this class then the element will be visible on hover
             &--child {
                 display: inherit;
@@ -1866,7 +1863,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -2354,15 +2351,15 @@ button.anchor {
     box-shadow: inset 0 -1px 0 0 #d6dbdf;
 
     &--menu {
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.20);
+        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
     }
 
     &--overlay {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.20);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.2);
     }
 
     &--modal {
-        box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.20);
+        box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.2);
     }
 }
 
@@ -2759,7 +2756,7 @@ textarea,
     }
 }
 
-.basic-multi-select>.select__control--is-disabled {
+.basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2892,7 +2889,6 @@ textarea,
 }
 
 .icon-stroke-b5 {
-
     path,
     rect {
         stroke: var(--B500);
@@ -4798,13 +4794,15 @@ textarea::placeholder {
 }
 
 .dc__info-card {
-    box-shadow: 0px 1px 2px 0px rgba(1, 87, 173, 0.10);
+    box-shadow: 0px 1px 2px 0px rgba(1, 87, 173, 0.1);
     border: 1px solid rgba(0, 102, 204, 0.12);
 
     &:not(&--no-hover) {
         &:hover {
             text-decoration: none;
-            box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.10), 0 1px 4px 0 rgba(0, 0, 0, 0.1);
+            box-shadow:
+                0 8px 12px 0 rgba(30, 35, 96, 0.1),
+                0 1px 4px 0 rgba(0, 0, 0, 0.1);
         }
     }
 
@@ -4814,7 +4812,7 @@ textarea::placeholder {
 }
 
 .dc__modal-gradient {
-    background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
+    background: linear-gradient(14deg, var(--N50) 48.93%, #d4e6f7 80.3%);
 }
 
 .bw-1_5 {

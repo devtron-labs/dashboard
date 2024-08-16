@@ -78,7 +78,7 @@ export interface CDModalProps {
     triggerType?: string
     parentEnvironmentName: string
     ciPipelineId?: number
-    isRedirectedFromAppDetails?: boolean,
+    isRedirectedFromAppDetails?: boolean
 }
 
 export interface AppDetails extends CDModalProps {
@@ -582,16 +582,12 @@ export interface SourceInfoType {
 export interface AppDetailsCDButtonType
     extends Pick<
             AppDetails,
-            | 'appId'
-            | 'environmentId'
-            | 'isVirtualEnvironment'
-            | 'deploymentAppType'
-            | 'environmentName'
+            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
-            isRedirectedFromAppDetails?: boolean,
-            cdModal: CDModalProps
-        }
+    isRedirectedFromAppDetails?: boolean
+    cdModal: CDModalProps
+}
 
 export interface EnvironmentListMinType {
     active?: boolean
@@ -628,7 +624,7 @@ export interface GenericAppListProps {
     clearAllFilters
     setShowPulsatingDotState
     masterFilters
-    appType: string,
+    appType: string
     isSSE?: boolean
 }
 export interface EditDescRequest {

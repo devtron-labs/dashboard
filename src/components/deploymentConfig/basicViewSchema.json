@@ -118,7 +118,7 @@
                 "MaxReplicas": {
                     "type": ["integer", "string"],
                     "title": "Maximum Replicas",
-                    "pattern": "^[a-zA-Z0-9-+\/*%_\\s]+$",
+                    "pattern": "^[a-zA-Z0-9-+/*%_\\s]+$",
                     "hidden": {
                         "condition": false,
                         "match": "enabled"
@@ -127,7 +127,7 @@
                 "MinReplicas": {
                     "type": ["integer", "string"],
                     "title": "Minimum Replicas",
-                    "pattern": "^[a-zA-Z0-9-+\/*%_\\s]+$",
+                    "pattern": "^[a-zA-Z0-9-+/*%_\\s]+$",
                     "hidden": {
                         "condition": false,
                         "match": "enabled"
@@ -136,7 +136,7 @@
                 "TargetCPUUtilizationPercentage": {
                     "type": ["integer", "string"],
                     "title": "Target CPU Utilization Percentage",
-                    "pattern": "^[a-zA-Z0-9-+\/*%_\\s]+$",
+                    "pattern": "^[a-zA-Z0-9-+/*%_\\s]+$",
                     "hidden": {
                         "condition": false,
                         "match": "enabled"
@@ -145,7 +145,7 @@
                 "TargetMemoryUtilizationPercentage": {
                     "type": ["integer", "string"],
                     "title": "TargetMemoryUtilizationPercentage",
-                    "pattern": "^[a-zA-Z0-9-+\/*%_\\s]+$",
+                    "pattern": "^[a-zA-Z0-9-+/*%_\\s]+$",
                     "hidden": {
                         "condition": false,
                         "match": "enabled"

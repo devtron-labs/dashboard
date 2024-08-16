@@ -49,7 +49,10 @@ export interface CustomGitOpsState {
 
 export interface GitOpsConfig
     extends TLSConfigDTO,
-        Pick<TLSConnectionDTO, 'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'>,
+        Pick<
+            TLSConnectionDTO,
+            'enableTLSVerification' | 'isCADataPresent' | 'isTLSCertDataPresent' | 'isTLSKeyDataPresent'
+        >,
         Pick<BaseGitOpsType, 'sshHost' | 'sshKey' | 'username' | 'token' | 'authMode'> {
     id: number
     provider: GitProviderType

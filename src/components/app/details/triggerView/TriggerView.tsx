@@ -32,7 +32,7 @@ import {
     getIsRequestAborted,
     handleUTCTime,
     createGitCommitUrl,
-    CIMaterialType
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'

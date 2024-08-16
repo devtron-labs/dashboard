@@ -80,11 +80,11 @@ export default function AppComposeRouter({
     reloadAppConfig,
     lastUnlockedStage,
 }: AppComposeRouterProps) {
-    const { path ,url,} = useRouteMatch()
+    const { path, url } = useRouteMatch()
     const location = useLocation()
 
     const renderJobViewRoutes = (): JSX.Element => {
-       // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
+        // currently the logic for redirection to next unlocked stage is in respondOnSuccess function can be done for MaterialList also
         return (
             <Switch>
                 <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>

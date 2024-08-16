@@ -1,11 +1,14 @@
-# Main Components #
-* ConfigmapForm
-* Configmap
+# Main Components
 
-## ConfigmapForm ##
-* main component responsible for save and update configmap
+-   ConfigmapForm
+-   Configmap
 
-## Save or Update Configmap Payload ##
+## ConfigmapForm
+
+-   main component responsible for save and update configmap
+
+## Save or Update Configmap Payload
+
 ```
 {
     id: number;
@@ -15,14 +18,13 @@
         type: "environment" | "volume";
         mountPath?: string;
         external: boolean;
-        data?: Map<string, string>; 
+        data?: Map<string, string>;
    }
 }
 ```
 
-* mountPath = "" if type = "environment"
+-   mountPath = "" if type = "environment"
 
+## Misc
 
-## Misc ##
-* used `KeyValueInput` form data
- 
+-   used `KeyValueInput` form data

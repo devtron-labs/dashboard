@@ -41,7 +41,7 @@
         display: flex;
         align-items: center;
         padding: 6px 8px;
-        .radio__title{
+        .radio__title {
             line-height: 20px;
         }
     }
@@ -84,7 +84,6 @@
     height: 38px;
     border: 1px solid var(--N200);
     background-color: var(--N50);
-
 }
 
 .SingleDatePickerInput {
@@ -95,18 +94,17 @@
     border: 1px solid var(--N200);
     background: var(--N50);
     margin-right: 8px;
-
 }
 
 .SingleDatePickerInput_calendarIcon {
     padding: 0;
     margin: 0;
-    margin-right: 8px
+    margin-right: 8px;
 }
 
 .SingleDatePickerInput__withBorder .DateInput {
     height: max-content;
-    background: var(--N50)
+    background: var(--N50);
 }
 
 .DateInput_input {
@@ -116,7 +114,7 @@
     background: var(--N50);
 
     &.DateInput_input__focused {
-        border: none
+        border: none;
     }
 }
 

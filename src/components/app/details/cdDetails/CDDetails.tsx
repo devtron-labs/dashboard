@@ -34,7 +34,7 @@ import {
     HistoryComponentType,
     FetchIdDataStatus,
     LogResizeButton,
-    getTriggerHistory
+    getTriggerHistory,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
@@ -44,7 +44,15 @@ import { DeploymentTemplateList } from './cd.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { processVirtualEnvironmentDeploymentData, renderCIListHeader, renderDeploymentApprovalInfo, renderDeploymentHistoryTriggerMetaText, renderRunSource, renderRunSourceInDropdown, renderVirtualHistoryArtifacts } from './utils'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderCIListHeader,
+    renderDeploymentApprovalInfo,
+    renderDeploymentHistoryTriggerMetaText,
+    renderRunSource,
+    renderRunSourceInDropdown,
+    renderVirtualHistoryArtifacts,
+} from './utils'
 
 export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }) {
     const location = useLocation()
@@ -72,7 +80,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         [appId, filteredEnvIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
-        () => getTriggerHistory({appId: Number(appId), envId: Number(envId), pagination}),
+        () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
         [pagination, appId, envId],
         !!envId && !!pipelineId,
     )
@@ -229,7 +237,11 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             return
         }
         const [error, result] = await asyncWrap(
-            getTriggerHistory({appId: +appId, envId: +envId, pagination: { offset: 0, size: pagination.offset + pagination.size }}),
+            getTriggerHistory({
+                appId: +appId,
+                envId: +envId,
+                pagination: { offset: 0, size: pagination.offset + pagination.size },
+            }),
         )
         if (error) {
             showError(error)
@@ -314,7 +326,6 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                             renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                             renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
                             processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
-
                         />
                     </Route>
                 ) : !envId ? (
@@ -333,4 +344,3 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         </div>
     )
 }
-

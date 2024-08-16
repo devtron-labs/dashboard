@@ -127,7 +127,9 @@ export default function App() {
 
     async function validation() {
         try {
-            const { result: { emailId: email } } = await validateToken()
+            const {
+                result: { emailId: email },
+            } = await validateToken()
             setEmail(email)
             defaultRedirection()
         } catch (err: any) {
@@ -176,11 +178,11 @@ export default function App() {
             defaultRedirection()
         }
         return () => {
-          navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+            navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
         }
     }, [])
 
-    const serviceWorkerTimeout = (()=> {
+    const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
 
         if (parsedTimeout) {
@@ -197,23 +199,26 @@ export default function App() {
         onRegisteredSW(swUrl, r) {
             console.log(`Service Worker at: ${swUrl}`)
             r &&
-                setInterval(async () => {
-                    if (!(!r.installing && navigator)) return
-                    if ('connection' in navigator && !navigator.onLine) return
+                setInterval(
+                    async () => {
+                        if (!(!r.installing && navigator)) return
+                        if ('connection' in navigator && !navigator.onLine) return
 
-                    try {
-                        const resp = await fetch(swUrl, {
-                            cache: 'no-store',
-                            headers: {
+                        try {
+                            const resp = await fetch(swUrl, {
                                 cache: 'no-store',
-                                'cache-control': 'no-cache',
-                            },
-                        })
-                        if (resp?.status === 200) await r.update()
-                    } catch {
-                        // Do nothing
-                    }
-                }, serviceWorkerTimeout * 1000 * 60)
+                                headers: {
+                                    cache: 'no-store',
+                                    'cache-control': 'no-cache',
+                                },
+                            })
+                            if (resp?.status === 200) await r.update()
+                        } catch {
+                            // Do nothing
+                        }
+                    },
+                    serviceWorkerTimeout * 1000 * 60,
+                )
         },
         onRegisterError(error) {
             console.log('SW registration error', error)

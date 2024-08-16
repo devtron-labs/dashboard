@@ -61,7 +61,6 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.sv
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 
-
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 const getBuildCDManualApproval = importComponentFromFELibrary('getBuildCDManualApproval', null, 'function')
@@ -349,7 +348,7 @@ export default function BuildCD({
 
         selection['defaultConfig'] = allStrategies.current[selection.deploymentTemplate]
         selection['jsonStr'] = JSON.stringify(allStrategies.current[selection.deploymentTemplate], null, 4)
-        selection['yamlStr'] =YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
+        selection['yamlStr'] = YAMLStringify(allStrategies.current[selection.deploymentTemplate], {
             indent: 2,
         })
         selection['isCollapsed'] = true
@@ -770,9 +769,13 @@ export default function BuildCD({
                     !noGitOpsModuleInstalledAndConfigured &&
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
-                {isAdvanced && getBuildCDManualApproval && (
-                   getBuildCDManualApproval(formData.requiredApprovals, formData.userApprovalConfig?.requiredCount, onChangeRequiredApprovals)
-                )}
+                {isAdvanced &&
+                    getBuildCDManualApproval &&
+                    getBuildCDManualApproval(
+                        formData.requiredApprovals,
+                        formData.userApprovalConfig?.requiredCount,
+                        onChangeRequiredApprovals,
+                    )}
                 {isAdvanced && (
                     <>
                         <CustomImageTags

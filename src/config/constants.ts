@@ -425,7 +425,7 @@ export const HEADER_TEXT = {
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
-        description: "Manage your organization’s git accounts.",
+        description: 'Manage your organization’s git accounts.',
         docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
     },
     NOTIFICATIONS: {
@@ -724,9 +724,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -750,9 +750,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
@@ -949,5 +949,5 @@ export const SwitchItemValues = {
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
-    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }

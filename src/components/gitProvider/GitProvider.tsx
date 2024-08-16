@@ -563,7 +563,7 @@ const GitForm = ({
                 setCustomState((state) => ({
                     ...state,
                     password: { value: state.password.value, error: isPasswordEmpty ? 'This is a required field' : '' },
-                    username: { value: state.username.value, error: !customState.username.value ? 'Required': '' },
+                    username: { value: state.username.value, error: !customState.username.value ? 'Required' : '' },
                 }))
                 return
             }

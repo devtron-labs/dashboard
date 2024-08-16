@@ -1043,9 +1043,7 @@ export default function ClusterForm({
     }
 
     const NoMatchingResults = (): JSX.Element => {
-        return (
-            <GenericFilterEmptyState />
-        )
+        return <GenericFilterEmptyState />
     }
 
     if (loader) {

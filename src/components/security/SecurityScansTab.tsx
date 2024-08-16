@@ -474,9 +474,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             }
             return (
                 <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
-                    <GenericFilterEmptyState
-                        handleClearFilters={this.removeFiltersAndSearch}
-                    />
+                    <GenericFilterEmptyState handleClearFilters={this.removeFiltersAndSearch} />
                 </div>
             )
         }

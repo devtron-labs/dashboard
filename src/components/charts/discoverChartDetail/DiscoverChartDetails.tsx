@@ -63,7 +63,6 @@ function mapById(arr) {
 }
 
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
-
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState([])
     const [chartInformation, setChartInformation] = React.useState({
@@ -426,7 +425,7 @@ function isReadmeInputCheckbox(text: string) {
 }
 
 /**
- * 
+ *
  * @deprecated function is used in common component
  */
 export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {

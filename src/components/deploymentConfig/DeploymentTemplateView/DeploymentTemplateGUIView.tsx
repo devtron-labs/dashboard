@@ -120,10 +120,7 @@ const DeploymentTemplateGUIView = ({
 
         if (state.error) {
             return (
-                <GenericEmptyState
-                    image={EmptyFolderImage}
-                    {...state.error}
-                >
+                <GenericEmptyState image={EmptyFolderImage} {...state.error}>
                     <button
                         type="button"
                         className="cta cta-with-img secondary dc__gap-6"

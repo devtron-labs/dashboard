@@ -153,8 +153,12 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         placement="top"
                         content={getLinkedCITippyContent(this.props.linkedCount)}
                     >
-                        <button type="button" className="link-count cursor dc__hover-border-n300 flex dc__gap-4" onClick={this.handleLinkedCIWorkflowChipClick}>
-                            <IcLink  className="icon-dim-12 dc__no-shrink icon-color-n7" />
+                        <button
+                            type="button"
+                            className="link-count cursor dc__hover-border-n300 flex dc__gap-4"
+                            onClick={this.handleLinkedCIWorkflowChipClick}
+                        >
+                            <IcLink className="icon-dim-12 dc__no-shrink icon-color-n7" />
                             <span>{this.props.linkedCount}</span>
                         </button>
                     </Tippy>

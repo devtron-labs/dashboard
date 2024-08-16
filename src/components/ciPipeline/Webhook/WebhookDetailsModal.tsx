@@ -25,7 +25,7 @@ import {
     CustomInput,
     ClipboardButton,
     ButtonWithLoader,
-    CodeEditor
+    CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -424,7 +424,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <>
                 <div className="w-400 h-32 mt-16">
                     <ReactSelect
-                        classNamePrefix='selectToken'
+                        classNamePrefix="selectToken"
                         value={selectedToken}
                         tabIndex={1}
                         onChange={setSelectedToken}
@@ -512,9 +512,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 data-testid="sample-script"
             >
                 <code>{value}</code>
-                {showCopyOption && (
-                        <ClipboardButton content={value} />
-                )}
+                {showCopyOption && <ClipboardButton content={value} />}
             </pre>
         )
     }
@@ -788,7 +786,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">
+                                {response.code}
+                            </div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(

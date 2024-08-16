@@ -456,15 +456,17 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Deployment Window</div>
                         </NavLink>
                     )}
-                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.FEATURE_IMAGE_PROMOTION_ENABLE  && ImagePromotion && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                            key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Image Promotion</div>
-                        </NavLink>
-                    )}
+                    {serverMode !== SERVER_MODE.EA_ONLY &&
+                        window._env_.FEATURE_IMAGE_PROMOTION_ENABLE &&
+                        ImagePromotion && (
+                            <NavLink
+                                to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                activeClassName="active-route"
+                            >
+                                <div className="flexbox flex-justify">Image Promotion</div>
+                            </NavLink>
+                        )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -558,7 +560,7 @@ const NavItem = ({ serverMode }) => {
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
-        const defaultRoute = (): string => {
+    const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
         }
@@ -681,20 +683,18 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
-                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
-                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
-                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
+            {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                    <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            ,
+            {serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
+                <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                    <ImagePromotion isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            ,
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />

@@ -29,7 +29,10 @@
     top: 100px;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: height 0.25s, width 0.25s, opacity 0.25s;
+    transition:
+        height 0.25s,
+        width 0.25s,
+        opacity 0.25s;
     overflow: hidden;
     text-align: center;
     display: block;
@@ -40,7 +43,10 @@
         width: 80px;
         padding: 16px;
         opacity: 0.95;
-        transition: height 0.25s, width 0.25s, opacity 0.25s;
+        transition:
+            height 0.25s,
+            width 0.25s,
+            opacity 0.25s;
     }
 }
 
@@ -192,7 +198,7 @@
 .manifest-tabs-row {
     height: 32px;
     background-color: inherit;
-    
+
     &__position-sticky {
         position: sticky;
         top: 155px;
@@ -238,7 +244,7 @@
     height: 0;
     .terminal-action-strip {
         display: none;
-      }
+    }
 }
 
 .pod-terminal-hidden * {

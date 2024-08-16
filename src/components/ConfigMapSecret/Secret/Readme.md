@@ -1,11 +1,14 @@
-# Main Components #
-* SecretForm
-* Secret
+# Main Components
 
-## SecretForm ##
-* main component responsible for save and update secret
+-   SecretForm
+-   Secret
 
-## Save or Update Secret Payload ##
+## SecretForm
+
+-   main component responsible for save and update secret
+
+## Save or Update Secret Payload
+
 ```
 {
     id: number;
@@ -16,14 +19,15 @@
         mountPath: string;
         external: boolean;
         externalType: string;
-        data?: Map<string, string>; 
+        data?: Map<string, string>;
    }
 }
 ```
-* mountpath = "" if type = "environment"
- 
- 
- ### or ###
+
+-   mountpath = "" if type = "environment"
+
+### or
+
 ```
 {
     id: number;
@@ -36,24 +40,22 @@
         mountPath: string;
         externalType: string;
         secretData?: {
-            key: string; 
-            name:string; 
-            property?: string; 
+            key: string;
+            name:string;
+            property?: string;
             isBinary: boolean;
         }[];
     }
 }
 ```
 
-* ? fields are optional
+-   ? fields are optional
 
+## Misc
 
-## Misc ##
-* used `KeyValueInput` form data
-* used `KeyValueFileInput` for secretData
-* `secretDataYaml` is yaml format of secretData
-* `secretData` is used for rendering parameter 
-* `handleSecretDataChange` handles change in secretData, converts to YAML
-* NOTE: 'fileName' in secretData will be mapped to 'key' in secreDataYaml
- 
-
+-   used `KeyValueInput` form data
+-   used `KeyValueFileInput` for secretData
+-   `secretDataYaml` is yaml format of secretData
+-   `secretData` is used for rendering parameter
+-   `handleSecretDataChange` handles change in secretData, converts to YAML
+-   NOTE: 'fileName' in secretData will be mapped to 'key' in secreDataYaml

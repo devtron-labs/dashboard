@@ -1088,8 +1088,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
 
-      
-
         return (
             <>
                 <section className="global-configuration__component flex-1">
@@ -1357,7 +1355,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                                     this.state.providerTab === GitProvider.AZURE_DEVOPS
                                                         ? 'Azure DevOps Access Token '
                                                         : 'Personal Access Token ',
-                                                        PROVIDER_DOC_LINK_MAP[this.state.providerTab],
+                                                    PROVIDER_DOC_LINK_MAP[this.state.providerTab],
                                                     '(Check permissions required for PAT)',
                                                 )}
                                                 value={this.state.form.token}

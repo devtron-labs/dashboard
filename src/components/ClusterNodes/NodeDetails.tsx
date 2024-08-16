@@ -623,9 +623,11 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
         })
     }
 
-    const getTriggerSortingHandler = (...props: Parameters<typeof handleSortClick>) => () => {
-        handleSortClick(...props)
-    }
+    const getTriggerSortingHandler =
+        (...props: Parameters<typeof handleSortClick>) =>
+        () => {
+            handleSortClick(...props)
+        }
 
     const renderPodHeaderCell = (columnName: string, sortingFieldName: string, columnType: string): JSX.Element => (
         <SortableTableHeaderCell
@@ -669,10 +671,7 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
                                 <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
                                     <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
-                                        <Tooltip
-                                            content={pod.name}
-                                            interactive
-                                        >
+                                        <Tooltip content={pod.name} interactive>
                                             <span
                                                 className="dc__inline-block dc__ellipsis-right cb-5 cursor"
                                                 style={{ maxWidth: 'calc(100% - 20px)' }}

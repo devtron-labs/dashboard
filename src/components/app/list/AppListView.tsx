@@ -263,7 +263,9 @@ export class AppListView extends Component<AppListViewProps> {
                                                     className="default-tt"
                                                     arrow={true}
                                                     placement="top"
-                                                    content={moment(app.defaultEnv.lastDeployedTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
+                                                    content={moment(app.defaultEnv.lastDeployedTime).format(
+                                                        DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
+                                                    )}
                                                 >
                                                     <p
                                                         className="dc__truncate-text  m-0"

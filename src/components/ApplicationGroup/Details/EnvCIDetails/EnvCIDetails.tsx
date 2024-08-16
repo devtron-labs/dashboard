@@ -16,7 +16,22 @@
 
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, showError, sortCallback, useAsync, PipelineType, Sidebar, LogResizeButton, HistoryComponentType, History, CICDSidebarFilterOptionType, FetchIdDataStatus, asyncWrap, mapByKey, useInterval } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    showError,
+    sortCallback,
+    useAsync,
+    PipelineType,
+    Sidebar,
+    LogResizeButton,
+    HistoryComponentType,
+    History,
+    CICDSidebarFilterOptionType,
+    FetchIdDataStatus,
+    asyncWrap,
+    mapByKey,
+    useInterval,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'

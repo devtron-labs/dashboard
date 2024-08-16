@@ -391,9 +391,7 @@ export default function SavedValuesList() {
     if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                />
+                <ErrorScreenManager code={errorStatusCode} />
             </div>
         )
     }

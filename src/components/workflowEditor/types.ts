@@ -28,11 +28,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import {
-    CIPipelineNodeType,
-    CdPipelineResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
+import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
 import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
@@ -290,7 +286,12 @@ export interface PipelineContext {
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any, clonedPluginDataStore?: PluginDataStoreType) => void
+    validateStage: (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?: any,
+        clonedPluginDataStore?: PluginDataStoreType,
+    ) => void
     isCdPipeline?: boolean
     configMapAndSecrets?: {
         label: string

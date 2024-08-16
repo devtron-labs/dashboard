@@ -93,9 +93,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
                     }
                 })()}
             </div>
-            <div className="fs-14 cn-0">
-                {msg}
-            </div>
+            <div className="fs-14 cn-0">{msg}</div>
             {isShowActionButton && (
                 <div
                     className="cursor dc__underline fs-14 cb-3"

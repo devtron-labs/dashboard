@@ -17,7 +17,15 @@
 import React, { Component } from 'react'
 import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getCookie, ServerErrors, Host, Progressing, showError, CustomInput, withUserEmail } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getCookie,
+    ServerErrors,
+    Host,
+    Progressing,
+    showError,
+    CustomInput,
+    withUserEmail,
+} from '@devtron-labs/devtron-fe-common-lib'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
