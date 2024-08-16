@@ -702,7 +702,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
             <div className="mt-0 ml-24 mr-24 mb-24">
-                <div className="code-editor-container">
+                <div className="br-4 dc__border w-100 dc__overflow-hidden">
                     <CodeEditor
                         value={codeEditorBody}
                         mode="yaml"
