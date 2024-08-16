@@ -15,7 +15,15 @@
  */
 
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    DeploymentAppTypes,
+    TagType,
+    Teams,
+    PodMetadatum,
+    DeploymentNodeType,
+    RuntimeParamsListItemType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
@@ -78,7 +86,7 @@ export interface CDModalProps {
     triggerType?: string
     parentEnvironmentName: string
     ciPipelineId?: number
-    isRedirectedFromAppDetails?: boolean,
+    isRedirectedFromAppDetails?: boolean
 }
 
 export interface AppDetails extends CDModalProps {
@@ -582,16 +590,12 @@ export interface SourceInfoType {
 export interface AppDetailsCDButtonType
     extends Pick<
             AppDetails,
-            | 'appId'
-            | 'environmentId'
-            | 'isVirtualEnvironment'
-            | 'deploymentAppType'
-            | 'environmentName'
+            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
-            isRedirectedFromAppDetails?: boolean,
-            cdModal: CDModalProps
-        }
+    isRedirectedFromAppDetails?: boolean
+    cdModal: CDModalProps
+}
 
 export interface EnvironmentListMinType {
     active?: boolean
@@ -628,7 +632,7 @@ export interface GenericAppListProps {
     clearAllFilters
     setShowPulsatingDotState
     masterFilters
-    appType: string,
+    appType: string
     isSSE?: boolean
 }
 export interface EditDescRequest {
@@ -639,4 +643,18 @@ export interface EditDescRequest {
     active: boolean
     default: boolean
     description: string
+}
+
+export interface TriggerCDNodeServiceProps {
+    pipelineId: any
+    ciArtifactId: any
+    appId: string
+    stageType: DeploymentNodeType
+    deploymentWithConfig?: string
+    wfrId?: number
+    abortSignal?: AbortSignal
+    /**
+     * Would be available only case of PRE/POST CD
+     */
+    runtimeParams?: RuntimeParamsListItemType[]
 }

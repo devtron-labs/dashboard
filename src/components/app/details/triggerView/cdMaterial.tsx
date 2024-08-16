@@ -398,6 +398,7 @@ const CDMaterial = ({
                 setTagsEditable(materialsResult.tagsEditable)
                 setAppReleaseTagNames(materialsResult.appReleaseTagNames)
                 setNoMoreImages(materialsResult.materials.length >= materialsResult.totalCount)
+                setRuntimeParamsList(materialsResult.runtimeParams || [])
 
                 setMaterial(materialsResult.materials)
                 const _isConsumedImageAvailable =
@@ -607,9 +608,11 @@ const CDMaterial = ({
     }
 
     const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        let isIdPresent: boolean = false
         const updatedVariables = runtimeParamsList.map((param) => {
             if (param.id === rowId) {
                 if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    isIdPresent = true
                     return {
                         ...param,
                         key: value,
@@ -617,6 +620,7 @@ const CDMaterial = ({
                 }
 
                 if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    isIdPresent = true
                     return {
                         ...param,
                         value,
@@ -626,6 +630,14 @@ const CDMaterial = ({
 
             return param
         })
+
+        if (!isIdPresent) {
+            updatedVariables.push({
+                id: rowId,
+                key: headerKey === RuntimeParamsHeadingType.KEY ? value : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? value : '',
+            })
+        }
 
         setRuntimeParamsList(updatedVariables)
     }
@@ -969,15 +981,16 @@ const CDMaterial = ({
         setDeploymentLoading(true)
 
         if (_appId && pipelineId && ciArtifactId) {
-            triggerCDNode(
+            triggerCDNode({
                 pipelineId,
                 ciArtifactId,
-                _appId.toString(),
-                nodeType,
+                appId: _appId.toString(),
+                stageType: nodeType,
                 deploymentWithConfig,
                 wfrId,
-                abortDeployRef.current.signal,
-            )
+                abortSignal: abortDeployRef.current.signal,
+                runtimeParams: runtimeParamsList,
+        })
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&
@@ -1656,6 +1669,7 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
+                        // TODO: Test slow internet
                         <RuntimeParameters
                             parameters={runtimeParamsList}
                             onChange={handleRuntimeParamChange}

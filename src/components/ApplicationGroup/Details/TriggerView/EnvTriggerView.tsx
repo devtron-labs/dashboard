@@ -68,11 +68,7 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import {
-    importComponentFromFELibrary,
-    preventBodyScroll,
-    sortObjectArrayAlphabetically,
-} from '../../../common'
+import { importComponentFromFELibrary, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
@@ -1432,7 +1428,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             })
             if (ciArtifact) {
                 _CDTriggerPromiseFunctionList.push(() =>
-                    triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
+                    triggerCDNode({
+                        pipelineId: node.id,
+                        ciArtifactId: ciArtifact.id,
+                        appId: _appIdMap.get(node.id),
+                        stageType: bulkTriggerType,
+                    }),
                 )
             } else {
                 triggeredAppList.splice(index, 1)
