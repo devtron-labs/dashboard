@@ -25,15 +25,15 @@ import {
     ConsequenceAction,
     useAsync,
     GenericEmptyState,
-    KeyValueListActionType,
-    HandleKeyValueChangeType,
     CIMaterialSidebarType,
     ApiQueuingWithBatch,
     RuntimeParamsListItemType,
     ModuleNameMap,
     SourceTypeMap,
+    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -84,6 +84,8 @@ const BulkCITrigger = ({
     setLoading,
     runtimeParams,
     setRuntimeParams,
+    runtimeParamsErrorState,
+    setRuntimeParamsErrorState,
     setPageViewType,
     httpProtocol,
 }: BulkCITriggerType) => {
@@ -198,36 +200,68 @@ const BulkCITrigger = ({
         }
     }
 
-    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        let _runtimeParams = runtimeParams[selectedApp.ciPipelineId] ?? []
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState((prevErrorState) => ({
+            ...prevErrorState,
+            // TODO: If possible, change the key to appId
+            [selectedApp.ciPipelineId]: errorState,
+        }))
+    }
 
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '', id: 0 })
-                break
+    const handleRuntimeParamDelete = (rowId: number) => {
+        const runtimeParamsList = runtimeParams[selectedApp.ciPipelineId] ?? []
+        const updatedRuntimeParams = structuredClone(runtimeParams)
+        updatedRuntimeParams[selectedApp.ciPipelineId] = runtimeParamsList.filter((param) => param.id !== rowId)
+        setRuntimeParams(updatedRuntimeParams)
+    }
 
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
+    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        let isIdPresent: boolean = false
+        const trimmedValue = value.trim()
 
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
+        const runtimeParamsList = runtimeParams[selectedApp.ciPipelineId] ?? []
+        const updatedRuntimeParams = structuredClone(runtimeParams)
 
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action ${action}`)
+        const updatedVariables = runtimeParamsList.map((param) => {
+            if (param.id === rowId) {
+                if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        key: trimmedValue,
+                    }
+                }
+
+                if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        value: trimmedValue,
+                    }
+                }
+            }
+
+            return param
+        })
+
+        if (!isIdPresent) {
+            updatedVariables.push({
+                id: rowId,
+                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
+            })
         }
 
-        setRuntimeParams({
-            ...runtimeParams,
-            [selectedApp.ciPipelineId]: _runtimeParams,
-        })
+        updatedRuntimeParams[selectedApp.ciPipelineId] = updatedVariables
+        setRuntimeParams(updatedRuntimeParams)
     }
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
         setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
     }
 
@@ -302,6 +336,11 @@ const BulkCITrigger = ({
     }
 
     const changeApp = (e): void => {
+        if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
         stopPropagation(e)
         const _selectedApp = appList[e.currentTarget.dataset.index]
         if (_selectedApp.appId !== selectedApp.appId) {
@@ -466,12 +505,13 @@ const BulkCITrigger = ({
                 fromBulkCITrigger
                 hideSearchHeader={selectedApp.hideSearchHeader}
                 isCITriggerBlocked={appPolicy[selectedApp.appId]?.action === ConsequenceAction.BLOCK}
-                ciBlockState={appPolicy[selectedApp.appId]}
                 isJobCI={selectedApp.isJobCI}
                 currentSidebarTab={currentSidebarTab}
                 handleSidebarTabChange={handleSidebarTabChange}
                 runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
-                handleRuntimeParametersChange={handleRuntimeParametersChange}
+                handleRuntimeParamChange={handleRuntimeParamChange}
+                handleRuntimeParamError={handleRuntimeParamError}
+                handleRuntimeParamDelete={handleRuntimeParamDelete}
                 appName={selectedApp?.name}
             />
         )

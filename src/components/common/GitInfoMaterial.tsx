@@ -77,8 +77,9 @@ export default function GitInfoMaterial({
     // Not required for BulkCI
     handleSidebarTabChange,
     runtimeParams,
-    handleRuntimeParametersChange,
-    ciBlockState = null,
+    handleRuntimeParamChange,
+    handleRuntimeParamDelete,
+    handleRuntimeParamError,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -400,11 +401,16 @@ export default function GitInfoMaterial({
         }
 
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
+            // TODO: Test slow internet and disable sidebar
             return (
                 <RuntimeParameters
+                    // Have to add key for appId since key value config would not be updated incase of app change
+                    key={appId}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
-                    handleKeyValueChange={handleRuntimeParametersChange}
+                    onChange={handleRuntimeParamChange}
+                    onDelete={handleRuntimeParamDelete}
+                    onError={handleRuntimeParamError}
                 />
             )
         }

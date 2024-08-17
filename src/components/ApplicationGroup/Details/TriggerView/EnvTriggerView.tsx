@@ -47,6 +47,7 @@ import {
     SourceTypeMap,
     RuntimeParamsListItemType,
     preventBodyScroll,
+    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -1816,33 +1817,56 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     /**
-     * For CI Material only since don't have selectedApp here
+     * Acting only for single build trigger
      */
-    const handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        let _runtimeParams = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
+    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        let isIdPresent: boolean = false
+        const trimmedValue = value.trim()
+        // TODO: check null checks
+        const runtimeParamsList = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
 
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '', id: 0 })
-                break
+        // TODO: Can create util for this snippet, using in a lot of places
+        const updatedVariables = runtimeParamsList.map((param) => {
+            if (param.id === rowId) {
+                if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        key: trimmedValue,
+                    }
+                }
 
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
+                if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        value: trimmedValue,
+                    }
+                }
+            }
 
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
+            return param
+        })
 
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action type: ${action}`)
+        if (!isIdPresent) {
+            updatedVariables.push({
+                id: rowId,
+                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
+            })
         }
 
         if (selectedCINode?.id) {
-            setRuntimeParams({ [selectedCINode.id]: _runtimeParams })
+            setRuntimeParams({ [selectedCINode.id]: updatedVariables })
+        }
+    }
+
+    const handleRuntimeParamDelete = (rowId: number) => {
+        const runtimeParamsList = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
+        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
+        
+        if (selectedCINode?.id) {
+            setRuntimeParams({ [selectedCINode.id]: updatedVariables })
         }
     }
 
@@ -1989,7 +2013,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             ciBlockState={nd?.ciBlockState}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
-                            handleRuntimeParametersChange={handleRuntimeParametersChange}
+                            handleRuntimeParamChange={handleRuntimeParamChange}
+                            handleRuntimeParamDelete={handleRuntimeParamDelete}
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
                             resetAbortController={resetAbortController}

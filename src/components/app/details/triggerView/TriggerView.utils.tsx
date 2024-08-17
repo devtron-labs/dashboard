@@ -15,10 +15,10 @@
  */
 
 import {
-    KeyValueListType,
     showError,
     DeploymentWithConfigType,
     DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP,
+    RuntimeParamsListItemType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { deepEqual } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
@@ -212,7 +212,7 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
 }
 
 export const validateAndGetValidRuntimeParams = (
-    runtimeParams: KeyValueListType[],
+    runtimeParams: RuntimeParamsListItemType[],
 ): RuntimeParamsValidatorReturnType => {
     // Checking if any key is duplicated
     const keysFrequencyMap = {}

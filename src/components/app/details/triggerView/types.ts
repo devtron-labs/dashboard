@@ -227,7 +227,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
-    handleRuntimeParametersChange: ({ action, data }: HandleKeyValueChangeType) => void
+    handleRuntimeParamChange: KeyValueTableProps<string>['onChange']
+    handleRuntimeParamDelete: KeyValueTableProps<string>['onDelete']
     runtimeParams: KeyValueListType[]
 }
 
@@ -242,6 +243,7 @@ export interface CIMaterialState {
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
     currentSidebarTab: CIMaterialSidebarType
+    runtimeParamsErrorState: boolean
 }
 
 export interface DownStreams {
@@ -423,7 +425,7 @@ export interface TriggerViewState {
     isDefaultConfigPresent?: boolean
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
-    runtimeParams?: KeyValueListType[]
+    runtimeParams?: RuntimeParamsListItemType[]
 }
 
 // -- begining of response type objects for trigger view

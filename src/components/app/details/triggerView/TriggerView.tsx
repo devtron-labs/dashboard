@@ -27,12 +27,11 @@ import {
     ToastBody,
     CommonNodeAttr,
     WorkflowType,
-    HandleKeyValueChangeType,
-    KeyValueListActionType,
     getIsRequestAborted,
     handleUTCTime,
     createGitCommitUrl,
-    CIMaterialType
+    CIMaterialType,
+    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -719,7 +718,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 if (resp[2]) {
                     // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
-                        runtimeParams: resp[2],
+                        runtimeParams: resp[2] || [],
                     })
                 }
             })
@@ -1106,31 +1105,52 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch })
     }
 
-    handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        const { runtimeParams } = this.state
-        let _runtimeParams = runtimeParams
+    // FIXME: Can we move all this code inside component and only pass setter?
+    handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        let isIdPresent: boolean = false
+        const trimmedValue = value.trim()
+        const runtimeParamsList = [...this.state.runtimeParams]
+        const updatedVariables = runtimeParamsList.map((param) => {
+            if (param.id === rowId) {
+                if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        key: trimmedValue,
+                    }
+                }
 
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
-                break
+                if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        value: trimmedValue,
+                    }
+                }
+            }
 
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
+            return param
+        })
 
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
-
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action: ${action}`)
+        if (!isIdPresent) {
+            updatedVariables.push({
+                id: rowId,
+                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
+            })
         }
 
-        this.setState({ runtimeParams: _runtimeParams })
+        this.setState({
+            runtimeParams: updatedVariables,
+        })
+    }
+
+    handleRuntimeParamDelete = (rowId: number) => {
+        const runtimeParamsList = [...this.state.runtimeParams]
+        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
+        this.setState({
+            runtimeParams: updatedVariables,
+        })
     }
 
     setLoader = (isLoader) => {
@@ -1218,7 +1238,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             environmentLists={this.state.environmentLists}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
-                            handleRuntimeParametersChange={this.handleRuntimeParametersChange}
+                            handleRuntimeParamChange={this.handleRuntimeParamChange}
+                            handleRuntimeParamDelete={this.handleRuntimeParamDelete}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}
