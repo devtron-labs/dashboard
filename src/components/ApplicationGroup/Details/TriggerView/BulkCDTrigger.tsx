@@ -36,9 +36,12 @@ import {
     DEPLOYMENT_WINDOW_TYPE,
     MODAL_TYPE,
     ApiQueuingWithBatch,
+    CDMaterialSidebarType,
+    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import ReactSelect, { components } from 'react-select'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -69,6 +72,7 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     null,
     'function',
 )
+const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -85,6 +89,10 @@ export default function BulkCDTrigger({
     isVirtualEnv,
     uniqueReleaseTags,
     httpProtocol,
+    runtimeParams,
+    setRuntimeParams,
+    runtimeParamsErrorState,
+    setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -101,11 +109,14 @@ export default function BulkCDTrigger({
     >({})
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
     const [showResistanceBox, setShowResistanceBox] = useState(false)
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
 
     const location = useLocation()
     const history = useHistory()
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
+
+    const showRuntimeParams = stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -131,6 +142,70 @@ export default function BulkCDTrigger({
         label: 'latest',
         value: 'latest',
     })
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState[selectedApp.appId]) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
+        setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
+    }
+
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState((prevErrorState) => ({
+            ...prevErrorState,
+            [selectedApp.appId]: errorState,
+        }))
+    }
+
+    const handleRuntimeParamDelete = (rowId: number) => {
+        const runtimeParamsList = runtimeParams[selectedApp.appId] || []
+        const updatedRuntimeParams = structuredClone(runtimeParams)
+        updatedRuntimeParams[selectedApp.appId] = runtimeParamsList.filter((param) => param.id !== rowId)
+        setRuntimeParams(updatedRuntimeParams)
+    }
+
+    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
+        let isIdPresent: boolean = false
+        const trimmedValue = value.trim()
+
+        const runtimeParamsList = runtimeParams[selectedApp.appId] || []
+        const updatedRuntimeParams = structuredClone(runtimeParams)
+
+        const updatedVariables = runtimeParamsList.map((param) => {
+            if (param.id === rowId) {
+                if (headerKey === RuntimeParamsHeadingType.KEY) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        key: trimmedValue,
+                    }
+                }
+
+                if (headerKey === RuntimeParamsHeadingType.VALUE) {
+                    isIdPresent = true
+                    return {
+                        ...param,
+                        value: trimmedValue,
+                    }
+                }
+            }
+
+            return param
+        })
+
+        if (!isIdPresent) {
+            updatedVariables.push({
+                id: rowId,
+                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
+                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
+            })
+        }
+
+        updatedRuntimeParams[selectedApp.appId] = updatedVariables
+        setRuntimeParams(updatedRuntimeParams)
+    }
 
     const getDeploymentWindowData = async (_cdMaterialResponse) => {
         const currentEnv = appList[0].envId
@@ -162,6 +237,12 @@ export default function BulkCDTrigger({
 
     const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
         if (response.status === 'fulfilled') {
+            setRuntimeParams((prevState) => {
+                const updatedRuntimeParams = { ...prevState }
+                updatedRuntimeParams[response.value['appId']] = response.value.runtimeParams || []
+                return updatedRuntimeParams
+            })
+
             _cdMaterialResponse[response.value['appId']] = response.value
             // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
             if (
@@ -299,7 +380,13 @@ export default function BulkCDTrigger({
         )
     }
 
+    // TODO: Disable save as well
     const changeApp = (e): void => {
+        if (runtimeParamsErrorState[selectedApp.appId]) {
+            toast.error('Please resolve all the errors before switching tabs')
+            return
+        }
+
         const _selectedApp = appList[e.currentTarget.dataset.index]
         setSelectedApp(_selectedApp)
         setSelectedImageFromBulk(selectedImages[_selectedApp.appId])
@@ -575,8 +662,26 @@ export default function BulkCDTrigger({
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                     <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
-                        <span className="pl-16 pr-16">Select image by release tag</span>
-                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
+                        {showRuntimeParams && (
+                            <div className="px-16 pb-8">
+                                {GitInfoMaterialTabs ? (
+                                    // TODO: Change name
+                                    <GitInfoMaterialTabs
+                                        // FIXME: Make a constant
+                                        tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
+                                            value: tabValue,
+                                            label: tabValue,
+                                        }))}
+                                        initialTab={currentSidebarTab}
+                                        onChange={handleSidebarTabChange}
+                                    />
+                                ) : (
+                                    'PLACEHOLDER TEXT'
+                                )}
+                            </div>
+                        )}
+                        <span className="px-16">Select image by release tag</span>
+                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pt-6 pb-12 px-16">
                             <ReactSelect
                                 isSearchable
                                 options={options}
@@ -590,7 +695,7 @@ export default function BulkCDTrigger({
                             />
                         </div>
                         <div
-                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 pt-8 pr-16 pb-8 pl-16"
+                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"
                             style={{ zIndex: 0 }}
                         >
                             APPLICATIONS
@@ -675,6 +780,11 @@ export default function BulkCDTrigger({
                                 updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
                                 selectedImageFromBulk={selectedImageFromBulk}
                                 isSuperAdmin={isSuperAdmin}
+                                bulkRuntimeParams={runtimeParams[selectedApp.appId] || []}
+                                handleBulkRuntimeParamChange={handleRuntimeParamChange}
+                                handleBulkRuntimeParamDelete={handleRuntimeParamDelete}
+                                handleBulkRuntimeParamError={handleRuntimeParamError}
+                                bulkSidebarTab={currentSidebarTab}
                             />
                         </>
                     )}

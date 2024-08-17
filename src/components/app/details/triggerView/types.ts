@@ -39,13 +39,34 @@ import {
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
+    RuntimeParamsListItemType,
+    KeyValueTableProps,
+    CDMaterialSidebarType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
-export interface CDMaterialProps {
+type CDMaterialBulkRuntimeParams =
+    | {
+          isFromBulkCD: true
+          bulkRuntimeParams: RuntimeParamsListItemType[]
+          handleBulkRuntimeParamChange: KeyValueTableProps<string>['onChange']
+          handleBulkRuntimeParamDelete: KeyValueTableProps<string>['onDelete']
+          handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
+          bulkSidebarTab: CDMaterialSidebarType
+      }
+    | {
+          isFromBulkCD?: false
+          bulkRuntimeParams?: never
+          handleBulkRuntimeParamChange?: never
+          handleBulkRuntimeParamDelete?: never
+          handleBulkRuntimeParamError?: never
+          bulkSidebarTab?: never
+      }
+
+export type CDMaterialProps = {
     material?: CDMaterialType[]
     isLoading: boolean
     materialType: string
@@ -107,13 +128,13 @@ export interface CDMaterialProps {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
-    isRedirectedFromAppDetails?:  boolean
+    isRedirectedFromAppDetails?: boolean
     /**
      * App name coming from app group view
      * To be consumed through variable called appName
      */
     selectedAppName?: string
-}
+} & CDMaterialBulkRuntimeParams
 
 export interface ConfigToDeployOptionType {
     label: string
@@ -306,7 +327,9 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
+export interface WorkflowProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
@@ -350,7 +373,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps>{
+export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
 }

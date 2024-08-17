@@ -256,7 +256,7 @@ export const getSpecificDeploymentConfig = (appId: number, pipelineId: number, w
 export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     const URL = `${Routes.CI_PIPELINE_TRIGGER}`
     const options = {
-        signal: abortSignal
+        signal: abortSignal,
     }
     return post(URL, request, options)
 }
@@ -271,6 +271,8 @@ export const triggerCDNode = ({
     abortSignal,
     runtimeParams = [],
 }: TriggerCDNodeServiceProps) => {
+    // BTW there should not even a state when, we have invalid runtime params at least in service layer, just adding for safety
+    // owing to the complexity of app group and trigger view
     // We can validate runtime params beforehand as well since empty array is also valid
     const { isValid, validParams, message } = validateAndGetValidRuntimeParams(runtimeParams)
     const areRuntimeParamsConfigured = stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD

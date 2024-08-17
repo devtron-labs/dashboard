@@ -21,16 +21,17 @@ import {
     Progressing,
     showError,
     stopPropagation,
-    noop,
     ConsequenceType,
     ConsequenceAction,
     useAsync,
     GenericEmptyState,
-    KeyValueListType,
     KeyValueListActionType,
     HandleKeyValueChangeType,
     CIMaterialSidebarType,
     ApiQueuingWithBatch,
+    RuntimeParamsListItemType,
+    ModuleNameMap,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { importComponentFromFELibrary } from '../../../common'
@@ -45,7 +46,7 @@ import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
+import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -134,7 +135,7 @@ const BulkCITrigger = ({
             try {
                 // Appending any for legacy code, since we did not had generics in APIQueuingWithBatch
                 const responses: any[] = await ApiQueuingWithBatch(runtimeParamsServiceList, httpProtocol, true)
-                const _runtimeParams: Record<string, KeyValueListType[]> = {}
+                const _runtimeParams: Record<string, RuntimeParamsListItemType[]> = {}
                 responses.forEach((res, index) => {
                     _runtimeParams[appList[index]?.ciPipelineId] = res.value || []
                 })
@@ -202,7 +203,7 @@ const BulkCITrigger = ({
 
         switch (action) {
             case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
+                _runtimeParams.unshift({ key: '', value: '', id: 0 })
                 break
 
             case KeyValueListActionType.UPDATE_KEY:

@@ -19,7 +19,6 @@ import {
     CDModalTabType,
     DeploymentNodeType,
     FilterConditionsListType,
-    KeyValueListType,
     MODAL_TYPE,
     ResponseType,
     UserApprovalConfigType,
@@ -27,6 +26,7 @@ import {
     WorkflowType,
     AppInfoListType,
     GVKType,
+    RuntimeParamsListItemType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { WebhookPayloads } from '../app/details/triggerView/types'
@@ -94,7 +94,14 @@ export interface ResponseRowType {
     envId?: number
 }
 
-export interface BulkCITriggerType {
+interface BulkRuntimeParamsType {
+    runtimeParams: Record<string, RuntimeParamsListItemType[]>
+    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsListItemType[]>>>
+    runtimeParamsErrorState: Record<string, boolean>
+    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+}
+
+export interface BulkCITriggerType extends BulkRuntimeParamsType {
     appList: BulkCIDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
@@ -108,13 +115,11 @@ export interface BulkCITriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    runtimeParams: Record<string, KeyValueListType[]>
-    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, KeyValueListType[]>>>
     setPageViewType: React.Dispatch<React.SetStateAction<string>>
     httpProtocol: string
 }
 
-export interface BulkCDTriggerType {
+export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     stage: DeploymentNodeType
     appList: BulkCDDetailType[]
     closePopup: (e) => void

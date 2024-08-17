@@ -163,6 +163,11 @@ const CDMaterial = ({
     selectedImageFromBulk,
     isRedirectedFromAppDetails,
     selectedAppName,
+    bulkRuntimeParams,
+    handleBulkRuntimeParamChange,
+    handleBulkRuntimeParamDelete,
+    handleBulkRuntimeParamError,
+    bulkSidebarTab,
 }: Readonly<CDMaterialProps>) => {
     // stageType should handle approval node, compute CDMaterialServiceEnum, create queryParams state
     // FIXME: the query params returned by useSearchString seems faulty
@@ -236,6 +241,7 @@ const CDMaterial = ({
     const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
     const [deploymentLoading, setDeploymentLoading] = useState<boolean>(false)
     const [appliedFilterList, setAppliedFilterList] = useState<FilterConditionsListType[]>([])
+    // ----- RUNTIME PARAMS States (To be overridden by parent props in case of bulk) -------
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [runtimeParamsList, setRuntimeParamsList] = useState<RuntimeParamsListItemType[]>([])
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<boolean>(false)
@@ -874,6 +880,7 @@ const CDMaterial = ({
             state.recentDeploymentConfig.pipelineStrategy) ||
         isConfigPresent()
 
+    // TODO: Check on save validation, how to achieve that
     const isDeployButtonDisabled = () => {
         const selectedImage = material.find((artifact) => artifact.isSelected)
 
@@ -1006,7 +1013,7 @@ const CDMaterial = ({
                 wfrId,
                 abortSignal: abortDeployRef.current.signal,
                 runtimeParams: runtimeParamsList,
-        })
+            })
                 .then((response: any) => {
                     if (response.result) {
                         isVirtualEnvironment &&
@@ -1638,7 +1645,9 @@ const CDMaterial = ({
                 )}
 
                 <ConditionalWrap condition={showRuntimeParams && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
-                    {currentSidebarTab === CDMaterialSidebarType.IMAGE || !RuntimeParameters ? (
+                    {(bulkSidebarTab
+                        ? bulkSidebarTab === CDMaterialSidebarType.IMAGE
+                        : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParameters ? (
                         <>
                             {isApprovalConfigured && renderMaterial(consumedImage, true, isApprovalConfigured)}
                             <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
@@ -1685,13 +1694,13 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        // TODO: Test slow internet
+                        // TODO: Test slow internet and disable sidebar
                         <RuntimeParameters
                             rootClassName=""
-                            parameters={runtimeParamsList}
-                            onChange={handleRuntimeParamChange}
-                            onDelete={handleRuntimeParamDelete}
-                            onError={handleRuntimeParamError}
+                            parameters={bulkRuntimeParams || runtimeParamsList}
+                            onChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
+                            onDelete={handleBulkRuntimeParamDelete || handleRuntimeParamDelete}
+                            onError={handleBulkRuntimeParamError || handleRuntimeParamError}
                         />
                     )}
                 </ConditionalWrap>

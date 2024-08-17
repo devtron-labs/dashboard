@@ -45,6 +45,8 @@ import {
     ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
+    RuntimeParamsListItemType,
+    preventBodyScroll,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -68,7 +70,7 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import { importComponentFromFELibrary, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
@@ -174,8 +176,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const [isConfigPresent, setConfigPresent] = useState<boolean>(false)
     const [isDefaultConfigPresent, setDefaultConfig] = useState<boolean>(false)
-    // Mapping pipelineId to runtime params
-    const [runtimeParams, setRuntimeParams] = useState<Record<string, KeyValueListType[]>>({})
+    // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
+    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimeParamsListItemType[]>>({})
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, boolean>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
@@ -1421,6 +1424,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const _CDTriggerPromiseFunctionList = []
         nodeList.forEach((node, index) => {
             let ciArtifact = null
+            const currentAppId = _appIdMap.get(node.id)
+
             node[materialType].forEach((artifact) => {
                 if (artifact.isSelected == true) {
                     ciArtifact = artifact
@@ -1431,8 +1436,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     triggerCDNode({
                         pipelineId: node.id,
                         ciArtifactId: ciArtifact.id,
-                        appId: _appIdMap.get(node.id),
+                        appId: currentAppId,
                         stageType: bulkTriggerType,
+                        runtimeParams: runtimeParams[currentAppId] || [],
                     }),
                 )
             } else {
@@ -1817,7 +1823,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         switch (action) {
             case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
+                _runtimeParams.unshift({ key: '', value: '', id: 0 })
                 break
 
             case KeyValueListActionType.UPDATE_KEY:
@@ -2019,6 +2025,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 isVirtualEnv={isVirtualEnv}
                 uniqueReleaseTags={uniqueReleaseTags}
                 httpProtocol={httpProtocol.current}
+                runtimeParams={runtimeParams}
+                setRuntimeParams={setRuntimeParams}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                setRuntimeParamsErrorState={setRuntimeParamsErrorState}
             />
         )
     }
@@ -2045,6 +2055,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setLoading={setCILoading}
                 runtimeParams={runtimeParams}
                 setRuntimeParams={setRuntimeParams}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                setRuntimeParamsErrorState={setRuntimeParamsErrorState}
                 setPageViewType={setPageViewType}
                 httpProtocol={httpProtocol.current}
             />
