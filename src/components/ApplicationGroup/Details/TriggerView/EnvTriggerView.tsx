@@ -34,9 +34,6 @@ import {
     CommonNodeAttr,
     WorkflowType,
     getDefaultConfig,
-    KeyValueListType,
-    HandleKeyValueChangeType,
-    KeyValueListActionType,
     abortPreviousRequests,
     getIsRequestAborted,
     handleUTCTime,
@@ -47,7 +44,6 @@ import {
     SourceTypeMap,
     RuntimeParamsListItemType,
     preventBodyScroll,
-    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -61,7 +57,7 @@ import {
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { CIMaterialProps, CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -1816,57 +1812,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return errorMessage
     }
 
+    // TODO: Also look into clean up of runtime params on modal close
     /**
      * Acting only for single build trigger
      */
-    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
-        let isIdPresent: boolean = false
-        const trimmedValue = value.trim()
-        // TODO: check null checks
-        const runtimeParamsList = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
-
-        // TODO: Can create util for this snippet, using in a lot of places
-        const updatedVariables = runtimeParamsList.map((param) => {
-            if (param.id === rowId) {
-                if (headerKey === RuntimeParamsHeadingType.KEY) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        key: trimmedValue,
-                    }
-                }
-
-                if (headerKey === RuntimeParamsHeadingType.VALUE) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        value: trimmedValue,
-                    }
-                }
-            }
-
-            return param
-        })
-
-        if (!isIdPresent) {
-            updatedVariables.push({
-                id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
-            })
-        }
-
+    const handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
         if (selectedCINode?.id) {
-            setRuntimeParams({ [selectedCINode.id]: updatedVariables })
-        }
-    }
-
-    const handleRuntimeParamDelete = (rowId: number) => {
-        const runtimeParamsList = selectedCINode?.id ? runtimeParams[selectedCINode.id] : []
-        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
-        
-        if (selectedCINode?.id) {
-            setRuntimeParams({ [selectedCINode.id]: updatedVariables })
+            setRuntimeParams({ [selectedCINode.id]: updatedRuntimeParams })
         }
     }
 
@@ -2014,7 +1966,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={runtimeParams[nd?.id] ?? []}
                             handleRuntimeParamChange={handleRuntimeParamChange}
-                            handleRuntimeParamDelete={handleRuntimeParamDelete}
                             closeCIModal={closeCIModal}
                             abortController={abortCIBuildRef.current}
                             resetAbortController={resetAbortController}

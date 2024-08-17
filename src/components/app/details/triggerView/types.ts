@@ -52,8 +52,7 @@ type CDMaterialBulkRuntimeParams =
     | {
           isFromBulkCD: true
           bulkRuntimeParams: RuntimeParamsListItemType[]
-          handleBulkRuntimeParamChange: KeyValueTableProps<string>['onChange']
-          handleBulkRuntimeParamDelete: KeyValueTableProps<string>['onDelete']
+          handleBulkRuntimeParamChange: (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
           handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
           bulkSidebarTab: CDMaterialSidebarType
       }
@@ -61,7 +60,6 @@ type CDMaterialBulkRuntimeParams =
           isFromBulkCD?: false
           bulkRuntimeParams?: never
           handleBulkRuntimeParamChange?: never
-          handleBulkRuntimeParamDelete?: never
           handleBulkRuntimeParamError?: never
           bulkSidebarTab?: never
       }
@@ -227,8 +225,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
-    handleRuntimeParamChange: KeyValueTableProps<string>['onChange']
-    handleRuntimeParamDelete: KeyValueTableProps<string>['onDelete']
+    handleRuntimeParamChange: (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
     runtimeParams: KeyValueListType[]
 }
 

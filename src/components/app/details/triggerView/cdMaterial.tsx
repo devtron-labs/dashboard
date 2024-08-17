@@ -69,7 +69,6 @@ import {
     CDMaterialSidebarType,
     RuntimeParamsListItemType,
     CDMaterialResponseType,
-    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -165,7 +164,6 @@ const CDMaterial = ({
     selectedAppName,
     bulkRuntimeParams,
     handleBulkRuntimeParamChange,
-    handleBulkRuntimeParamDelete,
     handleBulkRuntimeParamError,
     bulkSidebarTab,
 }: Readonly<CDMaterialProps>) => {
@@ -619,45 +617,10 @@ const CDMaterial = ({
         }))
     }
 
-    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
-        let isIdPresent: boolean = false
-        const trimmedValue = value.trim()
-        const updatedVariables = runtimeParamsList.map((param) => {
-            if (param.id === rowId) {
-                if (headerKey === RuntimeParamsHeadingType.KEY) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        key: trimmedValue,
-                    }
-                }
-
-                if (headerKey === RuntimeParamsHeadingType.VALUE) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        value: trimmedValue,
-                    }
-                }
-            }
-
-            return param
-        })
-
-        if (!isIdPresent) {
-            updatedVariables.push({
-                id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
-            })
-        }
-
-        setRuntimeParamsList(updatedVariables)
-    }
-
-    const handleRuntimeParamDelete = (rowId: number) => {
-        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
-        setRuntimeParamsList(updatedVariables)
+    const handleRuntimeParamChange: typeof handleBulkRuntimeParamChange = (
+        updatedRuntimeParams: RuntimeParamsListItemType[],
+    ) => {
+        setRuntimeParamsList(updatedRuntimeParams)
     }
 
     const handleRuntimeParamError = (errorState: boolean) => {
@@ -1698,8 +1661,7 @@ const CDMaterial = ({
                         <RuntimeParameters
                             rootClassName=""
                             parameters={bulkRuntimeParams || runtimeParamsList}
-                            onChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
-                            onDelete={handleBulkRuntimeParamDelete || handleRuntimeParamDelete}
+                            handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
                             onError={handleBulkRuntimeParamError || handleRuntimeParamError}
                         />
                     )}

@@ -37,7 +37,7 @@ import {
     MODAL_TYPE,
     ApiQueuingWithBatch,
     CDMaterialSidebarType,
-    RuntimeParamsHeadingType,
+    RuntimeParamsListItemType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactSelect, { components } from 'react-select'
@@ -159,52 +159,10 @@ export default function BulkCDTrigger({
         }))
     }
 
-    const handleRuntimeParamDelete = (rowId: number) => {
-        const runtimeParamsList = runtimeParams[selectedApp.appId] || []
-        const updatedRuntimeParams = structuredClone(runtimeParams)
-        updatedRuntimeParams[selectedApp.appId] = runtimeParamsList.filter((param) => param.id !== rowId)
-        setRuntimeParams(updatedRuntimeParams)
-    }
-
-    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
-        let isIdPresent: boolean = false
-        const trimmedValue = value.trim()
-
-        const runtimeParamsList = runtimeParams[selectedApp.appId] || []
-        const updatedRuntimeParams = structuredClone(runtimeParams)
-
-        const updatedVariables = runtimeParamsList.map((param) => {
-            if (param.id === rowId) {
-                if (headerKey === RuntimeParamsHeadingType.KEY) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        key: trimmedValue,
-                    }
-                }
-
-                if (headerKey === RuntimeParamsHeadingType.VALUE) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        value: trimmedValue,
-                    }
-                }
-            }
-
-            return param
-        })
-
-        if (!isIdPresent) {
-            updatedVariables.push({
-                id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
-            })
-        }
-
-        updatedRuntimeParams[selectedApp.appId] = updatedVariables
-        setRuntimeParams(updatedRuntimeParams)
+    const handleRuntimeParamChange = (currentAppRuntimeParams: RuntimeParamsListItemType[]) => {
+        const clonedRuntimeParams = structuredClone(runtimeParams)
+        clonedRuntimeParams[selectedApp.appId] = currentAppRuntimeParams
+        setRuntimeParams(clonedRuntimeParams)
     }
 
     const getDeploymentWindowData = async (_cdMaterialResponse) => {
@@ -782,7 +740,6 @@ export default function BulkCDTrigger({
                                 isSuperAdmin={isSuperAdmin}
                                 bulkRuntimeParams={runtimeParams[selectedApp.appId] || []}
                                 handleBulkRuntimeParamChange={handleRuntimeParamChange}
-                                handleBulkRuntimeParamDelete={handleRuntimeParamDelete}
                                 handleBulkRuntimeParamError={handleRuntimeParamError}
                                 bulkSidebarTab={currentSidebarTab}
                             />

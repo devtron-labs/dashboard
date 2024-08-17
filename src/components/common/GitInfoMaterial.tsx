@@ -78,7 +78,6 @@ export default function GitInfoMaterial({
     handleSidebarTabChange,
     runtimeParams,
     handleRuntimeParamChange,
-    handleRuntimeParamDelete,
     handleRuntimeParamError,
 }) {
     const [searchText, setSearchText] = useState('')
@@ -408,8 +407,7 @@ export default function GitInfoMaterial({
                     key={appId}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
-                    onChange={handleRuntimeParamChange}
-                    onDelete={handleRuntimeParamDelete}
+                    handleChange={handleRuntimeParamChange}
                     onError={handleRuntimeParamError}
                 />
             )

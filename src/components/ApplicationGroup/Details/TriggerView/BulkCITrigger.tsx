@@ -30,7 +30,6 @@ import {
     RuntimeParamsListItemType,
     ModuleNameMap,
     SourceTypeMap,
-    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
@@ -51,7 +50,7 @@ import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { RegexValueType } from '../../../app/details/triggerView/types'
+import { CIMaterialProps, RegexValueType } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
@@ -203,56 +202,14 @@ const BulkCITrigger = ({
     const handleRuntimeParamError = (errorState: boolean) => {
         setRuntimeParamsErrorState((prevErrorState) => ({
             ...prevErrorState,
-            // TODO: If possible, change the key to appId
             [selectedApp.ciPipelineId]: errorState,
         }))
     }
 
-    const handleRuntimeParamDelete = (rowId: number) => {
-        const runtimeParamsList = runtimeParams[selectedApp.ciPipelineId] ?? []
+    // TODO: Can create a type for method instead of deriving from CIMaterial
+    const handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (currentAppRuntimeParams) => {
         const updatedRuntimeParams = structuredClone(runtimeParams)
-        updatedRuntimeParams[selectedApp.ciPipelineId] = runtimeParamsList.filter((param) => param.id !== rowId)
-        setRuntimeParams(updatedRuntimeParams)
-    }
-
-    const handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
-        let isIdPresent: boolean = false
-        const trimmedValue = value.trim()
-
-        const runtimeParamsList = runtimeParams[selectedApp.ciPipelineId] ?? []
-        const updatedRuntimeParams = structuredClone(runtimeParams)
-
-        const updatedVariables = runtimeParamsList.map((param) => {
-            if (param.id === rowId) {
-                if (headerKey === RuntimeParamsHeadingType.KEY) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        key: trimmedValue,
-                    }
-                }
-
-                if (headerKey === RuntimeParamsHeadingType.VALUE) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        value: trimmedValue,
-                    }
-                }
-            }
-
-            return param
-        })
-
-        if (!isIdPresent) {
-            updatedVariables.push({
-                id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
-            })
-        }
-
-        updatedRuntimeParams[selectedApp.ciPipelineId] = updatedVariables
+        updatedRuntimeParams[selectedApp.ciPipelineId] = currentAppRuntimeParams
         setRuntimeParams(updatedRuntimeParams)
     }
 
@@ -511,7 +468,6 @@ const BulkCITrigger = ({
                 runtimeParams={runtimeParams[selectedApp.ciPipelineId] || []}
                 handleRuntimeParamChange={handleRuntimeParamChange}
                 handleRuntimeParamError={handleRuntimeParamError}
-                handleRuntimeParamDelete={handleRuntimeParamDelete}
                 appName={selectedApp?.name}
             />
         )

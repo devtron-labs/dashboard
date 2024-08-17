@@ -287,7 +287,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         handleSidebarTabChange={this.handleSidebarTabChange}
                         runtimeParams={this.props.runtimeParams}
                         handleRuntimeParamChange={this.props.handleRuntimeParamChange}
-                        handleRuntimeParamDelete={this.props.handleRuntimeParamDelete}
                         handleRuntimeParamError={this.handleRuntimeParamError}
                     />
                     {this.props.isCITriggerBlocked || this.props.showWebhookModal

@@ -31,7 +31,6 @@ import {
     handleUTCTime,
     createGitCommitUrl,
     CIMaterialType,
-    RuntimeParamsHeadingType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -51,7 +50,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -1105,51 +1104,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch })
     }
 
-    // FIXME: Can we move all this code inside component and only pass setter?
-    handleRuntimeParamChange = (rowId: number, headerKey: RuntimeParamsHeadingType, value: string) => {
-        let isIdPresent: boolean = false
-        const trimmedValue = value.trim()
-        const runtimeParamsList = [...this.state.runtimeParams]
-        const updatedVariables = runtimeParamsList.map((param) => {
-            if (param.id === rowId) {
-                if (headerKey === RuntimeParamsHeadingType.KEY) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        key: trimmedValue,
-                    }
-                }
-
-                if (headerKey === RuntimeParamsHeadingType.VALUE) {
-                    isIdPresent = true
-                    return {
-                        ...param,
-                        value: trimmedValue,
-                    }
-                }
-            }
-
-            return param
-        })
-
-        if (!isIdPresent) {
-            updatedVariables.push({
-                id: rowId,
-                key: headerKey === RuntimeParamsHeadingType.KEY ? trimmedValue : '',
-                value: headerKey === RuntimeParamsHeadingType.VALUE ? trimmedValue : '',
-            })
-        }
-
+    handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
         this.setState({
-            runtimeParams: updatedVariables,
-        })
-    }
-
-    handleRuntimeParamDelete = (rowId: number) => {
-        const runtimeParamsList = [...this.state.runtimeParams]
-        const updatedVariables = runtimeParamsList.filter((param) => param.id !== rowId)
-        this.setState({
-            runtimeParams: updatedVariables,
+            runtimeParams: updatedRuntimeParams,
         })
     }
 
@@ -1239,7 +1196,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
                             handleRuntimeParamChange={this.handleRuntimeParamChange}
-                            handleRuntimeParamDelete={this.handleRuntimeParamDelete}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}
