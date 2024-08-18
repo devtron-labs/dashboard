@@ -521,7 +521,7 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
-    heading: 'Custom Charts',
+    heading: 'Deployment Charts',
     infoText: 'Devtron provides charts that cover most use cases.',
     additionalParagraphText:
         'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',

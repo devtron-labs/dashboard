@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import { post, get, put } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
-import { ChartListResponse, ChartUploadResponse, ChartUploadType } from './types'
+import { post, get, put, ResponseType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes } from '@Config/constants'
+import { ChartUploadResponse, ChartUploadType, DeploymentChartDTO, DeploymentChartType } from '../types'
+import { processChartData } from '../utils'
 
-export const getChartList = (): Promise<ChartListResponse> => {
-    return get(Routes.CUSTOM_CHART_LIST)
+export const getChartList = async (): Promise<DeploymentChartType[]> => {
+    try {
+        const { result }: ResponseType<DeploymentChartDTO[]> = await get(Routes.CUSTOM_CHART_LIST)
+        return processChartData(result)
+    } catch (error) {
+        showError(error)
+        throw error
+    }
 }
 
 export const validateChart = (payload: FormData): Promise<ChartUploadResponse> => {

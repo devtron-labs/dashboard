@@ -16,17 +16,23 @@
 
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ChartDetailType {
-    id: number
-    chartDescription: string
+// TODO: move this type to fe-common-lib since can be reused in fe-lib
+export interface DeploymentChartType {
     name: string
-    version: string
     isUserUploaded: boolean
-    count?: number
-    versions?: {
+    versions: {
         id: number
         version: string
+        description: string
     }[]
+}
+
+export interface DeploymentChartDTO {
+    id: number
+    chartDescription?: string
+    isUserUploaded: boolean
+    name: string
+    version: string
 }
 
 export interface ChartUploadType {
@@ -35,11 +41,9 @@ export interface ChartUploadType {
     fileId: number
     message: string
     chartVersion: number
+    action?: string
 }
 
-export interface ChartListResponse extends ResponseType {
-    result?: ChartDetailType[]
-}
 export interface ChartUploadResponse extends ResponseType {
     result?: ChartUploadType
 }
@@ -54,3 +58,11 @@ export const UPLOAD_STATE = {
 export interface UploadChartModalType {
     closeUploadPopup: (reloadData: boolean) => void
 }
+
+export interface UploadButtonProps {
+    handleOpenUploadChartModal: () => void
+}
+
+export interface DeploymentChartsListHeaderProps extends UploadButtonProps {}
+
+export interface DownloadChartButtonProps extends Pick<DeploymentChartType, 'name' | 'versions'> {}

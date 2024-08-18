@@ -57,7 +57,7 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
-const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const DeploymentCharts = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
@@ -218,9 +218,9 @@ const NavItem = ({ serverMode }) => {
     const ConfigOptional = [
         { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
-            name: 'Custom Charts',
-            href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
-            component: CustomChartList,
+            name: 'Deployment Charts',
+            href: CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+            component: DeploymentCharts,
             isAvailableInEA: false,
         },
         {
@@ -640,9 +640,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                    <CustomChartList />
-                </Route>,
+                <DeploymentCharts />,
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
