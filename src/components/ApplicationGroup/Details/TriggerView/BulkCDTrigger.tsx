@@ -37,6 +37,7 @@ import {
     MODAL_TYPE,
     ApiQueuingWithBatch,
     CDMaterialSidebarType,
+    CD_MATERIAL_SIDEBAR_TABS,
     RuntimeParamsListItemType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -338,7 +339,6 @@ export default function BulkCDTrigger({
         )
     }
 
-    // TODO: Disable save as well
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
             toast.error('Please resolve all the errors before switching application')
@@ -624,11 +624,7 @@ export default function BulkCDTrigger({
                             <div className="px-16 pb-8">
                                 {RuntimeParamTabs ? (
                                     <RuntimeParamTabs
-                                        // FIXME: Make a constant
-                                        tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
-                                            value: tabValue,
-                                            label: tabValue,
-                                        }))}
+                                        tabs={CD_MATERIAL_SIDEBAR_TABS}
                                         initialTab={currentSidebarTab}
                                         onChange={handleSidebarTabChange}
                                     />

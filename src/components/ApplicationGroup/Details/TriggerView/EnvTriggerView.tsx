@@ -1245,6 +1245,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         preventBodyScroll(false)
         setShowMaterialRegexModal(false)
         setRuntimeParams({})
+        setRuntimeParamsErrorState({})
         history.push(url)
     }
 
@@ -1305,7 +1306,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
+
         setRuntimeParams({})
+        setRuntimeParamsErrorState({})
 
         history.push({
             search: '',
@@ -1325,6 +1328,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
+
+        setRuntimeParams({})
+        setRuntimeParamsErrorState({})
     }
 
     const onShowBulkCIModal = () => {
@@ -1571,9 +1577,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setIsBulkTriggerLoading(false)
 
             if (!skippedResources.length) {
-                setShowBulkCDModal(false)
-                setShowBulkCIModal(false)
-                setResponseList([])
+                hideBulkCIModal()
+                hideBulkCDModal()
             } else {
                 updateResponseListData(_responseList)
             }
@@ -1806,7 +1811,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return errorMessage
     }
 
-    // TODO: Also look into clean up of runtime params on modal close
     /**
      * Acting only for single build trigger
      */

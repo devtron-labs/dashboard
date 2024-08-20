@@ -50,7 +50,7 @@ import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
-import { CIMaterialProps, RegexValueType } from '../../../app/details/triggerView/types'
+import { HandleRuntimeParamChange, RegexValueType } from '../../../app/details/triggerView/types'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import BranchRegexModal from '../../../app/details/triggerView/BranchRegexModal'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
@@ -206,8 +206,7 @@ const BulkCITrigger = ({
         }))
     }
 
-    // TODO: Can create a type for method instead of deriving from CIMaterial
-    const handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (currentAppRuntimeParams) => {
+    const handleRuntimeParamChange: HandleRuntimeParamChange = (currentAppRuntimeParams) => {
         const updatedRuntimeParams = structuredClone(runtimeParams)
         updatedRuntimeParams[selectedApp.ciPipelineId] = currentAppRuntimeParams
         setRuntimeParams(updatedRuntimeParams)

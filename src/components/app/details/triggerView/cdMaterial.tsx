@@ -69,6 +69,7 @@ import {
     CDMaterialSidebarType,
     RuntimeParamsListItemType,
     CDMaterialResponseType,
+    CD_MATERIAL_SIDEBAR_TABS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -843,7 +844,6 @@ const CDMaterial = ({
             state.recentDeploymentConfig.pipelineStrategy) ||
         isConfigPresent()
 
-    // TODO: Check on save validation, how to achieve that
     const isDeployButtonDisabled = () => {
         const selectedImage = material.find((artifact) => artifact.isSelected)
 
@@ -1588,11 +1588,7 @@ const CDMaterial = ({
                         <div className="px-16 py-12 flex">
                             {RuntimeParamTabs ? (
                                 <RuntimeParamTabs
-                                    // FIXME: Make a constant
-                                    tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
-                                        value: tabValue,
-                                        label: tabValue,
-                                    }))}
+                                    tabs={CD_MATERIAL_SIDEBAR_TABS}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}
                                 />

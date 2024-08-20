@@ -34,7 +34,6 @@ import {
     Material,
     KeyValueListType,
     CIMaterialSidebarType,
-    RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
@@ -47,11 +46,13 @@ import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
+export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+
 type CDMaterialBulkRuntimeParams =
     | {
           isFromBulkCD: true
           bulkRuntimeParams: RuntimeParamsListItemType[]
-          handleBulkRuntimeParamChange: (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+          handleBulkRuntimeParamChange: HandleRuntimeParamChange
           handleBulkRuntimeParamError: KeyValueTableProps<string>['onError']
           bulkSidebarTab: CDMaterialSidebarType
       }
@@ -224,7 +225,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setSelectedEnv?: (selectedEnv: Environment) => void
     environmentLists?: any[]
     isJobCI?: boolean
-    handleRuntimeParamChange: (updatedRuntimeParams: RuntimeParamsListItemType[]) => void
+    handleRuntimeParamChange: HandleRuntimeParamChange
     runtimeParams: KeyValueListType[]
 }
 
