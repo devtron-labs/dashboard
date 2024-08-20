@@ -24,6 +24,7 @@ import {
     CHECKBOX_VALUE,
     useSearchString,
     MODAL_TYPE,
+    SecurityModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import PodPopup from './PodPopup'
 import AppDetailsStore from '../../appDetails.store'
@@ -37,7 +38,7 @@ import { URLS } from '../../../../../config'
 import { importComponentFromFELibrary } from '../../../../common'
 import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
 const NodeDeleteComponent = ({
@@ -168,7 +169,7 @@ const NodeDeleteComponent = ({
                 </PopupMenu.Body>
             </PopupMenu>
 
-            {!!manifestPayload && SecurityModal && (
+            {!!manifestPayload && isFELibAvailable() && (
                 <SecurityModal
                     resourceScanPayload={{
                         ...nodeDetails,

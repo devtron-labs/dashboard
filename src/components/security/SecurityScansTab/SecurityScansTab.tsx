@@ -19,9 +19,10 @@ import {
     SortableTableHeaderCell,
     abortPreviousRequests,
     getIsRequestAborted,
+    SecurityModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
-import { ScanDetailsModal, getSeverityWithCount } from '@Components/common'
+import { getSeverityWithCount } from '@Components/common'
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import {
@@ -60,6 +61,8 @@ export const SecurityScansTab = () => {
         handleSearch,
         updateSearchParams,
     } = urlFilters
+
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2
 
     const payload: ScanListPayloadType = {
         offset,
@@ -343,7 +346,25 @@ export const SecurityScansTab = () => {
 
     const renderScanDetailsModal = () => {
         if (scanDetails.uniqueId.appId) {
-            return <ScanDetailsModal showAppInfo uniqueId={scanDetails.uniqueId} close={handleCloseScanDetailsModal} />
+            return (
+                <SecurityModal
+                    handleModalClose={handleCloseScanDetailsModal}
+                    {...(isSecurityScanV2Enabled
+                        ? {
+                              appDetailsPayload: {
+                                  appId: scanDetails.uniqueId.appId,
+                                  envId: scanDetails.uniqueId.envId,
+                              },
+                          }
+                        : {
+                              executionDetailsPayload: {
+                                  appId: scanDetails.uniqueId.appId,
+                                  envId: scanDetails.uniqueId.envId,
+                                  imageScanDeployInfoId: scanDetails.uniqueId.imageScanDeployInfoId,
+                              },
+                          })}
+                />
+            )
         }
         return null
     }

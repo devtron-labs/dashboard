@@ -102,11 +102,6 @@ export const CD_MATERIAL_GA_EVENT = {
     },
 }
 
-export const NO_VULNERABILITY_TEXT = {
-    Secured: 'You’re secure!',
-    NoVulnerabilityFound: 'No security vulnerability found for this image.',
-}
-
 /**
  * @deprecated Use DEFAULT_ENV form common lib instead
  */

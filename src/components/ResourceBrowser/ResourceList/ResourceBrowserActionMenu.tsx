@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { PopupMenu, Nodes, useMainContext, ModuleNameMap } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, Nodes, useMainContext, ModuleNameMap, SecurityModal } from '@devtron-labs/devtron-fe-common-lib'
 import DeleteResourcePopup from './DeleteResourcePopup'
 import { importComponentFromFELibrary, getShowResourceScanModal } from '../../common'
 import { RESOURCE_ACTION_MENU } from '../Constants'
@@ -29,7 +29,6 @@ import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-m
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton')
-const SecurityModal = importComponentFromFELibrary('SecurityModal')
 
 const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     clusterId,
@@ -144,15 +143,15 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                 />
             )}
 
-            {showVulnerabilityModal && SecurityModal && (
+            {showVulnerabilityModal && (
                 <SecurityModal
                     resourceScanPayload={{
-                        name: resourceData.name,
-                        namespace: resourceData.namespace,
+                        name: String(resourceData.name),
+                        namespace: String(resourceData.namespace),
                         group: selectedResource?.gvk?.Group,
                         kind: selectedResource?.gvk?.Kind,
                         version: selectedResource?.gvk?.Version,
-                        clusterId,
+                        clusterId: +clusterId,
                     }}
                     handleModalClose={handleCloseVulnerabilityModal}
                 />

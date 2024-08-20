@@ -40,10 +40,13 @@ import {
     LogsRenderer,
     ModuleNameMap,
     EMPTY_STATE_STATUS,
-    ScanVulnerabilitiesTable,
+    SecuritySummaryCard,
+    getSecurityScan,
+    SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -53,7 +56,6 @@ import {
 } from '../../service'
 import { URLS, Routes } from '../../../../config'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
-import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
@@ -63,8 +65,8 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
-import { getSeverityWithCount } from '@Components/common'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
 
@@ -651,57 +653,21 @@ export const NoVulnerabilityViewWithTool = ({ scanToolId }: { scanToolId: number
 }
 
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
-    const [isCollapsed, setIsCollapsed] = useState(false)
-    const [securityData, setSecurityData] = useState({
-        vulnerabilities: [],
-        lastExecution: '',
-        severityCount: {
-            critical: 0,
-            high: 0,
-            medium: 0,
-            low: 0,
-            unknown: 0,
-        },
-        scanEnabled: false,
-        scanned: false,
-        isLoading: !!artifactId,
-        isError: false,
-        ScanToolId: null,
-    })
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
-    async function callGetSecurityIssues() {
-        try {
-            const { result } = await getLastExecutionByArtifactId(appId ?? appIdFromParent, artifactId)
-            setSecurityData({
-                vulnerabilities: result.vulnerabilities,
-                lastExecution: result.lastExecution,
-                severityCount: result.severityCount,
-                scanEnabled: result.scanEnabled,
-                scanned: result.scanned,
-                isLoading: false,
-                isError: false,
-                ScanToolId: result.scanToolId,
-            })
-        } catch (error) {
-            // showError(error);
-            setSecurityData({
-                ...securityData,
-                isLoading: false,
-                isError: true,
-            })
-        }
-    }
+    const isSecurityScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
 
-    function toggleCollapse() {
-        setIsCollapsed(!isCollapsed)
-    }
+    const [scanResultLoading, scanResultResponse, scanResultError] = useAsync(
+        () => getSecurityScan({ appId: appId ?? appIdFromParent, artifactId }),
+        [artifactId],
+        isSecurityScanV2Enabled,
+    )
 
-    useEffect(() => {
-        if (artifactId) {
-            callGetSecurityIssues()
-        }
-    }, [artifactId])
+    const [executionDetailsLoading, executionDetailsResponse, executionDetailsError] = useAsync(
+        () => getLastExecutionByArtifactId(appId ?? appIdFromParent, artifactId),
+        [artifactId],
+        !isSecurityScanV2Enabled,
+    )
 
     const redirectToCreate = () => {
         if (!ciPipelineId) {
@@ -714,7 +680,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    if (['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (!artifactId || ['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
@@ -725,47 +691,51 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab />
     }
-    if (securityData.isLoading) {
+    if (scanResultLoading || executionDetailsLoading) {
         return <Progressing pageLoader />
     }
-    if (securityData.isError) {
+    if (scanResultError || executionDetailsError) {
         return <Reload />
     }
-    if (artifactId && !securityData.scanned) {
-        if (!securityData.scanEnabled) {
+    if (artifactId && !executionDetailsResponse?.result?.scanned) {
+        if (!executionDetailsResponse?.result?.scanEnabled) {
             return <ScanDisabledView redirectToCreate={redirectToCreate} />
         }
         return <ImageNotScannedView />
     }
-    if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId} />
+    if (
+        artifactId &&
+        executionDetailsResponse.result?.scanned &&
+        !executionDetailsResponse.result?.vulnerabilities.length
+    ) {
+        return <NoVulnerabilityViewWithTool scanToolId={executionDetailsResponse.result?.scanToolId} />
     }
-    const scanToolId = securityData.ScanToolId
+
+    const imageScanSeverities = scanResultResponse?.result?.imageScan?.vulnerability.summary.severities // For scan-result Api
+    const severityCount: SeverityCount = isSecurityScanV2Enabled ? {
+        critical: imageScanSeverities?.CRITICAL,
+        high: imageScanSeverities?.HIGH,
+        medium: imageScanSeverities?.MEDIUM,
+        low: imageScanSeverities?.LOW,
+        unknown: imageScanSeverities?.UNKNOWN,
+    } : executionDetailsResponse.result?.severityCount
 
     return (
         <>
-            <div className="security__top" data-testid="security-scan-execution-heading">
-                Latest Scan Execution
-            </div>
-            <div className="white-card white-card--ci-scan" data-testid="last-scan-execution">
-                <div className="security-scan__header" onClick={toggleCollapse}>
-                    <Down
-                        style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
-                        className="icon-dim-24 rotate fcn-9 mr-12"
-                    />
-                    <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {getSeverityWithCount(securityData.severityCount)}
-                    <div className="security-scan__type flex">
-                        <ScannedByToolModal scanToolId={scanToolId} />
-                    </div>
-                </div>
-                {isCollapsed ? (
-                    ''
-                ) : (
-                    <div className='px-24 security-scan-table'>
-                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
-                    </div>
-                )}
+            <div className="p-16">
+                <SecuritySummaryCard
+                    severityCount={severityCount}
+                    scanToolId={executionDetailsResponse.result?.scanToolId}
+                    rootClassName="w-500"
+                    {...(isSecurityScanV2Enabled
+                        ? { appDetailsPayload: { appId, artifactId } }
+                        : {
+                              executionDetailsPayload: {
+                                  appId,
+                                  artifactId,
+                              },
+                          })}
+                />
             </div>
         </>
     )

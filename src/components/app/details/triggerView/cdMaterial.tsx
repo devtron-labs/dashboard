@@ -131,6 +131,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -167,6 +168,7 @@ const CDMaterial = ({
     const { isSuperAdmin } = useSuperAdmin()
 
     const searchImageTag = searchParams.search
+    const isScanV2Enabled = window._env_.ENABLE_RESOURCE_SCAN_V2 && isFELibAvailable()
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
@@ -1490,6 +1492,7 @@ const CDMaterial = ({
                                 changesCard={renderGitMaterialInfo(mat)}
                                 isScanned={mat.scanned}
                                 isScanEnabled={mat.scanEnabled}
+                                isScanV2Enabled={isScanV2Enabled}
                             />
                         )}
                 </ImageCard>
