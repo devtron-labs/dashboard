@@ -62,6 +62,12 @@ jobs:
 
         ### For ex: Fixes devtron-labs/sprint-tasks#2123
         pattern6="((Fixes|Resolves):? #devtron-labs/sprint-tasks/issues/[0-9]+)"
+
+        ### For ex: Resolves https://github.com/devtron-labs/devops-sprint/issues/2123
+        pattern7="((Fixes|Resolves) https://github.com/devtron-labs/devops-sprint/issues/[0-9]+)"
+
+        ### For ex: Resolves https://github.com/devtron-labs/sprint-tasks/issues/2123
+        pattern8="((Fixes|Resolves) https://github.com/devtron-labs/sprint-tasks/issues/[0-9]+)"
         
         # Get the pull request body
         PR_BODY=$(jq -r '.pull_request.body' $GITHUB_EVENT_PATH)
@@ -95,6 +101,11 @@ jobs:
             echo "$PR_BODY" | grep -oP "$pattern4" | head -n1 | grep -oP '#\K[0-9]+' | tr -d '\r\n' > issue_num
             issue_num=$(cat issue_num)
             echo "issue_num is : $issue_num"
+        elif echo "$PR_BODY" | grep -iEq "$pattern7|$pattern8"; then
+            url="$(echo "$PR_BODY" | grep -iE "$pattern7|$pattern8" | head -n1 | awk '{print $2}')"
+            echo "$PR_BODY" | grep -oP "$pattern4" | head -n1 | grep -oP '#\K[0-9]+' | tr -d '\r\n' > issue_num
+            issue_num=$(cat issue_num)
+            echo "issue_num is : $issue_num"
         else
             echo "No Issue number detected hence failing the PR Validation check."
             gh pr edit $PRNUM --add-label "PR:Issue-verification-failed"
@@ -102,7 +113,7 @@ jobs:
             exit 1
         fi
 
-        if echo "$PR_BODY" | grep -iEq "$pattern5|$pattern6"; then
+        if echo "$PR_BODY" | grep -iEq "$pattern5|$pattern6|$pattern7|$pattern8"; then
             echo $url
         else
             ### Here we are setting the Internal Field Separator to "/"
