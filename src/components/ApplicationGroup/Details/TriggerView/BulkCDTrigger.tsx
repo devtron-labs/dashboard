@@ -341,7 +341,7 @@ export default function BulkCDTrigger({
     // TODO: Disable save as well
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error('Please resolve all the errors before switching tabs')
+            toast.error('Please resolve all the errors before switching application')
             return
         }
 

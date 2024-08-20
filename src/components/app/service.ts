@@ -282,12 +282,13 @@ export const triggerCDNode = ({
         return
     }
 
+    // TODO: Can add type
     const request = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
-        ...(areRuntimeParamsConfigured && validParams),
+        ...(areRuntimeParamsConfigured && { runtimeParams: validParams }),
     }
 
     if (deploymentWithConfig) {

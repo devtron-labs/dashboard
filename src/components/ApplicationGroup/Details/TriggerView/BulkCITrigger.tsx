@@ -294,7 +294,7 @@ const BulkCITrigger = ({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            toast.error('Please resolve all the errors before switching tabs')
+            toast.error('Please resolve all the errors before switching application')
             return
         }
 
