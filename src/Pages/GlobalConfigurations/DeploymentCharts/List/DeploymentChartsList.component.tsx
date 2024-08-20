@@ -40,12 +40,12 @@ const EditDeploymentChart = importComponentFromFELibrary('EditDeploymentChart', 
 
 const DeploymentChartsList = () => {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
-    const [loading, list, error, reload] = useAsync(() => getChartList())
+    const [chartListLoading, chartList, chartListError, reloadChartList] = useAsync(getChartList)
 
     const handleCloseUploadChartModal = (isReloadChartList: boolean): void => {
         setShowUploadPopup(false)
         if (isReloadChartList) {
-            reload()
+            reloadChartList()
         }
     }
 
@@ -54,7 +54,7 @@ const DeploymentChartsList = () => {
     }
 
     const renderBody = () => {
-        if (list.length === 0) {
+        if (chartList.length === 0) {
             return (
                 <GenericEmptyState
                     image={emptyCustomChart}
@@ -113,7 +113,7 @@ const DeploymentChartsList = () => {
                         <span>Version</span>
                         <span>Description</span>
                     </div>
-                    {list?.map((chartData) => (
+                    {chartList?.map((chartData) => (
                         <div
                             key={`custom-chart_${chartData.name}`}
                             className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
@@ -149,18 +149,18 @@ const DeploymentChartsList = () => {
 
     return (
         <APIResponseHandler
-            isLoading={loading}
+            isLoading={chartListLoading}
             progressingProps={{
                 pageLoader: true,
             }}
-            error={error}
+            error={chartListError}
             errorScreenManagerProps={{
-                code: error?.code,
-                reload,
+                code: chartListError?.code,
+                reload: reloadChartList,
                 redirectURL: URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
             }}
         >
-            {!loading && !error && (
+            {!chartListLoading && !chartListError && (
                 <>
                     {renderBody()}
                     {showUploadPopup && <UploadChartModal closeUploadPopup={handleCloseUploadChartModal} />}
