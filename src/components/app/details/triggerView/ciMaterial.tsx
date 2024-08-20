@@ -84,7 +84,6 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Note: Can make a constant for error msg
         if (this.state.runtimeParamsErrorState) {
             toast.error('Please resolve all the errors before switching tabs')
             return

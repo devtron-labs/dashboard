@@ -1406,7 +1406,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
-        if (isCDLoading || validateBulkRuntimeParams()) {
+        if (isCDLoading || !validateBulkRuntimeParams()) {
             return
         }
 
@@ -1598,7 +1598,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isCILoading || validateBulkRuntimeParams()) {
+        if (isCILoading || !validateBulkRuntimeParams()) {
             return
         }
 
