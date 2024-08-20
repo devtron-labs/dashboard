@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import {
     showError,
@@ -23,11 +23,11 @@ import {
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
     GenericFilterEmptyState,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-error.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { getInitData, getSecurityScanList } from './security.service'
 import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils'
 import { DropdownIndicator, styles, ValueContainer, Option } from './security.util'
@@ -225,12 +225,12 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
         })
     }
 
-    search(e) {
+    search(_searchText?: string) {
         const searchParams = new URLSearchParams(this.props.location.search)
-        searchParams.set('search', e.target.value)
+        searchParams.set('search', _searchText)
         searchParams.set('offset', '0')
         this.props.history.push(`${this.props.match.url}?${searchParams.toString()}`)
-        this.setState({ searchApplied: true }, () => {
+        this.setState({ searchApplied: true, searchObjectValue: _searchText }, () => {
             this.callGetSecurityScanList()
         })
     }
@@ -312,7 +312,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                     <form
                         onSubmit={(e) => {
                             e.preventDefault()
-                            this.search(e)
+                            this.search()
                         }}
                         className="flex-1 flex mr-24"
                     >
@@ -349,25 +349,16 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
                                     }),
                                 }}
                             />
-                            <Search className="icon-dim-20 ml-7" />
-                            <input
-                                autoComplete="off"
-                                type="text"
-                                className="search-with-dropdown__search"
-                                data-testid="search-in-security-scan"
-                                tabIndex={1}
-                                value={this.state.searchObjectValue}
-                                placeholder={`Search ${this.state.searchObject.label}`}
-                                onKeyDown={(e) => {
-                                    if (e.keyCode === 13) {
-                                        this.search(e)
-                                    }
+                            <SearchBar
+                                initialSearchText={this.state.searchObjectValue}
+                                containerClassName="flex-grow-1"
+                                handleEnter={this.search}
+                                inputProps={{
+                                    placeholder: `Search ${this.state.searchObject.label}`,
                                 }}
-                                onChange={this.handleSearchChange}
+                                dataTestId="search-in-security-scan"
+                                noBackgroundAndBorder
                             />
-                            {this.state.searchApplied ? (
-                                <Close className="icon-dim-20 cursor icon-n4 mr-5" onClick={this.removeSearch} />
-                            ) : null}
                         </div>
                     </form>
                     <div className="flexbox">
@@ -474,9 +465,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
             }
             return (
                 <div className="dc__position-rel" style={{ height: 'calc(100vh - 200px)' }}>
-                    <GenericFilterEmptyState
-                        handleClearFilters={this.removeFiltersAndSearch}
-                    />
+                    <GenericFilterEmptyState handleClearFilters={this.removeFiltersAndSearch} />
                 </div>
             )
         }
