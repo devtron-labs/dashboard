@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import {
     not,
     stopPropagation,
@@ -22,11 +22,11 @@ import {
     CiPipelineSourceConfig,
     MaterialHistory,
     CIMaterialType,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
-import { SourceTypeMap } from '../../config'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
 import EmptyStateCIMaterial from '../app/details/triggerView/EmptyStateCIMaterial'
 import CiWebhookModal from '../app/details/triggerView/CiWebhookDebuggingModal'
@@ -400,11 +400,10 @@ export default function GitInfoMaterial({
         }
 
         if (RuntimeParameters && currentSidebarTab === CIMaterialSidebarType.PARAMETERS) {
-            // TODO: Test slow internet and disable sidebar
             return (
                 <RuntimeParameters
                     // Have to add key for appId since key value config would not be updated incase of app change
-                    key={appId}
+                    key={`runtime-parameters-${appId}`}
                     heading={getRuntimeParametersHeading()}
                     parameters={runtimeParams}
                     handleChange={handleRuntimeParamChange}

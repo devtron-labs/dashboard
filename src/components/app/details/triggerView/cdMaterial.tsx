@@ -966,6 +966,11 @@ const CDMaterial = ({
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         setDeploymentLoading(true)
 
+        if (runtimeParamsErrorState) {
+            toast.error('Please resolve all the errors before deploying')
+            return
+        }
+
         if (_appId && pipelineId && ciArtifactId) {
             triggerCDNode({
                 pipelineId,

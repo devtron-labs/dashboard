@@ -23,6 +23,7 @@ import {
     PodMetadatum,
     DeploymentNodeType,
     RuntimeParamsListItemType,
+    RuntimeParamsTriggerPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { AppEnvironment } from '../../services/service.types'
@@ -657,4 +658,12 @@ export interface TriggerCDNodeServiceProps {
      * Would be available only case of PRE/POST CD
      */
     runtimeParams?: RuntimeParamsListItemType[]
+}
+
+export interface TriggerCDPipelinePayloadType {
+    pipelineId: number
+    appId: number
+    ciArtifactId: number
+    cdWorkflowType: string
+    runtimeParamsPayload: RuntimeParamsTriggerPayloadType
 }

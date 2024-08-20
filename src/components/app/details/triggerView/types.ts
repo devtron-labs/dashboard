@@ -752,12 +752,6 @@ export interface RenderCTAType {
     disableSelection: boolean
 }
 
-export interface RuntimeParamsValidatorReturnType {
-    isValid: boolean
-    message?: string
-    validParams?: RuntimeParamsTriggerPayloadType['runtimeParams']
-}
-
 export interface CIMaterialModalProps extends CIMaterialProps {
     closeCIModal: () => void
     abortController: AbortController

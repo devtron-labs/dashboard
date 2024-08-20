@@ -34,11 +34,18 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import { getAPIOptionsWithTriggerTimeout } from '../common'
-import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo, TriggerCDNodeServiceProps } from './types'
+import { getAPIOptionsWithTriggerTimeout, importComponentFromFELibrary } from '../common'
+import {
+    AppDetails,
+    ArtifactsCiJob,
+    EditAppRequest,
+    AppMetaInfo,
+    TriggerCDNodeServiceProps,
+    TriggerCDPipelinePayloadType,
+} from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
-import { validateAndGetValidRuntimeParams } from './details/triggerView/TriggerView.utils'
-import { toast } from 'react-toastify'
+
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 const stageMap = {
     PRECD: 'PRE',
@@ -271,24 +278,16 @@ export const triggerCDNode = ({
     abortSignal,
     runtimeParams = [],
 }: TriggerCDNodeServiceProps) => {
-    // BTW there should not even a state when, we have invalid runtime params at least in service layer, just adding for safety
-    // owing to the complexity of app group and trigger view
-    // We can validate runtime params beforehand as well since empty array is also valid
-    const { isValid, validParams, message } = validateAndGetValidRuntimeParams(runtimeParams)
-    const areRuntimeParamsConfigured = stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD
+    const areRuntimeParamsConfigured =
+        getRuntimeParamsPayload && (stageType === DeploymentNodeType.POSTCD || stageType === DeploymentNodeType.PRECD)
+    const runtimeParamsPayload = areRuntimeParamsConfigured ? getRuntimeParamsPayload(runtimeParams) : null
 
-    if (!isValid && areRuntimeParamsConfigured) {
-        toast.error(message)
-        return
-    }
-
-    // TODO: Can add type
-    const request = {
+    const request: TriggerCDPipelinePayloadType = {
         pipelineId: parseInt(pipelineId),
         appId: parseInt(appId),
         ciArtifactId: parseInt(ciArtifactId),
         cdWorkflowType: stageMap[stageType],
-        ...(areRuntimeParamsConfigured && { runtimeParams: validParams }),
+        ...(areRuntimeParamsConfigured && runtimeParamsPayload),
     }
 
     if (deploymentWithConfig) {

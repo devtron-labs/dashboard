@@ -88,7 +88,6 @@ import {
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 
@@ -96,6 +95,7 @@ const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModa
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -881,12 +881,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             envId = this.state.selectedEnv.id
         }
 
-        const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(this.state.runtimeParams ?? [])
-        if (!runtimeParamsValidationResponse.isValid) {
-            this.setState({ isLoading: false })
-            toast.error(runtimeParamsValidationResponse.message)
-            return
-        }
+        // No need to validate here since ciMaterial handles it for trigger view
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
@@ -894,7 +890,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
         this.abortCIBuild = new AbortController()

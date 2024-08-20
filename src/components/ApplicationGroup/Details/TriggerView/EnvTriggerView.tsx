@@ -57,7 +57,12 @@ import {
 } from '../../../../config'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
-import { CIMaterialProps, CIMaterialRouterProps, CIPipelineNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import {
+    CIMaterialProps,
+    CIMaterialRouterProps,
+    CIPipelineNodeType,
+    MATERIAL_TYPE,
+} from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
     getCIMaterialList,
@@ -114,7 +119,6 @@ import {
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import BulkSourceChange from './BulkSourceChange'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { validateAndGetValidRuntimeParams } from '../../../app/details/triggerView/TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 
@@ -126,6 +130,7 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     null,
     'function',
 )
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -1049,22 +1054,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             return
         }
 
-        const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(
-            runtimeParams?.[selectedCINode?.id] ?? [],
-        )
-
-        if (!runtimeParamsValidationResponse.isValid) {
-            setCDLoading(false)
-            toast.error(runtimeParamsValidationResponse.message)
-            return
-        }
+        // For this block validation is handled in CIMaterial
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(runtimeParams?.[selectedCINode?.id] ?? [])
 
         const payload = {
             pipelineId: +selectedCINode.id,
             ciPipelineMaterials,
             invalidateCache,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
         triggerCINode(payload, abortCIBuildRef.current.signal)
@@ -1386,10 +1384,26 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
     }
 
+    const validateBulkRuntimeParams = (): boolean => {
+        const isRuntimeParamErrorPresent = Object.keys(runtimeParamsErrorState).some(
+            (key) => runtimeParamsErrorState[key],
+        )
+
+        if (isRuntimeParamErrorPresent) {
+            setCDLoading(false)
+            setCILoading(false)
+            toast.error('Please resolve all the runtime parameter errors before triggering the pipeline')
+            return false
+        }
+
+        return true
+    }
+
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
-        if (isCDLoading) {
+        if (isCDLoading || validateBulkRuntimeParams()) {
             return
         }
+
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
         setCDLoading(true)
         const _appIdMap = new Map<string, string>()
@@ -1579,7 +1593,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isCILoading) {
+        if (isCILoading || validateBulkRuntimeParams()) {
             return
         }
 
@@ -1611,26 +1625,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
         }
         const _CITriggerPromiseFunctionList = []
-        // Traversing each nodeListItem to verify if runtimeParams are valid, if not returning error message
-        const runtimeParamsNodesValidation = nodeList.reduce(
-            (acc, node) => {
-                const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(runtimeParams?.[node.id] ?? [])
-
-                if (!runtimeParamsValidationResponse.isValid) {
-                    acc.isValid = false
-                    acc.message = runtimeParamsValidationResponse.message
-                }
-                return acc
-            },
-            { isValid: true, message: '' },
-        )
-
-        if (!runtimeParamsNodesValidation.isValid) {
-            setCDLoading(false)
-            setCILoading(false)
-            toast.error(runtimeParamsNodesValidation.message)
-            return
-        }
 
         nodeList.forEach((node) => {
             const gitMaterials = new Map<number, string[]>()
@@ -1664,14 +1658,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 })
             }
 
-            const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(runtimeParams?.[node.id] ?? [])
+            const runtimeParamsPayload = getRuntimeParamsPayload?.(runtimeParams?.[node.id] ?? [])
 
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials,
                 invalidateCache: appIgnoreCache[+node.id],
                 pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-                ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse?.validParams } : {}),
+                ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
             }
             _CITriggerPromiseFunctionList.push(() => triggerCINode(payload))
         })
