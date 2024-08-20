@@ -34,6 +34,8 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
+    TabGroup,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1007,31 +1009,23 @@ export default function CDPipeline({
         }
     }
 
-    const getNavLink = (toLink: string, stageName: string) => {
+    const getNavLink = (toLink: string, stageName: string): TabProps => {
         const showAlert = !formDataErrorObj[stageName].isValid
-        return (
-            <li className="tab-list__tab">
-                <NavLink
-                    data-testid={`${toLink}-button`}
-                    replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
-                    activeClassName="active"
-                    to={`${toLink}?${urlParams}`}
-                    onClick={() => {
-                        validateStage(activeStageName, formData)
-                    }}
-                >
-                    {CDDeploymentTabText[stageName]}
-                    {showAlert && (
-                        <WarningTriangle
-                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
-                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
-                            }`}
-                        />
-                    )}
-                </NavLink>
-            </li>
-        )
+
+        return {
+            id: `${CDDeploymentTabText[stageName]}-tab`,
+            label: CDDeploymentTabText[stageName],
+            tabType: 'navLink',
+            showError: showAlert,
+            props: {
+                to: `${toLink}?${urlParams}`,
+                replace: true,
+                onClick: () => {
+                    validateStage(activeStageName, formData)
+                },
+                'data-testid': `${toLink}-button`,
+            },
+        }
     }
 
     const renderSecondaryButton = () => {
@@ -1131,11 +1125,17 @@ export default function CDPipeline({
         return (
             <>
                 {isAdvanced && (
-                    <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
-                    </ul>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={[
+                                getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                getNavLink(`build`, BuildStageVariable.Build),
+                                getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                 )}
                 <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
