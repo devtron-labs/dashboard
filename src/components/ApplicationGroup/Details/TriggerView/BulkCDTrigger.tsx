@@ -117,7 +117,7 @@ export default function BulkCDTrigger({
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
 
-    const showRuntimeParams = stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD
+    const showRuntimeParams = RuntimeParamTabs && (stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD)
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -622,15 +622,11 @@ export default function BulkCDTrigger({
                     <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
-                                {RuntimeParamTabs ? (
-                                    <RuntimeParamTabs
-                                        tabs={CD_MATERIAL_SIDEBAR_TABS}
-                                        initialTab={currentSidebarTab}
-                                        onChange={handleSidebarTabChange}
-                                    />
-                                ) : (
-                                    'PLACEHOLDER TEXT'
-                                )}
+                                <RuntimeParamTabs
+                                    tabs={CD_MATERIAL_SIDEBAR_TABS}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                />
                             </div>
                         )}
                         <span className="px-16">Select image by release tag</span>

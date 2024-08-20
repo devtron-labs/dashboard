@@ -191,7 +191,7 @@ const CDMaterial = ({
     const abortControllerRef = useRef(new AbortController())
     const abortDeployRef = useRef(null)
 
-    const showRuntimeParams = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
+    const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
 
     // TODO: Ask if pipelineId always changes on change of app else add appId as dependency
     const [loadingMaterials, responseList, materialsError, reloadMaterials] = useAsync(
@@ -1581,21 +1581,19 @@ const CDMaterial = ({
 
         return (
             <div
-                className={`flex-grow-1 dc__overflow-scroll ${showRuntimeParams && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
             >
-                {showRuntimeParams && !isFromBulkCD && (
+                {isPreOrPostCD && !isFromBulkCD && (
                     <div className="flexbox-col bcn-0">
-                        <div className="px-16 py-12 flex">
-                            {RuntimeParamTabs ? (
+                        {RuntimeParamTabs && (
+                            <div className="px-16 py-12 flex">
                                 <RuntimeParamTabs
                                     tabs={CD_MATERIAL_SIDEBAR_TABS}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}
                                 />
-                            ) : (
-                                'PLACEHOLDER TEXT'
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         <div className="flexbox dc__align-items-center px-16 py-8">
                             <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
@@ -1607,7 +1605,7 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <ConditionalWrap condition={showRuntimeParams && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
+                <ConditionalWrap condition={isPreOrPostCD && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
                     {(bulkSidebarTab
                         ? bulkSidebarTab === CDMaterialSidebarType.IMAGE
                         : currentSidebarTab === CDMaterialSidebarType.IMAGE) || !RuntimeParameters ? (
