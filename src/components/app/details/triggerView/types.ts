@@ -34,7 +34,6 @@ import {
     Material,
     KeyValueListType,
     CIMaterialSidebarType,
-    HandleKeyValueChangeType,
     RuntimeParamsTriggerPayloadType,
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,

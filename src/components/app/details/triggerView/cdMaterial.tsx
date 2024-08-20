@@ -134,7 +134,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 const CDMaterial = ({
@@ -1581,9 +1581,8 @@ const CDMaterial = ({
                 {showRuntimeParams && !isFromBulkCD && (
                     <div className="flexbox-col bcn-0">
                         <div className="px-16 py-12 flex">
-                            {GitInfoMaterialTabs ? (
-                                // TODO: Change name
-                                <GitInfoMaterialTabs
+                            {RuntimeParamTabs ? (
+                                <RuntimeParamTabs
                                     // FIXME: Make a constant
                                     tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
                                         value: tabValue,

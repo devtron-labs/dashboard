@@ -65,7 +65,7 @@ import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
 const BulkCITrigger = ({
     appList,
@@ -619,8 +619,8 @@ const BulkCITrigger = ({
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-9 p-12 "
                             style={{ zIndex: 1 }}
                         >
-                            {GitInfoMaterialTabs ? (
-                                <GitInfoMaterialTabs
+                            {RuntimeParamTabs ? (
+                                <RuntimeParamTabs
                                     tabs={sidebarTabs}
                                     initialTab={currentSidebarTab}
                                     onChange={handleSidebarTabChange}

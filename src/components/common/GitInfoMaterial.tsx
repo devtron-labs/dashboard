@@ -45,7 +45,7 @@ import { getCIPipelineURL, importComponentFromFELibrary } from '.'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 const BuildTriggerBlockedState = importComponentFromFELibrary('BuildTriggerBlockedState')
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
 
 // TODO: ADD prop type
@@ -144,9 +144,9 @@ export default function GitInfoMaterial({
 
         return (
             <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
-                {GitInfoMaterialTabs ? (
+                {RuntimeParamTabs ? (
                     <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
-                        <GitInfoMaterialTabs
+                        <RuntimeParamTabs
                             tabs={sidebarTabs}
                             initialTab={currentSidebarTab}
                             onChange={handleSidebarTabChange}

@@ -72,7 +72,7 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     null,
     'function',
 )
-const GitInfoMaterialTabs = importComponentFromFELibrary('GitInfoMaterialTabs', null, 'function')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -622,9 +622,8 @@ export default function BulkCDTrigger({
                     <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
-                                {GitInfoMaterialTabs ? (
-                                    // TODO: Change name
-                                    <GitInfoMaterialTabs
+                                {RuntimeParamTabs ? (
+                                    <RuntimeParamTabs
                                         // FIXME: Make a constant
                                         tabs={Object.values(CDMaterialSidebarType).map((tabValue) => ({
                                             value: tabValue,
