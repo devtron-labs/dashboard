@@ -32,6 +32,7 @@
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
+    --select-picker-menu-index: 20;
 }
 
 body {
@@ -2109,6 +2110,10 @@ button.anchor {
     align-self: flex-start;
 }
 
+.dc__align-self-end {
+    align-self: end;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -2488,6 +2493,10 @@ button.anchor {
 
 .dc__hide-section {
     display: none;
+
+    &--imp {
+        display: none !important;
+    }
 }
 
 .dark-background {
@@ -2672,6 +2681,18 @@ button.anchor {
 
 .dc__top-left-radius {
     border-top-left-radius: 4px;
+}
+
+.dc__top-right-radius {
+    border-top-right-radius: 4px;
+}
+
+.dc__bottom-left-radius {
+    border-bottom-left-radius: 4px;
+}
+
+.dc__bottom-right-radius {
+    border-bottom-right-radius: 4px;
 }
 
 .dc__bottom-left-radius-8 {
@@ -4418,6 +4439,10 @@ textarea::placeholder {
     z-index: 10;
 }
 
+.dc__zi-11 {
+    z-index: 11;
+}
+
 .dc__zi-20 {
     z-index: 20;
 }
@@ -4790,6 +4815,29 @@ textarea::placeholder {
 
 .dc__modal-gradient {
     background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
+}
+
+.dc__nav-item {
+    &.active {
+        color: var(--B500);
+        font-weight: 600;
+        background: var(--B100);
+
+        &:hover {
+            color: var(--B500);
+            background: var(--B100);
+        }
+    }
+
+    &:hover {
+        color: var(--N700);
+        text-decoration: none;
+        background: var(--N50);
+    }
+
+    &__text {
+        max-width: 192px;
+    }
 }
 
 .bw-1_5 {
