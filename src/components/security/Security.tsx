@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
-import { SecurityScansTab } from './SecurityScansTab'
+import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
-import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 interface SecurityProps extends RouteComponentProps<{}> {
@@ -63,14 +62,28 @@ export class Security extends Component<SecurityProps> {
         )
     }
 
+    getTippyContent = () => (
+        <div className="px-12 pt-12 fs-13 fw-4">
+            Devtron provides DevSecOps capabilities across your software development life cycle.
+            <p className="pt-20 m-0">
+            One of the key components of DevSecOps is the detection of security risks. Currently, Devtron supports the following types of scanning:
+            </p>
+            <ul className='pl-20'>
+                <li>Image Scan</li>
+                <li>Code Scan</li>
+                <li>Kubernetes Manifest Scan</li>
+            </ul>
+        </div>
+    )
+
     renderPageheader() {
         return (
             <PageHeader
                 headerName="Security"
                 tippyProps={{
+                    isTippyCustomized: true,
                     tippyRedirectLink: DOCUMENTATION.SECURITY,
-                    tippyMessage: 'Learn more',
-                    TippyIcon: ICHelpOutline,
+                    additionalContent: this.getTippyContent()
                 }}
                 showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
@@ -93,7 +106,7 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan">
+            <div className="security-scan bcn-0 flexbox-col min-h-100">
                 {this.renderPageheader()}
                 {this.props.serverMode === SERVER_MODE.EA_ONLY
                     ? this.renderEmptyStateForEAOnlyMode()
