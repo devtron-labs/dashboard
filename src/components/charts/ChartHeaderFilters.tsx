@@ -173,7 +173,7 @@ const ChartHeaderFilter = ({
                         placeholder: 'Search charts',
                         autoFocus: true
                     }}
-                    data-testid="chart-store-search-box"
+                    dataTestId="chart-store-search-box"
                 />
             </div>
             <div className="pl-12 pr-12 filter-tab">
