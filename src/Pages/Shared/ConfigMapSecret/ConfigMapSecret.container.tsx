@@ -131,7 +131,11 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                               appName,
                               envName,
                               configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
-                              resourceId: cmSecretStateLabel !== CM_SECRET_STATE.INHERITED ? selectedCMSecret.id : null,
+                              resourceId:
+                                  cmSecretStateLabel !== CM_SECRET_STATE.INHERITED &&
+                                  cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED
+                                      ? selectedCMSecret.id
+                                      : null,
                               resourceName: name,
                               resourceType:
                                   componentType === CMSecretComponentType.ConfigMap

@@ -401,7 +401,7 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
     }
 }
 
-export const transformSecretDataJSON = (jsonObj: any[]) => {
+export const transformSecretDataJSON = (jsonObj: any[]) =>
     jsonObj.map((j) => {
         const temp = {
             isBinary: null,
@@ -422,7 +422,6 @@ export const transformSecretDataJSON = (jsonObj: any[]) => {
         }
         return temp
     })
-}
 
 const handleValidJson = (isESO: boolean, json, dispatch: (action: ConfigMapAction) => void): void => {
     if (isESO) {
