@@ -14,15 +14,28 @@
  * limitations under the License.
  */
 
-import { post, get, put, ResponseType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    post,
+    get,
+    put,
+    ResponseType,
+    showError,
+    DeploymentChartListDTO,
+    DeploymentChartType,
+    convertDeploymentChartListToChartType,
+    ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '@Config/constants'
-import { ChartUploadResponse, ChartUploadType, DeploymentChartDTO, DeploymentChartType } from '../types'
-import { processChartData } from '../utils'
+import { sortObjectArrayAlphabetically } from '@Components/common'
+import { ChartUploadResponse, ChartUploadType } from '../types'
 
 export const getChartList = async (): Promise<DeploymentChartType[]> => {
     try {
-        const { result }: ResponseType<DeploymentChartDTO[]> = await get(Routes.CUSTOM_CHART_LIST)
-        return processChartData(result)
+        const { result }: ResponseType<DeploymentChartListDTO> = await get(ROUTES.DEPLOYMENT_CHARTS_LIST)
+        return sortObjectArrayAlphabetically(
+            convertDeploymentChartListToChartType(result),
+            'name',
+        ) as DeploymentChartType[]
     } catch (error) {
         showError(error)
         throw error

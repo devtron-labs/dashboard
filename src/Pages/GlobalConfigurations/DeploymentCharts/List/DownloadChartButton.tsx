@@ -7,6 +7,7 @@ import { Routes } from '@Config/constants'
 import { DownloadChartButtonProps } from '../types'
 
 const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
+    // TODO: replace with useDownload
     const [downloading, setDownloading] = useState(false)
     const tippyRef = useRef<Parameters<TippyProps['onMount']>[0]>(null)
 

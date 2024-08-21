@@ -69,17 +69,6 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
             })
     }
 
-    const handleSuccessButton = (): void => {
-        if (uploadState === UPLOAD_STATE.SUCCESS) {
-            onCancelUpload('Save')
-        } else if (uploadState === UPLOAD_STATE.UPLOAD) {
-            inputFileRef.current.value = null // to upload the same chart
-            inputFileRef.current.click()
-        } else {
-            resetCustomChart()
-        }
-    }
-
     const resetCustomChart = (): void => {
         setChartDetail(null)
         setUploadState(UPLOAD_STATE.UPLOAD)
@@ -123,6 +112,17 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                 showError(error)
                 setLoadingData(false)
             })
+    }
+
+    const handleSuccessButton = (): void => {
+        if (uploadState === UPLOAD_STATE.SUCCESS) {
+            onCancelUpload('Save')
+        } else if (uploadState === UPLOAD_STATE.UPLOAD) {
+            inputFileRef.current.value = null // to upload the same chart
+            inputFileRef.current.click()
+        } else {
+            resetCustomChart()
+        }
     }
 
     const renderSuccessPage = (): JSX.Element => {
@@ -228,6 +228,30 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
         return renderImageWithTitleDescription(errorImage, errorData.title, errorData.message)
     }
 
+    const getButtonDataTestId = () => {
+        switch (uploadState) {
+            case UPLOAD_STATE.UPLOAD:
+                return 'select-tgz-file-button'
+            case UPLOAD_STATE.ERROR:
+                return 'upload-another-chart'
+            case UPLOAD_STATE.SUCCESS:
+                return 'save-chart'
+            default:
+                return ''
+        }
+    }
+
+    const getButtonText = () => {
+        switch (uploadState) {
+            case UPLOAD_STATE.UPLOAD:
+                return 'Select .tgz file...'
+            case UPLOAD_STATE.ERROR:
+                return 'Upload another chart'
+            default:
+                return 'Save'
+        }
+    }
+
     const renderFooter = (): JSX.Element => {
         return (
             <div
@@ -244,31 +268,19 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                         className={`cta delete dc__no-text-transform ${
                             uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
                         }`}
-                        onClick={(e) => onCancelUpload('Cancel')}
+                        onClick={() => onCancelUpload('Cancel')}
                     >
                         Cancel upload
                     </button>
                 )}
                 {uploadState !== UPLOAD_STATE.UPLOADING && (
                     <ButtonWithLoader
-                        dataTestId={`${
-                            uploadState === UPLOAD_STATE.UPLOAD
-                                ? 'select-tgz-file-button'
-                                : uploadState === UPLOAD_STATE.ERROR
-                                  ? 'upload-another-chart'
-                                  : uploadState === UPLOAD_STATE.SUCCESS
-                                    ? 'save-chart'
-                                    : ''
-                        }`}
+                        dataTestId={getButtonDataTestId()}
                         rootClassName="cta mr-20 dc__no-text-transform"
                         onClick={handleSuccessButton}
                         isLoading={loadingData}
                     >
-                        {uploadState === UPLOAD_STATE.UPLOAD
-                            ? 'Select .tgz file...'
-                            : uploadState === UPLOAD_STATE.ERROR
-                              ? 'Upload another chart'
-                              : 'Save'}
+                        {getButtonText()}
                     </ButtonWithLoader>
                 )}
             </div>

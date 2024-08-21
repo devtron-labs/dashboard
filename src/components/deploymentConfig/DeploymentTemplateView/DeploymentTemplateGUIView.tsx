@@ -24,7 +24,7 @@ import {
     GenericEmptyState,
     joinObjects,
     flatMapOfJSONPaths,
-    HideSubmitButtonUISchema,
+    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
@@ -70,7 +70,7 @@ const DeploymentTemplateGUIView = ({
             if (!hideLockedKeys) {
                 return {
                     guiSchema: parsedGUISchema,
-                    uiSchema: HideSubmitButtonUISchema,
+                    uiSchema: HIDE_SUBMIT_BUTTON_UI_SCHEMA,
                 }
             }
             // Note: if the locked keys are not resolved from the following json(s)
@@ -83,7 +83,7 @@ const DeploymentTemplateGUIView = ({
             return {
                 guiSchema: parsedGUISchema,
                 uiSchema: joinObjects([
-                    HideSubmitButtonUISchema,
+                    HIDE_SUBMIT_BUTTON_UI_SCHEMA,
                     ...lockedConfigKeysWithLockType.config.flatMap((key) => {
                         // NOTE: we need to use the original document to evaluate the actual paths
                         return flatMapOfJSONPaths([key], parsedUneditedDocument)

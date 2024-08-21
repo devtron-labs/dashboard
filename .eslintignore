@@ -577,7 +577,6 @@ src/util/DeleteComponent.tsx
 src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
-src/Pages/GlobalConfigurations/DeploymentCharts/List/UploadChartModal.tsx
 src/components/ResourceBrowser/ResourceList/ResourceList.component.tsx
 types/patternfly-react.d.ts
 tests-examples/demo-todo-app.spec.ts

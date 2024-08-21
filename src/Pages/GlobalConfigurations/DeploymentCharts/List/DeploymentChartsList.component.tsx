@@ -53,6 +53,8 @@ const DeploymentChartsList = () => {
         setShowUploadPopup(true)
     }
 
+    const renderUploadButton = () => <UploadButton handleOpenUploadChartModal={handleOpenUploadChartModal} />
+
     const renderBody = () => {
         if (chartList.length === 0) {
             return (
@@ -73,17 +75,18 @@ const DeploymentChartsList = () => {
                         </>
                     }
                     isButtonAvailable
-                    renderButton={() => <UploadButton handleOpenUploadChartModal={handleOpenUploadChartModal} />}
+                    renderButton={renderUploadButton}
                 />
             )
         }
 
         return (
-            <div className="chart-list" data-testid="custom-charts-list">
+            <div className="chart-list flexbox-col dc__gap-20" data-testid="custom-charts-list">
                 <DeploymentChartsListHeader handleOpenUploadChartModal={handleOpenUploadChartModal} />
                 <div
                     data-testid="custom-chart-list"
-                    className="mt-16 en-2 bw-1 bcn-0 br-8"
+                    className="en-2 bw-1 bcn-0 br-8"
+                    // TODO: clean css later
                     style={{ minHeight: 'calc(100vh - 139px)' }}
                 >
                     <InfoColourBar
@@ -113,7 +116,7 @@ const DeploymentChartsList = () => {
                         <span>Version</span>
                         <span>Description</span>
                     </div>
-                    {chartList?.map((chartData) => (
+                    {chartList.map((chartData) => (
                         <div
                             key={`custom-chart_${chartData.name}`}
                             className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
@@ -136,9 +139,7 @@ const DeploymentChartsList = () => {
                             <Tooltip content={chartData.versions[0].description} placement="left">
                                 <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
                             </Tooltip>
-                            {EditDeploymentChart && (
-                                <EditDeploymentChart name={chartData.name} versions={chartData.versions} />
-                            )}
+                            {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
                             <DownloadChartButton name={chartData.name} versions={chartData.versions} />
                         </div>
                     ))}
@@ -160,7 +161,7 @@ const DeploymentChartsList = () => {
                 redirectURL: URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
             }}
         >
-            {!chartListLoading && !chartListError && (
+            {!!chartList && (
                 <>
                     {renderBody()}
                     {showUploadPopup && <UploadChartModal closeUploadPopup={handleCloseUploadChartModal} />}

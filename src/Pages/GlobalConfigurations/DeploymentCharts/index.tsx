@@ -1,1 +1,1 @@
-export { default } from './DeploymentCharts.component'
+export { default } from './DeploymentChartsRouter.component'

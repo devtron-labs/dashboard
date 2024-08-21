@@ -4366,6 +4366,10 @@ textarea::placeholder {
     width: 1px;
     min-height: 16px;
     background-color: var(--N200);
+
+    &--n1 {
+        background-color: var(--N100);
+    }
 }
 
 .dc__required-field::after {

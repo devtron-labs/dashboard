@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-
-// TODO: move this type to fe-common-lib since can be reused in fe-lib
-export interface DeploymentChartType {
-    name: string
-    isUserUploaded: boolean
-    versions: {
-        id: number
-        version: string
-        description: string
-    }[]
-}
-
-export interface DeploymentChartDTO {
-    id: number
-    chartDescription?: string
-    isUserUploaded: boolean
-    name: string
-    version: string
-}
+import { ResponseType, DeploymentChartType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartUploadType {
     chartName: string
