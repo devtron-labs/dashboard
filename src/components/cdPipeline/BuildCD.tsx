@@ -27,7 +27,7 @@ import {
     CodeEditor,
     Environment,
     ReleaseMode,
-    OptionType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useContext, useState } from 'react'
 import { useParams, useHistory } from 'react-router-dom'
@@ -53,7 +53,7 @@ import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { styles, Option, getNamespacePlaceholder } from './cdpipeline.util'
+import { getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
@@ -61,6 +61,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
 import { ReactComponent as ICInfo } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as ICCheck } from '../../assets/icons/ic-check.svg'
 
 import PullImageDigestToggle from './PullImageDigestToggle'
 
@@ -396,7 +397,9 @@ export default function BuildCD({
                     classNamePrefix="cd-pipeline-environment-dropdown"
                     placeholder="Select Environment"
                     options={
-                        releaseMode === ReleaseMode.MIGRATE_HELM ? envList.filter((env) => !env.isVirtualEnvironment) : envList
+                        releaseMode === ReleaseMode.MIGRATE_HELM
+                            ? envList.filter((env) => !env.isVirtualEnvironment)
+                            : envList
                     }
                     value={selectedEnv}
                     getOptionLabel={(option) => `${option.name}`}
@@ -644,27 +647,18 @@ export default function BuildCD({
             <>
                 <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                 <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
-                <ReactSelect<OptionType, false>
-                    menuPosition="fixed"
-                    closeMenuOnScroll
+                <SelectPicker
                     classNamePrefix="deployment-strategy-dropdown"
-                    isSearchable={false}
-                    isClearable={false}
-                    isMulti={false}
+                    inputId="deployment-strategy-dropdown"
+                    name="deployment-strategy-dropdown"
                     placeholder="Select Strategy"
                     options={strategyMenu}
                     value={strategy}
                     onChange={(selected: any) => {
                         handleStrategy(selected.value)
                     }}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    styles={{ ...styles }}
+                    error={isWebhookCD && !parentPipelineId && renderWebhookWarning()}
                 />
-                {isWebhookCD && !parentPipelineId && renderWebhookWarning()}
             </>
         )
     }
