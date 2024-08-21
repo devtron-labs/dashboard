@@ -121,12 +121,12 @@ const DeploymentChartsList = () => {
                             key={`custom-chart_${chartData.name}`}
                             className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
                         >
-                            <div className="flexbox">
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
                                 <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
                                 {!chartData.isUserUploaded && (
-                                    <div className="pl-6 pr-6 ml-8 flex bcb-1 h-20 br-6">
+                                    <div className="flex bcb-1 br-6 py-2 px-6">
                                         <DevtronIcon className="icon-dim-20" />
-                                        <span className="ml-4 fs-11 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
+                                        <span className="ml-4 fs-12 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
                                     </div>
                                 )}
                             </div>
@@ -139,8 +139,16 @@ const DeploymentChartsList = () => {
                             <Tooltip content={chartData.versions[0].description} placement="left">
                                 <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
                             </Tooltip>
-                            {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
-                            <DownloadChartButton name={chartData.name} versions={chartData.versions} />
+                            <div className="flexbox dc__gap-4">
+                                <Tooltip alwaysShowTippyOnHover content="Edit GUI Schema">
+                                    <div>{EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}</div>
+                                </Tooltip>
+                                <Tooltip alwaysShowTippyOnHover content="Download Chart">
+                                    <div>
+                                        <DownloadChartButton name={chartData.name} versions={chartData.versions} />
+                                    </div>
+                                </Tooltip>
+                            </div>
                         </div>
                     ))}
                 </div>

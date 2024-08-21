@@ -75,7 +75,7 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
             onClickOutside={handleCloseTippy}
             animation="fade"
         >
-            <div className="flex pointer">
+            <div className="flex pointer p-4 dc__hover-n50 br-4">
                 {downloading ? (
                     <Progressing pageLoader size={16} />
                 ) : (
