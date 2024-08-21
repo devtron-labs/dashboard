@@ -68,6 +68,7 @@ const ResourceBrowser: React.FC = () => {
                 clusterOptions={sortedClusterList}
                 isSuperAdmin={isSuperAdmin}
                 clusterListLoader={detailClusterListLoading}
+                initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
             />
         )
