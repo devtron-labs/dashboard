@@ -50,7 +50,7 @@ export function isChartRef3090OrBelow(id: number): boolean {
 }
 
 /**
- * @deprecated Use versionComparator from common lib instead
+ * @deprecated Use versionComparatorBySortOrder from common lib instead
  */
 export function versionComparator(
     a: Record<string, any>,
