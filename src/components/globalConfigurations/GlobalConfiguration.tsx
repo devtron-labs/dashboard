@@ -291,7 +291,7 @@ const NavItem = ({ serverMode }) => {
             }
         } catch (error) {
             if (retryOnError >= 0) {
-                getModuleStatus(moduleName, retryOnError--)
+                getModuleStatus(moduleName, --retryOnError)
             }
         }
     }
