@@ -117,7 +117,8 @@ export default function BulkCDTrigger({
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
 
-    const showRuntimeParams = RuntimeParamTabs && (stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD)
+    const showRuntimeParams =
+        RuntimeParamTabs && (stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD)
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -630,19 +631,21 @@ export default function BulkCDTrigger({
                             </div>
                         )}
                         <span className="px-16">Select image by release tag</span>
-                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pt-6 pb-12 px-16">
-                            <ReactSelect
-                                isSearchable
-                                options={options}
-                                value={selectedTagName}
-                                styles={multiSelectStyles}
-                                components={imageTaggingControls}
-                                onChange={handleTagChange}
-                                isDisabled={false}
-                                classNamePrefix="build-config__select-repository-containing-code"
-                                autoFocus
-                            />
-                        </div>
+                        {currentSidebarTab === CDMaterialSidebarType.IMAGE && (
+                            <div style={{ zIndex: 1 }} className="tag-selection-dropdown pt-6 pb-12 px-16">
+                                <ReactSelect
+                                    isSearchable
+                                    options={options}
+                                    value={selectedTagName}
+                                    styles={multiSelectStyles}
+                                    components={imageTaggingControls}
+                                    onChange={handleTagChange}
+                                    isDisabled={false}
+                                    classNamePrefix="build-config__select-repository-containing-code"
+                                    autoFocus
+                                />
+                            </div>
+                        )}
                         <div
                             className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"
                             style={{ zIndex: 0 }}

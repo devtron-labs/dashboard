@@ -1664,12 +1664,12 @@ const CDMaterial = ({
                             )}
                         </>
                     ) : (
-                        // TODO: Test slow internet and disable sidebar
                         <RuntimeParameters
                             rootClassName=""
                             parameters={bulkRuntimeParams || runtimeParamsList}
                             handleChange={handleBulkRuntimeParamChange || handleRuntimeParamChange}
                             onError={handleBulkRuntimeParamError || handleRuntimeParamError}
+                            headingClassName="pb-14 flexbox dc__gap-4"
                         />
                     )}
                 </ConditionalWrap>
@@ -2134,8 +2134,6 @@ const CDMaterial = ({
                             <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
                         </div>
 
-                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
                         <div className="shimmer-loading w-100" style={{ height: '150px' }} />
                         <div className="shimmer-loading w-100" style={{ height: '150px' }} />
                     </div>

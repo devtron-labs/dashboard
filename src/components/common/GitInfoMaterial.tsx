@@ -351,7 +351,7 @@ export default function GitInfoMaterial({
     }
 
     const getRuntimeParametersHeading = () => {
-        const headingPrefix = 'Pass parameters'
+        const headingPrefix = 'Runtime parameters'
         const headingSuffix = appName ? `for '${appName}'` : ''
         return `${headingPrefix} ${headingSuffix}`
     }
