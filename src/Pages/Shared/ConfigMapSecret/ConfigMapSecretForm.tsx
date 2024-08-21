@@ -388,7 +388,8 @@ export const ConfigMapSecretForm = React.memo(
             }
             if (
                 (componentType === CMSecretComponentType.Secret && state.externalType === 'KubernetesSecret') ||
-                (componentType !== CMSecretComponentType.Secret && state.external)
+                (componentType !== CMSecretComponentType.Secret && state.external) ||
+                (componentType === CMSecretComponentType.Secret && isESO)
             ) {
                 delete payload[CODE_EDITOR_RADIO_STATE.DATA]
             }
