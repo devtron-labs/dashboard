@@ -736,6 +736,7 @@ export default function BulkCDTrigger({
                                 handleBulkRuntimeParamChange={handleRuntimeParamChange}
                                 handleBulkRuntimeParamError={handleRuntimeParamError}
                                 bulkSidebarTab={currentSidebarTab}
+                                selectedAppName={selectedApp.name}
                             />
                         </>
                     )}
