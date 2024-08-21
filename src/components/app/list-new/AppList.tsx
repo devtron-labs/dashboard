@@ -96,6 +96,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
     const [, userRoleResponse] = useAsync(getUserRole, [])
+    const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState<PayloadParsedFromURL>(getPayloadFromUrl(location.search, appCount, true).payload)
 
     // on page load
     useEffect(() => {
