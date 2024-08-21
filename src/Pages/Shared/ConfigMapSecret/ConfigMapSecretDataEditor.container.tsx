@@ -422,12 +422,13 @@ const ConfigMapSecretDataEditor = ({
                         !state.secretMode &&
                         !state.yamlMode &&
                         !state.external && (
-                            <div
-                                className="dc__bold anchor pointer pb-10 dc_max-width__max-content"
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles pb-10 dc_max-width__max-content fw-7 cb-5"
                                 onClick={handleAddParam}
                             >
                                 + Add params
-                            </div>
+                            </button>
                         )}
                 </>
             )

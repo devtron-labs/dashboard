@@ -180,14 +180,15 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
                     <div className="fs-13 fw-4 lh-20">
-                        <span
-                            className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles w-100 flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
                             onClick={toggleDeleteDialog}
                             data-testid="delete-jobs-environment-link"
                         >
                             <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
                             {RESOURCE_ACTION_MENU.delete}
-                        </span>
+                        </button>
                     </div>
                 </PopupMenu.Body>
             </PopupMenu>
