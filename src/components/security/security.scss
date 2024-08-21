@@ -484,7 +484,9 @@
     border-bottom-right-radius: 0 !important;
 }
 
-.search-bar {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
+.security-scans-search {
+    .search-bar {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
 }

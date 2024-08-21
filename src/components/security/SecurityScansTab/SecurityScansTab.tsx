@@ -210,7 +210,7 @@ export const SecurityScansTab = () => {
                         />
                     </div>
                     <SearchBar
-                        containerClassName="flex-grow-1 dc__mxw-800"
+                        containerClassName="security-scans-search flex-grow-1 dc__mxw-800"
                         initialSearchText={searchKey}
                         inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
                         handleEnter={handleSearch}
