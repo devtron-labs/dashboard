@@ -25,6 +25,8 @@ import {
     Progressing,
     showError,
     stopPropagation,
+    TabGroup,
+    TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
@@ -308,20 +310,18 @@ export default function CreateAppGroup({
         setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
-    const renderTabItem = (tabName: CreateGroupTabs, appCount: number): JSX.Element => {
-        return (
-            <li className="tab-list__tab pointer" data-tab-name={tabName} onClick={onTabChange}>
-                <div className={`mb-6 fs-13 tab-hover${selectedTab === tabName ? ' fw-6 active' : ' fw-4'}`}>
-                    <span className="mr-6">{CREATE_GROUP_TABS[tabName]} </span>
-                    {appCount > 0 && (
-                        <span className={`br-10 pl-5 pr-5 ${selectedTab === tabName ? 'bcb-5 cn-0' : 'bcn-1 cn-7'}`}>
-                            {appCount}
-                        </span>
-                    )}
-                </div>
-                {selectedTab === tabName && <div className="apps-tab__active-tab" />}
-            </li>
-        )
+    const renderTabItem = (tabName: CreateGroupTabs, appCount: number): TabProps => {
+        return {
+            id: `${tabName}-tab`,
+            label: CREATE_GROUP_TABS[tabName],
+            tabType: 'button',
+            active: selectedTab === tabName,
+            badge: appCount > 0 ? appCount : null,
+            props: {
+                onClick: onTabChange,
+                'data-tab-name': tabName,
+            },
+        }
     }
 
     // called when showErrorMsg is true
@@ -374,21 +374,26 @@ export default function CreateAppGroup({
                     )}
                 </div>
                 <div>
-                    <ul role="tablist" className="tab-list dc__border-bottom mb-8">
-                        {renderTabItem(
-                            filterParentType === FilterParentType.app
-                                ? CreateGroupTabs.SELECTED_ENV
-                                : CreateGroupTabs.SELECTED_APPS,
-                            selectedAppsCount,
-                        )}
-                        {renderTabItem(
-                            filterParentType === FilterParentType.app
-                                ? CreateGroupTabs.ALL_ENV
-                                : CreateGroupTabs.ALL_APPS,
-                            appList.length,
-                        )}
-                    </ul>
-
+                    <div className="dc__border-bottom mb-8">
+                        <TabGroup
+                            tabs={[
+                                renderTabItem(
+                                    filterParentType === FilterParentType.app
+                                        ? CreateGroupTabs.SELECTED_ENV
+                                        : CreateGroupTabs.SELECTED_APPS,
+                                    selectedAppsCount,
+                                ),
+                                renderTabItem(
+                                    filterParentType === FilterParentType.app
+                                        ? CreateGroupTabs.ALL_ENV
+                                        : CreateGroupTabs.ALL_APPS,
+                                    appList.length,
+                                ),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS || selectedTab === CreateGroupTabs.SELECTED_ENV
                         ? renderSelectedApps()
                         : renderAllApps()}
