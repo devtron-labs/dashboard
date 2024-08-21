@@ -81,7 +81,7 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
                 ) : (
                     <Tooltip alwaysShowTippyOnHover content="Download Chart">
                         <span>
-                            <ICDownload className="icon-dim-16 scn-6" data-testid={`download-${name}`} />
+                            <ICDownload className="icon-dim-16 scn-6 dc__no-shrink" data-testid={`download-${name}`} />
                         </span>
                     </Tooltip>
                 )}
