@@ -597,7 +597,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
             )
         }
 
-        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE) {
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
             push(CommonURLS.NETWORK_STATUS_INTERFACE)
             return
         }
