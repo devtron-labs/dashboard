@@ -467,9 +467,11 @@ const ConfigMapSecretDataEditor = ({
                     if (key === 'v' && !value) {
                         return true
                     }
-                    const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
+                    // Adding !value since already validating for empty key
+                    const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value) || !value
                     return isValid
                 }}
+                validateEmptyKeys
                 errorMessages={['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed']}
                 onError={(err) => {
                     if (state.isValidateFormError !== err) {
