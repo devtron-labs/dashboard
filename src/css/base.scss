@@ -321,6 +321,10 @@ a:focus {
         background: transparent !important;
         border: none !important;
     }
+
+    &--unstyled {
+        background: transparent;
+    }
 }
 
 .dc__position-fixed {
