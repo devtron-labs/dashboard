@@ -171,6 +171,7 @@ const ChartHeaderFilter = ({
                     handleEnter={handleSearchEnter}
                     inputProps={{
                         placeholder: 'Search charts',
+                        autoFocus: true
                     }}
                     data-testid="chart-store-search-box"
                 />
