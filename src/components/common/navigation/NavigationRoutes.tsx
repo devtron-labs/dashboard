@@ -464,7 +464,7 @@ export default function NavigationRoutes() {
                                                       key={CommonURLS.NETWORK_STATUS_INTERFACE}
                                                       path={CommonURLS.NETWORK_STATUS_INTERFACE}
                                                   >
-                                                      <NetworkStatusInterface isSuperAdmin={isSuperAdmin} />
+                                                      <NetworkStatusInterface />
                                                   </Route>,
                                               ]
                                             : []),
