@@ -193,8 +193,8 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const canShowExternalLinks =
         userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
     const hideConfigHelp = isJob ? state.isCiPipeline : state.isCDPipeline
-    const isGitOpsConfigurationRequired = appConfigData?.[0].result?.find(
-        (item) => item.stageName === STAGE_NAME.GITOPS_CONFIG,
+    const isGitOpsConfigurationRequired = state.navItems.find(
+        ({ stage }) => stage === STAGE_NAME.GITOPS_CONFIG,
     )?.required
 
     useEffect(() => {
@@ -211,6 +211,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     // DATA TRANSFORMERS
     const getUnlockedConfigsAndLastStage = (
         configStatus: AppConfigStatusItemType[],
+        _isGitOpsConfigurationRequired: boolean,
     ): {
         configs: AppStageUnlockedType
         lastConfiguredStage: STAGE_NAME
@@ -259,7 +260,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
                 _lastConfiguredStage = STAGE_NAME.LOADING
             } else {
                 _lastConfiguredStage = lastConfiguredStage.stageName
-                _configs = isUnlocked(_lastConfiguredStage, isGitOpsConfigurationRequired)
+                _configs = isUnlocked(_lastConfiguredStage, _isGitOpsConfigurationRequired)
             }
         }
 
@@ -270,8 +271,14 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     }
 
     const processConfigStatusData = (configStatusRes: AppConfigStatusItemType[]) => {
-        const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes)
-        const { navItems } = getNavItems(configs, appId, resourceKind, isGitOpsConfigurationRequired)
+        const _isGitOpsConfigurationRequired = configStatusRes.find(
+            ({ stageName }) => stageName === STAGE_NAME.GITOPS_CONFIG,
+        )?.required
+        const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(
+            configStatusRes,
+            _isGitOpsConfigurationRequired,
+        )
+        const { navItems } = getNavItems(configs, appId, resourceKind, _isGitOpsConfigurationRequired)
         // Finding index of navItem which is locked and is not of alternate nav menu (nav-item rendering on different path)
         let index = navItems.findIndex((item) => !item.altNavKey && item.isLocked)
         if (index < 0) {
