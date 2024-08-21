@@ -140,14 +140,8 @@ const DeploymentChartsList = () => {
                                 <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
                             </Tooltip>
                             <div className="flexbox dc__gap-4">
-                                <Tooltip alwaysShowTippyOnHover content="Edit GUI Schema">
-                                    <div>{EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}</div>
-                                </Tooltip>
-                                <Tooltip alwaysShowTippyOnHover content="Download Chart">
-                                    <div>
-                                        <DownloadChartButton name={chartData.name} versions={chartData.versions} />
-                                    </div>
-                                </Tooltip>
+                                {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
+                                <DownloadChartButton name={chartData.name} versions={chartData.versions} />
                             </div>
                         </div>
                     ))}

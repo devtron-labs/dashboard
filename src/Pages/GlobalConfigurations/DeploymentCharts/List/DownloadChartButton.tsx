@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import Tippy, { TippyProps } from '@tippyjs/react'
 import { toast } from 'react-toastify'
-import { Progressing, showError, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, showError, Host, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICDownload } from '@Icons/ic-arrow-line-down.svg'
 import { Routes } from '@Config/constants'
 import { DownloadChartButtonProps } from '../types'
@@ -79,7 +79,11 @@ const DownloadChartButton = ({ name, versions }: DownloadChartButtonProps) => {
                 {downloading ? (
                     <Progressing pageLoader size={16} />
                 ) : (
-                    <ICDownload className="icon-dim-16 scn-6" data-testid={`download-${name}`} />
+                    <Tooltip alwaysShowTippyOnHover content="Download Chart">
+                        <span>
+                            <ICDownload className="icon-dim-16 scn-6" data-testid={`download-${name}`} />
+                        </span>
+                    </Tooltip>
                 )}
             </div>
         </Tippy>
