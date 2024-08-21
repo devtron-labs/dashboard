@@ -146,6 +146,7 @@ export const Routes = {
     PIPELINE_CONFIG_MAP_UPDATE: 'configmap/update/pipelinelevel',
     CHART_INSTALLED: 'app-store/installed-app',
     ARGO_APPS: 'argo-application',
+    FLUX_APPS: 'flux-application',
     CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
@@ -265,13 +266,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -466,30 +468,6 @@ export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticke
 export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
 
 export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
-
-// APP LIST STARTS
-export const AppListConstants = {
-    SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
-    CREATE_DEVTRON_APP_URL: 'create-d-app',
-    AppTabs: {
-        DEVTRON_APPS: 'Devtron Apps',
-        HELM_APPS: 'Helm Apps',
-        ARGO_APPS: 'ArgoCD Apps',
-    },
-    AppType: {
-        DEVTRON_APPS: 'd',
-        HELM_APPS: 'h',
-        ARGO_APPS: 'a',
-    },
-    FilterType: {
-        PROJECT: 'team',
-        CLUTSER: 'cluster',
-        NAMESPACE: 'namespace',
-        ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus',
-    },
-}
-// APP LIST ENDS
 
 export enum SERVER_MODE {
     EA_ONLY = 'EA_ONLY',
@@ -753,9 +731,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -779,9 +757,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',

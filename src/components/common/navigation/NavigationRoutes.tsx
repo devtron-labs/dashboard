@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import {
     useUserEmail,
@@ -26,6 +26,8 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    URLS as CommonURLS,
+    AppListConstants,
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
@@ -34,7 +36,7 @@ import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
 import { ErrorBoundary, AppContext } from '..'
-import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
@@ -54,8 +56,9 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { AppListResponse } from '../../app/list-new/AppListType'
+import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { MainContext } from './types'
+import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
 // Monaco Editor worker dependency
 import 'monaco-editor'
@@ -89,6 +92,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
+const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -166,7 +170,7 @@ export default function NavigationRoutes() {
                         withCredentials: true,
                     })
                     _sseConnection.onmessage = (message) => {
-                        const externalAppData: AppListResponse = JSON.parse(message.data)
+                        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
                         if (externalAppData.result?.helmApps?.length <= 1) {
                             history.push(`/${URLS.GETTING_STARTED}`)
                         }
@@ -191,7 +195,7 @@ export default function NavigationRoutes() {
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
                 Sentry.configureScope(function (scope) {
-                    scope.setUser({ email, })
+                    scope.setUser({ email })
                 })
             }
             if (window._env_.GA_ENABLED) {
@@ -453,8 +457,17 @@ export default function NavigationRoutes() {
                                                       </ImageSelectionUtilityProvider>
                                                   </Route>,
                                               ]
-                                            : []
-                                        ),
+                                            : []),
+                                        ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                      path={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                  >
+                                                      <NetworkStatusInterface />
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -471,8 +484,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>,
                                     ]}
+                                    {/* TODO: Check why its coming as empty in case route is in other library */}
                                     {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB}>
+                                        <Route path={URLS.JOB} key={URLS.JOB}>
                                             <AppContext.Provider value={contextValue}>
                                                 <Jobs />
                                             </AppContext.Provider>
@@ -517,6 +531,11 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                         path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
                         render={() => <ExternalArgoApps />}
                     />
+                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
+                            <ExternalFluxAppDetailsRoute />
+                        </Route>
+                    )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
                         render={(props) => <V2Details envType={EnvType.CHART} />}
@@ -572,8 +591,17 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     useEffect(() => {
         if (pathname && pathname !== '/') {
-            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+            Sentry.captureMessage(
+                `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
+                'warning',
+            )
         }
+
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
+            push(CommonURLS.NETWORK_STATUS_INTERFACE)
+            return
+        }
+
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {

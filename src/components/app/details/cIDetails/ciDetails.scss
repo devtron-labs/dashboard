@@ -379,47 +379,6 @@
     margin-top: 16px;
 }
 
-.security-scan-table__header {
-    border-bottom: 1px solid var(--N200);
-    cursor: default;
-}
-
-.security-scan-table__row {
-    border-bottom: solid 1px #f5f5f5;
-}
-
-.security-scan-table__title {
-    padding: 11px 24px;
-    width: 20%;
-    font-weight: 600;
-    text-transform: uppercase;
-    line-height: 18px;
-    border-collapse: collapse;
-    color: var(--N500);
-    font-size: 12px;
-}
-
-.security-scan-table__pl {
-    padding-left: 24px;
-}
-
-.security-scan-table__data {
-    padding: 11px 24px;
-    line-height: 20px;
-    font-size: 12px;
-    color: var(--N900);
-}
-
-.security-scan-table__cve {
-    width: 25%;
-    text-transform: uppercase;
-    padding-left: 24px;
-}
-
-.security-scan-table--w-18 {
-    width: 18%;
-}
-
 .git-commit-info__grid {
     display: grid;
     grid-template-columns: 20px auto;

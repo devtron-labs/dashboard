@@ -149,7 +149,7 @@ export default function DeploymentTemplateOptionsTab({
                             dataTestId="base-deployment-template-advanced-button"
                         >
                             {_unableToParseYaml && <ErrorIcon className="icon-dim-12 dc__no-svg-stroke mr-6" />}
-                            Advanced (YAML)
+                            YAML
                         </RadioGroup.Radio>
                     </RadioGroup>
                 </ConditionalWrap>

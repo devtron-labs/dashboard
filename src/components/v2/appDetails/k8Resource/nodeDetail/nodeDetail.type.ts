@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import React from 'react'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { Options, OptionsBase } from '../../appDetails.type'
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
@@ -118,4 +118,24 @@ export interface InputSelectionProps {
     customLogFilterOptions: CustomLogFilterOptionsType
     setCustomLogFilterOptions: React.Dispatch<React.SetStateAction<CustomLogFilterOptionsType>>
     filterTypeRadio: string
+}
+
+export interface AppDetailsAppIdentifierProps {
+    clusterId: number
+    namespace: string
+    appName: string
+    templateType?: string
+}
+
+export interface EphemeralContainerProps {
+    requestData: ResponsePayload
+    clusterId: number
+    environmentId: number
+    namespace: string
+    appName: string
+    appId: number
+    appType: string
+    fluxTemplateType: string
+    isResourceBrowserView: boolean
+    params: ParamsType
 }

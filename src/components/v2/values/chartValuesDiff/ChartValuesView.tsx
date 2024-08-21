@@ -136,7 +136,7 @@ import {
     EMPTY_YAML_ERROR,
 } from './ChartValuesView.constants'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
-import { VIEW_MODE } from '../../../ConfigMapSecret/Secret/secret.utils'
+import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/Secret.utils'
 import IndexStore from '../../appDetails/index.store'
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
@@ -818,11 +818,11 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId(
-                commonState.selectedEnvironment.clusterId,
-                commonState.selectedEnvironment.namespace,
+            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+                clusterId: commonState.selectedEnvironment.clusterId,
+                namespace: commonState.selectedEnvironment.namespace,
                 appName,
-            )}/${appName}`
+            })}/${appName}`
         }
 
         return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
