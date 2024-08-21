@@ -1056,7 +1056,7 @@ export default function CDPipeline({
                 </button>
             )
         }
-        if (!isAdvanced) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
             return (
                 !isWebhookCD && (
                     <button
@@ -1070,6 +1070,7 @@ export default function CDPipeline({
                 )
             )
         }
+        return null
     }
 
     const closePipelineModal = () => {
@@ -1248,14 +1249,16 @@ export default function CDPipeline({
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
                         className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            !isWebhookCD && (cdPipelineId || !isAdvanced) && formData.releaseMode !== ReleaseMode.MIGRATE_HELM
+                            !isWebhookCD &&
+                            !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
+                            (cdPipelineId || !isAdvanced)
                                 ? 'flex-justify'
                                 : 'justify-right'
                         } `}
                     >
                         {formData && (
                             <>
-                                {formData.releaseMode !== ReleaseMode.MIGRATE_HELM && renderSecondaryButton()}
+                                {renderSecondaryButton()}
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"
                                     dataTestId="build-pipeline-button"
