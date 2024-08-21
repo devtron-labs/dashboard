@@ -640,7 +640,9 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                <DeploymentChartsRouter />,
+                <Route key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST} path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}>
+                    <DeploymentChartsRouter />
+                </Route>,
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
                     key={URLS.GLOBAL_CONFIG_NOTIFIER}
