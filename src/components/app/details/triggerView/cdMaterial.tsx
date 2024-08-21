@@ -1571,6 +1571,35 @@ const CDMaterial = ({
         <div className="flexbox-col py-16 px-20 dc__overflow-scroll">{children}</div>
     )
 
+    const renderRuntimeParamsSidebar = (areTabsDisabled: boolean = false) => {
+        const showSidebar = isPreOrPostCD && !isFromBulkCD
+        if (!showSidebar) {
+            return null
+        }
+
+        return (
+            <div className="flexbox-col bcn-0">
+                {RuntimeParamTabs && (
+                    <div className={`px-16 py-12 flex ${areTabsDisabled ? 'dc__disabled' : ''}`}>
+                        <RuntimeParamTabs
+                            tabs={CD_MATERIAL_SIDEBAR_TABS}
+                            initialTab={currentSidebarTab}
+                            onChange={areTabsDisabled ? noop : handleSidebarTabChange}
+                        />
+                    </div>
+                )}
+
+                <div className="flexbox dc__align-items-center px-16 py-8">
+                    <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
+                </div>
+
+                <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
+                    <span className="cn-9 fs-13 fw-6 lh-16">{appName}</span>
+                </div>
+            </div>
+        )
+    }
+
     const renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList, eligibleImagesCount } =
             getConsumedAndAvailableMaterialList(isApprovalConfigured)
@@ -1583,27 +1612,7 @@ const CDMaterial = ({
             <div
                 className={`flex-grow-1 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
             >
-                {isPreOrPostCD && !isFromBulkCD && (
-                    <div className="flexbox-col bcn-0">
-                        {RuntimeParamTabs && (
-                            <div className="px-16 py-12 flex">
-                                <RuntimeParamTabs
-                                    tabs={CD_MATERIAL_SIDEBAR_TABS}
-                                    initialTab={currentSidebarTab}
-                                    onChange={handleSidebarTabChange}
-                                />
-                            </div>
-                        )}
-
-                        <div className="flexbox dc__align-items-center px-16 py-8">
-                            <span className="dc__uppercase cn-7 fs-12 fw-6 lh-20">Application</span>
-                        </div>
-
-                        <div className="flexbox dc__align-items-center px-16 py-12 dc__window-bg dc__border-bottom-n1">
-                            <span className="cn-9 fs-13 fw-6 lh-16">{appName}</span>
-                        </div>
-                    </div>
-                )}
+                {renderRuntimeParamsSidebar()}
 
                 <ConditionalWrap condition={isPreOrPostCD && !isFromBulkCD} wrap={renderMaterialListBodyWrapper}>
                     {(bulkSidebarTab
@@ -2117,15 +2126,19 @@ const CDMaterial = ({
                     </div>
                 )}
 
-                <div className="flexbox-col dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
-                    <div className="flexbox dc__align-items-center dc__content-space pt-20 pb-16 w-100">
-                        <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
-                    </div>
+                <div className={`flexbox-col h-100 dc__overflow-scroll ${isPreOrPostCD && !isFromBulkCD ? 'display-grid cd-material__container-with-sidebar' : ''}`}>
+                    {renderRuntimeParamsSidebar(true)}
 
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
-                    <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                    <div className="flexbox-col dc__overflow-scroll dc__gap-12 dc__align-items-center h-100 w-100 pl-20 pr-20">
+                        <div className="flexbox dc__align-items-center dc__content-space pt-20 pb-16 w-100">
+                            <div className="shimmer-loading" style={{ width: '100px', height: '20px' }} />
+                        </div>
+
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                        <div className="shimmer-loading w-100" style={{ height: '150px' }} />
+                    </div>
                 </div>
             </>
         )
