@@ -1913,41 +1913,6 @@ button.anchor {
 }
 
 // Start Security CSS
-.dc__fill-pass {
-    border-radius: 4px;
-    border: solid 1px var(--G300);
-    color: var(--G500);
-    padding: 0 8px 0 8px;
-    text-transform: capitalize;
-    background-color: var(--G100);
-}
-
-.dc__fill-critical {
-    border-radius: 4px;
-    border: solid 1px var(--R300);
-    color: var(--R500);
-    padding: 0 8px 0 8px;
-    text-transform: capitalize;
-    background-color: var(--R100);
-}
-
-.dc__fill-moderate {
-    border-radius: 4px;
-    border: solid 1px #ffbc76;
-    color: #ff8300;
-    text-transform: capitalize;
-    padding: 0 8px 0 8px;
-    background-color: #ffead4;
-}
-
-.dc__fill-low {
-    border-radius: 4px;
-    border: solid 1px var(--Y300);
-    color: var(--Y600);
-    padding: 0 8px 0 8px;
-    text-transform: capitalize;
-    background-color: var(--Y100);
-}
 
 .dc__security-tab__table-row:hover .dc__cve-cell:after {
     display: inline-block;
@@ -4861,6 +4826,53 @@ textarea::placeholder {
     }
 }
 
+.severity-chip {
+    display: flex;
+    padding: 0px 6px;
+    align-items: center;
+    gap: 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+
+    &--passed {
+        color: var(--G500);
+        border: 1px solid var(--G200);
+        background: var(--G100);
+    }
+
+    &--critical {
+        color: var(--R700, #B21212);
+        border: 1px solid var(--R700, #B21212);
+        background: var(--R100, #FDE7E7);
+    }
+
+    &--high {
+        color: var(--R500, #F33E3E);
+        border: 1px solid var(--R200, #FCBCBC);
+        background: var(--R100, #FDE7E7);
+    }
+
+    &--medium {
+        color: var(--O600, #E55E39);
+        border: 1px solid var(--O200, #FFBEAD);
+        background: var(--O100, #FFE5DE);
+    }
+
+    &--low {
+        color: var(--Y700, #8C6324);
+        border: 1px solid var(--Y200, #FFE5BE);
+        background: var(--Y100, #FFF5E5);
+    }
+
+    &--unknown {
+        color: var(--N700, #3B444C);
+        border: 1px solid var(--N200, #D0D4D9);
+        background: var(--N100, #EDF1F5);
+    }
+}
 .dc__grid-full {
     display: grid;
     grid-template-columns: 100% 0;
