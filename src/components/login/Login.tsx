@@ -27,6 +27,7 @@ import {
     withUserEmail,
     URLS as CommonURL,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME, PREVIEW_DEVTRON, PRIVACY_POLICY } from '../../config'
@@ -35,6 +36,8 @@ import { loginAsAdmin } from './login.service'
 import { dashboardAccessed } from '../../services/service'
 import './login.scss'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
+
+const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -70,7 +73,7 @@ class Login extends Component<LoginProps, LoginFormState> {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
-            queryParam = window._env_.HIDE_NETWORK_STATUS_INTERFACE ? URLS.APP : CommonURL.NETWORK_STATUS_INTERFACE
+            queryParam = window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface ? URLS.APP : CommonURL.NETWORK_STATUS_INTERFACE
             const url = `${this.props.location.pathname}?continue=${queryParam}`
             this.props.history.push(url)
         }
@@ -139,7 +142,7 @@ class Login extends Component<LoginProps, LoginFormState> {
             return queryString
         }
 
-        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE) {
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
             return CommonURL.NETWORK_STATUS_INTERFACE
         }
 
