@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
     showError,
     Progressing,
@@ -41,8 +41,9 @@ import {
     ModuleNameMap,
     EMPTY_STATE_STATUS,
     TabGroup,
+    ScanVulnerabilitiesTable,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import {
     getCIPipelines,
@@ -63,6 +64,7 @@ import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { ReactComponent as NoVulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { renderCIListHeader, renderDeploymentHistoryTriggerMetaText } from '../cdDetails/utils'
+import { getSeverityWithCount } from '@Components/common'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 const statusSet = new Set(['starting', 'running', 'pending'])
@@ -660,8 +662,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         lastExecution: '',
         severityCount: {
             critical: 0,
-            moderate: 0,
+            high: 0,
+            medium: 0,
             low: 0,
+            unknown: 0,
         },
         scanEnabled: false,
         scanned: false,
@@ -715,9 +719,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    const { severityCount } = securityData
-    const total = severityCount.critical + severityCount.moderate + severityCount.low
-
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
         return (
             <GenericEmptyState
@@ -758,16 +759,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         className="icon-dim-24 rotate fcn-9 mr-12"
                     />
                     <div className="security-scan__last-scan dc__ellipsis-right">{securityData.lastExecution}</div>
-                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
-                    {severityCount.critical !== 0 ? (
-                        <span className="dc__fill-critical">{severityCount.critical} Critical</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate !== 0 ? (
-                        <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
-                    ) : null}
-                    {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="dc__fill-low">{severityCount.low} Low</span>
-                    ) : null}
+                    {getSeverityWithCount(securityData.severityCount)}
                     <div className="security-scan__type flex">
                         <ScannedByToolModal scanToolId={scanToolId} />
                     </div>
@@ -775,44 +767,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <table className="security-scan-table">
-                        <tr className="security-scan-table__header">
-                            <th className="security-scan-table__title security-scan-table__cve">CVE</th>
-                            <th className="security-scan-table__title">SEVERITY</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">PACKAGE</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">CURRENT VERSION</th>
-                            <th className="security-scan-table__title security-scan-table--w-18">FIXED IN VERSION</th>
-                        </tr>
-                        {securityData.vulnerabilities.map((item) => {
-                            return (
-                                <tr className="security-scan-table__row">
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table__cve dc__cve-cell">
-                                        <a
-                                            href={`https://cve.mitre.org/cgi-bin/cvename.cgi?name=${item.name}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            {item.name}
-                                        </a>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl">
-                                        <span className={`fill-${item.severity}`} data-testid="severity-check">
-                                            {item.severity}
-                                        </span>
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.package}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.version}
-                                    </td>
-                                    <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
-                                        {item.fixedVersion}
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                    </table>
+                    <div className='px-24 security-scan-table'>
+                        <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
+                    </div>
                 )}
             </div>
         </>

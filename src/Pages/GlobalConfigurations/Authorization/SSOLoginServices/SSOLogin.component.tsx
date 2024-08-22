@@ -35,35 +35,28 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     CodeEditor,
     FeatureTitleWithInfo,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import yamlJsParser from 'yaml'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOLoginTabType, SSOConfigType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
+import Check from '@Icons/ic-selected-corner.png'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
+import { ReactComponent as WarningIcon } from '@Icons/ic-warning.svg'
+import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
-} from '../../../../components/common'
+} from '@Components/common'
+import { OIDCType, SSOLoginProps, SSOLoginState, SSOConfigType, SSOLoginTabType } from './ssoConfig.types'
+import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
+import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
 
-import '../../../../components/login/login.scss'
+import '@Components/login/login.scss'
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 
 import sample from './sampleSSOConfig.json'
-import { ReactComponent as Google } from '../../../../assets/icons/ic-google.svg'
-import Check from '../../../../assets/icons/ic-selected-corner.png'
-import { ReactComponent as Help } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as GitHub } from '../../../../assets/icons/git/github.svg'
-import { ReactComponent as Microsoft } from '../../../../assets/icons/ic-microsoft.svg'
-import { ReactComponent as LDAP } from '../../../../assets/icons/ic-ldap.svg'
-import { ReactComponent as OIDC } from '../../../../assets/icons/ic-oidc.svg'
-import { ReactComponent as Openshift } from '../../../../assets/icons/ic-openshift.svg'
-import { ReactComponent as GitLab } from '../../../../assets/icons/git/gitlab.svg'
-import { ReactComponent as UsersIcon } from '../../../../assets/icons/ic-users.svg'
-
-import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-info-warn.svg'
 
 import {
     AUTHORIZATION_CONFIG_TYPES,
@@ -73,36 +66,23 @@ import {
     ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
 } from './constants'
+import './ssoLogin.scss'
+import { SSOTabIcons } from './utils'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
 const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
-
-// eslint-disable-next-line consistent-return
-const SSOTabIcons: React.FC<{ provider: SSOProvider }> = ({ provider }) => {
-    // eslint-disable-next-line default-case
-    switch (provider) {
-        case SSOProvider.google:
-            return <Google />
-        case SSOProvider.github:
-            return <GitHub />
-        case SSOProvider.gitlab:
-            return <GitLab />
-        case SSOProvider.microsoft:
-            return <Microsoft />
-        case SSOProvider.ldap:
-            return <LDAP />
-        case SSOProvider.oidc:
-            return <OIDC />
-        case SSOProvider.openshift:
-            return <Openshift />
-    }
-}
-
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
     return (
         <label className="dc__tertiary-tab__radio">
-            <input type="radio" value={value} checked={checked} name="status" onChange={handleSSOClick} />
+            <input
+                className="dc__hide-section"
+                type="radio"
+                value={value}
+                checked={checked}
+                name="status"
+                onChange={handleSSOClick}
+            />
             <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
                 <aside className="login__icon-alignment">
                     <SSOTabIcons provider={value} />
@@ -111,8 +91,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
                 <label>
                     {lastActiveSSO?.name === value ? (
                         <aside className="dc__position-abs dc__right-0 dc__top-0">
-                            {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                            <img src={Check} className="h-32" />
+                            <img src={Check} className="h-32 dc__top-right-radius-3" alt="saved-provider-check" />
                         </aside>
                     ) : (
                         ''
@@ -655,19 +634,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div
-                style={{
-                    resize: 'none',
-                    lineHeight: '1.4',
-                    border: 'none',
-                    padding: `0 35px`,
-                    overflow: 'none',
-                    color: '#f32e2e',
-                    fontSize: '14px',
-                    fontFamily: 'Consolas, "Courier New", monospace',
-                }}
-                className="w-100"
-            >
+            <div className="w-100 code-editor__text">
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -678,19 +645,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div
-                    style={{
-                        resize: 'none',
-                        lineHeight: '1.4',
-                        border: 'none',
-                        padding: `0 35px`,
-                        overflow: 'none',
-                        color: '#f32e2e',
-                        fontSize: '14px',
-                        fontFamily: 'Consolas, "Courier New", monospace',
-                    }}
-                    className="w-100"
-                >
+                <div className="w-100 code-editor__text">
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -701,36 +656,32 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="mt-0 ml-24 mr-24 mb-24">
-                <div className="code-editor-container">
-                    <CodeEditor
-                        value={codeEditorBody}
-                        height={300}
-                        mode="yaml"
-                        noParsing={this.state.sso === OIDCType}
-                        lineDecorationsWidth={
-                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0
-                        }
-                        shebang={shebangHtml}
-                        readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                        onChange={this.handleConfigChange}
-                        onBlur={this.handleOnBlur}
-                    >
-                        <CodeEditor.Header>
-                            <Switch
-                                value={this.state.configMap}
-                                name="tab"
-                                onChange={(event) => {
-                                    this.handleCodeEditorTab(event.target.value)
-                                }}
-                            >
-                                <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
-                                <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-                            </Switch>
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
-                    </CodeEditor>
-                </div>
+            <div className="code-editor-container">
+                <CodeEditor
+                    value={codeEditorBody}
+                    height={500}
+                    mode="yaml"
+                    noParsing={this.state.sso === OIDCType}
+                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
+                    shebang={shebangHtml}
+                    readOnly={this.state.configMap !== SwitchItemValues.Configuration}
+                    onChange={this.handleConfigChange}
+                    onBlur={this.handleOnBlur}
+                >
+                    <CodeEditor.Header className="code-editor__header flex left">
+                        <Switch
+                            value={this.state.configMap}
+                            name="tab"
+                            onChange={(event) => {
+                                this.handleCodeEditorTab(event.target.value)
+                            }}
+                        >
+                            <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
+                            <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                        </Switch>
+                        <CodeEditor.ValidationError />
+                    </CodeEditor.Header>
+                </CodeEditor>
             </div>
         )
     }
@@ -750,7 +701,11 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
     render() {
         if (this.state.view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+            return (
+                <div className="bcn-0 h-100">
+                    <Progressing pageLoader />
+                </div>
+            )
         }
         if (this.state.view === ViewType.ERROR) {
             return (
@@ -760,24 +715,41 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
 
+        const renderInfoText = (): JSX.Element => {
+            return (
+                <div className="flex left column dc__gap-24">
+                    <div>
+                        For <span className="fw-6">redirectURI or callbackURI</span> use: &nbsp;
+                        {`${window.location.origin}/orchestrator`}
+                        /api/dex/callback
+                        <br />
+                        Please ensure above URL is registered with the identity provider.
+                    </div>
+                    <div>
+                        <span className="fw-6">📙 Need Help? </span>See documentation for&nbsp;
+                        <a
+                            rel="noreferrer noopener"
+                            href={`${ssoDocumentationMap[this.state.sso]}`}
+                            target="_blank"
+                            className="login__auth-link"
+                        >
+                            Authentication through {ssoProviderToDisplayNameMap[this.state.sso]}
+                        </a>
+                    </div>
+                </div>
+            )
+        }
+
         this.isAutoAssignPermissionFlowActive = !!(
             autoAssignPermissionsFlowActiveProviders.includes(this.state.sso as SSOProvider) && AutoAssignToggleTile
         )
         // The assignment confirmation modal has precedence over SSO change confirmation modal
         const showSSOChangeConfirmationModal = this.state.showToggling && !this.state.showAutoAssignConfirmationModal
-        return (
-            <section className="global-configuration__component">
-                <FeatureTitleWithInfo
-                    title={HEADER_TEXT.SSO_LOGIN.title}
-                    renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
-                    docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
-                    showInfoIconTippy
-                    additionalContainerClasses="mb-20"
-                    dataTestId="sso-login-heading"
-                />
 
-                <div className="bcn-0 bw-1 en-2 br-8 pb-22">
-                    <div className="login__sso-flex pl-24">
+        const renderSSOBody = () => {
+            return (
+                <div className="flex column left dc__gap-16 w-100">
+                    <div className="login__sso-flex dc__gap-12">
                         {Object.entries(ssoProviderToDisplayNameMap).map(([provider, ssoName]) => (
                             <SSOLoginTab
                                 key={provider}
@@ -789,29 +761,15 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             />
                         ))}
                     </div>
-                    <div className="dc__sso-description p-16 br-4 fs-14 eb-2 bw-1 mt-20 mb-20 ml-24 mr-24">
-                        <div className="flexbox">
-                            <Help className="icon-dim-20 fcb-5 mr-12" />
-                            <div>
-                                For redirectURI or callbackURI use: {`${window.location.origin}/orchestrator`}
-                                /api/dex/callback
-                                <br />
-                                Please ensure above URL is registered with the identity provider.
-                            </div>
-                        </div>
-                        <div className="mt-8 ml-32">
-                            <span className="fw-6">Help: </span>See documentation for&nbsp;
-                            <a
-                                rel="noreferrer noopener"
-                                href={`${ssoDocumentationMap[this.state.sso]}`}
-                                target="_blank"
-                                className="login__auth-link"
-                            >
-                                Authentication through {ssoProviderToDisplayNameMap[this.state.sso]}
-                            </a>
-                        </div>
+                    <div className="flex-grow-1 w-100">
+                        <InfoColourBar
+                            message={renderInfoText()}
+                            classname="question-bar w-100 dc__mw-600"
+                            iconClass="icon-dim-20 fcv-5"
+                            Icon={Help}
+                        />
                     </div>
-                    <label className="form__row mr-24 ml-24 mb-24">
+                    <div className="flex-grow-1 w-100">
                         <CustomInput
                             value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                             onChange={this.handleURLChange}
@@ -822,7 +780,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             error={this.state.isError.url}
                         />
                         <div className="flex left fw-4 pt-4">
-                            <Warn className="icon-dim-16 mr-4 " />
+                            <InfoIcon className="icon-dim-16 mr-4 " />
                             <div className="">Click to use:</div>
                             <button
                                 type="button"
@@ -832,10 +790,10 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 {window.location.origin}/orchestrator
                             </button>
                         </div>
-                    </label>
+                    </div>
                     {this.renderSSOCodeEditor()}
                     {this.isAutoAssignPermissionFlowActive && (
-                        <div className="mb-12 ml-24 mr-24">
+                        <div className="w-100">
                             <AutoAssignToggleTile
                                 ssoType={this.state.sso}
                                 isSelected={this.state.shouldAutoAssignPermissions}
@@ -843,19 +801,41 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             />
                         </div>
                     )}
-                    <div className="form__buttons mt-32 mr-24">
+                </div>
+            )
+        }
+
+        const renderSSOContent = () => {
+            return (
+                <div className="flex column left dc__mxw-1000 w-100 pb-64">
+                    <div className="px-20 py-16 dc__gap-24 flex column left w-100">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.SSO_LOGIN.title}
+                            renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
+                            docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                            showInfoIconTippy
+                            dataTestId="sso-login-heading"
+                        />
+                        {renderSSOBody()}
+                    </div>
+                    <div className="px-20 py-16 dc__border-top-n1 w-100 dc__position-fixed bcn-0 dc__bottom-0">
                         <button
                             onClick={this.onLoginConfigSave}
                             tabIndex={5}
                             type="submit"
                             disabled={this.state.saveLoading}
-                            className="cta"
+                            className="cta small"
                             data-testid="sso-save-button"
                         >
                             {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>
                     </div>
                 </div>
+            )
+        }
+        return (
+            <section className="bcn-0 sso-login__wrapper">
+                {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (
                     <ConfirmationDialog className="w-400">

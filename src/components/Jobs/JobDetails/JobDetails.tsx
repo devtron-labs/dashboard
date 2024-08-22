@@ -18,7 +18,6 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import ReactGA from 'react-ga4'
 import {
     generatePath,
-    NavLink,
     Redirect,
     Route,
     Switch,
@@ -27,24 +26,24 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
+import { APP_TYPE, URLS } from '../../../config'
 import {
     BreadCrumb,
     Progressing,
     showError,
     useBreadcrumb,
     PageHeader,
+    ResourceKindType,
     TabProps,
     TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
-import AppConfig from '../../app/details/appConfig/AppConfig'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
 import { ErrorBoundary, trackByGAEvent } from '../../common'
-import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { AppSelector } from '../../AppSelector'
 import '../../app/details/appDetails/appDetails.scss'
 
@@ -83,7 +82,11 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appType={APP_TYPE.JOB}
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView />
@@ -92,7 +95,7 @@ export default function JobDetails() {
                             <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} isJobView />
+                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
