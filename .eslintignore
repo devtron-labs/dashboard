@@ -556,7 +556,6 @@ src/index.tsx
 src/services/fetchWithFullRoute.ts
 src/services/service.ts
 src/services/service.types.ts
-src/util/DeleteComponent.tsx
 src/util/MurmurHash3.ts
 src/util/Subject.ts
 src/util/Util.ts
