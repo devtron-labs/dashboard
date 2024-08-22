@@ -15,7 +15,8 @@
  */
 
 import { DOCUMENTATION } from '@Config/constants'
-import { DefaultShortGitOpsType, GitOpsFormErrorType, GitProvider } from './gitops.type'
+import { GitProvider } from '@Components/common/GitTabs/constants'
+import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
 
 export const GitHost = {
     GITHUB: 'https://github.com/',
