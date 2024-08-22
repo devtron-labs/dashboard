@@ -29,6 +29,7 @@ import {
     SelectPicker,
     ComponentSizeType,
     SelectPickerProps,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -41,7 +42,6 @@ import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
 import { isAWSCodeCommitURL, renderMaterialIcon, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
-import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
     DeleteComponentsName,
