@@ -356,8 +356,8 @@ export class SecurityPolicyEdit extends Component<
                     <div className="dc__w-fit-content">
                         <SelectPicker
                             inputId={`select-vulnerability-${props.className}`}
-                            classNamePrefix=""
-                            name=""
+                            classNamePrefix={`select-vulnerability-${props.className}`}
+                            name={`select-vulnerability-${props.className}`}
                             value={selectedValue}
                             onChange={(selected) => {
                                 this.updateSeverity((selected as any).value, severity, v.envId)
