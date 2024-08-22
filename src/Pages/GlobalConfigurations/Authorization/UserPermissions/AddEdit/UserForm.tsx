@@ -26,6 +26,7 @@ import {
     OptionType,
     UserStatus,
     useMainContext,
+    UserGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Creatable from 'react-select/creatable'
 import { toast } from 'react-toastify'
@@ -45,6 +46,7 @@ import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getCreatableChipStyle } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
+import UserGroupSelector from './UserGroupSelector'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
@@ -69,7 +71,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         chartPermission,
         k8sPermission,
         currentK8sPermissionRef,
-        userGroups,
+        userRoleGroups,
         data: userData,
         userStatus,
         timeToLive,
@@ -81,6 +83,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const [emailState, setEmailState] = useState<{ emails: OptionType[]; inputEmailValue: string; emailError: string }>(
         { emails: [], inputEmailValue: '', emailError: '' },
     )
+    const [selectedUserGroups, setSelectedUserGroups] = useState<Pick<UserGroupType, 'name' | 'userGroupId'>[]>([])
 
     // UI States
     const [submitting, setSubmitting] = useState(false)
@@ -136,12 +139,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         const payload = createUserPermissionPayload({
             id: userData?.id,
             userIdentifier: emailState.emails.map((email) => email.value).join(','),
-            userGroups,
+            userRoleGroups,
             serverMode,
             directPermission,
             chartPermission,
             k8sPermission,
             permissionType,
+            userGroups: selectedUserGroups,
             ...getDefaultUserStatusAndTimeout(),
         })
 
@@ -172,9 +176,10 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     }
 
     const populateDataFromAPI = (data: User) => {
-        const { emailId, userStatus: _userStatus, timeToLive: _timeToLive } = data
+        const { emailId, userStatus: _userStatus, timeToLive: _timeToLive, userGroups } = data
 
         setEmailState({ emails: [{ label: emailId, value: emailId }], inputEmailValue: '', emailError: '' })
+        setSelectedUserGroups(userGroups)
         handleUserStatusUpdate(_userStatus, _timeToLive)
     }
 
@@ -336,9 +341,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                                     </span>
                                 )}
                             </div>
-                            {!isAutoAssignFlowEnabled && <div className="dc__border-top" />}
+                            <div className="dc__border-top" />
                         </>
                     )}
+                    <UserGroupSelector
+                        selectedUserGroups={selectedUserGroups}
+                        handleUserGroupChange={setSelectedUserGroups}
+                    />
                     {!isAddMode && isAutoAssignFlowEnabled && (
                         <UserAutoAssignedRoleGroupsTable roleGroups={_userData.userRoleGroups} />
                     )}

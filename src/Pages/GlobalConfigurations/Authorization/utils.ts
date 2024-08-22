@@ -99,30 +99,7 @@ export const transformUserResponse = (_user: UserDto): User => {
 
     return {
         ...user,
-        userGroups:
-            userGroups ?? [
-                {
-                    userGroupId: '1',
-                    name: 'my-user-group-1',
-                    description: '',
-                },
-                {
-                    userGroupId: '2',
-                    name: 'my-user-group-2',
-                    description: '',
-                },
-                {
-                    userGroupId: '3',
-                    name: 'my-user-group-3',
-                    description: '',
-                },
-                {
-                    userGroupId: '4',
-                    name: 'my-user-group-4',
-                    description: '',
-                },
-            ] ??
-            [],
+        userGroups: userGroups ?? [],
         emailId,
         lastLoginTime:
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
@@ -368,7 +345,7 @@ export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
-    userGroups,
+    userRoleGroups,
     serverMode,
     directPermission,
     chartPermission,
@@ -376,11 +353,12 @@ export const createUserPermissionPayload = ({
     permissionType,
     userStatus,
     timeToLive,
+    userGroups,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    userRoleGroups: userGroups,
+    userRoleGroups,
     superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
@@ -390,6 +368,7 @@ export const createUserPermissionPayload = ({
         serverMode,
         chartPermission,
     }),
+    userGroups,
 })
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {

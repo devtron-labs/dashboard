@@ -148,7 +148,9 @@ export interface User
 export type UserCreateOrUpdatePayload = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
->
+> & {
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
+}
 
 // Others
 export interface UserRole {
@@ -265,10 +267,10 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups'> {
     id: number
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     userIdentifier: string
-    userGroups: User['userRoleGroups']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter
