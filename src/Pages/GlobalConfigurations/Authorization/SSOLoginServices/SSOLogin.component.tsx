@@ -761,7 +761,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             />
                         ))}
                     </div>
-                    <div className="w-100">
+                    <div className="flex-grow-1 w-100">
                         <InfoColourBar
                             message={renderInfoText()}
                             classname="question-bar w-100 dc__mw-600"
@@ -769,7 +769,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             Icon={Help}
                         />
                     </div>
-                    <div className="w-100">
+                    <div className="flex-grow-1 w-100">
                         <CustomInput
                             value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                             onChange={this.handleURLChange}

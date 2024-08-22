@@ -87,7 +87,7 @@ const GitInfoTab: React.FC<{ gitLink: string; gitProvider: string; gitProviderGr
     gitProviderGroupAlias,
 }) => {
     return (
-        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col w-100">
+        <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col w-100 flex-grow-1">
             <div className="flex left ">
                 <Info className="icon-dim-20" style={{ marginTop: 1 }} />
                 <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
@@ -1025,8 +1025,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         const getGitOpsLabel = () => (
-            <div className="w-100">
-                <span className="dc__required-field w-100">{getGitOpsLabelText(this.state.providerTab)} </span>
+            <div>
+                <span className="dc__required-field">{getGitOpsLabelText(this.state.providerTab)} </span>
                 &nbsp;(Use https://)
             </div>
         )
@@ -1135,7 +1135,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             warning={this.state.deleteRepoError ? warning : ''}
                         />
                     )}
-                    <div className="w-100">
+                    <div className="flex-grow-1 w-100">
                         <CustomInput
                             value={this.state.form.host}
                             onChange={(event) => this.handleChange(event, 'host')}
@@ -1427,7 +1427,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
 
         return (
-            <div className="bcn-0 w-100 h-100">
+            <div className="bcn-0 flex-grow-1 w-100 h-100">
                 <section className="flex-1 bcn-0 flex left column">
                     <div className="flex left column px-20 py-16 dc__gap-24 w-100">
                         <FeatureTitleWithInfo
