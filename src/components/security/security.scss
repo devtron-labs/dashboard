@@ -476,10 +476,12 @@
     border-bottom-right-radius: 0 !important;
 }
 
-.security-scans-search {
-    .search-bar {
-        border-top-left-radius: 0 !important;
-        border-bottom-left-radius: 0 !important;
-        border-left: none;
+.security-scan {
+    .security-scans-search {
+        .search-bar {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-left: none;
+        }
     }
 }
