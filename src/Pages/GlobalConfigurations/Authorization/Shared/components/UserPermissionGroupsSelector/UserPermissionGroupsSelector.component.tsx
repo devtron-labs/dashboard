@@ -48,8 +48,8 @@ const UserPermissionGroupsSelector = () => {
     )
 
     function populateDataFromAPI(data: User) {
-        const { userRoleGroups } = data
-        setUserRoleGroups(userRoleGroups)
+        const { userRoleGroups: userRoleGroupsFromAPI } = data
+        setUserRoleGroups(userRoleGroupsFromAPI)
     }
 
     useEffect(() => {
