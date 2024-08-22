@@ -150,11 +150,15 @@ export interface User
     userGroups: UserGroupType[]
 }
 
-export type UserCreateOrUpdatePayload = Pick<
+export type UserCreateOrUpdateParamsType = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
 > & {
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
+}
+
+export interface UserCreateOrUpdatePayloadType extends Omit<UserDto, 'userGroups'> {
+    userGroups: Pick<UserGroupDTO, 'identifier'>[]
 }
 
 // Others
