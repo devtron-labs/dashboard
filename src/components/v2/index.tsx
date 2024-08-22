@@ -37,7 +37,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
-import { HelmAppOverview } from './HelmAppOverview/HelpAppOverview'
+import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 
 let initTimer = null
 
