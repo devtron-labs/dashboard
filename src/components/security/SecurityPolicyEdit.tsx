@@ -353,25 +353,25 @@ export class SecurityPolicyEdit extends Component<
                             {props.subTitle}
                         </div>
                     </div>
-                    <div className='dc__w-fit-content'>
-                    {/* TODO: Add align menu to right after support is added in Select Picker */}
-                    <SelectPicker
-                        inputId={`select-vulnerability-${props.className}`}
-                        classNamePrefix=""
-                        name=""
-                        value={selectedValue}
-                        onChange={(selected) => {
-                            this.updateSeverity((selected as any).value, severity, v.envId)
-                        }}
-                        placeholder={`${
-                            severity.policy.inherited && !severity.policy.isOverriden
-                                ? 'INHERITED'
-                                : severity.policy.action
-                        }`}
-                        options={actions}
-                        variant={SelectPickerVariantType.BORDERLESS}
-                    />
-                </div>
+                    <div className="dc__w-fit-content">
+                        <SelectPicker
+                            inputId={`select-vulnerability-${props.className}`}
+                            classNamePrefix=""
+                            name=""
+                            value={selectedValue}
+                            onChange={(selected) => {
+                                this.updateSeverity((selected as any).value, severity, v.envId)
+                            }}
+                            placeholder={`${
+                                severity.policy.inherited && !severity.policy.isOverriden
+                                    ? 'INHERITED'
+                                    : severity.policy.action
+                            }`}
+                            options={actions}
+                            variant={SelectPickerVariantType.BORDERLESS}
+                            shouldMenuAlignRight
+                        />
+                    </div>
                 </div>
                 <div className="dc__border-bottom-n1" />
             </>
@@ -570,7 +570,7 @@ export class SecurityPolicyEdit extends Component<
                                 <div className="flexbox flex-justify">
                                     <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p>
                                     <Arrow
-                                        className="icon-dim-24 cursor fwn-9 rotate"
+                                        className="icon-dim-24 cursor fwn-9 rotate dc__no-shrink"
                                         style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
                                         onClick={() => {
                                             this.toggleCollapse(cardIndex)

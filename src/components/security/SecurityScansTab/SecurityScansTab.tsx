@@ -211,7 +211,7 @@ export const SecurityScansTab = () => {
                         />
                     </div>
                     <SearchBar
-                        containerClassName="security-scans-search w-250"
+                        containerClassName="security-scan-search w-250"
                         initialSearchText={searchKey}
                         inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
                         handleEnter={handleSearch}
