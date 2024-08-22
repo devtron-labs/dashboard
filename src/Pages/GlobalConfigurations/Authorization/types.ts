@@ -132,7 +132,10 @@ export interface UserDto {
 }
 
 export interface User
-    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
+    extends Omit<
+        UserDto,
+        'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters' | 'userGroups'
+    > {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -144,6 +147,7 @@ export interface User
     userStatus: UserStatus
     userRoleGroups: UserRoleGroup[]
     roleFilters: APIRoleFilter[]
+    userGroups: UserGroupType[]
 }
 
 export type UserCreateOrUpdatePayload = Pick<
