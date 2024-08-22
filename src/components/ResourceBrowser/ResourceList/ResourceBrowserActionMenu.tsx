@@ -49,10 +49,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     }
 
     const handleShowVulnerabilityModal = () => {
-        /* TODO: stop propagation otherwise it conflicts with useOutsideClick of SecurityModal */
-        setTimeout(() => {
-            setShowVulnerabilityModal(true)
-        }, 100)
+        setShowVulnerabilityModal(true)
     }
 
     const handleCloseVulnerabilityModal = () => {
@@ -66,7 +63,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto" isKebab>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4" isKebab>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">

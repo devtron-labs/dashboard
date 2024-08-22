@@ -32,6 +32,7 @@
     --tooltip-index: 7;
     --events-logs: 4;
     --index-next-section: 3;
+    --select-picker-menu-index: 20;
 }
 
 body {
@@ -320,6 +321,10 @@ a:focus {
     &--imp {
         background: transparent !important;
         border: none !important;
+    }
+
+    &--unstyled {
+        background: transparent;
     }
 }
 
@@ -2105,6 +2110,10 @@ button.anchor {
     align-self: flex-start;
 }
 
+.dc__align-self-end {
+    align-self: end;
+}
+
 .dc__align-center {
     text-align: center !important;
 }
@@ -2484,6 +2493,10 @@ button.anchor {
 
 .dc__hide-section {
     display: none;
+
+    &--imp {
+        display: none !important;
+    }
 }
 
 .dark-background {
@@ -2670,6 +2683,18 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__top-right-radius {
+    border-top-right-radius: 4px;
+}
+
+.dc__bottom-left-radius {
+    border-bottom-left-radius: 4px;
+}
+
+.dc__bottom-right-radius {
+    border-bottom-right-radius: 4px;
+}
+
 .dc__bottom-left-radius-8 {
     border-bottom-left-radius: 8px;
 }
@@ -2801,6 +2826,12 @@ textarea,
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
+    }
+}
+
+.dc__fill-transparent {
+    path {
+        fill: transparent !important;
     }
 }
 
@@ -4099,6 +4130,10 @@ textarea,
 
 .dc__flip-90 {
     transform: rotate(90deg);
+
+    &--neg {
+        transform: rotate(-90deg);
+    }
 }
 
 .dc__flip-270 {
@@ -4402,6 +4437,10 @@ textarea::placeholder {
 
 .dc__zi-10 {
     z-index: 10;
+}
+
+.dc__zi-11 {
+    z-index: 11;
 }
 
 .dc__zi-20 {
@@ -4778,6 +4817,29 @@ textarea::placeholder {
     background: linear-gradient(14deg, var(--N50) 48.93%, #D4E6F7 80.3%);
 }
 
+.dc__nav-item {
+    &.active {
+        color: var(--B500);
+        font-weight: 600;
+        background: var(--B100);
+
+        &:hover {
+            color: var(--B500);
+            background: var(--B100);
+        }
+    }
+
+    &:hover {
+        color: var(--N700);
+        text-decoration: none;
+        background: var(--N50);
+    }
+
+    &__text {
+        max-width: 192px;
+    }
+}
+
 .bw-1_5 {
     border-width: 1.5px;
 }
@@ -4787,6 +4849,10 @@ textarea::placeholder {
         width: 100%;
         height: 100%;
     }
+}
+
+.dc__search-highlight-bg {
+    background-color: var(--search-highlight-text);
 }
 
 .severity-chip {

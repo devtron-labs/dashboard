@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, put, post, YAMLStringify, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, put, post, YAMLStringify, ResponseType, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 import { ConfigMapRequest } from './types'
 import { addGUISchemaIfAbsent } from './utils'
@@ -57,7 +57,7 @@ export function getDeploymentManisfest(request) {
     return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, request)
 }
 
-export function getOptions(appId: number, envId: number) {
+export function getOptions(appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> {
     return get(`${Routes.DEPLOYMENT_OPTIONS}?appId=${appId}&envId=${envId}`)
 }
 

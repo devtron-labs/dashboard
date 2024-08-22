@@ -33,6 +33,7 @@ import { WebhookPayloads } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+import { EnvConfigurationState } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -243,7 +244,9 @@ export interface EnvSelectorType {
 }
 
 export interface ApplicationRouteType {
-    envListData: ConfigAppList
+    envAppList: ConfigAppList[]
+    envConfig: EnvConfigurationState
+    fetchEnvConfig: () => void
 }
 
 export interface EnvironmentsListViewType {
