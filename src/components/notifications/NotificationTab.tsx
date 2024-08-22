@@ -758,7 +758,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         if (this.state.pagination.size) {
             return (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     offset={this.state.pagination.offset}
                     pageSize={this.state.pagination.pageSize}
                     size={this.state.pagination.size}

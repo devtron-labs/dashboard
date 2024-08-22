@@ -470,7 +470,7 @@ const GenericAppList = ({
         return (
             filteredAppsList.length > 20 && (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={filteredAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

@@ -203,7 +203,7 @@ export default function JobListView(props: JobListViewProps) {
         if (props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={props.size}
                     pageSize={props.pageSize}
                     offset={props.offset}

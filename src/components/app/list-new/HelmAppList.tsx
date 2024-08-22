@@ -719,7 +719,7 @@ export default function HelmAppList({
             filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={filteredHelmAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

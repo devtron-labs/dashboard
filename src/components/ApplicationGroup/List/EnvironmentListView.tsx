@@ -109,7 +109,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         if (envCount >= DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={envCount}
                     pageSize={paginationParamsChange.pageSize}
                     offset={paginationParamsChange.offset}

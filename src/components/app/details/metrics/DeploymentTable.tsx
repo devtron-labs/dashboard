@@ -187,7 +187,7 @@ export class DeploymentTable extends Component<DeploymentTableProps, any> {
         if (this.state.pagination.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={this.state.pagination.size}
                     pageSize={this.state.pagination.pageSize}
                     offset={this.state.pagination.offset}

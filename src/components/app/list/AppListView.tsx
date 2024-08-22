@@ -309,7 +309,7 @@ export class AppListView extends Component<AppListViewProps> {
         if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
-                    rootClassName="pagination-wrapper"
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={this.props.size}
                     pageSize={this.props.pageSize}
                     offset={this.props.offset}

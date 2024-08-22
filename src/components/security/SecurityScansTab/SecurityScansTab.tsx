@@ -329,7 +329,7 @@ export const SecurityScansTab = () => {
                 })}
                 {securityScansResult.result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
                     <Pagination
-                        rootClassName="pagination-wrapper"
+                        rootClassName="flex dc__content-space px-20 dc__border-top"
                         size={securityScansResult.result.totalCount}
                         pageSize={pageSize}
                         offset={offset}
