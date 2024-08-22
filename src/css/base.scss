@@ -4913,6 +4913,7 @@ textarea::placeholder {
 }
 
 .cd-material {
+    // Replace bulk ci/cd sidebar css with this one when moving a common component
     &__container-with-sidebar {
         grid-template-columns: 234px auto;
     }

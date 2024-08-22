@@ -61,6 +61,7 @@ import { BULK_CI_BUILD_STATUS, BULK_CI_MATERIAL_STATUS, BULK_CI_MESSAGING } from
 import { processConsequenceData } from '../../AppGroup.utils'
 import { getIsAppUnorthodox } from './utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { BULK_ERROR_MESSAGES } from './constants'
 
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
@@ -214,7 +215,7 @@ const BulkCITrigger = ({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            toast.error('Please resolve all the errors before switching tabs')
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
             return
         }
 
@@ -293,7 +294,7 @@ const BulkCITrigger = ({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.ciPipelineId]) {
-            toast.error('Please resolve all the errors before switching application')
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
             return
         }
 

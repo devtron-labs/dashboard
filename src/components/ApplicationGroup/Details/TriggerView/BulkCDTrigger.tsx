@@ -60,6 +60,7 @@ import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
+import { BULK_ERROR_MESSAGES } from './constants'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -147,7 +148,7 @@ export default function BulkCDTrigger({
 
     const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error('Please resolve all the errors before switching tabs')
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
             return
         }
 
@@ -342,7 +343,7 @@ export default function BulkCDTrigger({
 
     const changeApp = (e): void => {
         if (runtimeParamsErrorState[selectedApp.appId]) {
-            toast.error('Please resolve all the errors before switching application')
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
             return
         }
 
