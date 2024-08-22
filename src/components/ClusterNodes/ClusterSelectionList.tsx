@@ -36,6 +36,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
     clusterOptions,
     isSuperAdmin,
     clusterListLoader,
+    initialLoading,
     refreshData,
 }) => {
     const location = useLocation()
@@ -152,7 +153,7 @@ const ClusterSelectionList: React.FC<ClusterSelectionType> = ({
                     inputProps={{
                         placeholder: 'Search clusters',
                         autoFocus: true,
-                        disabled: clusterListLoader,
+                        disabled: initialLoading,
                     }}
                 />
                 <div className="fs-13">
