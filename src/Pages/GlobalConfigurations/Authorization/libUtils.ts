@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UserStatus, UserRoleGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, UserRoleGroup, UserGroupDTO, UserGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../components/common'
 import { User } from './types'
 
@@ -38,3 +38,6 @@ export const getIsStatusDropdownDisabled: (status: UserStatus) => boolean = impo
     () => false,
     'function',
 )
+
+export const getParsedUserGroupList: (userGroupListData: UserGroupDTO[]) => UserGroupType[] =
+    importComponentFromFELibrary('getParsedUserGroupList', () => [], 'function')

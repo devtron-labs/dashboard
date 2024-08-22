@@ -58,7 +58,7 @@ import {
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive } from './libUtils'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -99,7 +99,6 @@ export const transformUserResponse = (_user: UserDto): User => {
 
     return {
         ...user,
-        userGroups: userGroups ?? [],
         emailId,
         lastLoginTime:
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime
@@ -126,6 +125,7 @@ export const transformUserResponse = (_user: UserDto): User => {
                 },
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
+        userGroups: getParsedUserGroupList(userGroups),
     }
 }
 

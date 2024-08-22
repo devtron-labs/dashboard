@@ -46,11 +46,11 @@ import { createUserPermissionPayload, isDirectPermissionFormComplete } from '../
 import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import { getCreatableChipStyle } from '../utils'
 import { getDefaultUserStatusAndTimeout } from '../../libUtils'
-import UserGroupSelector from './UserGroupSelector'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
 const UserPermissionsInfoBar = importComponentFromFELibrary('UserPermissionsInfoBar', null, 'function')
 const UserStatusUpdate = importComponentFromFELibrary('UserStatusUpdate', null, 'function')
+const UserGroupSelector = importComponentFromFELibrary('UserGroupSelector', null, 'function')
 
 const creatableChipStyle = getCreatableChipStyle()
 
@@ -344,10 +344,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
                             <div className="dc__border-top" />
                         </>
                     )}
-                    <UserGroupSelector
-                        selectedUserGroups={selectedUserGroups}
-                        handleUserGroupChange={setSelectedUserGroups}
-                    />
+                    {/* Show status is enterprise only check hence reusing */}
+                    {showStatus && UserGroupSelector && (
+                        <UserGroupSelector
+                            selectedUserGroups={selectedUserGroups}
+                            handleUserGroupChange={setSelectedUserGroups}
+                        />
+                    )}
                     {!isAddMode && isAutoAssignFlowEnabled && (
                         <UserAutoAssignedRoleGroupsTable roleGroups={_userData.userRoleGroups} />
                     )}
