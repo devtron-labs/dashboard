@@ -602,7 +602,6 @@ const HistoryLogs = ({
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
-                    {/* TODO: Should replicate this case as well to check if p-16 is present? */}
                     {isJobCI && !loading && <div className="p-16 flexbox-col dc__gap-8">{CiArtifactsArrayCards}</div>}
                     {!loading && (
                         <div className="p-16 flex-grow-1">
