@@ -92,12 +92,37 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus,
         userRoleGroups,
         roleFilters,
+        userGroups,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
 
     return {
         ...user,
+        userGroups:
+            userGroups ?? [
+                {
+                    userGroupId: '1',
+                    name: 'my-user-group-1',
+                    description: '',
+                },
+                {
+                    userGroupId: '2',
+                    name: 'my-user-group-2',
+                    description: '',
+                },
+                {
+                    userGroupId: '3',
+                    name: 'my-user-group-3',
+                    description: '',
+                },
+                {
+                    userGroupId: '4',
+                    name: 'my-user-group-4',
+                    description: '',
+                },
+            ] ??
+            [],
         emailId,
         lastLoginTime:
             lastLoginTime === ZERO_TIME_STRING || !lastLoginTime

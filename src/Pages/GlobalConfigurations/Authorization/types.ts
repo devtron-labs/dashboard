@@ -22,6 +22,7 @@ import {
     OptionType,
     UserStatus,
     UserRoleGroup,
+    UserGroupType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
 import { ActionTypes, EntityTypes, PermissionType } from './constants'
@@ -126,6 +127,7 @@ export interface UserDto {
         status?: UserStatusDto
         timeoutWindowExpression?: string
     }[]
+    userGroups: UserGroupType[]
 }
 
 export interface User
