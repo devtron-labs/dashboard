@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+import { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -25,6 +25,7 @@ import {
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -57,7 +58,6 @@ import {
     AppCreationType,
 } from '../../config'
 import { getEnvName } from './cluster.util'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
