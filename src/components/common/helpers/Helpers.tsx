@@ -28,6 +28,8 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
+    PipelineBuildStageType,
+    SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -45,7 +47,6 @@ import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Co
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
-import { PipelineBuildStageType } from '../../workflowEditor/types'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
@@ -1309,4 +1310,33 @@ export const renderMaterialIcon = (url: string = '') => {
     }
 
     return <Git className="dc__vertical-align-middle icon-dim-20" />
+}
+
+export const getSeverityWithCount = (severityCount: SeverityCount) => {
+    if (severityCount.critical) {
+        return (
+            <span className="severity-chip severity-chip--critical dc__w-fit-content">
+                {severityCount.critical} Critical
+            </span>
+        )
+    }
+    if (severityCount.high) {
+        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
+    }
+    if (severityCount.medium) {
+        return (
+            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
+        )
+    }
+    if (severityCount.low) {
+        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
+    }
+    if (severityCount.unknown) {
+        return (
+            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
+                {severityCount.unknown} Unknown
+            </span>
+        )
+    }
+    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
 }
