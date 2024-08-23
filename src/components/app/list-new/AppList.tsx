@@ -28,7 +28,6 @@ import {
     HeaderWithCreateButton,
     AppListConstants,
     ModuleNameMap,
-    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
@@ -560,8 +559,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         handleAppSearchOperation('')
     }
 
-    const onChangeSearchString = (value: string): void => {
-        setSearchString(value.toLowerCase())
+    const onChangeSearchString = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        let str = event.target.value || ''
+        str = str.toLowerCase()
+        setSearchString(str)
     }
 
     const syncNow = (): void => {
@@ -657,7 +658,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
         return (
             <div className="search-filter-section">
-                {/* <form style={{ display: 'inline' }} onSubmit={searchApp}>
+                <form style={{ display: 'inline' }} onSubmit={searchApp}>
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
@@ -680,13 +681,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             </button>
                         )}
                     </div>
-                </form> */}
-                <SearchBar
-                    initialSearchText={searchString}
-                    handleEnter={onChangeSearchString}
-                    handleSearchChange={handleAppSearchOperation}
-                    containerClassName="search-filter-section__search-bar"
-                />
+                </form>
                 <div className="app-list-filters filters">
                     {!isGenericAppListView && (
                         <>
@@ -1002,7 +997,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div className="flexbox-col h-100 dc__overflow-scroll">
+        <div className='flexbox-col h-100 dc__overflow-scroll'>
             <HeaderWithCreateButton headerName="Applications" />
             {renderMasterFilters()}
             {renderAppliedFilters()}
