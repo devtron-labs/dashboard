@@ -656,7 +656,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="br-4 dc__border w-100 dc__overflow-hidden">
+            <div className="br-4 dc__border w-100 dc__overflow-hidden code-editor__height">
                 <CodeEditor
                     value={codeEditorBody}
                     mode="yaml"
@@ -838,7 +838,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             )
         }
         return (
-            <section className="bcn-0 sso-login__wrapper">
+            <section className="bcn-0 sso-login__wrapper h-100">
                 {renderSSOContent()}
                 {/* Confirmation Modal for SSO Change */}
                 {showSSOChangeConfirmationModal && (

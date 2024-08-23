@@ -25,4 +25,10 @@
         font-size: 14px;
         font-family: Consolas, "Courier New", monospace;
     }
+
+    & .code-editor__height {
+        & .react-monaco-editor-container {
+            min-height: 250px;
+        }
+    }
 }
