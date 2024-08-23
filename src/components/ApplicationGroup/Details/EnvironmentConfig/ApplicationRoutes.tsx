@@ -14,75 +14,62 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { useRouteMatch, useLocation, NavLink, useParams } from 'react-router-dom'
-import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as ProtectedIcon } from '../../../../assets/icons/ic-shield-protect-fill.svg'
+import { Fragment } from 'react'
+import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
+
+import { EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
+import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/Navigation.helper'
+
 import { ApplicationRouteType } from '../../AppGroup.types'
 
-export default function ApplicationRoute({ envListData }: ApplicationRouteType) {
-    const { appId } = useParams<{ envId: string; appId: string }>()
-    const { url } = useRouteMatch()
-    const location = useLocation()
-    const oldUrlSubstring = `/edit/${appId}`
-    const newUrlSubstring = `/edit/${envListData.id}`
-    const basePath = url.replace(oldUrlSubstring, newUrlSubstring)
-    const [collapsed, toggleCollapsed] = useState(+appId === envListData.id)
+const ApplicationRoute = ({ envAppList, envConfig, fetchEnvConfig }: ApplicationRouteType) => {
+    const {
+        url,
+        params: { envId },
+        path,
+    } = useRouteMatch<{ envId: string; appId: string }>()
 
-    useEffect(() => {
-        if (+appId !== envListData.id) {
-            toggleCollapsed(true)
-        } else {
-            toggleCollapsed(false)
-        }
-    }, [location.pathname])
-
-    const handleNavItemClick = () => {
-        toggleCollapsed(!collapsed)
-    }
     return (
-        <div className="flex column left environment-route-wrapper top">
-            <div
-                data-testid={`app-group-dropdown-${envListData.name}`}
-                className={`env-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
-                onClick={handleNavItemClick}
-            >
-                <div className="flex left">
-                    <Dropdown
-                        className="icon-dim-24 rotate mr-4"
-                        style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
-                    />
-                    <div className={`dc__truncate-text ${envListData.isProtected ? 'dc__mxw-155' : 'dc__mxw-180'}`}>
-                        {envListData.name}
-                    </div>
+        <Switch>
+            <Route path={`${path}/:resourceType(${Object.values(EnvResourceType).join('|')})`}>
+                <EnvConfigurationsNav
+                    envConfig={envConfig}
+                    fetchEnvConfig={fetchEnvConfig}
+                    environments={envAppList.map((env) => ({ ...env, isProtected: env.isProtected || false }))}
+                    goBackURL={generatePath(path, { envId })}
+                    showDeploymentTemplate
+                    paramToCheck="appId"
+                    showComparison
+                />
+            </Route>
+            <Route key="default-navigation">
+                <div className="pt-8 px-8" data-testid="application-group-configuration-heading">
+                    <h4
+                        className="m-0 fs-12 lh-20 cn-7 px-8 py-4 w-100"
+                        data-testid="application-group-configuration-heading"
+                    >
+                        APPLICATIONS
+                    </h4>
                 </div>
-                {envListData.isProtected && <ProtectedIcon className="mw-20 icon-dim-20 fcv-5" />}
-            </div>
-            {!collapsed && (
-                <div className="environment-routes pl-28 w-100">
-                    <NavLink
-                        data-testid={`application-group-deployment-template-${envListData.name}`}
-                        className="env-compose__nav-item cursor"
-                        to={`${basePath}/deployment-template`}
-                    >
-                        Deployment template
-                    </NavLink>
-                    <NavLink
-                        data-testid={`application-group-config-map-${envListData.name}`}
-                        className="env-compose__nav-item cursor"
-                        to={`${basePath}/configmap`}
-                    >
-                        ConfigMaps
-                    </NavLink>
-                    <NavLink
-                        data-testid={`application-group-secret-${envListData.name}`}
-                        className="env-compose__nav-item cursor"
-                        to={`${basePath}/secrets`}
-                    >
-                        Secrets
-                    </NavLink>
+                <div className="px-8">
+                    {envAppList.map(({ name, isProtected, id }) => (
+                        <Fragment key={id}>
+                            {renderNavItem(
+                                {
+                                    title: name,
+                                    isProtectionAllowed: isProtected,
+                                    href: `${url}/${id}/${EnvResourceType.DeploymentTemplate}`,
+                                },
+                                isProtected,
+                            )}
+                        </Fragment>
+                    ))}
                 </div>
-            )}
-        </div>
+            </Route>
+        </Switch>
     )
 }
+
+export default ApplicationRoute

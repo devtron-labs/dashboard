@@ -32,7 +32,7 @@ import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]

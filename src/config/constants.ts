@@ -265,13 +265,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -478,6 +479,12 @@ export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', // helm app work flow
     JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
+}
+
+export enum APP_TYPE {
+    HELM_CHART = 'helm-chart',
+    DEVTRON_APPS = 'app',
+    JOB = 'job',
 }
 
 export enum MODES {
@@ -723,9 +730,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -749,9 +756,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',

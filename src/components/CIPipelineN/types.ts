@@ -15,6 +15,7 @@
  */
 
 import { OptionType, PluginDetailType, StepType, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import { ExtendedOptionType } from '@Components/app/types'
 
 export enum DockerArgsAction {
     ADD = 'add_docker_arg',
@@ -66,4 +67,29 @@ export interface TaskTitleTippyContentProps {
     pluginVersion: string
     pluginName: string
     displayName: string
+}
+
+export interface SuggestedTagOptionType {
+    label: string
+    options: OptionsListType[]
+}
+
+export interface OptionsListType {
+    value: string
+    description: string
+    format: string
+    label: string
+    stageType: string
+    variableType: string
+}
+
+export interface InputPluginSelectionType {
+    selectedOutputVariable: ExtendedOptionType
+    variableOptions?: SuggestedTagOptionType[]
+    variableData?: ExtendedOptionType
+    setVariableData?: (tagData: ExtendedOptionType) => void
+    refVar?: React.MutableRefObject<HTMLTextAreaElement>
+    noBackDrop?: boolean
+    placeholder: string
+    selectedVariableIndex: number
 }

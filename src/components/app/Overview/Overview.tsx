@@ -18,7 +18,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import moment from 'moment'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { APP_TYPE, ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getJobCIPipeline, getTeamList } from '../../../services/service'
 import {
     showError,
@@ -72,8 +72,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     const isUpdateDependencyModalOpen =
         activeTab === OVERVIEW_TABS.DEPENDENCIES && searchParams.get(MODAL_STATE.key) === MODAL_STATE.value
     const config = getAppConfig(appType)
-    const isJobOverview = appType === 'job'
-    const isHelmChart = appType === 'helm-chart'
+    const isJobOverview = appType === APP_TYPE.JOB
+    const isHelmChart = appType === APP_TYPE.HELM_CHART
     // For helm the appId from the params is the installed appId and not the actual id of the app
     const appId = isHelmChart ? `${appMetaInfo.appId}` : appIdFromParams
     const [isLoading, setIsLoading] = useState(true)
@@ -307,7 +307,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                             {createdBy}
                         </div>
                     </div>
-                    {appType === 'app' && gitMaterials.length > 0 && (
+                    {appType === APP_TYPE.DEVTRON_APPS && gitMaterials.length > 0 && (
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Code source</div>
                             <div className="flexbox-col dc__gap-4">
