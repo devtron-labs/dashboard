@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#root > main {
+#root > div > main {
     width: 100%;
     min-height: 100vh;
     display: grid;
@@ -46,7 +46,7 @@
     text-align-last: left;
 }
 
-#root > main {
+#root > div > main {
     & > nav {
         width: 100%;
         background: var(--B500);
