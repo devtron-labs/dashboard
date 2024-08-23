@@ -656,10 +656,9 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
-            <div className="code-editor-container">
+            <div className="br-4 dc__border w-100 dc__overflow-hidden">
                 <CodeEditor
                     value={codeEditorBody}
-                    height={500}
                     mode="yaml"
                     noParsing={this.state.sso === OIDCType}
                     lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0}
@@ -667,19 +666,24 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={this.handleConfigChange}
                     onBlur={this.handleOnBlur}
+                    adjustEditorHeightToContent
                 >
-                    <CodeEditor.Header className="code-editor__header flex left">
-                        <Switch
-                            value={this.state.configMap}
-                            name="tab"
-                            onChange={(event) => {
-                                this.handleCodeEditorTab(event.target.value)
-                            }}
-                        >
-                            <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
-                            <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-                        </Switch>
-                        <CodeEditor.ValidationError />
+                    <CodeEditor.Header>
+                        <div className="flex dc__content-space dc__gap-6">
+                            <CodeEditor.ValidationError />
+                            <div className="dc__no-shrink">
+                                <Switch
+                                    value={this.state.configMap}
+                                    name="tab"
+                                    onChange={(event) => {
+                                        this.handleCodeEditorTab(event.target.value)
+                                    }}
+                                >
+                                    <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
+                                    <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                                </Switch>
+                            </div>
+                        </div>
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
