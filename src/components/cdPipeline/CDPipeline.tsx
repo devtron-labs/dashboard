@@ -234,6 +234,9 @@ export default function CDPipeline({
             steps: [],
             isValid: true,
         },
+        userApprovalConfig: {
+            isValid: true
+        }
     })
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
@@ -866,6 +869,14 @@ export default function CDPipeline({
             if (formData.name === '') {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
             }
+            return
+        }
+
+        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } = formDataErrorObj.userApprovalConfig ?? {}
+
+        if (!isUserApprovalConfigValid) {
+            setLoadingData(false)
+            toast.error(userApprovalConfigErrorMessage)
             return
         }
 
