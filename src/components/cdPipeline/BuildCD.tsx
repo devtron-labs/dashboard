@@ -225,7 +225,7 @@ export default function BuildCD({
         )
     }
 
-    const renderWebhookWarning = () => {
+    const renderWebhookInfo = () => {
         return (
             <InfoColourBar
                 message={
@@ -657,8 +657,8 @@ export default function BuildCD({
                     onChange={(selected: any) => {
                         handleStrategy(selected.value)
                     }}
-                    error={isWebhookCD && !parentPipelineId && renderWebhookWarning()}
                 />
+                {isWebhookCD && !parentPipelineId ? renderWebhookInfo(): null}
             </>
         )
     }
