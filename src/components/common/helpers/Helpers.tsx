@@ -28,6 +28,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
+    PipelineBuildStageType,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -46,7 +47,6 @@ import { JUMP_TO_KIND_SHORT_NAMES, SIDEBAR_KEYS } from '../../ResourceBrowser/Co
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 import { PATTERNS } from '../../../config/constants'
-import { PipelineBuildStageType } from '../../workflowEditor/types'
 import { ReactComponent as GitLab } from '../../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../../assets/icons/git/github.svg'
