@@ -40,10 +40,10 @@ import {
     RuntimeParamsListItemType,
     KeyValueTableProps,
     CDMaterialSidebarType,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimeParamsListItemType[]) => void

@@ -77,7 +77,7 @@ const ConfigMapSecretDataEditor = ({
                 key: 'v',
             },
         ],
-        rows: state.currentData.map(({ k, v, id }, idx) => ({
+        rows: state.currentData.map(({ k, v, id }) => ({
             data: {
                 k: {
                     value: k,
@@ -86,66 +86,52 @@ const ConfigMapSecretDataEditor = ({
                     value: v,
                 },
             },
-            id: id || idx,
+            id,
         })),
     }
 
     const keyValueTableHandleChange = (rowId: string | number, headerKey: string, value: string) => {
-        // We check if rowId is a string or not because:
         // - When data is changed from the YAML editor to the GUI, IDs are mapped to indices (numbers).
         // - When data is added via the GUI, IDs are created internally by the GUI editor as strings.
+        const _currentData = state.currentData.reduce(
+            (acc, currentData) => {
+                if (currentData.id === rowId) {
+                    // If the item is found, update it with the new value and reset errors.
+                    acc.found = true
+                    acc.updatedData.push({
+                        ...currentData,
+                        [headerKey]: value,
+                        keyError: '',
+                        valueError: '',
+                    })
+                } else {
+                    // If the item is not the one we're looking for, just add it as is.
+                    acc.updatedData.push(currentData)
+                }
+                return acc
+            },
+            { updatedData: [], found: false },
+        )
 
-        // Check if rowId is not a string (i.e., it's a number, representing an index).
-        if (typeof rowId !== 'string') {
-            const _currentData = state.currentData.map((currentData, idx) =>
-                rowId === idx
-                    ? {
-                          ...currentData,
-                          [headerKey]: value,
-                          keyError: '',
-                          valueError: '',
-                      }
-                    : currentData,
-            )
-            dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
-        } else {
-            // When rowId is a string, it means the data was added via the GUI editor where IDs are strings.
-            // Find the index of the current data item with the matching ID.
-            const index = state.currentData.findIndex(({ id }) => rowId === id)
-            if (index > -1) {
-                // If the item is found, update the current data object with the new value and reset errors.
-                const _currentData = state.currentData.map((currentData, idx) =>
-                    index === idx
-                        ? {
-                              ...currentData,
-                              [headerKey]: value,
-                              keyError: '',
-                              valueError: '',
-                          }
-                        : currentData,
-                )
-                dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
-            } else {
-                // If the item is not found, it means it's a new entry added via the GUI editor.
-                // Create a new data object and add it to the current data state.
-                const _currentData = [
-                    ...state.currentData,
-                    { k: '', v: '', [headerKey]: value, keyError: '', valueError: '', id: rowId },
-                ]
-                dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
-            }
+        // If the item is not found, it means it's a new entry added via the GUI editor.
+        // Create a new data object and add it to the current data state.
+        if (!_currentData.found) {
+            _currentData.updatedData.push({
+                k: '',
+                v: '',
+                [headerKey]: value,
+                keyError: '',
+                valueError: '',
+                id: rowId,
+            })
         }
+
+        dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData.updatedData })
     }
 
-    const keyValueRemove = (rowId: string) => {
+    const keyValueRemove = (rowId: string | number) => {
         // Create a new array by filtering out the item with the matching rowId.
-        // If rowId is a string, it means we're dealing with an ID from the GUI.
-        // If rowId is a number, it means we're dealing with an index mapped as ID from the YAML editor.
-        const _currentData = state.currentData.filter(({ id }, idx) =>
-            // When rowId is a string, remove the item with the matching ID.
-            // When rowId is a number, remove the item at the matching index.
-            typeof rowId === 'string' ? id !== rowId : idx !== rowId,
-        )
+        const _currentData = state.currentData.filter(({ id }) => id !== rowId)
         dispatch({ type: ConfigMapActionTypes.updateCurrentData, payload: _currentData })
     }
 
@@ -464,12 +450,11 @@ const ConfigMapSecretDataEditor = ({
                 onDelete={keyValueRemove}
                 showError
                 validationSchema={(value, key) => {
-                    if (key === 'v' && !value) {
-                        return true
+                    if (key === 'k' && value) {
+                        const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
+                        return isValid
                     }
-                    // Adding !value since already validating for empty key
-                    const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value) || !value
-                    return isValid
+                    return true
                 }}
                 validateEmptyKeys
                 errorMessages={['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed']}

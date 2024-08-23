@@ -211,7 +211,11 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     render() {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div className="modal-body--scan-details" ref={this.scanDetailsRef} onClick={stopPropagation}>
+                <div
+                    className="modal-body--scan-details security-scan-container"
+                    ref={this.scanDetailsRef}
+                    onClick={stopPropagation}
+                >
                     {this.renderHeader()}
                     {this.renderAppEnvInfo()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">

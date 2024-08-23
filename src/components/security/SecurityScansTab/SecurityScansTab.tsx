@@ -41,6 +41,7 @@ import { SecurityScanType } from '../security.types'
 export const SecurityScansTab = () => {
     const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
         parseSearchParams,
+        initialSortKey: SecurityListSortableKeys.APP_NAME,
     })
     const [scanDetails, setScanDetails] = useState<ScanDetailsType>(INITIAL_SCAN_DETAILS)
     const {
@@ -196,9 +197,9 @@ export const SecurityScansTab = () => {
 
     const renderFilters = () => {
         return (
-            <div className="flexbox dc__content-space px-20 py-12 dc__gap-16">
-                <div className="flexbox flex-grow-1">
-                    <div className="w-150">
+            <div className="flexbox dc__content-space px-20 py-12">
+                <div className="flexbox">
+                    <div className="w-120">
                         <SelectPicker
                             value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
                             options={SEARCH_TYPE_OPTIONS}
@@ -210,7 +211,7 @@ export const SecurityScansTab = () => {
                         />
                     </div>
                     <SearchBar
-                        containerClassName="flex-grow-1 dc__mxw-800"
+                        containerClassName="security-scan-search w-250"
                         initialSearchText={searchKey}
                         inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
                         handleEnter={handleSearch}
@@ -304,7 +305,7 @@ export const SecurityScansTab = () => {
                 {securityScansResult.result.securityScans.map((scan) => {
                     return (
                         <div
-                            className="table__row table__row-grid display-grid dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
+                            className="table__row table__row-grid display-grid fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
                             onClick={(event) => handleOpenScanDetailsModal(event, scan)}
                             key={`${scan.name}-${scan.environment}`}
                             role="button"
