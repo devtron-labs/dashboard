@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { CustomInput, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { useState } from 'react'
+import { CustomInput, DeleteComponent, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { importComponentFromFELibrary, useForm } from '../common'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
