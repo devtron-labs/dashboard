@@ -29,7 +29,7 @@ import {
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { URLS } from '../../../config'
+import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
@@ -368,7 +368,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
-                                appType="app"
+                                appType={APP_TYPE.DEVTRON_APPS}
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}
