@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import { validateEmail } from '../common'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
