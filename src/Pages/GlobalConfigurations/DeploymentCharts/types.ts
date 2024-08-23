@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-
-export interface ChartDetailType {
-    id: number
-    chartDescription: string
-    name: string
-    version: string
-    isUserUploaded: boolean
-    count?: number
-    versions?: {
-        id: number
-        version: string
-    }[]
-}
+import { ResponseType, DeploymentChartType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartUploadType {
     chartName: string
@@ -35,11 +22,9 @@ export interface ChartUploadType {
     fileId: number
     message: string
     chartVersion: number
+    action?: string
 }
 
-export interface ChartListResponse extends ResponseType {
-    result?: ChartDetailType[]
-}
 export interface ChartUploadResponse extends ResponseType {
     result?: ChartUploadType
 }
@@ -54,3 +39,11 @@ export const UPLOAD_STATE = {
 export interface UploadChartModalType {
     closeUploadPopup: (reloadData: boolean) => void
 }
+
+export interface UploadButtonProps {
+    handleOpenUploadChartModal: () => void
+}
+
+export interface DeploymentChartsListHeaderProps extends UploadButtonProps {}
+
+export interface DownloadChartButtonProps extends Pick<DeploymentChartType, 'name' | 'versions'> {}
