@@ -993,10 +993,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.2.14":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.2.14.tgz#b9eaaf1cbfcf4258ed42a46f27adad7b7d8b7250"
-  integrity sha512-hdRQd4ex42aRhIp2hlU7bWgRSGaYrPyoPHRjmDmbypqWx1Bk+k4grSPk/kPZk7P4oVPjXwmOmfXrL2iQ36MF5w==
+"@devtron-labs/devtron-fe-common-lib@0.2.15":
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.2.15.tgz#ddc2e06a9e03eb642000150a4131ddd50a30193b"
+  integrity sha512-SUDnfAP7MwvOp02kEHaipqAUcN5z2t6UAv9zyrYYUiSFJ1T5pZH+cXeSyaAO5a94bAta/XXQnNqaRq8Wq/nJkA==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -3389,9 +3389,9 @@ emojis-list@^3.0.0:
   integrity sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==
 
 enhanced-resolve@^5.12.0:
-  version "5.17.0"
-  resolved "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.17.0.tgz"
-  integrity sha512-dwDPwZL0dmye8Txp2gzFmA6sxALaSvdRDjPH0viLcKrtlOL3tw62nWWweVD1SdILDTJrbrL6tdWVN58Wo6U3eA==
+  version "5.17.1"
+  resolved "https://registry.npmjs.org/enhanced-resolve/-/enhanced-resolve-5.17.1.tgz"
+  integrity sha512-LMHl3dXhTcfv8gM4kEzIUeTQ+7fpdA0l2tUf34BddXPkz2A5xJ5L/Pchd5BL6rdccM9QGvu0sWZzK1Z1t4wwyg==
   dependencies:
     graceful-fs "^4.2.4"
     tapable "^2.2.0"
