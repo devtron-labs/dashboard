@@ -519,7 +519,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         return (
             filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
                 <Pagination
-                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
+                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                     size={filteredFlattenNodeList.length}
                     pageSize={pageSize}
                     offset={nodeListOffset}
