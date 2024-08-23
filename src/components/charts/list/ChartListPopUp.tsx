@@ -192,7 +192,7 @@ const ChartListPopUp = ({
                         placeholder: 'Search by repository or registry',
                         autoFocus: true,
                     }}
-                    data-testid="chart-store-search-box"
+                    dataTestId="chart-store-search-box"
                 />
             </div>
         )
