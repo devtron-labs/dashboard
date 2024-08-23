@@ -34,7 +34,7 @@ import { toast } from 'react-toastify'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ENV_ALREADY_EXIST_ERROR, TriggerType, URLS, ViewType } from '../../config'
-import { Environment, GeneratedHelmPush } from './cdPipeline.types'
+import { CDFormType, Environment, GeneratedHelmPush } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import {
     DropdownIndicator,
@@ -574,9 +574,10 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const onChangeRequiredApprovals = (requiredCount: string): void => {
-        const _form = { ...formData }
-        _form.requiredApprovals = requiredCount
+    const handleUpdateUserApprovalConfig = (updatedUserApprovalConfig: CDFormType['userApprovalConfig']) => {
+        const _form = structuredClone(formData)
+        _form.userApprovalConfig = updatedUserApprovalConfig
+
         setFormData(_form)
     }
 
@@ -771,7 +772,7 @@ export default function BuildCD({
                     renderDeploymentAppType()}
                 {isAdvanced ? renderDeploymentStrategy() : renderBasicDeploymentStartegy()}
                 {isAdvanced && getBuildCDManualApproval && (
-                   getBuildCDManualApproval(formData.requiredApprovals, formData.userApprovalConfig?.requiredCount, onChangeRequiredApprovals)
+                   getBuildCDManualApproval(formData.userApprovalConfig, handleUpdateUserApprovalConfig)
                 )}
                 {isAdvanced && (
                     <>
