@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { GitProvider, GitProviderTabIconsProps } from './gitops.type'
-import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'
-import { ReactComponent as ICAwsCodeCommit } from '../../assets/icons/ic-aws-codecommit.svg'
-import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
-import { ReactComponent as Azure } from '../../assets/icons/ic-azure.svg'
-import { ReactComponent as ICGit } from '../../assets/icons/git/git.svg'
+import { ReactComponent as Bitbucket } from '@Icons/git/bitbucket.svg'
+import { ReactComponent as ICAwsCodeCommit } from '@Icons/ic-aws-codecommit.svg'
+import { ReactComponent as GitLab } from '@Icons/git/gitlab.svg'
+import { ReactComponent as GitHub } from '@Icons/git/github.svg'
+import { ReactComponent as Azure } from '@Icons/ic-azure.svg'
+import { ReactComponent as ICGit } from '@Icons/git/git.svg'
+import { GitProviderTabIconsProps } from '../../gitOps/gitops.type'
+import { GitProvider } from './constants'
 
 const GitProviderTabIcons = ({ provider, rootClassName }: GitProviderTabIconsProps) => {
     switch (provider) {
