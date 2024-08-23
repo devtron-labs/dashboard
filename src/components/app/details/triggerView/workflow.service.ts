@@ -39,6 +39,7 @@ import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { BlackListedCI } from '../../../workflowEditor/types'
+import { getIsManualApprovalConfigured } from './utils'
 
 const getDeploymentWindowState = importComponentFromFELibrary('getDeploymentWindowState', null, 'function')
 const getDeploymentNotAllowedState = importComponentFromFELibrary('getDeploymentNotAllowedState', null, 'function')
@@ -262,7 +263,7 @@ export function processWorkflow(
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
-                        if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
+                        if (getIsManualApprovalConfigured(cdPipeline.userApprovalConfig)) {
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
                                 [cdPipeline.id]: cdPipeline.userApprovalConfig,

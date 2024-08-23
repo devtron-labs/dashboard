@@ -93,9 +93,7 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 
