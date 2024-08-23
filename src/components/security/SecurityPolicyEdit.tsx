@@ -368,7 +368,7 @@ export class SecurityPolicyEdit extends Component<
                                     : severity.policy.action
                             }`}
                             options={actions}
-                            variant={SelectPickerVariantType.BORDERLESS}
+                            variant={SelectPickerVariantType.BORDER_LESS}
                             shouldMenuAlignRight
                         />
                     </div>
