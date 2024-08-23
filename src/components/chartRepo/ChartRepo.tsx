@@ -27,11 +27,12 @@ import {
     RadioGroupItem,
     CustomInput,
     FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
-import { useForm, getNonEditableChartRepoText } from '../common'
+import { useForm } from '../common'
 import { List, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     saveChartProviderConfig,
@@ -52,7 +53,6 @@ import {
 } from '../../config'
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartFormFields } from './ChartRepoType'
 import { ChartRepoType } from './chartRepo.types'
