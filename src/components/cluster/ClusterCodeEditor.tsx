@@ -16,7 +16,7 @@
 
 import { useState, useRef } from 'react'
 import YAML from 'yaml'
-import { UPLOAD_STATE } from '../CustomChart/types'
+import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import { MODES } from '../../config/constants'
 import { CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
 

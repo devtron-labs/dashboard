@@ -16,7 +16,14 @@
 
 import { Component } from 'react'
 import ReactSelect from 'react-select'
-import { showError, Progressing, Reload, Severity } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Reload,
+    Severity,
+    SelectPicker,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
@@ -330,42 +337,44 @@ export class SecurityPolicyEdit extends Component<
                 : this.actions.find((data) => data.value === severity.policy.action)
         const permission = this.permissionText[severity.policy.action]
         return (
-            <div key={severity.id} className="vulnerability">
-                <div className="flex-1">
-                    <h3
-                        data-testid={`vulnerability-title-${props.className}`}
-                        className={`vulnerability__title vulnerability__title--${props.className}`}
-                    >
-                        {`${props.title} : ${permission}`}
-                    </h3>
-                    <p className="vulnerability__subtitle" data-testid={`vulnerability-subtitle-${props.className}`}>
-                        {props.subTitle}
-                    </p>
+            <>
+                <div key={severity.id} className="vulnerability dc__gap-16">
+                    <div className="flex-1">
+                        <h3
+                            data-testid={`vulnerability-title-${props.className}`}
+                            className={`vulnerability__title vulnerability__title--${props.className}`}
+                        >
+                            {`${props.title} : ${permission}`}
+                        </h3>
+                        <div
+                            className="vulnerability__subtitle cn-7 lh-18"
+                            data-testid={`vulnerability-subtitle-${props.className}`}
+                        >
+                            {props.subTitle}
+                        </div>
+                    </div>
+                    <div className="dc__w-fit-content">
+                        <SelectPicker
+                            inputId={`select-vulnerability-block-policy`}
+                            classNamePrefix={`select-vulnerability-block-policy`}
+                            name={`select-vulnerability-block-policy`}
+                            value={selectedValue}
+                            onChange={(selected) => {
+                                this.updateSeverity((selected as any).value, severity, v.envId)
+                            }}
+                            placeholder={`${
+                                severity.policy.inherited && !severity.policy.isOverriden
+                                    ? 'INHERITED'
+                                    : severity.policy.action
+                            }`}
+                            options={actions}
+                            variant={SelectPickerVariantType.BORDERLESS}
+                            shouldMenuAlignRight
+                        />
+                    </div>
                 </div>
-                <div className="vulnerability__menu">
-                    <ReactSelect
-                        classNamePrefix={`select-vulnerability-${props.className}`}
-                        value={selectedValue}
-                        onChange={(selected) => {
-                            this.updateSeverity((selected as any).value, severity, v.envId)
-                        }}
-                        placeholder={`${
-                            severity.policy.inherited && !severity.policy.isOverriden
-                                ? 'INHERITED'
-                                : severity.policy.action
-                        }`}
-                        components={{
-                            DropdownIndicator,
-                        }}
-                        styles={{
-                            ...styles,
-                            option: getCustomOptionSelectionStyle(),
-                        }}
-                        isSearchable={false}
-                        options={actions}
-                    />
-                </div>
-            </div>
+                <div className="dc__border-bottom-n1" />
+            </>
         )
     }
 
@@ -556,21 +565,19 @@ export class SecurityPolicyEdit extends Component<
                     const showCardContent = isCollapsible ? !v.isCollapsed : true
                     const envNameIndex = v?.name?.search('/')
                     return (
-                        <div key={v.name} className="security-policy__card mb-20">
-                            <div className="flexbox flex-justify">
-                                {isCollapsible ? (
+                        <div key={v.name} className="security-policy__card mb-20 flexbox-col dc__gap-12">
+                            {isCollapsible && (
+                                <div className="flexbox flex-justify">
                                     <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p>
-                                ) : null}
-                                {isCollapsible ? (
                                     <Arrow
-                                        className="icon-dim-24 cursor fwn-9 rotate"
+                                        className="icon-dim-24 cursor fwn-9 rotate dc__no-shrink"
                                         style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
                                         onClick={() => {
                                             this.toggleCollapse(cardIndex)
                                         }}
                                     />
-                                ) : null}
-                            </div>
+                                </div>
+                            )}
                             {showCardContent ? (
                                 <>
                                     {isCollapsible ? <div className="mb-20" /> : null}
