@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentAppTypes, UserApprovalConfigType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineBuildStageType } from '../workflowEditor/types'
 
 export const CD_PATCH_ACTION = {
@@ -93,9 +93,7 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 
@@ -172,10 +170,7 @@ export interface CDFormType {
     savedStrategies: SavedDeploymentStrategy[]
     preStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
     postStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
-    requiredApprovals: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isClusterCdActive: boolean
     deploymentAppCreated: boolean
     clusterId: string

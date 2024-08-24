@@ -114,6 +114,7 @@ import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } fro
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
+import { getIsManualApprovalConfigured } from './utils'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -229,7 +230,7 @@ const CDMaterial = ({
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
     const userApprovalConfig = materialsResult?.userApprovalConfig
-    const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
+    const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
 

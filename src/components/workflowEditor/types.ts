@@ -25,6 +25,7 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
+    ValidationResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -269,6 +270,7 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
+    userApprovalConfig?: ValidationResponseType
 }
 
 export interface PipelineContext {

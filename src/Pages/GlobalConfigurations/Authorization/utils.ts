@@ -42,7 +42,7 @@ import {
     PermissionGroup,
     PermissionGroupDto,
     User,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
@@ -292,7 +292,7 @@ export const getRoleFilters = ({
     CreateUserPermissionPayloadParams,
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
 >) => {
-    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+    const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directPermission
             .filter(
                 (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -354,7 +354,7 @@ export const createUserPermissionPayload = ({
     userStatus,
     timeToLive,
     userGroups,
-}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,

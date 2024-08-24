@@ -34,6 +34,9 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
+    ManualApprovalType,
+    UserApprovalConfigType,
+    UserApprovalConfigPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -99,6 +102,9 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+const sanitizeUserApprovalConfig: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigType =
+    importComponentFromFELibrary('sanitizeUserApprovalConfig', () => ({}), 'function')
+const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType = importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
 
 export default function CDPipeline({
     match,
@@ -169,8 +175,8 @@ export default function CDPipeline({
             triggerType: TriggerType.Auto,
             steps: [],
         },
-        requiredApprovals: '',
-        userApprovalConfig: null,
+        // Utilizing the null checks to get default value
+        userApprovalConfig: sanitizeUserApprovalConfig(null),
         isClusterCdActive: false,
         deploymentAppCreated: false,
         clusterName: '',
@@ -228,6 +234,9 @@ export default function CDPipeline({
             steps: [],
             isValid: true,
         },
+        userApprovalConfig: {
+            isValid: true
+        }
     })
     const [inputVariablesListFromPrevStep, setInputVariablesListFromPrevStep] = useState<{
         preBuildStage: Map<string, VariableType>[]
@@ -521,7 +530,7 @@ export default function CDPipeline({
         form.deploymentAppType = pipelineConfigFromRes.deploymentAppType || ''
         form.deploymentAppCreated = pipelineConfigFromRes.deploymentAppCreated || false
         form.triggerType = pipelineConfigFromRes.triggerType || TriggerType.Auto
-        form.userApprovalConfig = pipelineConfigFromRes.userApprovalConfig
+        form.userApprovalConfig = sanitizeUserApprovalConfig(pipelineConfigFromRes.userApprovalConfig)
         form.allowedDeploymentTypes = env.allowedDeploymentTypes || []
         form.customTag = pipelineConfigFromRes.customTag
         form.enableCustomTag = pipelineConfigFromRes.enableCustomTag
@@ -551,7 +560,6 @@ export default function CDPipeline({
                 }
             }
         }
-        form.requiredApprovals = `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`
         form.preStageConfigMapSecretNames = {
             configMaps: pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps
                 ? pipelineConfigFromRes.preStageConfigMapSecretNames.configMaps.map((configmap) => {
@@ -618,12 +626,7 @@ export default function CDPipeline({
             }),
         }
 
-        const _userApprovalConfig =
-            formData.requiredApprovals?.length > 0
-                ? {
-                      requiredCount: +formData.requiredApprovals,
-                  }
-                : null
+        const _userApprovalConfig = getUserApprovalConfigPayload(formData.userApprovalConfig)
 
         const pipeline = {
             name: formData.name,
@@ -866,6 +869,14 @@ export default function CDPipeline({
             if (formData.name === '') {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
             }
+            return
+        }
+
+        const { isValid: isUserApprovalConfigValid = true, message: userApprovalConfigErrorMessage } = formDataErrorObj.userApprovalConfig ?? {}
+
+        if (!isUserApprovalConfigValid) {
+            setLoadingData(false)
+            toast.error(userApprovalConfigErrorMessage)
             return
         }
 
