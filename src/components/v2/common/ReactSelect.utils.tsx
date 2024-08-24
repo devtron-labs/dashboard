@@ -236,10 +236,6 @@ export const menuComponent = (props) => {
     )
 }
 
-export const noMatchingPlatformOptions = (): string => {
-    return 'No matching options'
-}
-
 export const GroupHeading = (props) => {
     const { data, hideClusterName } = props
     if (!data.label) {

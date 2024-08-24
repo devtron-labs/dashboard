@@ -29,12 +29,13 @@ import { getSecretInitState } from './Secret.utils'
 
 const secureValues = (data, isExternalType) => {
     const decodedData = isExternalType ? decode(data) : data
-    return Object.keys(decodedData).map((k) => {
+    return Object.keys(decodedData).map((k, id) => {
         return {
             k,
             v: typeof decodedData[k] === 'object' ? YAMLStringify(decodedData[k]) : decodedData[k],
             keyError: '',
             valueError: '',
+            id,
         }
     })
 }
