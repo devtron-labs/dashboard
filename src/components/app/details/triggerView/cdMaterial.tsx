@@ -66,6 +66,7 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    getIsManualApprovalConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -114,7 +115,6 @@ import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } fro
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
-import { getIsManualApprovalConfigured } from './utils'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
