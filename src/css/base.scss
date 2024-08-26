@@ -377,6 +377,10 @@ a:focus {
     top: 26px;
 }
 
+.dc__top-38 {
+    top: 38px;
+}
+
 .dc__top-40 {
     top: 40px;
 }
@@ -399,6 +403,10 @@ a:focus {
 
 .dc__top-77 {
     top: 77px;
+}
+
+.dc__top-82 {
+    top: 82px;
 }
 
 .dc__top-88 {
@@ -1180,6 +1188,7 @@ button.anchor {
         outline: unset;
         border: unset;
         padding: 4px;
+
         &:first-child {
             border-bottom: 1px solid var(--N900);
         }
@@ -2215,6 +2224,10 @@ button.anchor {
     &--b1 {
         border-left: solid 1px var(--B100);
     }
+
+    &--n7 {
+        border-left: solid 1px var(--N700);
+    }
 }
 
 .dc__border-left-n0 {
@@ -2793,6 +2806,16 @@ textarea,
     }
 }
 
+.ic-error-cross-red {
+    g {
+        g {
+            rect {
+                fill: var(--R500);
+            }
+        }
+    }
+}
+
 .alert-icon-r5-imp {
     path {
         &:nth-child(1) {
@@ -3138,6 +3161,7 @@ textarea,
 .w-126 {
     width: 126px;
 }
+
 .w-130 {
     width: 130px;
 }
@@ -3608,6 +3632,10 @@ textarea,
     min-height: 200px;
 }
 
+.mh-210 {
+    min-height: 210px;
+}
+
 .mh-250 {
     min-height: 250px;
 }
@@ -3741,6 +3769,7 @@ textarea,
 .lh-18-imp {
     line-height: 18px !important;
 }
+
 .lh-20 {
     line-height: 20px;
 }
@@ -3804,6 +3833,10 @@ textarea,
 
 .pt-40 {
     padding-top: 40px;
+}
+
+.pl-50 {
+    padding-left: 50px;
 }
 
 .pt-70 {
@@ -4352,6 +4385,10 @@ textarea::placeholder {
     width: 1px;
     min-height: 16px;
     background-color: var(--N200);
+
+    &--n1 {
+        background-color: var(--N100);
+    }
 }
 
 .dc__required-field::after {
@@ -4415,6 +4452,10 @@ textarea::placeholder {
 
 .dc__zi-2 {
     z-index: 2;
+}
+
+.dc__zi-3 {
+    z-index: 3;
 }
 
 .dc__zi-4 {
@@ -4774,6 +4815,13 @@ textarea::placeholder {
     font: inherit;
     cursor: pointer;
     outline: inherit;
+
+    &:focus,
+    &:active,
+    &:hover {
+        outline: unset;
+        border: unset;
+    }
 }
 
 /* NOTE: if the border width is smaller than border-radius curve;
@@ -4892,6 +4940,7 @@ textarea::placeholder {
         background: var(--N100, #EDF1F5);
     }
 }
+
 .dc__grid-full {
     display: grid;
     grid-template-columns: 100% 0;

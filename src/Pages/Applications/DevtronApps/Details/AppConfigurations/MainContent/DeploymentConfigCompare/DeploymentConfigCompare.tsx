@@ -252,7 +252,7 @@ export const DeploymentConfigCompare = ({
         classNamePrefix: 'compare-with-environment-selector',
         inputId: 'compare-with-environment-selector',
         name: 'compare-with-environment-selector',
-        variant: SelectPickerVariantType.BORDERLESS,
+        variant: SelectPickerVariantType.BORDER_LESS,
         value: getSelectPickerOptionByValue(compareEnvironmentSelectorOptions, chartRefId || compareWith, {
             label: BASE_CONFIGURATIONS.name,
             value: '',
@@ -270,7 +270,7 @@ export const DeploymentConfigCompare = ({
         classNamePrefix: 'environment-config-type-selector',
         inputId: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
         name: `environment-config-type-selector-${isCompare ? 'compare' : 'current'}`,
-        variant: SelectPickerVariantType.BORDERLESS,
+        variant: SelectPickerVariantType.BORDER_LESS,
         isSearchable: false,
         disableDescriptionEllipsis: true,
         value: getSelectPickerOptionByValue(

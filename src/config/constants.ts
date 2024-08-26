@@ -56,7 +56,6 @@ export const Routes = {
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -208,7 +207,6 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
-    CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
@@ -528,7 +526,7 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
-    heading: 'Custom Charts',
+    heading: 'Deployment Charts',
     infoText: 'Devtron provides charts that cover most use cases.',
     additionalParagraphText:
         'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
@@ -836,7 +834,7 @@ export const SERVER_ERROR_CODES = {
     CHART_NAME_RESERVED: '5002',
 }
 
-export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const ENV_ALREADY_EXIST_ERROR = 'Pipeline already exists for this environment'
 export const CVE_ID_NOT_FOUND = 'CVE ID not found'
 export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
 export const NO_HOST_URL = 'Please enter host url'

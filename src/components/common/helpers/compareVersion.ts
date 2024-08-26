@@ -49,6 +49,9 @@ export function isChartRef3090OrBelow(id: number): boolean {
     return id <= 10
 }
 
+/**
+ * @deprecated Use versionComparatorBySortOrder from common lib instead
+ */
 export function versionComparator(
     a: Record<string, any>,
     b: Record<string, any>,
