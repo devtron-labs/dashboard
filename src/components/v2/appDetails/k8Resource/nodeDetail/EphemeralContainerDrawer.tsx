@@ -24,6 +24,7 @@ import {
     InfoIconTippy,
     CodeEditor,
     SelectOption,
+    TabGroup,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -141,7 +142,12 @@ const EphemeralContainerDrawer = ({
             if (hostUrlConfig.result) {
                 const imageValue: string = hostUrlConfig.result.value
                 const filteredImageList = filterImageList(JSON.parse(imageValue), appDetails?.k8sVersion)
-                const option = convertToOptionsList(filteredImageList, IMAGE_LIST.NAME, IMAGE_LIST.IMAGE, IMAGE_LIST.DESCRIPTION)
+                const option = convertToOptionsList(
+                    filteredImageList,
+                    IMAGE_LIST.NAME,
+                    IMAGE_LIST.IMAGE,
+                    IMAGE_LIST.DESCRIPTION,
+                )
                 setImageListOption(option)
                 setEphemeralForm({
                     ...ephemeralForm,
@@ -246,7 +252,8 @@ const EphemeralContainerDrawer = ({
         return (
             <span style={{ display: 'block', width: '220px' }}>
                 <span className="fs-12 fw-4">{data.description}</span>
-            </span>)
+            </span>
+        )
     }
 
     const renderBasicEphemeral = (): JSX.Element => {
@@ -297,7 +304,14 @@ const EphemeralContainerDrawer = ({
                         components={{
                             IndicatorSeparator: null,
                             MenuList: menuComponentForImage,
-                            Option: (props) => <SelectOption showTippy tippyClass="default-tt" tippyContent={getImageTippyContent(props.data)} {...props} />,
+                            Option: (props) => (
+                                <SelectOption
+                                    showTippy
+                                    tippyClass="default-tt"
+                                    tippyContent={getImageTippyContent(props.data)}
+                                    {...props}
+                                />
+                            ),
                         }}
                         styles={selectStyles}
                         onKeyDown={handleKeyDown}
@@ -340,32 +354,29 @@ const EphemeralContainerDrawer = ({
     const renderEphemeralContainerType = () => {
         return (
             <div className="dc__border-bottom pl-20">
-                <ul role="tablist" className="tab-list">
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.BASIC ? 'active' : ''
-                            }`}
-                        >
-                            Basic
-                        </div>
-                    </li>
-                    <li
-                        className="pt-4 pr-16 lh-20 fs-13"
-                        onClick={() => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED)}
-                    >
-                        <div
-                            className={`tab-list__tab-link w-auto pt-0 pb-4 ${
-                                ephemeralContainerType === EDITOR_VIEW.ADVANCED ? 'active ' : ''
-                            }`}
-                        >
-                            Advanced
-                        </div>
-                    </li>
-                </ul>
+                <TabGroup
+                    tabs={[
+                        {
+                            id: 'basic-tab',
+                            label: 'Basic',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.BASIC,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.BASIC),
+                            },
+                        },
+                        {
+                            id: 'advanced-tab',
+                            label: 'Advanced',
+                            tabType: 'button',
+                            active: ephemeralContainerType === EDITOR_VIEW.ADVANCED,
+                            props: {
+                                onClick: () => handleEphemeralContainerTypeClick(EDITOR_VIEW.ADVANCED),
+                            },
+                        },
+                    ]}
+                    alignActiveBorderWithContainer
+                />
             </div>
         )
     }

@@ -25,7 +25,9 @@ import {
     CustomInput,
     ClipboardButton,
     ButtonWithLoader,
-    CodeEditor
+    CodeEditor,
+    TabGroup,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect, { components } from 'react-select'
 import { useParams } from 'react-router-dom'
@@ -273,27 +275,22 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             setSelectedTab(e.currentTarget.dataset.key, index)
         }
         return (
-            <ul role="tablist" className={`tab-list ${isChildTab ? '' : 'dc__border-bottom'}`}>
-                {tabList.map((tabDetail) => (
-                    <li
-                        key={tabDetail.key}
-                        className="tab-list__tab pointer"
-                        onClick={tabClickHandler}
-                        data-key={tabDetail.key}
-                    >
-                        <div
-                            className={`mb-6 ${isChildTab ? 'fs-12 child-tab' : 'fs-13'} tab-hover${
-                                selectedTab === tabDetail.key ? ' fw-6 active' : ' fw-4'
-                            }`}
-                        >
-                            {tabDetail.value}
-                        </div>
-                        {selectedTab === tabDetail.key && (
-                            <div className={`tab-list_active-tab ${isChildTab ? 'child-tab' : ''}`} />
-                        )}
-                    </li>
-                ))}
-            </ul>
+            <div className={`${!isChildTab ? 'dc__border-bottom' : ''}`}>
+                <TabGroup
+                    tabs={tabList.map(({ key, value }) => ({
+                        id: key,
+                        label: value,
+                        tabType: 'button',
+                        active: selectedTab === key,
+                        props: {
+                            onClick: tabClickHandler,
+                            'data-key': key,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer={!isChildTab}
+                    size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
+                />
+            </div>
         )
     }
 
@@ -424,7 +421,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
             <>
                 <div className="w-400 h-32 mt-16">
                     <ReactSelect
-                        classNamePrefix='selectToken'
+                        classNamePrefix="selectToken"
                         value={selectedToken}
                         tabIndex={1}
                         onChange={setSelectedToken}
@@ -512,9 +509,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 data-testid="sample-script"
             >
                 <code>{value}</code>
-                {showCopyOption && (
-                        <ClipboardButton content={value} />
-                )}
+                {showCopyOption && <ClipboardButton content={value} />}
             </pre>
         )
     }
@@ -788,7 +783,9 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                     </div>
                     {webhookDetails?.responses.map((response, index) => (
                         <div className="response-row pt-8 pb-8">
-                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">{response.code}</div>
+                            <div className="fs-13 fw-4 cn-9" data-testid="response-code">
+                                {response.code}
+                            </div>
                             <div>
                                 <div className="fs-13 fw-4 cn-9 mb-16"> {response.description.description}</div>
                                 {generateTabHeader(

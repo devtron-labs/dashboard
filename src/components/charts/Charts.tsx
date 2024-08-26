@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Route, Switch, Redirect, NavLink } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom'
 import DiscoverCharts from './list/DiscoverCharts'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
 import { useRouteMatch } from 'react-router'
+import { TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const { path } = useRouteMatch()
@@ -39,13 +39,19 @@ export const GenericChartsHeader = ({ children = null }) => {
 
 export const ChartDetailNavigator = () => {
     return (
-        <ul role="tablist" className="tab-list">
-            <li className="tab-list__tab">
-                <NavLink replace to="discover" className="tab-list__tab-link" activeClassName="active">
-                    Discover
-                </NavLink>
-            </li>
-        </ul>
+        <TabGroup
+            tabs={[
+                {
+                    id: 'discover-tab',
+                    label: 'Discover',
+                    tabType: 'navLink',
+                    props: {
+                        to: 'discover',
+                        replace: true,
+                    },
+                },
+            ]}
+        />
     )
 }
 
