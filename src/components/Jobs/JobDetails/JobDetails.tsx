@@ -44,6 +44,7 @@ import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
 import { ErrorBoundary, trackByGAEvent } from '../../common'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { AppSelector } from '../../AppSelector'
 import '../../app/details/appDetails/appDetails.scss'
 
@@ -199,6 +200,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 id: 'job-config-tab',
                 label: 'Configurations',
                 tabType: 'navLink',
+                icon: Settings,
                 props: {
                     to: `${match.url}/${URLS.APP_CONFIG}`,
                     onClick: handleEventClick,

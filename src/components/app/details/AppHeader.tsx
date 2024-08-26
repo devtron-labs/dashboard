@@ -22,6 +22,7 @@ import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
 import { AppHeaderType } from '../types'
 import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
@@ -215,8 +216,9 @@ export const AppHeader = ({
             },
             {
                 id: 'app-configuration-tab',
-                label: 'App Configuration',
+                label: 'Configurations',
                 tabType: 'navLink',
+                icon: Settings,
                 props: {
                     to: `${match.url}/${URLS.APP_CONFIG}`,
                     ['data-action']: 'App Configuration Clicked',
