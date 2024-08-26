@@ -645,6 +645,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         const renderSearchText = (): JSX.Element => (
             <SearchBar
                 initialSearchText={searchString}
+                containerClassName="w-250"
                 handleEnter={handleEnterSearchApp}
                 inputProps={{
                     placeholder: `${
@@ -657,11 +658,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 dataTestId="Search-by-app-name"
             />
         )
-            
 
         return (
             <div className="search-filter-section">
-             {renderSearchText()}
+                {renderSearchText()}
                 <div className="app-list-filters filters">
                     {!isGenericAppListView && (
                         <>
