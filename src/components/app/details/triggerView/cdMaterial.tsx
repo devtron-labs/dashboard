@@ -66,6 +66,8 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    getIsManualApprovalConfigured,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -114,7 +116,6 @@ import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } fro
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
 import { abortEarlierRequests, getInitialState } from './cdMaterials.utils'
 import { DEFAULT_ROUTE_PROMPT_MESSAGE } from '../../../../config'
-import { getIsManualApprovalConfigured } from './utils'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -132,6 +133,10 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindowInfoBar')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
+const getIsImageApproverFromUserApprovalMetaData: (
+    email: string,
+    userApprovalMetadata: UserApprovalMetadataType,
+) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -166,6 +171,7 @@ const CDMaterial = ({
     const { handleDownload } = useDownload()
     // Add dep here
     const { isSuperAdmin } = useSuperAdmin()
+    const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
 
@@ -617,9 +623,8 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType) =>
-        userApprovalMetadata?.approvedUsersData &&
-        userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === requestedUserId)
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
+        getIsImageApproverFromUserApprovalMetaData(email, userApprovalMetadata)
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {

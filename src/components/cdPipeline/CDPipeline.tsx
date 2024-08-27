@@ -34,11 +34,11 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
-    ManualApprovalType,
+    sanitizeUserApprovalConfig,
     UserApprovalConfigType,
     UserApprovalConfigPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -102,8 +102,6 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
-const sanitizeUserApprovalConfig: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigType =
-    importComponentFromFELibrary('sanitizeUserApprovalConfig', () => ({}), 'function')
 const getUserApprovalConfigPayload: (userApprovalConfig: UserApprovalConfigType) => UserApprovalConfigPayloadType = importComponentFromFELibrary('getUserApprovalConfigPayload', null, 'function')
 
 export default function CDPipeline({
