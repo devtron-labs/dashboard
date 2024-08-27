@@ -375,7 +375,7 @@ const ChartDeploymentHistory = ({
 
     function renderSelectedDeploymentTabs() {
         return (
-            <div className="dc__border-bottom mr-20">
+            <div className="dc__border-bottom px-20">
                 {
                     <TabGroup
                         tabs={deploymentTabs().map((tab, index) => ({

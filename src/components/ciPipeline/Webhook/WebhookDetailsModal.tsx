@@ -287,6 +287,7 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                             'data-key': key,
                         },
                     }))}
+                    hideTopPadding
                     alignActiveBorderWithContainer={!isChildTab}
                     size={isChildTab ? ComponentSizeType.medium : ComponentSizeType.large}
                 />

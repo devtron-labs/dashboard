@@ -179,7 +179,7 @@ const EphemeralContainerDrawer = ({
 
     const renderEphemeralHeaders = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify bcn-0 pb-10 pt-12 pl-20 pr-20">
+            <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
                     <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
@@ -375,6 +375,7 @@ const EphemeralContainerDrawer = ({
                             },
                         },
                     ]}
+                    hideTopPadding
                     alignActiveBorderWithContainer
                 />
             </div>
