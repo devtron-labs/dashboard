@@ -77,9 +77,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
 
     const handleFilterKeyPress = (_searchText: string): void => {
         setSearchText(_searchText)
-        if (searchText.length) {
-            handleSearch(_searchText)
-        }
+        handleSearch(_searchText)
     }
 
     const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
@@ -138,7 +136,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                 handleEnter={handleFilterKeyPress}
                 inputProps={{
                     placeholder: 'Search environment',
-                    autoFocus: true
+                    autoFocus: true,
                 }}
                 dataTestId="environment-search-box"
             />
