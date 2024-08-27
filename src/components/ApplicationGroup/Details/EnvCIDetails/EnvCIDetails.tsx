@@ -32,6 +32,7 @@ import {
     mapByKey,
     useInterval,
     useScrollable,
+    TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
@@ -67,7 +68,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const triggerDetails = triggerHistory?.get(+buildId)
     // This is only meant for logsRenderer
     const [scrollableParentRef, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
 
