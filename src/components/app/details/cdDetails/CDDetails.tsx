@@ -36,6 +36,7 @@ import {
     LogResizeButton,
     getTriggerHistory,
     useScrollable,
+    TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { Route } from 'react-router-dom'
@@ -97,7 +98,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     const triggerDetails = triggerHistory?.get(+triggerId)
     const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
     useEffect(() => {
