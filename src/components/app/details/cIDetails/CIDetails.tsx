@@ -493,7 +493,6 @@ export const Details = ({
                                       ]
                                     : []),
                             ]}
-                            hideTopPadding
                             alignActiveBorderWithContainer
                         />
                     </div>
