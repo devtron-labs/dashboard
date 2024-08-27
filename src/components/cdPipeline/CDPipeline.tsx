@@ -786,6 +786,7 @@ export default function CDPipeline({
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid &&
                 _formDataErrorObj.envNameError.isValid &&
+                _formDataErrorObj.userApprovalConfig?.isValid &&
                 isReposAndContainerRegistoryValid
         } else {
             const stepsLength = _formData[stageName].steps.length
