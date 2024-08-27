@@ -25,7 +25,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import YamljsParser from 'yaml'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'

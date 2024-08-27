@@ -23,7 +23,6 @@ import {
     dynamicTabsData,
     fixedTabsData,
     mockedRemoveTabByIdentifier,
-    mockedStopTabByIdentifier,
     tabsData,
 } from '../__mocks__/DynamicTabs.mock'
 

@@ -37,7 +37,7 @@ test('Subscriber removal test', () => {
     let subscriber = (s: unknown) => {
         rec.push(s as string)
     }
-    let [added, unsubsribe] = subject.subscribe(subscriber)
+    let [, unsubsribe] = subject.subscribe(subscriber)
     subject.publish('hello')
     subject.publish('world')
     subject.publish('!!!')
