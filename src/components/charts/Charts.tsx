@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Route, Switch, Redirect } from 'react-router-dom'
 import DiscoverCharts from './list/DiscoverCharts'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
 import './charts.scss'
-import { useRouteMatch } from 'react-router'
 import { TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom'
 
 export default function Charts({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     const { path } = useRouteMatch()

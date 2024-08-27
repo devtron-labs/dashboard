@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import {
     CDMaterialType,
     CDModalTabType,
@@ -39,10 +39,10 @@ import {
     ArtifactPromotionMetadata,
     DeploymentWithConfigType,
     CIMaterialType,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { WorkflowDimensions } from './config'
 
 export interface CDMaterialProps {
@@ -114,7 +114,7 @@ export interface CDMaterialProps {
     deploymentAppType?: DeploymentAppTypes
     selectedImageFromBulk?: string
     isSuperAdmin?: boolean
-    isRedirectedFromAppDetails?:  boolean
+    isRedirectedFromAppDetails?: boolean
 }
 
 export interface ConfigToDeployOptionType {
@@ -308,7 +308,9 @@ export interface TriggerEdgeType {
     endNode: any
 }
 
-export interface WorkflowProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowType, 'artifactPromotionMetadata'> {
+export interface WorkflowProps
+    extends RouteComponentProps<{ appId: string }>,
+        Pick<WorkflowType, 'artifactPromotionMetadata'> {
     id: string
     name: string
     startX: number
@@ -352,7 +354,7 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps>{
+export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
     isJobView?: boolean
     filteredEnvIds?: string
 }

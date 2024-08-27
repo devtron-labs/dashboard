@@ -175,7 +175,9 @@ const ChartSelect: React.FC<ChartSelectProps> = ({
                     <span>/{chart.name}</span>
                 </div>
                 <div className="flex left">
-                    <div className="chart-grid-item__chart-version mr-12 dc__ellipsis-right__2nd-line">{chart.version}</div>
+                    <div className="chart-grid-item__chart-version mr-12 dc__ellipsis-right__2nd-line">
+                        {chart.version}
+                    </div>
                     {chart.deprecated && <DeprecatedWarn />}
                 </div>
                 {showDescription && <div className="flex left fw-4 fs-13 lh-20 mt-8">{chart.description}</div>}

@@ -15,9 +15,8 @@
  */
 
 import React from 'react'
-import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { useParams, useRouteMatch } from 'react-router'
+import { Link, useParams, useRouteMatch } from 'react-router-dom'
 import { PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'

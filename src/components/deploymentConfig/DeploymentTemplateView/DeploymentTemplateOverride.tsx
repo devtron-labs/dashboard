@@ -278,7 +278,7 @@ export default function DeploymentTemplateOverride({
                 +appId,
                 +envId,
                 state.selectedChartRefId || state.latestAppChartRef || state.latestChartRef,
-                state.selectedChart.name
+                state.selectedChart.name,
             )
 
             const _duplicateFromResp =

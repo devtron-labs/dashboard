@@ -68,7 +68,7 @@ import {
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
-import { UPLOAD_STATE } from '../CustomChart/types'
+import { UPLOAD_STATE } from '@Pages/GlobalConfigurations/DeploymentCharts/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -1043,9 +1043,7 @@ export default function ClusterForm({
     }
 
     const NoMatchingResults = (): JSX.Element => {
-        return (
-            <GenericFilterEmptyState />
-        )
+        return <GenericFilterEmptyState />
     }
 
     if (loader) {

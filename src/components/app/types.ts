@@ -15,8 +15,8 @@
  */
 
 import React, { ReactNode } from 'react'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
+import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
@@ -79,7 +79,7 @@ export interface CDModalProps {
     triggerType?: string
     parentEnvironmentName: string
     ciPipelineId?: number
-    isRedirectedFromAppDetails?: boolean,
+    isRedirectedFromAppDetails?: boolean
 }
 
 export interface AppDetails extends CDModalProps {
@@ -115,6 +115,8 @@ export interface AppDetails extends CDModalProps {
     clusterId?: number
     deploymentAppDeleteRequest: boolean
     imageTag?: string
+    isPipelineTriggered?: boolean
+    releaseMode: ReleaseMode
 }
 
 export interface LabelTag {
@@ -583,16 +585,12 @@ export interface SourceInfoType {
 export interface AppDetailsCDButtonType
     extends Pick<
             AppDetails,
-            | 'appId'
-            | 'environmentId'
-            | 'isVirtualEnvironment'
-            | 'deploymentAppType'
-            | 'environmentName'
+            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
         Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
-            isRedirectedFromAppDetails?: boolean,
-            cdModal: CDModalProps
-        }
+    isRedirectedFromAppDetails?: boolean
+    cdModal: CDModalProps
+}
 
 export interface EnvironmentListMinType {
     active?: boolean
@@ -629,7 +627,7 @@ export interface GenericAppListProps {
     clearAllFilters
     setShowPulsatingDotState
     masterFilters
-    appType: string,
+    appType: string
     isSSE?: boolean
 }
 export interface EditDescRequest {

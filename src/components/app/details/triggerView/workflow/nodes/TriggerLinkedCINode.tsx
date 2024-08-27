@@ -15,8 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../../../../assets/icons/ic-node-build-linked.svg'

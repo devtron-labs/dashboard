@@ -47,7 +47,6 @@ import { importComponentFromFELibrary } from '../../../../common'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
-
 export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeploymentBlocked }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         rotate: {
@@ -250,12 +249,11 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
         e.preventDefault()
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
         const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
-        if(!rotatingInProgress && isWorkloadPresent && isAnySelected){
+        if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
             if (isDeploymentBlocked && DeploymentWindowConfirmationDialog) {
                 // Show deployment window confirmation modal if deployment is blocked
                 setShowDeploymentWindowConfirmationModal(true)
-            }
-            else handlePodsRotation()
+            } else handlePodsRotation()
         }
     }
 

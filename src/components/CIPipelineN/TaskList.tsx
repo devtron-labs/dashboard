@@ -21,6 +21,7 @@ import {
     PluginType,
     RefVariableStageType,
     RefVariableType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -32,7 +33,6 @@ import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backwar
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineFormType } from '../workflowEditor/types'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')

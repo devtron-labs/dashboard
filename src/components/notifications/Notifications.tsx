@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
+import { Component } from 'react'
+import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
 import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'

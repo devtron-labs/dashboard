@@ -17,9 +17,8 @@
 import React from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { multiSelectStyles, noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, noop, stopPropagation, Environment } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
-import { Environment } from '../../cdPipeline/cdPipeline.types'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../ClusterNodes/constants'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
@@ -235,10 +234,6 @@ export const menuComponent = (props) => {
             {props.children}
         </components.MenuList>
     )
-}
-
-export const noMatchingPlatformOptions = (): string => {
-    return 'No matching options'
 }
 
 export const GroupHeading = (props) => {

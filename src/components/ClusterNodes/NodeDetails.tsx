@@ -33,7 +33,7 @@ import {
     ComponentSizeType,
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory } from 'react-router'
+import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import * as jsonpatch from 'fast-json-patch'

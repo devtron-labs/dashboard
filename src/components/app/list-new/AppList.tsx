@@ -15,8 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useLocation, useHistory, useParams } from 'react-router'
-import { Switch, Route } from 'react-router-dom'
+import { useLocation, useHistory, useParams, Switch, Route } from 'react-router-dom'
 import {
     showError,
     Progressing,

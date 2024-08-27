@@ -28,7 +28,7 @@ export default function TerminalWrapper({
     setSocketConnection,
     className,
     dataTestId,
-    isResourceBrowserView
+    isResourceBrowserView,
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (

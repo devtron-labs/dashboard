@@ -15,16 +15,14 @@
  */
 
 import React from 'react'
-import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { useRouteMatch } from 'react-router'
-import { AppListConstants, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useRouteMatch } from 'react-router-dom'
+import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ChartHeaderComponentType } from './appHeader.type'
-import { PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) => {
     const match = useRouteMatch()

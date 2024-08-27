@@ -113,11 +113,13 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan bcn-0 flexbox-col min-h-100">
-                {this.renderPageheader()}
-                {this.props.serverMode === SERVER_MODE.EA_ONLY
-                    ? this.renderEmptyStateForEAOnlyMode()
-                    : this.renderRouter()}
+            <div className="security-scan-container bcn-0 flexbox-col min-h-100">
+                <div className="security-scan">
+                    {this.renderPageheader()}
+                    {this.props.serverMode === SERVER_MODE.EA_ONLY
+                        ? this.renderEmptyStateForEAOnlyMode()
+                        : this.renderRouter()}
+                </div>
             </div>
         )
     }

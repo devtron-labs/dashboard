@@ -43,8 +43,7 @@ import {
     TabGroup,
     ScanVulnerabilitiesTable,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -84,6 +83,12 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+buildId)
+    // This is only meant for logsRenderer
+    const [scrollableParentRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
     const [initDataLoading, initDataResults] = useAsync(
         () =>
@@ -238,64 +243,68 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
                 </div>
             )}
             <div className="ci-details__body">
-                {!pipelineId ? (
-                    // Empty state if there is no pipeline
-                    <GenericEmptyState
-                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
-                        subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
-                            isJobView ? 'to see execution details' : 'to start seeing CI builds'
-                        }.`}
-                    />
-                ) : (
-                    pipeline && (
-                        <>
-                            {triggerHistory.size > 0 || fetchBuildIdData ? (
-                                <Route
-                                    path={`${path
-                                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                >
-                                    <Details
-                                        fullScreenView={fullScreenView}
-                                        synchroniseState={synchroniseState}
-                                        triggerHistory={triggerHistory}
-                                        isSecurityModuleInstalled={
-                                            initDataResults[1]?.['value']?.['result']?.status ===
-                                                ModuleStatus.INSTALLED || false
-                                        }
-                                        isBlobStorageConfigured={
-                                            initDataResults[2]?.['value']?.['result']?.enabled || false
-                                        }
-                                        isJobView={isJobView}
-                                        tagsEditable={tagsEditable}
-                                        appReleaseTags={appReleaseTags}
-                                        hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                                        fetchIdData={fetchBuildIdData}
-                                        isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
-                                    />
-                                </Route>
-                            ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                // Empty state if there is no linked pipeline
-                                <GenericEmptyState
-                                    title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
-                                    subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
-                                    isButtonAvailable
-                                    renderButton={renderSourcePipelineButton}
-                                />
-                            ) : (
-                                !loading && (
-                                    // Empty state if there is no pipeline
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                    {!pipelineId ? (
+                        // Empty state if there is no pipeline
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
+                                isJobView ? 'to see execution details' : 'to start seeing CI builds'
+                            }.`}
+                        />
+                    ) : (
+                        pipeline && (
+                            <>
+                                {triggerHistory.size > 0 || fetchBuildIdData ? (
+                                    <Route
+                                        path={`${path
+                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                                    >
+                                        <Details
+                                            fullScreenView={fullScreenView}
+                                            synchroniseState={synchroniseState}
+                                            triggerHistory={triggerHistory}
+                                            isSecurityModuleInstalled={
+                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED || false
+                                            }
+                                            isBlobStorageConfigured={
+                                                initDataResults[2]?.['value']?.['result']?.enabled || false
+                                            }
+                                            isJobView={isJobView}
+                                            tagsEditable={tagsEditable}
+                                            appReleaseTags={appReleaseTags}
+                                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                            fetchIdData={fetchBuildIdData}
+                                            isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                                            scrollToTop={scrollToTop}
+                                            scrollToBottom={scrollToBottom}
+                                        />
+                                    </Route>
+                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
+                                    // Empty state if there is no linked pipeline
                                     <GenericEmptyState
-                                        title={`${isJobView ? 'Job' : 'Build'} ${
-                                            EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
-                                        }`}
-                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
+                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
+                                        isButtonAvailable
+                                        renderButton={renderSourcePipelineButton}
                                     />
-                                )
-                            )}
-                        </>
-                    )
-                )}
+                                ) : (
+                                    !loading && (
+                                        // Empty state if there is no pipeline
+                                        <GenericEmptyState
+                                            title={`${isJobView ? 'Job' : 'Build'} ${
+                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                            }`}
+                                            subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
+                                        />
+                                    )
+                                )}
+                            </>
+                        )
+                    )}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>
@@ -315,6 +324,8 @@ export const Details = ({
     appReleaseTags,
     hideImageTaggingHardDelete,
     fetchIdData,
+    scrollToTop,
+    scrollToBottom,
 }: BuildDetails) => {
     const isJobCard: boolean = isJobView || isJobCI
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
@@ -414,82 +425,81 @@ export const Details = ({
     }
     return (
         <>
-            <div className="trigger-details-container">
-                {!fullScreenView && (
-                    <>
-                        <TriggerDetails
-                            type={HistoryComponentType.CI}
-                            status={triggerDetails.status}
-                            startedOn={triggerDetails.startedOn}
-                            finishedOn={triggerDetails.finishedOn}
-                            triggeredBy={triggerDetails.triggeredBy}
-                            triggeredByEmail={triggerDetails.triggeredByEmail}
-                            ciMaterials={triggerDetails.ciMaterials}
-                            gitTriggers={triggerDetails.gitTriggers}
-                            message={triggerDetails.message}
-                            podStatus={triggerDetails.podStatus}
-                            stage={triggerDetails.stage}
-                            artifact={triggerDetails.artifact}
-                            environmentName={triggerDetails.environmentName}
-                            isJobView={isJobView}
-                            workerPodName={triggerDetails.podName}
-                            renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
-                        />
-                        <div className="px-20 dc__border-bottom">
-                            <TabGroup
-                                tabs={[
-                                    {
-                                        id: 'logs-tab',
-                                        label: 'Logs',
-                                        tabType: 'navLink',
-                                        props: {
-                                            to: 'logs',
-                                            replace: true,
-                                            'data-testid': 'logs-link',
-                                        },
+            {!fullScreenView && (
+                <>
+                    <TriggerDetails
+                        type={HistoryComponentType.CI}
+                        status={triggerDetails.status}
+                        startedOn={triggerDetails.startedOn}
+                        finishedOn={triggerDetails.finishedOn}
+                        triggeredBy={triggerDetails.triggeredBy}
+                        triggeredByEmail={triggerDetails.triggeredByEmail}
+                        ciMaterials={triggerDetails.ciMaterials}
+                        gitTriggers={triggerDetails.gitTriggers}
+                        message={triggerDetails.message}
+                        podStatus={triggerDetails.podStatus}
+                        stage={triggerDetails.stage}
+                        artifact={triggerDetails.artifact}
+                        environmentName={triggerDetails.environmentName}
+                        isJobView={isJobView}
+                        workerPodName={triggerDetails.podName}
+                        renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                    />
+                    <div className="dc__border-bottom pl-50 pr-20 dc__position-sticky dc__top-0 bcn-0 dc__zi-3">
+                        <TabGroup
+                            tabs={[
+                                {
+                                    id: 'logs-tab',
+                                    label: 'Logs',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'logs',
+                                        replace: true,
+                                        'data-testid': 'logs-link',
                                     },
-                                    {
-                                        id: 'source-tab',
-                                        label: 'Source',
-                                        tabType: 'navLink',
-                                        props: {
-                                            to: 'source-code',
-                                            replace: true,
-                                            'data-testid': 'source-code-link',
-                                        },
+                                },
+                                {
+                                    id: 'source-tab',
+                                    label: 'Source',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'source-code',
+                                        replace: true,
+                                        'data-testid': 'source-code-link',
                                     },
-                                    {
-                                        id: 'artifacts-tab',
-                                        label: 'Artifacts',
-                                        tabType: 'navLink',
-                                        props: {
-                                            to: 'artifacts',
-                                            replace: true,
-                                            'data-testid': 'artifacts-link',
-                                        },
+                                },
+                                {
+                                    id: 'artifacts-tab',
+                                    label: 'Artifacts',
+                                    tabType: 'navLink',
+                                    props: {
+                                        to: 'artifacts',
+                                        replace: true,
+                                        'data-testid': 'artifacts-link',
                                     },
-                                    ...(!isJobCard && isSecurityModuleInstalled
-                                        ? [
-                                              {
-                                                  id: 'security-tab',
-                                                  label: 'Security',
-                                                  tabType: 'navLink' as const,
-                                                  props: {
-                                                      to: 'security',
-                                                      replace: true,
-                                                      'data-testid': 'security_link',
-                                                  },
+                                },
+                                ...(!isJobCard && isSecurityModuleInstalled
+                                    ? [
+                                          {
+                                              id: 'security-tab',
+                                              label: 'Security',
+                                              tabType: 'navLink' as const,
+                                              props: {
+                                                  to: 'security',
+                                                  replace: true,
+                                                  'data-testid': 'security_link',
                                               },
-                                          ]
-                                        : []),
-                                ]}
-                                hideTopPadding
-                                alignActiveBorderWithContainer
-                            />
-                        </div>
-                    </>
-                )}
-            </div>
+                                          },
+                                      ]
+                                    : []),
+                            ]}
+                            hideTopPadding
+                            alignActiveBorderWithContainer
+                        />
+                    </div>
+                </>
+            )}
+
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
@@ -500,6 +510,9 @@ export const Details = ({
                 appReleaseTags={appReleaseTags}
                 tagsEditable={tagsEditable}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                scrollToTop={scrollToTop}
+                scrollToBottom={scrollToBottom}
+                fullScreenView={fullScreenView}
             />
         </>
     )
@@ -514,13 +527,14 @@ const HistoryLogs = ({
     appReleaseTags,
     tagsEditable,
     hideImageTaggingHardDelete,
+    scrollToTop,
+    scrollToBottom,
+    fullScreenView,
 }: HistoryLogsType) => {
     const { path } = useRouteMatch()
     const isJobCard: boolean = isJobCI || isJobView
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
+
     const [ciJobArtifact, setciJobArtifact] = useState<string[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const downloadArtifactUrl = `${Routes.CI_CONFIG_GET}/${pipelineId}/artifacts/${buildId}`
@@ -561,22 +575,21 @@ const HistoryLogs = ({
                 appReleaseTagNames={appReleaseTags}
                 hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                 type={HistoryComponentType.CI}
-                jobCIClass="pb-0-imp"
+                rootClassName="pb-0-imp"
                 renderCIListHeader={renderCIListHeader}
             />
         )
     })
     return (
-        <div className="trigger-outputs-container">
+        <div className="trigger-outputs-container flexbox-col flex-grow-1">
             <Switch>
                 <Route path={`${path}/logs`}>
-                    <div ref={ref} className="dark-background h-100 dc__overflow-auto">
-                        <LogsRenderer
-                            triggerDetails={triggerDetails}
-                            isBlobStorageConfigured={isBlobStorageConfigured}
-                            parentType={HistoryComponentType.CI}
-                        />
-                    </div>
+                    <LogsRenderer
+                        triggerDetails={triggerDetails}
+                        isBlobStorageConfigured={isBlobStorageConfigured}
+                        parentType={HistoryComponentType.CI}
+                        fullScreenView={fullScreenView}
+                    />
                     {(scrollToTop || scrollToBottom) && (
                         <Scroller
                             style={{ position: 'fixed', bottom: '52px', right: '12px', zIndex: '4' }}
@@ -593,9 +606,9 @@ const HistoryLogs = ({
                 </Route>
                 <Route path={`${path}/artifacts`}>
                     {loading && <Progressing pageLoader />}
-                    {isJobCI && !loading && CiArtifactsArrayCards}
+                    {isJobCI && !loading && <div className="p-16 flexbox-col dc__gap-8">{CiArtifactsArrayCards}</div>}
                     {!loading && (
-                        <div className="p-16">
+                        <div className="p-16 flex-grow-1">
                             <Artifacts
                                 status={triggerDetails.status}
                                 artifact={triggerDetails.artifact}
@@ -767,7 +780,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 {isCollapsed ? (
                     ''
                 ) : (
-                    <div className='px-24 security-scan-table'>
+                    <div className="px-24 security-scan-table">
                         <ScanVulnerabilitiesTable vulnerabilities={securityData.vulnerabilities} hidePolicy />
                     </div>
                 )}

@@ -78,7 +78,7 @@ export const useKeyValueYaml = (keyValueArray, setKeyValueArray, keyPattern, key
             const errorneousKeys = []
             const errorneousValues = []
 
-            const tempArray = Object.keys(obj).reduce((agg, k) => {
+            const tempArray = Object.keys(obj).reduce((agg, k, id) => {
                 if (!k && !obj[k]) {
                     return agg
                 }
@@ -94,7 +94,7 @@ export const useKeyValueYaml = (keyValueArray, setKeyValueArray, keyPattern, key
                 if (v && (typeof obj[k] === 'boolean' || typeof obj[k] === 'number')) {
                     errorneousValues.push(v)
                 }
-                return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
+                return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '', id }]
             }, [])
             setKeyValueArray(tempArray)
             let updatedError = ''
