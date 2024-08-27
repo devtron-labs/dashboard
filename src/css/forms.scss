@@ -322,20 +322,19 @@ p.sentence-case:first-letter {
     background-image: url('../assets/icons/ic-checkbox-unselected.svg');
 }
 
-.form__checkbox:checked[value='INTERMEDIATE']~.form__checkbox-container {
+.form__checkbox:checked[value='INTERMEDIATE'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 
-.form__checkbox:checked[value='CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
-.form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
+.form__checkbox:checked[value='BULK_CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-bulk-check.svg');
 }
 
 .any-selected {
-
     background-image: url('../assets/icons/ic-checkbox-intermediate.svg');
 }
 

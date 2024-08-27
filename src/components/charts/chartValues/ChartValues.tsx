@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -110,9 +110,7 @@ export default function ChartValues() {
     if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenManager
-                    code={errorStatusCode}
-                />
+                <ErrorScreenManager code={errorStatusCode} />
             </div>
         )
     }

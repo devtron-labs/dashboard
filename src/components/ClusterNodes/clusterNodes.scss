@@ -187,7 +187,9 @@
             .pods-grid {
                 display: grid;
                 grid-template-rows: auto 1fr;
-                main, header, .row-wrapper {
+                main,
+                header,
+                .row-wrapper {
                     display: grid;
                 }
                 main {
@@ -201,7 +203,8 @@
                     top: 46px;
                     z-index: 1;
                 }
-                .row-wrapper, header {
+                .row-wrapper,
+                header {
                     padding: 8px 20px;
                     line-height: 24px;
                     grid-template-columns: minmax(100px, 150px) minmax(100px, 1fr) repeat(4, 100px) 75px;

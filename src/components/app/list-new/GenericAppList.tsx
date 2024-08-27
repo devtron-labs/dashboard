@@ -27,8 +27,7 @@ import {
     Pagination,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useHistory } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
@@ -367,7 +366,11 @@ const GenericAppList = ({
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={isArgoCDAppList ? APPLIST_EMPTY_STATE_MESSAGING.argoCDInfoText : APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText}
+                    subTitle={
+                        isArgoCDAppList
+                            ? APPLIST_EMPTY_STATE_MESSAGING.argoCDInfoText
+                            : APPLIST_EMPTY_STATE_MESSAGING.fluxCDInfoText
+                    }
                 />
             </div>
         )

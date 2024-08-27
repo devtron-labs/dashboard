@@ -120,12 +120,15 @@ const DeploymentTemplateEditorView = ({
             chartRefId: state.selectedChartRefId,
             values: value,
             valuesAndManifestFlag: 1,
-            ...(envId && { envId: +envId })
+            ...(envId && { envId: +envId }),
         }
         const response = await getDeploymentManisfest(request)
         try {
             // In complex objects we are receiving JSON object instead of YAML object in case value is YAML.
-            return { resolvedData: YAMLStringify(YAML.parse(response.result.resolvedData)), variableSnapshot: response.result.variableSnapshot }
+            return {
+                resolvedData: YAMLStringify(YAML.parse(response.result.resolvedData)),
+                variableSnapshot: response.result.variableSnapshot,
+            }
         } catch (error) {
             return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
         }
@@ -511,7 +514,8 @@ const DeploymentTemplateEditorView = ({
                     fetchingValues ||
                     draftLoading ||
                     resolveLoading ||
-                    (state.openComparison && !lhs)}
+                    (state.openComparison && !lhs)
+                }
                 height={getCodeEditorHeight(isUnSet, isEnvOverride, state.openComparison, state.showReadme)}
                 diffView={state.openComparison}
                 readOnly={readOnly}

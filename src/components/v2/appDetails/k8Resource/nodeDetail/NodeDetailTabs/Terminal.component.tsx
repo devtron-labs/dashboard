@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch } from 'react-router'
+import { useParams, useRouteMatch } from 'react-router-dom'
 import { get, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'

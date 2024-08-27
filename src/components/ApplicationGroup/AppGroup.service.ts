@@ -25,12 +25,7 @@ import {
     CommonNodeAttr,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    CdPipelineResult,
-    CiPipelineResult,
-    WorkflowResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
+import { CdPipelineResult, CiPipelineResult, WorkflowResult, CiPipeline } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'

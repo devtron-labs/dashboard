@@ -159,10 +159,15 @@ export const sortVariables = (variablesObj: ScopedVariablesDataType): ScopedVari
     return mutatedVariablesObj
 }
 
-export const parseURLViewToValidView = (urlView: string, isEnvironmentListEnabled: boolean): ScopedVariablesFileViewType => {
+export const parseURLViewToValidView = (
+    urlView: string,
+    isEnvironmentListEnabled: boolean,
+): ScopedVariablesFileViewType => {
     switch (urlView) {
         case ScopedVariablesFileViewType.ENVIRONMENT_LIST:
-            return isEnvironmentListEnabled ? ScopedVariablesFileViewType.ENVIRONMENT_LIST : ScopedVariablesFileViewType.YAML
+            return isEnvironmentListEnabled
+                ? ScopedVariablesFileViewType.ENVIRONMENT_LIST
+                : ScopedVariablesFileViewType.YAML
         case ScopedVariablesFileViewType.SAVED:
             return ScopedVariablesFileViewType.SAVED
         default:
