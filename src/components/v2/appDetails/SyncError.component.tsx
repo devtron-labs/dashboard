@@ -38,7 +38,7 @@ import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetai
 import { TOAST_INFO } from '../../../config/constantMessaging'
 import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
-const SyncErrorComponent: React.FC<SyncErrorType> = ({showApplicationDetailedModal }) => {
+const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
     const [isImagePullBackOff, setIsImagePullBackOff] = useState(false)
     const [clusterConnectionError, setClusterConnectionError] = useState<boolean>(false)

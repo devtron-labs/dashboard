@@ -29,7 +29,7 @@
 }
 
 .styled-form-box {
-    >.styled-form-box:last-of-type {
+    > .styled-form-box:last-of-type {
         margin-bottom: 0 !important;
     }
 }
@@ -71,7 +71,6 @@
     }
 
     .slider-input-box-wrapper {
-
         .slider-input-box,
         .slider-input-unit {
             padding: 6px 10px;

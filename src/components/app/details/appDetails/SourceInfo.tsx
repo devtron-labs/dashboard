@@ -16,9 +16,9 @@
 
 // @ts-nocheck - @TODO: Remove this by fixing the type issues
 import React, { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, DeploymentAppTypes, ReleaseMode, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -71,6 +71,9 @@ export const SourceInfo = ({
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     const isExternalCI = appDetails?.dataSource === 'EXTERNAL'
+    // helmMigratedAppNotTriggered means the app is migrated from a helm release and has not been deployed yet i.e. CD Pipeline has not been triggered
+    const helmMigratedAppNotTriggered =
+        appDetails?.releaseMode === ReleaseMode.MIGRATE_HELM && !appDetails?.isPipelineTriggered
 
     if (
         ['progressing', 'degraded'].includes(status?.toLowerCase()) &&
@@ -277,28 +280,32 @@ export const SourceInfo = ({
                               />
                           )}
                           {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
-                          {!loadingResourceTree && (
-                              <IssuesCard
-                                  cardLoading={cardLoading}
-                                  toggleIssuesModal={toggleIssuesModal}
-                                  setErrorsList={setErrorsList}
-                                  setDetailed={setDetailed}
-                              />
-                          )}
-                          <DeploymentStatusCard
-                              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                              cardLoading={cardLoading}
-                              hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
-                              isVirtualEnvironment={isVirtualEnvironment}
-                              refetchDeploymentStatus={refetchDeploymentStatus}
-                          />
-                          {appDetails?.dataSource !== 'EXTERNAL' && (
-                              <DeployedCommitCard
-                                  cardLoading={cardLoading}
-                                  showCommitInfoDrawer={onClickShowCommitInfo}
-                                  envId={envId}
-                                  ciArtifactId={ciArtifactId}
-                              />
+                          {!helmMigratedAppNotTriggered && (
+                              <>
+                                  {!loadingResourceTree && (
+                                      <IssuesCard
+                                          cardLoading={cardLoading}
+                                          toggleIssuesModal={toggleIssuesModal}
+                                          setErrorsList={setErrorsList}
+                                          setDetailed={setDetailed}
+                                      />
+                                  )}
+                                  <DeploymentStatusCard
+                                      deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                                      cardLoading={cardLoading}
+                                      hideDetails={appDetails?.deploymentAppType === DeploymentAppTypes.HELM}
+                                      isVirtualEnvironment={isVirtualEnvironment}
+                                      refetchDeploymentStatus={refetchDeploymentStatus}
+                                  />
+                                  {appDetails?.dataSource !== 'EXTERNAL' && (
+                                      <DeployedCommitCard
+                                          cardLoading={cardLoading}
+                                          showCommitInfoDrawer={onClickShowCommitInfo}
+                                          envId={envId}
+                                          ciArtifactId={ciArtifactId}
+                                      />
+                                  )}
+                              </>
                           )}
                           {DeploymentWindowStatusCard && (
                               <DeploymentWindowStatusCard
@@ -309,6 +316,7 @@ export const SourceInfo = ({
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest &&
+                              !helmMigratedAppNotTriggered &&
                               (showVulnerabilitiesCard || window._env_.ENABLE_RESOURCE_SCAN_V2) && (
                                   <SecurityVulnerabilityCard
                                       cardLoading={cardLoading}

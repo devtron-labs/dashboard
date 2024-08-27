@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router'
+import { useParams, useRouteMatch, useHistory, useLocation, Prompt } from 'react-router-dom'
 import { showError, Progressing, BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ChartSelect from './util/ChartSelect'

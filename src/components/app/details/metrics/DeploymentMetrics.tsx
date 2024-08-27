@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath } from 'react-router'
+import { generatePath } from 'react-router-dom'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import moment from 'moment'
 import ReactSelect from 'react-select'

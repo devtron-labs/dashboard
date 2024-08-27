@@ -108,7 +108,9 @@ module.exports = {
         'import/no-cycle': 'off',
         'import/prefer-default-export': 'off',
         'no-restricted-exports': 'off',
-        'import/named': 'off'
+        'import/named': 'off',
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': 'error',
     },
     overrides: [
         {

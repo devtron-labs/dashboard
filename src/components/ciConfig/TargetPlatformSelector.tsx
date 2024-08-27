@@ -48,26 +48,28 @@ const TargetPlatformSelector = ({
         }
     }
 
-    const handleCreateNewOption: SelectPickerProps<string, true>['multiSelectProps']['onCreateOption'] = (inputValue): void => {
-        if (inputValue) {
-            const _selectedTargetPlatforms = [
-                ...selectedTargetPlatforms,
-                {
-                    label: inputValue,
-                    value: inputValue,
-                },
-            ]
-            setSelectedTargetPlatforms(_selectedTargetPlatforms)
-            setShowCustomPlatformWarning(!targetPlatformMap.get(inputValue))
+    const handleCreateNewOption: SelectPickerProps<string, true>['multiSelectProps']['onCreateOption'] = (
+        inputValue,
+    ): void => {
+        const _selectedTargetPlatforms = [
+            ...selectedTargetPlatforms,
+            {
+                label: inputValue,
+                value: inputValue,
+            },
+        ]
+        setSelectedTargetPlatforms(_selectedTargetPlatforms)
+        setShowCustomPlatformWarning(!targetPlatformMap.get(inputValue))
 
-            if (configOverrideView) {
-                updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, _selectedTargetPlatforms)
-            }
-        } else {
-            setShowCustomPlatformWarning(
-                selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
-            )
+        if (configOverrideView) {
+            updateDockerConfigOverride(DockerConfigOverrideKeys.targetPlatform, _selectedTargetPlatforms)
         }
+    }
+
+    const handleCreatableBlur: SelectPickerProps['onBlur'] = () => {
+        setShowCustomPlatformWarning(
+            selectedTargetPlatforms.some((targetPlatform) => !targetPlatformMap.get(targetPlatform.value)),
+        )
     }
 
     const getOverridenValue = () => {
@@ -127,6 +129,7 @@ const TargetPlatformSelector = ({
                     onChange={handlePlatformChange}
                     hideSelectedOptions={false}
                     renderMenuListFooter={renderMenuListFooter}
+                    onBlur={handleCreatableBlur}
                 />
             )}
             {showCustomPlatformWarning && (

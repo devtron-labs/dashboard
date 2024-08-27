@@ -15,10 +15,9 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { NavLink } from 'react-router-dom'
 import { BreadCrumb, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
+import { NavLink, useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router-dom'
 import { AppSelector } from '../../AppSelector'
 import { URLS } from '../../../config'
 import { OptionType } from './appHeader.type'
