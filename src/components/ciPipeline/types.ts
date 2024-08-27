@@ -24,10 +24,12 @@ import {
     RefVariableType,
     ScriptType,
     PluginType,
+    CustomTagType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import { ChangeCIPayloadType, CustomTagType, PipelineFormType } from '../workflowEditor/types'
+import { ChangeCIPayloadType } from '../workflowEditor/types'
 
 export interface ExternalCIPipelineState {
     code: number

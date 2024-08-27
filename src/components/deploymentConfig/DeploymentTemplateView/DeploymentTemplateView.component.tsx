@@ -50,7 +50,7 @@ import {
 } from '../constants'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
+import { deleteDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
 import '../deploymentConfig.scss'

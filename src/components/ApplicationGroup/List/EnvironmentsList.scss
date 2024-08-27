@@ -43,11 +43,16 @@
     overflow: hidden;
 
     .env-compose__nav {
-        padding: 12px 12px 0;
         border-right: solid 1px #d6dbdf;
         background: white;
         height: 100%;
         overflow: hidden;
+        display: grid;
+        grid-template-rows: auto 1fr;
+
+        &.env-configurations {
+            display: block;
+        }
     }
 
     .env-compose__main {

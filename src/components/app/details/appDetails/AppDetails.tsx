@@ -31,6 +31,7 @@ import {
     processDeploymentStatusDetailsData,
     aggregateNodes,
     ArtifactInfoModal,
+    ReleaseMode,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -405,8 +406,8 @@ export const Details: React.FC<DetailsType> = ({
         appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef.current.signal)
             .then((response) => {
                 isVirtualEnvRef.current = response.result?.isVirtualEnvironment
-
-                if (!response.result.appName && !response.result.environmentName) {
+                // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
+                if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT  ) {
                     setResourceTreeFetchTimeOut(false)
                     setLoadingResourceTree(false)
                     setAppDetails(null)

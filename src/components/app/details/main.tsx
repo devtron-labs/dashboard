@@ -24,12 +24,13 @@ import {
     ToastBody,
     DeleteDialog,
     ErrorScreenManager,
+    ResourceKindType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'
 import { ErrorBoundary, sortOptionsByLabel } from '../../common'
-import { URLS } from '../../../config'
-import AppConfig from './appConfig/AppConfig'
+import { APP_TYPE, URLS } from '../../../config'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -367,7 +368,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
-                                appType="app"
+                                appType={APP_TYPE.DEVTRON_APPS}
                                 appMetaInfo={appMetaInfo}
                                 getAppMetaInfoRes={getAppMetaInfoRes}
                                 filteredEnvIds={_filteredEnvIds}
@@ -392,7 +393,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={appName} filteredEnvIds={_filteredEnvIds} />
+                            <AppConfig appName={appName} resourceKind={ResourceKindType.devtronApplication} filteredEnvIds={_filteredEnvIds} />
                         </Route>
                         {/* commented for time being */}
                         {/* <Route path={`${path}/tests/:pipelineId(\\d+)?/:triggerId(\\d+)?`}

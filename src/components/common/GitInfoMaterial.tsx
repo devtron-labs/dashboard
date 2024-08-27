@@ -22,6 +22,7 @@ import {
     CiPipelineSourceConfig,
     MaterialHistory,
     CIMaterialType,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { useHistory, useLocation } from 'react-router-dom'
@@ -33,8 +34,6 @@ import { ReactComponent as Back } from '../../assets/icons/ic-back.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Right } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.svg'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg'
 import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
@@ -223,23 +222,9 @@ export default function GitInfoMaterial({
         setSearchText('')
     }
 
-    const handleInputChange = (event): void => {
-        setSearchText(event.target.value)
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            if (event.target.value) {
-                handleFilterChanges(event.target.value)
-                setSearchApplied(true)
-            } else if (searchApplied) {
-                setSearchApplied(false)
-                clearSearch(event)
-            }
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch(event)
-        }
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setSearchText(_searchText)
+        handleFilterChanges(_searchText)
     }
 
     const goToWorkFlowEditor = () => {
@@ -253,23 +238,16 @@ export default function GitInfoMaterial({
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel en-2 bw-1 br-4 h-32 mr-0-imp">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    data-testid="ci-trigger-search-by-commit-hash"
-                    type="text"
-                    placeholder="Search by commit hash"
-                    value={searchText}
-                    className="search__input"
-                    onChange={handleInputChange}
-                    onKeyDown={handleFilterKeyPress}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
+            <SearchBar
+                initialSearchText={searchText}
+                containerClassName="w-250"
+                handleEnter={handleFilterKeyPress}
+                inputProps={{
+                    placeholder: 'Search by commit hash',
+                    autoFocus: true,
+                }}
+                dataTestId="ci-trigger-search-by-commit-hash"
+            />
         )
     }
 

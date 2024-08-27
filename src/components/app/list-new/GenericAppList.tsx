@@ -24,13 +24,14 @@ import {
     AppListConstants,
     Host,
     useMainContext,
+    Pagination,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy } from '../list/types'
 import { buildClusterVsNamespace, getArgoInstalledExternalApps } from './AppListService'
-import { LazyImage, Pagination } from '../../common'
+import { LazyImage } from '../../common'
 import { Routes, URLS } from '../../../config'
 import { AppListViewType } from '../config'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
@@ -472,6 +473,7 @@ const GenericAppList = ({
         return (
             filteredAppsList.length > 20 && (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={filteredAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

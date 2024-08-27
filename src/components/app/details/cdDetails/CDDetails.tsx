@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
     showError,
     Progressing,
@@ -35,6 +35,7 @@ import {
     FetchIdDataStatus,
     LogResizeButton,
     getTriggerHistory,
+    useScrollable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
@@ -92,6 +93,11 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+triggerId)
+    const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
     useEffect(() => {
         // check for more
@@ -298,47 +304,51 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 </div>
             )}
             <div className="ci-details__body">
-                {triggerHistory.size > 0 || fetchTriggerIdData ? (
-                    <Route
-                        path={`${path
-                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                            .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
-                    >
-                        <TriggerOutput
-                            fullScreenView={fullScreenView}
-                            triggerHistory={triggerHistory}
-                            deploymentHistoryResult={deploymentHistoryResult ?? null}
-                            setTriggerHistory={setTriggerHistory}
-                            setFullScreenView={setFullScreenView}
-                            setDeploymentHistoryList={setDeploymentHistoryList}
-                            deploymentHistoryList={deploymentHistoryList}
-                            deploymentAppType={deploymentAppType}
-                            isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
-                            appReleaseTags={appReleaseTags}
-                            tagsEditable={tagsEditable}
-                            hideImageTaggingHardDelete={hideImageTaggingHardDelete}
-                            fetchIdData={fetchTriggerIdData}
-                            setFetchTriggerIdData={setFetchTriggerIdData}
-                            selectedEnvironmentName={selectedEnv?.environmentName}
-                            renderRunSource={renderRunSourceInDropdown}
-                            renderCIListHeader={renderCIListHeader}
-                            renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
-                            renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
-                            renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
-                            processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                    {triggerHistory.size > 0 || fetchTriggerIdData ? (
+                        <Route
+                            path={`${path
+                                .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                                .replace(':envId(\\d+)?', ':envId(\\d+)')}`}
+                        >
+                            <TriggerOutput
+                                fullScreenView={fullScreenView}
+                                triggerHistory={triggerHistory}
+                                deploymentHistoryResult={deploymentHistoryResult ?? null}
+                                setTriggerHistory={setTriggerHistory}
+                                setFullScreenView={setFullScreenView}
+                                setDeploymentHistoryList={setDeploymentHistoryList}
+                                deploymentHistoryList={deploymentHistoryList}
+                                deploymentAppType={deploymentAppType}
+                                isBlobStorageConfigured={result[2]?.['value']?.result?.enabled || false}
+                                appReleaseTags={appReleaseTags}
+                                tagsEditable={tagsEditable}
+                                hideImageTaggingHardDelete={hideImageTaggingHardDelete}
+                                fetchIdData={fetchTriggerIdData}
+                                setFetchTriggerIdData={setFetchTriggerIdData}
+                                selectedEnvironmentName={selectedEnv?.environmentName}
+                                renderRunSource={renderRunSourceInDropdown}
+                                renderCIListHeader={renderCIListHeader}
+                                renderDeploymentApprovalInfo={renderDeploymentApprovalInfo}
+                                renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
+                                renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
+                                processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                                scrollToTop={scrollToTop}
+                                scrollToBottom={scrollToBottom}
+                            />
+                        </Route>
+                    ) : !envId ? (
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
-                    </Route>
-                ) : !envId ? (
-                    <GenericEmptyState
-                        title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
-                        subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
-                    />
-                ) : (
-                    <GenericEmptyState
-                        title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
-                        subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
-                    />
-                )}
+                    ) : (
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
+                        />
+                    )}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>

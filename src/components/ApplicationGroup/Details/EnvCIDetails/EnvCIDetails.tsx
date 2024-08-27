@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import {
     Progressing,
@@ -31,6 +31,7 @@ import {
     asyncWrap,
     mapByKey,
     useInterval,
+    useScrollable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
@@ -62,6 +63,13 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchBuildIdData, setFetchBuildIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+buildId)
+    // This is only meant for logsRenderer
+    const [scrollableParentRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
+
 
     useEffect(() => {
         try {
@@ -240,6 +248,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         hideImageTaggingHardDelete={hideImageTaggingHardDelete}
                         fetchIdData={fetchBuildIdData}
                         isJobCI={pipeline.pipelineType === CIPipelineBuildType.CI_JOB}
+                        scrollToTop={scrollToTop}
+                        scrollToBottom={scrollToBottom}
                     />
                 </Route>
             )
@@ -282,14 +292,16 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                {!pipelineId ? (
-                    <EmptyView
-                        title="No application selected"
-                        subTitle="Please select an application to see build history."
-                    />
-                ) : (
-                    pipeline && renderPipelineDetails()
-                )}
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableParentRef}>
+                    {!pipelineId ? (
+                        <EmptyView
+                            title="No application selected"
+                            subTitle="Please select an application to see build history."
+                        />
+                    ) : (
+                        pipeline && renderPipelineDetails()
+                    )}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>
