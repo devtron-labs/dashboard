@@ -136,7 +136,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                 handleEnter={handleFilterKeyPress}
                 inputProps={{
                     placeholder: 'Search environment',
-                    autoFocus: true
+                    autoFocus: true,
                 }}
                 dataTestId="environment-search-box"
             />
