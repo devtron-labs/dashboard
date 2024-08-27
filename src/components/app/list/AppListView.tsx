@@ -19,13 +19,14 @@ import {
     AppStatus,
     ErrorScreenManager,
     DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+    handleUTCTime,
     AppListConstants,
     DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { AppListViewType } from '../config'
-import { Pagination, handleUTCTime } from '../../common'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { Empty } from './emptyView/Empty'
 import { AppListViewProps, OrderBy, SortBy } from './types'
@@ -263,7 +264,9 @@ export class AppListView extends Component<AppListViewProps> {
                                                     className="default-tt"
                                                     arrow={true}
                                                     placement="top"
-                                                    content={moment(app.defaultEnv.lastDeployedTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
+                                                    content={moment(app.defaultEnv.lastDeployedTime).format(
+                                                        DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
+                                                    )}
                                                 >
                                                     <p
                                                         className="dc__truncate-text  m-0"
@@ -308,6 +311,7 @@ export class AppListView extends Component<AppListViewProps> {
         if (this.props.size > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={this.props.size}
                     pageSize={this.props.pageSize}
                     offset={this.props.offset}

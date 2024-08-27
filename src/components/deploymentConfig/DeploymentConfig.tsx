@@ -15,7 +15,7 @@
  */
 
 import React, { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
     showError,
@@ -29,6 +29,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
+import { useAppConfigurationContext } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfiguration.provider'
 import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
@@ -100,6 +101,7 @@ export default function DeploymentConfig({
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
     const baseDeploymentAbortController = new AbortController()
     const removedPatches = useRef<Array<Operation>>([])
+    const { fetchEnvConfig } = useAppConfigurationContext()
 
     const setHideLockedKeys = (value: boolean) => {
         if (!state.wasGuiOrHideLockedKeysEdited) {
@@ -334,6 +336,7 @@ export default function DeploymentConfig({
         })
         setHideLockedKeys(false)
         initialise()
+        fetchEnvConfig(-1)
     }
 
     async function fetchDeploymentTemplate() {

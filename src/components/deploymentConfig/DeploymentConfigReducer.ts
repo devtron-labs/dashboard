@@ -25,7 +25,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     template: '',
     schema: null,
     guiSchema: null,
-    loading: false,
+    loading: true,
     chartConfig: null,
     isAppMetricsEnabled: false,
     tempFormData: '',

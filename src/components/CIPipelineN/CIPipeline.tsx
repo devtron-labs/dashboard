@@ -15,8 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation, NavLink } from 'react-router-dom'
 import {
     ServerErrors,
     showError,
@@ -36,6 +35,8 @@ import {
     getPluginsDetail,
     ErrorScreenManager,
     getUpdatedPluginStore,
+    Environment,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -75,8 +76,7 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
-import { Environment } from '../cdPipeline/cdPipeline.types'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
@@ -437,7 +437,9 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore))
+                setMandatoryPluginData(
+                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
+                )
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }

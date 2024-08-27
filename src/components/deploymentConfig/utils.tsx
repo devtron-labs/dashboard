@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { applyCompareDiffOnUneditedDocument, ResponseType, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    applyCompareDiffOnUneditedDocument,
+    getGuiSchemaFromChartName,
+    ResponseType,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentTemplateOptionsTabProps } from './types'
-import fallbackGuiSchema from './basicViewSchema.json'
-import fallbackJobsNCronJobGuiSchema from './fallbackJobsNCronJobGuiSchema.json'
-import { DEPLOYMENT, JOB_AND_CRONJOB_CHART_NAME, ROLLOUT_DEPLOYMENT, STATEFUL_SET } from './constants'
 
 export const getRenderActionButton =
     (changeEditorMode: DeploymentTemplateOptionsTabProps['changeEditorMode']) => () => (
@@ -32,19 +34,6 @@ export const getRenderActionButton =
             <span className="cb-5 cursor fw-6">Switch to Advanced</span>
         </button>
     )
-
-const getGuiSchemaFromChartName = (chartName: string) => {
-    switch (chartName) {
-        case JOB_AND_CRONJOB_CHART_NAME:
-            return fallbackJobsNCronJobGuiSchema
-        case DEPLOYMENT:
-        case ROLLOUT_DEPLOYMENT:
-        case STATEFUL_SET:
-            return fallbackGuiSchema
-        default:
-            return {}
-    }
-}
 
 export const addGUISchemaIfAbsent = (response: ResponseType, chartName: string) => {
     if (response && response.result && !response.result.guiSchema) {

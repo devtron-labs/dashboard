@@ -176,10 +176,9 @@ const ChartListPopUp = ({
     }
 
     const handleFilterKeyPress = (searchKey: string): void => {
-            handleFilterChanges(searchKey)
-            setSearchText(searchKey)
+        handleFilterChanges(searchKey)
+        setSearchText(searchKey)
     }
-
 
     const renderChartListSearch = () => {
         return (
@@ -192,7 +191,7 @@ const ChartListPopUp = ({
                         placeholder: 'Search by repository or registry',
                         autoFocus: true,
                     }}
-                    data-testid="chart-store-search-box"
+                    dataTestId="chart-store-search-box"
                 />
             </div>
         )

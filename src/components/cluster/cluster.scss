@@ -52,7 +52,7 @@
 .cluster-env-list_table {
     display: grid;
     column-gap: 12px;
-    grid-template-columns: 20px 170px 1fr 1fr 52px
+    grid-template-columns: 20px 170px 1fr 1fr 52px;
 }
 
 .override-button.cta.delete {
@@ -61,7 +61,6 @@
         margin-right: auto;
     }
 }
-
 
 .cluster-list-row {
     display: grid;
@@ -80,5 +79,4 @@
     grid-template-columns: 24px minmax(240px, 250px) 150px 420px minmax(80px, 90px);
     grid-column-gap: 16px;
     line-height: 20px;
-} 
-
+}

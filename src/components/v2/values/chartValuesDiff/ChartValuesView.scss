@@ -110,7 +110,6 @@
         }
     }
 
-
     .chart-values-view__wrapper {
         display: grid;
         grid-template-columns: 300px 1px calc(100% - 301px);
@@ -387,9 +386,10 @@
                 border: none;
                 border-bottom: 1px solid var(--N100);
                 height: auto;
-                .monaco-editor{
-                    .monaco-editor-background, .margin {
-                      background-color: var(--N000) !important;
+                .monaco-editor {
+                    .monaco-editor-background,
+                    .margin {
+                        background-color: var(--N000) !important;
                     }
                 }
                 .code-editor__warning {

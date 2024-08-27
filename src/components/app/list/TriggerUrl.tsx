@@ -15,7 +15,13 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Progressing, VisibleModal, GenericEmptyState, ClipboardButton, EMPTY_STATE_STATUS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    VisibleModal,
+    GenericEmptyState,
+    ClipboardButton,
+    EMPTY_STATE_STATUS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { getIngressServiceUrls } from '../service'

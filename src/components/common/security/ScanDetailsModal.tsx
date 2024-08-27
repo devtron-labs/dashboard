@@ -15,6 +15,8 @@
  */
 
 import React, { Component } from 'react'
+import dayjs from 'dayjs'
+import { Link } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -23,19 +25,20 @@ import {
     VulnerabilityType,
     ScannedByToolModal,
     Drawer,
-    ScannedObjectBar,
     stopPropagation,
+    SeverityCount,
+    SegmentedBarChart,
+    DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as ICClock } from '../../../assets/icons/ic-clock.svg'
 import { ViewType, URLS } from '../../../config'
 import { getLastExecutionByImageScanDeploy } from '../../../services/service'
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails'
 
 interface ScanDetailsModalProps {
+    showAppInfo?: boolean
     uniqueId: ExecutionId
-    showAppInfo: boolean
-    name?: string
     close: () => void
 }
 
@@ -59,11 +62,7 @@ interface ScanDetailsModalState {
     replicaSet?: string
     image?: string
     objectType?: 'app' | 'chart'
-    severityCount: {
-        critical: number
-        moderate: number
-        low: number
-    }
+    severityCount: SeverityCount
     vulnerabilities: VulnerabilityType[]
     scanToolId?: number
 }
@@ -76,8 +75,10 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
             view: ViewType.LOADING,
             severityCount: {
                 critical: 0,
-                moderate: 0,
+                high: 0,
+                medium: 0,
                 low: 0,
+                unknown: 0,
             },
             scanExecutionId: 0,
             lastExecution: '',
@@ -133,84 +134,68 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     renderHeader() {
         return (
             <div className="trigger-modal__header">
-                <h1 className="modal__title">{this.props.name ? this.props.name : `Security Vulnerabilities`}</h1>
-                <button type="button" className="dc__transparent " onClick={this.props.close}>
+                <h2 className="fs-16 lh-24 fw-6 cn-9 m-0-imp">Security Vulnerabilities</h2>
+                <button type="button" className="dc__transparent p-0 h-20" onClick={this.props.close}>
                     <Close className="icon-dim-20" />
                 </button>
             </div>
         )
     }
 
-    renderScannedObjectInfo() {
-        let link = `/app/${this.state.appId}/details/${this.state.envId}`
-        if (this.state.objectType === 'chart') {
-            link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`
-        }
+    renderAppEnvInfo = () => {
+        const appEnvConfig = [
+            {
+                label: 'App',
+                value: this.state?.appName || '',
+                link:
+                    this.state.objectType === 'chart'
+                        ? `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`
+                        : `${URLS.APP}/${this.state.appId}${URLS.DETAILS}/${this.state.envId}`,
+            },
+            { label: 'Env', value: this.state?.envName || '' },
+            { label: 'Pod', value: this.state?.pod || '' },
+            { label: 'ReplicaSet', value: this.state?.replicaSet || '' },
+        ]
         return (
-            <div className="scanned-object">
-                <div className="flexbox flex-justify">
-                    {this.props.showAppInfo ? (
-                        <div>
-                            {this.state.appId ? (
-                                <>
-                                    <p className="scanned-object__label">App</p>
-                                    <p className="scanned-object__value">
-                                        {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
-                                            <Link to={link} className="dc__no-decor" onClick={(event) => {}}>
-                                                {this.state.appName}
-                                            </Link>
-                                        ) : null}
-                                    </p>
-                                </>
-                            ) : null}
-                            {this.state.envId ? (
-                                <>
-                                    <p className="scanned-object__label">Environment</p>
-                                    <p className="scanned-object__value">{this.state.envName}</p>
-                                </>
-                            ) : null}
-                            {this.state.replicaSet ? (
-                                <>
-                                    <p className="scanned-object__label">Replica Set</p>
-                                    <p className="scanned-object__value">{this.state.replicaSet}</p>
-                                </>
-                            ) : null}
-                            {this.state.pod ? (
-                                <>
-                                    <p className="scanned-object__label">Pod</p>
-                                    <p className="scanned-object__value">{this.state.pod}</p>
-                                </>
-                            ) : null}
+            <div className="px-20 py-10 flexbox dc__align-items-center dc__gap-12 justify-start dc__border-bottom-n1 dc__position-sticky dc__top-0 bcn-0">
+                {appEnvConfig.map((data) =>
+                    data.value ? (
+                        <div className="flexbox dc__align-items-center dc__gap-4" key={data.label}>
+                            <span className="fw-6 fs-13 lh-20 cn-9">{`${data.label}:`}</span>
+                            {data.link ? (
+                                <Link to={data.link} className="dc__no-decor">
+                                    <span className="fs-14 fw-4 lh-20 cb-5">{`${data.value}`}</span>
+                                </Link>
+                            ) : (
+                                <span className="fs-14 fw-4 lh-20 cn-9 dc__mxw-180 dc__ellipsis-right">{`${data.value}`}</span>
+                            )}
                         </div>
-                    ) : null}
-                    {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
-                        <div className="flexbox dc__content-space pt-3">
-                            <div className="flex top">
-                                <span className="flex">
-                                    <ScannedByToolModal scanToolId={this.state.scanToolId} />
-                                </span>
-                            </div>
-                        </div>
-                    ) : null}
-                </div>
-                {this.props.showAppInfo ? null : (
-                    <>
-                        <div className="flexbox dc__content-space">
-                            <span className="scanned-object__label flex left">Last Scanned</span>
-                            <span className="flex right">
-                                <ScannedByToolModal scanToolId={this.state.scanToolId} />
-                            </span>
-                        </div>
-                        <p className="scanned-object__value">{this.state.lastExecution}</p>
-                    </>
+                    ) : null,
                 )}
+            </div>
+        )
+    }
 
-                <ScannedObjectBar
-                    criticalVulnerabilitiesCount={this.state.severityCount.critical}
-                    moderateVulnerabilitiesCount={this.state.severityCount.moderate}
-                    lowVulnerabilitiesCount={this.state.severityCount.low}
-                    objectBarClassName="mb-16"
-                />
+    renderScannedObjectInfo = () => {
+        const entities = [
+            { label: 'Critical', color: '#B21212', value: this.state.severityCount.critical },
+            { label: 'High', color: '#F33E3E', value: this.state.severityCount.high },
+            { label: 'Medium', color: '#FF7E5B', value: this.state.severityCount.medium },
+            { label: 'Low', color: '#FFB549', value: this.state.severityCount.low },
+            { label: 'Unknown', color: '#B1B7BC', value: this.state.severityCount.unknown },
+        ]
+        return (
+            <div className="scanned-object dc__border br-8">
+                <SegmentedBarChart entities={entities} rootClassName="pb-16 fs-13" countClassName="fw-6" />
+                <div className="flexbox dc__content-space">
+                    <div className="flex dc__gap-8">
+                        <ICClock className="icon-dim-16 dc__no-shrink" />
+                        <span className="fw-4 fs-12 h-20 cn-8">
+                            Scanned On {dayjs(this.state.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
+                        </span>
+                    </div>
+                    <ScannedByToolModal scanToolId={this.state.scanToolId} />
+                </div>
             </div>
         )
     }
@@ -218,7 +203,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     renderTable() {
         return (
             <div className="scanned-object__results">
-                <ScanVulnerabilitiesTable vulnerabilities={this.state.vulnerabilities} />
+                <ScanVulnerabilitiesTable vulnerabilities={this.state.vulnerabilities} shouldStick />
             </div>
         )
     }
@@ -226,8 +211,13 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
     render() {
         return (
             <Drawer position="right" width="800px" onEscape={this.props.close}>
-                <div className="modal-body--scan-details" ref={this.scanDetailsRef} onClick={stopPropagation}>
+                <div
+                    className="modal-body--scan-details security-scan-container"
+                    ref={this.scanDetailsRef}
+                    onClick={stopPropagation}
+                >
                     {this.renderHeader()}
+                    {this.renderAppEnvInfo()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">
                         {this.state.view === ViewType.LOADING ? (
                             <Progressing pageLoader />

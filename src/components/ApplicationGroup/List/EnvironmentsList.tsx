@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { DevtronProgressing, useAsync, useMainContext, PageHeader, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch } from 'react-router'
-import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { useState, useEffect } from 'react'
+import {
+    DevtronProgressing,
+    useAsync,
+    useMainContext,
+    PageHeader,
+    AppListConstants,
+    SearchBar,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import './EnvironmentsList.scss'
 import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
@@ -33,7 +37,6 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     const location = useLocation()
     const history = useHistory()
     const [searchText, setSearchText] = useState('')
-    const [searchApplied, setSearchApplied] = useState(false)
     const [clusterfilter, setClusterFilter] = useState<FilterOption[]>([])
     const [loading, clusterListRes] = useAsync(() => getClusterListMinWithoutAuth())
 
@@ -42,9 +45,6 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
             const queryParams = new URLSearchParams(location.search)
             const clusters = queryParams.get('cluster') || ''
             const search = queryParams.get('search') || ''
-            if (search) {
-                setSearchApplied(true)
-            }
             const clusterStatus = clusters
                 .toString()
                 .split(',')
@@ -74,25 +74,13 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         history.push(`${match.path}?${queryParams.toString()}`)
     }
 
-    const clearSearch = (): void => {
-        setSearchApplied(false)
-        const queryParams = new URLSearchParams(location.search)
-        queryParams.delete('search')
-        queryParams.set('offset', '0')
-        history.push(`${match.path}?${queryParams.toString()}`)
-    }
-
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            if (searchText.length) {
-                handleSearch(event.target.value)
-                setSearchApplied(true)
-            }
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setSearchText(_searchText)
+        if (searchText.length) {
+            handleSearch(_searchText)
         }
     }
+
     const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
         const queryParams = new URLSearchParams(location.search)
         const ids = []
@@ -133,13 +121,8 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         queryParams.delete('cluster')
         queryParams.delete('search')
         queryParams.set('offset', '0')
-        setSearchApplied(false)
         setSearchText('')
         history.push(`${match.path}?${queryParams.toString()}`)
-    }
-
-    const handleSearchText = (event): void => {
-        setSearchText(event.target.value)
     }
 
     const onShowHideFilterContent = (show: boolean): void => {
@@ -148,23 +131,16 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
 
     const renderSearch = (): JSX.Element => {
         return (
-            <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
-                <Search className="search__icon icon-dim-18" />
-                <input
-                    data-testid="environment-search-box"
-                    type="text"
-                    placeholder="Search environment"
-                    value={searchText}
-                    className="search__input"
-                    onChange={handleSearchText}
-                    onKeyDown={handleFilterKeyPress}
-                />
-                {searchApplied && (
-                    <button className="search__clear-button" type="button" onClick={clearSearch}>
-                        <Clear className="icon-dim-18 icon-n4 dc__vertical-align-middle" />
-                    </button>
-                )}
-            </div>
+            <SearchBar
+                initialSearchText={searchText}
+                containerClassName="w-250"
+                handleEnter={handleFilterKeyPress}
+                inputProps={{
+                    placeholder: 'Search environment',
+                    autoFocus: true
+                }}
+                dataTestId="environment-search-box"
+            />
         )
     }
 

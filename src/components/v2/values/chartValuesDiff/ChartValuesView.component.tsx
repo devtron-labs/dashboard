@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import {
     Progressing,
@@ -202,7 +202,7 @@ export const DeploymentAppSelector = ({
                                 animation="shift-toward-subtle"
                                 content={gitRepoURL}
                             >
-                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target='_blank'>
+                                <a className="dc__block dc__ellipsis-left cursor" href={gitRepoURL} target="_blank">
                                     {gitRepoURL}
                                 </a>
                             </Tippy>
@@ -317,10 +317,14 @@ export const GitOpsDrawer = ({
     showRepoSelector,
     allowedCustomBool,
 }: gitOpsDrawerType): JSX.Element => {
-    const [selectedRepoType, setSelectedRepoType] = useState(commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE)
+    const [selectedRepoType, setSelectedRepoType] = useState(
+        commonState.authMode !== GitOpsAuthModeType.SSH ? repoType.DEFAULT : repoType.CONFIGURE,
+    )
     const [isDeploymentAllowed, setIsDeploymentAllowed] = useState(false)
     const [gitOpsState, setGitOpsState] = useState(false)
-    const [repoURL, setRepoURL] = useState(commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL)
+    const [repoURL, setRepoURL] = useState(
+        commonState.gitRepoURL === AUTO_GENERATE_GITOPS_REPO ? '' : commonState.gitRepoURL,
+    )
 
     useEffect(() => {
         if (deploymentAppType === DeploymentAppTypes.GITOPS) {
@@ -441,7 +445,10 @@ export const GitOpsDrawer = ({
                             Commit deployment manifests to
                             <EditIcon className="icon-dim-20 cursor ml-28 pt-4" onClick={toggleDrawer} />
                         </span>
-                        <a className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left" onClick={toggleDrawer}>
+                        <a
+                            className="fs-13 fw-4 lh-20 dc__block cursor dc__ellipsis-left pb-4 dc__align-left"
+                            onClick={toggleDrawer}
+                        >
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>

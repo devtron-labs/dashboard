@@ -15,46 +15,45 @@
  */
 
 .gitops__id {
-	color: #404040;
+    color: #404040;
 }
 .form__label {
-	&.form__label--fs-13 {
-		font-size: 13px;
-	}
+    &.form__label--fs-13 {
+        font-size: 13px;
+    }
 }
 .git_impt {
-	border: solid 1px #c5bbfa;
+    border: solid 1px #c5bbfa;
 }
 .config_failure {
-	border-bottom: 0px;
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
+    border-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 .config_failure-actions {
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 .onlink {
-	color: var(--B500);
-	&:hover {
-		color: var(--B500);
-	}
+    color: var(--B500);
+    &:hover {
+        color: var(--B500);
+    }
 }
 
 .stroke_width {
-	stroke-width: 2px;
+    stroke-width: 2px;
 }
 
 .form__radio-item {
-	&.disabled {
-		background-color: var(--N0);
-		opacity: 0.5;
-
-	}
+    &.disabled {
+        background-color: var(--N0);
+        opacity: 0.5;
+    }
 }
 
 .bitbucket-radio-group {
-	.form__radio-group .form__radio-item .form__radio-item-content {
-		padding: 4px 16px 4px 0;
-	}
+    .form__radio-group .form__radio-item .form__radio-item-content {
+        padding: 4px 16px 4px 0;
+    }
 }

@@ -118,9 +118,10 @@ export default function SavedVariablesView({
                     />
                 </Route>
 
-                {ScopedVariablesEnvironmentDetailsRouter && window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && (
-                    <ScopedVariablesEnvironmentDetailsRouter reloadScopedVariables={reloadScopedVariables} />
-                )}
+                {ScopedVariablesEnvironmentDetailsRouter &&
+                    window._env_.FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE && (
+                        <ScopedVariablesEnvironmentDetailsRouter reloadScopedVariables={reloadScopedVariables} />
+                    )}
 
                 <Redirect to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} />
             </Switch>
