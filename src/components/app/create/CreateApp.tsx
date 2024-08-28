@@ -35,7 +35,6 @@ import {
     OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
 import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
 import { AddNewAppProps, AddNewAppState } from '../types'
