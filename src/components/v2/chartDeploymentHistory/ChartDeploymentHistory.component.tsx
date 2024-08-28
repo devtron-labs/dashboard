@@ -30,8 +30,7 @@ import {
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
-import { useHistory, useRouteMatch } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import DataNotFound from '../../../assets/img/app-not-deployed.png'
@@ -55,7 +54,10 @@ import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '
 import { importComponentFromFELibrary } from '../../common'
 import DockerImageDetails from './DockerImageDetails'
 import RollbackConfirmationDialog from './RollbackConfirmationDialog'
-import { processVirtualEnvironmentDeploymentData, renderDeploymentApprovalInfo } from '../../app/details/cdDetails/utils'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderDeploymentApprovalInfo,
+} from '../../app/details/cdDetails/utils'
 
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 

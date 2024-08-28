@@ -68,11 +68,7 @@ import {
     triggerCINode,
     triggerBranchChange,
 } from '../../../app/service'
-import {
-    importComponentFromFELibrary,
-    preventBodyScroll,
-    sortObjectArrayAlphabetically,
-} from '../../../common'
+import { importComponentFromFELibrary, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {

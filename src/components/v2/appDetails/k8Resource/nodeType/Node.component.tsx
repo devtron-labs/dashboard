@@ -15,13 +15,8 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory } from 'react-router'
-import {
-    TippyCustomized,
-    TippyTheme,
-    ClipboardButton,
-    stopPropagation,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { useRouteMatch, useParams, useHistory } from 'react-router-dom'
+import { TippyCustomized, TippyTheme, ClipboardButton, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import IndexStore from '../../index.store'
 import { getElapsedTime, importComponentFromFELibrary } from '../../../../common'

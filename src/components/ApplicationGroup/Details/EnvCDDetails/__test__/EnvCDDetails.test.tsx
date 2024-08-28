@@ -43,7 +43,7 @@ describe('EnvCDDetails', () => {
         await act(async () => {
             component = renderWithRouter(
                 <Route path="application-group/:envId/cd-details/:pipelineId">
-                   <EnvCDDetails filteredAppIds={filteredData} />
+                    <EnvCDDetails filteredAppIds={filteredData} />
                 </Route>,
                 { route: 'application-group/1/cd-details/1' },
             )

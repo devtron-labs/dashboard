@@ -15,7 +15,17 @@
  */
 
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
-import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
+import {
+    Switch,
+    Route,
+    Redirect,
+    NavLink,
+    useParams,
+    useRouteMatch,
+    useHistory,
+    generatePath,
+    useLocation,
+} from 'react-router-dom'
 import {
     Progressing,
     BreadCrumb,
@@ -28,7 +38,6 @@ import {
     useAsync,
     PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
 import { toast } from 'react-toastify'

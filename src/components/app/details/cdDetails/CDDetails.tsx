@@ -37,8 +37,7 @@ import {
     getTriggerHistory,
     useScrollable,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
-import { Route } from 'react-router-dom'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import './cdDetail.scss'

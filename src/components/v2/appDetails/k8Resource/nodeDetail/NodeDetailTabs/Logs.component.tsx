@@ -16,7 +16,7 @@
 
 import Tippy from '@tippyjs/react'
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch, useLocation } from 'react-router'
+import { useParams, useRouteMatch, useLocation } from 'react-router-dom'
 import {
     Checkbox,
     CHECKBOX_VALUE,

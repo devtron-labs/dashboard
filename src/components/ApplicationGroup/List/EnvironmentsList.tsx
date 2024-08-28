@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
     DevtronProgressing,
     useAsync,
@@ -23,8 +23,7 @@ import {
     AppListConstants,
     SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch } from 'react-router'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import './EnvironmentsList.scss'
 import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'

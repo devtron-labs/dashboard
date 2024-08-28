@@ -53,7 +53,7 @@ export const SingleSelectOption = (props) => {
 }
 
 /**
- * 
+ *
  * @deprecated Use `MultiValueContainer` from common library
  */
 

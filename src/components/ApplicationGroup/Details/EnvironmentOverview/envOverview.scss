@@ -43,7 +43,6 @@
                 min-width: 170px;
             }
         }
-
     }
 
     .response-list-container {
@@ -76,7 +75,7 @@
 }
 
 .bulk-restart-workload-wrapper {
-    .drawer-section__empty{
+    .drawer-section__empty {
         height: calc(100vh - 118px);
     }
 
@@ -92,5 +91,4 @@
     .drawer-body-section__list-drawer {
         height: calc(100vh - 190px);
     }
-
 }
