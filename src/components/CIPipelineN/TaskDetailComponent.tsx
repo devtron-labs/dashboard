@@ -150,7 +150,7 @@ export const TaskDetailComponent = () => {
                 _formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.conditionDetails,
                 newInputVariables.length,
                 newPluginVersionData.outputVariables.length,
-            )
+            ),
         } as StepType['pluginRefStepDetail']
 
         calculateLastStepDetail(false, _formData, activeStageName)

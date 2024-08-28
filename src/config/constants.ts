@@ -424,7 +424,7 @@ export const HEADER_TEXT = {
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
-        description: "Manage your organization’s git accounts.",
+        description: 'Manage your organization’s git accounts.',
         docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
     },
     NOTIFICATIONS: {
@@ -954,5 +954,5 @@ export const SwitchItemValues = {
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
-    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }

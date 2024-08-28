@@ -15,8 +15,7 @@
  */
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation } from 'react-router'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useHistory, useLocation, NavLink } from 'react-router-dom'
 import {
     ServerErrors,
     showError,
@@ -438,7 +437,9 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             if (mandatoryPluginData?.pluginData?.length && validatePlugins) {
-                setMandatoryPluginData(validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore))
+                setMandatoryPluginData(
+                    validatePlugins(_formData, mandatoryPluginData.pluginData, clonedPluginDataStore),
+                )
             }
             _formDataErrorObj[stageName].isValid = isStageValid
         }

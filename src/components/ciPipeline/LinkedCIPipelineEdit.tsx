@@ -280,11 +280,11 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     })()}
                 </Typeahead>
                 {this.getIsChangingToSamePipeline() && (
-                        <span className="flex left form__error">
-                            <Warning className="icon-dim-14 mr-4 form__icon form__icon--error" />
-                            Source CI Pipeline cannot belong to the same workflow
-                        </span>
-                    )}
+                    <span className="flex left form__error">
+                        <Warning className="icon-dim-14 mr-4 form__icon form__icon--error" />
+                        Source CI Pipeline cannot belong to the same workflow
+                    </span>
+                )}
 
                 {this.state.showError && !this.state.isValid.parentCIPipelineId ? (
                     <span className="form__error">

@@ -30,7 +30,7 @@ import {
     CodeEditor,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { useHistory, useParams } from 'react-router'
+import { useHistory, useParams } from 'react-router-dom'
 import AsyncSelect from 'react-select/async'
 import ReactGA from 'react-ga4'
 import ReactSelect from 'react-select'

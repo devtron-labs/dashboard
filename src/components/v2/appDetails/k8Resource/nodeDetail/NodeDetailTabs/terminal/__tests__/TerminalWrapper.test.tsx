@@ -40,7 +40,7 @@ describe('TerminalWrapper', () => {
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -58,7 +58,7 @@ describe('TerminalWrapper', () => {
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -82,7 +82,7 @@ describe('TerminalWrapper', () => {
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()
@@ -106,7 +106,7 @@ describe('TerminalWrapper', () => {
                     socketConnection={SocketConnectionType.CONNECTING}
                     setSocketConnection={jest.fn()}
                 />,
-            )
+            ),
         )
 
         expect(container).toBeInTheDocument()

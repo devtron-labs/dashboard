@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { AppType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 
 export interface AppListState {
     code: number

@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useHistory, useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router-dom'
 import { showError, Progressing, sortCallback, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { getCIWebhookPayload } from './ciWebhook.service'

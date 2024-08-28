@@ -245,22 +245,22 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                     <ArrowDown className="icon-dim-20 dc__inline-block fcn-6" />
                 </div>
                 {this.state.showCalendar && (
-                     <DayPickerRangeController
-                     startDate={this.props.calendar.startDate}
-                     endDate={this.props.calendar.endDate}
-                     focusedInput={this.props.focusedInput}
-                     onDatesChange={this.props.handleDatesChange}
-                     onFocusChange={this.props.handleFocusChange}
-                     numberOfMonths={1}
-                     withPortal
-                     renderCalendarInfo={this.renderDatePresets}
-                     calendarInfoPosition="after"
-                     hideKeyboardShortcutsPanel
-                     isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} // enable past dates
-                     renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
-                     onOutsideClick={() => {
-                         this.setState({ showCalendar: false })
-                     }}
+                    <DayPickerRangeController
+                        startDate={this.props.calendar.startDate}
+                        endDate={this.props.calendar.endDate}
+                        focusedInput={this.props.focusedInput}
+                        onDatesChange={this.props.handleDatesChange}
+                        onFocusChange={this.props.handleFocusChange}
+                        numberOfMonths={1}
+                        withPortal
+                        renderCalendarInfo={this.renderDatePresets}
+                        calendarInfoPosition="after"
+                        hideKeyboardShortcutsPanel
+                        isOutsideRange={(day) => !isInclusivelyBeforeDay(day, moment())} // enable past dates
+                        renderCalendarDay={(props) => <CustomizableCalendarDay {...props} {...customDayStyles} />}
+                        onOutsideClick={() => {
+                            this.setState({ showCalendar: false })
+                        }}
                         initialVisibleMonth={() => moment().subtract(2, 'd')} //
                     />
                 )}

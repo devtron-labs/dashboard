@@ -15,8 +15,7 @@
  */
 
 import { Component } from 'react'
-import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
-import { RouteComponentProps } from 'react-router'
+import { Switch, NavLink, Route, Redirect, RouteComponentProps } from 'react-router-dom'
 import { ErrorScreenNotAuthorized, FeatureTitleWithInfo } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
