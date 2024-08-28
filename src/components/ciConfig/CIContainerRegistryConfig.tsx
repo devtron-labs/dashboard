@@ -16,7 +16,13 @@
 
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { ComponentSizeType, CustomInput, InfoColourBar, REGISTRY_TYPE_MAP, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    CustomInput,
+    InfoColourBar,
+    REGISTRY_TYPE_MAP,
+    SelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'

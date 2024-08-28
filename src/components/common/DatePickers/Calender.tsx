@@ -209,10 +209,10 @@ const blockToday = (day: Moment): boolean => {
 }
 
 /**
- * 
+ *
  * @param param0 date, handleDatesChange, readOnly, isTodayBlocked
  *  @deprecated it  is replaced with DatePicker in common
- * @returns 
+ * @returns
  */
 
 export const SingleDatePickerComponent = ({

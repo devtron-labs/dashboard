@@ -56,7 +56,6 @@ export const Routes = {
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -207,7 +206,6 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
-    CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
@@ -265,13 +263,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -424,7 +423,7 @@ export const HEADER_TEXT = {
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
-        description: "Manage your organization’s git accounts.",
+        description: 'Manage your organization’s git accounts.',
         docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
     },
     NOTIFICATIONS: {
@@ -480,6 +479,12 @@ export enum ACCESS_TYPE_MAP {
     JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
+export enum APP_TYPE {
+    HELM_CHART = 'helm-chart',
+    DEVTRON_APPS = 'app',
+    JOB = 'job',
+}
+
 export enum MODES {
     YAML = 'yaml',
     JSON = 'json',
@@ -520,7 +525,7 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
-    heading: 'Custom Charts',
+    heading: 'Deployment Charts',
     infoText: 'Devtron provides charts that cover most use cases.',
     additionalParagraphText:
         'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
@@ -723,9 +728,9 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export enum TIMELINE_STATUS {
     DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
     GIT_COMMIT = 'GIT_COMMIT',
@@ -749,9 +754,9 @@ export enum TIMELINE_STATUS {
     HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
 }
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
@@ -828,7 +833,7 @@ export const SERVER_ERROR_CODES = {
     CHART_NAME_RESERVED: '5002',
 }
 
-export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const ENV_ALREADY_EXIST_ERROR = 'Pipeline already exists for this environment'
 export const CVE_ID_NOT_FOUND = 'CVE ID not found'
 export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
 export const NO_HOST_URL = 'Please enter host url'
@@ -948,5 +953,5 @@ export const SwitchItemValues = {
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
-    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }

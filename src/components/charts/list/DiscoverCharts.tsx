@@ -26,8 +26,7 @@ import {
     DetectBottom,
     FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, NavLink } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
+import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
@@ -425,7 +424,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     return (
         <>
-            <div className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}>
+            <div
+                className={`discover-charts bcn-0 ${state.charts.length > 0 ? 'summary-show' : ''} chart-store-header`}
+            >
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
                     <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                 </ConditionalWrap>

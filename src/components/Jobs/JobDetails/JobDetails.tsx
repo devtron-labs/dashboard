@@ -27,9 +27,9 @@ import {
     useParams,
     useRouteMatch,
 } from 'react-router-dom'
-import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../config'
-import AppConfig from '../../app/details/appConfig/AppConfig'
+import { APP_TYPE, URLS } from '../../../config'
+import { BreadCrumb, Progressing, showError, useBreadcrumb, PageHeader, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
@@ -75,7 +75,7 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <Overview appType="job" appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview appType={APP_TYPE.JOB} appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView />
@@ -84,7 +84,7 @@ export default function JobDetails() {
                             <CIDetails key={appId} isJobView />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} isJobView />
+                            <AppConfig appName={jobName} resourceKind={ResourceKindType.job} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>

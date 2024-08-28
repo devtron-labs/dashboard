@@ -17,7 +17,6 @@
 import {
     CommonNodeAttr,
     DeploymentAppTypes,
-    FormType,
     OptionType,
     StepType,
     TaskErrorObj,
@@ -26,15 +25,12 @@ import {
     WorkflowType,
     PluginDataStoreType,
     MandatoryPluginDetailType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import {
-    CIPipelineNodeType,
-    CdPipelineResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
-import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
+import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { WorkflowProps } from './Workflow'
@@ -222,29 +218,6 @@ export interface CDNodeState {
     deploymentWindowConfimationValue: string
 }
 
-export interface PipelineBuildStageType {
-    id: number
-    triggerType?: string
-    steps: StepType[]
-}
-
-export interface CustomTagType {
-    tagPattern: string
-    counterX: string
-}
-export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
-    name: string
-    triggerType: string
-    preBuildStage?: PipelineBuildStageType
-    postBuildStage?: PipelineBuildStageType
-    defaultTag?: string[]
-    customTag?: CustomTagType
-    enableCustomTag?: boolean
-    customTagStage?: string
-    isDigestEnforcedForPipeline?: boolean
-    isDigestEnforcedForEnv?: boolean
-}
-
 export interface PipelineFormDataErrorType {
     name: { message?: string; isValid: boolean }
     envNameError?: { message?: string; isValid: boolean }
@@ -291,7 +264,12 @@ export interface PipelineContext {
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any, clonedPluginDataStore?: PluginDataStoreType) => void
+    validateStage: (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?: any,
+        clonedPluginDataStore?: PluginDataStoreType,
+    ) => void
     isCdPipeline?: boolean
     configMapAndSecrets?: {
         label: string

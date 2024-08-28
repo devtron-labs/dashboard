@@ -25,7 +25,7 @@ import {
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import IndexStore from '../index.store'
@@ -412,7 +412,7 @@ const EnvironmentSelectorComponent = ({
                 <TriggerUrlModal
                     installedAppId={params.appId}
                     isExternalApp={isExternalApp}
-                    appId={appIdentifier}
+                    appId={appDetails.appType !== AppType.DEVTRON_HELM_CHART ? appIdentifier : '' }
                     envId={params.envId}
                     close={closeUrlInfo}
                     appType={appDetails.appType}

@@ -133,11 +133,10 @@
     border: solid 1px var(--N200);
     background-color: var(--white);
     border-radius: 4px;
-
 }
 
 .material-history__box-shadow:hover {
-    box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.10);
+    box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.1);
 }
 
 .material-history--cd {
@@ -195,8 +194,17 @@
     color: var(--B500);
     width: 150px;
     text-align: right;
-    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
-        'Helvetica Neue', sans-serif;
+    font-family:
+        'Open Sans',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen-Sans,
+        Ubuntu,
+        Cantarell,
+        'Helvetica Neue',
+        sans-serif;
 }
 
 .material-history__scan-error {
@@ -399,7 +407,7 @@
         opacity: 0;
 
         &:checked {
-            &+.check {
+            & + .check {
                 display: inline-block;
             }
         }

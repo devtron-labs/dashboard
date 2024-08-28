@@ -16,8 +16,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { showError, PopupMenu, not, useSearchString, copyToClipboard } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
 import dots from '../../assets/icons/appstatus/ic-menu-dots.svg'

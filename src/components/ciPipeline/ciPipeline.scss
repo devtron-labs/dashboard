@@ -260,7 +260,6 @@
     &.no-side-bar {
         grid-template-columns: 1fr;
     }
-
 }
 
 .pipeline-empty-state {
@@ -340,7 +339,7 @@
 
         input {
             &:checked {
-                &~.form__radio-item-content {
+                & ~ .form__radio-item-content {
                     .radio__title {
                         color: var(--N900);
                     }
@@ -352,7 +351,7 @@
 
 .configuration-container {
     input {
-        &+.radio__item-label {
+        & + .radio__item-label {
             text-align: center;
             display: table;
             padding: 2px 8px;
@@ -364,7 +363,7 @@
 
     .width-120px {
         input {
-            &+.radio__item-label {
+            & + .radio__item-label {
                 width: 120px;
             }
         }
@@ -372,7 +371,7 @@
 
     .left-radius {
         input {
-            &+.radio__item-label {
+            & + .radio__item-label {
                 border-radius: 4px 0 0 4px !important;
             }
         }
@@ -380,7 +379,7 @@
 
     .right-radius {
         input {
-            &+.radio__item-label {
+            & + .radio__item-label {
                 border-radius: 0 4px 4px 0 !important;
                 border-left: 0px;
             }
@@ -390,7 +389,7 @@
 
 .radio-group {
     input[type='checkbox']:checked {
-        &+.radio__item-label {
+        & + .radio__item-label {
             background: var(--N100);
             color: var(--N900);
         }
@@ -541,22 +540,22 @@
     }
 }
 
-.custom-tag-radio{
+.custom-tag-radio {
     .form__radio-item {
-            border: none;
-            min-width: 125px;
-            margin-right: 20px;
-    
-            .form__radio-item-content {
-                padding: 6px 0 6px 0 !important;
-    
-                .radio__title {
-                    text-transform: none;
-                }
+        border: none;
+        min-width: 125px;
+        margin-right: 20px;
+
+        .form__radio-item-content {
+            padding: 6px 0 6px 0 !important;
+
+            .radio__title {
+                text-transform: none;
             }
         }
     }
-    
+}
+
 .custom-tag__text-area {
     resize: none;
 }

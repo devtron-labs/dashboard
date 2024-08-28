@@ -25,13 +25,13 @@ import {
     CommonNodeAttr,
     WorkflowType,
     Material,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipeline, CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
-import { Environment } from '../cdPipeline/cdPipeline.types'
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
