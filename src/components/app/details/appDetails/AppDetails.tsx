@@ -906,9 +906,8 @@ export const EnvSelector = ({
         }, []) || []
 
         // Pushing the virtual environment group to the end of the list
-        if(groupList[0].label === 'Virtual environments' && groupList.length === 2) {
-            groupList.push(groupList[0])
-            groupList.splice(0,1)
+        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+            groupList.reverse()
         }
 
     return (
