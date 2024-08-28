@@ -65,6 +65,12 @@ export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
     return { [key]: makeObjectFromJsonPathArray(index + 1, paths) }
 }
 
+/**
+ * This method will compare and calculate the diffs between @unedited and @edited
+ * documents and apply these diffs onto the @unedited document and return this new document
+ * @param {string} unedited - The unedited document onto which we want to patch the changes from @edited
+ * @param {string} edited - The edited document whose changes we want to patch onto @unedited
+ */
 export const applyCompareDiffOfTempFormDataOnOriginalData = (
     unedited: string,
     edited: string,

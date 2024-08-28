@@ -76,7 +76,7 @@ export default function DeploymentTemplateOverrideForm({
         allowed: false,
     })
     const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
-    const [hideLockedKeys, _setHideLockedKeys] = useState(false)
+    const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
     const removedPatches = useRef<Array<Operation>>([])
@@ -88,7 +88,7 @@ export default function DeploymentTemplateOverrideForm({
         }
     }, [state.duplicate])
 
-    const setHideLockedKeys = (value: boolean) => {
+    const handleSetHideLockedKeys = (value: boolean) => {
         if (!state.wasGuiOrHideLockedKeysEdited) {
             dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
         }
@@ -97,7 +97,7 @@ export default function DeploymentTemplateOverrideForm({
         // for hide logic to work. Therefore, whenever hideLockedKeys is changed we should update
         // the following ref to true. Internally getLockFilteredTemplate will set it to false.
         hideLockKeysToggled.current = true
-        _setHideLockedKeys(value)
+        setHideLockedKeys(value)
     }
 
     const toggleSaveChangesModal = () => {
@@ -751,7 +751,7 @@ export default function DeploymentTemplateOverrideForm({
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
                 setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                 lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
-                setHideLockedKeys={setHideLockedKeys}
+                setHideLockedKeys={handleSetHideLockedKeys}
                 hideLockedKeys={hideLockedKeys}
                 hideLockKeysToggled={hideLockKeysToggled}
                 inValidYaml={state.unableToParseYaml}

@@ -94,7 +94,7 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const [hideLockedKeys, _setHideLockedKeys] = useState(false)
+    const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
 
@@ -103,7 +103,7 @@ export default function DeploymentConfig({
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
 
-    const setHideLockedKeys = (value: boolean) => {
+    const handleSetHideLockedKeys = (value: boolean) => {
         if (!state.wasGuiOrHideLockedKeysEdited) {
             dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
         }
@@ -112,7 +112,7 @@ export default function DeploymentConfig({
         // for hide logic to work. Therefore, whenever hideLockedKeys is changed we should update
         // the following ref to true. Internally getLockFilteredTemplate will set it to false.
         hideLockKeysToggled.current = true
-        _setHideLockedKeys(value)
+        setHideLockedKeys(value)
     }
 
     const setIsValues = (value: boolean) => {
@@ -334,7 +334,7 @@ export default function DeploymentConfig({
                 loading: true,
             },
         })
-        setHideLockedKeys(false)
+        handleSetHideLockedKeys(false)
         initialise()
         fetchEnvConfig(-1)
     }
@@ -516,7 +516,7 @@ export default function DeploymentConfig({
             })
             saveEligibleChangesCb && closeLockedDiffDrawerWithChildModal()
             state.showConfirmation && handleConfirmationDialog(false)
-            setHideLockedKeys(false)
+            handleSetHideLockedKeys(false)
         }
     }
 
@@ -896,7 +896,7 @@ export default function DeploymentConfig({
                         setConvertVariables={setConvertVariables}
                         componentType={3}
                         setShowLockedDiffForApproval={setShowLockedDiffForApproval}
-                        setHideLockedKeys={setHideLockedKeys}
+                        setHideLockedKeys={handleSetHideLockedKeys}
                         hideLockedKeys={hideLockedKeys}
                         setLockedConfigKeysWithLockType={setLockedConfigKeysWithLockType}
                         lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
