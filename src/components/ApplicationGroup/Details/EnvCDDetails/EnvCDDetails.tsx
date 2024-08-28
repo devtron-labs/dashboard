@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortCallback, useAsync, Sidebar, TriggerOutput, LogResizeButton, CICDSidebarFilterOptionType, History, HistoryComponentType, FetchIdDataStatus, useInterval, mapByKey, asyncWrap, getTriggerHistory } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import {
+    Progressing,
+    showError,
+    sortCallback,
+    useAsync,
+    Sidebar,
+    TriggerOutput,
+    LogResizeButton,
+    CICDSidebarFilterOptionType,
+    History,
+    HistoryComponentType,
+    FetchIdDataStatus,
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    getTriggerHistory,
+    useScrollable,
+    TRIGGER_STATUS_PROGRESSING,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -29,7 +47,14 @@ import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
-import { processVirtualEnvironmentDeploymentData, renderCIListHeader, renderDeploymentApprovalInfo, renderDeploymentHistoryTriggerMetaText, renderRunSource, renderVirtualHistoryArtifacts } from '../../../app/details/cdDetails/utils'
+import {
+    processVirtualEnvironmentDeploymentData,
+    renderCIListHeader,
+    renderDeploymentApprovalInfo,
+    renderDeploymentHistoryTriggerMetaText,
+    renderRunSource,
+    renderVirtualHistoryArtifacts,
+} from '../../../app/details/cdDetails/utils'
 
 export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -48,6 +73,12 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [hideImageTaggingHardDelete, setHideImageTaggingHardDelete] = useState<boolean>(false)
     const [fetchTriggerIdData, setFetchTriggerIdData] = useState<FetchIdDataStatus>(null)
+
+    const triggerDetails = triggerHistory?.get(+triggerId)
+    const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
+    })
+
     const [loading, result] = useAsync(
         () =>
             Promise.allSettled([
@@ -57,7 +88,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
-        () => getTriggerHistory({appId: Number(appId), envId: Number(envId), pagination}),
+        () => getTriggerHistory({ appId: Number(appId), envId: Number(envId), pagination }),
         [pagination, appId, envId],
         !!appId && !!pipelineId,
     )
@@ -135,7 +166,11 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             return
         }
         const [error, result] = await asyncWrap(
-            getTriggerHistory({appId: +appId, envId: +envId, pagination: { offset: 0, size: pagination.offset + pagination.size }}),
+            getTriggerHistory({
+                appId: +appId,
+                envId: +envId,
+                pagination: { offset: 0, size: pagination.offset + pagination.size },
+            }),
         )
         if (error) {
             showError(error)
@@ -228,6 +263,8 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         renderDeploymentHistoryTriggerMetaText={renderDeploymentHistoryTriggerMetaText}
                         renderVirtualHistoryArtifacts={renderVirtualHistoryArtifacts}
                         processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                        scrollToTop={scrollToTop}
+                        scrollToBottom={scrollToBottom}
                     />
                 </Route>
             )
@@ -266,7 +303,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 </div>
             )}
             <div className="ci-details__body">
-                {renderDetail()}
+                <div className="flexbox-col flex-grow-1 dc__overflow-scroll" ref={scrollableRef}>
+                    {renderDetail()}
+                </div>
                 <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
             </div>
         </div>

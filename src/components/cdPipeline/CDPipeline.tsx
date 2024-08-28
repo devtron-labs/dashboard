@@ -34,8 +34,11 @@ import {
     DEFAULT_PLUGIN_DATA_STORE,
     getPluginsDetail,
     getUpdatedPluginStore,
+    Environment,
+    PipelineFormType,
+    ReleaseMode,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -47,7 +50,7 @@ import {
     sortObjectArrayAlphabetically,
 } from '../common'
 import BuildCD from './BuildCD'
-import { CD_PATCH_ACTION, Environment, GeneratedHelmPush } from './cdPipeline.types'
+import { CD_PATCH_ACTION, GeneratedHelmPush } from './cdPipeline.types'
 import {
     deleteCDPipeline,
     getCDPipelineConfig,
@@ -80,7 +83,7 @@ import {
     validateTask,
 } from './cdpipeline.util'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
-import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { getDockerRegistryMinAuth } from '../ciConfig/service'
 import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums } from '../CIPipelineN/ciPipeline.utils'
 import NoGitOpsRepoConfiguredWarning, {
@@ -99,9 +102,9 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+const ReleaseModeTabs = importComponentFromFELibrary('ReleaseModeTabs', null, 'function')
 
 export default function CDPipeline({
-    match,
     location,
     appName,
     close,
@@ -154,6 +157,8 @@ export default function CDPipeline({
         environmentName: '',
         namespace: '',
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
+        deploymentAppName: '',
+        releaseMode: ReleaseMode.NEW_DEPLOYMENT,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -506,6 +511,8 @@ export default function CDPipeline({
         }
         const env = environments.find((e) => e.id === pipelineConfigFromRes.environmentId)
         form.name = pipelineConfigFromRes.name
+        form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
+        form.releaseMode = pipelineConfigFromRes.releaseMode
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -632,11 +639,13 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_HELM ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
             deploymentAppType: formData.deploymentAppType,
+            deploymentAppName: formData.deploymentAppName,
+            releaseMode: formData.releaseMode,
             deploymentAppCreated: formData.deploymentAppCreated,
             userApprovalConfig: _userApprovalConfig,
             triggerType: formData.triggerType,
@@ -1047,7 +1056,7 @@ export default function CDPipeline({
                 </button>
             )
         }
-        if (!isAdvanced) {
+        if (!isAdvanced && formData.releaseMode !== ReleaseMode.MIGRATE_HELM) {
             return (
                 !isWebhookCD && (
                     <button
@@ -1061,10 +1070,19 @@ export default function CDPipeline({
                 )
             )
         }
+        return null
     }
 
     const closePipelineModal = () => {
         close()
+    }
+
+    const handleSelectMigrateHelmRelease = () => {
+        setFormData({ ...formData, releaseMode: ReleaseMode.MIGRATE_HELM, deploymentAppType: DeploymentAppTypes.HELM })
+    }
+
+    const handleSelectNewDeployment = () => {
+        setFormData({ ...formData, releaseMode: ReleaseMode.NEW_DEPLOYMENT })
     }
 
     const contextValue = useMemo(() => {
@@ -1172,6 +1190,7 @@ export default function CDPipeline({
                                     envIds={envIds}
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                                    releaseMode={formData.releaseMode}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -1194,6 +1213,17 @@ export default function CDPipeline({
             title = CREATE_DEPLOYMENT_PIPELINE
         }
 
+        // Disable button if environment or release name is not selected
+        const getButtonDisabledMessage = (): string => {
+            if (!formData.environmentId) {
+                return 'Please select an environment'
+            }
+            if (formData.releaseMode === ReleaseMode.MIGRATE_HELM && !formData.deploymentAppName) {
+                return 'Please select a release'
+            }
+            return ''
+        }
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
@@ -1208,11 +1238,22 @@ export default function CDPipeline({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
+                {!isAdvanced && ReleaseModeTabs && (
+                    <ReleaseModeTabs
+                        handleSelectMigrateHelmRelease={handleSelectMigrateHelmRelease}
+                        handleSelectNewDeployment={handleSelectNewDeployment}
+                        releaseMode={formData.releaseMode}
+                    />
+                )}
                 {renderCDPipelineBody()}
                 {pageState !== ViewType.LOADING && pageState !== ViewType.ERROR && (
                     <div
                         className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            !isWebhookCD && (cdPipelineId || !isAdvanced) ? 'flex-justify' : 'justify-right'
+                            !isWebhookCD &&
+                            !(formData.releaseMode === ReleaseMode.MIGRATE_HELM && !isAdvanced) &&
+                            (cdPipelineId || !isAdvanced)
+                                ? 'flex-justify'
+                                : 'justify-right'
                         } `}
                     >
                         {formData && (
@@ -1223,6 +1264,7 @@ export default function CDPipeline({
                                     dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}
+                                    disabled={!!getButtonDisabledMessage()}
                                 >
                                     {text}
                                 </ButtonWithLoader>

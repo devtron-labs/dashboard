@@ -16,7 +16,7 @@
 
 import React, { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
-import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getAppListMin } from '../../services/service'
 import { ViewType } from '../../config'
@@ -50,8 +50,8 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
             })
     }
 
-    handleSearchChange(e) {
-        this.setState({ appSearch: e.target.value })
+    handleSearchChange(_searchText: string): void {
+        this.setState({ appSearch: _searchText })
     }
 
     renderList() {
@@ -71,17 +71,16 @@ export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: st
                 <tbody>
                     <tr>
                         <td className="security-policy-cluster__title w-100">
-                            <div className="dc__search-with-dropdown">
-                                <Search className="icon-dim-20 ml-8" />
-                                <input
-                                    type="text"
-                                    className="search-with-dropdown__search"
-                                    data-testid="search-application"
-                                    onChange={this.handleSearchChange}
-                                    autoFocus
-                                    placeholder="Search application"
-                                />
-                            </div>
+                            <SearchBar
+                                initialSearchText={this.state.appSearch}
+                                containerClassName="flex-grow-1"
+                                handleEnter={this.handleSearchChange}
+                                inputProps={{
+                                    placeholder: 'Search Application',
+                                    autoFocus: true,
+                                }}
+                                dataTestId="search-application"
+                            />
                         </td>
                     </tr>
                     {this.state.appList

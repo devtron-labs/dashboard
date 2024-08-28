@@ -81,13 +81,14 @@ const DeploymentChartsList = () => {
         }
 
         return (
-            <div className="chart-list flexbox-col dc__gap-20" data-testid="custom-charts-list">
+            <div
+                className="chart-list flexbox-col dc__gap-20 dc__overflow-hidden h-100"
+                data-testid="custom-charts-list"
+            >
                 <DeploymentChartsListHeader handleOpenUploadChartModal={handleOpenUploadChartModal} />
                 <div
                     data-testid="custom-chart-list"
-                    className="en-2 bw-1 bcn-0 br-8"
-                    // TODO: clean css later
-                    style={{ minHeight: 'calc(100vh - 139px)' }}
+                    className="en-2 bw-1 bcn-0 br-8 h-100 dc__overflow-hidden flexbox-col"
                 >
                     <InfoColourBar
                         message={
@@ -111,40 +112,42 @@ const DeploymentChartsList = () => {
                         Icon={HelpIcon}
                         iconClass="fcv-5 icon-dim-20"
                     />
-                    <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
+                    <div className="chart-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase dc__no-shrink">
                         <span>Name</span>
                         <span>Version</span>
                         <span>Description</span>
                     </div>
-                    {chartList.map((chartData) => (
-                        <div
-                            key={`custom-chart_${chartData.name}`}
-                            className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
-                        >
-                            <div className="flexbox dc__gap-8 dc__align-items-center">
-                                <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
-                                {!chartData.isUserUploaded && (
-                                    <div className="flex bcb-1 br-6 py-2 px-6">
-                                        <DevtronIcon className="icon-dim-20" />
-                                        <span className="ml-4 fs-12 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
-                                    </div>
-                                )}
-                            </div>
-                            <span>
-                                {chartData.versions[0].version}
-                                <span className="cn-5 ml-8">
-                                    {chartData.versions.length && `+${chartData.versions.length} more`}
+                    <div className="h-100 dc__overflow-scroll">
+                        {chartList.map((chartData) => (
+                            <div
+                                key={`custom-chart_${chartData.name}`}
+                                className="chart-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20"
+                            >
+                                <div className="flexbox dc__gap-8 dc__align-items-center">
+                                    <span className="cn-9 dc__ellipsis-right">{chartData.name}</span>
+                                    {!chartData.isUserUploaded && (
+                                        <div className="flex bcb-1 br-6 py-2 px-6">
+                                            <DevtronIcon className="icon-dim-20" />
+                                            <span className="ml-4 fs-12 fw-6 cn-7 lh-20 devtron-tag">by Devtron</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <span>
+                                    {chartData.versions[0].version}
+                                    <span className="cn-5 ml-8">
+                                        {chartData.versions.length && `+${chartData.versions.length} more`}
+                                    </span>
                                 </span>
-                            </span>
-                            <Tooltip content={chartData.versions[0].description} placement="left">
-                                <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
-                            </Tooltip>
-                            <div className="flexbox dc__gap-4">
-                                {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
-                                <DownloadChartButton name={chartData.name} versions={chartData.versions} />
+                                <Tooltip content={chartData.versions[0].description} placement="left">
+                                    <span className="dc__ellipsis-right">{chartData.versions[0].description}</span>
+                                </Tooltip>
+                                <div className="flexbox dc__gap-4">
+                                    {EditDeploymentChart && <EditDeploymentChart name={chartData.name} />}
+                                    <DownloadChartButton name={chartData.name} versions={chartData.versions} />
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         )

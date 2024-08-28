@@ -168,6 +168,7 @@ export default function JobsList() {
                     handleEnter={handleSearch}
                     inputProps={{
                         placeholder: 'Search by job name',
+                        autoFocus: true
                     }}
                     dataTestId="Search-by-job-name"
                 />

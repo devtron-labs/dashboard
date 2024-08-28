@@ -33,6 +33,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     GenericFilterEmptyState,
     CodeEditor,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
@@ -59,7 +60,6 @@ import {
 } from './cluster.type'
 
 import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
-import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
     DeleteComponentsName,

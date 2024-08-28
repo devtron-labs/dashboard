@@ -36,6 +36,8 @@ import {
     getPluginsDetail,
     ErrorScreenManager,
     getUpdatedPluginStore,
+    Environment,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -75,8 +77,7 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
-import { PipelineContext, PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
-import { Environment } from '../cdPipeline/cdPipeline.types'
+import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
 import { getEnvironmentListMinPublic } from '../../services/service'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 

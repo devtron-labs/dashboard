@@ -172,7 +172,7 @@ const ChartHeaderFilter = ({
                     inputProps={{
                         placeholder: 'Search charts',
                     }}
-                    data-testid="chart-store-search-box"
+                    dataTestId="chart-store-search-box"
                 />
             </div>
             <div className="pl-12 pr-12 filter-tab">

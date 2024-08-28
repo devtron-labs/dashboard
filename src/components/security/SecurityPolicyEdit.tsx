@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import ReactSelect from 'react-select'
-import { showError, Progressing, Reload, Severity } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Reload,
+    Severity,
+    SelectPicker,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import { styles, portalStyles, DropdownIndicator } from './security.util'
 import {
@@ -45,17 +52,31 @@ export class SecurityPolicyEdit extends Component<
         {
             className: 'critical',
             title: 'Critical Vulnerabilities',
-            subTitle: 'Exploitation is straightforward and usually results in system-level compromise.',
+            subTitle:
+                'Immediate threat requiring urgent action. Could lead to complete system or data compromise. Highest priority for investigation and mitigation.',
         },
         {
-            className: 'moderate',
-            title: 'Moderate Vulnerabilities',
-            subTitle: 'Vulnerabilities exist but are not exploitable or require extra step such as social engineering.',
+            className: 'high',
+            title: 'High Vulnerabilities',
+            subTitle:
+                'Risk of unauthorized access to application resources or sensitive data exposure. Significant impact on system security if exploited.',
+        },
+        {
+            className: 'medium',
+            title: 'Medium Vulnerabilities',
+            subTitle:
+                'Often from misconfigurations. May allow limited data access or contribute to larger exploits. Requires attention but less urgent than higher levels.',
         },
         {
             className: 'low',
             title: 'Low Vulnerabilities',
-            subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface.",
+            subTitle:
+                'Not directly exploitable but introduces unnecessary weaknesses. Often due to missing controls or excessive information disclosure.',
+        },
+        {
+            className: 'unknown',
+            title: 'Unknown Vulnerabilities',
+            subTitle: 'Issues identified at this level do not have enough context to clearly demonstrate severity.',
         },
     ]
 
@@ -289,14 +310,18 @@ export class SecurityPolicyEdit extends Component<
     }
 
     private renderVulnerabilitiesCard(v: VulnerabilityPolicy, severities: SeverityPolicy[]) {
-        const critical = severities.filter((s) => s.severity === 'critical')[0]
-        const moderate = severities.filter((s) => s.severity === 'moderate')[0]
-        const low = severities.filter((s) => s.severity === 'low')[0]
+        const critical = severities.filter((s) => s.severity === Severity.CRITICAL)[0]
+        const medium = severities.filter((s) => s.severity === Severity.MEDIUM)[0]
+        const low = severities.filter((s) => s.severity === Severity.LOW)[0]
+        const high = severities.filter((s) => s.severity === Severity.HIGH)[0]
+        const unknown = severities.filter((s) => s.severity === Severity.UNKNOWN)[0]
         return (
             <>
                 {this.renderVulnerability(this.vulnerabilityMetaData[0], v, critical)}
-                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, moderate)}
-                {this.renderVulnerability(this.vulnerabilityMetaData[2], v, low)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[1], v, high)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[2], v, medium)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[3], v, low)}
+                {this.renderVulnerability(this.vulnerabilityMetaData[4], v, unknown)}
             </>
         )
     }
@@ -312,42 +337,44 @@ export class SecurityPolicyEdit extends Component<
                 : this.actions.find((data) => data.value === severity.policy.action)
         const permission = this.permissionText[severity.policy.action]
         return (
-            <div key={severity.id} className="vulnerability">
-                <div className="flex-1">
-                    <h3
-                        data-testid={`vulnerability-title-${props.className}`}
-                        className={`vulnerability__title vulnerability__title--${props.className}`}
-                    >
-                        {`${props.title} : ${permission}`}
-                    </h3>
-                    <p className="vulnerability__subtitle" data-testid={`vulnerability-subtitle-${props.className}`}>
-                        {props.subTitle}
-                    </p>
+            <>
+                <div key={severity.id} className="vulnerability dc__gap-16">
+                    <div className="flex-1">
+                        <h3
+                            data-testid={`vulnerability-title-${props.className}`}
+                            className={`vulnerability__title vulnerability__title--${props.className}`}
+                        >
+                            {`${props.title} : ${permission}`}
+                        </h3>
+                        <div
+                            className="vulnerability__subtitle cn-7 lh-18"
+                            data-testid={`vulnerability-subtitle-${props.className}`}
+                        >
+                            {props.subTitle}
+                        </div>
+                    </div>
+                    <div className="dc__w-fit-content">
+                        <SelectPicker
+                            inputId={`select-vulnerability-block-policy`}
+                            classNamePrefix={`select-vulnerability-block-policy`}
+                            name={`select-vulnerability-block-policy`}
+                            value={selectedValue}
+                            onChange={(selected) => {
+                                this.updateSeverity((selected as any).value, severity, v.envId)
+                            }}
+                            placeholder={`${
+                                severity.policy.inherited && !severity.policy.isOverriden
+                                    ? 'INHERITED'
+                                    : severity.policy.action
+                            }`}
+                            options={actions}
+                            variant={SelectPickerVariantType.BORDER_LESS}
+                            shouldMenuAlignRight
+                        />
+                    </div>
                 </div>
-                <div className="vulnerability__menu">
-                    <ReactSelect
-                        classNamePrefix={`select-vulnerability-${props.className}`}
-                        value={selectedValue}
-                        onChange={(selected) => {
-                            this.updateSeverity((selected as any).value, severity, v.envId)
-                        }}
-                        placeholder={`${
-                            severity.policy.inherited && !severity.policy.isOverriden
-                                ? 'INHERITED'
-                                : severity.policy.action
-                        }`}
-                        components={{
-                            DropdownIndicator,
-                        }}
-                        styles={{
-                            ...styles,
-                            option: getCustomOptionSelectionStyle(),
-                        }}
-                        isSearchable={false}
-                        options={actions}
-                    />
-                </div>
-            </div>
+                <div className="dc__border-bottom-n1" />
+            </>
         )
     }
 
@@ -538,21 +565,19 @@ export class SecurityPolicyEdit extends Component<
                     const showCardContent = isCollapsible ? !v.isCollapsed : true
                     const envNameIndex = v?.name?.search('/')
                     return (
-                        <div key={v.name} className="security-policy__card mb-20">
-                            <div className="flexbox flex-justify">
-                                {isCollapsible ? (
+                        <div key={v.name} className="security-policy__card mb-20 flexbox-col dc__gap-12">
+                            {isCollapsible && (
+                                <div className="flexbox flex-justify">
                                     <p className="security-polic__app-env-name">env{v?.name.substr(envNameIndex)}</p>
-                                ) : null}
-                                {isCollapsible ? (
                                     <Arrow
-                                        className="icon-dim-24 cursor fwn-9 rotate"
+                                        className="icon-dim-24 cursor fwn-9 rotate dc__no-shrink"
                                         style={{ ['--rotateBy' as any]: v.isCollapsed ? '0deg' : '180deg' }}
                                         onClick={() => {
                                             this.toggleCollapse(cardIndex)
                                         }}
                                     />
-                                ) : null}
-                            </div>
+                                </div>
+                            )}
                             {showCardContent ? (
                                 <>
                                     {isCollapsible ? <div className="mb-20" /> : null}

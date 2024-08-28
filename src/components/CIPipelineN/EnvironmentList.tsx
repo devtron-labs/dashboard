@@ -16,8 +16,8 @@
 
 import React from 'react'
 import ReactSelect, { components } from 'react-select'
+import { Environment } from '@devtron-labs/devtron-fe-common-lib'
 import { createClusterEnvGroup } from '../common'
-import { Environment } from '../cdPipeline/cdPipeline.types'
 import { DropdownIndicator } from '../cdPipeline/cdpipeline.util'
 import { buildStageStyles, groupHeading, triggerStageStyles } from './Constants'
 import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
