@@ -41,13 +41,13 @@ export const getPreviousDeploymentValue = (value: string) => {
 }
 
 export const getEnvironmentIdByEnvironmentName = (environments: EnvironmentOptionType[], name: string) =>
-    environments.find(({ name: _name }) => name === _name)?.id || BASE_CONFIGURATIONS.id
+    environments.find(({ name: _name }) => name === _name)?.id ?? BASE_CONFIGURATIONS.id
 
 export const isEnvProtected = (
     environments: EnvironmentOptionType[],
     envName: string,
     isBaseConfigProtected?: boolean,
-) => environments.find(({ name }) => name === envName)?.isProtected || isBaseConfigProtected
+) => environments.find(({ name }) => name === envName)?.isProtected ?? isBaseConfigProtected
 
 export const parseCompareWithSearchParams =
     ({

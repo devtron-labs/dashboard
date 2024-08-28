@@ -568,7 +568,7 @@ export const Details: React.FC<DetailsType> = ({
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvRef.current
+        !appDetails?.isPipelineTriggered
     ) {
         return (
             <>
