@@ -15,7 +15,7 @@
  */
 
 import { Moment } from 'moment'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 
 export interface GraphType {
     xAxisLabel: string

@@ -15,8 +15,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react'
-import { Route, Switch } from 'react-router-dom'
-import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
+import { Route, Switch, useRouteMatch, useLocation, useParams, useHistory } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -64,7 +63,6 @@ function mapById(arr) {
 }
 
 const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, history, location }) => {
-
     const [selectedVersion, selectVersion] = React.useState(null)
     const [availableVersions, setChartVersions] = React.useState([])
     const [chartInformation, setChartInformation] = React.useState({
@@ -427,7 +425,7 @@ function isReadmeInputCheckbox(text: string) {
 }
 
 /**
- * 
+ *
  * @deprecated function is used in common component
  */
 export const MarkDown = ({ markdown = '', className = '', breaks = false, disableEscapedText = false, ...props }) => {

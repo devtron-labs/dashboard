@@ -36,7 +36,6 @@
 }
 
 .select__option {
-
     // For highlighting the matching text in Direct Permission options
     mark {
         padding: 0;
@@ -61,7 +60,6 @@
 }
 
 .authorization-container {
-
     // To make the loader take the full width
     .loader {
         flex-grow: 1;
@@ -69,7 +67,6 @@
 }
 
 .user-permission {
-
     &__row,
     &__header {
         display: grid;

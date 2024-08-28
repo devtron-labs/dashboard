@@ -49,7 +49,14 @@ export const getTriggerWorkflows = (
     isJobView: boolean,
     filteredEnvIds?: string,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView, filteredEnvIds)
+    return getInitialWorkflows(
+        appId,
+        WorkflowTrigger,
+        WorkflowTrigger.workflow,
+        useAppWfViewAPI,
+        isJobView,
+        filteredEnvIds,
+    )
 }
 
 export const getCreateWorkflows = (
@@ -98,7 +105,7 @@ const getInitialWorkflows = (
             }
             const cdPipelineData = response[0].result?.cdConfig as CdPipelineResult
 
-            if (Object.keys(response[1]?.result || {}).length>0 && cdPipelineData) {
+            if (Object.keys(response[1]?.result || {}).length > 0 && cdPipelineData) {
                 cdPipelineData.pipelines?.forEach((pipeline) => {
                     pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(response[1], pipeline.environmentId)
                 })
@@ -134,9 +141,12 @@ const getInitialWorkflows = (
         getExternalCIList(id),
         getDeploymentWindowState ? getDeploymentWindowState(id, filteredEnvIds) : null,
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig, deploymentWindowState]) => {
-        if (Object.keys(deploymentWindowState?.result || {}).length>0 && cdConfig) {
+        if (Object.keys(deploymentWindowState?.result || {}).length > 0 && cdConfig) {
             cdConfig.pipelines?.forEach((pipeline) => {
-                pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(deploymentWindowState, pipeline.environmentId)
+                pipeline.isDeploymentBlocked = getDeploymentNotAllowedState(
+                    deploymentWindowState,
+                    pipeline.environmentId,
+                )
             })
         }
         return processWorkflow(

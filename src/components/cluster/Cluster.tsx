@@ -27,7 +27,7 @@ import {
     FeatureTitleWithInfo,
     DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react/headless'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
@@ -49,14 +49,7 @@ import { ReactComponent as VirtualEnvIcon } from '../../assets/icons/ic-environm
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
-import {
-    DOCUMENTATION,
-    SERVER_MODE,
-    ViewType,
-    URLS,
-    CONFIGURATION_TYPES,
-    AppCreationType,
-} from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ClusterForm from './ClusterForm'
@@ -259,7 +252,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     <FeatureTitleWithInfo
                         title={moduleBasedTitle}
                         renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
-                        docLink={ DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
                         showInfoIconTippy
                         additionalContainerClasses="mb-20"
                     />
@@ -554,7 +547,7 @@ const Cluster = ({
         const proxyUrlValue = state.proxyUrl.value?.trim() ?? ''
         if (proxyUrlValue.endsWith('/')) {
             payload.remoteConnectionConfig.proxyConfig['proxyUrl'] = proxyUrlValue.slice(0, -1)
-        } 
+        }
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {

@@ -15,7 +15,6 @@
  */
 
 import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
-import { Route, Switch } from 'react-router-dom'
 import {
     useUserEmail,
     showError,
@@ -30,7 +29,7 @@ import {
     AppListConstants,
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'

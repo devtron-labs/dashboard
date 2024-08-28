@@ -118,10 +118,6 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
-    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
-        return <ErrorScreenManager code={securityScansResult?.responseCode} />
-    }
-
     const updateSeverityFilters = (selectedOptions: string[]) => {
         updateSearchParams({ severity: selectedOptions })
     }
@@ -281,6 +277,14 @@ export const SecurityScansTab = () => {
                             <span className="child child-shimmer-loading w-250" />
                         </div>
                     ))}
+                </div>
+            )
+        }
+
+        if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
+            return (
+                <div className="flexbox-col flex-grow-1 dc__content-center">
+                    <ErrorScreenManager code={securityScansResult?.responseCode} />
                 </div>
             )
         }

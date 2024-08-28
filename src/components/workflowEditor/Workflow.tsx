@@ -15,8 +15,7 @@
  */
 
 import React, { Component } from 'react'
-import { RouteComponentProps } from 'react-router'
-import { Link } from 'react-router-dom'
+import { RouteComponentProps, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
@@ -697,7 +696,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             return this.props.nodes
         }
 
-        const originalNodes = structuredClone((this.props.nodes))
+        const originalNodes = structuredClone(this.props.nodes)
         const bufferHeight = WorkflowCreate.cDNodeSizes.distanceY + WorkflowCreate.cDNodeSizes.nodeHeight
         const bufferNodes = this.props.workflowPositionState?.nodes ?? []
         // would traverse through nodes if type and id matches with bufferNodes then would add bufferHeight to y

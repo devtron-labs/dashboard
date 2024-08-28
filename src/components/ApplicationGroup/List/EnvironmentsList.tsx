@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
     DevtronProgressing,
     useAsync,
@@ -23,8 +23,7 @@ import {
     AppListConstants,
     SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch } from 'react-router'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import './EnvironmentsList.scss'
 import { Filter, FilterOption } from '../../common'
 import EnvironmentsListView from './EnvironmentListView'
@@ -77,9 +76,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
 
     const handleFilterKeyPress = (_searchText: string): void => {
         setSearchText(_searchText)
-        if (searchText.length) {
-            handleSearch(_searchText)
-        }
+        handleSearch(_searchText)
     }
 
     const applyFilter = (type: string, list: FilterOption[], selectedAppTab?: string): void => {
@@ -138,7 +135,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                 handleEnter={handleFilterKeyPress}
                 inputProps={{
                     placeholder: 'Search environment',
-                    autoFocus: true
+                    autoFocus: true,
                 }}
                 dataTestId="environment-search-box"
             />

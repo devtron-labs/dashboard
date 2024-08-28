@@ -256,8 +256,7 @@ export const NavItem = ({
     showInitializing,
     showVersionInfo,
 }: StackManagerNavItemType): JSX.Element => {
-
-    const {currentServerInfo} = useMainContext()
+    const { currentServerInfo } = useMainContext()
 
     const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
         return (

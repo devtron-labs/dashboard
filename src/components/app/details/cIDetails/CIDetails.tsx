@@ -41,9 +41,9 @@ import {
     ModuleNameMap,
     EMPTY_STATE_STATUS,
     ScanVulnerabilitiesTable,
+    TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { NavLink, Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,
@@ -87,7 +87,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const triggerDetails = triggerHistory?.get(+buildId)
     // This is only meant for logsRenderer
     const [scrollableParentRef, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
     const [initDataLoading, initDataResults] = useAsync(
@@ -728,7 +728,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         )
     }
 
-    if (['failed', 'cancelled'].includes(status.toLowerCase())) {
+    if (['failed', 'cancelled'].includes(status.toLowerCase()) || !artifactId ) {
         return (
             <GenericEmptyState
                 title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
