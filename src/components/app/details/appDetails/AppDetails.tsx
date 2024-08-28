@@ -899,6 +899,11 @@ export const EnvSelector = ({
             return acc
         }, []) || []
 
+        if(groupList[0].label === 'Virtual environments' && groupList.length === 2) {
+            groupList.push(groupList[0])
+            groupList.splice(0,1)
+        }
+
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
