@@ -18,7 +18,6 @@ import { useEffect, useReducer, Reducer, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     showError,
-    Progressing,
     useAsync,
     useMainContext,
     YAMLStringify,
@@ -43,7 +42,6 @@ const DraftComments = importComponentFromFELibrary('DraftComments')
 const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceName', null, 'function')
 
 export default function DeploymentTemplateOverride({
-    parentState,
     setParentState,
     environments,
     environmentName,
