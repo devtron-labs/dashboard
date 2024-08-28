@@ -55,8 +55,8 @@ export async function fetchChartVersionsData(
                     selectedVersionUpdatePage: _currentVersion,
                     initialChartVersionValues: {
                         chartVersionId: _currentVersion.id,
-                        chartValuesId: currentChartValueId
-                    }
+                        chartValuesId: currentChartValueId,
+                    },
                 },
             })
         }

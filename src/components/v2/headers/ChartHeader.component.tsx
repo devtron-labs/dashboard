@@ -15,9 +15,8 @@
  */
 
 import React from 'react'
-import { NavLink, Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { useRouteMatch } from 'react-router'
+import { NavLink, Link, useRouteMatch } from 'react-router-dom'
 import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'

@@ -15,8 +15,7 @@
  */
 
 import React, { Suspense } from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams } from 'react-router'
+import { Route, Switch, Redirect, useRouteMatch, useParams } from 'react-router-dom'
 import { Progressing, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import EAHeaderComponent from '../v2/headers/EAHeader.component'
 import { URLS } from '../../config'

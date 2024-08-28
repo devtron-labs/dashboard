@@ -26,7 +26,7 @@ import {
     UserGroupDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
-import { ActionTypes, EntityTypes, PermissionType } from './constants'
+import { ActionTypes, EntityTypes, PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
     children: ReactNode
@@ -169,8 +169,14 @@ export interface UserRole {
     roles: string[]
     /**
      * If true, the user has super admin role
+     * @note If false, this key won't be present
      */
-    superAdmin: boolean
+    superAdmin?: boolean
+    /**
+     * Role of the user
+     * @note This key is present only when superAdmin is false
+     */
+    role?: UserRoleType
 }
 
 export type UserBulkDeletePayload =

@@ -15,9 +15,8 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
 import { not, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, NavLink } from 'react-router-dom'
+import { useParams, Link, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
+import { useState } from 'react'
 import {
     showError,
     Progressing,
@@ -24,6 +24,7 @@ import {
     ConditionalWrap,
     useAsync,
     PageHeader,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -41,7 +42,6 @@ import {
     deleteChartGroup,
 } from './charts.service'
 import ChartGroupBasicDeploy from './modal/ChartGroupBasicDeploy'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'

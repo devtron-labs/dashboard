@@ -169,14 +169,14 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
 
     renderPageHeader() {
         return (
-                <FeatureTitleWithInfo
-                    title={HEADER_TEXT.PROJECTS.title}
-                    renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
-                    docLink={HEADER_TEXT.PROJECTS.docLink}
-                    showInfoIconTippy
-                    additionalContainerClasses="mb-20"
-                    dataTestId="project-list-title"
-                />
+            <FeatureTitleWithInfo
+                title={HEADER_TEXT.PROJECTS.title}
+                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
+                docLink={HEADER_TEXT.PROJECTS.docLink}
+                showInfoIconTippy
+                additionalContainerClasses="mb-20"
+                dataTestId="project-list-title"
+            />
         )
     }
 

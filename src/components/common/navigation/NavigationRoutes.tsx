@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState, useRef, useMemo } from 'react'
 import {
     useUserEmail,
     showError,
@@ -26,10 +25,11 @@ import {
     useMainContext,
     MainContextProvider,
     ImageSelectionUtilityProvider,
+    URLS as CommonURLS,
     AppListConstants,
     MODES,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
@@ -91,6 +91,7 @@ const Jobs = lazy(() => import('../../Jobs/Jobs'))
 const getEnvironmentData = importComponentFromFELibrary('getEnvironmentData', null, 'function')
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
+const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
@@ -456,6 +457,16 @@ export default function NavigationRoutes() {
                                                   </Route>,
                                               ]
                                             : []),
+                                        ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                      path={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                  >
+                                                      <NetworkStatusInterface />
+                                                  </Route>,
+                                              ]
+                                            : []),
                                         <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                             <DevtronStackManager
                                                 serverInfo={currentServerInfo.serverInfo}
@@ -472,8 +483,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>,
                                     ]}
+                                    {/* TODO: Check why its coming as empty in case route is in other library */}
                                     {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB}>
+                                        <Route path={URLS.JOB} key={URLS.JOB}>
                                             <AppContext.Provider value={contextValue}>
                                                 <Jobs />
                                             </AppContext.Provider>
@@ -578,8 +590,17 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     useEffect(() => {
         if (pathname && pathname !== '/') {
-            Sentry.captureMessage(`redirecting to app-list from ${pathname}`, 'warning')
+            Sentry.captureMessage(
+                `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
+                'warning',
+            )
         }
+
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
+            push(CommonURLS.NETWORK_STATUS_INTERFACE)
+            return
+        }
+
         if (window._env_.K8S_CLIENT) {
             push(URLS.RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {

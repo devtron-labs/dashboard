@@ -41,7 +41,7 @@ export const CIMaterialModal = ({
 
     return (
         <VisibleModal className="" close={closeCIModal}>
-            <div className="modal-body--ci-material h-100 flexbox-col" onClick={stopPropagation}>
+            <div className="modal-body--ci-material h-100 w-100 flexbox-col" onClick={stopPropagation}>
                 {loader ? (
                     <>
                         <div className="trigger-modal__header flex right">

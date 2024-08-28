@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { components } from 'react-select'
 import {
     BuildStageVariable,
@@ -27,65 +26,13 @@ import {
     StepType,
     TaskErrorObj,
     VariableType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-nav-search.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { PipelineFormDataErrorType } from '../workflowEditor/types'
 import { DELETE_ACTION } from '../../config'
-
-export const styles = {
-    control: (base, state) => ({
-        ...base,
-        boxShadow: 'none',
-        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-    }),
-    menu: (base, state) => {
-        return {
-            ...base,
-            backgroundColor: 'white',
-        }
-    },
-    singleValue: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-        }
-    },
-    multiValue: (base, state) => {
-        return {
-            ...base,
-            backgroundColor: 'var(--N0)',
-            border: '1px solid var(--N200)',
-            borderRadius: '4px',
-        }
-    },
-    option: (base, state) => {
-        return {
-            ...base,
-            color: 'var(--N900)',
-            backgroundColor: state.isFocused ? 'var(--N100)' : 'white',
-            paddingLeft: '8px',
-        }
-    },
-}
-
-export const Option = (props) => {
-    const { selectOption, data } = props
-    const style = { flex: '0 0', alignText: 'left' }
-    const onClick = (e) => selectOption(data)
-    return (
-        <div className="flex left" style={{ background: props.isFocused ? 'var(--N100)' : 'transparent' }}>
-            {props.isSelected ? (
-                <Check onClick={onClick} className="icon-dim-16" style={style} />
-            ) : (
-                <span onClick={onClick} style={style} />
-            )}
-            <components.Option {...props} />
-        </div>
-    )
-}
 
 export const DropdownIndicator = (props) => {
     return (
@@ -424,4 +371,11 @@ export const filterInvalidConditionDetails = (
             return true
         }) || []
     )
+}
+
+export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace: string): string => {
+    if (isVirtualEnvironment && !namespace) {
+        return 'Not available'
+    }
+    return 'Will be auto-populated based on environment'
 }

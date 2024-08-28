@@ -242,7 +242,9 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             setValue={this.setDeploymentWindowConfimationValue}
             isLoading={this.state.deleteInProgress}
             type={MODAL_TYPE.PIPELINE}
-            onClickActionButton={() => handleDeleteCDNodePipeline(this.deleteCD, this.props.deploymentAppType as DeploymentAppTypes)}
+            onClickActionButton={() =>
+                handleDeleteCDNodePipeline(this.deleteCD, this.props.deploymentAppType as DeploymentAppTypes)
+            }
             appName={this.props.appName}
             envName={this.props.environmentName}
             appId={this.props.appId}
