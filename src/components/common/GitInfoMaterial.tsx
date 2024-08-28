@@ -276,7 +276,7 @@ export default function GitInfoMaterial({
     const renderExcludedCommitsOption = () => {
         return (
             <div className="dc__position-rel cursor">
-                <div className="mw-18" onClick={toggleShowExcludePopUp}>
+                <div className="mw-18 flex" onClick={toggleShowExcludePopUp}>
                     {showAllCommits ? (
                         <ShowIconFilter data-testid="show-icon-filter" className="icon-dim-20" />
                     ) : (
