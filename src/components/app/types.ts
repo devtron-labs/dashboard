@@ -53,7 +53,7 @@ export interface AddNewAppState {
     view: string
     code: number
     disableForm: boolean
-    projects: { id: number; name: string }[]
+    projects: OptionType[]
     appNameErrors: boolean
     showErrors: boolean
     form: {
