@@ -477,7 +477,7 @@ export const K8SResourceList = ({
                 )}
                 {showPaginatedView && (
                     <Pagination
-                        rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
+                        rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                         size={filteredResourceList.length}
                         pageSize={pageSize}
                         offset={resourceListOffset}

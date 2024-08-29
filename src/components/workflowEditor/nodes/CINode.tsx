@@ -26,7 +26,7 @@ import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
 
-export interface CINodeProps extends RouteComponentProps<{}>{
+export interface CINodeProps extends RouteComponentProps<{}> {
     x: number
     y: number
     width: number
@@ -132,7 +132,12 @@ export class CINode extends Component<CINodeProps> {
             <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
                 <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                     {this.props.linkedCount > 0 && (
-                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={getLinkedCITippyContent(this.props.linkedCount)}>
+                        <Tippy
+                            className="default-tt w-200"
+                            arrow={false}
+                            placement="top"
+                            content={getLinkedCITippyContent(this.props.linkedCount)}
+                        >
                             <button
                                 type="button"
                                 className={`link-count cursor dc__hover-border-n300 flex dc__gap-4 ${

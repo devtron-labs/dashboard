@@ -17,7 +17,16 @@
 import React, { Component } from 'react'
 import { Prompt } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { showError, ServerErrors, Checkbox, noop, CIMaterialSidebarType, ButtonWithLoader, ModuleNameMap, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    ServerErrors,
+    Checkbox,
+    noop,
+    CIMaterialSidebarType,
+    ButtonWithLoader,
+    ModuleNameMap,
+    SourceTypeMap,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'

@@ -51,9 +51,7 @@ export default function VariablesList({ variablesList }: { variablesList: Variab
     )
 
     if (!variablesList?.length) {
-        return (
-            <GenericFilterEmptyState />
-        )
+        return <GenericFilterEmptyState />
     }
 
     return (

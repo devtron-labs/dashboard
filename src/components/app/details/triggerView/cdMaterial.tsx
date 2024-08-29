@@ -70,6 +70,8 @@ import {
     RuntimeParamsListItemType,
     CDMaterialResponseType,
     CD_MATERIAL_SIDEBAR_TABS,
+    getIsManualApprovalConfigured,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -137,6 +139,10 @@ const MaintenanceWindowInfoBar = importComponentFromFELibrary('MaintenanceWindow
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null, 'function')
+const getIsImageApproverFromUserApprovalMetaData: (
+    email: string,
+    userApprovalMetadata: UserApprovalMetadataType,
+) => boolean = importComponentFromFELibrary('getIsImageApproverFromUserApprovalMetaData', () => false, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -180,6 +186,7 @@ const CDMaterial = ({
     const { currentAppName } = useAppContext()
 
     const appName = selectedAppName || currentAppName
+    const { email } = useUserEmail()
 
     const searchImageTag = searchParams.search
 
@@ -251,7 +258,7 @@ const CDMaterial = ({
     const hideImageTaggingHardDelete = materialsResult?.hideImageTaggingHardDelete ?? false
     const requestedUserId = materialsResult?.requestedUserId ?? ''
     const userApprovalConfig = materialsResult?.userApprovalConfig
-    const isApprovalConfigured = userApprovalConfig?.requiredCount > 0
+    const isApprovalConfigured = getIsManualApprovalConfigured(userApprovalConfig)
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy && searchParams.config
 
@@ -650,9 +657,8 @@ const CDMaterial = ({
     const getIsApprovalRequester = (userApprovalMetadata?: UserApprovalMetadataType) =>
         userApprovalMetadata?.requestedUserData && userApprovalMetadata.requestedUserData.userId === requestedUserId
 
-    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType) =>
-        userApprovalMetadata?.approvedUsersData &&
-        userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === requestedUserId)
+    const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
+        getIsImageApproverFromUserApprovalMetaData(email, userApprovalMetadata)
 
     // NOTE: Pure
     const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {

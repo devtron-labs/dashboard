@@ -15,11 +15,10 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { Route, Switch } from 'react-router-dom'
 import K8ResourceComponent from './k8Resource/K8Resource.component'
 import './appDetails.scss'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
-import { useRouteMatch, Redirect, useParams } from 'react-router'
+import { Route, Switch, useRouteMatch, Redirect, useParams } from 'react-router-dom'
 import { URLS } from '../../../config'
 import AppDetailsStore from './appDetails.store'
 import { NodeTreeDetailTabProps, NodeType } from './appDetails.type'

@@ -118,10 +118,6 @@ export const SecurityScansTab = () => {
         [filterConfig],
     )
 
-    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
-        return <ErrorScreenManager code={securityScansResult?.responseCode} />
-    }
-
     const updateSeverityFilters = (selectedOptions: string[]) => {
         updateSearchParams({ severity: selectedOptions })
     }
@@ -285,6 +281,14 @@ export const SecurityScansTab = () => {
             )
         }
 
+        if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
+            return (
+                <div className="flexbox-col flex-grow-1 dc__content-center">
+                    <ErrorScreenManager code={securityScansResult?.responseCode} />
+                </div>
+            )
+        }
+
         if (!securityScansResult.result.securityScans.length) {
             const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
             if (areFiltersActive) {
@@ -330,7 +334,7 @@ export const SecurityScansTab = () => {
                 })}
                 {securityScansResult.result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
                     <Pagination
-                        rootClassName="pagination-wrapper"
+                        rootClassName="flex dc__content-space px-20 dc__border-top"
                         size={securityScansResult.result.totalCount}
                         pageSize={pageSize}
                         offset={offset}

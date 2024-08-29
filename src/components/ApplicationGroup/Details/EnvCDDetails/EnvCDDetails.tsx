@@ -32,9 +32,9 @@ import {
     asyncWrap,
     getTriggerHistory,
     useScrollable,
+    TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
-import { Route } from 'react-router-dom'
+import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
@@ -75,7 +75,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     const triggerDetails = triggerHistory?.get(+triggerId)
     const [scrollableRef, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails && triggerDetails.status.toLowerCase() !== 'succeeded',
+        autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
     const [loading, result] = useAsync(
