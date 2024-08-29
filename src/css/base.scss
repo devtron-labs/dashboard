@@ -2883,6 +2883,13 @@ textarea,
     }
 }
 
+.info-icon-circle-b5 {
+    circle {
+        fill: var(--B500);
+        stroke: var(--B500)
+    }
+}
+
 .icon-fill-n4 {
     rect {
         fill: var(--N400);

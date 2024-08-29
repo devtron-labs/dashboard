@@ -48,7 +48,7 @@ import {
 } from '../../AppGroup.types'
 import { GROUP_LIST_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
-import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
+import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
@@ -466,7 +466,7 @@ export default function EnvironmentOverview({
     }
 
     return appListData?.appInfoList?.length > 0 ? (
-        <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
+        <div className="env-overview-container dc__content-center bcn-0 p-20">
             <div>{renderSideInfoColumn()}</div>
             <div className="dc__h-fit-content mw-none">
                 <div className="flex column left">
@@ -508,7 +508,7 @@ export default function EnvironmentOverview({
                             </div>
                         ) : (
                             <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
-                                <ICInfoFilled className="icon-dim-20" />
+                                <ICInfoOutline className="icon-dim-20 info-icon-circle-b5 fcn-0" />
                                 <span>Select applications to take bulk actions</span>
                             </p>
                         )}

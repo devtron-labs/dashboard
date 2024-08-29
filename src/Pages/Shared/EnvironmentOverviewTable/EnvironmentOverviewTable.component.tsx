@@ -1,5 +1,7 @@
 import { ChangeEvent, Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import { followCursor } from 'tippy.js'
 
 import {
     AppStatus,
@@ -151,14 +153,23 @@ export const EnvironmentOverviewTable = ({
                     />
                     {!isVirtualEnv && <AppStatus appStatus={status} hideStatusMessage />}
                     <div className="flexbox dc__align-items-center dc__content-space dc__gap-8">
-                        <Link
-                            className="py-2 dc__truncate flex-grow-1"
-                            to={redirectLink}
-                            target="_blank"
-                            rel="noreferrer"
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={name}
+                            followCursor="horizontal"
+                            plugins={[followCursor]}
                         >
-                            {name}
-                        </Link>
+                            <Link
+                                className="py-2 dc__truncate flex-grow-1"
+                                to={redirectLink}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                {name}
+                            </Link>
+                        </Tippy>
                         {!!popUpMenuItems?.length && (
                             <PopupMenu autoClose>
                                 <PopupMenu.Button isKebab rootClassName="p-4 flex dc__no-border cursor">
@@ -206,7 +217,7 @@ export const EnvironmentOverviewTable = ({
                     {deployedBy && (
                         <>
                             <Link to={deployedAtLink}>{processDeployedTime(deployedAt, true)}</Link>
-                            <div className="flexbox align-items-center dc__gap-8">
+                            <div className="flexbox dc__align-items-center dc__gap-8">
                                 <span
                                     className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
                                     style={{
@@ -215,7 +226,9 @@ export const EnvironmentOverviewTable = ({
                                 >
                                     {deployedBy[0]}
                                 </span>
-                                {deployedBy}
+                                <Tippy className="default-tt" arrow={false} placement="bottom" content={deployedBy}>
+                                    <span>{deployedBy}</span>
+                                </Tippy>
                             </div>
                         </>
                     )}

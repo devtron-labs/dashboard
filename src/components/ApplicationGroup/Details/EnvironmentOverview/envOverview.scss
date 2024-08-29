@@ -18,7 +18,6 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     gap: 32px;
-    height: calc(100vh - 78px);
     background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
 
     .response-list-container {
