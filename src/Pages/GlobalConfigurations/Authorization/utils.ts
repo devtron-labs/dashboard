@@ -42,7 +42,7 @@ import {
     PermissionGroup,
     PermissionGroupDto,
     User,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
     UserDto,
 } from './types'
 import { LAST_LOGIN_TIME_NULL_STATE } from './UserPermissions/constants'
@@ -58,7 +58,7 @@ import {
 import { AppIdWorkflowNamesMapping } from '../../../services/service.types'
 import { ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE } from './Shared/components/AppPermissions/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { getFormattedTimeToLive } from './libUtils'
+import { getFormattedTimeToLive, getParsedUserGroupList } from './libUtils'
 
 const getUserStatus: (status: UserStatusDto, timeToLive: string) => UserStatus = importComponentFromFELibrary(
     'getUserStatus',
@@ -92,6 +92,7 @@ export const transformUserResponse = (_user: UserDto): User => {
         userStatus,
         userRoleGroups,
         roleFilters,
+        userGroups,
         ...user
     } = _user
     const timeToLive = getFormattedTimeToLive(timeoutWindowExpression)
@@ -124,6 +125,7 @@ export const transformUserResponse = (_user: UserDto): User => {
                 },
             ) ?? [],
         roleFilters: transformRoleFilters(roleFilters),
+        userGroups: getParsedUserGroupList(userGroups),
     }
 }
 
@@ -290,7 +292,7 @@ export const getRoleFilters = ({
     CreateUserPermissionPayloadParams,
     'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission'
 >) => {
-    const roleFilters: UserCreateOrUpdatePayload['roleFilters'] = [
+    const roleFilters: UserCreateOrUpdateParamsType['roleFilters'] = [
         ...directPermission
             .filter(
                 (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -343,7 +345,7 @@ export const getIsSuperAdminPermission = (permissionType: PermissionType) =>
 export const createUserPermissionPayload = ({
     id,
     userIdentifier,
-    userGroups,
+    userRoleGroups,
     serverMode,
     directPermission,
     chartPermission,
@@ -351,11 +353,12 @@ export const createUserPermissionPayload = ({
     permissionType,
     userStatus,
     timeToLive,
-}: CreateUserPermissionPayloadParams): UserCreateOrUpdatePayload => ({
+    userGroups,
+}: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => ({
     // ID 0 denotes create operation
     id: id || 0,
     emailId: userIdentifier,
-    userRoleGroups: userGroups,
+    userRoleGroups,
     superAdmin: getIsSuperAdminPermission(permissionType),
     userStatus,
     timeToLive,
@@ -365,6 +368,7 @@ export const createUserPermissionPayload = ({
         serverMode,
         chartPermission,
     }),
+    userGroups,
 })
 
 export const isDirectPermissionFormComplete = (directPermission, setDirectPermission): boolean => {
