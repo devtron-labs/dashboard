@@ -22,6 +22,8 @@ import {
     OptionType,
     UserStatus,
     UserRoleGroup,
+    UserGroupType,
+    UserGroupDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../../config'
 import { ActionTypes, EntityTypes, PermissionType, UserRoleType } from './constants'
@@ -126,10 +128,14 @@ export interface UserDto {
         status?: UserStatusDto
         timeoutWindowExpression?: string
     }[]
+    userGroups: UserGroupDTO[]
 }
 
 export interface User
-    extends Omit<UserDto, 'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters'> {
+    extends Omit<
+        UserDto,
+        'timeoutWindowExpression' | 'email_id' | 'userStatus' | 'userRoleGroups' | 'roleFilters' | 'userGroups'
+    > {
     emailId: UserDto['email_id']
     /**
      * Time until which the user is active
@@ -141,12 +147,19 @@ export interface User
     userStatus: UserStatus
     userRoleGroups: UserRoleGroup[]
     roleFilters: APIRoleFilter[]
+    userGroups: UserGroupType[]
 }
 
-export type UserCreateOrUpdatePayload = Pick<
+export type UserCreateOrUpdateParamsType = Pick<
     User,
     'id' | 'emailId' | 'userStatus' | 'roleFilters' | 'superAdmin' | 'timeToLive' | 'userRoleGroups'
->
+> & {
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
+}
+
+export interface UserCreateOrUpdatePayloadType extends Omit<UserDto, 'userGroups'> {
+    userGroups: Pick<UserGroupDTO, 'identifier'>[]
+}
 
 // Others
 export interface UserRole {
@@ -269,10 +282,10 @@ export interface K8sPermissionFilter extends PermissionStatusAndTimeout {
     key?: number
 }
 
-export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive'> {
+export interface CreateUserPermissionPayloadParams extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups'> {
     id: number
+    userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
     userIdentifier: string
-    userGroups: User['userRoleGroups']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter
