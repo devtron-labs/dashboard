@@ -180,6 +180,7 @@ export default function DeploymentConfig({
         })
     }
 
+    // TODO: use async
     useEffect(() => {
         const fetchOptionsList = async () => {
             const res = await getOptions(+appId, -1) // -1 is for base deployment template
