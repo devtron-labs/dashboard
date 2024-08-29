@@ -2896,6 +2896,14 @@ textarea,
     }
 }
 
+.icon-stroke-n7 {
+
+    path,
+    rect {
+        stroke: var(--N700);
+    }
+}
+
 .icon-fill-blue-imp path {
     fill: var(--B500) !important;
 }

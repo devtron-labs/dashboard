@@ -21,6 +21,7 @@ import {
     PipelineType,
     DownstreamNodesEnvironmentsType,
     WorkflowType,
+    getIsManualApprovalConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
@@ -272,7 +273,7 @@ export function processWorkflow(
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, branch.isLast)
                         wf.nodes.push(cdNode)
 
-                        if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
+                        if (getIsManualApprovalConfigured(cdPipeline.userApprovalConfig)) {
                             wf.approvalConfiguredIdsMap = {
                                 ...wf.approvalConfiguredIdsMap,
                                 [cdPipeline.id]: cdPipeline.userApprovalConfig,
