@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-.expand-incoming-payload{
+.expand-incoming-payload {
     height: calc(100vh - 400px);
 }
 
-.collapsed-incoming-payload{
+.collapsed-incoming-payload {
     max-height: 200px;
 }
 
-.empty-payload{
-   min-height: 186px;
+.empty-payload {
+    min-height: 186px;
 }
 
-.payload-wrapper-no-header{
+.payload-wrapper-no-header {
     height: calc(100vh - 74px);
 }
 
-.payload-wrapper{
-    height: calc(100vh - 130px);   
+.payload-wrapper {
+    height: calc(100vh - 130px);
 }
 
-.incoming-payload-bottom{
-    height: calc(100vh - 300px); 
+.incoming-payload-bottom {
+    height: calc(100vh - 300px);
     overflow: scroll;
 }

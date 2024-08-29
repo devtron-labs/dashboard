@@ -373,7 +373,7 @@ export enum ChartValuesViewActionTypes {
     setGitRepoURL = 'setGitRepoURL',
     updateGitOpsConfiguration = 'updateGitOpsConfiguration',
     setInitialChartVersionValues = 'setInitialChartVersionValues',
-    setIsManifestScanEnabled = 'setIsManifestScanEnabled'
+    setIsManifestScanEnabled = 'setIsManifestScanEnabled',
 }
 
 export interface ChartValuesViewAction {

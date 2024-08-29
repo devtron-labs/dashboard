@@ -15,8 +15,7 @@
  */
 
 import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, Redirect, useLocation, useHistory } from 'react-router'
-import { Switch, Route } from 'react-router-dom'
+import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
 import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
@@ -37,7 +36,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
-import { HelmAppOverview } from './HelmAppOverview/HelpAppOverview'
+import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 
 let initTimer = null
 

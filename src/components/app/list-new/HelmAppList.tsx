@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     AppStatus,
     showError,
@@ -23,14 +23,15 @@ import {
     Host,
     GenericEmptyState,
     DEFAULT_BASE_PAGE_SIZE,
+    Pagination,
+    handleUTCTime,
     DATE_TIME_FORMATS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useHistory } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useLocation, useHistory, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps } from './AppListService'
-import { Pagination, LazyImage, handleUTCTime } from '../../common'
+import { LazyImage } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
@@ -717,6 +718,7 @@ export default function HelmAppList({
             filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
+                    rootClassName="flex dc__content-space px-20 dc__border-top"
                     size={filteredHelmAppsList.length}
                     pageSize={payloadParsedFromUrl.size}
                     offset={payloadParsedFromUrl.hOffset}

@@ -15,8 +15,8 @@
  */
 
 import React from 'react'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { PipelineFormDataErrorType, PipelineFormType } from '../workflowEditor/types'
+import { OptionType, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import { PipelineFormDataErrorType } from '../workflowEditor/types'
 
 export interface CustomTagType {
     tagPattern: string

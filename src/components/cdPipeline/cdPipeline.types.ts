@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, VariableType } from '@devtron-labs/devtron-fe-common-lib'
-import { PipelineBuildStageType } from '../workflowEditor/types'
+import {
+    DeploymentStrategy,
+    Environment,
+    SavedDeploymentStrategy,
+    UserApprovalConfigType,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
     UPDATE: 2,
     DEPLOYMENT_PARTIAL_DELETE: 3,
-}
-
-export interface DeploymentStrategy {
-    deploymentTemplate: string
-    config: any
-    default: boolean
-}
-
-export interface SavedDeploymentStrategy {
-    deploymentTemplate: string
-    config: any
-    default: boolean
-    isCollapsed?: boolean
-    defaultConfig?: any
-    yamlStr?: any
-    jsonStr?: any
 }
 
 export interface CDStageType {
@@ -47,19 +36,7 @@ export interface CDStageType {
     cdWorkflowId?: number
     cdWorkflowRunnerId?: number
 }
-export interface Environment {
-    description?: string
-    id: number
-    name: string
-    namespace: string
-    active: boolean
-    clusterName: string
-    clusterId: string
-    isClusterCdActive: boolean
-    isVirtualEnvironment?: boolean
-    allowedDeploymentTypes?: DeploymentAppTypes[]
-    isDigestEnforcedForEnv?: boolean
-}
+
 export interface CommonError {
     isValid: boolean
     message: string
@@ -93,9 +70,7 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
+    userApprovalConfig?: UserApprovalConfigType
     isDigestEnforcedForEnv?: boolean
 }
 
@@ -149,44 +124,6 @@ export interface AdvanceCDPipelineModalProps {
     selectStrategy: (selection: string) => void
     deleteStage: (key: 'preStage' | 'postStage') => void
     renderAddStage: (key: 'preStage' | 'postStage') => void
-}
-
-interface ConfigSecretType {
-    label: string
-    value: string
-    type: string
-}
-
-export interface CDFormType {
-    name: string
-    ciPipelineId: number
-    environmentId: number
-    environmentName: string
-    namespace: string
-    environments: Environment[]
-    deploymentAppType: string
-    triggerType: string
-    preBuildStage?: PipelineBuildStageType
-    postBuildStage?: PipelineBuildStageType
-    strategies: DeploymentStrategy[]
-    savedStrategies: SavedDeploymentStrategy[]
-    preStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
-    postStageConfigMapSecretNames: { configMaps: ConfigSecretType[]; secrets: ConfigSecretType[] }
-    requiredApprovals: string
-    userApprovalConfig?: {
-        requiredCount: number
-    }
-    isClusterCdActive: boolean
-    deploymentAppCreated: boolean
-    clusterId: string
-    clusterName: string
-    runPreStageInEnv: boolean
-    runPostStageInEnv: boolean
-    allowedDeploymentTypes: DeploymentAppTypes[]
-    containerRegistryName: string
-    repoName: string
-    selectedRegistry: any
-    generatedHelmPushAction: string
 }
 
 export interface InputVariablesFromInputListType {

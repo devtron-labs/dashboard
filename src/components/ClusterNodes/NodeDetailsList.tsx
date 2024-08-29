@@ -519,7 +519,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
         return (
             filteredFlattenNodeList.length > NODE_DETAILS_PAGE_SIZE_OPTIONS[0].value && (
                 <Pagination
-                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top"
+                    rootClassName="pagination-wrapper resource-browser-paginator dc__border-top flex dc__content-space px-20"
                     size={filteredFlattenNodeList.length}
                     pageSize={pageSize}
                     offset={nodeListOffset}
@@ -562,10 +562,7 @@ export default function NodeDetailsList({ isSuperAdmin, renderRefreshBar, addTab
     }
 
     return (
-        <div
-            data-testid="cluster_name_info_page"
-            className="node-list dc__overflow-hidden dc__border-left"
-        >
+        <div data-testid="cluster_name_info_page" className="node-list dc__overflow-hidden dc__border-left">
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div
                 className={`bcn-0 pt-16 h-100 flexbox-col ${showStaleDataWarning ? 'sync-error' : ''} ${

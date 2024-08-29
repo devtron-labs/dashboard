@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router'
+import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import {
     showError,
     Progressing,

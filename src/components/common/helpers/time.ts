@@ -41,4 +41,3 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
 export const getTimeElapsed = (start: Dayjs, now: Dayjs) => {
     return getTimeDifference(start.toISOString(), now.toISOString())
 }
-

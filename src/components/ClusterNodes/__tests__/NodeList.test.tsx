@@ -18,7 +18,13 @@ import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import '@testing-library/jest-dom'
 import { act, render } from '@testing-library/react'
-import { clusterId, mockFailedResponse, mockSuccessResponseWithOutNote, mockSuccessResponseWithNote, mockMarkDownEditorComponent } from '../__mocks__/clusterAbout.mock'
+import {
+    clusterId,
+    mockFailedResponse,
+    mockSuccessResponseWithOutNote,
+    mockSuccessResponseWithNote,
+    mockMarkDownEditorComponent,
+} from '../__mocks__/clusterAbout.mock'
 import ClusterAbout from '../ClusterAbout'
 import ApiMethods from '@devtron-labs/devtron-fe-common-lib'
 
@@ -58,7 +64,9 @@ describe('Test randerAboutCluster function', () => {
         expect(component.container).toBeInTheDocument()
         expect(component.getByTestId('mark-down-test-response')).toBeVisible()
         expect(component.getByTestId('cluster-name')).toBeVisible()
-        expect(component.getByTestId('cluster-name')).toHaveTextContent(mockSuccessResponseWithOutNote.result.clusterName)
+        expect(component.getByTestId('cluster-name')).toHaveTextContent(
+            mockSuccessResponseWithOutNote.result.clusterName,
+        )
     })
 
     it('should render cluster details empty state for invalid cluster id', async () => {
@@ -66,7 +74,7 @@ describe('Test randerAboutCluster function', () => {
         const mockJsonPromise = Promise.reject(mockFailedResponse)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<ClusterAbout clusterId='10010101010' isSuperAdmin={true} />, { wrapper: BrowserRouter })
+            component = render(<ClusterAbout clusterId="10010101010" isSuperAdmin={true} />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith('cluster/description?id=10010101010')

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import {

@@ -17,7 +17,13 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
-import { ConfirmationDialog, Progressing, SortingOrder, VisibleModal2, DropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConfirmationDialog,
+    Progressing,
+    SortingOrder,
+    VisibleModal2,
+    DropdownIndicator,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -44,7 +50,7 @@ import {
 } from '../constants'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { deleteDeploymentTemplate } from '../../EnvironmentOverride/service'
+import { deleteDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
 import '../deploymentConfig.scss'

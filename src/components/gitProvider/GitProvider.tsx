@@ -29,6 +29,7 @@ import {
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
     FeatureTitleWithInfo,
+    DeleteComponent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -57,7 +58,6 @@ import './gitProvider.scss'
 import { GitHostConfigModal } from './AddGitHostConfigModal'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
-import DeleteComponent from '../../util/DeleteComponent'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
@@ -563,7 +563,7 @@ const GitForm = ({
                 setCustomState((state) => ({
                     ...state,
                     password: { value: state.password.value, error: isPasswordEmpty ? 'This is a required field' : '' },
-                    username: { value: state.username.value, error: !customState.username.value ? 'Required': '' },
+                    username: { value: state.username.value, error: !customState.username.value ? 'Required' : '' },
                 }))
                 return
             }
