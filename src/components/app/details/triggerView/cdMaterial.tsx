@@ -66,6 +66,9 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    SelectPicker,
+    SelectPickerVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1780,33 +1783,23 @@ const CDMaterial = ({
                     !showConfigDiffView &&
                     stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
-                            <div className="flex">
-                                <ReactSelect
+                            <div className="flex px-16">
+                                <span className="fs-13 fw-4 cn-9">Deploy:&nbsp;</span>
+                                <SelectPicker
+                                    inputId="deploy-config-select"
+                                    name="deploy-config-select"
+                                    variant={SelectPickerVariantType.BORDER_LESS}
                                     options={getDeployConfigOptions(
                                         state.isRollbackTrigger,
                                         state.recentDeploymentConfig !== null,
                                     )}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        DropdownIndicator,
-                                        Option,
-                                        ValueContainer: customValueContainer,
-                                    }}
                                     isDisabled={state.checkingDiff}
                                     isSearchable={false}
-                                    formatOptionLabel={formatOptionLabel}
                                     classNamePrefix="deploy-config-select"
                                     placeholder="Select Config"
-                                    menuPlacement="top"
                                     value={state.selectedConfigToDeploy}
-                                    styles={getCommonConfigSelectStyles({
-                                        valueContainer: (base, state) => ({
-                                            ...base,
-                                            minWidth: '135px',
-                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                        }),
-                                    })}
                                     onChange={handleConfigSelection}
+                                    size={ComponentSizeType.large}
                                 />
                             </div>
                             <span className="dc__border-left h-100" />
