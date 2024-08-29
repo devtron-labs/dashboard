@@ -212,7 +212,7 @@ export default function EnvironmentOverview({
     const getAppRedirectLink = (appId: number, envId: number) => `/app/${appId}/details/${envId}`
 
     const sortAndUpdateAppListData = (_appListData) => {
-        const { sortBy, sortOrder } = searchParams
+        const { sortBy = EnvironmentOverviewTableSortableKeys.NAME, sortOrder = SortingOrder.ASC } = searchParams
         setAppListData({
             ..._appListData,
             ist: _appListData.appInfoList.sort((a, b) => {
