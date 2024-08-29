@@ -16,35 +16,26 @@
 
 import {
     ACTION_STATE,
-    AppStatus,
     getRandomColor,
     handleRelativeDateSorting,
-    processDeployedTime,
     Progressing,
     showError,
-    SortableTableHeaderCell,
     SortingOrder,
-    useUrlFilters,
     EditableTextArea,
     useSearchString,
     AppInfoListType,
     MODAL_TYPE,
     DEPLOYMENT_WINDOW_TYPE,
-    CommitChipCell,
     ArtifactInfoModal,
     ArtifactInfoModalProps,
-    ImageChipCell,
-    RegistryType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
 import { Moment12HourFormat } from '../../../../config'
-import { StatusConstants } from '../../../app/list-new/Constants'
 import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
@@ -55,12 +46,9 @@ import {
     ManageAppsResponse,
     StatusDrawer,
 } from '../../AppGroup.types'
-import { EnvironmentOverviewSortableKeys, GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
+import { GROUP_LIST_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
-import { ReactComponent as DockerIcon } from '../../../../assets/icons/git/docker.svg'
-import { ReactComponent as ActivityIcon } from '../../../../assets/icons/ic-activity.svg'
-import { ReactComponent as ArrowLineDown } from '../../../../assets/icons/ic-arrow-line-down.svg'
-import { ReactComponent as DevtronIcon } from '../../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
@@ -68,6 +56,8 @@ import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-u
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
 import './envOverview.scss'
+import { EnvironmentOverviewTable } from '@Pages/Shared/EnvironmentOverviewTable/EnvironmentOverviewTable.component'
+import { EnvironmentOverviewTableSortableKeys } from '@Pages/Shared/EnvironmentOverviewTable/EnvironmentOverview.constants'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
@@ -97,13 +87,10 @@ export default function EnvironmentOverview({
     const [selectedAppDetailsList, setSelectedAppDetailsList] = useState<AppInfoListType[]>([])
     const [openedHibernateModalType, setOpenedHibernateModalType] =
         useState<HibernateModalProps['openedHibernateModalType']>(null)
-    const [isHovered, setIsHovered] = useState<number>(null)
-    const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState<boolean>(false)
     const [commitInfoModalConfig, setCommitInfoModalConfig] = useState<Pick<
         ArtifactInfoModalProps,
         'ciArtifactId' | 'envId'
     > | null>(null)
-    const lastDeployedClassName = isLastDeployedExpanded ? 'last-deployed-expanded' : ''
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [showDefaultDrawer, setShowDefaultDrawer] = useState<boolean>(true)
     const [hibernateInfoMap, setHibernateInfoMap] = useState<
@@ -134,10 +121,6 @@ export default function EnvironmentOverview({
             observer.disconnect()
         }
     }, [])
-
-    const { sortBy, sortOrder, handleSorting } = useUrlFilters({
-        initialSortKey: EnvironmentOverviewSortableKeys.application,
-    })
 
     const { searchParams } = useSearchString()
     const history = useHistory()
@@ -206,52 +189,34 @@ export default function EnvironmentOverview({
         }
     }
 
-    const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { checked, value } = e.target
-
-        if (value === 'ALL') {
-            if (checked) {
-                setSelectedAppDetailsList(appListData.appInfoList)
+    const handleCheckboxSelect = (id: number, checked: boolean, allChecked: boolean) => {
+        if (allChecked) {
+            setSelectedAppDetailsList(checked ? appListData.appInfoList : [])
+        } else {
+            const targetApp = appListData.appInfoList.find((appInfo) => appInfo.appId === id)
+            if (!targetApp) {
                 return
             }
 
-            setSelectedAppDetailsList([])
-            return
+            if (checked) {
+                setSelectedAppDetailsList([...selectedAppDetailsList, targetApp])
+            } else {
+                setSelectedAppDetailsList(selectedAppDetailsList.filter((app) => app.appId !== targetApp.appId))
+            }
         }
-
-        const targetApp = appListData.appInfoList.find((appInfo) => appInfo.appId === +value)
-        if (!targetApp) {
-            return
-        }
-
-        if (checked) {
-            setSelectedAppDetailsList([...selectedAppDetailsList, targetApp])
-            return
-        }
-
-        setSelectedAppDetailsList(selectedAppDetailsList.filter((app) => app.appId !== targetApp.appId))
-    }
-
-    const toggleIsLastDeployedExpanded = () => {
-        setIsLastDeployedExpanded(!isLastDeployedExpanded)
     }
 
     const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
         `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
 
-    const sortByApplication = () => {
-        handleSorting(EnvironmentOverviewSortableKeys.application)
-    }
-
-    const sortByDeployedAt = () => {
-        handleSorting(EnvironmentOverviewSortableKeys.deployedAt)
-    }
+    const getAppRedirectLink = (appId: number, envId: number) => `/app/${appId}/details/${envId}`
 
     const sortAndUpdateAppListData = (_appListData) => {
+        const { sortBy, sortOrder } = searchParams
         setAppListData({
             ..._appListData,
-            appInfoList: _appListData.appInfoList.sort((a, b) => {
-                if (sortBy === EnvironmentOverviewSortableKeys.deployedAt) {
+            ist: _appListData.appInfoList.sort((a, b) => {
+                if (sortBy === EnvironmentOverviewTableSortableKeys.DEPLOYED_AT) {
                     return handleRelativeDateSorting(a.lastDeployed, b.lastDeployed, sortOrder)
                 }
 
@@ -266,7 +231,7 @@ export default function EnvironmentOverview({
         if (appListData) {
             sortAndUpdateAppListData(appListData)
         }
-    }, [sortBy, sortOrder])
+    }, [searchParams.sortBy, searchParams.sortOrder])
 
     const parseAppListData = (
         data: AppGroupListType,
@@ -336,86 +301,31 @@ export default function EnvironmentOverview({
         )
     }
 
-    const renderAppInfoRow = (item: AppInfoListType, index: number) => {
-        const isSelected = selectedAppDetailsList.some((appDetail) => appDetail.appId === item.appId)
-
-        const openCommitInfoModal = (e) => {
-            e.stopPropagation()
-            setCommitInfoModalConfig({
-                envId,
-                ciArtifactId: item.ciArtifactId,
-            })
-        }
-
-        return (
-            <div
-                key={`${item.application}-${index}`}
-                className={`app-deployments-info-row dc__w-fit-inherit display-grid dc__align-items-center ${
-                    isHovered === index ? 'bc-n50' : 'bcn-0'
-                } ${lastDeployedClassName}`}
-                onMouseEnter={() => setIsHovered(index)}
-                onMouseLeave={() => setIsHovered(null)}
-            >
-                <div
-                    className={`pl-16 pr-16 app-deployment-info-row-leftsection h-100 dc__border-right-n1 dc__align-items-center display-grid dc__position-sticky sticky-column dc__ellipsis-right  ${
-                        isHovered === index ? 'bc-n50' : 'bcn-0'
-                    }`}
-                >
-                    {isHovered !== index && !isSelected ? (
-                        <DevtronIcon className="icon-dim-20" />
-                    ) : (
-                        <label className="dc__position-rel pointer mb-0">
-                            <input
-                                type="checkbox"
-                                className="form__checkbox"
-                                value={item.appId}
-                                onChange={handleSelect}
-                                checked={isSelected}
-                            />
-                            <span className={`form__checkbox-container ${isSelected ? 'tick-icon' : ''}`} />
-                        </label>
-                    )}
-                    {!isVirtualEnv && <AppStatus appStatus={item.appStatus} hideStatusMessage />}
-                    <span className="fs-13 fw-4 cn-7 dc__ellipsis-right">{item.application}</span>
-                </div>
-                <AppStatus
-                    appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
-                    isDeploymentStatus
-                    isVirtualEnv={isVirtualEnv}
-                />
-                {item?.lastDeployedImage && (
-                    <ImageChipCell
-                        handleClick={openCommitInfoModal}
-                        imagePath={item.lastDeployedImage}
-                        isExpanded={isLastDeployedExpanded}
-                        registryType={RegistryType.DOCKER}
-                    />
-                )}
-                <CommitChipCell handleClick={openCommitInfoModal} commits={item?.commits} />
-                {item?.lastDeployedBy && (
-                    <span
-                        className="fs-13 fw-4 cn-9 dc__word-break flex left dc__gap-6 pr-8 mw-none"
-                        style={{ whiteSpace: 'nowrap' }}
-                    >
-                        <span className="flex left dc__gap-8">
-                            <span
-                                className="icon-dim-20 mw-20 flex dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                                style={{
-                                    backgroundColor: getRandomColor(item?.lastDeployedBy),
-                                }}
-                            >
-                                {item?.lastDeployedBy[0]}
-                            </span>
-                            <span>{item?.lastDeployedBy}</span>
-                        </span>
-                        <Link to={getDeploymentHistoryLink(item.appId, item.pipelineId)}>
-                            {processDeployedTime(item?.lastDeployed, true)}
-                        </Link>
-                    </span>
-                )}
-            </div>
-        )
+    const openCommitInfoModal = (ciArtifactId: number) => (e) => {
+        e.stopPropagation()
+        setCommitInfoModalConfig({
+            envId,
+            ciArtifactId: ciArtifactId,
+        })
     }
+
+    const environmentOverviewTableRows = appListData?.appInfoList?.map((appInfo) => ({
+        environment: {
+            id: appInfo.appId,
+            name: appInfo.application,
+            commits: appInfo.commits,
+            deployedAt: appInfo.lastDeployed,
+            status: appInfo.appStatus,
+            deploymentStatus: appInfo.deploymentStatus,
+            deployedBy: appInfo.lastDeployedBy,
+            lastDeployedImage: appInfo.lastDeployedImage,
+        },
+        isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
+        onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
+        onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
+        deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
+        redirectLink: getAppRedirectLink(appInfo.appId, +envId),
+    }))
 
     const renderSideInfoColumn = () => {
         return (
@@ -558,13 +468,13 @@ export default function EnvironmentOverview({
     return appListData?.appInfoList?.length > 0 ? (
         <div className="env-overview-container dc__content-center bcn-0  pt-20 pb-20 pl-20 pr-20">
             <div>{renderSideInfoColumn()}</div>
-            <div className="dc__h-fit-content">
+            <div className="dc__h-fit-content mw-none">
                 <div className="flex column left">
                     <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                         <span className="flex">
                             <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                         </span>
-                        {selectedAppDetailsList.length > 0 && (
+                        {selectedAppDetailsList.length > 0 ? (
                             <div className="flexbox dc__gap-6">
                                 {ClonePipelineButton && appListData.environment && (
                                     <ClonePipelineButton
@@ -596,66 +506,20 @@ export default function EnvironmentOverview({
                                     Restart Workload
                                 </button>
                             </div>
+                        ) : (
+                            <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
+                                <ICInfoFilled className="icon-dim-20" />
+                                <span>Select applications to take bulk actions</span>
+                            </p>
                         )}
                     </div>
-                    <div className="app-deployments-info-wrapper dc__overflow-scroll w-100 dc__position-rel min-w-500">
-                        <div
-                            className={`app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 ${lastDeployedClassName}`}
-                        >
-                            <div className="pl-16 pr-16 app-deployment-info-row-leftsection dc__border-right-n1 display-grid dc__position-sticky sticky-column bcn-0 h-100 dc__align-items-center dc__ellipsis-right">
-                                <label className="dc__position-rel pointer m-0-imp">
-                                    <input
-                                        type="checkbox"
-                                        className="form__checkbox"
-                                        value="ALL"
-                                        onChange={handleSelect}
-                                        checked={selectedAppDetailsList.length === appListData.appInfoList.length}
-                                    />
-                                    <span
-                                        className={`form__checkbox-container ${
-                                            selectedAppDetailsList.length === appListData.appInfoList.length
-                                                ? 'tick-icon'
-                                                : selectedAppDetailsList.length > 0
-                                                  ? 'any-selected'
-                                                  : ''
-                                        }`}
-                                    />
-                                </label>
-                                {!isVirtualEnv && <ActivityIcon className="icon-dim-16" />}
-                                <SortableTableHeaderCell
-                                    title={OVERVIEW_HEADER.APPLICATION}
-                                    triggerSorting={sortByApplication}
-                                    isSorted={sortBy === EnvironmentOverviewSortableKeys.application}
-                                    sortOrder={sortOrder}
-                                    disabled={loading}
-                                />
-                            </div>
-                            <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
-                            <button
-                                type="button"
-                                className="dc__outline-none-imp p-0 dc__uppercase dc__transparent flexbox dc__align-items-center dc__gap-4"
-                                onClick={toggleIsLastDeployedExpanded}
-                            >
-                                <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
-                                <ArrowLineDown
-                                    className="icon-dim-14 scn-7 rotate"
-                                    style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
-                                />
-                            </button>
-                            <span>{OVERVIEW_HEADER.COMMIT}</span>
-                            <SortableTableHeaderCell
-                                title={OVERVIEW_HEADER.DEPLOYED_AT}
-                                triggerSorting={sortByDeployedAt}
-                                isSorted={sortBy === EnvironmentOverviewSortableKeys.deployedAt}
-                                sortOrder={sortOrder}
-                                disabled={loading}
-                            />
-                        </div>
-                        <div>{appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}</div>
-                    </div>
+                    <EnvironmentOverviewTable
+                        rows={environmentOverviewTableRows}
+                        isVirtualEnv={isVirtualEnv}
+                        onCheckboxSelect={handleCheckboxSelect}
+                    />
                 </div>
             </div>
-
             {renderOverviewModal()}
         </div>
     ) : null
