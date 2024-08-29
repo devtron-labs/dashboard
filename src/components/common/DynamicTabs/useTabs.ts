@@ -138,8 +138,7 @@ export function useTabs(persistanceKey: string) {
                     isSelected: false,
                     /* NOTE: following lines migrate old tab data to new */
                     lastSyncMoment: dayjs(),
-                    // @ts-expect-error relic of old type
-                    position: _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
+                    position: 'positionFixed' in _tab && _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
                     ...(_tab.componentKey
                         ? { componentKey: _tab.componentKey }
                         : { componentKey: getNewTabComponentKey(_tab.id) }),
@@ -212,38 +211,36 @@ export function useTabs(persistanceKey: string) {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
         }
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<boolean>()
 
-        const title = `${kind}/${name}`
-        const _id = `${idPrefix}-${title}`
+        return new Promise((resolve) => {
+            const title = `${kind}/${name}`
+            const _id = `${idPrefix}-${title}`
 
-        setTabs((prevTabs) => {
-            let found = false
-            const _tabs = prevTabs.map((tab) => {
-                const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
-                found = found || matched
-                return matched
-                    ? {
-                          ...tab,
-                          url,
-                          isSelected: true,
-                      }
-                    : {
-                          ...tab,
-                          isSelected: false,
-                      }
+            setTabs((prevTabs) => {
+                let found = false
+                const _tabs = prevTabs.map((tab) => {
+                    const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                    found = found || matched
+                    return matched
+                        ? {
+                              ...tab,
+                              url,
+                              isSelected: true,
+                          }
+                        : {
+                              ...tab,
+                              isSelected: false,
+                          }
+                })
+
+                if (!found) {
+                    _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
+                }
+                resolve(!found)
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-
-            if (!found) {
-                _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
-            }
-            resolve(!found)
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
     }
 
     /**
@@ -253,34 +250,30 @@ export function useTabs(persistanceKey: string) {
      * @param {string} id - The identifier of the tab to be removed
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was removed
      */
-    const removeTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<string>()
+    const removeTabByIdentifier = (id: string): Promise<string> =>
+        new Promise((resolve) => {
+            setTabs((prevTabs) => {
+                let selectedRemoved = false
 
-        setTabs((prevTabs) => {
-            let selectedRemoved = false
-
-            /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
-            const _tabs = prevTabs.filter((tab) => {
-                if (tab.id === id) {
-                    selectedRemoved = tab.isSelected
-                    return false
+                /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
+                const _tabs = prevTabs.filter((tab) => {
+                    if (tab.id === id) {
+                        selectedRemoved = tab.isSelected
+                        return false
+                    }
+                    return true
+                })
+                if (selectedRemoved) {
+                    /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
+                    _tabs[FALLBACK_TAB].isSelected = true
+                    resolve(_tabs[FALLBACK_TAB].url)
+                } else {
+                    resolve('')
                 }
-                return true
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-            if (selectedRemoved) {
-                /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
-                _tabs[FALLBACK_TAB].isSelected = true
-                resolve(_tabs[FALLBACK_TAB].url)
-            } else {
-                resolve('')
-            }
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
-    }
 
     /**
      * Stops or deactivate a tab by its title.
@@ -288,36 +281,32 @@ export function useTabs(persistanceKey: string) {
      * @param {string} title - The title of the tab to be stopped
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was stopped
      */
-    const stopTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<string>()
+    const stopTabByIdentifier = (id: string): Promise<string> =>
+        new Promise((resolve) => {
+            setTabs((prevTabs) => {
+                let selectedRemoved = false
 
-        setTabs((prevTabs) => {
-            let selectedRemoved = false
-
-            const _tabs = prevTabs.map((tab) => {
-                if (tab.id === id) {
-                    selectedRemoved = tab.isSelected
-                    return {
-                        ...tab,
-                        isSelected: false,
-                        isAlive: false,
+                const _tabs = prevTabs.map((tab) => {
+                    if (tab.id === id) {
+                        selectedRemoved = tab.isSelected
+                        return {
+                            ...tab,
+                            isSelected: false,
+                            isAlive: false,
+                        }
                     }
+                    return tab
+                })
+                if (selectedRemoved) {
+                    _tabs[FALLBACK_TAB].isSelected = true
+                    resolve(_tabs[FALLBACK_TAB].url)
+                } else {
+                    resolve('')
                 }
-                return tab
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-            if (selectedRemoved) {
-                _tabs[FALLBACK_TAB].isSelected = true
-                resolve(_tabs[FALLBACK_TAB].url)
-            } else {
-                resolve('')
-            }
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
-    }
 
     /**
      * This function is used to mark a tab as active based on its identifier (id or title).
