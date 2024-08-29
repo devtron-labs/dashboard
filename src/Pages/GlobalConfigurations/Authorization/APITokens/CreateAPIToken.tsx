@@ -95,7 +95,7 @@ const CreateAPIToken = ({
         invalidDescription: false,
         invalidDescriptionMessage: '',
     })
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
         usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const validationRules = new ValidationRules()
@@ -198,12 +198,13 @@ const CreateAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.userId,
                     userIdentifier: result.userIdentifier,
-                    userGroups,
+                    userRoleGroups,
                     serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
                     permissionType,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

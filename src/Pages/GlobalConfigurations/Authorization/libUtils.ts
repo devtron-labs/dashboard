@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { UserStatus, UserRoleGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { UserStatus, UserRoleGroup, UserGroupDTO, UserGroupType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../../../components/common'
-import { User } from './types'
+import { User, UserCreateOrUpdateParamsType, UserCreateOrUpdatePayloadType } from './types'
 
 // Adding here to avoid circular import dependency
 // These are being reused across with default values
@@ -36,5 +36,16 @@ export const getFormattedTimeToLive: (timeToLive: string) => string = importComp
 export const getIsStatusDropdownDisabled: (status: UserStatus) => boolean = importComponentFromFELibrary(
     'getIsStatusDropdownDisabled',
     () => false,
+    'function',
+)
+
+export const getParsedUserGroupList: (userGroupListData: UserGroupDTO[]) => UserGroupType[] =
+    importComponentFromFELibrary('getParsedUserGroupList', () => [], 'function')
+
+export const getUserGroupsPayload: (
+    userGroups: UserCreateOrUpdateParamsType['userGroups'],
+) => UserCreateOrUpdatePayloadType['userGroups'] = importComponentFromFELibrary(
+    'getUserGroupsPayload',
+    () => [],
     'function',
 )

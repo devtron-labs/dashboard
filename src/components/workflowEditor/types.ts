@@ -25,6 +25,7 @@ import {
     WorkflowType,
     PluginDataStoreType,
     MandatoryPluginDetailType,
+    ValidationResponseType,
     PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
@@ -243,6 +244,7 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
+    userApprovalConfig?: ValidationResponseType
 }
 
 export interface PipelineContext {
