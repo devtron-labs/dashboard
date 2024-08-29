@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import Tippy from '@tippyjs/react'
+import { PopupMenu, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as FileCode } from '../../../assets/icons/ic-file-code.svg'
 import { ReactComponent as CompareIcon } from '../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as ReadmeIcon } from '../../../assets/icons/ic-book-open.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ViewVariablesIcon } from '../../../assets/icons/ic-view-variable-toggle.svg'
+import { DropdownItem } from './DeploymentTemplateView.component'
 import { DeploymentConfigToolbarProps } from '../types'
 import '../deploymentConfig.scss'
-import { DropdownItem } from './DeploymentTemplateView.component'
-import Tippy from '@tippyjs/react'
-import { PopupMenu, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 
+// TODO: Can move code into fe-common to remove code duplication
 export default function DeploymentConfigToolbar({
     selectedTabIndex,
     handleTabSelection,
@@ -96,6 +97,7 @@ export default function DeploymentConfigToolbar({
                             <FileCode className={getTabIconClass(1)} />
                             Values
                         </li>
+
                         <li
                             className={`${getTabClassName(2)} dc__position-rel`}
                             data-index={2}

@@ -16,8 +16,14 @@
 
 import {
     applyCompareDiffOnUneditedDocument,
+    CONFIGURATION_TYPE_VALUES,
+    ConfigurationType,
+    DEPLOYMENT_TEMPLATE_COMPARE_MODES_VALUES,
+    DeploymentTemplateCompareModes,
+    DeploymentTemplateQueryParamsType,
     getGuiSchemaFromChartName,
     ResponseType,
+    UseUrlFiltersProps,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
@@ -80,3 +86,28 @@ export const applyCompareDiffOfTempFormDataOnOriginalData = (
     updateTempFormData?.(YAMLStringify(updated))
     return updated
 }
+
+const parseDeploymentTemplateQueryParams = (
+    params: URLSearchParams,
+    isSuperAdmin: boolean,
+): DeploymentTemplateQueryParamsType => {
+    const currentEditMode = params.get('currentMode') as ConfigurationType
+    const isCurrentEditModeValid = CONFIGURATION_TYPE_VALUES.includes(currentEditMode)
+
+    const fallbackConfigurationType: ConfigurationType = isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI
+
+    const currentCompareMode = params.get('compareMode') as DeploymentTemplateCompareModes
+    const isCurrentCompareModeValid = DEPLOYMENT_TEMPLATE_COMPARE_MODES_VALUES.includes(currentCompareMode)
+
+    return {
+        hideLockedKeys: params.get('hideLockedKeys') === 'true' || null,
+        resolveScopedVariables: params.get('resolveScopedVariables') === 'true' || null,
+        editMode: isCurrentEditModeValid ? currentEditMode : fallbackConfigurationType,
+        compareMode: isCurrentCompareModeValid ? currentCompareMode : null,
+    }
+}
+
+export const getDeploymentTemplateQueryParser =
+    (isSuperAdmin: boolean): UseUrlFiltersProps<never, DeploymentTemplateQueryParamsType>['parseSearchParams'] =>
+    (params) =>
+        parseDeploymentTemplateQueryParams(params, isSuperAdmin)

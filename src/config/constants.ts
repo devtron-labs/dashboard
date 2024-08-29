@@ -591,11 +591,6 @@ export const AppCreationType = {
     Existing: 'EXISTING',
 }
 
-export const ConfigurationType = {
-    GUI: 'GUI',
-    YAML: 'YAML',
-}
-
 export const BuildStageVariable = {
     PreBuild: 'preBuildStage',
     Build: 'buildStage',

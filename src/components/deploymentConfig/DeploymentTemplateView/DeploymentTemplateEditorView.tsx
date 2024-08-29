@@ -442,7 +442,7 @@ const DeploymentTemplateEditorView = ({
                             typeof optionOveriddeStatus?.[state.selectedCompareOption.id] !== 'undefined' && (
                                 <span className="flex right flex-grow-1 fs-12 fw-4 lh-20 dc__italic-font-style w-44">
                                     {optionOveriddeStatus[state.selectedCompareOption.id]
-                                        ? 'Overriden'
+                                        ? 'Overridden'
                                         : 'Inheriting from base'}
                                 </span>
                             )}

@@ -348,7 +348,13 @@ export interface DeploymentConfigStateType {
     lockChangesLoading: boolean
     showConfirmation: boolean
     showReadme: boolean
+    /**
+     * @deprecated - transient state on url
+     */
     openComparison: boolean
+    /**
+     * @deprecated - move to URL
+     */
     selectedTabIndex: number
     readme: string
     fetchedValues: Record<number | string, string>
@@ -360,7 +366,6 @@ export interface DeploymentConfigStateType {
     latestAppChartRef: any
     latestChartRef: any
     isOverride: boolean
-    isValues: boolean
     loadingManifest: boolean
     manifestDataRHS: string
     manifestDataLHS: string
@@ -429,12 +434,15 @@ export enum DeploymentConfigStateActionTypes {
     loadingManifest = 'loadingManifest',
     manifestDataRHS = 'manifestDataRHS',
     manifestDataLHS = 'manifestDataLHS',
-    isValues = 'isValues',
     isValuesOverride = 'isValuesOverride',
     groupedOptionsDataOverride = 'groupedOptionsDataOverride',
     loadingManifestOverride = 'loadingManifestOverride',
     manifestDataRHSOverride = 'manifestDataRHSOverride',
     manifestDataLHSOverride = 'manifestDataLHSOverride',
+    /**
+     * @deprecated - use from url
+     * 
+     */
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',

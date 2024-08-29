@@ -54,7 +54,6 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     isDraftOverriden: false,
     unableToParseYaml: false,
     selectedCompareOption: null,
-    isValues: true,
     loadingManifest: false,
     manifestDataRHS: '',
     manifestDataLHS: '',
@@ -152,8 +151,6 @@ export const deploymentConfigReducer = (
             return { ...state, unableToParseYaml: action.payload }
         case DeploymentConfigStateActionTypes.selectedCompareOption:
             return { ...state, selectedCompareOption: action.payload }
-        case DeploymentConfigStateActionTypes.isValues:
-            return { ...state, isValues: action.payload }
         case DeploymentConfigStateActionTypes.loadingManifest:
             return { ...state, loadingManifest: action.payload }
         case DeploymentConfigStateActionTypes.manifestDataRHS:

@@ -322,7 +322,7 @@ export const renderEditorHeading = (
         <div className="flex right dc__gap-8">
             {!isDeleteDraftState && isEnvOverride && (
                 <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
-                    {overridden ? 'Overriden' : 'Inheriting from base'}
+                    {overridden ? 'Overridden' : 'Inheriting from base'}
                 </span>
             )}
             {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (
@@ -414,7 +414,7 @@ export const CompareWithApprovalPendingAndDraft = ({
             <div className="flex right dc__gap-8">
                 {!isDeleteDraftState && isEnvOverride && (
                     <span className="fs-12 fw-4 lh-20 dc__italic-font-style">
-                        {overridden ? 'Overriden' : 'Inheriting from base'}
+                        {overridden ? 'Overridden' : 'Inheriting from base'}
                     </span>
                 )}
                 {isEnvOverride && (!latestDraft || (latestDraft.action !== 3 && isPublishedOverriden)) && (

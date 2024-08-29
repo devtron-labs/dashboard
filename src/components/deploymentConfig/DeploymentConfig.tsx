@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
+import { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -26,6 +26,9 @@ import {
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
+    useUrlFilters,
+    DeploymentTemplateQueryParamsType,
+    DeploymentTemplateCompareModes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -58,7 +61,7 @@ import DeploymentConfigToolbar from './DeploymentTemplateView/DeploymentConfigTo
 import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateView/DeploymentTemplateView.component'
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
-import { applyCompareDiffOfTempFormDataOnOriginalData } from './utils'
+import { applyCompareDiffOfTempFormDataOnOriginalData, getDeploymentTemplateQueryParser } from './utils'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -94,7 +97,6 @@ export default function DeploymentConfig({
     )
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
-    const [hideLockedKeys, setHideLockedKeys] = useState(false)
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
 
@@ -102,6 +104,19 @@ export default function DeploymentConfig({
     const baseDeploymentAbortController = new AbortController()
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
+
+    const { clearFilters, hideLockedKeys, resolveScopedVariables, compareMode, editMode, updateSearchParams } =
+        useUrlFilters<never, DeploymentTemplateQueryParamsType>({
+            parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
+        })
+
+    // FIXME: There should be no need of this variable
+    const isValues = compareMode !== DeploymentTemplateCompareModes.MANIFEST
+
+    // TODO: Rename this method
+    const setHideLockedKeys = (value: boolean) => {
+        updateSearchParams({ hideLockedKeys: value })
+    }
 
     const handleSetHideLockedKeys = (value: boolean) => {
         if (!state.wasGuiOrHideLockedKeysEdited) {
@@ -115,11 +130,14 @@ export default function DeploymentConfig({
         setHideLockedKeys(value)
     }
 
+    // FIXME: Should be named to something meaningful
     const setIsValues = (value: boolean) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.isValues,
-            payload: value,
-        })
+        // TODO: Handle tab selection of 2 we should not revert the changed stage
+        updateSearchParams(
+            value
+                ? { compareMode: DeploymentTemplateCompareModes.VALUES }
+                : { compareMode: DeploymentTemplateCompareModes.MANIFEST },
+        )
     }
 
     const setManifestDataRHS = (value: string) => {
@@ -151,6 +169,11 @@ export default function DeploymentConfig({
     }
 
     const setConvertVariables = (value: boolean) => {
+        updateSearchParams({
+            resolveScopedVariables: value,
+        })
+
+        // FIXME: Remove this dispatch
         dispatch({
             type: DeploymentConfigStateActionTypes.convertVariables,
             payload: value,
@@ -335,6 +358,7 @@ export default function DeploymentConfig({
             },
         })
         handleSetHideLockedKeys(false)
+        clearFilters()
         initialise()
         fetchEnvConfig(-1)
     }
@@ -400,7 +424,7 @@ export default function DeploymentConfig({
                 payload = templateData
             }
 
-            if (!state.isValues) {
+            if (compareMode === DeploymentTemplateCompareModes.MANIFEST) {
                 const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
                 setManifestDataRHS(_manifestCodeEditorData)
             }
@@ -535,7 +559,7 @@ export default function DeploymentConfig({
             return
         }
 
-        if (state.isValues && !state.convertVariables) {
+        if (compareMode !== DeploymentTemplateCompareModes.MANIFEST && !state.convertVariables) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -550,7 +574,7 @@ export default function DeploymentConfig({
             })
         } catch (error) {
             // Set unableToParseYaml flag when yaml is malformed
-            if (!state.isValues) {
+            if (compareMode === DeploymentTemplateCompareModes.MANIFEST) {
                 return
             } // don't set flag when in manifest view
             dispatch({
@@ -590,7 +614,7 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
-        // setting true to update codeditor values with current locked keys checkbox value
+        // setting true to update code editor values with current locked keys checkbox value
         if (state.selectedTabIndex !== index) {
             hideLockKeysToggled.current = true
         }
@@ -610,14 +634,17 @@ export default function DeploymentConfig({
         } catch {}
 
         switch (index) {
+            // 1 is published in case of draft else current values in case of normal
             case 1:
+            // 3 is edit draft value
             case 3:
-                setIsValues(true)
                 if (state.selectedTabIndex === 2) {
                     toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
                 }
+                updateSearchParams({ compareMode: null })
                 break
+            // 2 is compared
             case 2:
                 if (state.selectedTabIndex !== 2) {
                     isGuiModeRef.current = state.yamlMode
@@ -631,6 +658,10 @@ export default function DeploymentConfig({
                         }
                     }
                     handleComparisonClick()
+                }
+
+                if (!compareMode) {
+                    setIsValues(true)
                 }
                 break
             default:
@@ -717,7 +748,7 @@ export default function DeploymentConfig({
     }
 
     useEffect(() => {
-        if (state.isValues) {
+        if (compareMode !== DeploymentTemplateCompareModes.MANIFEST) {
             return
         }
         setLoadingManifest(true)
@@ -737,7 +768,7 @@ export default function DeploymentConfig({
             .finally(() => {
                 setLoadingManifest(false)
             })
-    }, [state.isValues])
+    }, [compareMode])
 
     const fetchManifestData = async (data) => {
         const request = {
@@ -792,12 +823,12 @@ export default function DeploymentConfig({
 
         return (
             <DeploymentTemplateEditorView
-                defaultValue={state.isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
-                value={state.isValues ? valuesDataRHS : state.manifestDataRHS}
+                defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
+                value={isValues ? valuesDataRHS : state.manifestDataRHS}
                 globalChartRefId={state.selectedChartRefId}
                 editorOnChange={editorOnChange}
-                readOnly={isCompareAndApprovalState || !state.isValues || state.convertVariables}
-                isValues={state.isValues}
+                readOnly={isCompareAndApprovalState || !isValues || state.convertVariables}
+                isValues={isValues}
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
                 groupedData={state.groupedOptionsData}
@@ -826,7 +857,7 @@ export default function DeploymentConfig({
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
-                isValues={state.isValues}
+                isValues={isValues}
             />
             {renderEditorComponent()}
             <DeploymentConfigFormCTA
@@ -845,7 +876,7 @@ export default function DeploymentConfig({
                 toggleAppMetrics={toggleAppMetrics}
                 isPublishedMode={readOnlyPublishedMode}
                 reload={reload}
-                isValues={state.isValues}
+                isValues={isValues}
                 convertVariables={state.convertVariables}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
@@ -890,7 +921,7 @@ export default function DeploymentConfig({
                         approvalUsers={state.latestDraft?.approvers}
                         showValuesPostfix
                         reload={reload}
-                        isValues={state.isValues}
+                        isValues={isValues}
                         setIsValues={setIsValues}
                         convertVariables={state.convertVariables}
                         setConvertVariables={setConvertVariables}
