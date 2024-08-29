@@ -354,43 +354,47 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
     }
 
     const renderLabelAnnotationTaint = (): JSX.Element => {
+        const tabs: TabProps[] = [
+            {
+                id: 'labels-tab',
+                label: `Labels (${nodeDetail.labels.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 0,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(0)
+                    },
+                },
+            },
+            {
+                id: 'annotation-tab',
+                label: `Annotation (${nodeDetail.annotations.length})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 1,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(1)
+                    },
+                },
+            },
+            {
+                id: 'taints-tab',
+                label: `Taints (${nodeDetail.taints?.length || 0})`,
+                tabType: 'button',
+                active: selectedSubTabIndex == 2,
+                props: {
+                    onClick: () => {
+                        setSelectedSubTabIndex(2)
+                    },
+                },
+            },
+        ]
+
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(0)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 0 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Labels ({nodeDetail.labels.length})
-                        </div>
-                        {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(1)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 1 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Annotation ({nodeDetail.annotations.length})
-                        </div>
-                        {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                    <li
-                        className="tab-list__tab cursor"
-                        onClick={() => {
-                            setSelectedSubTabIndex(2)
-                        }}
-                    >
-                        <div className={`mb-6 fs-13${selectedSubTabIndex == 2 ? ' fw-6 cb-5' : ' fw-4'}`}>
-                            Taints ({nodeDetail.taints?.length || 0})
-                        </div>
-                        {selectedSubTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
-                </ul>
+                <div className="dc__border-bottom px-20 mt-12">
+                    <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+                </div>
                 <div className=" pr-20 pl-20 pt-12 pb-12">
                     {selectedSubTabIndex == 0 && renderLabelTab()}
                     {selectedSubTabIndex == 1 && renderAnnotationTab()}
