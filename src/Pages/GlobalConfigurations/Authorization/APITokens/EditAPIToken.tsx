@@ -69,7 +69,7 @@ const EditAPIToken = ({
     isLoading: boolean
     setEditData: (editData: EditDataType) => void
 }) => {
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
         usePermissionConfiguration()
 
     const history = useHistory()
@@ -131,12 +131,13 @@ const EditAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: editData.userId,
                     userIdentifier: editData.userIdentifier,
-                    userGroups,
+                    userRoleGroups,
                     serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
                     permissionType,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
 
