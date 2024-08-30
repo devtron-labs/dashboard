@@ -19,6 +19,8 @@
     grid-template-columns: 300px 1fr;
     gap: 32px;
     background: linear-gradient(249deg, #d4e6f7 0%, var(--N50) 50.58%);
+    flex-grow: 1;
+    overflow: auto;
 
     .response-list-container {
         max-height: calc(100vh - 120px);

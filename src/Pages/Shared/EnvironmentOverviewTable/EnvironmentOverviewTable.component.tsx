@@ -93,7 +93,7 @@ export const EnvironmentOverviewTable = ({
                     {headerValue}
                     <ICArrowLineDown
                         className="icon-dim-14 scn-7 rotate"
-                        style={{ ['--rotateBy' as any]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
+                        style={{ ['--rotateBy' as string]: isLastDeployedExpanded ? '90deg' : '-90deg' }}
                     />
                 </button>
             )
@@ -103,7 +103,7 @@ export const EnvironmentOverviewTable = ({
     }
 
     const renderHeaderRow = () => (
-        <div className="environment-overview-table__row dc__border-bottom-n1 no-hover">
+        <div className="environment-overview-table__row bcn-0 dc__border-bottom-n1 no-hover">
             <div
                 className={`environment-overview-table__fixed-cell bcn-0 pl-16 pr-15 py-8 cn-7 fw-6 fs-12 lh-20 ${isVirtualEnvRowClassName}`}
             >

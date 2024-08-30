@@ -468,57 +468,55 @@ export default function EnvironmentOverview({
     return appListData?.appInfoList?.length > 0 ? (
         <div className="env-overview-container dc__content-center bcn-0 p-20">
             <div>{renderSideInfoColumn()}</div>
-            <div className="dc__h-fit-content mw-none">
-                <div className="flex column left">
-                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
-                        <span className="flex">
-                            <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
-                        </span>
-                        {selectedAppDetailsList.length > 0 ? (
-                            <div className="flexbox dc__gap-6">
-                                {ClonePipelineButton && appListData.environment && (
-                                    <ClonePipelineButton
-                                        sourceEnvironmentName={appListData.environment}
-                                        selectedAppDetailsList={selectedAppDetailsList}
-                                        httpProtocol={httpProtocol.current}
-                                    />
-                                )}
+            <div className="mw-none">
+                <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
+                    <span className="flex">
+                        <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
+                    </span>
+                    {selectedAppDetailsList.length > 0 ? (
+                        <div className="flexbox dc__gap-6">
+                            {ClonePipelineButton && appListData.environment && (
+                                <ClonePipelineButton
+                                    sourceEnvironmentName={appListData.environment}
+                                    selectedAppDetailsList={selectedAppDetailsList}
+                                    httpProtocol={httpProtocol.current}
+                                />
+                            )}
 
-                                <button
-                                    onClick={openHibernateModalPopup}
-                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                                >
-                                    <HibernateIcon className="icon-dim-12 mr-4" />
-                                    Hibernate
-                                </button>
-                                <button
-                                    onClick={openUnHibernateModalPopup}
-                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                                >
-                                    <UnhibernateIcon className="icon-dim-12 mr-4" />
-                                    Unhibernate
-                                </button>
-                                <button
-                                    onClick={onClickShowBulkRestartModal}
-                                    className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                                >
-                                    <RotateIcon className="icon-dim-12 mr-4 scn-9" />
-                                    Restart Workload
-                                </button>
-                            </div>
-                        ) : (
-                            <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
-                                <ICInfoOutline className="icon-dim-20 info-icon-circle-b5 fcn-0" />
-                                <span>Select applications to take bulk actions</span>
-                            </p>
-                        )}
-                    </div>
-                    <EnvironmentOverviewTable
-                        rows={environmentOverviewTableRows}
-                        isVirtualEnv={isVirtualEnv}
-                        onCheckboxSelect={handleCheckboxSelect}
-                    />
+                            <button
+                                onClick={openHibernateModalPopup}
+                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                            >
+                                <HibernateIcon className="icon-dim-12 mr-4" />
+                                Hibernate
+                            </button>
+                            <button
+                                onClick={openUnHibernateModalPopup}
+                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                            >
+                                <UnhibernateIcon className="icon-dim-12 mr-4" />
+                                Unhibernate
+                            </button>
+                            <button
+                                onClick={onClickShowBulkRestartModal}
+                                className="bcn-0 fs-12 dc__border dc__border-radius-4-imp flex h-28"
+                            >
+                                <RotateIcon className="icon-dim-12 mr-4 scn-9" />
+                                Restart Workload
+                            </button>
+                        </div>
+                    ) : (
+                        <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
+                            <ICInfoOutline className="icon-dim-20 info-icon-circle-b5 fcn-0" />
+                            <span>Select applications to take bulk actions</span>
+                        </p>
+                    )}
                 </div>
+                <EnvironmentOverviewTable
+                    rows={environmentOverviewTableRows}
+                    isVirtualEnv={isVirtualEnv}
+                    onCheckboxSelect={handleCheckboxSelect}
+                />
             </div>
             {renderOverviewModal()}
         </div>
