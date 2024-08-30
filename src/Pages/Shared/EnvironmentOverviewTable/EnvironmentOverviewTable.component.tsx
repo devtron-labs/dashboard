@@ -227,7 +227,7 @@ export const EnvironmentOverviewTable = ({
                                     {deployedBy[0]}
                                 </span>
                                 <Tippy className="default-tt" arrow={false} placement="bottom" content={deployedBy}>
-                                    <span>{deployedBy}</span>
+                                    <span className="dc__truncate">{deployedBy}</span>
                                 </Tippy>
                             </div>
                         </>

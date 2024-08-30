@@ -48,7 +48,7 @@ import {
 } from '../../AppGroup.types'
 import { GROUP_LIST_HEADER } from '../../Constants'
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
-import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
+import { ReactComponent as InfoFilled } from '@Icons/info-filled.svg'
 import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
@@ -507,7 +507,7 @@ export default function EnvironmentOverview({
                         </div>
                     ) : (
                         <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
-                            <ICInfoOutline className="icon-dim-20 info-icon-circle-b5 fcn-0" />
+                            <InfoFilled className="icon-dim-20" />
                             <span>Select applications to take bulk actions</span>
                         </p>
                     )}
