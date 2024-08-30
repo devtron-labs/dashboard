@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /*
  * Copyright (c) 2024. Devtron Inc.
  *
@@ -326,7 +327,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 toast.error('"tenant" is required in configuration for auto-assigning permissions to users')
                 return { isValid: false }
             }
-        } catch (error) {
+        } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             this.setState({ saveLoading: false })
@@ -523,7 +524,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             let config
             try {
                 config = yamlJsParser.parse(value)
-            } catch (error) {
+            } catch {
                 // Invalid YAML, couldn't be parsed to JSON. Show error toast
                 this.setState({
                     invalidYaml: true,
@@ -596,7 +597,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let newConfig
         try {
             newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-        } catch (error) {
+        } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
             toast.error('Invalid Yaml')
             return

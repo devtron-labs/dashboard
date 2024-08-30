@@ -74,7 +74,7 @@ export function useTabs(persistanceKey: string) {
             const persistedTabsData = localStorage.getItem('persisted-tabs-data')
             try {
                 _parsedTabsData = JSON.parse(persistedTabsData)
-            } catch (err) {
+            } catch {
                 noop()
             }
         }
@@ -128,7 +128,7 @@ export function useTabs(persistanceKey: string) {
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = persistedTabsData ? parsedTabsData.data : prevTabs
-                } catch (err) {
+                } catch {
                     _tabs = prevTabs
                 }
             }

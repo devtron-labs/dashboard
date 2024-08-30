@@ -154,7 +154,7 @@ export const ProtectedConfigMapSecretDetails = ({
                     ? baseData
                     : JSON.parse(draftData.data).configData[0]
             codeEditorValue.value = JSON.stringify(getCodeEditorData(currentConfigData, false)) ?? ''
-        } catch (error) {
+        } catch {
             // do nothing
         }
 

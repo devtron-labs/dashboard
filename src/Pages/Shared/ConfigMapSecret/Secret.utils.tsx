@@ -476,7 +476,7 @@ export function handleSecretDataYamlChange(
         } else {
             handleValidJson(isESO, json, dispatch)
         }
-    } catch (error) {
+    } catch {
         // do nothing
     }
 }
