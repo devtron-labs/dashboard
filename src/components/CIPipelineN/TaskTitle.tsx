@@ -27,8 +27,8 @@ const TaskTitleTippyContent = ({ isLatest, pluginName, pluginVersion, displayNam
         <div className="flexbox-col dc__gap-4">
             <h4 className="m-0 cn-0 fs-12 fw-6 lh-18 dc__truncate--clamp-3">{displayName}</h4>
 
-            <p className="m-0 dc__truncate--clamp-3 c-n50">
-                {pluginName}({pluginVersion})
+            <p className="m-0 dc__truncate--clamp-3 c-n50 fs-12 lh-18">
+                {pluginName}&nbsp;({pluginVersion})
             </p>
         </div>
 

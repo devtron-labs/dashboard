@@ -63,9 +63,15 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
             <div className="flexbox dc__gap-8 dc__align-items-center">
                 {renderPluginImageContainer()}
                 <Tooltip content={name}>
-                    <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-180 m-0">{name}</h4>
+                    <h4 className="cn-9 fs-13 fw-4 lh-24 dc__truncate dc__mxw-180 m-0">{name}</h4>
                 </Tooltip>
-                <PluginVersionSelect handlePluginVersionChange={handlePluginVersionChange} />
+
+                {stepType === PluginType.PLUGIN_REF && (
+                    <>
+                        <span className="fs-13 cn-7 lh-20">/</span>
+                        <PluginVersionSelect handlePluginVersionChange={handlePluginVersionChange} />
+                    </>
+                )}
             </div>
 
             <div className="flexbox dc__align-items-center dc__gap-8">
