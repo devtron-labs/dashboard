@@ -143,8 +143,11 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
         clonedPluginForm,
     ) => {
         try {
+            setPluginDetailsError(null)
             const { id: parentPluginId } = clonedPluginForm
-            if (pluginDataStore.parentPluginStore[parentPluginId]) {
+            const parentPluginLatestVersionId = pluginDataStore.parentPluginStore[parentPluginId]?.latestVersionId
+
+            if (parentPluginLatestVersionId && pluginDataStore.pluginVersionStore[parentPluginLatestVersionId]) {
                 const { latestVersionId, pluginVersions } = pluginDataStore.parentPluginStore[parentPluginId]
                 setSelectedPluginVersions(pluginVersions.map((pluginVersionData) => pluginVersionData.pluginVersion))
                 const latestPluginDetails = pluginDataStore.pluginVersionStore[latestVersionId]

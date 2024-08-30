@@ -6,6 +6,7 @@ import {
     PluginImageContainer,
     PluginDetailType,
     PluginType,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
@@ -61,7 +62,9 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
         <div className="flexbox dc__align-items-center dc__content-space py-10 px-20 dc__border-bottom-n1">
             <div className="flexbox dc__gap-8 dc__align-items-center">
                 {renderPluginImageContainer()}
-                <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-155 m-0">{name}</h4>
+                <Tooltip content={name}>
+                    <h4 className="cn-9 fs-14 fw-4 lh-24 dc__truncate dc__mxw-180 m-0">{name}</h4>
+                </Tooltip>
                 <PluginVersionSelect handlePluginVersionChange={handlePluginVersionChange} />
             </div>
 
