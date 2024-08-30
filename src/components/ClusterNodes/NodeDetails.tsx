@@ -392,8 +392,8 @@ const NodeDetails = ({ isSuperAdmin, addTab, k8SObjectMapRaw, updateTabUrl }: Cl
 
         return (
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
-                <div className="dc__border-bottom px-20 mt-12">
-                    <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+                <div className="dc__border-bottom px-20">
+                    <TabGroup tabs={tabs} alignActiveBorderWithContainer />
                 </div>
                 <div className=" pr-20 pl-20 pt-12 pb-12">
                     {selectedSubTabIndex == 0 && renderLabelTab()}

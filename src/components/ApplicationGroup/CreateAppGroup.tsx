@@ -114,7 +114,7 @@ export default function CreateAppGroup({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Save filter</h2>
                 <button
                     type="button"
@@ -342,7 +342,7 @@ export default function CreateAppGroup({
             return <Progressing pageLoader />
         }
         return (
-            <div className="p-20 bcn-0 dc__overflow-auto" style={{ height: 'calc(100vh - 128px)' }}>
+            <div className="p-20 bcn-0 dc__overflow-auto flex-grow-1">
                 <div className="form__row mb-16">
                     <CustomInput
                         label="Name"
@@ -457,7 +457,7 @@ export default function CreateAppGroup({
 
     const renderFooterSection = (): JSX.Element => {
         return (
-            <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 w-800">
+            <div className="dc__border-top flex right bcn-0 py-16 px-20 w-800">
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
@@ -470,7 +470,7 @@ export default function CreateAppGroup({
 
     return (
         <Drawer position="right" width="800px" onEscape={closePopup}>
-            <div className="dc__window-bg h-100 create-group-container" ref={CreateGroupRef}>
+            <div className="dc__window-bg h-100 flexbox-col" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}
                 {renderFooterSection()}
