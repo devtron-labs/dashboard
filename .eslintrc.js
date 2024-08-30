@@ -138,5 +138,5 @@ module.exports = {
         },
         'import/ignore': ['\\.png$', '\\.jpg$', '\\.svg$'],
     },
-    ignorePatterns: ['.eslintrc.cjs', 'vite.config.ts'],
+    ignorePatterns: ['.eslintrc.cjs', 'vite.config.mts'],
 }
