@@ -88,6 +88,7 @@ export default function DeploymentConfigFormCTA({
     }
 
     const checkForLockedChangesForApproval = async () => {
+        // TODO: Ask product why we are showing another overlay for approve changes
         // setting approveChangesClicked to true only is approve changes button
         if (isApprovalPending && !approveDisabled && !isSuperAdmin) {
             setApproveChangesClicked(true)

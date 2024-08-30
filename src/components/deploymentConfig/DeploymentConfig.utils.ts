@@ -15,7 +15,7 @@
  */
 
 import moment from 'moment'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, TemplateListDTO, TemplateListType } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
 
 export const handleConfigProtectionError = (
@@ -36,9 +36,9 @@ export const handleConfigProtectionError = (
     showError(err)
 }
 
-export function groupDataByType(data) {
+export function groupDataByType(data: TemplateListDTO[]) {
     // Create a Map to store grouped objects by type
-    const groupedData = new Map()
+    const groupedData = new Map<TemplateListType, TemplateListDTO[]>()
 
     // Iterate through the data and group objects by type
     data.forEach((item) => {

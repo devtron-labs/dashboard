@@ -137,6 +137,7 @@ export const deploymentConfigReducer = (
             return { ...state, showSaveChangesModal: !state.showSaveChangesModal }
         case DeploymentConfigStateActionTypes.toggleShowLockedTemplateDiff:
             return { ...state, showLockedTemplateDiff: action.payload }
+        // TODO: Maybe stale
         case DeploymentConfigStateActionTypes.allDrafts:
             return { ...state, allDrafts: action.payload }
         case DeploymentConfigStateActionTypes.toggleDraftComments:

@@ -43,6 +43,7 @@ export function toggleAppMetrics(appId, envId, payload) {
     return post(`app/env/metrics/${appId}/${envId}`, payload)
 }
 
+// FIXME: Same api route with different service name
 export function chartRefAutocomplete(appId, envId, signal?) {
     return get(`${Routes.CHART_REFERENCES_MIN}/${appId}/${envId}`, { signal })
 }

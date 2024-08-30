@@ -82,25 +82,45 @@ export default function DeploymentConfig({
     isProtected,
     reloadEnvironments,
 }: DeploymentConfigProps) {
+    // Create a useParam type containing only appId for devtron apps
     const { appId } = useParams<{ appId: string }>()
     const { isSuperAdmin } = useMainContext()
-    const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState(false)
-    const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState(false)
+
+    /**
+     * State to derive whether to save eligible changes after applying lock config.
+     * TODO: Move to DeploymentTemplateLockedDiff
+     */
+    const [saveEligibleChangesCb, setSaveEligibleChangesCb] = useState<boolean>(false)
+    /**
+     * State to show locked changes modal in case user is non super admin and is changing locked keys
+     * TODO: Should be part of showLockedTemplateDiff
+     */
+    const [showLockedDiffForApproval, setShowLockedDiffForApproval] = useState<boolean>(false)
+    /**
+     * Can remove this state since we calculate this at FE itself
+     */
+    const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState<boolean>(false)
+    /**
+     * TODO: Can move to fe-lib at mount of provider currently multiple calls are getting called
+     */
     const [lockedConfigKeysWithLockType, setLockedConfigKeysWithLockType] = useState<ConfigKeysWithLockType>({
         config: [],
         allowed: false,
     })
-    const [disableSaveEligibleChanges, setDisableSaveEligibleChanges] = useState(false)
+
     const [state, dispatch] = useReducer<Reducer<DeploymentConfigStateWithDraft, DeploymentConfigStateAction>>(
         deploymentConfigReducer,
         { ...initDeploymentConfigState, yamlMode: isSuperAdmin },
     )
+
     const [obj, , , error] = useJsonYaml(state.tempFormData, 4, 'yaml', true)
     const [, grafanaModuleStatus] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [appId])
     const isGuiModeRef = useRef(state.yamlMode)
     const hideLockKeysToggled = useRef(false)
 
     const readOnlyPublishedMode = state.selectedTabIndex === 1 && isProtected && !!state.latestDraft
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
     const baseDeploymentAbortController = new AbortController()
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
@@ -182,6 +202,7 @@ export default function DeploymentConfig({
 
     // TODO: use async
     useEffect(() => {
+        // TODO: No error/loading state for this
         const fetchOptionsList = async () => {
             const res = await getOptions(+appId, -1) // -1 is for base deployment template
             const { result } = res
@@ -193,6 +214,7 @@ export default function DeploymentConfig({
     }, [environments])
 
     useEffect(() => {
+        // TODO: Not using this abortController
         const abortController = new AbortController()
         reloadEnvironments()
         initialise()
@@ -202,6 +224,7 @@ export default function DeploymentConfig({
         }
     }, [])
 
+    // FIXME: Ideally should be inside code editor
     useEffectAfterMount(() => {
         if (state.selectedChart) {
             fetchDeploymentTemplate()
@@ -296,7 +319,6 @@ export default function DeploymentConfig({
             schema,
         } = JSON.parse(latestDraft.data)
 
-        // FIXME: send sortMapKeys option to strigify for consistency?
         const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
         const payload = {
@@ -470,7 +492,7 @@ export default function DeploymentConfig({
             // create flow
             save()
         } else {
-            // is superadmin
+            // is super admin
             openConfirmationOrSaveChangesModal()
         }
     }
@@ -484,6 +506,7 @@ export default function DeploymentConfig({
         }
     }
 
+    // TODO: This should be inside fe-lib
     const checkForProtectedLockedChanges = async (data: object) => {
         const action = data['id'] > 0 ? 2 : 1
         const requestPayload = {
@@ -507,6 +530,8 @@ export default function DeploymentConfig({
             const requestBody = prepareDataToSave(true)
             const deploymentTemplateResp = await api(requestBody, baseDeploymentAbortController.signal)
             if (deploymentTemplateResp.result.isLockConfigError) {
+                // TODO: Remove this check
+                // TODO: Remove lock validate api call
                 setDisableSaveEligibleChanges(deploymentTemplateResp.result?.disableSaveEligibleChanges)
                 handleLockedDiffDrawer(true)
                 return
@@ -551,9 +576,6 @@ export default function DeploymentConfig({
             payload: !state.isAppMetricsEnabled,
         })
     }
-
-    const isCompareAndApprovalState =
-        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
     const editorOnChange = (str: string): void => {
         if (isCompareAndApprovalState) {
@@ -673,6 +695,7 @@ export default function DeploymentConfig({
     const toggleSaveChangesModal = () => {
         dispatch({ type: DeploymentConfigStateActionTypes.toggleSaveChangesModal })
     }
+
     const handleConfirmationDialog = (value: boolean) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.showConfirmation,
@@ -800,6 +823,7 @@ export default function DeploymentConfig({
     const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
 
     const renderEditorComponent = () => {
+        // Move to fe-lib
         if (readOnlyPublishedMode && !state.showReadme) {
             return (
                 <DeploymentTemplateReadOnlyEditorView
@@ -861,6 +885,7 @@ export default function DeploymentConfig({
                 isValues={isValues}
             />
             {renderEditorComponent()}
+
             <DeploymentConfigFormCTA
                 loading={state.loading || state.chartConfigLoading || state.lockChangesLoading}
                 showAppMetricsToggle={
@@ -888,6 +913,7 @@ export default function DeploymentConfig({
         </div>
     )
 
+    // TODO: Should be memoized
     const getValueForContext = () => ({
         isUnSet: readOnlyPublishedMode ? false : isUnSet,
         state,
@@ -897,6 +923,7 @@ export default function DeploymentConfig({
         changeEditorMode,
         reloadEnvironments,
     })
+
     return (
         <DeploymentConfigContext.Provider value={getValueForContext()}>
             <div
@@ -937,7 +964,9 @@ export default function DeploymentConfig({
                         appId={appId}
                         envId={-1}
                     />
+
                     {renderValuesView()}
+
                     {state.showConfirmation && (
                         <SaveConfirmationDialog
                             onSave={save}
@@ -945,6 +974,7 @@ export default function DeploymentConfig({
                             closeLockedDiffDrawerWithChildModal={closeLockedDiffDrawerWithChildModal}
                         />
                     )}
+
                     {DeploymentTemplateLockedDiff && state.showLockedTemplateDiff && (
                         <DeploymentTemplateLockedDiff
                             closeModal={closeLockedDiffDrawerWithChildModal}
@@ -966,6 +996,7 @@ export default function DeploymentConfig({
                             envId={-1}
                         />
                     )}
+                    {/* In case of protect */}
                     {SaveChangesModal && state.showSaveChangesModal && (
                         <SaveChangesModal
                             appId={Number(appId)}
@@ -982,6 +1013,8 @@ export default function DeploymentConfig({
                         />
                     )}
                 </div>
+
+                {/* In case of protect */}
                 {DraftComments && state.showComments && (
                     <DraftComments
                         draftId={state.latestDraft?.draftId}

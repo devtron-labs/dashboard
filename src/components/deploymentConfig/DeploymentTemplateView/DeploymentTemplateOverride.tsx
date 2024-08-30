@@ -87,6 +87,7 @@ export default function DeploymentTemplateOverride({
     }
 
     useEffect(() => {
+        // TODO: There is no loading/error state here
         const fetchOptionsList = async () => {
             const { result } = await getOptions(+appId, +envId)
             const _groupedData = groupDataByType(result)

@@ -100,6 +100,7 @@ const DeploymentTemplateEditorView = ({
         return response.result.data
     }
 
+    // TODO: Ig do not need this can make a key based on current view from url
     const triggerEditorLoadingState = () => {
         // NOTE: this is to trigger a loading state in CodeEditor
         // React-Monaco-Editor internally does not put defaultValue prop
@@ -134,6 +135,7 @@ const DeploymentTemplateEditorView = ({
         }
     }
 
+    // FIXME: isValues should be in dependency
     useEffect(() => {
         if (!showDraftData || isValues) {
             return
@@ -275,6 +277,13 @@ const DeploymentTemplateEditorView = ({
         [state.openComparison],
     )
 
+    useEffect(() => {
+        editorOnChange(rhs)
+        if (state.selectedTabIndex === 2) {
+            triggerEditorLoadingState()
+        }
+    }, [state.selectedTabIndex])
+
     const setSelectedOption = (selectedOption: DeploymentChartOptionType) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.selectedCompareOption,
@@ -324,13 +333,6 @@ const DeploymentTemplateEditorView = ({
         }
         return ''
     }
-
-    useEffect(() => {
-        editorOnChange(rhs)
-        if (state.selectedTabIndex === 2) {
-            triggerEditorLoadingState()
-        }
-    }, [state.selectedTabIndex])
 
     useEffect(() => {
         if (!convertVariables) {

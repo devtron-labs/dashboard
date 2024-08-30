@@ -384,6 +384,7 @@ export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateTyp
     draftValues: string
     showSaveChangesModal: boolean
     allDrafts: any[]
+    // TODO: Might be string
     latestDraft: any
     showComments: boolean
     showDeleteOverrideDraftModal: boolean
