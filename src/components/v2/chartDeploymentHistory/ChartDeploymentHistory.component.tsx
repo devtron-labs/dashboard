@@ -375,21 +375,19 @@ const ChartDeploymentHistory = ({
     function renderSelectedDeploymentTabs() {
         return (
             <div className="dc__border-bottom px-20">
-                {
-                    <TabGroup
-                        tabs={deploymentTabs().map((tab, index) => ({
-                            id: `deployment-tab-${index}`,
-                            label: tab,
-                            tabType: 'button',
-                            active: selectedDeploymentTabName === tab,
-                            props: {
-                                onClick: () => onClickDeploymentTabs(tab),
-                                'data-testid': `nav-bar-option-${index}`,
-                            },
-                        }))}
-                        alignActiveBorderWithContainer
-                    />
-                }
+                <TabGroup
+                    tabs={deploymentTabs().map((tab, index) => ({
+                        id: `deployment-tab-${index}`,
+                        label: tab,
+                        tabType: 'button',
+                        active: selectedDeploymentTabName === tab,
+                        props: {
+                            onClick: () => onClickDeploymentTabs(tab),
+                            'data-testid': `nav-bar-option-${index}`,
+                        },
+                    }))}
+                    alignActiveBorderWithContainer
+                />
             </div>
         )
     }
