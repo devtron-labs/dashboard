@@ -239,11 +239,8 @@ export const handleToggleCheckForBulkSelection =
         )
     }
 
-const getSelectedPermissionValues = (options: OptionType[]) => {
-    return options.some((option) => option.value === SELECT_ALL_VALUE)
-        ? ''
-        : options.map((option) => option.value).join(',')
-}
+const getSelectedPermissionValues = (options: OptionType[]) =>
+    options.some((option) => option.value === SELECT_ALL_VALUE) ? '' : options.map((option) => option.value).join(',')
 
 const getSelectedEnvironments = (permission) => {
     if (permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS || permission.entity === EntityTypes.JOB) {
