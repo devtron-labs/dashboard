@@ -107,9 +107,6 @@ const NodeDetailComponent = ({
         [k8SObjectMapRaw, params.nodeType],
     )
 
-    const isResourceMissing =
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART && _selectedResource?.['health']?.status === 'Missing'
-
     const showDesiredAndCompareManifest =
         !isResourceBrowserView &&
         appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
@@ -126,6 +123,15 @@ const NodeDetailComponent = ({
         name: params.node,
         containers: [],
     }
+
+    const currentResource = isResourceBrowserView
+        ? selectedResource
+        : appDetails.resourceTree.nodes.filter(
+              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+          )[0]
+
+    const isResourceMissing =
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART && currentResource?.['health']?.status === 'Missing'
 
     const [containers, setContainers] = useState<Options[]>(
         (isResourceBrowserView ? selectedResource?.containers ?? [] : getContainersData(podMetaData)) as Options[],

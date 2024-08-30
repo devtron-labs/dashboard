@@ -249,7 +249,7 @@ const ManifestComponent = ({
             } catch {}
             toggleManagedFields(false)
         }
-    }, [isEditMode])
+    }, [isEditMode, modifiedManifest])
 
     useEffect(() => {
         setTrimedManifestEditorData(activeManifestEditorData)
