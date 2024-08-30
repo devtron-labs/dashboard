@@ -139,6 +139,10 @@
                     min-width: 100%;
                     display: grid;
 
+                    &:hover > :first-child {
+                        background-color: var(--N50);
+                    }
+
                     & > :first-child {
                         position: sticky;
                         left: 0;
