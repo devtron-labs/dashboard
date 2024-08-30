@@ -96,14 +96,12 @@ const TaskTitle = ({ taskDetail }: TaskTitleProps) => {
         )
     }
 
-    const renderContent = () => {
-        return (
-            <div className="flex left dc__gap-6">
-                {renderPluginIcon()}
-                <span className="w-100 dc__truncate">{taskDetail.name}</span>
-            </div>
-        )
-    }
+    const renderContent = () => (
+        <div className="flex left dc__gap-6">
+            {renderPluginIcon()}
+            <span className="w-100 dc__truncate">{taskDetail.name}</span>
+        </div>
+    )
 
     if (isInline || !pluginId) {
         return renderContent()

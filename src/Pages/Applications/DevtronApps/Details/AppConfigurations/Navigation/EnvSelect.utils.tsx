@@ -6,13 +6,11 @@ import { ReactComponent as ArrowDown } from '@Icons/ic-chevron-down.svg'
 import { ReactComponent as ProtectedIcon } from '@Icons/ic-shield-protect-fill.svg'
 import { EnvironmentOptionType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
-export const EnvSelectDropdownIndicator = (props: DropdownIndicatorProps) => {
-    return (
-        <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-16 fcn-6" data-testid="env-configuration-dropdown" />
-        </components.DropdownIndicator>
-    )
-}
+export const EnvSelectDropdownIndicator = (props: DropdownIndicatorProps) => (
+    <components.DropdownIndicator {...props}>
+        <ArrowDown className="icon-dim-16 fcn-6" data-testid="env-configuration-dropdown" />
+    </components.DropdownIndicator>
+)
 
 export const envSelectStyles = getCommonSelectStyle({
     container: (base, state) => ({ ...commonSelectStyles.container(base, state), flexGrow: 1 }),

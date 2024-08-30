@@ -42,33 +42,29 @@ export const ClusterMetaDataBar = ({
         pathname.includes(NodeDetailTabs.LOGS.toLowerCase()) ||
         pathname.includes(URLS.APP_DETAILS_LOG)
 
-    const renderNavigationToAllResources = () => {
-        return (
-            <a
-                className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
-                target="_blank"
-                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
-                rel="noreferrer"
-            >
-                <AllResourcesIcon />
-                All resources
-            </a>
-        )
-    }
+    const renderNavigationToAllResources = () => (
+        <a
+            className={`${darkTheme ? 'scn-0 resource-link__dark-theme' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            target="_blank"
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
+            rel="noreferrer"
+        >
+            <AllResourcesIcon />
+            All resources
+        </a>
+    )
 
-    const renderNavigationToAClusterTerminal = () => {
-        return (
-            <a
-                className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
-                target="_blank"
-                href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
-                rel="noreferrer"
-            >
-                <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
-                Cluster terminal
-            </a>
-        )
-    }
+    const renderNavigationToAClusterTerminal = () => (
+        <a
+            className={`${darkTheme ? 'resource-link__dark-theme' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor cn-0`}
+            target="_blank"
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
+            rel="noreferrer"
+        >
+            <TerminalIcon className={`${darkTheme ? 'fcn-0' : ''} icon-dim-16`} />
+            Cluster terminal
+        </a>
+    )
 
     if (!isSuperAdmin) {
         return null

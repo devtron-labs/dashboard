@@ -321,24 +321,16 @@ export const GroupHeading = (props: GroupHeadingProps<ReturnType<typeof getTypeG
     )
 }
 
-export const hasHashiOrAWS = (externalType): boolean => {
-    return (
-        externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
-    )
-}
+export const hasHashiOrAWS = (externalType): boolean =>
+    externalType === 'AWSSecretsManager' || externalType === 'AWSSystemManager' || externalType === 'HashiCorpVault'
 
-export const hasESO = (externalType): boolean => {
-    return (
-        externalType === 'ESO_GoogleSecretsManager' ||
-        externalType === 'ESO_AzureSecretsManager' ||
-        externalType === 'ESO_AWSSecretsManager' ||
-        externalType === 'ESO_HashiCorpVault'
-    )
-}
+export const hasESO = (externalType): boolean =>
+    externalType === 'ESO_GoogleSecretsManager' ||
+    externalType === 'ESO_AzureSecretsManager' ||
+    externalType === 'ESO_AWSSecretsManager' ||
+    externalType === 'ESO_HashiCorpVault'
 
-export const hasProperty = (externalType): boolean => {
-    return externalType === 'ESO_AWSSecretsManager'
-}
+export const hasProperty = (externalType): boolean => externalType === 'ESO_AWSSecretsManager'
 
 export const secretValidationInfoToast = (isESO, secretStore, secretStoreRef) => {
     let errorMessage = ''
@@ -371,14 +363,12 @@ export async function prepareSecretOverrideData(configMapSecretData, dispatch: (
             },
         })
         if (configMapSecretData.secretData) {
-            const json = configMapSecretData.secretData.map((s) => {
-                return {
-                    fileName: s.key,
-                    name: s.name,
-                    property: s.property,
-                    isBinary: s.isBinary,
-                }
-            })
+            const json = configMapSecretData.secretData.map((s) => ({
+                fileName: s.key,
+                name: s.name,
+                property: s.property,
+                isBinary: s.isBinary,
+            }))
             dispatch({
                 type: ConfigMapActionTypes.multipleOptions,
                 payload: { secretDataYaml: YAMLStringify(configMapSecretData.secretData), secretData: json },
@@ -491,9 +481,12 @@ export const getSecretInitState = (configMapSecretData): SecretState => {
         tempSecretData = configMapSecretData?.defaultSecretData ?? []
         jsonForSecretDataYaml = configMapSecretData?.defaultSecretData ?? []
     }
-    tempSecretData = tempSecretData.map((s) => {
-        return { fileName: s.key, name: s.name, isBinary: s.isBinary, property: s.property }
-    })
+    tempSecretData = tempSecretData.map((s) => ({
+        fileName: s.key,
+        name: s.name,
+        isBinary: s.isBinary,
+        property: s.property,
+    }))
     jsonForSecretDataYaml = transformSecretDataJSON(jsonForSecretDataYaml)
     const tempEsoSecretData =
         (configMapSecretData?.esoSecretData?.esoData || []).length === 0 && configMapSecretData?.defaultESOSecretData
@@ -526,16 +519,14 @@ export const ConfigMapOptions: OptionType[] = [
     { value: 'KubernetesConfigMap', label: 'Kubernetes External ConfigMap' },
 ]
 
-export const ExternalSecretHelpNote = () => {
-    return (
-        <div className="fs-13 fw-4 lh-18">
-            <NavLink to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`} className="dc__link" target="_blank">
-                External Secrets Operator
-            </NavLink>
-            &nbsp;should be installed in the target cluster.&nbsp;
-            <a className="dc__link" href={DOCUMENTATION.EXTERNAL_SECRET} rel="noreferrer noopener" target="_blank">
-                Learn more
-            </a>
-        </div>
-    )
-}
+export const ExternalSecretHelpNote = () => (
+    <div className="fs-13 fw-4 lh-18">
+        <NavLink to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`} className="dc__link" target="_blank">
+            External Secrets Operator
+        </NavLink>
+        &nbsp;should be installed in the target cluster.&nbsp;
+        <a className="dc__link" href={DOCUMENTATION.EXTERNAL_SECRET} rel="noreferrer noopener" target="_blank">
+            Learn more
+        </a>
+    </div>
+)

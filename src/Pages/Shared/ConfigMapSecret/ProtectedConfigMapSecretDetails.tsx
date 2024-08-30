@@ -283,16 +283,14 @@ export const ProtectedConfigMapSecretDetails = ({
         )
     }
 
-    const renderEmptyMessage = (message: string): JSX.Element => {
-        return (
-            <div className="h-200 flex">
-                <div className="dc__align-center">
-                    <InfoIconOutlined className="icon-dim-20 mb-8" />
-                    <div className="fs-13 fw-4 cn-7">{message}</div>
-                </div>
+    const renderEmptyMessage = (message: string): JSX.Element => (
+        <div className="h-200 flex">
+            <div className="dc__align-center">
+                <InfoIconOutlined className="icon-dim-20 mb-8" />
+                <div className="fs-13 fw-4 cn-7">{message}</div>
             </div>
-        )
-    }
+        </div>
+    )
 
     const renderForm = (): JSX.Element => {
         if (selectedTab === CMSecretProtectedTab.Published && cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED) {

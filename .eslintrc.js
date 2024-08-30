@@ -39,7 +39,7 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'airbnb',
         'airbnb/hooks',
-        'plugin:prettier/recommended',
+        'prettier',
     ],
     rules: {
         'prettier/prettier': ['error'],
