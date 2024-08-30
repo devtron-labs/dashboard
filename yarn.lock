@@ -1167,10 +1167,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@0.2.20-beta-7":
-  version "0.2.20-beta-7"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.2.20-beta-7.tgz#6d6066bfdc6d304b3f01007ba1fb190b7b0cdbc6"
-  integrity sha512-lYMhupkxvZPXlqCqgkWjWdX7TLDASEOuwFKSErIGVqjAvVJhH487M/Qj9UsHS/YLmO6/q4ngPIg/SdLkgg+SEg==
+"@devtron-labs/devtron-fe-common-lib@0.2.21":
+  version "0.2.21"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.2.21.tgz#7347dc838a9d58bc7a321dc87cb0c818339de3fb"
+  integrity sha512-d0BYyQmy+CU4GEoK3ck81a11KmPmNPqfprxPFLHGrXU1iCJ7PtJwTuwbxXUpgdnMyOCk69cZOJS2pNeYhn30rg==
   dependencies:
     "@types/react-dates" "^21.8.6"
     ansi_up "^5.2.1"
@@ -1179,7 +1179,7 @@
     react-dates "^21.8.0"
     react-monaco-editor "^0.54.0"
     sass "^1.69.7"
-    tslib "2.7.0"
+    tslib "^2.4.1"
 
 "@emotion/babel-plugin@^11.11.0":
   version "11.11.0"
