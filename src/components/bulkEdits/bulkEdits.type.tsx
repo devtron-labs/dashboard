@@ -16,6 +16,7 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 import { SERVER_MODE_TYPE } from '../../config'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CodeEditorScript {
     apiVersion: string
@@ -53,11 +54,6 @@ export interface BulkConfiguration {
     operation: string
     script: CodeEditorScript
     readme: string
-}
-
-export interface UpdatedTemplate {
-    value: string
-    label: string
 }
 
 export interface DTImpactedObjects {
@@ -118,11 +114,11 @@ export interface BulkEditsState {
     outputName: string
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects
-    updatedTemplate: UpdatedTemplate[]
+    updatedTemplate: OptionType[]
     readmeResult: string[]
     outputResult: BulkOutput
     showExamples: boolean
-    showImpactedtData: boolean
+    showImpactedData: boolean
     showOutputData: boolean
     bulkConfig: BulkConfiguration[]
     codeEditorPayload: string

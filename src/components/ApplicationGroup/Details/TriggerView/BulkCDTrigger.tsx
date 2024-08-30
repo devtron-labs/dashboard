@@ -36,9 +36,10 @@ import {
     DEPLOYMENT_WINDOW_TYPE,
     MODAL_TYPE,
     ApiQueuingWithBatch,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { components } from 'react-select'
+import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -577,12 +578,13 @@ export default function BulkCDTrigger({
                     <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
                         <span className="pl-16 pr-16">Select image by release tag</span>
                         <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
-                            <ReactSelect
+                            <SelectPicker
+                                name="build-config__select-repository-containing-code"
+                                inputId="build-config__select-repository-containing-code"
                                 isSearchable
                                 options={options}
                                 value={selectedTagName}
-                                styles={multiSelectStyles}
-                                components={imageTaggingControls}
+                                icon={<Tag className="ml-8 mt-8 mb-8 flex icon-dim-16" />}
                                 onChange={handleTagChange}
                                 isDisabled={false}
                                 classNamePrefix="build-config__select-repository-containing-code"

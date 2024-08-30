@@ -15,7 +15,7 @@
  */
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import ReactGA from 'react-ga4'
 import { toast } from 'react-toastify'
 import { Prompt, useHistory } from 'react-router-dom'
@@ -92,7 +92,7 @@ import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrow
 import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
-import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import noArtifact from '../../../../assets/img/no-artifact@2x.png'
 import { getCTAClass, importComponentFromFELibrary } from '../../../common'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
@@ -1161,7 +1161,7 @@ const CDMaterial = ({
         ) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No eligible image found"
                     subTitle={renderFilterEmptyStateSubtitle()}
                     isButtonAvailable={!noMoreImages}
@@ -1173,7 +1173,7 @@ const CDMaterial = ({
         if (searchImageTag) {
             return (
                 <GenericEmptyState
-                    image={noartifact}
+                    image={noArtifact}
                     title="No matching image available"
                     subTitle="We couldn't find any matching image"
                     isButtonAvailable
@@ -1197,7 +1197,7 @@ const CDMaterial = ({
 
         return (
             <GenericEmptyState
-                image={noartifact}
+                image={noArtifact}
                 title={EMPTY_STATE_STATUS.CD_MATERIAL.TITLE}
                 subTitle={
                     materialType == MATERIAL_TYPE.rollbackMaterialList
@@ -1799,7 +1799,7 @@ const CDMaterial = ({
                                     placeholder="Select Config"
                                     value={state.selectedConfigToDeploy}
                                     onChange={handleConfigSelection}
-                                    size={ComponentSizeType.large}
+                                    menuSize={ComponentSizeType.medium}
                                 />
                             </div>
                             <span className="dc__border-left h-100" />

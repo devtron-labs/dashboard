@@ -120,7 +120,7 @@ export interface CDMaterialProps {
 export interface ConfigToDeployOptionType {
     label: string
     value: DeploymentWithConfigType
-    infoText: string
+    description?: string
 }
 
 export enum FilterConditionViews {
@@ -670,10 +670,9 @@ export interface TriggerViewDeploymentConfigType {
     secret: DeploymentHistoryDetail[]
 }
 
-export interface TriggerViewConfigDiffProps {
+export interface TriggerViewConfigDiffProps extends Pick<CDMaterialState, 'selectedConfigToDeploy'> {
     currentConfiguration: TriggerViewDeploymentConfigType
     baseTemplateConfiguration: TriggerViewDeploymentConfigType
-    selectedConfigToDeploy
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
