@@ -18,7 +18,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    DeploymentAppTypes,
+    getIsManualApprovalConfigured,
+    ReleaseMode,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -142,6 +148,16 @@ export const SourceInfo = ({
         )
     }
 
+    const getIsApprovalConfigured = () => {
+        try {
+            const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
+            const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
+            return getIsManualApprovalConfigured(parsedUserApprovalConfig)
+        } catch (error) {
+            return false
+        }
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100">
@@ -186,14 +202,14 @@ export const SourceInfo = ({
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <ConditionalWrap
-                                        condition={appDetails?.userApprovalConfig?.length > 0}
+                                        condition={getIsApprovalConfigured()}
                                         wrap={conditionalScalePodsButton}
                                     >
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
-                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                            disabled={getIsApprovalConfigured()}
                                         >
                                             <ScaleDown
                                                 className="icon-dim-16 mr-6 rotate"
@@ -207,14 +223,14 @@ export const SourceInfo = ({
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
                                     <ConditionalWrap
-                                        condition={appDetails?.userApprovalConfig?.length > 0}
+                                        condition={getIsApprovalConfigured()}
                                         wrap={conditionalScalePodsButton}
                                     >
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
-                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                            disabled={getIsApprovalConfigured()}
                                         >
                                             <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
                                             Restart workloads
