@@ -151,7 +151,7 @@ export const SourceInfo = ({
         )
     }
 
-    const getIsApprovalConfigured = () => {
+    const getIsApprovalConfigured = (): boolean => {
         try {
             const userApprovalConfig = appDetails?.userApprovalConfig || '{}'
             const parsedUserApprovalConfig = JSON.parse(userApprovalConfig)
@@ -162,6 +162,9 @@ export const SourceInfo = ({
     }
 
     const renderDevtronAppsEnvironmentSelector = (environment) => {
+        // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
+        const isApprovalConfigured = getIsApprovalConfigured()
+
         return (
             <div className="flex left w-100">
                 <EnvSelector
@@ -205,14 +208,14 @@ export const SourceInfo = ({
                                 )}
                                 {!isVirtualEnvironment && showHibernateModal && (
                                     <ConditionalWrap
-                                        condition={getIsApprovalConfigured()}
+                                        condition={isApprovalConfigured}
                                         wrap={conditionalScalePodsButton}
                                     >
                                         <button
                                             data-testid="app-details-hibernate-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={onClickShowHibernateModal}
-                                            disabled={getIsApprovalConfigured()}
+                                            disabled={isApprovalConfigured}
                                         >
                                             <ScaleDown
                                                 className="icon-dim-16 mr-6 rotate"
@@ -226,14 +229,14 @@ export const SourceInfo = ({
                                 )}
                                 {window._env_.ENABLE_RESTART_WORKLOAD && !isVirtualEnvironment && setRotateModal && (
                                     <ConditionalWrap
-                                        condition={getIsApprovalConfigured()}
+                                        condition={isApprovalConfigured}
                                         wrap={conditionalScalePodsButton}
                                     >
                                         <button
                                             data-testid="app-details-rotate-pods-modal-button"
                                             className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                             onClick={setRotateModal}
-                                            disabled={getIsApprovalConfigured()}
+                                            disabled={isApprovalConfigured}
                                         >
                                             <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-4" />
                                             Restart workloads
