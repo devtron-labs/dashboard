@@ -144,11 +144,5 @@
             "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
             "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
         }
-    },
-    "resolutions": {
-        "**/@typescript-eslint/eslint-plugin": "^4.33.0",
-        "**/@typescript-eslint/parser": "^4.33.0",
-        "react": "^17.0.2",
-        "@types/react": "17.0.39"
     }
 }
