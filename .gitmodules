@@ -1,0 +1,6 @@
+[submodule "packages/devtron-fe-lib"]
+	path = packages/devtron-fe-lib
+	url = git@github.com:devtron-labs/devtron-fe-lib.git
+[submodule "packages/devtron-fe-common-lib"]
+	path = packages/devtron-fe-common-lib
+	url = git@github.com:devtron-labs/devtron-fe-common-lib.git

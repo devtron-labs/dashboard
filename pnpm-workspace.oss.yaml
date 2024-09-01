@@ -1,2 +1,2 @@
 workspace:
-  '../devtron-fe-common-lib'
+  - 'packages/devtron-fe-common-lib'
