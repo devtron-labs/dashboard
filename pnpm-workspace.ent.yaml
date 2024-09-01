@@ -1,0 +1,3 @@
+packages:
+  - '../devtron-fe-lib'
+  - '../devtron-fe-common-lib'

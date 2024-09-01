@@ -19,6 +19,12 @@
             ],
             "@Services/*": [
                 "./src/services/*"
+            ],
+            "@devtron-labs/devtron-fe-common-lib": [
+                "./node_modules/@devtron-labs/devtron-fe-common-lib/src/index.ts"
+            ],
+            "@devtron-labs/devtron-fe-lib": [
+                "./node_modules/@devtron-labs/devtron-fe-lib/src/index.ts"
             ]
         },
         "target": "ES2020",
