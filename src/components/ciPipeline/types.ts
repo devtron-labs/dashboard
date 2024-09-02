@@ -26,6 +26,7 @@ import {
     PluginType,
     CustomTagType,
     PipelineFormType,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
@@ -413,4 +414,14 @@ export enum CIPipelineBuildType {
     CI_LINKED = 'LINKED',
     LINKED_CD = 'LINKED_CD',
     NORMAL_JOB = 'NORMAL_JOB',
+}
+
+export interface WebhookConditionType {
+    conditionIndex: number
+    masterSelectorList: OptionType[]
+    selectorCondition: any
+    onSelectorChange: (selectorId: number, value: number) => void
+    onSelectorValueChange: (index: number, value: string) => void
+    deleteWebhookCondition: (index: number) => void
+    canEditSelectorCondition: boolean
 }

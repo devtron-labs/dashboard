@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TabDetailsType } from './types'
+import { TabDetailsType, TokenListOptionsType } from './types'
 
 export const TOKEN_TAB_LIST: TabDetailsType[] = [
     { key: 'selectToken', value: 'Select API token' },
@@ -72,4 +72,15 @@ export const SELECT_TOKEN_STYLE = {
         ...base,
         background: 'var(--N50) !important',
     }),
+}
+
+export const getWebhookTokenListOptions = (tokenList: TokenListOptionsType[]) => {
+    return tokenList.map((token) => {
+        return {
+            ...token,
+            label: token.label,
+            value: token.value,
+            description: 'Has access',
+        }
+    })
 }
