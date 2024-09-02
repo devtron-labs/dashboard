@@ -17,11 +17,10 @@
 // Disabling due to react select issue
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent } from 'react'
-import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
-import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _multiSelectStyles } from './CIConfig.utils'
+import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { getGitProviderIcon } from '@Components/common'
+import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { CISelfDockerBuildOptionProps } from './types'
 
 const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
@@ -37,6 +36,16 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
     handleFileLocationChange,
     dockerfileError,
 }) => {
+    const getDockerfileOptions = () => {
+        return sourceMaterials.map((material) => {
+            return {
+                value: material.checkoutPath,
+                label: material.name,
+                startIcon: getGitProviderIcon(material.url),
+            }
+        })
+    }
+
     if (readOnly) {
         return (
             <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
@@ -60,34 +69,31 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
         )
     }
 
+    const getSelectedMaterialValue = () => {
+        if (selectedMaterial.name) {
+            return {
+                label: selectedMaterial.name,
+                value: selectedMaterial.checkoutPath,
+                startIcon: getGitProviderIcon(selectedMaterial.url),
+            }
+        }
+        return null
+    }
+
     return (
         <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
             <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                 <label className="form__label">Select repository containing Dockerfile</label>
 
-                <ReactSelect
-                    className="m-0"
+                <SelectPicker
+                    inputId="select-repository-containing-dockerfile"
+                    name="select-repository-containing-dockerfile"
                     classNamePrefix="build-config__select-repository-containing-dockerfile"
-                    isMulti={false}
                     isClearable={false}
-                    options={sourceMaterials}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.checkoutPath}`}
-                    value={selectedMaterial}
-                    styles={{
-                        ..._multiSelectStyles,
-                        menu: (base) => ({
-                            ...base,
-                            marginTop: '0',
-                            paddingBottom: '4px',
-                        }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: repositoryOption,
-                        Control: repositoryControls,
-                    }}
+                    options={getDockerfileOptions()}
+                    value={getSelectedMaterialValue()}
                     onChange={handleFileLocationChange}
+                    size={ComponentSizeType.large}
                 />
 
                 {repositoryError && <label className="form__error">{repositoryError}</label>}
