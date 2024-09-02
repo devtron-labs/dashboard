@@ -189,12 +189,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsList((appList) => {
-            return missingProjects.reduce((_appList, projectId) => {
+        setAppsList((appList) =>
+            missingProjects.reduce((_appList, projectId) => {
                 _appList.set(projectId, { loading: true, result: [], error: null })
                 return _appList
-            }, appList)
-        })
+            }, appList),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
@@ -227,12 +227,12 @@ const AppPermissions = () => {
         if (missingProjects.length === 0) {
             return
         }
-        setAppsListHelmApps((appListHelmApps) => {
-            return missingProjects.reduce((_appListHelmApps, projectId) => {
+        setAppsListHelmApps((appListHelmApps) =>
+            missingProjects.reduce((_appListHelmApps, projectId) => {
                 _appListHelmApps.set(projectId, { loading: true, result: [], error: null })
                 return _appListHelmApps
-            }, appListHelmApps)
-        })
+            }, appListHelmApps),
+        )
         try {
             const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.HELM_APPS)
 
@@ -720,9 +720,10 @@ const AppPermissions = () => {
         const { value } = option || { value: '' }
         if (value === SELECT_ALL_VALUE) {
             if (action === ReactSelectInputAction.selectOption) {
-                const allWorkflowOptions = workflowList?.options?.reduce((acc, _option) => {
-                    return [...acc, ..._option.options]
-                }, [])
+                const allWorkflowOptions = workflowList?.options?.reduce(
+                    (acc, _option) => [...acc, ..._option.options],
+                    [],
+                )
                 tempPermissions[index].workflow = [SELECT_ALL_OPTION, ...(allWorkflowOptions || [])]
                 tempPermissions[index].workflowError = null
             } else {
