@@ -20,15 +20,6 @@ import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
 import { EnvironmentOverrideComponentProps } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
-export interface DeploymentObject {
-    id: number | null
-    appId: number | null
-    refChartTemplate: string
-    refChartTemplateVersion: string
-    chartRepositoryId: number
-    valuesOverrride: any
-    defaultAppOverride: any
-}
 export interface ConfigKeysWithLockType {
     config: string[]
     allowed: boolean
@@ -85,7 +76,8 @@ export interface ConfigMapRequest {
     secret_data: any
 }
 
-export interface DeploymentConfigProps extends Omit<EnvironmentOverrideComponentProps, 'envConfig' | 'fetchEnvConfig' | 'onErrorRedirectURL'> {
+export interface DeploymentConfigProps
+    extends Omit<EnvironmentOverrideComponentProps, 'envConfig' | 'fetchEnvConfig' | 'onErrorRedirectURL'> {
     respondOnSuccess?: (redirection: boolean) => void
     isUnSet: boolean
     isCiPipeline: boolean
@@ -105,6 +97,44 @@ export interface DeploymentChartVersionType {
     name: string
     description?: string
     isAppMetricsSupported: boolean
+}
+
+interface DeploymentTemplateGlobalConfigDTO {
+    appId: number
+    chartRefId: number
+    // TODO: Look into this, why it is there
+    chartRepositoryId: number
+    // TODO: Look into this, why it is there
+    currentViewEditor: string
+    /**
+     * Base deployment template
+     */
+    defaultAppOverride: Record<string, string>
+    id: number
+    isAppMetricsEnabled: boolean
+    isBasicViewLocked: boolean
+    latest: boolean
+    readme: string
+    refChartTemplate: string
+    refChartTemplateVersion: string
+    saveEligibleChanges: boolean
+    /**
+     * Schema to feed into the Code editor
+     */
+    schema: Record<string, string>
+}
+
+export interface DeploymentTemplateConfigDTO {
+    globalConfig: DeploymentTemplateGlobalConfigDTO
+    guiSchema: string
+}
+
+export interface MinChartRefDTO {
+    chartMetadata: Record<string, ChartMetadataType>
+    chartRefs: DeploymentChartVersionType[]
+    latestAppChartRef: number
+    latestChartRef: number
+    latestEnvChartRef?: number
 }
 
 export type DeploymentChartOptionkind = 'base' | 'env' | 'chartVersion' | 'deployment'
@@ -434,7 +464,7 @@ export enum DeploymentConfigStateActionTypes {
     manifestDataLHSOverride = 'manifestDataLHSOverride',
     /**
      * @deprecated - use from url
-     * 
+     *
      */
     convertVariables = 'convertVariables',
     convertVariablesOverride = 'convertVariablesOverride',

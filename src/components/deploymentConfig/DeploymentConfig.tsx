@@ -123,7 +123,7 @@ export default function DeploymentConfig({
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
 
-    const { clearFilters, hideLockedKeys, resolveScopedVariables, selectedTab ,editMode, updateSearchParams } =
+    const { clearFilters, hideLockedKeys, resolveScopedVariables, selectedTab, editMode, updateSearchParams } =
         useUrlFilters<never, DeploymentTemplateQueryParamsType>({
             parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
         })
@@ -189,17 +189,31 @@ export default function DeploymentConfig({
         }
     }, [state.selectedChart])
 
-    const updateRefsData = (chartRefsData, clearPublishedState?) => {
-        const payload = {
+    const updateRefsData = (
+        chartRefsData: Pick<
+            DeploymentConfigStateWithDraft,
+            'charts' | 'chartsMetadata' | 'selectedChartRefId' | 'selectedChart'
+        >,
+        clearPublishedState: boolean = false,
+    ) => {
+        const payload  = {
             ...chartRefsData,
             chartConfigLoading: false,
         }
 
         if (clearPublishedState) {
-            payload.selectedTabIndex = state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex
-            payload.publishedState = null
-            payload.showComments = false
-            payload.latestDraft = null
+            dispatch({
+                type: DeploymentConfigStateActionTypes.multipleOptions,
+                payload: {
+                    ...payload,
+                    selectedTabIndex: state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex,
+                    publishedState: null,
+                    showComments: false,
+                    latestDraft: null,
+                },
+            })
+
+            return
         }
 
         dispatch({
@@ -227,12 +241,14 @@ export default function DeploymentConfig({
                 }
 
                 if (isProtected && typeof getDraftByResourceName === 'function') {
+                    // TODO: Look into it when doing moving to approval
                     fetchAllDrafts(chartRefsData)
                 } else {
                     updateRefsData(chartRefsData)
                 }
             })
             .catch((err) => {
+                // TODO: Need error screen for this
                 showError(err)
                 dispatch({
                     type: DeploymentConfigStateActionTypes.chartConfigLoading,
@@ -247,7 +263,7 @@ export default function DeploymentConfig({
             })
     }
 
-    const fetchAllDrafts = (chartRefsData) => {
+    const fetchAllDrafts = (chartRefsData: Parameters<typeof updateRefsData>[0]) => {
         dispatch({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
@@ -350,6 +366,7 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
+
         try {
             const {
                 result: {
@@ -371,6 +388,7 @@ export default function DeploymentConfig({
                 baseDeploymentAbortController.signal,
                 state.selectedChart.name,
             )
+
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
             const templateData = {
                 template: defaultAppOverride,
@@ -616,7 +634,9 @@ export default function DeploymentConfig({
                     handleComparisonClick()
                 }
                 // FIXME: The enums should correspond to case values directly
-                updateSearchParams({ selectedTab: isDraftMode ? DeploymentTemplateTabsType.PUBLISHED : DeploymentTemplateTabsType.EDIT })
+                updateSearchParams({
+                    selectedTab: isDraftMode ? DeploymentTemplateTabsType.PUBLISHED : DeploymentTemplateTabsType.EDIT,
+                })
                 break
             case 3:
                 if (state.selectedTabIndex === 2) {

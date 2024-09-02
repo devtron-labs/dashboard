@@ -45,6 +45,7 @@ import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
+import { MinChartRefDTO } from '@Components/deploymentConfig/types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
@@ -403,27 +404,12 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferences(appId: number): Promise<ResponseType> {
+export function getChartReferences(appId: number): Promise<ResponseType<MinChartRefDTO>> {
     const URL = `${Routes.CHART_REFERENCES_MIN}/${appId}`
     return get(URL)
 }
 
-export function getAppChartRef(appId: number): Promise<ResponseType> {
-    return getChartReferences(appId).then((response) => {
-        const {
-            result: { chartRefs, latestAppChartRef },
-        } = response
-        const selectedChartId = latestAppChartRef
-        const chart = chartRefs?.find((chart) => selectedChartId === chart.id)
-        return {
-            code: response.code,
-            status: response.status,
-            result: chart,
-        }
-    })
-}
-
-export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType> {
+export function getChartReferencesForAppAndEnv(appId: number, envId?: number): Promise<ResponseType<MinChartRefDTO>> {
     let envParam = ''
     if (envId) {
         envParam = `/${envId}`

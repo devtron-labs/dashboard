@@ -16,16 +16,16 @@
 
 import { get, put, post, YAMLStringify, ResponseType, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { ConfigMapRequest } from './types'
+import { ConfigMapRequest, DeploymentTemplateConfigDTO } from './types'
 import { addGUISchemaIfAbsent } from './utils'
 
 export async function getDeploymentTemplate(
-    id: number,
+    appId: number,
     chartRefId: number,
     abortSignal: AbortSignal,
     chartName: string,
-): Promise<ResponseType> {
-    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${id}/${chartRefId}`, {
+): Promise<ResponseType<DeploymentTemplateConfigDTO>> {
+    const response = await get(`${Routes.DEPLOYMENT_TEMPLATE}/${appId}/${chartRefId}`, {
         signal: abortSignal,
     })
     return addGUISchemaIfAbsent(response, chartName)
