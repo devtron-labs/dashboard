@@ -38,7 +38,6 @@ const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPl
 const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export const TaskList = ({
     withWarning,
-    mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
     isJobView,
 }: TaskListType) => {
@@ -56,6 +55,7 @@ export const TaskList = ({
         validateTask,
         validateStage,
         pluginDataStore,
+        mandatoryPluginsMap = {},
     } = useContext(pipelineContext)
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
@@ -327,7 +327,7 @@ export const TaskList = ({
                             onDragOver={(e) => e.preventDefault()}
                             onClick={() => handleSelectedTaskChange(index)}
                         >
-                            <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
+                            <Drag className="dc__grabbable icon-dim-20 p-2 dc__no-shrink" onMouseDown={() => setDragAllowed(true)} />
                             <div className={`flex left dc__gap-6 dc__content-space w-100`}>
                                 <TaskTitle taskDetail={taskDetail} />
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}

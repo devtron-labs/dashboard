@@ -24,9 +24,7 @@ const FALLBACK_TAB = 1
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
-    const getNewTabComponentKey = (id) => {
-        return `${id}-${dayjs().toString()}`
-    }
+    const getNewTabComponentKey = (id) => `${id}-${dayjs().toString()}`
 
     const populateTabData = (
         id: string,
@@ -39,8 +37,8 @@ export function useTabs(persistanceKey: string) {
         iconPath = '',
         dynamicTitle = '',
         isAlive = false,
-    ) => {
-        return {
+    ) =>
+        ({
             id,
             name,
             url,
@@ -54,8 +52,7 @@ export function useTabs(persistanceKey: string) {
             isAlive,
             lastSyncMoment: dayjs(),
             componentKey: getNewTabComponentKey(id),
-        } as DynamicTabType
-    }
+        }) as DynamicTabType
 
     /**
      * To serialize tab data and store it in localStorage. The stored data can be retrieved
@@ -74,7 +71,7 @@ export function useTabs(persistanceKey: string) {
             const persistedTabsData = localStorage.getItem('persisted-tabs-data')
             try {
                 _parsedTabsData = JSON.parse(persistedTabsData)
-            } catch (err) {
+            } catch {
                 noop()
             }
         }
@@ -128,7 +125,7 @@ export function useTabs(persistanceKey: string) {
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = persistedTabsData ? parsedTabsData.data : prevTabs
-                } catch (err) {
+                } catch {
                     _tabs = prevTabs
                 }
             }
@@ -138,8 +135,7 @@ export function useTabs(persistanceKey: string) {
                     isSelected: false,
                     /* NOTE: following lines migrate old tab data to new */
                     lastSyncMoment: dayjs(),
-                    // @ts-expect-error relic of old type
-                    position: _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
+                    position: 'positionFixed' in _tab && _tab.positionFixed ? index : Number.MAX_SAFE_INTEGER,
                     ...(_tab.componentKey
                         ? { componentKey: _tab.componentKey }
                         : { componentKey: getNewTabComponentKey(_tab.id) }),
@@ -212,38 +208,36 @@ export function useTabs(persistanceKey: string) {
         if (!name || !url || !kind) {
             return Promise.resolve(false)
         }
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<boolean>()
 
-        const title = `${kind}/${name}`
-        const _id = `${idPrefix}-${title}`
+        return new Promise((resolve) => {
+            const title = `${kind}/${name}`
+            const _id = `${idPrefix}-${title}`
 
-        setTabs((prevTabs) => {
-            let found = false
-            const _tabs = prevTabs.map((tab) => {
-                const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
-                found = found || matched
-                return matched
-                    ? {
-                          ...tab,
-                          url,
-                          isSelected: true,
-                      }
-                    : {
-                          ...tab,
-                          isSelected: false,
-                      }
+            setTabs((prevTabs) => {
+                let found = false
+                const _tabs = prevTabs.map((tab) => {
+                    const matched = tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+                    found = found || matched
+                    return matched
+                        ? {
+                              ...tab,
+                              url,
+                              isSelected: true,
+                          }
+                        : {
+                              ...tab,
+                              isSelected: false,
+                          }
+                })
+
+                if (!found) {
+                    _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
+                }
+                resolve(!found)
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-
-            if (!found) {
-                _tabs.push(populateTabData(_id, name, url, true, title, position, showNameOnSelect))
-            }
-            resolve(!found)
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
     }
 
     /**
@@ -253,34 +247,30 @@ export function useTabs(persistanceKey: string) {
      * @param {string} id - The identifier of the tab to be removed
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was removed
      */
-    const removeTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<string>()
+    const removeTabByIdentifier = (id: string): Promise<string> =>
+        new Promise((resolve) => {
+            setTabs((prevTabs) => {
+                let selectedRemoved = false
 
-        setTabs((prevTabs) => {
-            let selectedRemoved = false
-
-            /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
-            const _tabs = prevTabs.filter((tab) => {
-                if (tab.id === id) {
-                    selectedRemoved = tab.isSelected
-                    return false
+                /* NOTE: wasnt this asynchronous? why expect pushURL to not be null? */
+                const _tabs = prevTabs.filter((tab) => {
+                    if (tab.id === id) {
+                        selectedRemoved = tab.isSelected
+                        return false
+                    }
+                    return true
+                })
+                if (selectedRemoved) {
+                    /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
+                    _tabs[FALLBACK_TAB].isSelected = true
+                    resolve(_tabs[FALLBACK_TAB].url)
+                } else {
+                    resolve('')
                 }
-                return true
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-            if (selectedRemoved) {
-                /* NOTE: inconsistent behaviour b/w stopTab(line 248) & here */
-                _tabs[FALLBACK_TAB].isSelected = true
-                resolve(_tabs[FALLBACK_TAB].url)
-            } else {
-                resolve('')
-            }
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
-    }
 
     /**
      * Stops or deactivate a tab by its title.
@@ -288,36 +278,32 @@ export function useTabs(persistanceKey: string) {
      * @param {string} title - The title of the tab to be stopped
      * @returns {Promise<string>} - A promise resolving the url that need be pushed if a selectedTab was stopped
      */
-    const stopTabByIdentifier = (id: string): Promise<string> => {
-        // @ts-expect-error available on all modern browsers
-        const { promise, resolve } = Promise.withResolvers<string>()
+    const stopTabByIdentifier = (id: string): Promise<string> =>
+        new Promise((resolve) => {
+            setTabs((prevTabs) => {
+                let selectedRemoved = false
 
-        setTabs((prevTabs) => {
-            let selectedRemoved = false
-
-            const _tabs = prevTabs.map((tab) => {
-                if (tab.id === id) {
-                    selectedRemoved = tab.isSelected
-                    return {
-                        ...tab,
-                        isSelected: false,
-                        isAlive: false,
+                const _tabs = prevTabs.map((tab) => {
+                    if (tab.id === id) {
+                        selectedRemoved = tab.isSelected
+                        return {
+                            ...tab,
+                            isSelected: false,
+                            isAlive: false,
+                        }
                     }
+                    return tab
+                })
+                if (selectedRemoved) {
+                    _tabs[FALLBACK_TAB].isSelected = true
+                    resolve(_tabs[FALLBACK_TAB].url)
+                } else {
+                    resolve('')
                 }
-                return tab
+                localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+                return _tabs
             })
-            if (selectedRemoved) {
-                _tabs[FALLBACK_TAB].isSelected = true
-                resolve(_tabs[FALLBACK_TAB].url)
-            } else {
-                resolve('')
-            }
-            localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
-            return _tabs
         })
-
-        return promise
-    }
 
     /**
      * This function is used to mark a tab as active based on its identifier (id or title).
@@ -398,14 +384,14 @@ export function useTabs(persistanceKey: string) {
 
         const _id = `${idPrefix}-${title}`
         setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) => {
-                return tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
+            const _tabs = prevTabs.map((tab) =>
+                tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id
                     ? {
                           ...tab,
                           isDeleted: true,
                       }
-                    : tab
-            })
+                    : tab,
+            )
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
@@ -420,15 +406,15 @@ export function useTabs(persistanceKey: string) {
      */
     const updateTabUrl = (id: string, url: string, dynamicTitle?: string, retainSearchParams = false) => {
         setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) => {
-                return tab.id === id
+            const _tabs = prevTabs.map((tab) =>
+                tab.id === id
                     ? {
                           ...tab,
                           url: retainSearchParams ? `${url}?${tab.url.split('?')[1] || ''}` : url,
                           dynamicTitle: dynamicTitle || tab.dynamicTitle,
                       }
-                    : tab
-            })
+                    : tab,
+            )
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
@@ -442,14 +428,14 @@ export function useTabs(persistanceKey: string) {
 
     const updateTabComponentKey = (id: string) => {
         setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) => {
-                return tab.id === id
+            const _tabs = prevTabs.map((tab) =>
+                tab.id === id
                     ? {
                           ...tab,
                           componentKey: getNewTabComponentKey(id),
                       }
-                    : tab
-            })
+                    : tab,
+            )
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })
@@ -457,14 +443,14 @@ export function useTabs(persistanceKey: string) {
 
     const updateTabLastSyncMoment = (id: string) => {
         setTabs((prevTabs) => {
-            const _tabs = prevTabs.map((tab) => {
-                return tab.id === id
+            const _tabs = prevTabs.map((tab) =>
+                tab.id === id
                     ? {
                           ...tab,
                           lastSyncMoment: dayjs(),
                       }
-                    : tab
-            })
+                    : tab,
+            )
             localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
             return _tabs
         })

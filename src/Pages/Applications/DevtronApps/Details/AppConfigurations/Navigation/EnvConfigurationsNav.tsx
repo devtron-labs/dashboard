@@ -234,34 +234,32 @@ export const EnvConfigurationsNav = ({
         history.push(getNavigationPath(path, params, id, resourceType, name, paramToCheck))
     }
 
-    const renderEnvSelector = () => {
-        return (
-            <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
-                <NavLink to={goBackURL}>
-                    <div className="dc__border br-4 flex p-1 dc__hover-n50">
-                        <ICBack className="icon-dim-16" />
-                    </div>
-                </NavLink>
-                <ReactSelect<typeof environmentData>
-                    classNamePrefix="env-config-selector"
-                    isClearable={false}
-                    value={environmentData}
-                    options={envOptions}
-                    getOptionLabel={(option) => `${option.name}`}
-                    getOptionValue={(option) => `${option.id}`}
-                    styles={envSelectStyles}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: EnvSelectOption,
-                        DropdownIndicator: EnvSelectDropdownIndicator,
-                    }}
-                    onChange={onEnvSelect}
-                    placeholder="Select Environment"
-                />
-                {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
-            </div>
-        )
-    }
+    const renderEnvSelector = () => (
+        <div className="flexbox dc__align-center dc__gap-8 p-12 dc__border-bottom-n1">
+            <NavLink to={goBackURL}>
+                <div className="dc__border br-4 flex p-1 dc__hover-n50">
+                    <ICBack className="icon-dim-16" />
+                </div>
+            </NavLink>
+            <ReactSelect<typeof environmentData>
+                classNamePrefix="env-config-selector"
+                isClearable={false}
+                value={environmentData}
+                options={envOptions}
+                getOptionLabel={(option) => `${option.name}`}
+                getOptionValue={(option) => `${option.id}`}
+                styles={envSelectStyles}
+                components={{
+                    IndicatorSeparator: null,
+                    Option: EnvSelectOption,
+                    DropdownIndicator: EnvSelectDropdownIndicator,
+                }}
+                onChange={onEnvSelect}
+                placeholder="Select Environment"
+            />
+            {environmentData?.isProtected && <ProtectedIcon className="icon-dim-20 fcv-5 dc__no-shrink" />}
+        </div>
+    )
 
     const renderCompareWithBtn = () => {
         const { name: compareTo } = environmentData
