@@ -153,6 +153,14 @@ export const SecurityScansTab = () => {
         })
     }
 
+    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
+        return (
+            <div className="flexbox-col flex-grow-1 dc__content-center">
+                <ErrorScreenManager code={scanListError.code} />
+            </div>
+        )
+    }
+
     const renderHeader = () => (
         <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bcn-0">
             <div className="icon-dim-24" />
@@ -202,12 +210,16 @@ export const SecurityScansTab = () => {
                         name="search-type__select-picker"
                         size={ComponentSizeType.large}
                         onChange={updateSearchType}
+                        isDisabled={scanListLoading}
                     />
                 </div>
                 <SearchBar
                     containerClassName="security-scan-search w-250"
                     initialSearchText={searchKey}
-                    inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
+                    inputProps={{
+                        placeholder: `Search ${getSearchLabelFromValue(searchType)}`,
+                        disabled: scanListLoading,
+                    }}
                     handleEnter={handleSearch}
                     size={ComponentSizeType.large}
                 />
@@ -278,29 +290,6 @@ export const SecurityScansTab = () => {
             )
         }
 
-        if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
-            return (
-                <div className="flexbox-col flex-grow-1 dc__content-center">
-                    <ErrorScreenManager code={securityScansResult?.responseCode} />
-                </div>
-            )
-        }
-
-        if (!securityScansResult.result.securityScans.length) {
-            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
-            if (areFiltersActive) {
-                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
-            }
-
-            return (
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                    classname="flex-grow-1"
-                />
-            )
-        }
-
         return (
             <>
                 {securityScansResult.result.securityScans.map((scan) => (
@@ -345,13 +334,36 @@ export const SecurityScansTab = () => {
         return null
     }
 
+    const renderScanListContainer = () => {
+        if (!scanListLoading && !securityScansResult?.result.securityScans.length) {
+            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
+            if (areFiltersActive) {
+                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
+            }
+
+            return (
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <>
+                {renderHeader()}
+                {renderScanList()}
+                {renderScanDetailsModal()}
+            </>
+        )
+    }
+
     return (
         <>
             {renderFilters()}
             {renderSavedFilters()}
-            {renderHeader()}
-            {renderScanList()}
-            {renderScanDetailsModal()}
+            {renderScanListContainer()}
         </>
     )
 }
