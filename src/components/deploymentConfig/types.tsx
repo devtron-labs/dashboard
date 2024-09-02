@@ -117,6 +117,9 @@ interface DeploymentTemplateGlobalConfigDTO {
     readme: string
     refChartTemplate: string
     refChartTemplateVersion: string
+    /**
+     * Might be irrelevant
+     */
     saveEligibleChanges: boolean
     /**
      * Schema to feed into the Code editor
@@ -364,7 +367,10 @@ export interface DeploymentConfigStateType {
     chartsMetadata: Record<string, ChartMetadataType>
     selectedChartRefId: number
     selectedChart: DeploymentChartVersionType
-    template: string
+    /**
+     * Base deployment template in JSON format
+     */
+    template: Record<string, string>
     schema: any
     guiSchema: string
     wasGuiOrHideLockedKeysEdited: boolean
@@ -402,6 +408,8 @@ export interface DeploymentConfigStateType {
     loadingManifestOverride: boolean
     convertVariables: boolean
     convertVariablesOverride: boolean
+    baseDeploymentTemplate: string
+    editorTemplate: string
 }
 
 export interface DeploymentConfigStateWithDraft extends DeploymentConfigStateType {

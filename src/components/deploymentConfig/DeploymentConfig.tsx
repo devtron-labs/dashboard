@@ -47,6 +47,7 @@ import {
     DeploymentConfigProps,
     DeploymentConfigStateAction,
     DeploymentConfigStateActionTypes,
+    DeploymentConfigStateType,
     DeploymentConfigStateWithDraft,
 } from './types'
 import './deploymentConfig.scss'
@@ -202,15 +203,17 @@ export default function DeploymentConfig({
         }
 
         if (clearPublishedState) {
+            const updatedPayload: Partial<DeploymentConfigStateWithDraft> = {
+                ...payload,
+                selectedTabIndex: state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex,
+                publishedState: null,
+                showComments: false,
+                latestDraft: null,
+            }
+
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
-                payload: {
-                    ...payload,
-                    selectedTabIndex: state.selectedTabIndex === 3 ? 1 : state.selectedTabIndex,
-                    publishedState: null,
-                    showComments: false,
-                    latestDraft: null,
-                },
+                payload: updatedPayload,
             })
 
             return
@@ -296,7 +299,7 @@ export default function DeploymentConfig({
 
         const _codeEditorStringifyData = YAMLStringify(valuesOverride)
         const isApprovalPending = latestDraft.draftState === 4
-        const payload = {
+        const payload: Partial<DeploymentConfigStateWithDraft> = {
             template: valuesOverride,
             chartConfig: {
                 id,
@@ -368,6 +371,7 @@ export default function DeploymentConfig({
         })
 
         try {
+            // TODO: Error state
             const {
                 result: {
                     globalConfig: {
@@ -390,7 +394,7 @@ export default function DeploymentConfig({
             )
 
             const _codeEditorStringifyData = YAMLStringify(defaultAppOverride)
-            const templateData = {
+            const templateData: Partial<DeploymentConfigStateWithDraft> = {
                 template: defaultAppOverride,
                 schema,
                 readme,
@@ -398,9 +402,12 @@ export default function DeploymentConfig({
                 chartConfig: { id, refChartTemplate, refChartTemplateVersion, chartRefId, readme },
                 isAppMetricsEnabled,
                 tempFormData: _codeEditorStringifyData,
+                // TODO: move to updateSearchParams
                 ...(guiSchema === '{}' ? { yamlMode: true } : {}),
                 // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
+                baseDeploymentTemplate: _codeEditorStringifyData,
+                editorTemplate: _codeEditorStringifyData,
             }
 
             let payload = {}
@@ -764,6 +771,13 @@ export default function DeploymentConfig({
         }
 
         const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
+
+        // TODO: Should be default case
+        if (selectedTab === DeploymentTemplateTabsType.EDIT) {
+            // return (
+                // <DeploymentTemplateForm />
+            // )
+        }
 
         return (
             <DeploymentTemplateEditorView

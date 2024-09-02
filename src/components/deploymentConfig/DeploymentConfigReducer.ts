@@ -22,7 +22,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     chartsMetadata: {},
     selectedChartRefId: 0,
     selectedChart: null,
-    template: '',
+    template: {},
     schema: null,
     guiSchema: null,
     loading: true,
@@ -65,6 +65,8 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     showLockedTemplateDiff: false,
     lockChangesLoading: false,
     wasGuiOrHideLockedKeysEdited: false,
+    baseDeploymentTemplate: '',
+    editorTemplate: '',
 }
 
 export const deploymentConfigReducer = (
