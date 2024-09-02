@@ -45,22 +45,20 @@ import { groupStyle } from '../../../../../../components/v2/common/ReactSelect.u
 import { renderNavItem } from './Navigation.helper'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
 
-const EnvOverridesHelpNote = () => {
-    return (
-        <div className="fs-12 fw-4 lh-18">
-            Environment overrides allow you to manage environment specific configurations after you’ve created
-            deployment pipelines. &nbsp;
-            <a
-                className="dc__link"
-                href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
-                rel="noreferrer noopener"
-                target="_blank"
-            >
-                Learn more
-            </a>
-        </div>
-    )
-}
+const EnvOverridesHelpNote = () => (
+    <div className="fs-12 fw-4 lh-18">
+        Environment overrides allow you to manage environment specific configurations after you’ve created deployment
+        pipelines. &nbsp;
+        <a
+            className="dc__link"
+            href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
+            rel="noreferrer noopener"
+            target="_blank"
+        >
+            Learn more
+        </a>
+    </div>
+)
 
 const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected }: JobEnvOverrideRouteProps) => {
     const { url } = useRouteMatch()
@@ -96,53 +94,49 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         setDeleteView(false)
     }
 
-    const renderDeleteDialog = (): JSX.Element => {
-        return (
-            <DeleteDialog
-                title={`Delete configurations for environment '${envOverride.environmentName}'?`}
-                delete={deleteEnvHandler}
-                closeDelete={handleCancelDelete}
-            >
-                <DeleteDialog.Description>
-                    <p className="fs-13 cn-7 lh-1-54">
-                        Are you sure you want to delete configurations for this environment?
-                    </p>
-                </DeleteDialog.Description>
-            </DeleteDialog>
-        )
-    }
+    const renderDeleteDialog = (): JSX.Element => (
+        <DeleteDialog
+            title={`Delete configurations for environment '${envOverride.environmentName}'?`}
+            delete={deleteEnvHandler}
+            closeDelete={handleCancelDelete}
+        >
+            <DeleteDialog.Description>
+                <p className="fs-13 cn-7 lh-1-54">
+                    Are you sure you want to delete configurations for this environment?
+                </p>
+            </DeleteDialog.Description>
+        </DeleteDialog>
+    )
 
-    const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => {
-        return (
-            <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warn} />
-                <ConfirmationDialog.Body
-                    title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`}
-                />
-                <p className="fs-13 cn-7 lh-1-54">
-                    {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
-                    <Link to={path} onClick={handleViewPipeline} className="ml-2">
-                        View pipeline
-                    </Link>
-                </p>
-                <p className="fs-13 cn-7 lh-1-54">
-                    Base configmaps & secrets will be used if environment configurations are deleted.
-                </p>
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta cancel" onClick={handleCancelDelete}>
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleDeleteConfirmation}
-                        className="cta delete cta-cd-delete-modal ml-16"
-                    >
-                        Delete Anyway
-                    </button>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
-        )
-    }
+    const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => (
+        <ConfirmationDialog>
+            <ConfirmationDialog.Icon src={warn} />
+            <ConfirmationDialog.Body
+                title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`}
+            />
+            <p className="fs-13 cn-7 lh-1-54">
+                {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
+                <Link to={path} onClick={handleViewPipeline} className="ml-2">
+                    View pipeline
+                </Link>
+            </p>
+            <p className="fs-13 cn-7 lh-1-54">
+                Base configmaps & secrets will be used if environment configurations are deleted.
+            </p>
+            <ConfirmationDialog.ButtonGroup>
+                <button type="button" className="cta cancel" onClick={handleCancelDelete}>
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onClick={handleDeleteConfirmation}
+                    className="cta delete cta-cd-delete-modal ml-16"
+                >
+                    Delete Anyway
+                </button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
+    )
 
     const showDeleteDialog = (pipeline): JSX.Element => {
         const workFlows = workflowsRes?.workflows
@@ -172,28 +166,26 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
         }
     }
 
-    const deletePopUpMenu = (): JSX.Element => {
-        return (
-            <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab>
-                    <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
-                </PopupMenu.Button>
-                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
-                    <div className="fs-13 fw-4 lh-20">
-                        <button
-                            type="button"
-                            className="dc__unset-button-styles w-100 flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                            onClick={toggleDeleteDialog}
-                            data-testid="delete-jobs-environment-link"
-                        >
-                            <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                            {RESOURCE_ACTION_MENU.delete}
-                        </button>
-                    </div>
-                </PopupMenu.Body>
-            </PopupMenu>
-        )
-    }
+    const deletePopUpMenu = (): JSX.Element => (
+        <PopupMenu autoClose>
+            <PopupMenu.Button rootClassName="flex" isKebab>
+                <More className="icon-dim-16 fcn-6" data-testid="popup-env-delete-button" />
+            </PopupMenu.Button>
+            <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-100px">
+                <div className="fs-13 fw-4 lh-20">
+                    <button
+                        type="button"
+                        className="dc__unset-button-styles w-100 flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                        onClick={toggleDeleteDialog}
+                        data-testid="delete-jobs-environment-link"
+                    >
+                        <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                        {RESOURCE_ACTION_MENU.delete}
+                    </button>
+                </div>
+            </PopupMenu.Body>
+        </PopupMenu>
+    )
 
     return (
         <div className="flexbox dc__align-items-center dc__content-space pr-8">
@@ -311,48 +303,46 @@ const EnvironmentOverrideRouter = () => {
         setEnvironmentView(!addEnvironment)
     }
 
-    const renderEnvSelector = (): JSX.Element => {
-        return (
-            <ReactSelect
-                autoFocus
-                menuIsOpen
-                isSearchable
-                menuPlacement="auto"
-                closeMenuOnScroll
-                placeholder="Select Environment"
-                classNamePrefix="job-pipeline-environment-dropdown"
-                options={environmentOptions}
-                value={environmentOptions.find((env) => env.id === -1)}
-                getOptionLabel={(option) => `${option.name}`}
-                getOptionValue={(option) => `${option.id}`}
-                isMulti={false}
-                onChange={selectEnvironment}
-                onBlur={handleAddEnvironment}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator: null,
-                    GroupHeading: groupHeading,
-                    ValueContainer,
-                }}
-                styles={{
-                    ...groupStyle(),
-                    control: (base) => ({
-                        ...base,
-                        border: '1px solid #d6dbdf',
-                        minHeight: '20px',
-                        height: '30px',
-                        marginTop: '4px',
-                        width: '100%',
-                    }),
-                    container: (base) => ({
-                        ...base,
-                        paddingRight: '0px',
-                    }),
-                    valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
-                }}
-            />
-        )
-    }
+    const renderEnvSelector = (): JSX.Element => (
+        <ReactSelect
+            autoFocus
+            menuIsOpen
+            isSearchable
+            menuPlacement="auto"
+            closeMenuOnScroll
+            placeholder="Select Environment"
+            classNamePrefix="job-pipeline-environment-dropdown"
+            options={environmentOptions}
+            value={environmentOptions.find((env) => env.id === -1)}
+            getOptionLabel={(option) => `${option.name}`}
+            getOptionValue={(option) => `${option.id}`}
+            isMulti={false}
+            onChange={selectEnvironment}
+            onBlur={handleAddEnvironment}
+            components={{
+                IndicatorSeparator: null,
+                DropdownIndicator: null,
+                GroupHeading: groupHeading,
+                ValueContainer,
+            }}
+            styles={{
+                ...groupStyle(),
+                control: (base) => ({
+                    ...base,
+                    border: '1px solid #d6dbdf',
+                    minHeight: '20px',
+                    height: '30px',
+                    marginTop: '4px',
+                    width: '100%',
+                }),
+                container: (base) => ({
+                    ...base,
+                    paddingRight: '0px',
+                }),
+                valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
+            }}
+        />
+    )
 
     const renderEnvsNav = (): JSX.Element => {
         if (environments.length) {

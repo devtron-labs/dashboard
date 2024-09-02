@@ -16,9 +16,7 @@
 
 import { GroupHeading, groupStyle } from '../v2/common/ReactSelect.utils'
 
-export const groupHeading = (props) => {
-    return <GroupHeading {...props} />
-}
+export const groupHeading = (props) => <GroupHeading {...props} />
 
 export const buildStageStyles = {
     ...groupStyle(),

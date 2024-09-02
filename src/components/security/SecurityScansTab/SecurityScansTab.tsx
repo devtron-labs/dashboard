@@ -91,9 +91,8 @@ export const SecurityScansTab = () => {
 
     const [clusterEnvListLoading, clusterEnvListResult] = useAsync(() => getVulnerabilityFilterData())
 
-    const getClusterLabelFromId = (clusterId: string) => {
-        return clusterEnvListResult?.filters?.clusters.find((clusterOption) => clusterOption.value === clusterId).label
-    }
+    const getClusterLabelFromId = (clusterId: string) =>
+        clusterEnvListResult?.filters?.clusters.find((clusterOption) => clusterOption.value === clusterId).label
 
     const getEnvLabelFromId = (envId: string) =>
         clusterEnvListResult?.filters?.environments.find((envOption) => envOption.value === envId).label
@@ -191,59 +190,57 @@ export const SecurityScansTab = () => {
         </div>
     )
 
-    const renderFilters = () => {
-        return (
-            <div className="flexbox dc__content-space px-20 py-12">
-                <div className="flexbox">
-                    <div className="w-120">
-                        <SelectPicker
-                            value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
-                            options={SEARCH_TYPE_OPTIONS}
-                            classNamePrefix="search-type__select-picker"
-                            inputId="search-type__select-picker"
-                            name="search-type__select-picker"
-                            size={ComponentSizeType.large}
-                            onChange={updateSearchType}
-                        />
-                    </div>
-                    <SearchBar
-                        containerClassName="security-scan-search w-250"
-                        initialSearchText={searchKey}
-                        inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
-                        handleEnter={handleSearch}
+    const renderFilters = () => (
+        <div className="flexbox dc__content-space px-20 py-12">
+            <div className="flexbox">
+                <div className="w-120">
+                    <SelectPicker
+                        value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
+                        options={SEARCH_TYPE_OPTIONS}
+                        classNamePrefix="search-type__select-picker"
+                        inputId="search-type__select-picker"
+                        name="search-type__select-picker"
                         size={ComponentSizeType.large}
+                        onChange={updateSearchType}
                     />
                 </div>
-                <div className="flexbox dc__gap-8">
-                    <FilterButton
-                        placeholder="Severity"
-                        disabled={clusterEnvListLoading}
-                        appliedFilters={severity}
-                        options={clusterEnvListResult?.filters?.severity}
-                        handleApplyChange={updateSeverityFilters}
-                        controlWidth="140px"
-                    />
-                    <FilterButton
-                        placeholder="Cluster"
-                        disabled={clusterEnvListLoading}
-                        appliedFilters={cluster}
-                        options={clusterEnvListResult?.filters?.clusters || []}
-                        handleApplyChange={updateClusterFilters}
-                        controlWidth="140px"
-                    />
-                    <FilterButton
-                        placeholder="Environment"
-                        disabled={clusterEnvListLoading}
-                        appliedFilters={environment}
-                        options={clusterEnvListResult?.filters?.environments || []}
-                        handleApplyChange={updateEnvironmentFilters}
-                        menuAlignFromRight
-                        controlWidth="175px"
-                    />
-                </div>
+                <SearchBar
+                    containerClassName="security-scan-search w-250"
+                    initialSearchText={searchKey}
+                    inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
+                    handleEnter={handleSearch}
+                    size={ComponentSizeType.large}
+                />
             </div>
-        )
-    }
+            <div className="flexbox dc__gap-8">
+                <FilterButton
+                    placeholder="Severity"
+                    disabled={clusterEnvListLoading}
+                    appliedFilters={severity}
+                    options={clusterEnvListResult?.filters?.severity}
+                    handleApplyChange={updateSeverityFilters}
+                    controlWidth="140px"
+                />
+                <FilterButton
+                    placeholder="Cluster"
+                    disabled={clusterEnvListLoading}
+                    appliedFilters={cluster}
+                    options={clusterEnvListResult?.filters?.clusters || []}
+                    handleApplyChange={updateClusterFilters}
+                    controlWidth="140px"
+                />
+                <FilterButton
+                    placeholder="Environment"
+                    disabled={clusterEnvListLoading}
+                    appliedFilters={environment}
+                    options={clusterEnvListResult?.filters?.environments || []}
+                    handleApplyChange={updateEnvironmentFilters}
+                    menuAlignFromRight
+                    controlWidth="175px"
+                />
+            </div>
+        </div>
+    )
 
     const renderSavedFilters = () => (
         <FilterChips<Omit<ScanListUrlFiltersType, 'searchType'>>
@@ -306,32 +303,27 @@ export const SecurityScansTab = () => {
 
         return (
             <>
-                {securityScansResult.result.securityScans.map((scan) => {
-                    return (
-                        <div
-                            className="table__row table__row-grid display-grid fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
-                            onClick={(event) => handleOpenScanDetailsModal(event, scan)}
-                            key={`${scan.name}-${scan.environment}`}
-                            role="button"
-                            tabIndex={0}
-                        >
-                            <ICDevtron className="icon-dim-24 dc__no-shrink" />
-                            <span
-                                className="cb-5 dc__ellipsis-right lh-20"
-                                data-testid={`scanned-app-list-${scan.name}`}
-                            >
-                                {scan.name}
-                            </span>
-                            <span className="dc__ellipsis-right lh-20">{scan.environment}</span>
-                            <div className="dc__ellipsis-right">{getSeverityWithCount(scan.severityCount)}</div>
-                            <span data-testid="image-scan-security-check lh-20">
-                                {scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
-                                    ? dayjs(scan.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
-                                    : ''}
-                            </span>
-                        </div>
-                    )
-                })}
+                {securityScansResult.result.securityScans.map((scan) => (
+                    <div
+                        className="table__row table__row-grid display-grid fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
+                        onClick={(event) => handleOpenScanDetailsModal(event, scan)}
+                        key={`${scan.name}-${scan.environment}`}
+                        role="button"
+                        tabIndex={0}
+                    >
+                        <ICDevtron className="icon-dim-24 dc__no-shrink" />
+                        <span className="cb-5 dc__ellipsis-right lh-20" data-testid={`scanned-app-list-${scan.name}`}>
+                            {scan.name}
+                        </span>
+                        <span className="dc__ellipsis-right lh-20">{scan.environment}</span>
+                        <div className="dc__ellipsis-right">{getSeverityWithCount(scan.severityCount)}</div>
+                        <span data-testid="image-scan-security-check lh-20">
+                            {scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
+                                ? dayjs(scan.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
+                                : ''}
+                        </span>
+                    </div>
+                ))}
                 {securityScansResult.result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
                     <Pagination
                         rootClassName="flex dc__content-space px-20 dc__border-top"
