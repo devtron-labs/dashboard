@@ -18,9 +18,9 @@ import {
     applyCompareDiffOnUneditedDocument,
     CONFIGURATION_TYPE_VALUES,
     ConfigurationType,
-    DEPLOYMENT_TEMPLATE_COMPARE_MODES_VALUES,
-    DeploymentTemplateCompareModes,
+    DEPLOYMENT_TEMPLATE_TAB_VALUES,
     DeploymentTemplateQueryParamsType,
+    DeploymentTemplateTabsType,
     getGuiSchemaFromChartName,
     ResponseType,
     UseUrlFiltersProps,
@@ -96,14 +96,15 @@ const parseDeploymentTemplateQueryParams = (
 
     const fallbackConfigurationType: ConfigurationType = isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI
 
-    const currentCompareMode = params.get('compareMode') as DeploymentTemplateCompareModes
-    const isCurrentCompareModeValid = DEPLOYMENT_TEMPLATE_COMPARE_MODES_VALUES.includes(currentCompareMode)
+    const currentSelectedTab = Number(params.get('selectedTab')) as DeploymentTemplateTabsType
+    const isSelectedTabValid = DEPLOYMENT_TEMPLATE_TAB_VALUES.includes(currentSelectedTab)
 
     return {
         hideLockedKeys: params.get('hideLockedKeys') === 'true' || null,
         resolveScopedVariables: params.get('resolveScopedVariables') === 'true' || null,
         editMode: isCurrentEditModeValid ? currentEditMode : fallbackConfigurationType,
-        compareMode: isCurrentCompareModeValid ? currentCompareMode : null,
+        // TODO: Get default landing tab
+        selectedTab: isSelectedTabValid ? currentSelectedTab : DeploymentTemplateTabsType.EDIT,
     }
 }
 

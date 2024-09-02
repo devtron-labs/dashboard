@@ -21,14 +21,13 @@ import {
     showError,
     useEffectAfterMount,
     useAsync,
-    Progressing,
     useMainContext,
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
     useUrlFilters,
     DeploymentTemplateQueryParamsType,
-    DeploymentTemplateCompareModes,
+    DeploymentTemplateTabsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -37,7 +36,6 @@ import {
     getDeploymentTemplate,
     updateDeploymentTemplate,
     saveDeploymentTemplate,
-    getDeploymentManisfest,
     getOptions,
     getIfLockedConfigProtected,
 } from './service'
@@ -125,13 +123,10 @@ export default function DeploymentConfig({
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
 
-    const { clearFilters, hideLockedKeys, resolveScopedVariables, compareMode, editMode, updateSearchParams } =
+    const { clearFilters, hideLockedKeys, resolveScopedVariables, selectedTab ,editMode, updateSearchParams } =
         useUrlFilters<never, DeploymentTemplateQueryParamsType>({
             parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
         })
-
-    // FIXME: There should be no need of this variable
-    const isValues = compareMode !== DeploymentTemplateCompareModes.MANIFEST
 
     // TODO: Rename this method
     const setHideLockedKeys = (value: boolean) => {
@@ -148,37 +143,6 @@ export default function DeploymentConfig({
         // the following ref to true. Internally getLockFilteredTemplate will set it to false.
         hideLockKeysToggled.current = true
         setHideLockedKeys(value)
-    }
-
-    // FIXME: Should be named to something meaningful
-    const setIsValues = (value: boolean) => {
-        // TODO: Handle tab selection of 2 we should not revert the changed stage
-        updateSearchParams(
-            value
-                ? { compareMode: DeploymentTemplateCompareModes.VALUES }
-                : { compareMode: DeploymentTemplateCompareModes.MANIFEST },
-        )
-    }
-
-    const setManifestDataRHS = (value: string) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.manifestDataRHS,
-            payload: value,
-        })
-    }
-
-    const setManifestDataLHS = (value: string) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.manifestDataLHS,
-            payload: value,
-        })
-    }
-
-    const setLoadingManifest = (value: boolean) => {
-        dispatch({
-            type: DeploymentConfigStateActionTypes.loadingManifest,
-            payload: value,
-        })
     }
 
     const setGroupedOptionsData = (value: Array<Object>) => {
@@ -214,14 +178,8 @@ export default function DeploymentConfig({
     }, [environments])
 
     useEffect(() => {
-        // TODO: Not using this abortController
-        const abortController = new AbortController()
         reloadEnvironments()
         initialise()
-
-        return () => {
-            abortController.abort()
-        }
     }, [])
 
     // FIXME: Ideally should be inside code editor
@@ -255,6 +213,7 @@ export default function DeploymentConfig({
             type: DeploymentConfigStateActionTypes.chartConfigLoading,
             payload: true,
         })
+
         getChartReferences(+appId)
             .then((chartRefResp) => {
                 const { chartRefs, latestAppChartRef, latestChartRef, chartMetadata } = chartRefResp.result
@@ -447,11 +406,6 @@ export default function DeploymentConfig({
                 payload = templateData
             }
 
-            if (compareMode === DeploymentTemplateCompareModes.MANIFEST) {
-                const _manifestCodeEditorData = await fetchManifestData(_codeEditorStringifyData)
-                setManifestDataRHS(_manifestCodeEditorData)
-            }
-
             dispatch({
                 type: DeploymentConfigStateActionTypes.multipleOptions,
                 payload,
@@ -582,7 +536,7 @@ export default function DeploymentConfig({
             return
         }
 
-        if (compareMode !== DeploymentTemplateCompareModes.MANIFEST && !state.convertVariables) {
+        if (!state.convertVariables) {
             dispatch({
                 type: DeploymentConfigStateActionTypes.tempFormData,
                 payload: str,
@@ -596,10 +550,6 @@ export default function DeploymentConfig({
                 payload: false,
             })
         } catch (error) {
-            // Set unableToParseYaml flag when yaml is malformed
-            if (compareMode === DeploymentTemplateCompareModes.MANIFEST) {
-                return
-            } // don't set flag when in manifest view
             dispatch({
                 type: DeploymentConfigStateActionTypes.unableToParseYaml,
                 payload: true,
@@ -637,6 +587,8 @@ export default function DeploymentConfig({
     }
 
     const handleTabSelection = (index: number) => {
+        const isDraftMode = isProtected && !!state.latestDraft
+
         // setting true to update code editor values with current locked keys checkbox value
         if (state.selectedTabIndex !== index) {
             hideLockKeysToggled.current = true
@@ -659,13 +611,19 @@ export default function DeploymentConfig({
         switch (index) {
             // 1 is published in case of draft else current values in case of normal
             case 1:
-            // 3 is edit draft value
+                if (state.selectedTabIndex === 2) {
+                    toggleYamlMode(isGuiModeRef.current)
+                    handleComparisonClick()
+                }
+                // FIXME: The enums should correspond to case values directly
+                updateSearchParams({ selectedTab: isDraftMode ? DeploymentTemplateTabsType.PUBLISHED : DeploymentTemplateTabsType.EDIT })
+                break
             case 3:
                 if (state.selectedTabIndex === 2) {
                     toggleYamlMode(isGuiModeRef.current)
                     handleComparisonClick()
                 }
-                updateSearchParams({ compareMode: null })
+                updateSearchParams({ selectedTab: DeploymentTemplateTabsType.EDIT })
                 break
             // 2 is compared
             case 2:
@@ -683,9 +641,9 @@ export default function DeploymentConfig({
                     handleComparisonClick()
                 }
 
-                if (!compareMode) {
-                    setIsValues(true)
-                }
+                updateSearchParams({
+                    selectedTab: DeploymentTemplateTabsType.COMPARE,
+                })
                 break
             default:
                 break
@@ -771,57 +729,6 @@ export default function DeploymentConfig({
         return requestData
     }
 
-    useEffect(() => {
-        if (compareMode !== DeploymentTemplateCompareModes.MANIFEST) {
-            return
-        }
-        setLoadingManifest(true)
-        const values = Promise.all([getValueRHS(), getValuesLHS()])
-        values
-            .then((res) => {
-                setLoadingManifest(false)
-
-                const [_manifestDataRHS, _manifestDataLHS] = res
-                setManifestDataRHS(_manifestDataRHS)
-                setManifestDataLHS(_manifestDataLHS)
-            })
-            .catch(() => {
-                setIsValues(true)
-                toast.error('Unable to fetch manifest data')
-            })
-            .finally(() => {
-                setLoadingManifest(false)
-            })
-    }, [compareMode])
-
-    const fetchManifestData = async (data) => {
-        const request = {
-            appId: +appId,
-            chartRefId: state.selectedChartRefId,
-            valuesAndManifestFlag: 2,
-            values: data,
-        }
-        setLoadingManifest(true)
-        const response = await getDeploymentManisfest(request)
-        setLoadingManifest(false)
-        return response.result.data
-    }
-
-    const getValueRHS = async () => {
-        let result = null
-        if (isCompareAndApprovalState) {
-            result = await fetchManifestData(state.draftValues)
-        } else if (hideLockedKeys) {
-            const parsed = YAML.parse(state.tempFormData)
-            result = fetchManifestData(YAMLStringify(reapplyRemovedLockedKeysToYaml(parsed, removedPatches.current)))
-        } else {
-            result = await fetchManifestData(state.tempFormData)
-        }
-        return result
-    }
-
-    const getValuesLHS = async () => fetchManifestData(state.publishedState?.tempFormData ?? state.data)
-
     const renderEditorComponent = () => {
         // Move to fe-lib
         if (readOnlyPublishedMode && !state.showReadme) {
@@ -836,24 +743,17 @@ export default function DeploymentConfig({
             )
         }
 
-        if (state.loadingManifest) {
-            return (
-                <div className="h-100vh">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-
         const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
 
         return (
             <DeploymentTemplateEditorView
-                defaultValue={isValues ? state.publishedState?.tempFormData ?? state.data : state.manifestDataLHS}
-                value={isValues ? valuesDataRHS : state.manifestDataRHS}
+                defaultValue={state.publishedState?.tempFormData ?? state.data}
+                value={valuesDataRHS}
                 globalChartRefId={state.selectedChartRefId}
                 editorOnChange={editorOnChange}
-                readOnly={isCompareAndApprovalState || !isValues || state.convertVariables}
-                isValues={isValues}
+                readOnly={isCompareAndApprovalState || state.convertVariables}
+                // FIXME: Remove
+                isValues
                 convertVariables={state.convertVariables}
                 setConvertVariables={setConvertVariables}
                 groupedData={state.groupedOptionsData}
@@ -882,7 +782,8 @@ export default function DeploymentConfig({
             <DeploymentTemplateOptionsTab
                 codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
-                isValues={isValues}
+                // FIXME: Remove
+                isValues
             />
             {renderEditorComponent()}
 
@@ -902,7 +803,8 @@ export default function DeploymentConfig({
                 toggleAppMetrics={toggleAppMetrics}
                 isPublishedMode={readOnlyPublishedMode}
                 reload={reload}
-                isValues={isValues}
+                // FIXME: Remove
+                isValues
                 convertVariables={state.convertVariables}
                 handleLockedDiffDrawer={handleLockedDiffDrawer}
                 setShowLockedDiffForApproval={setShowLockedDiffForApproval}
@@ -949,8 +851,6 @@ export default function DeploymentConfig({
                         approvalUsers={state.latestDraft?.approvers}
                         showValuesPostfix
                         reload={reload}
-                        isValues={isValues}
-                        setIsValues={setIsValues}
                         convertVariables={state.convertVariables}
                         setConvertVariables={setConvertVariables}
                         componentType={3}

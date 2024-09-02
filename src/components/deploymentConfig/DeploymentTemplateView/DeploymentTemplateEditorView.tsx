@@ -35,7 +35,7 @@ import {
 } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, NO_SCOPED_VARIABLES_MESSAGE, getApprovalPendingOption } from '../constants'
 import { importComponentFromFELibrary, versionComparator } from '../../common'
-import { getDefaultDeploymentTemplate, getDeploymentManisfest, getDeploymentTemplateData } from '../service'
+import { getDefaultDeploymentTemplate, getDeploymentTemplateData } from '../service'
 import { MODES } from '../../../config'
 import {
     CompareWithDropdown,
@@ -78,8 +78,6 @@ const DeploymentTemplateEditorView = ({
     const isDeleteDraftState = state.latestDraft?.action === 3 && state.selectedCompareOption?.environmentId === +envId
     const baseDeploymentAbortController = useRef(null)
     const [showDraftData, setShowDraftData] = useState(false)
-    const [draftManifestData, setDraftManifestData] = useState(null)
-    const [draftLoading, setDraftLoading] = useState(false)
     const [selectedOptionDraft, setSelectedOptionDraft] = useState<CompareApprovalAndDraftSelectedOption>(
         getApprovalPendingOption(state.selectedChart?.version),
     )
@@ -87,18 +85,8 @@ const DeploymentTemplateEditorView = ({
     const [resolvedValuesRHS, setResolvedValuesRHS] = useState(null)
     const [resolveLoading, setResolveLoading] = useState(false)
 
-    const getLocalDaftManifest = async () => {
-        const request = {
-            appId: +appId,
-            chartRefId: state.selectedChartRefId,
-            valuesAndManifestFlag: 2,
-            values: state.tempFormData ? state.tempFormData : state.draftValues,
-        }
-
-        const response = await getDeploymentManisfest(request)
-
-        return response.result.data
-    }
+    const isCompareAndApprovalState =
+        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
     // TODO: Ig do not need this can make a key based on current view from url
     const triggerEditorLoadingState = () => {
@@ -114,44 +102,6 @@ const DeploymentTemplateEditorView = ({
     useEffect(() => {
         triggerEditorLoadingState()
     }, [hideLockedKeys])
-
-    const resolveVariables = async (value: string) => {
-        const request = {
-            appId: +appId,
-            chartRefId: state.selectedChartRefId,
-            values: value,
-            valuesAndManifestFlag: 1,
-            ...(envId && { envId: +envId }),
-        }
-        const response = await getDeploymentManisfest(request)
-        try {
-            // In complex objects we are receiving JSON object instead of YAML object in case value is YAML.
-            return {
-                resolvedData: YAMLStringify(YAML.parse(response.result.resolvedData)),
-                variableSnapshot: response.result.variableSnapshot,
-            }
-        } catch (error) {
-            return { resolvedData: response.result.resolvedData, variableSnapshot: response.result.variableSnapshot }
-        }
-    }
-
-    // FIXME: isValues should be in dependency
-    useEffect(() => {
-        if (!showDraftData || isValues) {
-            return
-        } // hit api only when manifest is selected, for values use local states.
-        setDraftLoading(true)
-        getLocalDaftManifest()
-            .then((data) => {
-                setDraftManifestData(data)
-            })
-            .catch((err) => {
-                showError(err)
-            })
-            .finally(() => {
-                setDraftLoading(false)
-            })
-    }, [showDraftData])
 
     useEffect(() => {
         if (state.selectedChart && environments.length > 0) {
@@ -197,9 +147,6 @@ const DeploymentTemplateEditorView = ({
             )
         }
     }, [state.selectedChart, state.charts])
-
-    const isCompareAndApprovalState =
-        state.selectedTabIndex === 2 && !state.showReadme && state.latestDraft?.draftState === 4
 
     // fetch values for LHS (values/manifest) and save in corresponding caching stores, if not already fetched and in cache.
     useEffect(() => {
@@ -334,31 +281,6 @@ const DeploymentTemplateEditorView = ({
         return ''
     }
 
-    useEffect(() => {
-        if (!convertVariables) {
-            return
-        }
-        setResolveLoading(true)
-        Promise.all([resolveVariables(valueLHS), resolveVariables(valueRHS)])
-            .then(([lhs, rhs]) => {
-                if (
-                    Object.keys(lhs.variableSnapshot || {}).length === 0 &&
-                    Object.keys(rhs.variableSnapshot || {}).length === 0
-                ) {
-                    setConvertVariables(false)
-                    toast.error(NO_SCOPED_VARIABLES_MESSAGE)
-                }
-                setResolvedValuesLHS(lhs.resolvedData)
-                setResolvedValuesRHS(rhs.resolvedData)
-            })
-            .catch((err) => {
-                showError(err)
-            })
-            .finally(() => {
-                setResolveLoading(false)
-            })
-    }, [convertVariables, selectedOptionDraft])
-
     // choose LHS value for comparison
     const selectedOptionId = state.selectedCompareOption?.id
     const isIdMatch = selectedOptionId === -1
@@ -370,7 +292,7 @@ const DeploymentTemplateEditorView = ({
 
     // choose RHS value for comparison
     const shouldUseDraftData = state.selectedTabIndex !== 3 && showDraftData
-    const selectedData = isValues ? state.tempFormData || state.draftValues : draftManifestData
+    const selectedData = state.tempFormData || state.draftValues
     const valueRHS = shouldUseDraftData ? selectedData : value
 
     // final value for RHS
@@ -514,7 +436,6 @@ const DeploymentTemplateEditorView = ({
                 loading={
                     state.chartConfigLoading ||
                     fetchingValues ||
-                    draftLoading ||
                     resolveLoading ||
                     (state.openComparison && !lhs)
                 }

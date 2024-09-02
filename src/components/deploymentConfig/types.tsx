@@ -324,8 +324,6 @@ export interface DeploymentConfigToolbarProps {
     noReadme?: boolean
     showReadme: boolean
     handleReadMeClick: () => void
-    isValues?: boolean
-    setIsValues?: (isValues: boolean) => void
     convertVariables?: boolean
     setConvertVariables?: (convertVariables: boolean) => void
     componentType: string
@@ -366,9 +364,6 @@ export interface DeploymentConfigStateType {
     latestAppChartRef: any
     latestChartRef: any
     isOverride: boolean
-    loadingManifest: boolean
-    manifestDataRHS: string
-    manifestDataLHS: string
     groupedOptionsData: Array<Object>
     isValuesOverride: boolean
     manifestDataRHSOverride: string
@@ -432,9 +427,6 @@ export enum DeploymentConfigStateActionTypes {
     selectedCompareOption = 'selectedCompareOption',
     multipleOptions = 'multipleOptions',
     groupedOptionsData = 'groupedOptionsData',
-    loadingManifest = 'loadingManifest',
-    manifestDataRHS = 'manifestDataRHS',
-    manifestDataLHS = 'manifestDataLHS',
     isValuesOverride = 'isValuesOverride',
     groupedOptionsDataOverride = 'groupedOptionsDataOverride',
     loadingManifestOverride = 'loadingManifestOverride',

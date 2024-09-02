@@ -29,7 +29,7 @@ import DeploymentTemplateOptionsTab from './DeploymentTemplateOptionsTab'
 import DeploymentTemplateEditorView from './DeploymentTemplateEditorView'
 import DeploymentConfigFormCTA from './DeploymentConfigFormCTA'
 import { DeploymentConfigContext } from '../DeploymentConfig'
-import { getDeploymentManisfest, getIfLockedConfigProtected } from '../service'
+import { getIfLockedConfigProtected } from '../service'
 import { DeleteOverrideDialog } from './DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateReadOnlyEditorView'
 import DeploymentConfigToolbar from './DeploymentConfigToolbar'
@@ -504,52 +504,6 @@ export default function DeploymentTemplateOverrideForm({
         return YAMLStringify(state.data.globalConfig)
     }
 
-    useEffect(() => {
-        if (isValuesOverride) {
-            return
-        }
-        const values = Promise.all([getCodeEditorManifestValue(false), getCodeEditorManifestValue(true)])
-        setLoadingManifestOverride(true)
-        values
-            .then((res) => {
-                const [_manifestDataRHS, _manifestDataLHS] = res
-                setManifestDataRHS(_manifestDataRHS)
-                setManifestDataLHS(_manifestDataLHS)
-            })
-            .catch((err) => {
-                toast.error('Failed to fetch manifest data')
-                setIsValuesOverride(true)
-            })
-            .finally(() => {
-                setLoadingManifestOverride(false)
-            })
-    }, [isValuesOverride])
-
-    const getCodeEditorManifestValue = async (readOnlyPublishedMode: boolean) => {
-        let codeEditorValue = ''
-        if (readOnlyPublishedMode) {
-            const readOnlyData = getCodeEditorValueForReadOnly()
-            codeEditorValue = readOnlyData
-        } else if (isCompareAndApprovalState) {
-            codeEditorValue =
-                state.latestDraft?.action !== 3 || state.showDraftOverriden
-                    ? state.draftValues
-                    : YAMLStringify(state.data.globalConfig)
-        } else if (state.tempFormData) {
-            codeEditorValue = state.tempFormData
-            if (hideLockedKeys) {
-                codeEditorValue = YAMLStringify(
-                    reapplyRemovedLockedKeysToYaml(YAML.parse(state.tempFormData), removedPatches.current),
-                )
-            }
-        } else {
-            const isOverridden = state.latestDraft?.action === 3 ? state.isDraftOverriden : !!state.duplicate
-            codeEditorValue = isOverridden ? YAMLStringify(state.duplicate) : YAMLStringify(state.data.globalConfig)
-        }
-        const manifestEditorValue = await fetchManifestData(codeEditorValue)
-        return manifestEditorValue
-    }
-
     const getCodeEditorValue = (readOnlyPublishedMode: boolean, notTempFormData = false) => {
         let codeEditorValue = ''
         if (readOnlyPublishedMode) {
@@ -580,20 +534,6 @@ export default function DeploymentTemplateOverrideForm({
         })
         initialise(state.selectedChartRefId, true, false)
         fetchEnvConfig(envId)
-    }
-
-    const fetchManifestData = async (data) => {
-        const request = {
-            appId: +appId,
-            envId: +envId,
-            chartRefId: state.selectedChartRefId,
-            valuesAndManifestFlag: 2,
-            values: data,
-        }
-        setLoadingManifestOverride(true)
-        const response = await getDeploymentManisfest(request)
-        setLoadingManifestOverride(false)
-        return response.result.data
     }
 
     function renderEditorComponent() {

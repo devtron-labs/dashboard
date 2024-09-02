@@ -18,7 +18,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, DeploymentAppTypes, ReleaseMode, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionalWrap,
+    DeploymentAppTypes,
+    getIsManualApprovalConfigured,
+    ReleaseMode,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'

@@ -31,6 +31,9 @@ export async function getDeploymentTemplate(
     return addGUISchemaIfAbsent(response, chartName)
 }
 
+/**
+ * @deprecated
+ */
 export function getDeploymentTemplateData(
     appId: number,
     chartRefId: number,
@@ -51,10 +54,6 @@ export function getDeploymentTemplateData(
         deploymentTemplateHistoryId,
         pipelineId,
     })
-}
-
-export function getDeploymentManisfest(request) {
-    return post(`${Routes.DEPLOYMENT_VALUES_MANIFEST}`, request)
 }
 
 export function getOptions(appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> {
