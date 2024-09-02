@@ -19,42 +19,40 @@ import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
 import { DOCUMENTATION } from '@Config/constants'
 import { INLINE_PLUGIN_TEXT } from './Constants'
 
-const CustomScriptCard = () => {
-    return (
-        <div
-            data-testid="execute-custom-script-button"
-            className="p-12 cursor flexbox dc__gap-16 plugin-card dc__visible-hover dc__visible-hover--parent dc__border-transparent dc__hover-border-n1 br-4"
-        >
-            <ICCDStage className="dc__no-shrink icon-dim-40 p-8 bcn-50 br-8" />
+const CustomScriptCard = () => (
+    <div
+        data-testid="execute-custom-script-button"
+        className="p-12 cursor flexbox dc__gap-16 plugin-card dc__visible-hover dc__visible-hover--parent dc__border-transparent dc__hover-border-n1 br-4"
+    >
+        <ICCDStage className="dc__no-shrink icon-dim-40 p-8 bcn-50 br-8" />
 
-            <div className="flexbox-col dc__gap-2 w-100">
-                <div className="flexbox dc__gap-6 w-100 dc__align-start dc__content-space">
-                    <div className="flexbox dc__gap-4">
-                        <h4 className="m-0 dc__truncate cn-9 fs-13 fw-6 lh-20 plugin-card__title">
-                            {INLINE_PLUGIN_TEXT.TITLE}
-                        </h4>
-                    </div>
-
-                    <div className="flexbox dc__gap-4 dc__visible-hover--child dc__align-items-center">
-                        <a
-                            href={DOCUMENTATION.EXECUTE_CUSTOM_SCRIPT}
-                            className="anchor fs-12 fw-6 lh-20"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={stopPropagation}
-                        >
-                            Learn more
-                        </a>
-
-                        <ICBookOpen className="icon-dim-12 dc__no-shrink scb-5" />
-                    </div>
+        <div className="flexbox-col dc__gap-2 w-100">
+            <div className="flexbox dc__gap-6 w-100 dc__align-start dc__content-space">
+                <div className="flexbox dc__gap-4">
+                    <h4 className="m-0 dc__truncate cn-9 fs-13 fw-6 lh-20 plugin-card__title">
+                        {INLINE_PLUGIN_TEXT.TITLE}
+                    </h4>
                 </div>
 
-                {/* Plugin description */}
-                <p className="m-0 cn-7 fs-12 fw-4 lh-16 dc__truncate--clamp-3">{INLINE_PLUGIN_TEXT.DESCRIPTION}</p>
+                <div className="flexbox dc__gap-4 dc__visible-hover--child dc__align-items-center">
+                    <a
+                        href={DOCUMENTATION.EXECUTE_CUSTOM_SCRIPT}
+                        className="anchor fs-12 fw-6 lh-20"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={stopPropagation}
+                    >
+                        Learn more
+                    </a>
+
+                    <ICBookOpen className="icon-dim-12 dc__no-shrink scb-5" />
+                </div>
             </div>
+
+            {/* Plugin description */}
+            <p className="m-0 cn-7 fs-12 fw-4 lh-16 dc__truncate--clamp-3">{INLINE_PLUGIN_TEXT.DESCRIPTION}</p>
         </div>
-    )
-}
+    </div>
+)
 
 export default CustomScriptCard

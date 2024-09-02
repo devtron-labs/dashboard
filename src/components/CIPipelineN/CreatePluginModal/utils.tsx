@@ -22,12 +22,10 @@ import {
 } from './types'
 import { CREATE_PLUGIN_DEFAULT_FORM, MAX_TAG_LENGTH } from './constants'
 
-export const getDefaultPluginFormData = (currentInputVariables: VariableType[]): CreatePluginFormType => {
-    return {
-        ...structuredClone(CREATE_PLUGIN_DEFAULT_FORM),
-        inputVariables: currentInputVariables,
-    }
-}
+export const getDefaultPluginFormData = (currentInputVariables: VariableType[]): CreatePluginFormType => ({
+    ...structuredClone(CREATE_PLUGIN_DEFAULT_FORM),
+    inputVariables: currentInputVariables,
+})
 
 export const getIsTagValid = (tag: string): boolean => tag.length <= MAX_TAG_LENGTH
 

@@ -385,7 +385,7 @@ const CreatePluginModal = ({ handleClose }: CreatePluginModalProps) => {
             if (pluginForm.shouldReplaceCustomTask) {
                 handleReplacePluginAfterCreation(pluginVersionId, clonedPluginDataStore)
             }
-        } catch (error) {
+        } catch {
             toast.error('Unable to retrieve data for newly created plugin')
         }
 
