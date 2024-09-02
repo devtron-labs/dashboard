@@ -23,6 +23,7 @@ import {
     DevtronProgressing,
     PageHeader,
     useMainContext,
+    DetectBottom,
     FeatureTitleWithInfo,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
@@ -43,7 +44,7 @@ import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
@@ -53,7 +54,6 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import DetectBottom from '../../common/DetectBottom'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
@@ -535,6 +535,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                 <DetectBottom callback={reloadNextAfterBottom} />
                                                             )}
                                                         </div>
+
                                                         {state.hasMoreCharts && (
                                                             <Progressing
                                                                 size={25}

@@ -339,6 +339,7 @@ export interface DeploymentConfigStateType {
     template: string
     schema: any
     guiSchema: string
+    wasGuiOrHideLockedKeysEdited: boolean
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -438,6 +439,7 @@ export enum DeploymentConfigStateActionTypes {
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
     guiSchema = 'guiSchema',
+    wasGuiOrHideLockedKeysEdited = 'wasGuiOrHideLockedKeysEdited',
 }
 
 export interface DeploymentConfigStateAction {

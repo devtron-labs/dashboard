@@ -28,7 +28,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
@@ -48,7 +48,8 @@ const DeploymentTemplateGUIView = ({
 }: DeploymentTemplateGUIViewProps) => {
     const {
         isUnSet,
-        state: { chartConfigLoading, guiSchema, selectedChart },
+        state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
+        dispatch,
         changeEditorMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
@@ -105,6 +106,9 @@ const DeploymentTemplateGUIView = ({
     }, [guiSchema, hideLockedKeys])
 
     const handleFormChange: FormProps['onChange'] = (data) => {
+        if (!wasGuiOrHideLockedKeysEdited) {
+            dispatch({ type: DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited, payload: true })
+        }
         editorOnChange?.(YAML.stringify(data.formData))
     }
 

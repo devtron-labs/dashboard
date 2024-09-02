@@ -44,7 +44,7 @@ function getSelectedInstances(charts) {
 export default function useChartGroup(chartGroupId = null): ChartGroupExports {
     const { serverMode } = useMainContext()
 
-    const initialState = {
+    const initialState: ChartGroupState = {
         chartGroups: [],
         chartRepos: [],
         charts: [],
