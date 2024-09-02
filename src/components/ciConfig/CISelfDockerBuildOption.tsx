@@ -19,8 +19,7 @@
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
 import { ComponentSizeType, CustomInput, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import { getGitProviderIcon } from '@Components/common'
-import { renderOptionIcon } from './CIBuildpackBuildOptions'
+import { getGitRepositoryOptions, getSelectedMaterialValue, renderOptionIcon } from './CIBuildpackBuildOptions'
 import { CISelfDockerBuildOptionProps } from './types'
 
 const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> = ({
@@ -36,16 +35,6 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
     handleFileLocationChange,
     dockerfileError,
 }) => {
-    const getDockerfileOptions = () => {
-        return sourceMaterials.map((material) => {
-            return {
-                value: material.checkoutPath,
-                label: material.name,
-                startIcon: getGitProviderIcon(material.url),
-            }
-        })
-    }
-
     if (readOnly) {
         return (
             <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
@@ -69,31 +58,20 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
         )
     }
 
-    const getSelectedMaterialValue = () => {
-        if (selectedMaterial.name) {
-            return {
-                label: selectedMaterial.name,
-                value: selectedMaterial.checkoutPath,
-                startIcon: getGitProviderIcon(selectedMaterial.url),
-            }
-        }
-        return null
-    }
-
     return (
         <div className={`${configOverrideView ? 'mb-12' : ''}  form-row__docker`}>
             <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                <label className="form__label">Select repository containing Dockerfile</label>
-
                 <SelectPicker
                     inputId="select-repository-containing-dockerfile"
                     name="select-repository-containing-dockerfile"
+                    label="Select repository containing Dockerfile"
                     classNamePrefix="build-config__select-repository-containing-dockerfile"
                     isClearable={false}
-                    options={getDockerfileOptions()}
-                    value={getSelectedMaterialValue()}
+                    options={getGitRepositoryOptions(sourceMaterials)}
+                    value={getSelectedMaterialValue(selectedMaterial)}
                     onChange={handleFileLocationChange}
                     size={ComponentSizeType.large}
+                    isSearchable={false}
                 />
 
                 {repositoryError && <label className="form__error">{repositoryError}</label>}
@@ -111,19 +89,18 @@ const CISelfDockerBuildOption: FunctionComponent<CISelfDockerBuildOptionProps> =
                         placement="top"
                         content={selectedMaterial?.checkoutPath}
                     >
-                        <span className="h-38 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                        <span className="h-36 checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
                             {selectedMaterial?.checkoutPath}
                         </span>
                     </Tippy>
 
                     <CustomInput
-                        rootClassName="file-name"
+                        rootClassName="file-name h-36"
                         data-testid="dockerfile-path-text-box"
                         placeholder="Dockerfile"
                         name="dockerfile"
                         value={dockerFileValue}
                         onChange={handleOnChangeConfig}
-                        autoComplete="off"
                         autoFocus={!configOverrideView}
                         error={dockerfileError}
                     />

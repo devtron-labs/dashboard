@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
-import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy } from '@devtron-labs/devtron-fe-common-lib'
+import { stopPropagation, CIBuildType, CustomInput, InfoIconTippy, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -51,6 +51,7 @@ import {
     VERSION_DETECT_OPTION,
     VERSION_SELECT_STYLES,
 } from './ciConfigConstant'
+import { getGitProviderIcon } from '@Components/common'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) {
@@ -70,6 +71,53 @@ export const renderOptionIcon = (option: string) => {
         <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
     )
 }
+
+export const getGitRepositoryOptions = (sourceMaterials) => {
+    return sourceMaterials.map((material) => {
+        return {
+            value: material.checkoutPath,
+            label: material.name,
+            startIcon: getGitProviderIcon(material.url),
+        }
+    })
+}
+
+export const getSelectedMaterialValue = (selectedMaterial) => {
+    if (selectedMaterial.name) {
+        return {
+            label: selectedMaterial.name,
+            value: selectedMaterial.checkoutPath,
+            startIcon: getGitProviderIcon(selectedMaterial.url),
+        }
+    }
+    return null
+}
+
+// TODO: Remove console after testing,
+
+export const getLanguageOptions = (languages) => {
+    console.log(languages, 'languages')
+    return languages.map((_language) => {
+        return {
+            value: _language.value.label,
+            label: _language.value.label,
+            startIcon: _language.value.icon,
+        }
+    })
+}
+
+export const getSelectedLanguageValue = (selectedLanguage) => {
+    console.log(selectedLanguage, 'selectedLanguage')
+    if (selectedLanguage.name) {
+        return {
+            label: selectedLanguage.value.label,
+            value: selectedLanguage.value.label,
+            startIcon: getGitProviderIcon(selectedLanguage.value.icon),
+        }
+    }
+    return null
+}
+
 
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -571,42 +619,32 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
+
+
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">
             <div className="flex top project-material-options">
                 <div className="form__field">
-                    <label className="form__label">Select repository containing code</label>
+                    {/* <label className="form__label">Select repository containing code</label> */}
 
-                    <ReactSelect
+{console.log(sourceConfig)}
+{console.log('selectedMaterial', selectedMaterial)}
+                    <SelectPicker
+                        label="Select repository containing code"
+                        inputId="build-pack-repository-select"
                         classNamePrefix="build-config__select-repository-containing-code"
-                        className="m-0"
-                        tabIndex={3}
                         isSearchable={false}
                         options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
+                        // getOptionLabel={(option) => `${option.name}`}
+                        // getOptionValue={(option) => `${option.checkoutPath}`}
                         value={selectedMaterial}
-                        styles={getCommonSelectStyle({
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                marginTop: '0',
-                                minWidth: '226px',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
+                        // components={{
+                        //     IndicatorSeparator: null,
+                        //     Option: repositoryOption,
+                        //     Control: repositoryControls,
+                        // }}
                         onChange={handleFileLocationChange}
+                        size={ComponentSizeType.large}
                     />
 
                     {repository.error && <label className="form__error">{repository.error}</label>}
