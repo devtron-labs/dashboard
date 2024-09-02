@@ -147,7 +147,7 @@ const compareConfigValues = (configA: DeploymentHistoryDetail, configB: Deployme
         if (!deepEqual(parsedEditorValueA, parsedEditorValueB)) {
             return true
         }
-    } catch (err) {
+    } catch {
         return false
     }
 

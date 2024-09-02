@@ -28,19 +28,15 @@ export function createProject(project) {
 
 export function getProjectList() {
     const URL = `${Routes.PROJECT_LIST}`
-    return get(URL).then((response) => {
-        return {
-            code: response.code,
-            result: response.result
-                ? response.result.map((project) => {
-                      return {
-                          ...project,
-                          isCollapsed: true,
-                      }
-                  })
-                : [],
-        }
-    })
+    return get(URL).then((response) => ({
+        code: response.code,
+        result: response.result
+            ? response.result.map((project) => ({
+                  ...project,
+                  isCollapsed: true,
+              }))
+            : [],
+    }))
 }
 
 export function deleteProject(request) {

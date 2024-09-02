@@ -20,7 +20,6 @@ import {
     CiPipelineSourceTypeOption,
     Githost,
     ErrorObj,
-    MandatoryPluginDetailType,
     RefVariableType,
     ScriptType,
     PluginType,
@@ -403,7 +402,6 @@ export interface BuildType {
 }
 
 export interface PreBuildType {
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     isJobView?: boolean
 }
 

@@ -53,6 +53,8 @@ export interface PluginDetailHeaderProps {
     handlePluginVersionChange: (pluginId: number) => Promise<void>
 }
 
+export interface PluginVersionSelectProps extends PluginDetailHeaderProps {}
+
 export interface PluginVersionSelectOptionType extends OptionType<number, string>, Pick<PluginDetailType, 'isLatest'> {}
 export interface TaskDetailComponentParamsType {
     appId: string
