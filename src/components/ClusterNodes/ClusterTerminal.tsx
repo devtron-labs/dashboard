@@ -409,11 +409,12 @@ const ClusterTerminal = ({
     }
 
     // Disconnect terminal on unmount of the component
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             closeTerminalModal()
-        }
-    }, [])
+        },
+        [],
+    )
 
     const preFetchData = (podState = '', status = '') => {
         const _terminal = terminalRef.current
@@ -658,24 +659,22 @@ const ClusterTerminal = ({
         })
     }
 
-    const imageTippyInfo = () => {
-        return (
-            <div className="p-12 fs-13">
-                {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
-                <a href={NETSHOOT_LINK} target="_blank" rel="noreferrer">
-                    {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
-                </a>
-                ,&nbsp;
-                <a href={BUSYBOX_LINK} target="_blank" rel="noreferrer">
-                    {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
-                </a>
-                {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
-                <br />
-                <br />
-                {CLUSTER_TERMINAL_MESSAGING.PUBLIC_IMAGE}
-            </div>
-        )
-    }
+    const imageTippyInfo = () => (
+        <div className="p-12 fs-13">
+            {CLUSTER_TERMINAL_MESSAGING.SELECT_UTILITY}&nbsp;
+            <a href={NETSHOOT_LINK} target="_blank" rel="noreferrer">
+                {CLUSTER_TERMINAL_MESSAGING.NETSHOOT}
+            </a>
+            ,&nbsp;
+            <a href={BUSYBOX_LINK} target="_blank" rel="noreferrer">
+                {CLUSTER_TERMINAL_MESSAGING.BUSYBOX}
+            </a>
+            {CLUSTER_TERMINAL_MESSAGING.DEBUG_CLUSTER}
+            <br />
+            <br />
+            {CLUSTER_TERMINAL_MESSAGING.PUBLIC_IMAGE}
+        </div>
+    )
 
     const imageOptionComponent = (props) => {
         const tippyText = clusterImageDescription(clusterImageList, props.data.value)
@@ -691,42 +690,38 @@ const ClusterTerminal = ({
         )
     }
 
-    const groupHeading = (props) => {
-        return <GroupHeading {...props} hideClusterName />
-    }
+    const groupHeading = (props) => <GroupHeading {...props} hideClusterName />
 
-    const terminalTabWrapper = (terminalView: () => JSX.Element) => {
-        return (
-            <div
-                className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
+    const terminalTabWrapper = (terminalView: () => JSX.Element) => (
+        <div
+            className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''}
 node-details-full-screen
                 `}
-            >
-                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
-                    {connectTerminal && terminalView}
-                </div>
-                {selectedTabIndex === 1 && (
-                    <div className="h-100 dc__overflow-scroll">
-                        <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
-                    </div>
-                )}
-                {selectedTabIndex === 2 && (
-                    <div className="h-100">
-                        <ClusterManifest
-                            terminalAccessId={terminalAccessIdRef.current}
-                            manifestMode={manifestButtonState}
-                            setManifestMode={setManifestButtonState}
-                            setManifestData={setManifestData}
-                            errorMessage={manifestErrors}
-                            setManifestAvailable={setManifestAvailable}
-                            selectTerminalTab={selectTerminalTab}
-                            hideManagedFields={hideManagedFields}
-                        />
-                    </div>
-                )}
+        >
+            <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
+                {connectTerminal && terminalView}
             </div>
-        )
-    }
+            {selectedTabIndex === 1 && (
+                <div className="h-100 dc__overflow-scroll">
+                    <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
+                </div>
+            )}
+            {selectedTabIndex === 2 && (
+                <div className="h-100">
+                    <ClusterManifest
+                        terminalAccessId={terminalAccessIdRef.current}
+                        manifestMode={manifestButtonState}
+                        setManifestMode={setManifestButtonState}
+                        setManifestData={setManifestData}
+                        errorMessage={manifestErrors}
+                        setManifestAvailable={setManifestAvailable}
+                        selectTerminalTab={selectTerminalTab}
+                        hideManagedFields={hideManagedFields}
+                    />
+                </div>
+            )}
+        </div>
+    )
 
     const renderTabs = () => {
         const tabs: TabProps[] = [

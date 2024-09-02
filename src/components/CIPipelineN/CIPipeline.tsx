@@ -26,7 +26,6 @@ import {
     RefVariableType,
     VariableType,
     MandatoryPluginDataType,
-    MandatoryPluginDetailType,
     ButtonWithLoader,
     PluginDataStoreType,
     ProcessPluginDataReturnType,
@@ -37,6 +36,11 @@ import {
     getUpdatedPluginStore,
     TabProps,
     TabGroup,
+    ModuleNameMap,
+    SourceTypeMap,
+    DEFAULT_ENV,
+    getEnvironmentListMinPublic,
+    ModuleStatus,
     Environment,
     PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -52,11 +56,9 @@ import {
     BuildStageVariable,
     BuildTabText,
     JobPipelineTabText,
-    ModuleNameMap,
     TriggerType,
     URLS,
     ViewType,
-    SourceTypeMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -73,14 +75,11 @@ import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
-import { getEnvironmentListMinPublic } from '../../services/service'
-import { DEFAULT_ENV } from '../app/details/triggerView/Constants'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
@@ -205,11 +204,13 @@ export default function CIPipeline({
         structuredClone(DEFAULT_PLUGIN_DATA_STORE),
     )
     const [availableTags, setAvailableTags] = useState<string[]>([])
+    const [hideScopedVariableWidget, setHideScopedVariableWidget] = useState<boolean>(false)
+    const [disableParentModalClose, setDisableParentModalClose] = useState<boolean>(false)
 
     const selectedBranchRef = useRef(null)
 
-    const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
-        const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
+    const mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = useMemo(() => {
+        const _mandatoryPluginsMap: PipelineContext['mandatoryPluginsMap'] = {}
         if (mandatoryPluginData?.pluginData.length) {
             for (const plugin of mandatoryPluginData.pluginData) {
                 _mandatoryPluginsMap[plugin.parentPluginId] = plugin
@@ -224,6 +225,18 @@ export default function CIPipeline({
         setPluginDataStore((prevPluginDataStore) =>
             getUpdatedPluginStore(prevPluginDataStore, parentPluginStore, pluginVersionStore),
         )
+    }
+
+    const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
+        hideScopedVariableWidgetValue: boolean,
+    ) => {
+        setHideScopedVariableWidget(hideScopedVariableWidgetValue)
+    }
+
+    const handleDisableParentModalCloseUpdate: PipelineContext['handleDisableParentModalCloseUpdate'] = (
+        disableParentModalCloseValue: boolean,
+    ) => {
+        setDisableParentModalClose(disableParentModalCloseValue)
     }
 
     const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
@@ -523,6 +536,10 @@ export default function CIPipeline({
     }, [location.pathname, ciPipeline.pipelineType])
 
     const handleClose = () => {
+        if (disableParentModalClose) {
+            return null
+        }
+
         close()
     }
 
@@ -775,6 +792,9 @@ export default function CIPipeline({
             pageState,
             availableTags,
             handleUpdateAvailableTags,
+            handleHideScopedVariableWidgetUpdate,
+            handleDisableParentModalCloseUpdate,
+            mandatoryPluginsMap,
         }
     }, [
         formData,
@@ -787,6 +807,7 @@ export default function CIPipeline({
         globalVariables,
         pluginDataStore,
         availableTags,
+        mandatoryPluginsMap,
     ])
 
     const renderCIPipelineModalContent = () => {
@@ -826,7 +847,6 @@ export default function CIPipeline({
                                     isJobCI={isJobCI}
                                     mandatoryPluginData={mandatoryPluginData}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
-                                    mandatoryPluginsMap={mandatoryPluginsMap}
                                     environments={environments}
                                     selectedEnv={selectedEnv}
                                     setSelectedEnv={setSelectedEnv}
@@ -836,12 +856,12 @@ export default function CIPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild isJobView={isJobCard} mandatoryPluginsMap={mandatoryPluginsMap} />
+                                    <PreBuild isJobView={isJobCard} />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild mandatoryPluginsMap={mandatoryPluginsMap} />
+                                    <PreBuild />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>
@@ -900,7 +920,7 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 py-12 pr-20 pl-20">
+                <div className="flex flex-align-center flex-justify bcn-0 py-12 px-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
@@ -916,7 +936,11 @@ export default function CIPipeline({
     }
 
     const renderFloatingVariablesWidget = () => {
-        if (!window._env_.ENABLE_SCOPED_VARIABLES || activeStageName === BuildStageVariable.Build) {
+        if (
+            !window._env_.ENABLE_SCOPED_VARIABLES ||
+            activeStageName === BuildStageVariable.Build ||
+            hideScopedVariableWidget
+        ) {
             return <></>
         }
 

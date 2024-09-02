@@ -2414,6 +2414,10 @@ button.anchor {
     max-width: 250px;
 }
 
+.dc__mxw-280 {
+    max-width: 280px;
+}
+
 .dc__mxw-300 {
     max-width: 300px;
 }
@@ -2893,6 +2897,14 @@ textarea,
     path,
     rect {
         stroke: var(--B500);
+    }
+}
+
+.icon-stroke-n7 {
+
+    path,
+    rect {
+        stroke: var(--N700);
     }
 }
 
@@ -4226,6 +4238,7 @@ textarea::placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+    word-break: break-all;
 }
 
 // opacity
@@ -4499,6 +4512,7 @@ textarea::placeholder {
     background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
     background-size: 800px 104px;
     position: relative;
+    border-radius: 2px;
 }
 
 @keyframes shimmer-loading {
@@ -4653,6 +4667,10 @@ textarea::placeholder {
 
 .dc__hover-border-b5:hover {
     border: 1px solid var(--B500) !important;
+}
+
+.dc__hover-border-n1:hover {
+    border: 1px solid var(--N100) !important;
 }
 
 .placeholder-cn5::placeholder {

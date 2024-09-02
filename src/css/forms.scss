@@ -368,7 +368,7 @@ p.sentence-case:first-letter {
     margin-right: 10px;
 }
 
-.form__radio-group input {
+.form__radio-group input[type="radio"] {
     position: absolute;
     opacity: 0;
 }

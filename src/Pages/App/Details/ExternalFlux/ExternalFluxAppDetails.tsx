@@ -50,12 +50,13 @@ const ExternalFluxAppDetails = () => {
         },
     )
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             IndexStore.publishAppDetails({} as AppDetails, AppType.EXTERNAL_FLUX_APP)
             clearTimeout(initTimer)
-        }
-    }, [])
+        },
+        [],
+    )
 
     useEffect(() => {
         if (appDetailsResult && !appDetailsError) {
