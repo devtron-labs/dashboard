@@ -1,5 +1,6 @@
-import { ComponentSizeType, ButtonStyleType, ButtonVariantType, Button } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, Button, ButtonStyleType, ButtonVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCube } from '@Icons/ic-cube.svg'
+// import { Button, ButtonStyleType, ButtonVariantType } from '@Pages/Shared/Button'
 
 const BUTTON_TEXT = 'Hello world'
 
