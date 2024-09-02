@@ -107,13 +107,6 @@ const NodeDetailComponent = ({
         [k8SObjectMapRaw, params.nodeType],
     )
 
-    const showDesiredAndCompareManifest =
-        !isResourceBrowserView &&
-        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
-        !appDetails.resourceTree.nodes.filter(
-            (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
-        )[0]?.['parentRefs']?.length
-
     const selectedResource = {
         clusterId: +params.clusterId,
         kind: _selectedResource?.gvk.Kind as string,
@@ -129,6 +122,11 @@ const NodeDetailComponent = ({
         : appDetails.resourceTree.nodes.filter(
               (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
           )[0]
+
+    const showDesiredAndCompareManifest =
+        !isResourceBrowserView &&
+        appDetails.appType === AppType.EXTERNAL_HELM_CHART &&
+        !currentResource?.['parentRefs']?.length
 
     const isResourceMissing =
         appDetails.appType === AppType.EXTERNAL_HELM_CHART && currentResource?.['health']?.status === 'Missing'
@@ -366,6 +364,69 @@ const NodeDetailComponent = ({
         )
     }
 
+    const renderManifestTabHeader = () => (
+        <>
+            {(isExternalApp ||
+                isResourceBrowserView ||
+                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                    appDetails.deploymentAppDeleteRequest)) &&
+                manifestCodeEditorMode &&
+                !showManifestCompareView &&
+                !isResourceMissing && (
+                    <>
+                        <div className="ml-4 mr-12 tab-cell-border" />
+                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                            <div className="flex dc__gap-12">
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                    onClick={handleManifestApplyChanges}
+                                >
+                                    <>
+                                        <ICCheck className="icon-dim-16 scb-5" />
+                                        <span>Apply changes</span>
+                                    </>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                    onClick={handleManifestCancel}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                onClick={handleManifestEdit}
+                            >
+                                <>
+                                    <ICPencil className="icon-dim-16 scb-5" />
+                                    <span>Edit live manifest</span>
+                                </>
+                            </button>
+                        )}
+                    </>
+                )}
+            {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
+                !showManifestCompareView &&
+                (showDesiredAndCompareManifest || isResourceMissing) && (
+                    <>
+                        <div className="ml-12 mr-12 tab-cell-border" />
+                        <button
+                            type="button"
+                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                            onClick={handleManifestCompareWithDesired}
+                        >
+                            <ICArrowsLeftRight className="icon-dim-16 scb-5" />
+                            <span>Compare with desired</span>
+                        </button>
+                    </>
+                )}
+        </>
+    )
+
     return (
         <>
             <div
@@ -430,68 +491,7 @@ const NodeDetailComponent = ({
                             </div>
                         </>
                     )}
-                    {selectedTabName === NodeDetailTab.MANIFEST && (
-                        <>
-                            {(isExternalApp ||
-                                isResourceBrowserView ||
-                                (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS &&
-                                    appDetails.deploymentAppDeleteRequest)) &&
-                                manifestCodeEditorMode &&
-                                !showManifestCompareView &&
-                                !isResourceMissing && (
-                                    <>
-                                        <div className="ml-4 mr-12 tab-cell-border" />
-                                        {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
-                                            <div className="flex dc__gap-12">
-                                                <button
-                                                    type="button"
-                                                    className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                                    onClick={handleManifestApplyChanges}
-                                                >
-                                                    <>
-                                                        <ICCheck className="icon-dim-16 scb-5" />
-                                                        <span>Apply changes</span>
-                                                    </>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
-                                                    onClick={handleManifestCancel}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                                onClick={handleManifestEdit}
-                                            >
-                                                <>
-                                                    <ICPencil className="icon-dim-16 scb-5" />
-                                                    <span>Edit live manifest</span>
-                                                </>
-                                            </button>
-                                        )}
-                                    </>
-                                )}
-                            {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&
-                                !showManifestCompareView &&
-                                (showDesiredAndCompareManifest || isResourceMissing) && (
-                                    <>
-                                        <div className="ml-12 mr-12 tab-cell-border" />
-                                        <button
-                                            type="button"
-                                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                                            onClick={handleManifestCompareWithDesired}
-                                        >
-                                            <ICArrowsLeftRight className="icon-dim-16 scb-5" />
-                                            <span>Compare with desired</span>
-                                        </button>
-                                    </>
-                                )}
-                        </>
-                    )}
+                    {selectedTabName === NodeDetailTab.MANIFEST && renderManifestTabHeader()}
                 </div>
                 {isResourceBrowserView &&
                     !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
