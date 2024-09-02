@@ -108,7 +108,7 @@ export const SecurityScansTab = () => {
     }
 
     const abortControllerRef = useRef(new AbortController())
-    const [scanListLoading, securityScansResult, scanListError] = useAsync(
+    const [scanListLoading, securityScansResult, scanListError, reloadScansList] = useAsync(
         () =>
             abortPreviousRequests(
                 () => getSecurityScanList(payload, abortControllerRef.current.signal),
@@ -156,7 +156,7 @@ export const SecurityScansTab = () => {
     if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
         return (
             <div className="flexbox-col flex-grow-1 dc__content-center">
-                <ErrorScreenManager code={scanListError.code} />
+                <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
             </div>
         )
     }
