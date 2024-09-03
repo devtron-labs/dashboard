@@ -112,7 +112,7 @@ const ResourceFilterOptions = ({
         if (selected.value === selectedNamespace?.value) {
             return
         }
-        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}?${location.search}`
+        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
         updateK8sResourceTab(url)
         replace(url)
         setSelectedNamespace(selected)

@@ -57,7 +57,7 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
-const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
@@ -218,9 +218,9 @@ const NavItem = ({ serverMode }) => {
     const ConfigOptional = [
         { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
-            name: 'Custom Charts',
-            href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
-            component: CustomChartList,
+            name: 'Deployment Charts',
+            href: CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+            component: DeploymentChartsRouter,
             isAvailableInEA: false,
         },
         {
@@ -487,18 +487,17 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Catalog Framework</div>
                         </NavLink>
                     )}
+                    {window._env_.ENABLE_SCOPED_VARIABLES && (
+                        <NavLink
+                            to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
+                            key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Scoped Variables</div>
+                        </NavLink>
+                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <>
-                            {window._env_.ENABLE_SCOPED_VARIABLES && (
-                                <NavLink
-                                    to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Scoped Variables</div>
-                                </NavLink>
-                            )}
-
                             {PluginsPolicy && (
                                 <NavLink
                                     to={URLS.GLOBAL_CONFIG_PLUGINS}
@@ -650,8 +649,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     }}
                 />,
                 serverMode !== SERVER_MODE.EA_ONLY && (
-                    <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                        <CustomChartList />
+                    <Route
+                        key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                        path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                    >
+                        <DeploymentChartsRouter />
                     </Route>
                 ),
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,

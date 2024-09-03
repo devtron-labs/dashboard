@@ -180,7 +180,3 @@ export const GUI_VIEW_TEXTS = {
     SWITCH_TO_ADVANCE_BUTTON_TEXT: 'Switch to advance',
 }
 
-export const JOB_AND_CRONJOB_CHART_NAME = 'Job & CronJob'
-export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
-export const DEPLOYMENT = 'Deployment'
-export const STATEFUL_SET = 'StatefulSet'
