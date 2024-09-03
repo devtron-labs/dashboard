@@ -1498,7 +1498,6 @@ const CDMaterial = ({
     const renderSearch = (): JSX.Element => (
                 <SearchBar
                     initialSearchText={state.searchText}
-                    inputClassName="dc__position-rel-imp"
                     containerClassName="w-250"
                     handleEnter={handleFilterKeyPress}
                     inputProps={{
