@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { AppType, EnvironmentListHelmResult, EnvListMinDTO } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppType,
+    EnvironmentListHelmResult,
+    EnvListMinDTO,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
 
 export interface App {
@@ -46,7 +51,8 @@ export interface Environment {
     isVirtualEnvironment?: boolean
 }
 
-export interface DevtronAppListProps {
+export interface DevtronAppListProps
+    extends Pick<UseUrlFiltersReturnType<AppListSortableKeys>, 'changePage' | 'changePageSize' | 'handleSorting'> {
     filterConfig: AppListFilterConfig
     appFiltersResponseLoading: boolean
     environmentList: EnvListMinDTO[]
@@ -56,9 +62,6 @@ export interface DevtronAppListProps {
     updateDataSyncing: (loading: boolean) => void
     clearAllFilters: () => void
     setCurrentAppName: (appName: string) => void
-    changePage: (pageNo: number) => void
-    changePageSize: (pageSize: number) => void
-    handleSorting: (sortBy: AppListSortableKeys) => void
     setAppCount: (appCount: number) => void
 }
 
@@ -69,9 +72,6 @@ export const OrderBy = {
 
 export const SortBy = {
     APP_NAME: 'appNameSort',
-    LAST_DEPLOYED: 'lastDeployedSort',
-    STATUS: 'statusSort',
-    ENVIRONMENT: 'environmentSort',
 }
 
 export interface AppListPropType {
@@ -92,4 +92,17 @@ export interface ManifestUrlList {
     name: string
     pointsTo: string
     urls: string[]
+}
+
+export interface GetEnvironmentsFromClusterNamespaceProps {
+    selectedClusterIds: number[]
+    selectedNamespaces: string[]
+    environmentList: EnvListMinDTO[]
+    namespaceList: EnvironmentListHelmResult[]
+}
+
+export interface DevtronAppExpandedState {
+    expandedRow: Record<number, boolean>
+    isAllExpanded: boolean
+    isAllExpandable: boolean
 }

@@ -119,7 +119,6 @@ export interface HelmAppListProps
     extends Pick<
         DevtronAppListProps,
         | 'filterConfig'
-        | 'appFiltersResponseLoading'
         | 'clearAllFilters'
         | 'handleSorting'
         | 'changePage'
@@ -139,12 +138,7 @@ export interface HelmAppListProps
 export interface GenericAppListProps
     extends Pick<
             DevtronAppListProps,
-            | 'filterConfig'
-            | 'appFiltersResponseLoading'
-            | 'clearAllFilters'
-            | 'handleSorting'
-            | 'changePage'
-            | 'changePageSize'
+            'filterConfig' | 'clearAllFilters' | 'handleSorting' | 'changePage' | 'changePageSize'
         >,
         Pick<HelmAppListProps, 'clusterIdsCsv' | 'setShowPulsatingDot'> {
     appType: string

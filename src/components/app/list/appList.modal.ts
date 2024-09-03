@@ -16,32 +16,43 @@
 
 import { EnvironmentListHelmResult, EnvListMinDTO, handleUTCTime } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListFilterConfig, AppListPayloadType } from '../list-new/AppListType'
-import { Environment } from './types'
+import { Environment, GetEnvironmentsFromClusterNamespaceProps } from './types'
 
-const getEnvironmentsFromClusterNamespace = (
-    selectedClusterIds: number[],
-    selectedNamespaces: string[],
-    environmentList: EnvListMinDTO[],
-    namespaceList: EnvironmentListHelmResult[],
-): number[] => {
+const getEnvironmentsFromClusterNamespace = ({
+    selectedClusterIds,
+    selectedNamespaces,
+    environmentList,
+    namespaceList,
+}: GetEnvironmentsFromClusterNamespaceProps): number[] => {
     const environments = new Set<number>()
     // If namespace is selected we send environments of selected namespace
     // Else we send all environments of selected clusters
     if (selectedNamespaces.length) {
+        const namespaceVsEnvMap = new Map<string, number>()
         namespaceList?.forEach((cluster) => {
             cluster.environments.forEach((env) => {
-                if (selectedNamespaces.includes(`${cluster.clusterId}_${env.namespace}`) && env.environmentId) {
-                    environments.add(env.environmentId)
-                }
+                namespaceVsEnvMap.set(`${cluster.clusterId}_${env.namespace}`, env.environmentId)
             })
         })
-    } else {
-        environmentList?.forEach((env) => {
-            if (selectedClusterIds.includes(env.cluster_id)) {
-                environments.add(env.id)
+        selectedNamespaces.forEach((namespace) => {
+            const envId = namespaceVsEnvMap.get(namespace)
+            if (envId) {
+                environments.add(envId)
             }
         })
+        return Array.from(environments)
     }
+    const clusterVsEnvMap = new Map<number, number>()
+    environmentList?.forEach((env) => {
+        clusterVsEnvMap.set(env.cluster_id, env.id)
+    })
+    selectedClusterIds.forEach((clusterId) => {
+        const envId = clusterVsEnvMap.get(clusterId)
+        if (envId) {
+            environments.add(envId)
+        }
+    })
+
     return Array.from(environments)
 }
 
@@ -126,12 +137,12 @@ export const getDevtronAppListPayload = (
         // If environment(s) is/are selected we send selected environment Ids else we send env Ids according to selected cluster and namespaces
         environments: environment?.length
             ? environment.map((envId) => +envId)
-            : getEnvironmentsFromClusterNamespace(
-                  cluster.map((clusterId) => +clusterId),
-                  namespace,
-                  environmentList,
-                  namespaceList,
-              ),
+            : getEnvironmentsFromClusterNamespace({
+                  selectedClusterIds: cluster.map((clusterId) => +clusterId),
+                  selectedNamespaces: namespace,
+                  environmentList: environmentList,
+                  namespaceList: namespaceList,
+              }),
         teams: project.map((team) => +team),
         namespaces: namespace,
     }

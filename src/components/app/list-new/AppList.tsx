@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /*
  * Copyright (c) 2024. Devtron Inc.
  *
@@ -15,8 +16,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { useLocation, useHistory, useParams } from 'react-router'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, useLocation, useHistory, useParams } from 'react-router-dom'
 import {
     Progressing,
     stopPropagation,
@@ -38,6 +38,8 @@ import {
     SortingOrder,
     ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppFilters, getClusterListMinWithoutAuth } from '@Services/service'
+import { getProjectList } from '@Components/project/service'
 import { useAppContext } from '../../common'
 import { SERVER_MODE, DOCUMENTATION, URLS } from '../../../config'
 import HelmAppList from './HelmAppList'
@@ -66,12 +68,12 @@ import {
     AppStatuses,
     FluxCDTemplateType,
 } from './AppListType'
-import { getAppFilters, getClusterListMinWithoutAuth } from '@Services/service'
 import DevtronAppList from '../list/DevtronAppListContainer'
 import { getDevtronAppListDataToExport } from './AppListService'
-import { getProjectList } from '@Components/project/service'
 
-export default function AppList({ isArgoInstalled }: AppListPropType) {
+let interval
+
+const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -170,8 +172,8 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
         serverMode === SERVER_MODE.EA_ONLY,
     )
 
-    const clusterIdsArray = cluster?.map((clusterId) => +clusterId)
-    const clusterIdsCsv = cluster?.join()
+    const clusterIdsArray = cluster.map((clusterId) => +clusterId)
+    const clusterIdsCsv = cluster.join()
 
     const [namespaceListLoading, namespaceListResponse] = useAsync(
         () => getNamespaceListMin(clusterIdsCsv),
@@ -182,14 +184,14 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     const getFormattedFilterValue = (filterKey: AppListUrlFilters, filterValue: string) => {
         switch (filterKey) {
             case AppListUrlFilters.cluster:
-                return appListFilterResponse?.result?.Clusters.find((cluster) => cluster.id === +filterValue)
+                return appListFilterResponse?.result.clusters.find((clusterItem) => clusterItem.id === +filterValue)
                     ?.cluster_name
             case AppListUrlFilters.project:
                 return +filterValue
-                    ? appListFilterResponse?.result?.Teams.find((team) => team.id === +filterValue)?.name
+                    ? appListFilterResponse?.result.teams.find((team) => team.id === +filterValue)?.name
                     : 'Apps with no project'
             case AppListUrlFilters.environment:
-                return appListFilterResponse?.result?.Environments.find((env) => env.id === +filterValue)
+                return appListFilterResponse?.result.environments.find((env) => env.id === +filterValue)
                     ?.environment_name
             case AppListUrlFilters.namespace:
                 return filterValue.split('_')[1]
@@ -200,85 +202,111 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
         }
     }
 
-    const projectOptions: GroupedOptionsType[] = [
-        { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
-        appListFilterResponse?.result.Teams.length && {
-            label: 'Projects',
-            options: [
-                ...(appListFilterResponse?.result.Teams.map((team) => ({
-                    label: team.name,
-                    value: String(team.id),
-                })) ?? []),
-                ...(projectListResponse?.result.map((team) => ({ label: team.name, value: String(team.id) })) ?? []),
-            ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC)),
-        },
-    ]
-
-    const clusterGroupedEnvOptions: GroupedOptionsType[] = appListFilterResponse?.result.Environments.reduce(
-        (prev, curr) => {
-            if (!prev.find((cluster) => cluster.label === curr.cluster_id)) {
-                prev.push({ label: curr.cluster_id, options: [] })
-            }
-            prev.find((cluster) => cluster.label === curr.cluster_id).options.push({
-                label: curr.environment_name,
-                value: String(curr.id),
-            })
-
-            return prev
-        },
-        [],
+    const projectOptions: GroupedOptionsType[] = useMemo(
+        () => [
+            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
+            appListFilterResponse?.result.teams.length && {
+                label: 'Projects',
+                options: [
+                    ...(appListFilterResponse?.result.teams.map((team) => ({
+                        label: team.name,
+                        value: String(team.id),
+                    })) ?? []),
+                    ...(projectListResponse?.result.map((team) => ({ label: team.name, value: String(team.id) })) ??
+                        []),
+                ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC)),
+            },
+        ],
+        [appListFilterResponse],
     )
 
-    const environmentOptions: GroupedOptionsType[] =
-        clusterGroupedEnvOptions?.map((cluster) => ({
-            label: getFormattedFilterValue(AppListUrlFilters.cluster, cluster.label),
-            options: cluster.options,
-        })) ?? []
+    const clusterGroupedEnvOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            appListFilterResponse?.result.environments.reduce((prev, curr) => {
+                if (!prev.find((clusterItem) => clusterItem.label === curr.cluster_id)) {
+                    prev.push({ label: curr.cluster_id, options: [] })
+                }
+                prev.find((clusterItem) => clusterItem.label === curr.cluster_id).options.push({
+                    label: curr.environment_name,
+                    value: String(curr.id),
+                })
 
-    const clusterOptions: SelectPickerOptionType[] = [
-        ...(appListFilterResponse?.result.Clusters.map((cluster) => ({
-            label: cluster.cluster_name,
-            value: String(cluster.id),
-        })) ?? []),
-        ...(clusterListResponse?.result.map((cluster) => ({ label: cluster.cluster_name, value: cluster.id })) ?? []),
-    ]
+                return prev
+            }, []),
+        [appListFilterResponse],
+    )
 
-    const namespaceOptions: GroupedOptionsType[] = namespaceListResponse?.result
-        ?.map((cluster) => ({
-            label: cluster.clusterName,
-            options: cluster.environments
-                .filter((env) => !!env.namespace)
-                .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace, SortingOrder.ASC))
-                .map((env) => ({
-                    label: env.namespace,
-                    value: `${cluster.clusterId}_${env.namespace}`,
-                })),
-        }))
-        .sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC))
+    const environmentOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            clusterGroupedEnvOptions?.map((clusterItem) => ({
+                label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterItem.label),
+                options: clusterItem.options,
+            })) ?? [],
+        [clusterGroupedEnvOptions],
+    )
 
-    const selectedAppStatus = appStatus?.map((status) => ({ label: status, value: status }))
+    const clusterOptions: SelectPickerOptionType[] = useMemo(
+        () => [
+            ...(appListFilterResponse?.result.clusters.map((clusterItem) => ({
+                label: clusterItem.cluster_name,
+                value: String(clusterItem.id),
+            })) ?? []),
+            ...(clusterListResponse?.result.map((clusterItem) => ({
+                label: clusterItem.cluster_name,
+                value: clusterItem.id,
+            })) ?? []),
+        ],
+        [appListFilterResponse],
+    )
 
-    const selectedProjects = project?.map((project) => ({
-        label: getFormattedFilterValue(AppListUrlFilters.project, project),
-        value: project,
-    }))
+    const namespaceOptions: GroupedOptionsType[] = useMemo(
+        () =>
+            namespaceListResponse?.result
+                ?.map((clusterItem) => ({
+                    label: clusterItem.clusterName,
+                    options: clusterItem.environments
+                        .filter((env) => !!env.namespace)
+                        .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace, SortingOrder.ASC))
+                        .map((env) => ({
+                            label: env.namespace,
+                            value: `${clusterItem.clusterId}_${env.namespace}`,
+                        })),
+                }))
+                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC)),
+        [namespaceListResponse],
+    )
 
-    const selectedEnvironments = environment?.map((env) => ({
-        label: getFormattedFilterValue(AppListUrlFilters.environment, env),
-        value: env,
-    }))
+    const selectedAppStatus = appStatus.map((status) => ({ label: status, value: status })) || []
 
-    const selectedClusters = cluster?.map((clusterId) => ({
-        label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterId),
-        value: clusterId,
-    }))
+    const selectedProjects =
+        project.map((team) => ({
+            label: getFormattedFilterValue(AppListUrlFilters.project, team),
+            value: team,
+        })) || []
 
-    const selectedNamespaces = namespace?.map((namespaceOption) => ({
-        label: getFormattedFilterValue(AppListUrlFilters.namespace, namespaceOption),
-        value: namespaceOption,
-    }))
+    const selectedEnvironments =
+        environment.map((env) => ({
+            label: getFormattedFilterValue(AppListUrlFilters.environment, env),
+            value: env,
+        })) || []
 
-    const selectedTemplateTypes = templateType?.map((templateType) => ({ label: templateType, value: templateType }))
+    const selectedClusters =
+        cluster.map((clusterId) => ({
+            label: getFormattedFilterValue(AppListUrlFilters.cluster, clusterId),
+            value: clusterId,
+        })) || []
+
+    const selectedNamespaces =
+        namespace.map((namespaceOption) => ({
+            label: getFormattedFilterValue(AppListUrlFilters.namespace, namespaceOption),
+            value: namespaceOption,
+        })) || []
+
+    const selectedTemplateTypes =
+        templateType.map((templateTypeItem) => ({
+            label: templateTypeItem,
+            value: templateTypeItem,
+        })) || []
 
     const handleUpdateFilters = (filterKey: AppListUrlFilters) => (selectedOptions: SelectPickerOptionType[]) => {
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
@@ -287,8 +315,12 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     useEffect(() => {
         // To check whether namespaces are to be updated in url after cluster selection is changed
         if (!appListFilterLoading) {
-            const updatedNamespaces = namespace?.filter((currentNamespace) =>
-                clusterIdsArray.includes(+currentNamespace.split('_')?.[0]),
+            const clusterIdsMap = new Map<number, boolean>()
+            clusterIdsArray.forEach((clusterId) => {
+                clusterIdsMap.set(clusterId, true)
+            })
+            const updatedNamespaces = namespace.filter(
+                (currentNamespace) => clusterIdsMap.get(+currentNamespace.split('_')[0]) || false,
             )
             updateSearchParams({ namespace: updatedNamespaces })
         }
@@ -296,23 +328,21 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
 
     // In EA Mode if there is only one cluster select it
     useEffect(() => {
-        if (serverMode === SERVER_MODE.EA_ONLY && appListFilterResponse?.result.Clusters.length === 1) {
-            updateSearchParams({ cluster: [String(appListFilterResponse?.result.Clusters[0].id)] })
+        if (serverMode === SERVER_MODE.EA_ONLY && appListFilterResponse?.result.clusters.length === 1) {
+            updateSearchParams({ cluster: [String(appListFilterResponse?.result.clusters[0].id)] })
         }
-    }, [])
+    }, [appListFilterResponse])
 
     // on page load
     useEffect(() => {
         setCurrentTab(getCurrentTabName(params.appType))
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
     }, [syncListData])
 
-    const renderDataSyncingText = () => {
-        return <span className="dc__loading-dots">Syncing</span>
-    }
+    const renderDataSyncingText = () => <span className="dc__loading-dots">Syncing</span>
 
     useEffect(() => {
-        let interval
         if (isDataSyncing) {
             setLastDataSyncTimeString(renderDataSyncingText)
         } else {
@@ -323,7 +353,9 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
             }, 1000)
         }
         return () => {
-            interval && clearInterval(interval)
+            if (interval) {
+                clearInterval(interval)
+            }
         }
     }, [isDataSyncing])
 
@@ -332,7 +364,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     }
 
     function changeAppTab(appTabType) {
-        if (appTabType == currentTab) {
+        if (appTabType === currentTab) {
             return
         }
         history.push(getChangeAppTabURL(appTabType))
@@ -350,7 +382,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     const renderFilters = () => {
         const appStatusFilters: SelectPickerOptionType[] =
             params.appType === AppListConstants.AppType.HELM_APPS
-                ? APP_STATUS_FILTER_OPTIONS.filter((appStatus) => appStatus.label !== AppStatuses.NOT_DEPLOYED)
+                ? APP_STATUS_FILTER_OPTIONS.filter((status) => status.label !== AppStatuses.NOT_DEPLOYED)
                 : APP_STATUS_FILTER_OPTIONS
 
         const showExportCsvButton =
@@ -401,12 +433,11 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                                 isLoading={appListFilterLoading || projectListLoading}
                             />
                             <div className="dc__border-right h-16" />
-                            {serverMode == SERVER_MODE.FULL && (
+                            {serverMode === SERVER_MODE.FULL && (
                                 <>
                                     <Tooltip
                                         content="Remove cluster filters to use environment filter"
                                         alwaysShowTippyOnHover={!!clusterIdsCsv}
-                                        maxWidth="200px"
                                         wordBreak={false}
                                     >
                                         <div>
@@ -446,21 +477,20 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                     )}
                     <Tooltip
                         content="Remove environment filters to use cluster filter"
-                        alwaysShowTippyOnHover={!!environment?.length}
-                        maxWidth="200px"
+                        alwaysShowTippyOnHover={!!environment.length}
                         wordBreak={false}
                     >
-                        <div className='flexbox dc__position-rel'>
+                        <div className="flexbox dc__position-rel">
                             <FilterSelectPicker
                                 placeholder="Cluster"
                                 inputId="app-list-cluster-filter"
                                 options={clusterOptions}
                                 appliedFilterOptions={selectedClusters}
-                                isDisabled={!!environment?.length}
+                                isDisabled={!!environment.length}
                                 isLoading={appListFilterLoading || clusterListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                             />
-                            {showPulsatingDot && <div className='pulsating-dot dc__position-abs' />}
+                            {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                         </div>
                     </Tooltip>
                     <Tooltip content={SELECT_CLUSTER_TIPPY} alwaysShowTippyOnHover={!clusterIdsCsv}>
@@ -484,10 +514,10 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                                 apiPromise={() =>
                                     getDevtronAppListDataToExport(
                                         filterConfig,
-                                        appListFilterResponse?.result.Environments,
+                                        appListFilterResponse?.result.environments,
                                         namespaceListResponse?.result,
-                                        appListFilterResponse?.result.Clusters,
-                                        appListFilterResponse?.result.Teams,
+                                        appListFilterResponse?.result.clusters,
+                                        appListFilterResponse?.result.teams,
                                     )
                                 }
                                 fileName={FILE_NAMES.Apps}
@@ -567,13 +597,14 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                 </ul>
                 <div className="app-tabs-sync fs-13">
                     {lastDataSyncTimeString &&
-                        (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
-                            (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
+                        (params.appType === AppListConstants.AppType.DEVTRON_APPS ||
+                            (params.appType === AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
                             <span data-testid="sync-now-text">
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
                                     <button
                                         className="btn btn-link p-0 fw-6 cb-5 mb-2"
+                                        type="button"
                                         onClick={syncNow}
                                         data-testid="sync-now-button"
                                     >
@@ -582,7 +613,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                                 )}
                             </span>
                         )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS &&
+                    {params.appType === AppListConstants.AppType.HELM_APPS &&
                         fetchingExternalApps &&
                         renderDataSyncingText()}
                 </div>
@@ -593,7 +624,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     const closeDevtronAppCreateModal = (e) => {
         stopPropagation(e)
         const _urlPrefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
+            currentTab === AppListConstants.AppTabs.DEVTRON_APPS ? URLS.DEVTRON_APP_LIST : URLS.HELM_APP_LIST
         history.push(`${_urlPrefix}${location.search}`)
     }
 
@@ -636,7 +667,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
             {params.appType === AppListConstants.AppType.DEVTRON_APPS && serverMode === SERVER_MODE.FULL && (
                 <DevtronAppList
                     filterConfig={filterConfig}
-                    environmentList={appListFilterResponse?.result.Environments}
+                    environmentList={appListFilterResponse?.result.environments}
                     namespaceList={namespaceListResponse?.result}
                     appFiltersResponseLoading={appListFilterLoading || namespaceListLoading}
                     isArgoInstalled={isArgoInstalled}
@@ -665,8 +696,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                     <HelmAppList
                         serverMode={serverMode}
                         filterConfig={filterConfig}
-                        clusterList={appListFilterResponse?.result.Clusters}
-                        appFiltersResponseLoading={appListFilterLoading || namespaceListLoading}
+                        clusterList={appListFilterResponse?.result.clusters}
                         handleSorting={handleSorting}
                         clearAllFilters={clearFilters}
                         fetchingExternalApps={fetchingExternalApps}
@@ -689,22 +719,21 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
             {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used
                 for further app lists too  */}
             {isGenericAppListView && (
-                <>
-                    <GenericAppList
-                        key={params.appType}
-                        clearAllFilters={clearFilters}
-                        appFiltersResponseLoading={appListFilterLoading || namespaceListLoading}
-                        filterConfig={filterConfig}
-                        clusterList={appListFilterResponse?.result.Clusters}
-                        clusterIdsCsv={clusterIdsCsv}
-                        appType={params.appType}
-                        changePage={changePage}
-                        changePageSize={changePageSize}
-                        handleSorting={handleSorting}
-                        setShowPulsatingDot={setShowPulsatingDot}
-                    />
-                </>
+                <GenericAppList
+                    key={params.appType}
+                    clearAllFilters={clearFilters}
+                    filterConfig={filterConfig}
+                    clusterList={appListFilterResponse?.result.clusters}
+                    clusterIdsCsv={clusterIdsCsv}
+                    appType={params.appType}
+                    changePage={changePage}
+                    changePageSize={changePageSize}
+                    handleSorting={handleSorting}
+                    setShowPulsatingDot={setShowPulsatingDot}
+                />
             )}
         </div>
     )
 }
+
+export default AppList

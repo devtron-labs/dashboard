@@ -54,12 +54,12 @@ export const renderIcon = (appType: string): string => {
 }
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
-    [AppListUrlFilters.appStatus]: searchParams.getAll(AppListUrlFilters.appStatus) || [],
-    [AppListUrlFilters.project]: searchParams.getAll(AppListUrlFilters.project) || [],
-    [AppListUrlFilters.environment]: searchParams.getAll(AppListUrlFilters.environment) || [],
-    [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster) || [],
-    [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace) || [],
-    [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType) || [],
+    [AppListUrlFilters.appStatus]: searchParams.getAll(AppListUrlFilters.appStatus),
+    [AppListUrlFilters.project]: searchParams.getAll(AppListUrlFilters.project),
+    [AppListUrlFilters.environment]: searchParams.getAll(AppListUrlFilters.environment),
+    [AppListUrlFilters.cluster]: searchParams.getAll(AppListUrlFilters.cluster),
+    [AppListUrlFilters.namespace]: searchParams.getAll(AppListUrlFilters.namespace),
+    [AppListUrlFilters.templateType]: searchParams.getAll(AppListUrlFilters.templateType),
 })
 
 export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {

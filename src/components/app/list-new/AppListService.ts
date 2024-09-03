@@ -15,16 +15,14 @@
  */
 
 import { EnvListMinDTO, get, ResponseType, EnvironmentListHelmResult, Teams } from '@devtron-labs/devtron-fe-common-lib'
+import moment from 'moment'
+import { Cluster } from '@Services/service.types'
 import { Moment12HourFormat, Routes } from '../../../config'
 import { AppListFilterConfig, AppListPayloadType, GenericAppType, HelmAppListResponse } from './AppListType'
 import { getAppList } from '../service'
 import { getDevtronAppListPayload } from '../list/appList.modal'
-import moment from 'moment'
-import { Cluster } from '@Services/service.types'
 
-export const getDevtronInstalledHelmApps = (
-    clusterIdsCsv: string,
-): Promise<HelmAppListResponse> => {
+export const getDevtronInstalledHelmApps = (clusterIdsCsv: string): Promise<HelmAppListResponse> => {
     let url = Routes.CHART_INSTALLED
     if (clusterIdsCsv) {
         url = `${url}?clusterIds=${clusterIdsCsv}`
@@ -43,18 +41,15 @@ export const getDevtronAppListDataToExport = (
     projectList: Teams[],
 ) => {
     const appListPayload: AppListPayloadType = getDevtronAppListPayload(filterConfig, environmentList, namespaceList)
+    const clusterMap = new Map<string, number>()
+    clusterList.forEach((cluster) => clusterMap.set(cluster.cluster_name, cluster.id))
     return getAppList(appListPayload).then(({ result }) => {
         if (result.appContainers) {
             const _appDataList = []
             for (const _app of result.appContainers) {
                 if (_app.environments) {
                     for (const _env of _app.environments) {
-                        const clusterId =
-                            _env.clusterName &&
-                            clusterList.find((cluster) => {
-                                return cluster.cluster_name === _env.clusterName
-                            })?.id
-
+                        const clusterId = _env.clusterName ? clusterMap.get(_env.clusterName) || '-' : '-'
                         _appDataList.push({
                             appId: _env.appId,
                             appName: _env.appName,

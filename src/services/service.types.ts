@@ -183,7 +183,7 @@ export interface ConfigOverrideWorkflowDetailsResponse extends ResponseType {
 }
 
 export interface ClusterEnvTeams {
-    Clusters: Cluster[]
-    Environments: EnvListMinDTO[]
-    Teams: Teams[]
+    clusters: Cluster[]
+    environments: EnvListMinDTO[]
+    teams: Teams[]
 }

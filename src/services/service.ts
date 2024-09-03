@@ -169,9 +169,16 @@ export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): 
     return get(url)
 }
 
-export function getAppFilters(): Promise<ResponseType<ClusterEnvTeams>> {
-    return get(`${Routes.APP_FILTER_LIST}?auth=false`)
-}
+export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> => get(`${Routes.APP_FILTER_LIST}?auth=false`).then((response) => {
+    return {
+        ...response,
+        result: {
+            clusters: response.result?.Clusters ?? [],
+            environments: response.result?.Environments ?? [],
+            teams: response.result?.Teams ?? [],
+        }
+    }
+})
 
 /**
  * @deprecated Use getEnvironmentListMinPublic form common lib instead

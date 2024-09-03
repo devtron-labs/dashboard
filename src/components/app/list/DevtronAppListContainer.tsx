@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
 import moment from 'moment'
@@ -36,11 +36,11 @@ import ContentCard from '@Components/common/ContentCard/ContentCard'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCard.types'
 import { appListModal, getDevtronAppListPayload } from './appList.modal'
-import { App, DevtronAppListProps } from './types'
-import { DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
+import { App, DevtronAppExpandedState, DevtronAppListProps } from './types'
+import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
 import { getAppList } from '../service'
 import './list.scss'
-import { AppListPayloadType, AppListSortableKeys } from '../list-new/AppListType'
+import { AppListSortableKeys } from '../list-new/AppListType'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
@@ -51,6 +51,7 @@ import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtr
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
+import { INITIAL_EXPANDED_STATE } from './constants'
 
 const DevtronAppList = ({
     filterConfig,
@@ -69,15 +70,7 @@ const DevtronAppList = ({
 }: DevtronAppListProps) => {
     const history = useHistory()
 
-    const [expandedState, setExpandedState] = useState<{
-        expandedRow: Record<number, boolean>
-        isAllExpanded: boolean
-        isAllExpandable: boolean
-    }>({
-        expandedRow: {},
-        isAllExpanded: false,
-        isAllExpandable: false,
-    })
+    const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
 
     const { searchKey, offset, pageSize, appStatus, project, environment, namespace, cluster, sortBy, sortOrder } =
         filterConfig
@@ -85,38 +78,40 @@ const DevtronAppList = ({
     const isSearchOrFilterApplied =
         searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
 
-    const appListPayload: AppListPayloadType = getDevtronAppListPayload(filterConfig, environmentList, namespaceList)
-
-    const abortControllerRef = useRef(new AbortController())
+    const abortControllerRef = useRef<AbortController>(new AbortController())
     const [appListLoading, appListResponse, appListError, appListReload] = useAsync(
         () =>
             abortPreviousRequests(
-                () => getAppList(appListPayload, {signal: abortControllerRef.current.signal}),
+                () =>
+                    getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
+                        signal: abortControllerRef.current.signal,
+                    }),
                 abortControllerRef,
             ),
         [filterConfig, syncListData],
-        !appFiltersResponseLoading,
+        !appFiltersResponseLoading, // We need to wait until environment filters are created from cluster and namespace
     )
 
-    const parsedAppList: App[] = appListResponse?.result?.appContainers
-        ? appListModal(appListResponse?.result.appContainers)
-        : []
+    const parsedAppList: App[] = useMemo(
+        () => (appListResponse?.result.appContainers ? appListModal(appListResponse?.result.appContainers) : []),
+        [appListResponse],
+    )
 
     useEffect(() => {
         if (appListLoading) {
             updateDataSyncing(true)
-        } else {
-            updateDataSyncing(false)
-            setExpandedState({
-                ...expandedState,
-                isAllExpandable: parsedAppList?.filter((app) => app.environments.length > 1).length > 0,
-            })
-            setAppCount(parsedAppList?.length)
+            return
         }
+        updateDataSyncing(false)
+        setExpandedState({
+            ...expandedState,
+            isAllExpandable: parsedAppList.some((app) => app.environments.length > 1),
+        })
+        setAppCount(parsedAppList.length)
     }, [appListLoading])
 
     const handleEditApp = (appId: number): void => {
-        const url = `/app/${appId}/edit`
+        const url = `/${Routes.APP}/${appId}/${Routes.EDIT}`
         history.push(url)
     }
 
@@ -130,9 +125,9 @@ const DevtronAppList = ({
         setCurrentAppName(app.name)
 
         if (envId) {
-            return `/app/${app.id}/details/${envId}`
+            return `/${Routes.APP}/${app.id}/details/${envId}`
         }
-        return `/app/${app.id}/trigger`
+        return `/${Routes.APP}/${app.id}/trigger`
     }
 
     const expandRow = (id: number): void => {
@@ -176,52 +171,50 @@ const DevtronAppList = ({
 
     const getArrowIconClass = (): string => {
         if (expandedState.isAllExpandable) {
-            return expandedState.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-270'
+            return `fcn-7 dc__transition--transform ${expandedState.isAllExpanded ? '' : 'dc__flip-n90'}`
         }
-        return 'cursor-not-allowed dc__flip-270'
+        return 'cursor-not-allowed dc__flip-n90'
     }
 
-    const renderGuidedCards = () => {
-        return (
-            <div className="devtron-app-guided-cards-container">
-                <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
-                <div className="devtron-app-guided-cards-wrapper">
-                    <ContentCard
-                        datatestid="deploy-basic-k8snode"
-                        redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
-                        isExternalRedirect
-                        imgSrc={NodeAppThumbnail}
-                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
-                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
-                        LinkIcon={PlayMedia}
-                        linkIconClass="scb-5 mr-8"
-                        linkIconPlacement={CardLinkIconPlacement.BeforeLink}
-                    />
-                    <ContentCard
-                        datatestid="create-application"
-                        redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                        rootClassName="ev-5"
-                        imgSrc={DeployCICD}
-                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
-                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
-                        LinkIcon={ArrowRight}
-                        linkIconClass="scb-5"
-                        linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                    />
-                </div>
+    const renderGuidedCards = () => (
+        <div className="devtron-app-guided-cards-container">
+            <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
+            <div className="devtron-app-guided-cards-wrapper">
+                <ContentCard
+                    datatestid="deploy-basic-k8snode"
+                    redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
+                    isExternalRedirect
+                    imgSrc={NodeAppThumbnail}
+                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
+                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
+                    LinkIcon={PlayMedia}
+                    linkIconClass="scb-5 mr-8"
+                    linkIconPlacement={CardLinkIconPlacement.BeforeLink}
+                />
+                <ContentCard
+                    datatestid="create-application"
+                    redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    rootClassName="ev-5"
+                    imgSrc={DeployCICD}
+                    title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
+                    linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
+                    LinkIcon={ArrowRight}
+                    linkIconClass="scb-5"
+                    linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                />
             </div>
-        )
-    }
+        </div>
+    )
 
     if (!appListLoading && appListError && !getIsRequestAborted(appListError)) {
-        return <ErrorScreenManager reload={appListReload} />
+        return <ErrorScreenManager code={appListError.code} reload={appListReload} />
     }
 
     if (isSearchOrFilterApplied && appListResponse?.result?.appCount === 0) {
         return <GenericFilterEmptyState handleClearFilters={clearAllFilters} />
     }
 
-    if (appListResponse?.result?.appCount === 0) {
+    if (appListResponse?.result.appCount === 0) {
         return renderGuidedCards()
     }
 
@@ -253,184 +246,179 @@ const DevtronAppList = ({
         return <div className="app-list__cell app-list__cell--env" />
     }
 
-    const renderAppList = () => {
-        return (
-            <div className="app-list" data-testid="app-list-container">
-                <div className="app-list__header dc__position-sticky dc__top-47">
-                    <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
-                        <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />
-                    </div>
-                    <div className="app-list__cell app-list__cell--name">
-                        <SortableTableHeaderCell
-                            title={APP_LIST_HEADERS.AppName}
-                            isSorted={sortBy === AppListSortableKeys.APP_NAME}
-                            sortOrder={sortOrder}
-                            isSortable
-                            triggerSorting={handleAppNameSorting}
-                            disabled={false}
-                        />
-                    </div>
-                    {isArgoInstalled && (
-                        <div className="app-list__cell app-list__cell--app_status">
-                            <span className="app-list__cell-header" data-testid="appstatus">
-                                {APP_LIST_HEADERS.AppStatus}
-                            </span>
-                        </div>
-                    )}
-                    <div className="app-list__cell app-list__cell--env">
-                        <span className="app-list__cell-header mr-4" data-testid="environment">
-                            {APP_LIST_HEADERS.Environment}
-                        </span>
-                        <Tippy
-                            data-testid="env-tippy"
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top"
-                            content="Environment is a unique combination of cluster and namespace"
-                        >
-                            <div className="flex">
-                                <ICHelpOutline className="icon-dim-16" />
-                            </div>
-                        </Tippy>
-                    </div>
-                    <div className="app-list__cell app-list__cell--cluster">
-                        <span className="app-list__cell-header" data-testid="cluster">
-                            {APP_LIST_HEADERS.Cluster}
-                        </span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--namespace">
-                        <span className="app-list__cell-header" data-testid="namespace">
-                            {APP_LIST_HEADERS.Namespace}
-                        </span>
-                    </div>
-                    <div className="app-list__cell app-list__cell--time ">
-                        <SortableTableHeaderCell
-                            title={APP_LIST_HEADERS.LastDeployedAt}
-                            isSorted={sortBy === AppListSortableKeys.LAST_DEPLOYED}
-                            sortOrder={sortOrder}
-                            isSortable
-                            triggerSorting={handleLastDeployedSorting}
-                            disabled={false}
-                        />
-                    </div>
-                    <div className="app-list__cell app-list__cell--action" />
+    const renderAppList = () => (
+        <div className="app-list" data-testid="app-list-container">
+            <div className="app-list__header dc__position-sticky dc__top-47">
+                <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
+                    <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />
                 </div>
-                {appListLoading || appFiltersResponseLoading || getIsRequestAborted(appListError) ? (
-                    <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
-                        {appListLoadingArray.map((eachRow) => (
-                            <div className="pl-20 resource-list__table-row" key={eachRow.id}>
-                                {Object.keys(eachRow).map((eachKey) => (
-                                    <div className="child child-shimmer-loading" key={eachKey} />
-                                ))}
-                            </div>
-                        ))}
+                <div className="app-list__cell app-list__cell--name">
+                    <SortableTableHeaderCell
+                        title={APP_LIST_HEADERS.AppName}
+                        isSorted={sortBy === AppListSortableKeys.APP_NAME}
+                        sortOrder={sortOrder}
+                        isSortable
+                        triggerSorting={handleAppNameSorting}
+                        disabled={false}
+                    />
+                </div>
+                {isArgoInstalled && (
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header" data-testid="appstatus">
+                            {APP_LIST_HEADERS.AppStatus}
+                        </span>
                     </div>
-                ) : (
-                    parsedAppList.map((app) => {
-                        const len = app.environments.length > 1
-                        return (
-                            <React.Fragment key={app.id}>
-                                {!expandedState.expandedRow[app.id] ? (
-                                    <Link
-                                        to={redirectToAppDetails(app, app.defaultEnv.id)}
-                                        className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
-                                        data-testid="app-list-row"
-                                    >
-                                        <div className="app-list__cell--icon">
-                                            <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
-                                            {len && (
-                                                <Arrow
-                                                    className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
-                                                    onClick={expandEnv}
-                                                    data-key={app.id}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
-                                                {app.name}
-                                            </p>
-                                        </div>
-                                        {isArgoInstalled && (
-                                            <div
-                                                className="app-list__cell app-list__cell--app_status"
-                                                data-testid="devtron-app-status"
-                                            >
-                                                <AppStatus
-                                                    appStatus={app.defaultEnv.appStatus}
-                                                    isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
-                                                />
-                                            </div>
-                                        )}
-                                        {renderEnvironmentList(app)}
-                                        <div className="app-list__cell app-list__cell--cluster">
-                                            <p
-                                                data-testid={`${app.defaultEnv.clusterName}-cluster`}
-                                                className="dc__truncate-text  m-0"
-                                            >
-                                                {app.defaultEnv ? app.defaultEnv.clusterName : ''}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--namespace">
-                                            <p
-                                                data-testid={`${app.defaultEnv.namespace}-namespace`}
-                                                className="dc__truncate-text  m-0"
-                                            >
-                                                {app.defaultEnv ? app.defaultEnv.namespace : ''}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--time">
-                                            {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
-                                                <Tippy
-                                                    className="default-tt"
-                                                    arrow
-                                                    placement="top"
-                                                    content={moment(app.defaultEnv.lastDeployedTime).format(
-                                                        DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
-                                                    )}
-                                                >
-                                                    <p
-                                                        className="dc__truncate-text  m-0"
-                                                        data-testid="last-deployed-time"
-                                                    >
-                                                        {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
-                                                    </p>
-                                                </Tippy>
-                                            )}
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--action">
-                                            <button
-                                                data-testid="edit-app-button"
-                                                type="button"
-                                                aria-label="redirect-to-app-config"
-                                                data-key={app.id}
-                                                className="button-edit"
-                                                onClick={handleEditAppRedirect}
-                                            >
-                                                <Edit className="button-edit__icon" />
-                                            </button>
-                                        </div>
-                                    </Link>
-                                ) : null}
-                                {expandedState.expandedRow[app.id] && (
-                                    <ExpandedRow
-                                        app={app}
-                                        close={handleCloseExpandedRow}
-                                        redirect={redirectToAppDetails}
-                                        handleEdit={handleEditApp}
-                                        isArgoInstalled={isArgoInstalled}
-                                    />
-                                )}
-                            </React.Fragment>
-                        )
-                    })
                 )}
+                <div className="app-list__cell app-list__cell--env">
+                    <span className="app-list__cell-header mr-4" data-testid="environment">
+                        {APP_LIST_HEADERS.Environment}
+                    </span>
+                    <Tippy
+                        data-testid="env-tippy"
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content="Environment is a unique combination of cluster and namespace"
+                    >
+                        <div className="flex">
+                            <ICHelpOutline className="icon-dim-16" />
+                        </div>
+                    </Tippy>
+                </div>
+                <div className="app-list__cell app-list__cell--cluster">
+                    <span className="app-list__cell-header" data-testid="cluster">
+                        {APP_LIST_HEADERS.Cluster}
+                    </span>
+                </div>
+                <div className="app-list__cell app-list__cell--namespace">
+                    <span className="app-list__cell-header" data-testid="namespace">
+                        {APP_LIST_HEADERS.Namespace}
+                    </span>
+                </div>
+                <div className="app-list__cell app-list__cell--time ">
+                    <SortableTableHeaderCell
+                        title={APP_LIST_HEADERS.LastDeployedAt}
+                        isSorted={sortBy === AppListSortableKeys.LAST_DEPLOYED}
+                        sortOrder={sortOrder}
+                        isSortable
+                        triggerSorting={handleLastDeployedSorting}
+                        disabled={false}
+                    />
+                </div>
+                <div className="app-list__cell app-list__cell--action" />
             </div>
-        )
-    }
+            {appListLoading || appFiltersResponseLoading || getIsRequestAborted(appListError) ? (
+                <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
+                    {appListLoadingArray.map((eachRow) => (
+                        <div className="pl-20 resource-list__table-row" key={eachRow.id}>
+                            {Object.keys(eachRow).map((eachKey) => (
+                                <div className="child child-shimmer-loading" key={eachKey} />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                parsedAppList.map((app) => {
+                    const len = app.environments.length > 1
+                    return (
+                        <React.Fragment key={app.id}>
+                            {!expandedState.expandedRow[app.id] ? (
+                                <Link
+                                    to={redirectToAppDetails(app, app.defaultEnv.id)}
+                                    className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                    data-testid="app-list-row"
+                                >
+                                    <div className="app-list__cell--icon">
+                                        <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
+                                        {len && (
+                                            <Arrow
+                                                className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
+                                                onClick={expandEnv}
+                                                data-key={app.id}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--name">
+                                        <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
+                                            {app.name}
+                                        </p>
+                                    </div>
+                                    {isArgoInstalled && (
+                                        <div
+                                            className="app-list__cell app-list__cell--app_status"
+                                            data-testid="devtron-app-status"
+                                        >
+                                            <AppStatus
+                                                appStatus={app.defaultEnv.appStatus}
+                                                isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
+                                            />
+                                        </div>
+                                    )}
+                                    {renderEnvironmentList(app)}
+                                    <div className="app-list__cell app-list__cell--cluster">
+                                        <p
+                                            data-testid={`${app.defaultEnv.clusterName}-cluster`}
+                                            className="dc__truncate-text  m-0"
+                                        >
+                                            {app.defaultEnv ? app.defaultEnv.clusterName : ''}
+                                        </p>
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--namespace">
+                                        <p
+                                            data-testid={`${app.defaultEnv.namespace}-namespace`}
+                                            className="dc__truncate-text  m-0"
+                                        >
+                                            {app.defaultEnv ? app.defaultEnv.namespace : ''}
+                                        </p>
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--time">
+                                        {app.defaultEnv && app.defaultEnv.lastDeployedTime && (
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow
+                                                placement="top"
+                                                content={moment(app.defaultEnv.lastDeployedTime).format(
+                                                    DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
+                                                )}
+                                            >
+                                                <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
+                                                    {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
+                                                </p>
+                                            </Tippy>
+                                        )}
+                                    </div>
+                                    <div className="app-list__cell app-list__cell--action">
+                                        <button
+                                            data-testid="edit-app-button"
+                                            type="button"
+                                            aria-label="redirect-to-app-config"
+                                            data-key={app.id}
+                                            className="button-edit"
+                                            onClick={handleEditAppRedirect}
+                                        >
+                                            <Edit className="button-edit__icon" />
+                                        </button>
+                                    </div>
+                                </Link>
+                            ) : null}
+                            {expandedState.expandedRow[app.id] && (
+                                <ExpandedRow
+                                    app={app}
+                                    close={handleCloseExpandedRow}
+                                    redirect={redirectToAppDetails}
+                                    handleEdit={handleEditApp}
+                                    isArgoInstalled={isArgoInstalled}
+                                />
+                            )}
+                        </React.Fragment>
+                    )
+                })
+            )}
+        </div>
+    )
 
     const renderPagination = () => {
-        if (appListResponse?.result?.appCount > DEFAULT_BASE_PAGE_SIZE) {
+        if (appListResponse?.result.appCount > DEFAULT_BASE_PAGE_SIZE) {
             return (
                 <Pagination
                     rootClassName="flex dc__content-space px-20"

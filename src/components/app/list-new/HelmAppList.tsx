@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
     AppStatus,
     showError,
@@ -31,6 +31,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
+import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
 import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
@@ -66,10 +67,9 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { HelmAppListResponse, HelmApp, AppListSortableKeys, AppListFilterConfig, HelmAppListProps } from './AppListType'
-import moment from 'moment'
+import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
 
-export default function HelmAppList({
+const HelmAppList = ({
     serverMode,
     filterConfig,
     clusterList,
@@ -84,7 +84,7 @@ export default function HelmAppList({
     changePage,
     changePageSize,
     setShowPulsatingDot,
-}: HelmAppListProps) {
+}: HelmAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
     const [devtronInstalledHelmAppsList, setDevtronInstalledHelmAppsList] = useState<HelmApp[]>([])
@@ -93,38 +93,52 @@ export default function HelmAppList({
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
 
-    const { appStatus, environment, cluster, namespace, project, searchKey, sortBy, sortOrder, offset, pageSize } = filterConfig
+    const { appStatus, environment, cluster, namespace, project, searchKey, sortBy, sortOrder, offset, pageSize } =
+        filterConfig
 
-    const getFilteredAppList = (): HelmApp[] => {
-        let tempFilteredList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
-        if (searchKey) {
-            tempFilteredList = tempFilteredList.filter((app) => app.appName.includes(searchKey.toLowerCase()))
-        }
-        if (project?.length) {
-            tempFilteredList = tempFilteredList.filter((app) => project.includes(String(app.projectId)))
-        }
-        if (environment?.length) {
-            tempFilteredList = tempFilteredList.filter((app) =>
-                environment.includes(String(app.environmentDetail.environmentId)),
-            )
-        }
-        if (namespace?.length) {
-            tempFilteredList = tempFilteredList.filter((app) =>
-                namespace.includes(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`),
-            )
-        }
-        if (appStatus?.length) {
-            tempFilteredList = tempFilteredList.filter((app) => appStatus.includes(app.appStatus))
-        }
+    const handleAppListSorting = (a: HelmApp, b: HelmApp) =>
+        sortBy === AppListSortableKeys.APP_NAME
+            ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
+            : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
 
-        return tempFilteredList
-    }
+    const getFilteredAppList = (): { filteredHelmAppList: HelmApp[]; filteredListSize: number } =>
+        useMemo(() => {
+            let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
+            if (searchKey) {
+                const searchLowerCase = searchKey.toLowerCase()
+                filteredHelmAppList = filteredHelmAppList.filter((app) => app.appName.includes(searchLowerCase))
+            }
+            if (project.length) {
+                filteredHelmAppList = filteredHelmAppList.filter((app) => project.includes(String(app.projectId)))
+            }
+            if (environment.length) {
+                filteredHelmAppList = filteredHelmAppList.filter((app) =>
+                    environment.includes(String(app.environmentDetail.environmentId)),
+                )
+            }
+            if (namespace.length) {
+                filteredHelmAppList = filteredHelmAppList.filter((app) =>
+                    namespace.includes(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`),
+                )
+            }
+            if (appStatus.length) {
+                filteredHelmAppList = filteredHelmAppList.filter((app) => appStatus.includes(app.appStatus))
+            }
+            filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
 
-    const filteredHelmAppsList: HelmApp[] = getFilteredAppList()
+            const filteredListSize = filteredHelmAppList.length
+
+            filteredHelmAppList = filteredHelmAppList.slice(offset, offset + pageSize)
+
+            return { filteredHelmAppList, filteredListSize }
+        }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
+
+    const { filteredHelmAppList, filteredListSize } = getFilteredAppList()
 
     // component load
     useEffect(() => {
         init()
+        return setShowPulsatingDot(false)
     }, [])
 
     useEffect(() => {
@@ -132,7 +146,7 @@ export default function HelmAppList({
         setDataStateType(AppListViewType.LOADING)
         setDevtronInstalledHelmAppsList([])
         setExternalHelmAppsList([])
-        if (serverMode == SERVER_MODE.EA_ONLY) {
+        if (serverMode === SERVER_MODE.EA_ONLY) {
             setDataStateType(AppListViewType.LIST)
             if (clusterIdsCsv) {
                 _getExternalHelmApps()
@@ -176,6 +190,79 @@ export default function HelmAppList({
         setExternalHelmListFetchErrors([])
     }
 
+    function _closeSseConnection(_sseConnection: EventSource) {
+        _sseConnection.close()
+        setSseConnection(undefined)
+        setFetchingExternalAppsState(false)
+    }
+
+    function _onExternalAppDataFromSse(
+        message: MessageEvent,
+        _externalAppRecievedClusterIds: string[],
+        _externalAppRecievedHelmApps: HelmApp[],
+        _externalAppFetchErrors: string[],
+        _sseConnection: EventSource,
+    ) {
+        try {
+            const externalAppData: HelmAppListResponse = JSON.parse(message.data)
+            if (!externalAppData.result.clusterIds?.length) {
+                return
+            }
+
+            const _clusterId = externalAppData.result.clusterIds[0].toString()
+            if (_externalAppRecievedClusterIds.includes(_clusterId)) {
+                return
+            }
+
+            if (externalAppData.result.errored) {
+                const _cluster = cluster.find((clusterId) => clusterId === _clusterId)
+                let _errorMsg = ''
+                if (_cluster) {
+                    _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster}". ERROR: `
+                }
+                _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
+                _externalAppFetchErrors.push(_errorMsg)
+                setExternalHelmListFetchErrors([..._externalAppFetchErrors])
+            }
+
+            _externalAppRecievedClusterIds.push(_clusterId)
+            const _newExternalAppList = externalAppData.result.helmApps || []
+            _newExternalAppList.forEach((app) => {
+                app.isExternal = true
+            })
+
+            _externalAppRecievedHelmApps.push(..._newExternalAppList)
+            setExternalHelmAppsList([..._externalAppRecievedHelmApps])
+        } catch (err) {
+            showError(err)
+        }
+
+        // Show guided content card for connecting cluster or installing CI/CD integration
+        // when there's only one cluster & no app other than devtron-operator is installed
+        if (serverMode === SERVER_MODE.EA_ONLY) {
+            setShowGuidedContentCards(
+                cluster.length === 1 &&
+                    _externalAppRecievedHelmApps.length === 1 &&
+                    checkIfDevtronOperatorHelmRelease(
+                        _externalAppRecievedHelmApps[0].appName,
+                        _externalAppRecievedHelmApps[0].environmentDetail?.namespace,
+                        `${_externalAppRecievedHelmApps[0].environmentDetail?.clusterId}`,
+                    ),
+            )
+        }
+
+        const _requestedSortedClusterIdsJson = JSON.stringify(
+            clusterIdsCsv.split(',').sort((a, b) => a.localeCompare(b)),
+        )
+        const _receivedSortedClusterIdsJson = JSON.stringify(
+            _externalAppRecievedClusterIds.sort((a, b) => a.localeCompare(b)),
+        )
+
+        if (_requestedSortedClusterIdsJson === _receivedSortedClusterIdsJson) {
+            _closeSseConnection(_sseConnection)
+        }
+    }
+
     function _getExternalHelmApps() {
         setFetchingExternalAppsState(true)
         const _sseConnection = new EventSource(`${Host}/application?clusterIds=${clusterIdsCsv}`, {
@@ -201,99 +288,17 @@ export default function HelmAppList({
         setSseConnection(_sseConnection)
     }
 
-    function _onExternalAppDataFromSse(
-        message: MessageEvent,
-        _externalAppRecievedClusterIds: string[],
-        _externalAppRecievedHelmApps: HelmApp[],
-        _externalAppFetchErrors: string[],
-        _sseConnection: EventSource,
-    ) {
-        try {
-            const externalAppData: HelmAppListResponse = JSON.parse(message.data)
-            if (!externalAppData.result.clusterIds?.length) {
-                return
-            }
-
-            const _clusterId = externalAppData.result.clusterIds[0].toString()
-            if (_externalAppRecievedClusterIds.includes(_clusterId)) {
-                return
-            }
-
-            if (externalAppData.result.errored) {
-                const _cluster = cluster?.find((clusterId) => {
-                    return clusterId === _clusterId
-                })
-                let _errorMsg = ''
-                if (_cluster) {
-                    _errorMsg = `${EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR} "${_cluster}". ERROR: `
-                }
-                _errorMsg += externalAppData.result.errorMsg || EXTERNAL_HELM_APP_FETCH_ERROR
-                _externalAppFetchErrors.push(_errorMsg)
-                setExternalHelmListFetchErrors([..._externalAppFetchErrors])
-            }
-
-            _externalAppRecievedClusterIds.push(_clusterId)
-            const _newExternalAppList = externalAppData.result.helmApps || []
-            _newExternalAppList.every((element) => (element.isExternal = true))
-
-            _externalAppRecievedHelmApps.push(..._newExternalAppList)
-            setExternalHelmAppsList([..._externalAppRecievedHelmApps])
-        } catch (err) {
-            showError(err)
-        }
-
-        // Show guided content card for connecting cluster or installing CI/CD integration
-        // when there's only one cluster & no app other than devtron-operator is installed
-        if (serverMode === SERVER_MODE.EA_ONLY) {
-            setShowGuidedContentCards(
-                cluster?.length === 1 &&
-                    _externalAppRecievedHelmApps.length === 1 &&
-                    checkIfDevtronOperatorHelmRelease(
-                        _externalAppRecievedHelmApps[0].appName,
-                        _externalAppRecievedHelmApps[0].environmentDetail?.namespace,
-                        `${_externalAppRecievedHelmApps[0].environmentDetail?.clusterId}`,
-                    ),
-            )
-        }
-
-        const _requestedSortedClusterIdsJson = JSON.stringify(
-            clusterIdsCsv.split(',').sort((a, b) => a.localeCompare(b)),
-        )
-        const _receivedSortedClusterIdsJson = JSON.stringify(
-            _externalAppRecievedClusterIds.sort((a, b) => a.localeCompare(b)),
-        )
-
-        if (_requestedSortedClusterIdsJson === _receivedSortedClusterIdsJson) {
-            _closeSseConnection(_sseConnection)
-        }
-    }
-
-    function _closeSseConnection(_sseConnection: EventSource) {
-        _sseConnection.close()
-        setSseConnection(undefined)
-        setFetchingExternalAppsState(false)
-    }
-
     function _isAnyFilterationAppliedExceptClusterAndNs() {
-        return (
-            filterConfig.project?.length ||
-            filterConfig.searchKey?.length ||
-            filterConfig.environment?.length ||
-            filterConfig.appStatus?.length
-        )
+        return project.length || searchKey.length || environment.length || appStatus.length
     }
 
     function _isAnyFilterationApplied() {
-        return (
-            _isAnyFilterationAppliedExceptClusterAndNs() ||
-            filterConfig.cluster?.length ||
-            filterConfig.namespace?.length
-        )
+        return _isAnyFilterationAppliedExceptClusterAndNs() || cluster.length || namespace.length
     }
 
     function _isOnlyAllClusterFilterationApplied() {
-        const _isAllClusterSelected = cluster?.length === clusterList?.length
-        const _isAnyNamespaceSelected = !!namespace?.length
+        const _isAllClusterSelected = cluster.length === clusterList?.length
+        const _isAnyNamespaceSelected = !!namespace.length
         return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
     }
 
@@ -320,11 +325,6 @@ export default function HelmAppList({
     const handleAppNameSorting = () => handleSorting(AppListSortableKeys.APP_NAME)
 
     const handleLastDeployedSorting = () => handleSorting(AppListSortableKeys.LAST_DEPLOYED)
-
-    const handleAppListSorting = (a: HelmApp, b: HelmApp) =>
-        sortBy === AppListSortableKeys.APP_NAME
-            ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
-            : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
 
     function renderHeaders() {
         return (
@@ -381,82 +381,75 @@ export default function HelmAppList({
         )
     }
 
-    const renderFetchError = (externalHelmListFetchError: string, index: number) => {
-        return (
-            <div className="bcn-0" key={index}>
-                <div className="h-8" />
-                <div className="ea-fetch-error-message above-header-message flex left">
-                    <span className="mr-8 flex">
-                        <ErrorExclamationIcon className="icon-dim-20" />
-                    </span>
-                    <span>{externalHelmListFetchError}</span>
-                    <CloseIcon
-                        data-id={index}
-                        className="icon-dim-24 dc__align-right cursor"
-                        onClick={_removeExternalAppFetchError}
-                    />
-                </div>
+    const renderFetchError = (externalHelmListFetchError: string, index: number) => (
+        <div className="bcn-0" key={index}>
+            <div className="h-8" />
+            <div className="ea-fetch-error-message above-header-message flex left">
+                <span className="mr-8 flex">
+                    <ErrorExclamationIcon className="icon-dim-20" />
+                </span>
+                <span>{externalHelmListFetchError}</span>
+                <CloseIcon
+                    data-id={index}
+                    className="icon-dim-24 dc__align-right cursor"
+                    onClick={_removeExternalAppFetchError}
+                />
             </div>
-        )
-    }
+        </div>
+    )
 
-    const renderHelmAppLink = (app: HelmApp): JSX.Element => {
-        return (
-            <Link key={app.appId} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
-                <div className="app-list__cell--icon">
-                    <LazyImage
-                        className="dc__chart-grid-item__icon icon-dim-24"
-                        src={app.chartAvatar}
-                        onError={handleImageError}
-                    />
-                </div>
-                <div className="app-list__cell app-list__cell--name flex column left">
-                    <div className="dc__truncate-text  m-0 value">{app.appName}</div>
-                    <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
-                </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--namespace">
-                        <AppStatus
-                            appStatus={app.appStatus}
-                            isVirtualEnv={app.environmentDetail.isVirtualEnvironment}
-                        />
-                    </div>
-                )}
-                <div className="app-list__cell app-list__cell--env">
-                    <p
-                        className="dc__truncate-text  m-0"
-                        data-testid={`${app.environmentDetail.environmentName}-environment`}
-                    >
-                        {app.environmentDetail.environmentName
-                            ? app.environmentDetail.environmentName
-                            : `${app.environmentDetail.clusterName}__${app.environmentDetail.namespace}`}
-                    </p>
-                </div>
-                <div className="app-list__cell app-list__cell--cluster">
-                    <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.clusterName}`}>
-                        {app.environmentDetail.clusterName}
-                    </p>
-                </div>
+    const renderHelmAppLink = (app: HelmApp): JSX.Element => (
+        <Link key={app.appId} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
+            <div className="app-list__cell--icon">
+                <LazyImage
+                    className="dc__chart-grid-item__icon icon-dim-24"
+                    src={app.chartAvatar}
+                    onError={handleImageError}
+                />
+            </div>
+            <div className="app-list__cell app-list__cell--name flex column left">
+                <div className="dc__truncate-text  m-0 value">{app.appName}</div>
+                <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
+            </div>
+            {isArgoInstalled && (
                 <div className="app-list__cell app-list__cell--namespace">
-                    <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.namespace}`}>
-                        {app.environmentDetail.namespace}
-                    </p>
+                    <AppStatus appStatus={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
                 </div>
-                <div className="app-list__cell app-list__cell--time">
-                    {app.lastDeployedAt && (
-                        <Tippy
-                            className="default-tt"
-                            arrow
-                            placement="top"
-                            content={moment(app.lastDeployedAt).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
-                        >
-                            <p className="dc__truncate-text  m-0">{handleUTCTime(app.lastDeployedAt, true)}</p>
-                        </Tippy>
-                    )}
-                </div>
-            </Link>
-        )
-    }
+            )}
+            <div className="app-list__cell app-list__cell--env">
+                <p
+                    className="dc__truncate-text  m-0"
+                    data-testid={`${app.environmentDetail.environmentName}-environment`}
+                >
+                    {app.environmentDetail.environmentName
+                        ? app.environmentDetail.environmentName
+                        : `${app.environmentDetail.clusterName}__${app.environmentDetail.namespace}`}
+                </p>
+            </div>
+            <div className="app-list__cell app-list__cell--cluster">
+                <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.clusterName}`}>
+                    {app.environmentDetail.clusterName}
+                </p>
+            </div>
+            <div className="app-list__cell app-list__cell--namespace">
+                <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.namespace}`}>
+                    {app.environmentDetail.namespace}
+                </p>
+            </div>
+            <div className="app-list__cell app-list__cell--time">
+                {app.lastDeployedAt && (
+                    <Tippy
+                        className="default-tt"
+                        arrow
+                        placement="top"
+                        content={moment(app.lastDeployedAt).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
+                    >
+                        <p className="dc__truncate-text  m-0">{handleUTCTime(app.lastDeployedAt, true)}</p>
+                    </Tippy>
+                )}
+            </div>
+        </Link>
+    )
 
     function renderApplicationList() {
         return (
@@ -485,11 +478,8 @@ export default function HelmAppList({
                 {externalHelmListFetchErrors.map((externalHelmListFetchError, index) =>
                     renderFetchError(externalHelmListFetchError, index),
                 )}
-                {filteredHelmAppsList.length > 0 && renderHeaders()}
-                {filteredHelmAppsList
-                    .sort((a, b) => handleAppListSorting(a, b)) // Sorting
-                    .slice(offset, offset + pageSize) // Pagination
-                    .map((app) => renderHelmAppLink(app))}
+                {filteredListSize > 0 && renderHeaders()}
+                {filteredHelmAppList.map((app) => renderHelmAppLink(app))}
                 {showGuidedContentCards && (
                     <div className="helm-app-guided-cards-wrapper">
                         <ContentCard
@@ -575,15 +565,13 @@ export default function HelmAppList({
     }
 
     function askToConnectAClusterForNoResult() {
-        const handleButton = () => {
-            return (
-                <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
-                    <button type="button" className="cta flex">
-                        {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
-                    </button>
-                </Link>
-            )
-        }
+        const handleButton = () => (
+            <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                <button type="button" className="cta flex">
+                    {APP_LIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
+                </button>
+            </Link>
+        )
         return (
             <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
@@ -628,10 +616,10 @@ export default function HelmAppList({
     }
 
     function renderFullModeApplicationListContainer() {
-        if (!sseConnection && filteredHelmAppsList.length == 0) {
+        if (!sseConnection && filteredListSize === 0) {
             return (
                 <>
-                    {serverMode == SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
+                    {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
                     {renderNoApplicationState()}
                 </>
             )
@@ -641,11 +629,11 @@ export default function HelmAppList({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredHelmAppsList.length > DEFAULT_BASE_PAGE_SIZE &&
+            filteredListSize > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
                     rootClassName="flex dc__content-space px-20"
-                    size={filteredHelmAppsList.length}
+                    size={filteredListSize}
                     pageSize={pageSize}
                     offset={offset}
                     changePage={changePage}
@@ -654,7 +642,7 @@ export default function HelmAppList({
             )
         )
     }
-    if (dataStateType == AppListViewType.ERROR) {
+    if (dataStateType === AppListViewType.ERROR) {
         return (
             <div className="dc__loading-wrapper">
                 <ErrorScreenManager code={errorResponseCode} />
@@ -663,7 +651,7 @@ export default function HelmAppList({
     }
     return (
         <>
-            {dataStateType == AppListViewType.LOADING && (
+            {dataStateType === AppListViewType.LOADING && (
                 <>
                     {renderHeaders()}
                     <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
@@ -677,7 +665,7 @@ export default function HelmAppList({
                     </div>
                 </>
             )}
-            {dataStateType == AppListViewType.LIST && (
+            {dataStateType === AppListViewType.LIST && (
                 <div>
                     {renderFullModeApplicationListContainer()}
                     {renderPagination()}
@@ -686,3 +674,5 @@ export default function HelmAppList({
         </>
     )
 }
+
+export default HelmAppList
