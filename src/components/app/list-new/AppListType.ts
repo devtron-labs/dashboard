@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ResponseType, SERVER_MODE, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { Cluster } from '@Services/service.types'
+import { DevtronAppListProps } from '../list/types'
 
 export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',
     HELM_RELEASE = 'HelmRelease',
 }
+
+export enum AppStatuses {
+    DEGRADED = 'Degraded',
+    HEALTHY = 'Healthy',
+    HIBERNATING = 'Hibernating',
+    MISSING = 'Missing',
+    PROGRESSING = 'Progressing',
+    NOT_DEPLOYED = 'Not Deployed',
+}
+
 export interface GenericAppType {
     appName: string
     appStatus: string
@@ -68,24 +80,72 @@ export interface HelmAppListResponse extends ResponseType {
     result?: HelmAppsListResult
 }
 
-export interface AppListAppliedFilters {
-    environments: Set<number>
-    teams: Set<number>
-    appStatus: Set<string>
-    templateType: Set<string>
-    clusterVsNamespaceMap
-}
-
 export interface AppListPayloadType {
     environments: number[]
     teams: number[]
     namespaces: string[]
     appNameSearch: string
     appStatuses: string[]
-    templateType: string[]
-    sortBy: string
-    sortOrder: string
+    sortBy: AppListSortableKeys
+    sortOrder: SortingOrder
     offset: number
-    hOffset: number
     size: number
+}
+
+export enum AppListSortableKeys {
+    APP_NAME = 'appNameSort',
+    LAST_DEPLOYED = 'lastDeployedSort',
+}
+
+export enum AppListUrlFilters {
+    appStatus = 'appStatus',
+    project = 'project',
+    environment = 'environment',
+    namespace = 'namespace',
+    cluster = 'cluster',
+    templateType = 'templateType',
+}
+
+export interface AppListUrlFiltersType extends Record<AppListUrlFilters, string[]> {}
+
+export interface AppListFilterConfig
+    extends AppListUrlFiltersType,
+        Pick<AppListPayloadType, 'sortBy' | 'sortOrder' | 'offset'> {
+    pageSize: number
+    searchKey: string
+}
+
+export interface HelmAppListProps
+    extends Pick<
+        DevtronAppListProps,
+        | 'filterConfig'
+        | 'appFiltersResponseLoading'
+        | 'clearAllFilters'
+        | 'handleSorting'
+        | 'changePage'
+        | 'changePageSize'
+        | 'isArgoInstalled'
+        | 'syncListData'
+        | 'updateDataSyncing'
+    > {
+    clusterIdsCsv: string
+    serverMode: SERVER_MODE
+    fetchingExternalApps: boolean
+    setFetchingExternalAppsState
+    clusterList: Cluster[]
+}
+
+export interface GenericAppListProps
+    extends Pick<
+            DevtronAppListProps,
+            | 'filterConfig'
+            | 'appFiltersResponseLoading'
+            | 'clearAllFilters'
+            | 'handleSorting'
+            | 'changePage'
+            | 'changePageSize'
+        >,
+        Pick<HelmAppListProps, 'clusterIdsCsv'> {
+    appType: string
+    clusterList: Cluster[]
 }

@@ -566,13 +566,7 @@ export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRou
             <Switch>
                 <Route
                     path={`${path}/:appType`}
-                    render={() => (
-                        <NewAppList
-                            isSuperAdmin={isSuperAdmin}
-                            isArgoInstalled={isArgoInstalled}
-                            appListCount={appListCount}
-                        />
-                    )}
+                    render={() => <NewAppList isArgoInstalled={isArgoInstalled} />}
                 />
                 <Route exact path="">
                     <RedirectToAppList />

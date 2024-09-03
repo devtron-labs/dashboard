@@ -40,6 +40,7 @@ import {
     LoginCountType,
     ConfigOverrideWorkflowDetailsResponse,
     AllWorkflows,
+    ClusterEnvTeams,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
@@ -168,7 +169,7 @@ export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): 
     return get(url)
 }
 
-export function getAppFilters() {
+export function getAppFilters(): Promise<ResponseType<ClusterEnvTeams>> {
     return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 

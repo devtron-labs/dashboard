@@ -409,26 +409,6 @@
     }
 }
 
-.app-tabs-wrapper {
-    position: relative;
-    border-bottom: 1px solid #ddd;
-}
-
-.app-tabs-wrapper .tab-list {
-    padding-left: 20px;
-    background-color: white;
-}
-
-.app-tabs-wrapper .app-tabs-sync {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}
-
-.app-tabs-wrapper .app-tabs-sync button {
-    margin-top: -2px;
-}
-
 .filter-divider {
     width: 1px;
     height: 20px;
@@ -464,10 +444,6 @@
 .ea-fetch-error-message {
     background-color: var(--R100);
     border: solid 1px var(--R200);
-}
-
-.first-app-container {
-    margin-top: 60px;
 }
 
 .helm-app-guided-cards-wrapper,

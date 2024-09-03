@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { AppType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router-dom'
+import { AppType, EnvironmentListHelmResult, EnvListMinDTO, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
 
 export interface AppListState {
     code: number
@@ -24,13 +23,7 @@ export interface AppListState {
     errors: ServerError[]
     apps: App[]
     showCommandBar: boolean
-    sortRule: {
-        key: string
-        order: string
-    }
     size: number
-    offset: number
-    pageSize: number
     expandedRow: Record<number, boolean>
     isAllExpanded: boolean
     isAllExpandable: boolean
@@ -65,40 +58,20 @@ export interface Environment {
     isVirtualEnvironment?: boolean
 }
 
-export interface EnvironmentClusterList {
-    environmentClusterAppListData: any
-}
-
-export interface AppListProps extends RouteComponentProps<{ route: string }> {
-    payloadParsedFromUrl?: any
-    serverMode?: string
+export interface DevtronAppListProps {
+    filterConfig: AppListFilterConfig
+    appFiltersResponseLoading: boolean
+    environmentList: EnvListMinDTO[]
+    namespaceList: EnvironmentListHelmResult[]
+    isArgoInstalled: boolean
+    syncListData: boolean
+    updateDataSyncing: (loading: boolean) => void
     clearAllFilters: () => void
-    sortApplicationList: (key: string) => void
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-    setAppCount: React.Dispatch<React.SetStateAction<number>>
-    updateDataSyncing: (loading: boolean) => void
-    isArgoInstalled: boolean
-    environmentClusterList: EnvironmentClusterList
     setCurrentAppName: (appName: string) => void
-}
-
-export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {
-    expandRow: (id: number | null) => void
-    closeExpandedRow: (id: number | null) => void
-    sort: (key: string) => void
-    handleEditApp: (appId: number) => void
-    redirectToAppDetails: (app, envId: number) => string
-    clearAll: () => void
     changePage: (pageNo: number) => void
-    changePageSize: (size: number) => void
-    appListCount: number
-    isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
-    updateDataSyncing: (loading: boolean) => void
-    toggleExpandAllRow: () => void
-    isArgoInstalled: boolean
+    changePageSize: (pageSize: number) => void
+    handleSorting: (sortBy: AppListSortableKeys) => void
+    setAppCount: (appCount: number) => void
 }
 
 export interface AppListResponse {
@@ -153,8 +126,6 @@ export const SortBy = {
 }
 
 export interface AppListPropType {
-    isSuperAdmin: boolean
-    appListCount: number
     isArgoInstalled: boolean
 }
 

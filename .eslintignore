@@ -164,12 +164,10 @@ src/components/app/list-new/AppList.tsx
 src/components/app/list-new/AppListService.ts
 src/components/app/list-new/GenericAppList.tsx
 src/components/app/list-new/HelmAppList.tsx
-src/components/app/list/AppListView.tsx
 src/components/app/list/DevtronAppListContainer.tsx
 src/components/app/list/TriggerUrl.tsx
 src/components/app/list/__tests__/AppListView.test.tsx
 src/components/app/list/appList.modal.ts
-src/components/app/list/appStatus/AppStatus.tsx
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts

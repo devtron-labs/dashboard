@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
@@ -31,6 +32,7 @@ export interface ExportToCsvProps {
     className?: string
     disabled?: boolean
     showOnlyIcon?: boolean
+    size?: ComponentSizeType.medium | ComponentSizeType.large
 }
 
 export const APPLIST_EXPORT_HEADERS = [

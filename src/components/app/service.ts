@@ -31,6 +31,7 @@ import {
     createGitCommitUrl,
     PromiseAllStatusType,
     ApiQueuingWithBatch,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
@@ -45,7 +46,7 @@ const stageMap = {
     APPROVAL: 'APPROVAL',
 }
 
-export const getAppList = (request, options?) => {
+export const getAppList = (request, options?: APIOptions) => {
     return post(Routes.APP_LIST, request, options)
 }
 

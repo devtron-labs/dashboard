@@ -373,11 +373,6 @@ export interface GenericNode<T> {
     namespace?: string
 }
 
-export enum AppListColumnSort {
-    appNameSort = 'appName',
-    lastDeployedSort = 'lastDeployedAt',
-}
-
 /**
  * @deprecated - use from fe-common
  */
@@ -607,29 +602,6 @@ export interface EnvironmentListMinType {
     allowedDeploymentTypes?: DeploymentAppTypes[]
 }
 
-export interface PayloadParsedFromURL {
-    appNameSearch?: string
-    appStatuses?
-    environments?
-    templateType?: string[]
-    hOffset?: number
-    namespaces?
-    offset?: number
-    size?: number
-    sortBy?: string
-    sortOrder?: string
-    teams?
-}
-
-export interface GenericAppListProps {
-    payloadParsedFromUrl: PayloadParsedFromURL
-    sortApplicationList
-    clearAllFilters
-    setShowPulsatingDotState
-    masterFilters
-    appType: string
-    isSSE?: boolean
-}
 export interface EditDescRequest {
     id: number
     environment_name: string

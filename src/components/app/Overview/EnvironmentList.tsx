@@ -32,9 +32,7 @@ import {
     ImageChipCell,
     RegistryType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { Link, useHistory } from 'react-router-dom'
-
 import { ReactComponent as ActivityIcon } from '../../../assets/icons/ic-activity.svg'
 import { ReactComponent as IconForward } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as ArrowLineDown } from '@Icons/ic-arrow-line-down.svg'

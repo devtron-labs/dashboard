@@ -27,6 +27,7 @@ import {
     HeaderWithCreateButton,
     SearchBar,
     useUrlFilters,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import { URLS } from '../../../config'
@@ -220,6 +221,7 @@ export default function JobsList() {
                                 apiPromise={getJobsDataToExport}
                                 fileName={FILE_NAMES.Jobs}
                                 disabled={!jobCount}
+                                size={ComponentSizeType.large}
                             />
                         </>
                     )}
