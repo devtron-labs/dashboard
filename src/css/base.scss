@@ -4966,3 +4966,17 @@ textarea::placeholder {
     display: grid;
     grid-template-columns: 50% 50%;
 }
+
+.pulsating-dot {
+    width: 10px;
+    height: 10px;
+    border: solid 4px rgba(255, 126, 91, 0.4);
+    background-color: #ff7e5b;
+    top: -5px;
+    right: -5px;
+    border-radius: 50%;
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}

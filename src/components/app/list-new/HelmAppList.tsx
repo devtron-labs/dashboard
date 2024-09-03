@@ -83,6 +83,7 @@ export default function HelmAppList({
     handleSorting,
     changePage,
     changePageSize,
+    setShowPulsatingDot,
 }: HelmAppListProps) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -141,6 +142,11 @@ export default function HelmAppList({
             getDevtronInstalledHelmApps(clusterIdsCsv)
                 .then((devtronInstalledHelmAppsListResponse: HelmAppListResponse) => {
                     setDevtronInstalledHelmAppsList(devtronInstalledHelmAppsListResponse.result.helmApps ?? [])
+                    if (!devtronInstalledHelmAppsListResponse.result.helmApps?.length && !clusterIdsCsv) {
+                        setShowPulsatingDot(true)
+                    } else {
+                        setShowPulsatingDot(false)
+                    }
                     setDataStateType(AppListViewType.LIST)
                     if (clusterIdsCsv) {
                         _getExternalHelmApps()
@@ -351,7 +357,7 @@ export default function HelmAppList({
                         content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
                     >
                         <div className="flex">
-                            <ICHelpOutline className="icon-dim-20" />
+                            <ICHelpOutline className="icon-dim-16" />
                         </div>
                     </Tippy>
                 </div>

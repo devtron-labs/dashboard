@@ -84,6 +84,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     const [currentTab, setCurrentTab] = useState(getCurrentTabName(params.appType))
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
+    const [showPulsatingDot, setShowPulsatingDot] = useState(false)
 
     // check for external argoCD app
     const isExternalArgo =
@@ -182,14 +183,14 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
         switch (filterKey) {
             case AppListUrlFilters.cluster:
                 return appListFilterResponse?.result?.Clusters.find((cluster) => cluster.id === +filterValue)
-                    .cluster_name
+                    ?.cluster_name
             case AppListUrlFilters.project:
                 return +filterValue
-                    ? appListFilterResponse?.result?.Teams.find((team) => team.id === +filterValue).name
+                    ? appListFilterResponse?.result?.Teams.find((team) => team.id === +filterValue)?.name
                     : 'Apps with no project'
             case AppListUrlFilters.environment:
                 return appListFilterResponse?.result?.Environments.find((env) => env.id === +filterValue)
-                    .environment_name
+                    ?.environment_name
             case AppListUrlFilters.namespace:
                 return filterValue.split('_')[1]
             case AppListUrlFilters.templateType:
@@ -305,8 +306,6 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
         setCurrentTab(getCurrentTabName(params.appType))
         getModuleInfo(ModuleNameMap.CICD) // To check the latest status and show user reload toast
     }, [syncListData])
-
-    // update last sync time on tab change
 
     const renderDataSyncingText = () => {
         return <span className="dc__loading-dots">Syncing</span>
@@ -451,7 +450,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                         maxWidth="200px"
                         wordBreak={false}
                     >
-                        <div>
+                        <div className='flexbox dc__position-rel'>
                             <FilterSelectPicker
                                 placeholder="Cluster"
                                 inputId="app-list-cluster-filter"
@@ -461,6 +460,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                                 isLoading={appListFilterLoading || clusterListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                             />
+                            {showPulsatingDot && <div className='pulsating-dot dc__position-abs' />}
                         </div>
                     </Tooltip>
                     <Tooltip content={SELECT_CLUSTER_TIPPY} alwaysShowTippyOnHover={!clusterIdsCsv}>
@@ -677,6 +677,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                         clusterIdsCsv={clusterIdsCsv}
                         changePage={changePage}
                         changePageSize={changePageSize}
+                        setShowPulsatingDot={setShowPulsatingDot}
                     />
                     {fetchingExternalApps && (
                         <div className="mt-16">
@@ -700,6 +701,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
                         changePage={changePage}
                         changePageSize={changePageSize}
                         handleSorting={handleSorting}
+                        setShowPulsatingDot={setShowPulsatingDot}
                     />
                 </>
             )}
