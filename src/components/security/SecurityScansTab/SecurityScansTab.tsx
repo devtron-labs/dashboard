@@ -108,7 +108,7 @@ export const SecurityScansTab = () => {
     }
 
     const abortControllerRef = useRef(new AbortController())
-    const [scanListLoading, securityScansResult, scanListError] = useAsync(
+    const [scanListLoading, securityScansResult, scanListError, reloadScansList] = useAsync(
         () =>
             abortPreviousRequests(
                 () => getSecurityScanList(payload, abortControllerRef.current.signal),
@@ -151,6 +151,14 @@ export const SecurityScansTab = () => {
                 envId: scan.envId,
             },
         })
+    }
+
+    if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
+        return (
+            <div className="flexbox-col flex-grow-1 dc__content-center">
+                <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
+            </div>
+        )
     }
 
     const renderHeader = () => (
@@ -202,12 +210,16 @@ export const SecurityScansTab = () => {
                         name="search-type__select-picker"
                         size={ComponentSizeType.large}
                         onChange={updateSearchType}
+                        isDisabled={scanListLoading}
                     />
                 </div>
                 <SearchBar
                     containerClassName="security-scan-search w-250"
                     initialSearchText={searchKey}
-                    inputProps={{ placeholder: `Search ${getSearchLabelFromValue(searchType)}` }}
+                    inputProps={{
+                        placeholder: `Search ${getSearchLabelFromValue(searchType)}`,
+                        disabled: scanListLoading,
+                    }}
                     handleEnter={handleSearch}
                     size={ComponentSizeType.large}
                 />
@@ -278,29 +290,6 @@ export const SecurityScansTab = () => {
             )
         }
 
-        if (!scanListLoading && scanListError && !getIsRequestAborted(scanListError)) {
-            return (
-                <div className="flexbox-col flex-grow-1 dc__content-center">
-                    <ErrorScreenManager code={securityScansResult?.responseCode} />
-                </div>
-            )
-        }
-
-        if (!securityScansResult.result.securityScans.length) {
-            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
-            if (areFiltersActive) {
-                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
-            }
-
-            return (
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                    classname="flex-grow-1"
-                />
-            )
-        }
-
         return (
             <>
                 {securityScansResult.result.securityScans.map((scan) => (
@@ -345,13 +334,36 @@ export const SecurityScansTab = () => {
         return null
     }
 
+    const renderScanListContainer = () => {
+        if (!scanListLoading && !securityScansResult?.result.securityScans.length) {
+            const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
+            if (areFiltersActive) {
+                return <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
+            }
+
+            return (
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <>
+                {renderHeader()}
+                {renderScanList()}
+                {renderScanDetailsModal()}
+            </>
+        )
+    }
+
     return (
         <>
             {renderFilters()}
             {renderSavedFilters()}
-            {renderHeader()}
-            {renderScanList()}
-            {renderScanDetailsModal()}
+            {renderScanListContainer()}
         </>
     )
 }

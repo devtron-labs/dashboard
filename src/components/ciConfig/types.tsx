@@ -22,7 +22,6 @@ import {
     DockerConfigOverrideType,
     MandatoryPluginDataType,
     VariableType,
-    MandatoryPluginDetailType,
     CommonNodeAttr,
     WorkflowType,
     Material,
@@ -342,7 +341,6 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     isJobCI?: boolean
     mandatoryPluginData?: MandatoryPluginDataType
-    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
@@ -356,7 +354,6 @@ export interface CIPipelineSidebarType {
 
 export interface TaskListType {
     withWarning: boolean
-    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
