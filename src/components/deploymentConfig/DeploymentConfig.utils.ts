@@ -15,8 +15,13 @@
  */
 
 import moment from 'moment'
-import { showError, TemplateListDTO, TemplateListType } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes } from './types'
+import {
+    showError,
+    TemplateListDTO,
+    TemplateListType,
+    DeploymentConfigStateActionTypes,
+    DeploymentConfigStateAction,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const handleConfigProtectionError = (
     action: number,

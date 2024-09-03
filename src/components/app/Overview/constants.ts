@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { AppEnvironment } from '@devtron-labs/devtron-fe-common-lib'
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../config'
-import { AppEnvironment } from '../../../services/service.types'
 
 /**
  * Mock data for the shimmer loader

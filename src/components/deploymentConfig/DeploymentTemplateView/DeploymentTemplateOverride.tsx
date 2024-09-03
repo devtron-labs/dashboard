@@ -23,11 +23,13 @@ import {
     YAMLStringify,
     ModuleNameMap,
     ModuleStatus,
+    DeploymentConfigStateActionTypes,
+    DeploymentConfigStateAction,
+    DeploymentConfigStateWithDraft,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentTemplate, chartRefAutocomplete } from '../../../Pages/Shared/EnvironmentOverride/service'
 import { getOptions } from '../service'
 import { importComponentFromFELibrary } from '../../common'
-import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes, DeploymentConfigStateWithDraft } from '../types'
 import {
     ComponentStates,
     DeploymentTemplateOverrideProps,

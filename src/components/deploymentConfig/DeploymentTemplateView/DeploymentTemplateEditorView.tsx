@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import YAML from 'yaml'
 import {
     Progressing,
@@ -23,13 +23,12 @@ import {
     YAMLStringify,
     MarkDown,
     CodeEditor,
+    useDeploymentTemplateContext,
+    DeploymentConfigStateActionTypes,
+    DeploymentChartOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import {
-    DeploymentChartOptionType,
-    DeploymentConfigContextType,
-    DeploymentConfigStateActionTypes,
     DeploymentTemplateEditorViewProps,
     CompareApprovalAndDraftSelectedOption,
 } from '../types'
@@ -43,7 +42,6 @@ import {
     getCodeEditorHeight,
     renderEditorHeading,
 } from './DeploymentTemplateView.component'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 
 const getLockFilteredTemplate = importComponentFromFELibrary('getLockFilteredTemplate', null, 'function')
@@ -69,7 +67,7 @@ const DeploymentTemplateEditorView = ({
     uneditedDocument,
 }: DeploymentTemplateEditorViewProps) => {
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
-    const { isUnSet, state, environments, dispatch } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { isUnSet, state, environments, dispatch } = useDeploymentTemplateContext()
     const [fetchingValues, setFetchingValues] = useState(false)
     const [optionOveriddeStatus, setOptionOveriddeStatus] = useState<Record<number, boolean>>()
     const [filteredEnvironments, setFilteredEnvironments] = useState<DeploymentChartOptionType[]>([])

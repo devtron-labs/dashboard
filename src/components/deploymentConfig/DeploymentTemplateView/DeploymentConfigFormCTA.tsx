@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
+import React from 'react'
 import {
     CHECKBOX_VALUE,
     Checkbox,
     ConditionalWrap,
     Progressing,
     showError,
+    useDeploymentTemplateContext,
     useMainContext,
     useUserEmail,
+    DeploymentConfigStateActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { DeploymentConfigContextType, DeploymentConfigFormCTAProps, DeploymentConfigStateActionTypes } from '../types'
+import { DeploymentConfigFormCTAProps } from '../types'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS } from '../constants'
 import { DOCUMENTATION } from '../../../config'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/ic-info-outline-grey.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { hasApproverAccess, importComponentFromFELibrary } from '../../common'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 
 const ApproveRequestTippy = importComponentFromFELibrary('ApproveRequestTippy')
 
@@ -55,8 +56,7 @@ export default function DeploymentConfigFormCTA({
     checkForProtectedLockedChanges,
     handleSaveChanges,
 }: DeploymentConfigFormCTAProps) {
-    const { state, isConfigProtectionEnabled, dispatch } =
-        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { state, isConfigProtectionEnabled, dispatch } = useDeploymentTemplateContext()
     const [approveChangesClicked, setApproveChangesClicked] = React.useState(false)
     const { isSuperAdmin } = useMainContext()
     const _selectedChart = isPublishedMode ? state.publishedState?.selectedChart : state.selectedChart

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { useContext } from 'react'
 import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
     StyledRadioGroup as RadioGroup,
     YAMLStringify,
+    useDeploymentTemplateContext,
+    DeploymentConfigStateActionTypes,
+    DeploymentChartVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentChartVersionType, DeploymentConfigContextType, DeploymentConfigStateActionTypes } from '../types'
 import { ChartTypeVersionOptions } from './DeploymentTemplateView.component'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-anticlockwise.svg'
 
@@ -47,7 +47,7 @@ export default function DeploymentTemplateOptionsTab({
         changeEditorMode,
         handleChangeToYAMLMode,
         handleChangeToGUIMode,
-    } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    } = useDeploymentTemplateContext()
     const currentStateValues =
         state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Reducer, createContext, useEffect, useReducer, useRef, useState } from 'react'
+import { Reducer, useEffect, useReducer, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
@@ -29,6 +29,10 @@ import {
     DeploymentTemplateQueryParamsType,
     DeploymentTemplateTabsType,
     ConfigurationType,
+    DeploymentConfigStateActionTypes,
+    DeploymentTemplateProvider,
+    DeploymentConfigStateAction,
+    DeploymentConfigStateWithDraft,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -44,12 +48,7 @@ import { getChartReferences } from '../../services/service'
 import { useJsonYaml, importComponentFromFELibrary, FloatingVariablesSuggestions } from '../common'
 import {
     ConfigKeysWithLockType,
-    DeploymentConfigContextType,
     DeploymentConfigProps,
-    DeploymentConfigStateAction,
-    DeploymentConfigStateActionTypes,
-    DeploymentConfigStateType,
-    DeploymentConfigStateWithDraft,
 } from './types'
 import './deploymentConfig.scss'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
@@ -72,8 +71,6 @@ const getDraftByResourceName = importComponentFromFELibrary('getDraftByResourceN
 const getLockedJSON = importComponentFromFELibrary('getLockedJSON', null, 'function')
 const getUnlockedJSON = importComponentFromFELibrary('getUnlockedJSON', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
-
-export const DeploymentConfigContext = createContext<DeploymentConfigContextType>(null)
 
 export default function DeploymentConfig({
     respondOnSuccess,
@@ -899,7 +896,7 @@ export default function DeploymentConfig({
     })
 
     return (
-        <DeploymentConfigContext.Provider value={getValueForContext()}>
+        <DeploymentTemplateProvider value={getValueForContext()}>
             <div
                 className={`app-compose__deployment-config dc__window-bg ${
                     state.openComparison || state.showReadme ? 'full-view' : ''
@@ -995,6 +992,6 @@ export default function DeploymentConfig({
                     />
                 )}
             </div>
-        </DeploymentConfigContext.Provider>
+        </DeploymentTemplateProvider>
     )
 }

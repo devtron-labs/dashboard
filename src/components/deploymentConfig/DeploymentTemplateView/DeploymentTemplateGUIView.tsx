@@ -25,15 +25,16 @@ import {
     joinObjects,
     flatMapOfJSONPaths,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
+    useDeploymentTemplateContext,
+    DeploymentConfigStateActionTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { JSONPath } from 'jsonpath-plus'
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
-import { DeploymentConfigContextType, DeploymentConfigStateActionTypes, DeploymentTemplateGUIViewProps } from '../types'
+import { DeploymentTemplateGUIViewProps } from '../types'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICArrow } from '../../../assets/icons/ic-arrow-forward.svg'
 import EmptyFolderImage from '../../../assets/img/Empty-folder.png'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
 
 const DeploymentTemplateGUIView = ({
@@ -50,7 +51,7 @@ const DeploymentTemplateGUIView = ({
         state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
         dispatch,
         handleChangeToYAMLMode,
-    } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    } = useDeploymentTemplateContext()
     const [formData, setFormData] = useState(null)
 
     useEffect(() => {

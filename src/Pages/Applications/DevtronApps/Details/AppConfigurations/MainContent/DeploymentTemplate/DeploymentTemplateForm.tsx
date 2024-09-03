@@ -1,9 +1,12 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { BaseURLParams, ConfigurationType, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseURLParams,
+    ConfigurationType,
+    Progressing,
+    useDeploymentTemplateContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentTemplateGUIView from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateGUIView'
-import { DeploymentConfigContext } from '@Components/deploymentConfig/DeploymentConfig'
-import { DeploymentConfigContextType } from '@Components/deploymentConfig/types'
 import { toast } from 'react-toastify'
 import { NO_SCOPED_VARIABLES_MESSAGE } from '@Components/deploymentConfig/constants'
 import { DeploymentTemplateFormProps } from './types'
@@ -21,7 +24,7 @@ const DeploymentTemplateForm = ({
     const {
         state: { editorTemplate, originalTemplate, selectedChartRefId },
         editorOnChange,
-    } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    } = useDeploymentTemplateContext()
 
     const [resolvedEditorTemplate, setResolvedEditorTemplate] = useState<string>('')
     const [resolvedOriginalTemplate, setResolvedOriginalTemplate] = useState<string>('')

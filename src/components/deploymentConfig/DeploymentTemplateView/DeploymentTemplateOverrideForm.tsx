@@ -18,17 +18,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import YAML from 'yaml'
-import { Progressing, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentTemplateProvider, Progressing, YAMLStringify, DeploymentConfigStateActionTypes } from '@devtron-labs/devtron-fe-common-lib'
 import { compare as jsonpatchCompare, Operation } from 'fast-json-patch'
 import { ReactComponent as WarningIcon } from '@Icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-filled.svg'
 import { FloatingVariablesSuggestions, importComponentFromFELibrary, useJsonYaml } from '../../common'
-import { ConfigKeysWithLockType, DeploymentConfigStateActionTypes } from '../types'
+import { ConfigKeysWithLockType } from '../types'
 import { createDeploymentTemplate, updateDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import DeploymentTemplateOptionsTab from './DeploymentTemplateOptionsTab'
 import DeploymentTemplateEditorView from './DeploymentTemplateEditorView'
 import DeploymentConfigFormCTA from './DeploymentConfigFormCTA'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import { getIfLockedConfigProtected } from '../service'
 import { DeleteOverrideDialog } from './DeploymentTemplateView.component'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateReadOnlyEditorView'
@@ -664,7 +663,7 @@ export default function DeploymentTemplateOverrideForm({
     })
 
     return (
-        <DeploymentConfigContext.Provider value={getValueForContext()}>
+        <DeploymentTemplateProvider value={getValueForContext()}>
             <ConfigToolbar
                 loading={state.loading || state.chartConfigLoading}
                 draftId={state.latestDraft?.draftId}
@@ -748,6 +747,6 @@ export default function DeploymentTemplateOverrideForm({
                     envId={envId}
                 />
             )}
-        </DeploymentConfigContext.Provider>
+        </DeploymentTemplateProvider>
     )
 }

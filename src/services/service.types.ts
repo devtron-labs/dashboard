@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { DeploymentAppTypes, DeploymentStrategy, ResponseType, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentAppTypes,
+    DeploymentStrategy,
+    ResponseType,
+    SeverityCount,
+    AppEnvironment,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface RootObject {
     code: number
@@ -66,26 +72,6 @@ export interface ProjectFilteredApps extends ResponseType {
             name: string
         }[]
     }[]
-}
-
-export interface AppEnvironment {
-    environmentId: number
-    environmentName: string
-    appMetrics: boolean
-    infraMetrics: boolean
-    prod: boolean
-    chartRefId?: number
-    lastDeployed?: string
-    lastDeployedBy?: string
-    lastDeployedImage?: string
-    appStatus?: string
-    deploymentAppDeleteRequest?: boolean
-    isVirtualEnvironment?: boolean
-    isProtected?: boolean
-    pipelineId?: number
-    latestCdWorkflowRunnerId?: number
-    commits?: string[]
-    ciArtifactId?: number
 }
 
 export interface AppIdWorkflowNamesMapping {

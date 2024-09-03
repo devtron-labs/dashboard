@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { DeploymentConfigStateAction, DeploymentConfigStateActionTypes, DeploymentConfigStateWithDraft } from './types'
+import {
+    DeploymentConfigStateAction,
+    DeploymentConfigStateActionTypes,
+    DeploymentConfigStateWithDraft,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     publishedState: null,

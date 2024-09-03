@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useContext, useRef } from 'react'
-import { Progressing, YAMLStringify, MarkDown, CodeEditor } from '@devtron-labs/devtron-fe-common-lib'
+import { useRef } from 'react'
+import {
+    Progressing,
+    YAMLStringify,
+    MarkDown,
+    CodeEditor,
+    useDeploymentTemplateContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
-import { DeploymentConfigContextType, DeploymentTemplateReadOnlyEditorViewProps } from '../types'
+import { DeploymentTemplateReadOnlyEditorViewProps } from '../types'
 import { MODES } from '../../../config'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import DeploymentTemplateGUIView from './DeploymentTemplateGUIView'
 import { importComponentFromFELibrary } from '../../common'
 
@@ -33,7 +38,7 @@ export default function DeploymentTemplateReadOnlyEditorView({
     hideLockedKeys,
     uneditedDocument,
 }: DeploymentTemplateReadOnlyEditorViewProps) {
-    const { state } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const { state } = useDeploymentTemplateContext()
     const addOperationsRef = useRef([])
 
     // NOTE: the following can throw error but not putting it in try block

@@ -37,6 +37,7 @@ import {
     getTriggerHistory,
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
+    AppEnvironment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
@@ -44,7 +45,6 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import './cdDetail.scss'
 import { DeploymentTemplateList } from './cd.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
-import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {
     processVirtualEnvironmentDeploymentData,

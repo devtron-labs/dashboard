@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { sortObjectArrayAlphabetically, versionComparator } from '../common'
 import {
     PopupMenu,
     stopPropagation,
     StyledRadioGroup as RadioGroup,
     SortingOrder,
+    DeploymentChartVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { ChartSelectorModalType, DeploymentChartVersionType } from './types'
+import { ChartSelectorModalType } from './types'
 import { CHART_DOCUMENTATION_LINK, CHART_TYPE_TAB, CHART_TYPE_TAB_KEYS } from './constants'
 import { DEPLOYMENT } from '../../config'
 

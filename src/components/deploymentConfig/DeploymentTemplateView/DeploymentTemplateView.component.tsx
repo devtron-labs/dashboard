@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import {
@@ -23,6 +23,10 @@ import {
     SortingOrder,
     VisibleModal2,
     DropdownIndicator,
+    useDeploymentTemplateContext,
+    DeploymentConfigStateActionTypes,
+    DeploymentChartOptionType,
+    DeploymentChartVersionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { versionComparator } from '../../common'
@@ -35,9 +39,6 @@ import {
     ChartTypeVersionOptionsProps,
     CompareWithApprovalPendingAndDraftProps,
     CompareWithDropdownProps,
-    DeploymentChartOptionType,
-    DeploymentChartVersionType,
-    DeploymentConfigStateActionTypes,
     DropdownItemProps,
     SaveConfirmationDialogProps,
 } from '../types'
@@ -49,7 +50,6 @@ import {
     getDraftOption,
 } from '../constants'
 import ChartSelectorDropdown from '../ChartSelectorDropdown'
-import { DeploymentConfigContext } from '../DeploymentConfig'
 import { deleteDeploymentTemplate } from '../../../Pages/Shared/EnvironmentOverride/service'
 import { getPosition, handleConfigProtectionError, textDecider } from '../DeploymentConfig.utils'
 import { ReactComponent as Eye } from '../../../assets/icons/ic-visibility-on.svg'
@@ -450,7 +450,7 @@ export const SaveConfirmationDialog = ({
     showAsModal,
     closeLockedDiffDrawerWithChildModal,
 }: SaveConfirmationDialogProps) => {
-    const { state } = useContext(DeploymentConfigContext)
+    const { state } = useDeploymentTemplateContext()
     const saveConfirmationContent = () => (
         <div
             className={`modal__body flexbox-col dc__gap-12 bcn-0 w-400 pt-16 pb-16 pl-16 pr-16 dc__border ${
@@ -506,7 +506,7 @@ export const SaveConfirmationDialog = ({
 }
 
 export const DeleteOverrideDialog = ({ appId, envId, initialise }) => {
-    const { state, dispatch, reloadEnvironments } = useContext(DeploymentConfigContext)
+    const { state, dispatch, reloadEnvironments } = useDeploymentTemplateContext()
     const [apiInProgress, setApiInProgress] = useState(false)
 
     const closeConfirmationDialog = () => {

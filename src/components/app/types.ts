@@ -16,8 +16,15 @@
 
 import React, { ReactNode } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { ACTION_STATE, DeploymentAppTypes, TagType, Teams, PodMetadatum, ReleaseMode } from '@devtron-labs/devtron-fe-common-lib'
-import { AppEnvironment } from '../../services/service.types'
+import {
+    ACTION_STATE,
+    DeploymentAppTypes,
+    TagType,
+    Teams,
+    PodMetadatum,
+    ReleaseMode,
+    AppEnvironment,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentStatusDetailsBreakdownDataType, ErrorItem } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
