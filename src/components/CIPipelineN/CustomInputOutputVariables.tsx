@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
-import { ConditionType, CustomInput, RefVariableType } from '@devtron-labs/devtron-fe-common-lib'
+import { useContext } from 'react'
+import { ConditionType, CustomInput, RefVariableType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -24,8 +24,6 @@ import { ReactComponent as Equal } from '../../assets/icons/ic-variable-equal.sv
 import { TaskFieldDescription, VariableFieldType, PluginVariableType } from '../ciPipeline/types'
 import CustomInputVariableSelect from './CustomInputVariableSelect'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { baseSelectStyles, outputFormatSelectStyle } from './ciPipeline.utils'
-import { Option } from '../v2/common/ReactSelect.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -248,28 +246,24 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                                     }}
                                                     className="dc__border-right"
                                                 >
-                                                    <ReactSelect
+                                                    <SelectPicker
+                                                        inputId="output-variable-format-select"
+                                                        name="output-variable-format-select"
+                                                        classNamePrefix="output-variable-format-select"
                                                         value={
                                                             variable.format
                                                                 ? { label: variable.format, value: variable.format }
                                                                 : formatOptions[0]
                                                         }
-                                                        tabIndex={1}
-                                                        onChange={(selectedValue) => {
+                                                        onChange={(selectedValue: OptionType) => {
                                                             handleFormatChange(selectedValue, index)
                                                         }}
                                                         options={formatOptions}
                                                         isSearchable={false}
-                                                        components={{
-                                                            IndicatorSeparator: null,
-                                                            Option,
-                                                        }}
-                                                        styles={outputFormatSelectStyle}
-                                                        menuPlacement="auto"
                                                     />
                                                 </div>
                                             )}
-                                        </div>{' '}
+                                        </div>
                                     </div>
                                     {type === PluginVariableType.INPUT && (
                                         <div className="flexbox">
@@ -278,34 +272,30 @@ const CustomInputOutputVariables = ({ type }: { type: PluginVariableType }) => {
                                             </div>
                                             <div
                                                 style={{
-                                                    width: '20%',
+                                                    width: '10%',
                                                 }}
                                             >
-                                                <ReactSelect
+                                                <SelectPicker
                                                     value={
                                                         variable.format
                                                             ? { label: variable.format, value: variable.format }
                                                             : formatOptions[0]
                                                     }
-                                                    tabIndex={2}
-                                                    onChange={(selectedValue) => {
+                                                    classNamePrefix="input-variable-format-select"
+                                                    inputId="input-variable"
+                                                    onChange={(selectedValue: OptionType) => {
                                                         handleFormatChange(selectedValue, index)
                                                     }}
                                                     options={formatOptions}
                                                     isSearchable={false}
-                                                    components={{
-                                                        IndicatorSeparator: null,
-                                                        Option,
-                                                    }}
                                                     name="format"
-                                                    styles={baseSelectStyles}
                                                     isDisabled={
                                                         variable.format &&
                                                         (variable.variableType === RefVariableType.GLOBAL ||
                                                             variable.variableType ===
                                                                 RefVariableType.FROM_PREVIOUS_STEP)
                                                     }
-                                                    menuPlacement="auto"
+                                                    shouldMenuAlignRight
                                                 />
                                             </div>
                                         </div>

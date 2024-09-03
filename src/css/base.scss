@@ -4803,6 +4803,10 @@ textarea::placeholder {
     line-height: 0;
 }
 
+.dc__lh-inherit {
+    line-height: inherit;
+}
+
 .dc__unset-button-styles {
     background: none;
     color: inherit;

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { OptionType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect from 'react-select'
+import { OptionType, SelectPicker, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
@@ -25,7 +24,6 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
-import { Option, DropdownIndicator, getCommonSelectStyle } from '../v2/common/ReactSelect.utils'
 import { getCDStageTypeSelectorValue, customTagStageTypeOptions } from './ciPipeline.utils'
 import '../ciPipeline/ciPipeline.scss'
 
@@ -86,30 +84,14 @@ function CustomImageTags({
 
     const renderCustomTagStageOnCD = () => {
         return (
-            <div className="flex left">
-                <ReactSelect
+            <div className="flex left ml-8">
+                <SelectPicker
+                    inputId="custom-image-tag-cd-stage-type"
                     value={selectedCDStageTypeValue}
                     options={customTagStageTypeOptions}
-                    className="select-width w-250 p-0"
                     classNamePrefix="select-custom-image-tag-cd-stage-type"
                     isSearchable={false}
                     onChange={handleCustomTagStageOnCD}
-                    components={{
-                        IndicatorSeparator: null,
-                        DropdownIndicator,
-                        Option,
-                    }}
-                    styles={getCommonSelectStyle({
-                        control: (base, state) => ({
-                            ...base,
-                            boxShadow: 'none',
-                            backgroundColor: 'var(--N50)',
-                            border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                            cursor: 'pointer',
-                            minHeight: '28px',
-                            margin: '0px 8px',
-                        }),
-                    })}
                 />
             </div>
         )
