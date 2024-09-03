@@ -431,7 +431,7 @@ export default function BulkCDTrigger({
             const _tagNotFoundWarningsMap = new Map()
             const _cdMaterialResponse: Record<string, any> = {}
 
-            for (let i = 0; i < appList?.length; i++) {
+            for (let i = 0; i < (appList?.length ?? 0); i++) {
                 const app = appList[i]
                 const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
                 let artifactIndex = -1
