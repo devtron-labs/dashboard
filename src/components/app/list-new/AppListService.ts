@@ -15,20 +15,12 @@
  */
 
 import { EnvListMinDTO, get, ResponseType, EnvironmentListHelmResult, Teams } from '@devtron-labs/devtron-fe-common-lib'
-import { Moment12HourFormat, Routes, SERVER_MODE } from '../../../config'
-import { getProjectList } from '../../project/service'
+import { Moment12HourFormat, Routes } from '../../../config'
 import { AppListFilterConfig, AppListPayloadType, GenericAppType, HelmAppListResponse } from './AppListType'
 import { getAppList } from '../service'
 import { getDevtronAppListPayload } from '../list/appList.modal'
 import moment from 'moment'
 import { Cluster } from '@Services/service.types'
-import { getClusterListMinWithoutAuth } from '@Services/service'
-
-async function commonAppFilters(serverMode) {
-    return Promise.all([getProjectList(), getClusterListMinWithoutAuth()]).then(([projectListRes, clusterListResp]) => {
-        return { result: { Teams: projectListRes?.result, Clusters: clusterListResp?.result } }
-    })
-}
 
 export const getDevtronInstalledHelmApps = (
     clusterIdsCsv: string,

@@ -286,7 +286,7 @@ export default function AppList({ isArgoInstalled }: AppListPropType) {
     useEffect(() => {
         // To check whether namespaces are to be updated in url after cluster selection is changed
         if (!appListFilterLoading) {
-            const updatedNamespaces = namespace.filter((currentNamespace) =>
+            const updatedNamespaces = namespace?.filter((currentNamespace) =>
                 clusterIdsArray.includes(+currentNamespace.split('_')?.[0]),
             )
             updateSearchParams({ namespace: updatedNamespaces })

@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import { AppType, EnvironmentListHelmResult, EnvListMinDTO, ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, EnvironmentListHelmResult, EnvListMinDTO } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
-
-export interface AppListState {
-    code: number
-    view: string
-    errors: ServerError[]
-    apps: App[]
-    showCommandBar: boolean
-    size: number
-    expandedRow: Record<number, boolean>
-    isAllExpanded: boolean
-    isAllExpandable: boolean
-}
 
 export interface App {
     id: number
@@ -74,45 +62,6 @@ export interface DevtronAppListProps {
     setAppCount: (appCount: number) => void
 }
 
-export interface AppListResponse {
-    appId: number
-    appName: string
-    environments: AppListEnvironmentResponse
-}
-
-export interface AppListEnvironmentResponse {
-    appId: number
-    appName: string
-    environmentId: number
-    environmentName: string
-    deploymentCounter?: number
-    instanceCounter?: number
-    status?: string
-    lastDeployedTime?: string
-    namespace?: string
-    prometheusEndpoint?: string
-    default?: boolean
-    lastSuccessDeploymentDetail?: DeploymentDetailContainerResponse
-}
-
-export interface DeploymentDetailContainerResponse {
-    appId: number
-    appName: string
-    environmentId: number
-    environmentName: string
-    statusMessage?: string
-    LastDeployedBy?: string
-    status?: string
-    lastDeployedTime?: string
-    namespace?: string
-    prometheusEndpoint?: string
-    default?: boolean
-    materialInfo?: any
-    releaseVersion?: string
-    dataSource?: string
-    lastDeployedPipeline?: string
-}
-
 export const OrderBy = {
     ASC: 'ASC',
     DESC: 'DESC',
@@ -143,11 +92,4 @@ export interface ManifestUrlList {
     name: string
     pointsTo: string
     urls: string[]
-}
-
-export interface CopyToClipboardTextProps {
-    text: string
-    rootClassName?: string
-    iconClass?: string
-    placement?: 'top' | 'bottom' | 'left' | 'right'
 }
