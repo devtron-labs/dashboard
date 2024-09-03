@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { URLS } from '../../config'
 import { updatePostHogEvent } from '../../services/service'
 
 export const POSTHOG_EVENT_ONBOARDING = {
@@ -45,7 +44,3 @@ export const handlePostHogEventUpdate = (e, eventName?: string): void => {
     updatePostHogEvent(payload)
 }
 
-export const NAVIGATION = {
-    AUTOCOMPLETE: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}?hOffset=0&namespace=1&offset=0`,
-    HELM_APPS: `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
-}
