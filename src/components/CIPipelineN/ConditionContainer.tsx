@@ -15,14 +15,22 @@
  */
 
 import React, { useState, useEffect, useContext, Fragment } from 'react'
-import { RadioGroup, RadioGroupItem, ConditionType, PluginType, CustomInput, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
-import ReactSelect, { components } from 'react-select'
+import {
+    RadioGroup,
+    RadioGroupItem,
+    ConditionType,
+    PluginType,
+    CustomInput,
+    PipelineFormType,
+    SelectPicker,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { components } from 'react-select'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
-import { selectOperatorStyle, selectVariableStyle } from './ciPipeline.utils'
 import { OptionType } from '../app/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
@@ -157,7 +165,8 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
         setFormData(_formData)
     }
 
-    const handleConditionOnVariableChange = (selectedValue: { label: string; value: number }, index: number): void => {
+    const handleConditionOnVariableChange = (selectedValue: OptionType, index: number): void => {
+        console.log(selectedValue)
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
             'conditionOnVariable'
@@ -321,13 +330,15 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                             formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
                                 ?.conditionDetails?.[index]
                         return conditionDetail.conditionType === conditionType ? (
-                            <Fragment key={`condtion__${index}`}>
+                            <Fragment key={`condition__${index}`}>
                                 <div className="condition-container">
                                     <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase mr-10">
                                         {conditionDetail.conditionType} If
                                     </div>
-                                    <div className="tp-4 fs-13 fw-4 mr-10">
-                                        <ReactSelect
+                                    <div className="flex left">
+                                        <SelectPicker
+                                            inputId="condition-on-variable"
+                                            classNamePrefix="condition-on-variable"
                                             autoFocus
                                             value={
                                                 conditionDetail.conditionOnVariable
@@ -337,9 +348,8 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                                       }
                                                     : null
                                             }
-                                            tabIndex={1}
                                             placeholder="Select variable"
-                                            onChange={(selectedValue) => {
+                                            onChange={(selectedValue: OptionType) => {
                                                 handleConditionOnVariableChange(selectedValue, index)
                                             }}
                                             options={formData[activeStageName].steps[selectedTaskIndex][
@@ -352,17 +362,14 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                                 ?.filter((variable) => variable.name)
                                                 .map((variable) => ({ label: variable.name, value: variable.id }))}
                                             isSearchable={false}
-                                            styles={selectVariableStyle}
-                                            components={{
-                                                IndicatorSeparator: null,
-                                                Option,
-                                                ValueContainer,
-                                            }}
+                                            variant={SelectPickerVariantType.BORDER_LESS}
                                         />
                                     </div>
                                     <div className="fw-4 mr-10">
-                                        <ReactSelect
-                                            defaultValue={
+                                        <SelectPicker
+                                            inputId="condition-operator"
+                                            classNamePrefix="condition-operator"
+                                            value={
                                                 conditionDetail.conditionOperator
                                                     ? {
                                                           label: conditionDetail.conditionOperator,
@@ -370,21 +377,14 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                                       }
                                                     : selectedOperator
                                             }
-                                            tabIndex={1}
-                                            onChange={(selectedValue) => {
+                                            onChange={(selectedValue: OptionType) =>
                                                 handleConditionOperatorChange(selectedValue, index)
-                                            }}
+                                            }
                                             options={operatorOptions}
                                             isSearchable={false}
-                                            styles={selectOperatorStyle}
-                                            formatOptionLabel={formatOptionLabel}
-                                            components={{
-                                                IndicatorSeparator: null,
-                                                Option,
-                                                ValueContainer,
-                                            }}
                                         />
                                     </div>
+
                                     <div className="fs-13 mr-10">
                                         <CustomInput
                                             name="conditionalValue"
@@ -405,7 +405,6 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                                 <div className="flexbox cr-5 mb-8 fw-5 fs-11 flexbox">
                                     {errorObj && !errorObj.isValid && (
                                         <>
-                                            {' '}
                                             <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
                                             <span>{errorObj.message}</span>
                                         </>
