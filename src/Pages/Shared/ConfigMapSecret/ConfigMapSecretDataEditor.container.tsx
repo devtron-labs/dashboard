@@ -244,14 +244,12 @@ const ConfigMapSecretDataEditor = ({
             type: ConfigMapActionTypes.setSecretData,
             payload: _secretData,
         })
-        json = json.map((j) => {
-            return {
-                key: j.fileName,
-                name: j.name,
-                property: j.property,
-                isBinary: j.isBinary,
-            }
-        })
+        json = json.map((j) => ({
+            key: j.fileName,
+            name: j.name,
+            property: j.property,
+            isBinary: j.isBinary,
+        }))
         dispatch({
             type: ConfigMapActionTypes.setSecretDataYaml,
             payload: YAMLStringify(json),
@@ -320,62 +318,58 @@ const ConfigMapSecretDataEditor = ({
         handleOnChange: (yaml) => void,
         sheBangText: string,
         readOnly: boolean,
-    ): JSX.Element => {
-        return (
-            <div className="yaml-container">
-                <CodeEditor
-                    value={value}
-                    mode="yaml"
-                    inline
-                    height={350}
-                    onChange={handleOnChange}
-                    readOnly={
-                        (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) || readonlyView || readOnly
-                    }
-                    shebang={sheBangText}
-                >
-                    <CodeEditor.Header>
-                        {state.external ? (
-                            <RadioGroup
-                                className="gui-yaml-switch"
-                                name="data-mode"
-                                initialTab={state.codeEditorRadio}
-                                disabled={false}
-                                onChange={handleCodeEditorRadioChange}
-                            >
-                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
-                                    {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
-                                </RadioGroup.Radio>
-                                <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
-                                    {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
-                                </RadioGroup.Radio>
-                            </RadioGroup>
-                        ) : (
-                            <CodeEditor.ValidationError />
-                        )}
-                        <div className="flexbox dc__align-items-center dc__gap-8">
-                            {renderSecretShowHide()}
-                            <CodeEditor.Clipboard />
-                        </div>
-                    </CodeEditor.Header>
-                    {!state.external && state.yamlMode && (
-                        <InfoColourBar
-                            message={renderInfotext()}
-                            Icon={InfoIcon}
-                            iconSize={20}
-                            classname="info_bar cn-9 lh-20 dc__no-border-radius dc__no-right-border dc__no-left-border dc__no-top-border"
-                        />
+    ): JSX.Element => (
+        <div className="yaml-container">
+            <CodeEditor
+                value={value}
+                mode="yaml"
+                inline
+                height={350}
+                onChange={handleOnChange}
+                readOnly={(state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) || readonlyView || readOnly}
+                shebang={sheBangText}
+            >
+                <CodeEditor.Header>
+                    {state.external ? (
+                        <RadioGroup
+                            className="gui-yaml-switch"
+                            name="data-mode"
+                            initialTab={state.codeEditorRadio}
+                            disabled={false}
+                            onChange={handleCodeEditorRadioChange}
+                        >
+                            <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.DATA}>
+                                {CODE_EDITOR_RADIO_STATE_VALUE.DATA}
+                            </RadioGroup.Radio>
+                            <RadioGroup.Radio value={CODE_EDITOR_RADIO_STATE.SAMPLE}>
+                                {CODE_EDITOR_RADIO_STATE_VALUE.SAMPLE}
+                            </RadioGroup.Radio>
+                        </RadioGroup>
+                    ) : (
+                        <CodeEditor.ValidationError />
                     )}
-                    {!state.external && error && (
-                        <div className="validation-error-block">
-                            <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
-                            <div>{error}</div>
-                        </div>
-                    )}
-                </CodeEditor>
-            </div>
-        )
-    }
+                    <div className="flexbox dc__align-items-center dc__gap-8">
+                        {renderSecretShowHide()}
+                        <CodeEditor.Clipboard />
+                    </div>
+                </CodeEditor.Header>
+                {!state.external && state.yamlMode && (
+                    <InfoColourBar
+                        message={renderInfotext()}
+                        Icon={InfoIcon}
+                        iconSize={20}
+                        classname="info_bar cn-9 lh-20 dc__no-border-radius dc__no-right-border dc__no-left-border dc__no-top-border"
+                    />
+                )}
+                {!state.external && error && (
+                    <div className="validation-error-block">
+                        <Info color="var(--R500)" style={{ height: '16px', width: '16px' }} />
+                        <div>{error}</div>
+                    </div>
+                )}
+            </CodeEditor>
+        </div>
+    )
 
     const externalSecretEditor = (): JSX.Element => {
         if ((isHashiOrAWS || isESO) && state.yamlMode) {
@@ -421,55 +415,53 @@ const ConfigMapSecretDataEditor = ({
         )
     }
 
-    const renderGUIEditor = () => {
-        return (
-            <KeyValueTable
-                isAdditionNotAllowed={
-                    (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
-                    state.unAuthorized ||
-                    state.secretMode ||
-                    state.yamlMode ||
-                    state.external
+    const renderGUIEditor = () => (
+        <KeyValueTable
+            isAdditionNotAllowed={
+                (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
+                state.unAuthorized ||
+                state.secretMode ||
+                state.yamlMode ||
+                state.external
+            }
+            readOnly={
+                (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
+                readonlyView ||
+                state.unAuthorized ||
+                state.secretMode
+            }
+            isSortable
+            config={config}
+            placeholder={{
+                k: 'Enter Key',
+                v: 'Enter Value',
+            }}
+            onChange={keyValueTableHandleChange}
+            maskValue={{
+                v: state.secretMode || state.unAuthorized,
+            }}
+            onDelete={keyValueRemove}
+            showError
+            validationSchema={(value, key) => {
+                if (key === 'k' && value) {
+                    const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
+                    return isValid
                 }
-                readOnly={
-                    (state.cmSecretState === CM_SECRET_STATE.INHERITED && !draftMode) ||
-                    readonlyView ||
-                    state.unAuthorized ||
-                    state.secretMode
+                return true
+            }}
+            errorMessages={['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed']}
+            onError={(err) => {
+                if (state.isValidateFormError !== err) {
+                    dispatch({
+                        type: ConfigMapActionTypes.setValidateFormError,
+                        payload: err,
+                    })
                 }
-                isSortable
-                config={config}
-                placeholder={{
-                    k: 'Enter Key',
-                    v: 'Enter Value',
-                }}
-                onChange={keyValueTableHandleChange}
-                maskValue={{
-                    v: state.secretMode || state.unAuthorized,
-                }}
-                onDelete={keyValueRemove}
-                showError
-                validationSchema={(value, key) => {
-                    if (key === 'k' && value) {
-                        const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
-                        return isValid
-                    }
-                    return true
-                }}
-                validateEmptyKeys
-                errorMessages={['Can only contain alphanumeric chars and ( - ), ( _ ), ( . )', 'Spaces not allowed']}
-                onError={(err) => {
-                    if (state.isValidateFormError !== err) {
-                        dispatch({
-                            type: ConfigMapActionTypes.setValidateFormError,
-                            payload: err,
-                        })
-                    }
-                }}
-                headerComponent={renderSecretShowHide(false)}
-            />
-        )
-    }
+            }}
+            headerComponent={renderSecretShowHide(false)}
+            validateEmptyKeys
+        />
+    )
 
     const getCodeEditorValue = (): string => {
         if (componentType === CMSecretComponentType.Secret && (state.secretMode || state.unAuthorized)) {

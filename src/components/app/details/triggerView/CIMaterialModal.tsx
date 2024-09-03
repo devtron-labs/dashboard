@@ -32,12 +32,13 @@ export const CIMaterialModal = ({
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
     usePrompt({ shouldPrompt: isLoading })
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             abortController.abort()
             resetAbortController()
-        }
-    }, [])
+        },
+        [],
+    )
 
     return (
         <VisibleModal className="" close={closeCIModal}>

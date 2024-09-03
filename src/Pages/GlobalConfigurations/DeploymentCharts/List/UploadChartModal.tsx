@@ -125,93 +125,87 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
         }
     }
 
-    const renderSuccessPage = (): JSX.Element => {
-        return (
-            <>
-                {chartDetail.message && (
-                    <div className="bcb-1 eb-2 p-10 br-4 flexbox cn-9 fs-13 mb-20">
-                        <Info className="mr-8 ml-4 icon-dim-20" />
-                        <span className="lh-20">
-                            <span className="dc__inline-block fs-13 fw-6">{chartDetail.message}</span>
-                            <span className="dc__inline-block fs-13 fw-4">
-                                The version ({chartDetail.chartVersion}) you’re uploading will be added to the existing
-                                chart.
-                            </span>
+    const renderSuccessPage = (): JSX.Element => (
+        <>
+            {chartDetail.message && (
+                <div className="bcb-1 eb-2 p-10 br-4 flexbox cn-9 fs-13 mb-20">
+                    <Info className="mr-8 ml-4 icon-dim-20" />
+                    <span className="lh-20">
+                        <span className="dc__inline-block fs-13 fw-6">{chartDetail.message}</span>
+                        <span className="dc__inline-block fs-13 fw-4">
+                            The version ({chartDetail.chartVersion}) you’re uploading will be added to the existing
+                            chart.
                         </span>
-                    </div>
-                )}
+                    </span>
+                </div>
+            )}
+            <div>
                 <div>
-                    <div>
-                        <CustomInput
-                            label="Chart Name"
-                            name="chartName"
-                            onChange={noop}
-                            rootClassName="w-100 br-4 en-2 bw-1 mt-6 form__input"
-                            disabled
-                            value={chartDetail.chartName}
-                            isRequiredField
-                        />
-                    </div>
-                    <div className="mt-16">
-                        <span className="fs-13 fw-4 cn-7">Description</span>
-                        <textarea
-                            cols={3}
-                            className="w-100 br-4 en-2 bw-1 mt-6 form__input"
-                            value={chartDetail.description}
-                            onChange={handleDescriptionChange}
-                            disabled={loadingData}
-                        />
-                        {isDescriptionLengthError && (
-                            <span className="form__error">
-                                <Error className="form__icon form__icon--error" />
-                                Maximum 250 characters allowed
-                            </span>
-                        )}
-                    </div>
+                    <CustomInput
+                        label="Chart Name"
+                        name="chartName"
+                        onChange={noop}
+                        rootClassName="w-100 br-4 en-2 bw-1 mt-6 form__input"
+                        disabled
+                        value={chartDetail.chartName}
+                        isRequiredField
+                    />
                 </div>
-            </>
-        )
-    }
-
-    const renderImageWithTitleDescription = (imgSrc: string, title: string, descriptionList: string[]): JSX.Element => {
-        return (
-            <div className="flex column" style={{ width: '100%', height: '310px' }}>
-                <img src={imgSrc} alt={title} style={{ height: '100px' }} className="mb-10" />
-                <h4 className="fw-6 fs-16 text-center">{title}</h4>
-                {descriptionList.map((description) => (
-                    <p className="fs-13 fw-4 m-0">{description}</p>
-                ))}
+                <div className="mt-16">
+                    <span className="fs-13 fw-4 cn-7">Description</span>
+                    <textarea
+                        cols={3}
+                        className="w-100 br-4 en-2 bw-1 mt-6 form__input"
+                        value={chartDetail.description}
+                        onChange={handleDescriptionChange}
+                        disabled={loadingData}
+                    />
+                    {isDescriptionLengthError && (
+                        <span className="form__error">
+                            <Error className="form__icon form__icon--error" />
+                            Maximum 250 characters allowed
+                        </span>
+                    )}
+                </div>
             </div>
-        )
-    }
+        </>
+    )
 
-    const renderPreRequisitePage = (): JSX.Element => {
-        return (
-            <>
-                <div className="cn-9 fw-6 fs-14 mb-8">Pre-requisites to upload a custom chart</div>
-                <div className="cn-7 fw-4 fs-14 cn-7">
-                    1. A valid helm chart, which contains Chart.yaml file with name and version fields.
+    const renderImageWithTitleDescription = (imgSrc: string, title: string, descriptionList: string[]): JSX.Element => (
+        <div className="flex column" style={{ width: '100%', height: '310px' }}>
+            <img src={imgSrc} alt={title} style={{ height: '100px' }} className="mb-10" />
+            <h4 className="fw-6 fs-16 text-center">{title}</h4>
+            {descriptionList.map((description) => (
+                <p className="fs-13 fw-4 m-0">{description}</p>
+            ))}
+        </div>
+    )
+
+    const renderPreRequisitePage = (): JSX.Element => (
+        <>
+            <div className="cn-9 fw-6 fs-14 mb-8">Pre-requisites to upload a custom chart</div>
+            <div className="cn-7 fw-4 fs-14 cn-7">
+                1. A valid helm chart, which contains Chart.yaml file with name and version fields.
+            </div>
+            <div className="cn-7 fw-4 fs-14 cn-7">
+                2. Image descriptor template file - .image_descriptor_template.json.
+            </div>
+            <div className="cn-7 fw-4 fs-14 cn-7 mb-20">3. Custom chart packaged in the *.tgz format.</div>
+            <div className="sidebar-action-container pr-20">
+                <div className="fw-6 fs-13 cn-9 mb-8">
+                    📙 Need help?&nbsp;
+                    <a
+                        className="dc__link fw-6"
+                        href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        View documentation
+                    </a>
                 </div>
-                <div className="cn-7 fw-4 fs-14 cn-7">
-                    2. Image descriptor template file - .image_descriptor_template.json.
-                </div>
-                <div className="cn-7 fw-4 fs-14 cn-7 mb-20">3. Custom chart packaged in the *.tgz format.</div>
-                <div className="sidebar-action-container pr-20">
-                    <div className="fw-6 fs-13 cn-9 mb-8">
-                        📙 Need help?&nbsp;
-                        <a
-                            className="dc__link fw-6"
-                            href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
-                            View documentation
-                        </a>
-                    </div>
-                </div>
-            </>
-        )
-    }
+            </div>
+        </>
+    )
 
     const renderPageContent = (): JSX.Element => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
@@ -252,40 +246,38 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
         }
     }
 
-    const renderFooter = (): JSX.Element => {
-        return (
-            <div
-                className={`footer pt-16 pb-16 dc__border-top flexbox ${
-                    uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
-                        ? 'dc__content-end'
-                        : 'dc__content-space'
-                }`}
-            >
-                {uploadState !== UPLOAD_STATE.UPLOAD && (
-                    <button
-                        type="button"
-                        data-testid="cancel-upload-button"
-                        className={`cta delete dc__no-text-transform ${
-                            uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
-                        }`}
-                        onClick={() => onCancelUpload('Cancel')}
-                    >
-                        Cancel upload
-                    </button>
-                )}
-                {uploadState !== UPLOAD_STATE.UPLOADING && (
-                    <ButtonWithLoader
-                        dataTestId={getButtonDataTestId()}
-                        rootClassName="cta mr-20 dc__no-text-transform"
-                        onClick={handleSuccessButton}
-                        isLoading={loadingData}
-                    >
-                        {getButtonText()}
-                    </ButtonWithLoader>
-                )}
-            </div>
-        )
-    }
+    const renderFooter = (): JSX.Element => (
+        <div
+            className={`footer pt-16 pb-16 dc__border-top flexbox ${
+                uploadState === UPLOAD_STATE.UPLOAD || uploadState === UPLOAD_STATE.UPLOADING
+                    ? 'dc__content-end'
+                    : 'dc__content-space'
+            }`}
+        >
+            {uploadState !== UPLOAD_STATE.UPLOAD && (
+                <button
+                    type="button"
+                    data-testid="cancel-upload-button"
+                    className={`cta delete dc__no-text-transform ${
+                        uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
+                    }`}
+                    onClick={() => onCancelUpload('Cancel')}
+                >
+                    Cancel upload
+                </button>
+            )}
+            {uploadState !== UPLOAD_STATE.UPLOADING && (
+                <ButtonWithLoader
+                    dataTestId={getButtonDataTestId()}
+                    rootClassName="cta mr-20 dc__no-text-transform"
+                    onClick={handleSuccessButton}
+                    isLoading={loadingData}
+                >
+                    {getButtonText()}
+                </ButtonWithLoader>
+            )}
+        </div>
+    )
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal dc__no-top-radius mt-0">

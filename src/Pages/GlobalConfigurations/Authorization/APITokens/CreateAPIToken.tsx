@@ -51,17 +51,15 @@ import { importComponentFromFELibrary } from '../../../../components/common'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
-export const renderQuestionwithTippy = () => {
-    return (
-        <InfoIconTippy
-            heading={API_COMPONENTS.TITLE}
-            infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-            documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
-            documentationLinkText="View Documentation"
-            iconClassName="icon-dim-20 fcn-9 ml-4"
-        />
-    )
-}
+export const renderQuestionwithTippy = () => (
+    <InfoIconTippy
+        heading={API_COMPONENTS.TITLE}
+        infoText={API_COMPONENTS.QUESTION_ICON_INFO}
+        documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
+        documentationLinkText="View Documentation"
+        iconClassName="icon-dim-20 fcn-9 ml-4"
+    />
+)
 
 const CreateAPIToken = ({
     setShowGenerateModal,
@@ -101,14 +99,15 @@ const CreateAPIToken = ({
     const validationRules = new ValidationRules()
 
     // Reset selected expiration date to 30 days on unmount
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             setSelectedExpirationDate({
                 label: '30 days',
                 value: 30,
             })
-        }
-    }, [])
+        },
+        [],
+    )
 
     const onChangeHandler = (event): void => {
         setFormData({

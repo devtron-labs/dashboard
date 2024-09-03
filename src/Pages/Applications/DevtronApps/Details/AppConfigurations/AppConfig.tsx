@@ -331,18 +331,14 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
 
     const reloadWorkflows = async () => {
         const response = await getWorkflowList(appId)
-        setState((prevState) => {
-            return {
-                ...prevState,
-                canDeleteApp: response.result.workflows.length === 0,
-                workflowsRes: response.result,
-            }
-        })
+        setState((prevState) => ({
+            ...prevState,
+            canDeleteApp: response.result.workflows.length === 0,
+            workflowsRes: response.result,
+        }))
     }
 
-    const redirectToWorkflowEditor = () => {
-        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob)
-    }
+    const redirectToWorkflowEditor = () => getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJob)
 
     const deleteAppHandler = () => {
         deleteApp(appId)
@@ -392,14 +388,12 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds }: AppConfigPr
     const reloadEnvironments = () => {
         fetchEnvironments()
             .then(({ updatedEnvs, isBaseConfigProtectionEnabled, configProtections }) => {
-                setState((prevState) => {
-                    return {
-                        ...prevState,
-                        environmentList: updatedEnvs,
-                        isBaseConfigProtected: isBaseConfigProtectionEnabled,
-                        configProtectionData: configProtections,
-                    }
-                })
+                setState((prevState) => ({
+                    ...prevState,
+                    environmentList: updatedEnvs,
+                    isBaseConfigProtected: isBaseConfigProtectionEnabled,
+                    configProtectionData: configProtections,
+                }))
             })
             .catch((errors) => {
                 showError(errors)
