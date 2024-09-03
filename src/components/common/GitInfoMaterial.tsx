@@ -318,7 +318,7 @@ export default function GitInfoMaterial({
             >
                 <div className="dc__mxw-300">{renderBranchChangeHeader(selectedMaterial)}</div>
                 {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                    <div className="flex right">
+                    <div className="flex right dc__gap-8">
                         {renderSearch()}
                         {excludeIncludeEnv && renderExcludedCommitsOption()}
                     </div>

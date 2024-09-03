@@ -27,15 +27,14 @@ import {
     HeaderWithCreateButton,
     AppListConstants,
     ModuleNameMap,
+    SearchBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import moment from 'moment'
 import { Filter, FilterOption, handleUTCTime, useAppContext } from '../../common'
-import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
 import { SERVER_MODE, DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
-import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
@@ -548,22 +547,9 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setCurrentTab(appTabType)
     }
 
-    const searchApp = (event: React.FormEvent) => {
-        event.preventDefault()
-        setSearchApplied(true)
-        handleAppSearchOperation(searchString)
-    }
-
-    const clearSearch = (): void => {
-        setSearchApplied(false)
-        setSearchString('')
-        handleAppSearchOperation('')
-    }
-
-    const onChangeSearchString = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        let str = event.target.value || ''
-        str = str.toLowerCase()
-        setSearchString(str)
+    const handleEnterSearchApp = (_searchText: string): void => {
+        setSearchString(_searchText.toLowerCase())
+        handleAppSearchOperation(_searchText)
     }
 
     const syncNow = (): void => {
@@ -657,32 +643,26 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 ? masterFilters.clusters.filter((cluster) => !cluster?.optionMetadata?.isVirtualCluster)
                 : masterFilters.clusters
 
+        const renderSearchText = (): JSX.Element => (
+            <SearchBar
+                initialSearchText={searchString}
+                containerClassName="w-250"
+                handleEnter={handleEnterSearchApp}
+                inputProps={{
+                    placeholder: `${
+                        currentTab === AppListConstants.AppTabs.HELM_APPS
+                            ? 'Search by app or chart name'
+                            : 'Search by app name'
+                    }`,
+                    autoFocus: true,
+                }}
+                dataTestId="Search-by-app-name"
+            />
+        )
+
         return (
             <div className="search-filter-section">
-                <form style={{ display: 'inline' }} onSubmit={searchApp}>
-                    <div className="search">
-                        <Search className="search__icon icon-dim-18" />
-                        <input
-                            data-testid="Search-by-app-name"
-                            type="text"
-                            name="app_search_input"
-                            autoComplete="off"
-                            value={searchString}
-                            placeholder={`${
-                                currentTab === AppListConstants.AppTabs.HELM_APPS
-                                    ? 'Search by app or chart name'
-                                    : 'Search by app name'
-                            }`}
-                            className="search__input bcn-1"
-                            onChange={onChangeSearchString}
-                        />
-                        {searchApplied && (
-                            <button className="search__clear-button flex" type="button" onClick={clearSearch}>
-                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
-                            </button>
-                        )}
-                    </div>
-                </form>
+                {renderSearchText()}
                 <div className="app-list-filters filters">
                     {!isGenericAppListView && (
                         <>
