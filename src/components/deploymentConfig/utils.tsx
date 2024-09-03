@@ -91,7 +91,7 @@ const parseDeploymentTemplateQueryParams = (
     params: URLSearchParams,
     isSuperAdmin: boolean,
 ): DeploymentTemplateQueryParamsType => {
-    const currentEditMode = params.get('currentMode') as ConfigurationType
+    const currentEditMode = params.get('editMode') as ConfigurationType
     const isCurrentEditModeValid = CONFIGURATION_TYPE_VALUES.includes(currentEditMode)
 
     const fallbackConfigurationType: ConfigurationType = isSuperAdmin ? ConfigurationType.YAML : ConfigurationType.GUI
@@ -105,6 +105,7 @@ const parseDeploymentTemplateQueryParams = (
         editMode: isCurrentEditModeValid ? currentEditMode : fallbackConfigurationType,
         // TODO: Get default landing tab
         selectedTab: isSelectedTabValid ? currentSelectedTab : DeploymentTemplateTabsType.EDIT,
+        showReadMe: params.get('showReadMe') === 'true' || null,
     }
 }
 

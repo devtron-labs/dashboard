@@ -28,6 +28,7 @@ import {
     useUrlFilters,
     DeploymentTemplateQueryParamsType,
     DeploymentTemplateTabsType,
+    ConfigurationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Operation, compare as jsonpatchCompare } from 'fast-json-patch'
@@ -61,6 +62,7 @@ import { SaveConfirmationDialog, SuccessToastBody } from './DeploymentTemplateVi
 import { deploymentConfigReducer, initDeploymentConfigState } from './DeploymentConfigReducer'
 import DeploymentTemplateReadOnlyEditorView from './DeploymentTemplateView/DeploymentTemplateReadOnlyEditorView'
 import { applyCompareDiffOfTempFormDataOnOriginalData, getDeploymentTemplateQueryParser } from './utils'
+import DeploymentTemplateForm from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentTemplate/DeploymentTemplateForm'
 
 const DeploymentTemplateLockedDiff = importComponentFromFELibrary('DeploymentTemplateLockedDiff')
 const ConfigToolbar = importComponentFromFELibrary('ConfigToolbar', DeploymentConfigToolbar)
@@ -124,10 +126,17 @@ export default function DeploymentConfig({
     const removedPatches = useRef<Array<Operation>>([])
     const { fetchEnvConfig } = useAppConfigurationContext()
 
-    const { clearFilters, hideLockedKeys, resolveScopedVariables, selectedTab, editMode, updateSearchParams } =
-        useUrlFilters<never, DeploymentTemplateQueryParamsType>({
-            parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
-        })
+    const {
+        clearFilters,
+        hideLockedKeys,
+        selectedTab,
+        resolveScopedVariables,
+        updateSearchParams,
+        showReadMe,
+        editMode,
+    } = useUrlFilters<never, DeploymentTemplateQueryParamsType>({
+        parseSearchParams: getDeploymentTemplateQueryParser(isSuperAdmin),
+    })
 
     // TODO: Rename this method
     const setHideLockedKeys = (value: boolean) => {
@@ -165,6 +174,10 @@ export default function DeploymentConfig({
         })
     }
 
+    const handleDisableResolveScopedVariables = () => {
+        setConvertVariables(false)
+    }
+
     // TODO: use async
     useEffect(() => {
         // TODO: No error/loading state for this
@@ -197,7 +210,7 @@ export default function DeploymentConfig({
         >,
         clearPublishedState: boolean = false,
     ) => {
-        const payload  = {
+        const payload = {
             ...chartRefsData,
             chartConfigLoading: false,
         }
@@ -351,6 +364,14 @@ export default function DeploymentConfig({
         })
     }
 
+    const handleChangeToYAMLMode = () => {
+        updateSearchParams({ editMode: ConfigurationType.YAML })
+    }
+
+    const handleChangeToGUIMode = () => {
+        updateSearchParams({ editMode: ConfigurationType.GUI })
+    }
+
     const reload = () => {
         dispatch({
             type: DeploymentConfigStateActionTypes.loading,
@@ -406,7 +427,10 @@ export default function DeploymentConfig({
                 ...(guiSchema === '{}' ? { yamlMode: true } : {}),
                 // NOTE: temp form data is temp data updated by the code editor while data is the original
                 data: _codeEditorStringifyData,
+
+                // New keys addition
                 baseDeploymentTemplate: _codeEditorStringifyData,
+                originalTemplate: _codeEditorStringifyData,
                 editorTemplate: _codeEditorStringifyData,
             }
 
@@ -561,9 +585,9 @@ export default function DeploymentConfig({
             return
         }
 
-        if (!state.convertVariables) {
+        if (!resolveScopedVariables) {
             dispatch({
-                type: DeploymentConfigStateActionTypes.tempFormData,
+                type: DeploymentConfigStateActionTypes.editorTemplate,
                 payload: str,
             })
         }
@@ -583,9 +607,12 @@ export default function DeploymentConfig({
     }
 
     const handleReadMeClick = () => {
+        // TODO: Can give tooltip on button as well
         if (!state.showReadme && state.unableToParseYaml) {
             return
         }
+
+        updateSearchParams({ showReadMe: !showReadMe })
 
         dispatch({
             type: DeploymentConfigStateActionTypes.multipleOptions,
@@ -771,12 +798,20 @@ export default function DeploymentConfig({
         }
 
         const valuesDataRHS = isCompareAndApprovalState ? state.draftValues : state.tempFormData
+        const isReadOnlyView = isCompareAndApprovalState || resolveScopedVariables
 
         // TODO: Should be default case
-        if (selectedTab === DeploymentTemplateTabsType.EDIT) {
-            // return (
-                // <DeploymentTemplateForm />
-            // )
+        if (selectedTab === DeploymentTemplateTabsType.EDIT && editMode === ConfigurationType.GUI) {
+            return (
+                <DeploymentTemplateForm
+                    editMode={editMode}
+                    hideLockedKeys={hideLockedKeys}
+                    lockedConfigKeysWithLockType={lockedConfigKeysWithLockType}
+                    readOnly={isReadOnlyView}
+                    resolveScopedVariables={resolveScopedVariables}
+                    handleDisableResolveScopedVariables={handleDisableResolveScopedVariables}
+                />
+            )
         }
 
         return (
@@ -785,7 +820,7 @@ export default function DeploymentConfig({
                 value={valuesDataRHS}
                 globalChartRefId={state.selectedChartRefId}
                 editorOnChange={editorOnChange}
-                readOnly={isCompareAndApprovalState || state.convertVariables}
+                readOnly={isReadOnlyView}
                 // FIXME: Remove
                 isValues
                 convertVariables={state.convertVariables}
@@ -814,7 +849,6 @@ export default function DeploymentConfig({
             )}
 
             <DeploymentTemplateOptionsTab
-                codeEditorValue={readOnlyPublishedMode ? state.publishedState?.tempFormData : state.tempFormData}
                 disableVersionSelect={readOnlyPublishedMode}
                 // FIXME: Remove
                 isValues
@@ -858,6 +892,10 @@ export default function DeploymentConfig({
         environments: environments || [],
         changeEditorMode,
         reloadEnvironments,
+        // TODO: New Keys, handle in override
+        handleChangeToYAMLMode,
+        handleChangeToGUIMode,
+        editorOnChange,
     })
 
     return (

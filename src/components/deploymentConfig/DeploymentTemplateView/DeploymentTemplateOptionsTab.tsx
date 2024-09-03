@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import {
     ConditionalWrap,
     TippyCustomized,
@@ -30,19 +30,24 @@ import { ReactComponent as RestoreIcon } from '../../../assets/icons/ic-arrow-an
 
 interface DeploymentTemplateOptionsTabProps {
     isEnvOverride?: boolean
-    codeEditorValue: string
     disableVersionSelect?: boolean
     isValues?: boolean
 }
 
 export default function DeploymentTemplateOptionsTab({
     isEnvOverride,
-    codeEditorValue,
     disableVersionSelect,
     isValues,
 }: DeploymentTemplateOptionsTabProps) {
-    const { isUnSet, state, dispatch, isConfigProtectionEnabled, changeEditorMode } =
-        useContext<DeploymentConfigContextType>(DeploymentConfigContext)
+    const {
+        isUnSet,
+        state,
+        dispatch,
+        isConfigProtectionEnabled,
+        changeEditorMode,
+        handleChangeToYAMLMode,
+        handleChangeToGUIMode,
+    } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const currentStateValues =
         state.selectedTabIndex === 1 && isConfigProtectionEnabled && !!state.latestDraft ? state.publishedState : state
 
@@ -64,6 +69,16 @@ export default function DeploymentTemplateOptionsTab({
         if ((e.target.value === 'yaml' && state.yamlMode) || (e.target.value === 'gui' && !state.yamlMode)) {
         } else {
             changeEditorMode()
+        }
+
+        if (e.target.value === 'yaml') {
+            handleChangeToYAMLMode()
+            return
+        }
+        
+        if (e.target.value === 'gui') {
+            handleChangeToGUIMode()
+            return
         }
     }
 
@@ -133,16 +148,17 @@ export default function DeploymentTemplateOptionsTab({
                     <RadioGroup
                         className="gui-yaml-switch"
                         name="yaml-mode"
+                        // TODO: Derive from url
                         initialTab={state.yamlMode ? 'yaml' : 'gui'}
                         disabled={_unableToParseYaml}
                         onChange={onChangeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui" canSelect={!state.chartConfigLoading && codeEditorValue}>
+                        <RadioGroup.Radio value="gui" canSelect={false}>
                             GUI
                         </RadioGroup.Radio>
                         <RadioGroup.Radio
                             value="yaml"
-                            canSelect={disableVersionSelect && state.chartConfigLoading && codeEditorValue}
+                            canSelect={false}
                             dataTestId="base-deployment-template-advanced-button"
                         >
                             {_unableToParseYaml && <ErrorIcon className="icon-dim-12 dc__no-svg-stroke mr-6" />}

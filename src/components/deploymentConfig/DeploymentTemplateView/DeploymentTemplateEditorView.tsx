@@ -478,7 +478,6 @@ const DeploymentTemplateEditorView = ({
         renderCodeEditorView()
     ) : (
         <DeploymentTemplateGUIView
-            fetchingValues={fetchingValues}
             uneditedDocument={uneditedDocument}
             editedDocument={editedDocument}
             value={rhs}

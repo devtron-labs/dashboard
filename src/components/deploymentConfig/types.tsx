@@ -285,7 +285,14 @@ export interface DeploymentConfigContextType {
     isConfigProtectionEnabled: boolean
     environments: AppEnvironment[]
     reloadEnvironments: () => void
+    /**
+     * @deprecated
+     */
     changeEditorMode: () => void
+    // TODO: Remove optional check
+    handleChangeToYAMLMode?: () => void
+    handleChangeToGUIMode?: () => void
+    editorOnChange?: (str: string) => void
 }
 
 export interface EsoData {
@@ -368,7 +375,7 @@ export interface DeploymentConfigStateType {
     selectedChartRefId: number
     selectedChart: DeploymentChartVersionType
     /**
-     * Base deployment template in JSON format
+     * Initial deployment template in JSON format
      */
     template: Record<string, string>
     schema: any
@@ -408,7 +415,17 @@ export interface DeploymentConfigStateType {
     loadingManifestOverride: boolean
     convertVariables: boolean
     convertVariablesOverride: boolean
+    /**
+     * Base deployment template in string format
+     */
     baseDeploymentTemplate: string
+    /**
+     * Deployment template of editable saved state
+     */
+    originalTemplate: string
+    /**
+     * Edited deployment template
+     */
     editorTemplate: string
 }
 
@@ -439,6 +456,9 @@ export enum DeploymentConfigStateActionTypes {
     schemas = 'schemas',
     chartConfig = 'chartConfig',
     isAppMetricsEnabled = 'isAppMetricsEnabled',
+    /**
+     * @deprecated
+     */
     tempFormData = 'tempFormData',
     chartConfigLoading = 'chartConfigLoading',
     showConfirmation = 'showConfirmation',
@@ -479,6 +499,7 @@ export enum DeploymentConfigStateActionTypes {
     lockChangesLoading = 'lockChangesLoading',
     guiSchema = 'guiSchema',
     wasGuiOrHideLockedKeysEdited = 'wasGuiOrHideLockedKeysEdited',
+    editorTemplate = 'editorTemplate',
 }
 
 export interface DeploymentConfigStateAction {
@@ -509,7 +530,6 @@ export interface DeploymentTemplateGUIViewProps
         DeploymentTemplateEditorViewProps,
         'editorOnChange' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys'
     > {
-    fetchingValues?: boolean
     value: string
     readOnly: boolean
     uneditedDocument?: DeploymentTemplateEditorViewProps['uneditedDocument']

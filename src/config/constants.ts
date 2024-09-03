@@ -64,6 +64,7 @@ export const Routes = {
     LOCKED_CONFIG_PROTECTED: 'draft/config/lock/validate',
     LOCKED_CONFIG_NON_PROTECTED: 'app/template/validate',
 
+    // TODO: Rename
     DEPLOYMENT_VALUES_MANIFEST: 'app/template/data',
     DEPLOYMENT_OPTIONS: 'app/template/list',
 

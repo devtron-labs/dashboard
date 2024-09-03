@@ -66,6 +66,7 @@ export const initDeploymentConfigState: DeploymentConfigStateWithDraft = {
     lockChangesLoading: false,
     wasGuiOrHideLockedKeysEdited: false,
     baseDeploymentTemplate: '',
+    originalTemplate: '',
     editorTemplate: '',
 }
 
@@ -171,6 +172,8 @@ export const deploymentConfigReducer = (
             return { ...state, guiSchema: action.payload }
         case DeploymentConfigStateActionTypes.wasGuiOrHideLockedKeysEdited:
             return { ...state, wasGuiOrHideLockedKeysEdited: action.payload }
+        case DeploymentConfigStateActionTypes.editorTemplate:
+            return { ...state, editorTemplate: action.payload }
         case DeploymentConfigStateActionTypes.multipleOptions:
             return { ...state, ...action.payload }
         default:

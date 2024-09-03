@@ -619,7 +619,6 @@ export default function DeploymentTemplateOverrideForm({
             <DeploymentTemplateOptionsTab
                 isEnvOverride
                 disableVersionSelect={readOnlyPublishedMode || !state.duplicate}
-                codeEditorValue={isValuesOverride ? getCodeEditorValue(readOnlyPublishedMode) : manifestDataRHS}
                 isValues={isValuesOverride}
             />
             {renderEditorComponent()}

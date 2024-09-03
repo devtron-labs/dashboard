@@ -37,7 +37,6 @@ import { DeploymentConfigContext } from '../DeploymentConfig'
 import { getRenderActionButton, makeObjectFromJsonPathArray } from '../utils'
 
 const DeploymentTemplateGUIView = ({
-    fetchingValues,
     value,
     readOnly,
     editorOnChange,
@@ -50,7 +49,7 @@ const DeploymentTemplateGUIView = ({
         isUnSet,
         state: { chartConfigLoading, guiSchema, selectedChart, wasGuiOrHideLockedKeysEdited },
         dispatch,
-        changeEditorMode,
+        handleChangeToYAMLMode,
     } = useContext<DeploymentConfigContextType>(DeploymentConfigContext)
     const [formData, setFormData] = useState(null)
 
@@ -58,7 +57,7 @@ const DeploymentTemplateGUIView = ({
         try {
             setFormData(YAML.parse(value))
         } catch {
-            changeEditorMode()
+            handleChangeToYAMLMode()
         }
     }, [value])
 
@@ -113,7 +112,8 @@ const DeploymentTemplateGUIView = ({
     }
 
     const renderContent = () => {
-        if (chartConfigLoading || fetchingValues) {
+        // TODO: Can remove
+        if (chartConfigLoading) {
             return <Progressing pageLoader />
         }
 
@@ -123,7 +123,7 @@ const DeploymentTemplateGUIView = ({
                     <button
                         type="button"
                         className="cta cta-with-img secondary dc__gap-6"
-                        onClick={changeEditorMode}
+                        onClick={handleChangeToYAMLMode}
                         aria-label={GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}
                     >
                         <span>{GUI_VIEW_TEXTS.SWITCH_TO_ADVANCE_BUTTON_TEXT}</span>
@@ -157,6 +157,7 @@ const DeploymentTemplateGUIView = ({
                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.codeEditor.warning}
                 </div>
             )}
+
             <div
                 className={`form__row--gui-container dc__overflow-scroll ${
                     !isUnSet ? 'gui dc__border-top-n1' : 'gui-with-warning'
@@ -164,13 +165,15 @@ const DeploymentTemplateGUIView = ({
             >
                 {renderContent()}
             </div>
+
+            {/* In case of readOnly makes no sense */}
             {!state.error && (
                 <InfoColourBar
                     message="To modify additional configurations"
                     classname="dc__content-start en-2 bw-1 dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 switch-to-advance-info-bar"
                     Icon={Help}
                     iconClass="fcv-5 icon-dim-20"
-                    renderActionButton={getRenderActionButton(changeEditorMode)}
+                    renderActionButton={getRenderActionButton(handleChangeToYAMLMode)}
                 />
             )}
         </>
