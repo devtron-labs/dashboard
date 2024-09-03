@@ -218,30 +218,33 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                 redirectToChartValues,
             }}
         >
-            <div className="chart-detail-container">
-                <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-                {loading ? (
-                    <Progressing pageLoader />
-                ) : (
-                    <div style={{ overflow: 'auto' }}>
-                        <div className="left-right-container">
-                            <div className="chart-detail-left">
-                                <About {...chartInformation} chartYaml={chartYaml} />
-                                <ReadmeRowHorizontal {...chartInformation} />
-                                <ChartDeploymentList chartId={chartId} />
-                            </div>
-                            <div className="chart-detail-right">
-                                <Deployment
-                                    chartId={chartId}
-                                    {...chartInformation}
-                                    availableVersions={mapById(availableVersions)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
             <Switch>
+                <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId`} exact>
+                    {/* // TODO: refactor this part? Why spin two loaders? */}
+                    <div className="chart-detail-container">
+                        <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+                        {loading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <div style={{ overflow: 'auto' }}>
+                                <div className="left-right-container">
+                                    <div className="chart-detail-left">
+                                        <About {...chartInformation} chartYaml={chartYaml} />
+                                        <ReadmeRowHorizontal {...chartInformation} />
+                                        <ChartDeploymentList chartId={chartId} />
+                                    </div>
+                                    <div className="chart-detail-right">
+                                        <Deployment
+                                            chartId={chartId}
+                                            {...chartInformation}
+                                            availableVersions={mapById(availableVersions)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </Route>
                 <Route
                     path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}
                     render={(props) => {
@@ -503,7 +506,7 @@ export const MarkDown = ({ markdown = '', className = '', breaks = false, disabl
         <article
             {...props}
             ref={mdeRef}
-            className={`deploy-chart__readme-markdown mr-20 ${className}`}
+            className={`deploy-chart__readme-markdown pr-20 ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
             data-testid="article-for-bulk-edit"
         />
