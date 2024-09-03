@@ -126,10 +126,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
         [chartId],
     )
 
-    function goBackToDiscoverChart() {
-        history.push(`${URLS.CHARTS}/discover/chart/${chartId}`)
-    }
-
     async function fetchVersions() {
         setLoading(true)
         try {
@@ -187,9 +183,9 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     }, [selectedVersion])
 
     useEffect(() => {
-        const chartValues = chartValuesList.find((chrtValue) => {
-            if (chrtValue.kind === 'DEFAULT' && chrtValue.id === selectedVersion) {
-                return chrtValue
+        const chartValues = chartValuesList.find((chartValue) => {
+            if (chartValue.kind === 'DEFAULT' && chartValue.id === selectedVersion) {
+                return chartValue
             }
         })
         if (chartValues) {
@@ -207,7 +203,6 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
     return (
         <DiscoverDetailsContext.Provider
             value={{
-                goBackToDiscoverChart,
                 openSavedValuesList,
                 availableVersions,
                 selectedVersion,
@@ -245,42 +240,26 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         )}
                     </div>
                 </Route>
-                <Route
-                    path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}
-                    render={(props) => {
-                        return (
-                            <div className="deploy-chart__container">
-                                {!chartInformation.chartName ||
-                                !selectedVersion ||
-                                chartValuesList.length <= 0 ||
-                                availableVersions.length <= 0 ? (
-                                    <Progressing pageLoader />
-                                ) : (
-                                    <>
-                                        <PageHeader
-                                            headerName={`Deploy chart: ${chartInformation.chartName}/${chartInformation.name}`}
-                                            additionalHeaderInfo={() =>
-                                                chartInformation.deprecated && (
-                                                    <span style={{ color: 'var(--R500)' }}>&nbsp;(Deprecated)</span>
-                                                )
-                                            }
-                                            showCloseButton
-                                            onClose={goBackToDiscoverChart}
-                                        />
-                                        <ChartValuesView
-                                            isDeployChartView
-                                            installedConfigFromParent={chartInformation as ChartInstalledConfig}
-                                            chartValuesListFromParent={chartValuesList}
-                                            chartVersionsDataFromParent={availableVersions}
-                                            chartValuesFromParent={chartValues}
-                                            selectedVersionFromParent={selectedVersion}
-                                        />
-                                    </>
-                                )}
-                            </div>
-                        )
-                    }}
-                />
+                <Route path={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/:chartId${URLS.DEPLOY_CHART}/:presetValueId?`}>
+                    <div className="deploy-chart__container">
+                        <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+                        {!chartInformation.chartName ||
+                        !selectedVersion ||
+                        chartValuesList.length <= 0 ||
+                        availableVersions.length <= 0 || loading ? (
+                            <Progressing pageLoader />
+                        ) : (
+                            <ChartValuesView
+                                isDeployChartView
+                                installedConfigFromParent={chartInformation as ChartInstalledConfig}
+                                chartValuesListFromParent={chartValuesList}
+                                chartVersionsDataFromParent={availableVersions}
+                                chartValuesFromParent={chartValues}
+                                selectedVersionFromParent={selectedVersion}
+                            />
+                        )}
+                    </div>
+                </Route>
             </Switch>
         </DiscoverDetailsContext.Provider>
     )

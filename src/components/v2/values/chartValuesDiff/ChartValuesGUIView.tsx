@@ -93,6 +93,7 @@ const ChartValuesGUIForm = ({
             } ${openReadMe ? 'chart-values-view__full-mode' : ''}`}
         >
             <RJSFForm
+                key={state.json}
                 schema={state.json}
                 uiSchema={HIDE_SUBMIT_BUTTON_UI_SCHEMA}
                 formData={formData}
