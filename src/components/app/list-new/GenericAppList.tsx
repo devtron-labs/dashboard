@@ -71,6 +71,7 @@ const GenericAppList = ({
     changePage,
     changePageSize,
     handleSorting,
+    setShowPulsatingDot,
 }: GenericAppListProps) => {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -163,8 +164,10 @@ const GenericAppList = ({
     useEffect(() => {
         if (!clusterIdsCsv) {
             setAppsList([])
+            setShowPulsatingDot(true)
             return
         }
+        setShowPulsatingDot(false)
         if (isArgoCDAppList) {
             handleArgoAppListing()
             return

@@ -131,8 +131,9 @@ export interface HelmAppListProps
     clusterIdsCsv: string
     serverMode: SERVER_MODE
     fetchingExternalApps: boolean
-    setFetchingExternalAppsState
+    setFetchingExternalAppsState: (fetchingExternalApps: boolean) => void
     clusterList: Cluster[]
+    setShowPulsatingDot: (showPulsatingDot: boolean) => void
 }
 
 export interface GenericAppListProps
@@ -145,7 +146,7 @@ export interface GenericAppListProps
             | 'changePage'
             | 'changePageSize'
         >,
-        Pick<HelmAppListProps, 'clusterIdsCsv'> {
+        Pick<HelmAppListProps, 'clusterIdsCsv' | 'setShowPulsatingDot'> {
     appType: string
     clusterList: Cluster[]
 }
