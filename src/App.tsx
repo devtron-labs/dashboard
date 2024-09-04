@@ -17,13 +17,7 @@
 import { lazy, Suspense, useRef, useState, useEffect } from 'react'
 import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-// @TODO: Patternfly styles files need to be removed in future
-import './css/patternfly.scss'
-import 'react-toastify/dist/ReactToastify.css'
-import './css/base.scss'
-import './css/formulae.scss'
-import './css/forms.scss'
-import 'tippy.js/dist/tippy.css'
+import './application.scss';
 import {
     showError,
     BreadcrumbStore,
