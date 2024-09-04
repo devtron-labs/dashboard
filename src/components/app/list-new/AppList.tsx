@@ -454,7 +454,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isDisabled={appListFilterLoading || projectListLoading}
                                 isLoading={appListFilterLoading || projectListLoading}
                                 optionListError={appListFiltersError || projectListError}
-                                reloadOptionList={appListFilterResponse ? reloadAppFilters : reloadProjectOptions}
+                                reloadOptionList={appListFiltersError ? reloadAppFilters : reloadProjectOptions}
                             />
                             <div className="dc__border-right h-16" />
                             {serverMode === SERVER_MODE.FULL && (
@@ -516,7 +516,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isLoading={appListFilterLoading || clusterListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
                                 optionListError={appListFiltersError || clusterListError}
-                                reloadOptionList={appListFilterResponse ? reloadAppFilters : reloadClusterOptions}
+                                reloadOptionList={appListFiltersError ? reloadAppFilters : reloadClusterOptions}
                             />
                             {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                         </div>

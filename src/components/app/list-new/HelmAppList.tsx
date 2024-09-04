@@ -101,7 +101,6 @@ const HelmAppList = ({
             ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
             : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
 
-
     const { filteredHelmAppList, filteredListTotalSize } = useMemo(() => {
         let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
         if (searchKey) {
@@ -110,9 +109,7 @@ const HelmAppList = ({
         }
         if (project.length) {
             const projectMap = new Map<string, boolean>(project.map((projectId) => [projectId, true]))
-            filteredHelmAppList = filteredHelmAppList.filter(
-                (app) => projectMap.get(String(app.projectId)) ?? false,
-            )
+            filteredHelmAppList = filteredHelmAppList.filter((app) => projectMap.get(String(app.projectId)) ?? false)
         }
         if (environment.length) {
             const environmentMap = new Map<string, boolean>(environment.map((envId) => [envId, true]))
@@ -124,8 +121,7 @@ const HelmAppList = ({
             const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
             filteredHelmAppList = filteredHelmAppList.filter(
                 (app) =>
-                    namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ??
-                    false,
+                    namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ?? false,
             )
         }
         if (appStatus.length) {
@@ -143,7 +139,9 @@ const HelmAppList = ({
     // component load
     useEffect(() => {
         init()
-        return setShowPulsatingDot(false)
+        return () => {
+            setShowPulsatingDot(false)
+        }
     }, [])
 
     useEffect(() => {
