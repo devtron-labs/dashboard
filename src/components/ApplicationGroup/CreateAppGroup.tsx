@@ -23,6 +23,7 @@ import {
     Drawer,
     GenericEmptyState,
     Progressing,
+    SearchBar,
     showError,
     stopPropagation,
     TabGroup,
@@ -37,7 +38,6 @@ import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import Info from '../../assets/icons/ic-info-outline-grey.svg'
 import { CreateGroupType, CreateTypeOfAppListType, FilterParentType } from './AppGroup.types'
-import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS, FILTER_NAME_REGEX } from './Constants'
 import { createEnvGroup } from './AppGroup.service'
 
@@ -58,9 +58,7 @@ export default function CreateAppGroup({
         filterParentType === FilterParentType.app ? CreateGroupTabs.SELECTED_ENV : CreateGroupTabs.SELECTED_APPS,
     )
     const [allAppSearchText, setAllAppSearchText] = useState('')
-    const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
-    const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
     const [selectedAppsMap, setSelectedAppsMap] = useState<Record<string, boolean>>({})
     const [selectedAppsCount, setSelectedAppsCount] = useState<number>(0)
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<CreateTypeOfAppListType[]>([])
@@ -82,7 +80,7 @@ export default function CreateAppGroup({
             return
         }
         if (!FILTER_NAME_REGEX.test(name) || name.length > 30) {
-            // regex doesnt check of max length = 30
+            // regex doesn't check of max length = 30
             setShowErrorMsg(true)
         } else {
             setShowErrorMsg(false)
@@ -205,14 +203,21 @@ export default function CreateAppGroup({
             (app) =>
                 selectedAppsMap[app.id] && (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
         )
+
+        const handleAppSearchEnterChange = (_searchText: string): void => {
+            setSelectedAppSearchText(_searchText)
+        }
+
         return (
             <div>
                 <SearchBar
-                    placeholder={`Search ${filterParentTypeMsg}'s`}
-                    searchText={selectedAppSearchText}
-                    setSearchText={setSelectedAppSearchText}
-                    searchApplied={selectedAppSearchApplied}
-                    setSearchApplied={setSelectedAppSearchApplied}
+                    inputProps={{
+                        placeholder: `Search ${filterParentTypeMsg}'s`,
+                        autoFocus: true,
+                    }}
+                    initialSearchText={selectedAppSearchText}
+                    handleEnter={handleAppSearchEnterChange}
+                    dataTestId="create-app-group"
                 />
                 <div>
                     {filteredAuthList.length <= 0 && filteredUnAuthList.length <= 0
@@ -233,7 +238,7 @@ export default function CreateAppGroup({
                           })}
                     {filteredUnAuthList.length > 0 && (
                         <div className="dc__bold ml-4">
-                            {`You don't have admin/manager pemission for the following ${filterParentTypeMsg}.`}
+                            {`You don't have admin/manager permission for the following ${filterParentTypeMsg}.`}
                         </div>
                     )}
                     {filteredUnAuthList.map((app) => {
@@ -243,7 +248,7 @@ export default function CreateAppGroup({
                                 className="default-tt w-200"
                                 arrow={false}
                                 placement="bottom-start"
-                                content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
+                                content={`You don't have admin/manager permission for this ${filterParentTypeMsg}.`}
                             >
                                 <div>
                                     <div className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor">
@@ -261,14 +266,20 @@ export default function CreateAppGroup({
 
     const renderAllApps = (): JSX.Element => {
         const filteredAllApps = appList.filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
+
+        const handleAllAppSearchEnterChange = (_searchText: string): void => {
+            setAllAppSearchText(_searchText)
+        }
+
         return (
             <div>
                 <SearchBar
-                    placeholder={`Search ${filterParentTypeMsg}'s`}
-                    searchText={allAppSearchText}
-                    setSearchText={setAllAppSearchText}
-                    searchApplied={allAppSearchApplied}
-                    setSearchApplied={setAllAppSearchApplied}
+                    inputProps={{
+                        placeholder: `Search ${filterParentTypeMsg}'s`,
+                        autoFocus: true,
+                    }}
+                    initialSearchText={allAppSearchText}
+                    handleEnter={handleAllAppSearchEnterChange}
                 />
                 <div>
                     {filteredAllApps.length <= 0
@@ -283,7 +294,7 @@ export default function CreateAppGroup({
                                           className="default-tt w-200"
                                           arrow={false}
                                           placement="bottom-start"
-                                          content={`You don't have admin/manager pemission for this ${filterParentTypeMsg}.`}
+                                          content={`You don't have admin/manager permission for this ${filterParentTypeMsg}.`}
                                       >
                                           <div>{children}</div>
                                       </Tippy>

@@ -170,6 +170,7 @@ export const ConfigMapSecretContainer = (props: CMSecretContainerProps) => {
                             : CMSecretProtectedTab.Draft,
                     )
                 } else {
+                    setSelectedTab(null)
                     setDraftData(null)
                 }
 
