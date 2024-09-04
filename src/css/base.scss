@@ -4978,7 +4978,7 @@ textarea::placeholder {
     width: 10px;
     height: 10px;
     border: solid 4px rgba(255, 126, 91, 0.4);
-    background-color: #ff7e5b;
+    background-color: var(--O500);
     top: -5px;
     right: -5px;
     border-radius: 50%;

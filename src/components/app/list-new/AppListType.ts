@@ -32,6 +32,7 @@ export enum AppStatuses {
     NOT_DEPLOYED = 'Not Deployed',
 }
 
+// Values to be sent in payload for app status filter in devtron app list API
 export enum AppStatusesDTO {
     DEGRADED = 'Degraded',
     HEALTHY = 'Healthy',

@@ -22,7 +22,6 @@ import './filter.css'
 import Tippy from '@tippyjs/react'
 import { replaceLastOddBackslash } from '../../../util/Util'
 
-// This component should be deleted and its instances replaced by FilterSelectPicker
 /**
  * @deprecated use FilterSelectPicker from fe-common
  */
