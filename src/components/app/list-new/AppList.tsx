@@ -274,10 +274,13 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         })) ?? []
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(
-        () => [
-            ...getClusterOptions(appListFilterResponse?.result.clusters),
-            ...getClusterOptions(clusterListResponse?.result),
-        ],
+        () =>
+            appListFilterResponse?.result
+                ? [
+                      ...getClusterOptions(appListFilterResponse.result.clusters),
+                      ...getClusterOptions(clusterListResponse.result),
+                  ]
+                : [],
         [appListFilterResponse],
     )
 
