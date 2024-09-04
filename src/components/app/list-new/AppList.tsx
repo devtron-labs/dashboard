@@ -35,7 +35,6 @@ import {
     Tooltip,
     handleUTCTime,
     stringComparatorBySortOrder,
-    SortingOrder,
     ModuleNameMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppFilters, getClusterListMinWithoutAuth } from '@Services/service'
@@ -58,7 +57,13 @@ import {
     FLUX_CD_HELM_RELEASE_LABEL,
 } from './Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { getChangeAppTabURL, getCurrentTabName, getFormattedFilterLabel, parseSearchParams } from './list.utils'
+import {
+    getAppStatusFormattedValue,
+    getChangeAppTabURL,
+    getCurrentTabName,
+    getFormattedFilterLabel,
+    parseSearchParams,
+} from './list.utils'
 import GenericAppList from './GenericAppList'
 import {
     AppListFilterConfig,
@@ -154,19 +159,19 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         ],
     )
 
-    const [appListFilterLoading, appListFilterResponse] = useAsync(
-        () => getAppFilters(),
+    const [appListFilterLoading, appListFilterResponse, appListFiltersError, reloadAppFilters] = useAsync(
+        getAppFilters,
         [],
         serverMode === SERVER_MODE.FULL,
     )
 
-    const [projectListLoading, projectListResponse] = useAsync(
+    const [projectListLoading, projectListResponse, projectListError, reloadProjectOptions] = useAsync(
         () => getProjectList(),
         [],
         serverMode === SERVER_MODE.EA_ONLY,
     )
 
-    const [clusterListLoading, clusterListResponse] = useAsync(
+    const [clusterListLoading, clusterListResponse, clusterListError, reloadClusterOptions] = useAsync(
         () => getClusterListMinWithoutAuth(),
         [],
         serverMode === SERVER_MODE.EA_ONLY,
@@ -175,7 +180,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const clusterIdsArray = cluster.map((clusterId) => +clusterId)
     const clusterIdsCsv = cluster.join()
 
-    const [namespaceListLoading, namespaceListResponse] = useAsync(
+    const [namespaceListLoading, namespaceListResponse, namespaceListError, reloadNamespaceOptions] = useAsync(
         () => getNamespaceListMin(clusterIdsCsv),
         [clusterIdsCsv],
         !!clusterIdsCsv,
@@ -197,26 +202,33 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 return filterValue.split('_')[1]
             case AppListUrlFilters.templateType:
                 return filterValue === FluxCDTemplateType.HELM_RELEASE ? FLUX_CD_HELM_RELEASE_LABEL : filterValue
+            case AppListUrlFilters.appStatus:
+                return getAppStatusFormattedValue(filterValue)
             default:
                 return filterValue
         }
     }
 
     const projectOptions: GroupedOptionsType[] = useMemo(
-        () => [
-            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
-            appListFilterResponse?.result.teams.length && {
-                label: 'Projects',
-                options: [
-                    ...(appListFilterResponse?.result.teams.map((team) => ({
-                        label: team.name,
-                        value: String(team.id),
-                    })) ?? []),
-                    ...(projectListResponse?.result.map((team) => ({ label: team.name, value: String(team.id) })) ??
-                        []),
-                ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC)),
-            },
-        ],
+        () =>
+            appListFilterResponse?.result
+                ? [
+                      { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
+                      appListFilterResponse?.result.teams.length > 0 && {
+                          label: 'Projects',
+                          options: [
+                              ...(appListFilterResponse?.result?.teams.map((team) => ({
+                                  label: team.name,
+                                  value: String(team.id),
+                              })) ?? []),
+                              ...(projectListResponse?.result?.map((team) => ({
+                                  label: team.name,
+                                  value: String(team.id),
+                              })) ?? []),
+                          ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
+                      },
+                  ]
+                : [],
         [appListFilterResponse],
     )
 
@@ -266,13 +278,13 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                     label: clusterItem.clusterName,
                     options: clusterItem.environments
                         .filter((env) => !!env.namespace)
-                        .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace, SortingOrder.ASC))
+                        .sort((a, b) => stringComparatorBySortOrder(a.namespace, b.namespace))
                         .map((env) => ({
                             label: env.namespace,
                             value: `${clusterItem.clusterId}_${env.namespace}`,
                         })),
                 }))
-                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label, SortingOrder.ASC)),
+                .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
         [namespaceListResponse],
     )
 
@@ -320,7 +332,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 clusterIdsMap.set(clusterId, true)
             })
             const updatedNamespaces = namespace.filter(
-                (currentNamespace) => clusterIdsMap.get(+currentNamespace.split('_')[0]) || false,
+                (currentNamespace) => clusterIdsMap.get(+currentNamespace.split('_')[0]) ?? false,
             )
             updateSearchParams({ namespace: updatedNamespaces })
         }
@@ -431,6 +443,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.project)}
                                 isDisabled={appListFilterLoading || projectListLoading}
                                 isLoading={appListFilterLoading || projectListLoading}
+                                optionListError={appListFiltersError || projectListError}
+                                reloadOptionList={reloadAppFilters || reloadProjectOptions}
                             />
                             <div className="dc__border-right h-16" />
                             {serverMode === SERVER_MODE.FULL && (
@@ -449,6 +463,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.environment)}
                                                 isDisabled={appListFilterLoading || !!clusterIdsCsv}
                                                 isLoading={appListFilterLoading}
+                                                optionListError={appListFiltersError}
+                                                reloadOptionList={reloadAppFilters}
                                             />
                                         </div>
                                     </Tooltip>
@@ -489,6 +505,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isDisabled={!!environment.length}
                                 isLoading={appListFilterLoading || clusterListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
+                                optionListError={appListFiltersError || clusterListError}
+                                reloadOptionList={reloadAppFilters || reloadClusterOptions}
                             />
                             {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
                         </div>
@@ -504,6 +522,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                                 isLoading={namespaceListLoading}
                                 handleApplyFilter={handleUpdateFilters(AppListUrlFilters.namespace)}
                                 shouldMenuAlignRight={!showExportCsvButton}
+                                optionListError={namespaceListError}
+                                reloadOptionList={reloadNamespaceOptions}
                             />
                         </div>
                     </Tooltip>

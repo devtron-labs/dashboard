@@ -18,7 +18,7 @@ import { AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import ArgoCDAppIcon from '../../../assets/icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '../../../assets/icons/ic-fluxcd-app.svg'
-import { AppListUrlFilters } from './AppListType'
+import { AppListUrlFilters, AppStatuses, AppStatusesDTO } from './AppListType'
 
 export const getCurrentTabName = (appType: string): string => {
     switch (appType) {
@@ -70,4 +70,15 @@ export const getFormattedFilterLabel = (filterType: AppListUrlFilters) => {
         return 'Template Type'
     }
     return null
+}
+
+export const getAppStatusFormattedValue = (filterValue: string) => {
+    switch (filterValue) {
+        case AppStatusesDTO.HIBERNATING:
+            return AppStatuses.HIBERNATING
+        case AppStatusesDTO.NOT_DEPLOYED:
+            return AppStatuses.NOT_DEPLOYED
+        default:
+            return filterValue
+    }
 }

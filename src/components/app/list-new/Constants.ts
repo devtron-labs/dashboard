@@ -15,7 +15,7 @@
  */
 
 import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { AppStatuses, FluxCDTemplateType } from './AppListType'
+import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
 
 export const APP_LIST_HEADERS = {
     AppName: 'APP NAME',
@@ -83,12 +83,12 @@ export const TEMPLATE_TYPE_FILTER_OPTIONS: SelectPickerOptionType[] = [
 ]
 
 export const APP_STATUS_FILTER_OPTIONS: SelectPickerOptionType[] = [
-    { label: AppStatuses.DEGRADED, value: AppStatuses.DEGRADED },
-    { label: AppStatuses.HEALTHY, value: AppStatuses.HEALTHY },
-    { label: AppStatuses.HIBERNATING, value: AppStatuses.HIBERNATING },
-    { label: AppStatuses.MISSING, value: AppStatuses.MISSING },
-    { label: AppStatuses.NOT_DEPLOYED, value: AppStatuses.NOT_DEPLOYED },
-    { label: AppStatuses.PROGRESSING, value: AppStatuses.PROGRESSING },
+    { label: AppStatuses.DEGRADED, value: AppStatusesDTO.DEGRADED },
+    { label: AppStatuses.HEALTHY, value: AppStatusesDTO.HEALTHY },
+    { label: AppStatuses.HIBERNATING, value: AppStatusesDTO.HIBERNATING },
+    { label: AppStatuses.MISSING, value: AppStatusesDTO.MISSING },
+    { label: AppStatuses.NOT_DEPLOYED, value: AppStatusesDTO.NOT_DEPLOYED },
+    { label: AppStatuses.PROGRESSING, value: AppStatusesDTO.PROGRESSING },
 ]
 
 export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {

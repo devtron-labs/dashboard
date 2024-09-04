@@ -92,11 +92,17 @@ const GenericAppList = ({
                 filteredAppsList = filteredAppsList.filter((app) => app.appName.includes(searchLowerCase))
             }
             if (templateType.length) {
-                filteredAppsList = filteredAppsList.filter((app) => templateType.includes(app.fluxAppDeploymentType))
+                const templateTypeMap = new Map<string, boolean>(templateType.map((template) => [template, true]))
+
+                filteredAppsList = filteredAppsList.filter(
+                    (app) => templateTypeMap.get(app.fluxAppDeploymentType) ?? false,
+                )
             }
             if (namespace.length) {
-                filteredAppsList = filteredAppsList.filter((app) =>
-                    namespace.includes(`${app.clusterId}_${app.namespace}`),
+                const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
+
+                filteredAppsList = filteredAppsList.filter(
+                    (app) => namespaceMap.get(`${app.clusterId}_${app.namespace}`) ?? false,
                 )
             }
             filteredAppsList = filteredAppsList.sort((a, b) =>
@@ -437,7 +443,7 @@ const GenericAppList = ({
 
     return (
         <>
-            {(dataStateType === AppListViewType.LOADING) && (
+            {dataStateType === AppListViewType.LOADING && (
                 <>
                     {renderAppListHeader()}
                     <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">

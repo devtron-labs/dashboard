@@ -109,16 +109,23 @@ const HelmAppList = ({
                 filteredHelmAppList = filteredHelmAppList.filter((app) => app.appName.includes(searchLowerCase))
             }
             if (project.length) {
-                filteredHelmAppList = filteredHelmAppList.filter((app) => project.includes(String(app.projectId)))
+                const projectMap = new Map<string, boolean>(project.map((projectId) => [projectId, true]))
+                filteredHelmAppList = filteredHelmAppList.filter(
+                    (app) => projectMap.get(String(app.projectId)) ?? false,
+                )
             }
             if (environment.length) {
-                filteredHelmAppList = filteredHelmAppList.filter((app) =>
-                    environment.includes(String(app.environmentDetail.environmentId)),
+                const environmentMap = new Map<string, boolean>(environment.map((envId) => [envId, true]))
+                filteredHelmAppList = filteredHelmAppList.filter(
+                    (app) => environmentMap.get(String(app.environmentDetail.environmentId)) ?? false,
                 )
             }
             if (namespace.length) {
-                filteredHelmAppList = filteredHelmAppList.filter((app) =>
-                    namespace.includes(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`),
+                const namespaceMap = new Map<string, boolean>(namespace.map((namespaceItem) => [namespaceItem, true]))
+                filteredHelmAppList = filteredHelmAppList.filter(
+                    (app) =>
+                        namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ??
+                        false,
                 )
             }
             if (appStatus.length) {

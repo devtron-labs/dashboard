@@ -32,6 +32,15 @@ export enum AppStatuses {
     NOT_DEPLOYED = 'Not Deployed',
 }
 
+export enum AppStatusesDTO {
+    DEGRADED = 'Degraded',
+    HEALTHY = 'Healthy',
+    HIBERNATING = 'HIBERNATING',
+    MISSING = 'Missing',
+    PROGRESSING = 'Progressing',
+    NOT_DEPLOYED = 'NOT DEPLOYED',
+}
+
 export interface GenericAppType {
     appName: string
     appStatus: string
