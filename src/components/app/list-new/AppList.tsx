@@ -212,26 +212,29 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         }
     }
 
-    const getProjectOptions = (projectList: Teams[]): OptionType[] =>
-        projectList.map((team) => ({
-            label: team.name,
-            value: String(team.id),
-        })) ?? []
+    const getProjectOptions = (projectList: Teams[]): OptionType[] => {
+        if (!projectList) {
+            return []
+        }
+        return (
+            projectList.map((team) => ({
+                label: team.name,
+                value: String(team.id),
+            })) ?? []
+        )
+    }
 
     const projectOptions: GroupedOptionsType[] = useMemo(
-        () =>
-            appListFilterResponse?.result
-                ? [
-                      { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
-                      appListFilterResponse?.result.teams.length > 0 && {
-                          label: 'Projects',
-                          options: [
-                              ...getProjectOptions(appListFilterResponse.result.teams),
-                              ...getProjectOptions(projectListResponse.result),
-                          ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
-                      },
-                  ]
-                : [],
+        () => [
+            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
+            appListFilterResponse?.result.teams.length > 0 && {
+                label: 'Projects',
+                options: [
+                    ...getProjectOptions(appListFilterResponse?.result.teams),
+                    ...getProjectOptions(projectListResponse?.result),
+                ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
+            },
+        ],
         [appListFilterResponse],
     )
 
@@ -247,7 +250,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                 })
 
                 return prev
-            }, []),
+            }, []) ?? [],
         [appListFilterResponse],
     )
 
@@ -261,6 +264,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     )
 
     const handleVirtualClusterFiltering = (clusterList: Cluster[]): Cluster[] => {
+        if (!clusterList) return []
         if (isExternalArgo || isExternalFlux) {
             return clusterList.filter((clusterItem) => !clusterItem.isVirtualCluster)
         }
@@ -271,16 +275,13 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         handleVirtualClusterFiltering(clusterList).map((clusterItem) => ({
             label: clusterItem.cluster_name,
             value: String(clusterItem.id),
-        })) ?? []
+        }))
 
     const clusterOptions: SelectPickerOptionType[] = useMemo(
-        () =>
-            appListFilterResponse?.result
-                ? [
-                      ...getClusterOptions(appListFilterResponse.result.clusters),
-                      ...getClusterOptions(clusterListResponse.result),
-                  ]
-                : [],
+        () => [
+            ...getClusterOptions(appListFilterResponse?.result.clusters),
+            ...getClusterOptions(clusterListResponse?.result),
+        ],
         [appListFilterResponse],
     )
 
@@ -407,8 +408,10 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const renderFilters = () => {
         const appStatusFilters: SelectPickerOptionType[] =
             params.appType === AppListConstants.AppType.HELM_APPS
-                ? APP_STATUS_FILTER_OPTIONS.filter((status) => status.label !== AppStatuses.NOT_DEPLOYED)
-                : APP_STATUS_FILTER_OPTIONS
+                ? structuredClone(APP_STATUS_FILTER_OPTIONS).filter(
+                      (status) => status.label !== AppStatuses.NOT_DEPLOYED,
+                  )
+                : structuredClone(APP_STATUS_FILTER_OPTIONS)
 
         const showExportCsvButton =
             userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1 &&
