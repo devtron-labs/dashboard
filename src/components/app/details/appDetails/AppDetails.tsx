@@ -905,6 +905,11 @@ export const EnvSelector = ({
             return acc
         }, []) || []
 
+        // Pushing the virtual environment group to the end of the list
+        if(groupList[0]?.label === 'Virtual environments' && groupList.length === 2) {
+            groupList.reverse()
+        }
+
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
