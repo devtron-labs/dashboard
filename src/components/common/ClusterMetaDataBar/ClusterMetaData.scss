@@ -15,22 +15,22 @@
  */
 
 .dark-theme {
-        border-top: 1px solid #2C3354;
-        background: #0C0F21;
-        color: var(--N000);
-        z-index: 19;
+    border-top: 1px solid #2c3354;
+    background: #0c0f21;
+    color: var(--N000);
+    z-index: 19;
 
-        .resource-link__dark-theme:hover,
-        .resource-link__dark-theme:focus {
-                color: var(--N000);
-                text-decoration: none;
-        }
+    .resource-link__dark-theme:hover,
+    .resource-link__dark-theme:focus {
+        color: var(--N000);
+        text-decoration: none;
+    }
 }
 
 .cluster-meta-data-wrapper {
-        .resource-link__white-theme:hover,
-        .resource-link__white-theme:focus {
-                color: var(--N900) !important;
-                text-decoration: none;
-        }
+    .resource-link__white-theme:hover,
+    .resource-link__white-theme:focus {
+        color: var(--N900) !important;
+        text-decoration: none;
+    }
 }

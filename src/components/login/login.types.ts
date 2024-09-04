@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { UseUserEmailContextType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SSOConfig {

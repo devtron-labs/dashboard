@@ -39,10 +39,10 @@
     -webkit-background-size: 100% 100%;
 }
 
-.app-status__icon:hover~.app-status-cell__tooltip-arrow {
+.app-status__icon:hover ~ .app-status-cell__tooltip-arrow {
     display: block;
 }
 
-.app-status__icon:hover~.app-status-cell__tooltip-body {
+.app-status__icon:hover ~ .app-status-cell__tooltip-body {
     display: block;
 }

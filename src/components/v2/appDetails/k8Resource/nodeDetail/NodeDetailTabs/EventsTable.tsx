@@ -36,9 +36,13 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
         }
         if (eventsList && eventsList.length > 0) {
             return (
-                <div data-testid="app-events-container" className="cn-0 dc__overflow-auto" style={{
-                    height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 155px)'
-                }}>
+                <div
+                    data-testid="app-events-container"
+                    className="cn-0 dc__overflow-auto"
+                    style={{
+                        height: isResourceBrowserView ? 'calc(100vh - 119px)' : 'calc(100vh - 155px)',
+                    }}
+                >
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
                             {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;
@@ -49,7 +53,7 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                     )}
                     <table className="table pl-20">
                         <thead
-                            className='dc__position-sticky dc__top-0'
+                            className="dc__position-sticky dc__top-0"
                             style={{
                                 minHeight: isResourceBrowserView ? '200px' : '600px',
                                 background: 'var(--terminal-bg)',

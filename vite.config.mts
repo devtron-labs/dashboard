@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Changed to .mts to support importing from ESM module
+
 import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
@@ -132,6 +134,9 @@ export default defineConfig(({ mode }) => {
                 srcDir: 'src',
                 filename: 'service-worker.ts',
                 strategies: 'injectManifest',
+                injectManifest: {
+                    maximumFileSizeToCacheInBytes: 8000000,
+                },
             }),
             jsToBottomNoModule(),
         ],

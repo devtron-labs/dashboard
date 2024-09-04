@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react'
-import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
+import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     DeleteDialog,
@@ -40,11 +40,7 @@ import { getAppDetailsForManifest } from '../nodeDetail/nodeDetail.api'
 const SecurityModal = importComponentFromFELibrary('SecurityModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 
-const NodeDeleteComponent = ({
-    nodeDetails,
-    appDetails,
-    isDeploymentBlocked,
-}: NodeDeleteComponentType) => {
+const NodeDeleteComponent = ({ nodeDetails, appDetails, isDeploymentBlocked }: NodeDeleteComponentType) => {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -173,7 +169,7 @@ const NodeDeleteComponent = ({
                     resourceScanPayload={{
                         ...nodeDetails,
                         ...manifestPayload,
-                        isAppDetailView: true
+                        isAppDetailView: true,
                     }}
                     handleModalClose={handleCloseVulnerabilityModal}
                 />

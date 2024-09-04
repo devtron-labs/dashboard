@@ -25,6 +25,7 @@ import {
     showError,
     trash,
     UserListFilterParams,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import {
@@ -35,15 +36,20 @@ import {
     PermissionGroupDto,
     User,
     UserBulkDeletePayload,
-    UserCreateOrUpdatePayload,
+    UserCreateOrUpdateParamsType,
+    UserCreateOrUpdatePayloadType,
     UserDto,
     UserRole,
 } from './types'
 import { transformPermissionGroupResponse, transformUserResponse } from './utils'
 import { SortableKeys as PermissionGroupListSortableKeys } from './PermissionGroups/List/constants'
 import { importComponentFromFELibrary } from '../../../components/common'
+import { getUserGroupsPayload } from './libUtils'
 
-const getUserStatusAndTimeoutPayload = importComponentFromFELibrary(
+const getUserStatusAndTimeoutPayload: (
+    userStatus: UserStatus,
+    timeToLive: string,
+) => Pick<UserDto, 'userStatus' | 'timeoutWindowExpression'> = importComponentFromFELibrary(
     'getUserStatusAndTimeoutPayload',
     () => ({}),
     'function',
@@ -68,9 +74,10 @@ export const createOrUpdateUser = ({
     timeToLive,
     userRoleGroups,
     roleFilters,
+    userGroups,
     ...data
-}: UserCreateOrUpdatePayload) => {
-    const _data: UserDto = {
+}: UserCreateOrUpdateParamsType) => {
+    const _data: UserCreateOrUpdatePayloadType = {
         ...data,
         email_id: emailId,
         userRoleGroups: userRoleGroups.map(({ id, name, status: groupStatus, timeToLive: groupTimeToLive }) => ({
@@ -86,6 +93,7 @@ export const createOrUpdateUser = ({
                 ...getStatusAndTimeoutPayload(roleFilterStatus, roleFilterTimeToLive),
             }),
         ),
+        userGroups: getUserGroupsPayload(userGroups),
         ...getUserStatusAndTimeoutPayload(userStatus, timeToLive),
     }
 

@@ -25,7 +25,7 @@ import {
     DeploymentAppTypes,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
-import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import IndexStore from '../index.store'

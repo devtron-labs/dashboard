@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP, EXTERNAL_TYPES, decode } from '@devtron-labs/devtron-fe-common-lib'
-import {
-    DeploymentHistoryDetail,
-    DeploymentHistorySingleValue,
-} from './cd.type'
+import { DeploymentHistoryDetail, DeploymentHistorySingleValue } from './cd.type'
 
 export const prepareDeploymentTemplateData = (rawData): Record<string, DeploymentHistorySingleValue> => {
     const deploymentTemplateData = {}

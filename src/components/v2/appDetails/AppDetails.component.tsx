@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
-import { useLocation, useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router-dom'
 import {
     DeploymentAppTypes,
     Progressing,

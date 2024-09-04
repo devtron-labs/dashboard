@@ -15,8 +15,7 @@
  */
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router'
-import { NavLink } from 'react-router-dom'
+import { useHistory, useLocation, useRouteMatch, NavLink } from 'react-router-dom'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'

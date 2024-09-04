@@ -43,6 +43,7 @@ import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
+const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')
 
 const UserPermissionRow = ({
     id,
@@ -56,6 +57,7 @@ const UserPermissionRow = ({
     isChecked = false,
     toggleChecked,
     showCheckbox,
+    userGroups,
 }: UserPermissionRowProps) => {
     const { path } = useRouteMatch()
     const isAdminOrSystemUser = getIsAdminOrSystemUser(emailId)
@@ -103,7 +105,7 @@ const UserPermissionRow = ({
                     isChecked && !isAdminOrSystemUser ? 'bc-b50' : ''
                 } dc__hover-n50`}
             >
-                {/* Note (v2): no checkbox for admin/system */}
+                {/* Note: no checkbox for admin/system */}
                 <div className="flex dc__content-start">
                     {(!_showCheckbox || isAdminOrSystemUser) && (
                         <span
@@ -147,6 +149,7 @@ const UserPermissionRow = ({
                         </Link>
                     </span>
                 )}
+                {showStatus && <UserGroupCell userGroups={userGroups} />}
                 <ConditionalWrap
                     condition={lastLoginTime !== LAST_LOGIN_TIME_NULL_STATE}
                     // eslint-disable-next-line react/no-unstable-nested-components

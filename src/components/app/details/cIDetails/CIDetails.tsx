@@ -43,8 +43,7 @@ import {
     ScanVulnerabilitiesTable,
     TRIGGER_STATUS_PROGRESSING,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
+import { NavLink, Switch, Route, Redirect, useRouteMatch, useParams, useHistory, generatePath } from 'react-router-dom'
 import {
     getCIPipelines,
     getCIHistoricalStatus,

@@ -15,6 +15,8 @@
  */
 
 import { useState, useEffect } from 'react'
+
+import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 import {
     useParams,
     useRouteMatch,
@@ -26,14 +28,11 @@ import {
     generatePath,
 } from 'react-router-dom'
 
-import { Reload } from '@devtron-labs/devtron-fe-common-lib'
-
 import { mapByKey, ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, URLS, getAppComposeURL } from '@Config/index'
 import DeploymentTemplateOverride from '@Components/deploymentConfig/DeploymentTemplateView/DeploymentTemplateOverride'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 import { CMSecretComponentType } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.types'
-
 import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'

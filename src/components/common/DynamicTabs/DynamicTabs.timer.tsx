@@ -25,13 +25,12 @@ const Timer: React.FC<TimerType> = ({ start, callback, transition, transpose, fo
     const [now, setNow] = useState(format(start, dayjs()))
     const intervalRef = useRef(null)
 
-    const getTimerInterval = () => {
-        return setInterval(() => {
+    const getTimerInterval = () =>
+        setInterval(() => {
             const _now = dayjs()
             setNow(format(start, _now))
             callback?.(_now)
         }, 1000)
-    }
 
     useEffect(() => {
         intervalRef.current = getTimerInterval()
