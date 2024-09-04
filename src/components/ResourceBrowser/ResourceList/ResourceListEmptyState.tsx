@@ -25,13 +25,12 @@ const ResourceListEmptyState = ({
     actionButtonText,
     actionHandler,
 }: ResourceListEmptyStateType) => {
-    const handleButton = () => {
-        return actionHandler ? (
+    const handleButton = () =>
+        actionHandler ? (
             <button type="button" onClick={actionHandler} className="add-link cta flex">
                 {actionButtonText ?? 'Clear filters'}
             </button>
         ) : null
-    }
     return (
         <GenericEmptyState
             classname="title dc__position-rel-imp"

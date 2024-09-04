@@ -397,14 +397,12 @@ export const ConfigMapSecretForm = React.memo(
                 payload.roleARN = ''
                 payload.externalType = state.externalType
                 if (isHashiOrAWS) {
-                    payload.secretData = state.secretData.map((s) => {
-                        return {
-                            key: s.fileName,
-                            name: s.name,
-                            isBinary: s.isBinary,
-                            property: s.property,
-                        }
-                    })
+                    payload.secretData = state.secretData.map((s) => ({
+                        key: s.fileName,
+                        name: s.name,
+                        isBinary: s.isBinary,
+                        property: s.property,
+                    }))
                     payload.secretData = payload.secretData.filter((s) => s.key || s.name || s.property)
                     payload.roleARN = state.roleARN.value
                 } else if (isESO) {
@@ -445,9 +443,7 @@ export const ConfigMapSecretForm = React.memo(
             return payload
         }
 
-        const preparePayload = () => {
-            return state.draftPayload
-        }
+        const preparePayload = () => state.draftPayload
 
         const handleError = (actionType, err, payloadData?) => {
             if (err instanceof ServerErrors && Array.isArray(err.errors)) {
@@ -631,9 +627,8 @@ export const ConfigMapSecretForm = React.memo(
             dispatch({ type: ConfigMapActionTypes.setRoleARN, payload: { value: e.target.value, error: '' } })
         }
 
-        const submitButtonText = (): string => {
-            return `Save${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
-        }
+        const submitButtonText = (): string =>
+            `Save${configMapSecretData?.name ? ' changes' : ''}${isProtectedView ? '...' : ''}`
 
         const closeProtectedDeleteOverrideModal = (): void => {
             dispatch({ type: ConfigMapActionTypes.toggleProtectedDeleteOverrideModal })
@@ -650,33 +645,29 @@ export const ConfigMapSecretForm = React.memo(
             }
         }
 
-        const renderDeleteOverRideModal = (): JSX.Element => {
-            return (
-                <ConfirmationDialog className="confirmation-dialog__body--w-400">
-                    <ConfirmationDialog.Icon src={warningIcon} />
-                    <ConfirmationDialog.Body
-                        title="Delete override ?"
-                        subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone."
-                    />
-                    <ConfirmationDialog.ButtonGroup>
-                        <button
-                            type="button"
-                            className="cta cancel h-32 lh-20-imp p-6-12-imp"
-                            onClick={() => dispatch({ type: ConfigMapActionTypes.toggleDialog })}
-                        >
-                            Cancel
-                        </button>
-                        <button type="button" className="cta delete h-32 lh-20-imp p-6-12-imp" onClick={handleDelete}>
-                            Confirm
-                        </button>
-                    </ConfirmationDialog.ButtonGroup>
-                </ConfirmationDialog>
-            )
-        }
+        const renderDeleteOverRideModal = (): JSX.Element => (
+            <ConfirmationDialog className="confirmation-dialog__body--w-400">
+                <ConfirmationDialog.Icon src={warningIcon} />
+                <ConfirmationDialog.Body
+                    title="Delete override ?"
+                    subtitle="Are you sure you want to delete the modified configuration. This action can’t be undone."
+                />
+                <ConfirmationDialog.ButtonGroup>
+                    <button
+                        type="button"
+                        className="cta cancel h-32 lh-20-imp p-6-12-imp"
+                        onClick={() => dispatch({ type: ConfigMapActionTypes.toggleDialog })}
+                    >
+                        Cancel
+                    </button>
+                    <button type="button" className="cta delete h-32 lh-20-imp p-6-12-imp" onClick={handleDelete}>
+                        Confirm
+                    </button>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
 
-        const prepareDataToDeleteOverrideDraft = () => {
-            return { id }
-        }
+        const prepareDataToDeleteOverrideDraft = () => ({ id })
 
         const renderProtectedDeleteOverRideModal = (): JSX.Element => {
             if (DeleteOverrideDraftModal) {
@@ -727,146 +718,138 @@ export const ConfigMapSecretForm = React.memo(
             return null
         }
 
-        const renderFilePermission = (): JSX.Element => {
-            return (
-                <>
+        const renderFilePermission = (): JSX.Element => (
+            <>
+                <div className="mb-16">
+                    <Checkbox
+                        isChecked={state.isFilePermissionChecked}
+                        onClick={stopPropagation}
+                        rootClassName=""
+                        disabled={
+                            (!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)) ||
+                            isChartVersion309OrBelow
+                        }
+                        value={CHECKBOX_VALUE.CHECKED}
+                        onChange={toggleFilePermission}
+                    >
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
+                            Set File Permission (same as
+                            <a
+                                href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
+                                className="ml-5 mr-5 anchor"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                defaultMode
+                            </a>
+                            for secrets in kubernetes)
+                            <br />
+                            {isChartVersion309OrBelow ? (
+                                <span className="fs-12 fw-5">
+                                    <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                                    <span className="cn-7 ml-5">Learn more about </span>
+                                    <a
+                                        href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+                                        rel="noreferrer noopener"
+                                        target="_blank"
+                                    >
+                                        Deployment Template &gt; Chart Version
+                                    </a>
+                                </span>
+                            ) : null}
+                        </span>
+                    </Checkbox>
+                </div>
+                {state.isFilePermissionChecked && (
                     <div className="mb-16">
-                        <Checkbox
-                            isChecked={state.isFilePermissionChecked}
-                            onClick={stopPropagation}
-                            rootClassName=""
+                        <CustomInput
+                            name="filePermission"
+                            value={state.filePermission.value}
+                            autoComplete="off"
+                            tabIndex={0}
+                            label=""
+                            dataTestid="configmap-file-permission-textbox"
+                            placeholder="eg. 0400 or 400"
+                            error={state.filePermission.error}
+                            onChange={onFilePermissionChange}
                             disabled={
                                 (!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)) ||
                                 isChartVersion309OrBelow
                             }
-                            value={CHECKBOX_VALUE.CHECKED}
-                            onChange={toggleFilePermission}
-                        >
-                            <span data-testid="configmap-file-permission-checkbox" className="mr-5">
-                                Set File Permission (same as
-                                <a
-                                    href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-files-permissions"
-                                    className="ml-5 mr-5 anchor"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    defaultMode
-                                </a>
-                                for secrets in kubernetes)
-                                <br />
-                                {isChartVersion309OrBelow ? (
-                                    <span className="fs-12 fw-5">
-                                        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
-                                        <span className="cn-7 ml-5">Learn more about </span>
-                                        <a
-                                            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-                                            rel="noreferrer noopener"
-                                            target="_blank"
-                                        >
-                                            Deployment Template &gt; Chart Version
-                                        </a>
-                                    </span>
-                                ) : null}
-                            </span>
-                        </Checkbox>
+                        />
                     </div>
-                    {state.isFilePermissionChecked && (
+                )}
+            </>
+        )
+
+        const renderSubPathCheckBoxContent = (): JSX.Element => (
+            <span data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="mb-0">
+                Set SubPath (same as
+                <a
+                    href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
+                    className="ml-5 mr-5 anchor"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    subPath
+                </a>
+                for volume mount)
+                <br />
+                {state.isSubPathChecked && (
+                    <span className="mb-0 cn-5 fs-11">
+                        {state.external
+                            ? 'Please provide keys of config map to be mounted'
+                            : 'Keys will be used as filename for subpath'}
+                    </span>
+                )}
+                {isChartVersion309OrBelow && (
+                    <span className="fs-12 fw-5">
+                        <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
+                        <span className="cn-7 ml-5">Learn more about </span>
+                        <a
+                            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            Deployment Template &gt; Chart Version
+                        </a>
+                    </span>
+                )}
+            </span>
+        )
+
+        const renderSubPath = (): JSX.Element => (
+            <div className="mb-16">
+                <Checkbox
+                    isChecked={state.isSubPathChecked}
+                    onClick={stopPropagation}
+                    rootClassName="top"
+                    disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
+                    value={CHECKBOX_VALUE.CHECKED}
+                    onChange={toggleSubpath}
+                >
+                    {renderSubPathCheckBoxContent()}
+                </Checkbox>
+                {(state.externalType === 'KubernetesSecret' ||
+                    (componentType !== CMSecretComponentType.Secret && state.external)) &&
+                    state.isSubPathChecked && (
                         <div className="mb-16">
                             <CustomInput
-                                name="filePermission"
-                                value={state.filePermission.value}
-                                autoComplete="off"
+                                name="externalSubpathValues"
+                                value={state.externalSubpathValues.value}
                                 tabIndex={0}
                                 label=""
-                                dataTestid="configmap-file-permission-textbox"
-                                placeholder="eg. 0400 or 400"
-                                error={state.filePermission.error}
-                                onChange={onFilePermissionChange}
+                                placeholder="Enter keys (Eg. username,configs.json)"
+                                error={state.externalSubpathValues.error}
+                                onChange={onExternalSubpathValuesChange}
                                 disabled={
-                                    (!draftMode &&
-                                        (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)) ||
-                                    isChartVersion309OrBelow
+                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
                                 }
                             />
                         </div>
                     )}
-                </>
-            )
-        }
-
-        const renderSubPathCheckBoxContent = (): JSX.Element => {
-            return (
-                <span data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-sub-path-checkbox`} className="mb-0">
-                    Set SubPath (same as
-                    <a
-                        href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
-                        className="ml-5 mr-5 anchor"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        subPath
-                    </a>
-                    for volume mount)
-                    <br />
-                    {state.isSubPathChecked && (
-                        <span className="mb-0 cn-5 fs-11">
-                            {state.external
-                                ? 'Please provide keys of config map to be mounted'
-                                : 'Keys will be used as filename for subpath'}
-                        </span>
-                    )}
-                    {isChartVersion309OrBelow && (
-                        <span className="fs-12 fw-5">
-                            <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>
-                            <span className="cn-7 ml-5">Learn more about </span>
-                            <a
-                                href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-                                rel="noreferrer noopener"
-                                target="_blank"
-                            >
-                                Deployment Template &gt; Chart Version
-                            </a>
-                        </span>
-                    )}
-                </span>
-            )
-        }
-
-        const renderSubPath = (): JSX.Element => {
-            return (
-                <div className="mb-16">
-                    <Checkbox
-                        isChecked={state.isSubPathChecked}
-                        onClick={stopPropagation}
-                        rootClassName="top"
-                        disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={toggleSubpath}
-                    >
-                        {renderSubPathCheckBoxContent()}
-                    </Checkbox>
-                    {(state.externalType === 'KubernetesSecret' ||
-                        (componentType !== CMSecretComponentType.Secret && state.external)) &&
-                        state.isSubPathChecked && (
-                            <div className="mb-16">
-                                <CustomInput
-                                    name="externalSubpathValues"
-                                    value={state.externalSubpathValues.value}
-                                    tabIndex={0}
-                                    label=""
-                                    placeholder="Enter keys (Eg. username,configs.json)"
-                                    error={state.externalSubpathValues.error}
-                                    onChange={onExternalSubpathValuesChange}
-                                    disabled={
-                                        !draftMode &&
-                                        (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
-                                    }
-                                />
-                            </div>
-                        )}
-                </div>
-            )
-        }
+            </div>
+        )
 
         const renderUsageTypeVolumeDetails = (): JSX.Element => {
             if (state.selectedType !== 'volume') {
@@ -894,64 +877,60 @@ export const ConfigMapSecretForm = React.memo(
             )
         }
 
-        const configMapSecretUsageTypeSelector = (): JSX.Element => {
-            return (
-                <>
-                    <div className="form__label form__label--lower">
-                        {`How do you want to use this ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
-                        ?
-                    </div>
-                    <div className="form__row configmap-secret-usage-radio">
-                        <RadioGroup
-                            value={state.selectedType}
-                            name="DeploymentAppTypeGroup"
-                            onChange={toggleSelectedType}
-                            disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
-                            className="radio-group-no-border"
-                        >
-                            <RadioGroupItem
-                                dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.environment.title
-                                    .toLowerCase()
-                                    .split(' ')
-                                    .join('-')}-radio-button`}
-                                value={ConfigMapSecretUsageMap.environment.value}
-                            >
-                                {ConfigMapSecretUsageMap.environment.title}
-                            </RadioGroupItem>
-                            <RadioGroupItem
-                                dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.volume.title
-                                    .toLowerCase()
-                                    .split(' ')
-                                    .join('-')}-radio-button`}
-                                value={ConfigMapSecretUsageMap.volume.value}
-                            >
-                                {ConfigMapSecretUsageMap.volume.title}
-                            </RadioGroupItem>
-                        </RadioGroup>
-                    </div>
-                </>
-            )
-        }
-
-        const renderName = (): JSX.Element => {
-            return (
-                <div className="form__row mb-0-imp">
-                    <CustomInput
-                        name="name"
-                        label="Name"
-                        data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-name-textbox`}
-                        value={state.configName.value}
-                        autoFocus
-                        onChange={onConfigNameChange}
-                        handleOnBlur={trimConfigMapName}
-                        placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
-                        isRequiredField
-                        disabled={!!configMapSecretData?.name}
-                        error={state.configName.error}
-                    />
+        const configMapSecretUsageTypeSelector = (): JSX.Element => (
+            <>
+                <div className="form__label form__label--lower">
+                    {`How do you want to use this ${componentType === CMSecretComponentType.Secret ? 'Secret' : 'ConfigMap'}`}
+                    ?
                 </div>
-            )
-        }
+                <div className="form__row configmap-secret-usage-radio">
+                    <RadioGroup
+                        value={state.selectedType}
+                        name="DeploymentAppTypeGroup"
+                        onChange={toggleSelectedType}
+                        disabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
+                        className="radio-group-no-border"
+                    >
+                        <RadioGroupItem
+                            dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.environment.title
+                                .toLowerCase()
+                                .split(' ')
+                                .join('-')}-radio-button`}
+                            value={ConfigMapSecretUsageMap.environment.value}
+                        >
+                            {ConfigMapSecretUsageMap.environment.title}
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            dataTestId={`${CM_SECRET_COMPONENT_NAME[componentType]}-${ConfigMapSecretUsageMap.volume.title
+                                .toLowerCase()
+                                .split(' ')
+                                .join('-')}-radio-button`}
+                            value={ConfigMapSecretUsageMap.volume.value}
+                        >
+                            {ConfigMapSecretUsageMap.volume.title}
+                        </RadioGroupItem>
+                    </RadioGroup>
+                </div>
+            </>
+        )
+
+        const renderName = (): JSX.Element => (
+            <div className="form__row mb-0-imp">
+                <CustomInput
+                    name="name"
+                    label="Name"
+                    data-testid={`${CM_SECRET_COMPONENT_NAME[componentType]}-name-textbox`}
+                    value={state.configName.value}
+                    autoFocus
+                    onChange={onConfigNameChange}
+                    handleOnBlur={trimConfigMapName}
+                    placeholder={componentType === CMSecretComponentType.Secret ? 'secret-name' : 'configmap-name'}
+                    isRequiredField
+                    disabled={!!configMapSecretData?.name}
+                    error={state.configName.error}
+                />
+            </div>
+        )
 
         const renderExternalInfo = (): JSX.Element => {
             if (
@@ -975,65 +954,61 @@ export const ConfigMapSecretForm = React.memo(
             return null
         }
 
-        const secretDataTypeSelectWithInfo = (): JSX.Element => {
-            return (
-                <ReactSelect
-                    placeholder="Select Secret Type"
-                    options={getTypeGroups(isJob)}
-                    defaultValue={
-                        state.externalType && state.externalType !== ''
-                            ? getTypeGroups(isJob, state.externalType)
-                            : getTypeGroups()[0].options[0]
-                    }
-                    onChange={toggleExternalType}
-                    styles={{
-                        ...groupStyle(),
-                        control: (base) => ({ ...groupStyle().control(base), width: '100%' }),
-                    }}
-                    components={{
-                        IndicatorSeparator: null,
-                        Option: SecretOptions,
-                        GroupHeading,
-                    }}
-                    classNamePrefix="secret-data-type"
-                    isDisabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
-                />
-            )
-        }
+        const secretDataTypeSelectWithInfo = (): JSX.Element => (
+            <ReactSelect
+                placeholder="Select Secret Type"
+                options={getTypeGroups(isJob)}
+                defaultValue={
+                    state.externalType && state.externalType !== ''
+                        ? getTypeGroups(isJob, state.externalType)
+                        : getTypeGroups()[0].options[0]
+                }
+                onChange={toggleExternalType}
+                styles={{
+                    ...groupStyle(),
+                    control: (base) => ({ ...groupStyle().control(base), width: '100%' }),
+                }}
+                components={{
+                    IndicatorSeparator: null,
+                    Option: SecretOptions,
+                    GroupHeading,
+                }}
+                classNamePrefix="secret-data-type"
+                isDisabled={!draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)}
+            />
+        )
 
-        const dataTypeSelector = (): JSX.Element => {
-            return (
-                <div className="form__row mb-0-imp">
-                    {/* TODO: will be resolved when replaced with Select Picker */}
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label className="form__label">Data type</label>
-                    <div className="form-row__select-external-type">
-                        {componentType === CMSecretComponentType.Secret ? (
-                            secretDataTypeSelectWithInfo()
-                        ) : (
-                            <ReactSelect
-                                placeholder="Select ConfigMap Type"
-                                options={ConfigMapOptions}
-                                value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
-                                onChange={toggleExternalValues}
-                                styles={{
-                                    ...groupStyle(),
-                                    control: (base) => ({ ...groupStyle().control(base), width: '100%' }),
-                                }}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option,
-                                }}
-                                classNamePrefix="configmap-data-type"
-                                isDisabled={
-                                    !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
-                                }
-                            />
-                        )}
-                    </div>
+        const dataTypeSelector = (): JSX.Element => (
+            <div className="form__row mb-0-imp">
+                {/* TODO: will be resolved when replaced with Select Picker */}
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label className="form__label">Data type</label>
+                <div className="form-row__select-external-type">
+                    {componentType === CMSecretComponentType.Secret ? (
+                        secretDataTypeSelectWithInfo()
+                    ) : (
+                        <ReactSelect
+                            placeholder="Select ConfigMap Type"
+                            options={ConfigMapOptions}
+                            value={state.external ? ConfigMapOptions[1] : ConfigMapOptions[0]}
+                            onChange={toggleExternalValues}
+                            styles={{
+                                ...groupStyle(),
+                                control: (base) => ({ ...groupStyle().control(base), width: '100%' }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option,
+                            }}
+                            classNamePrefix="configmap-data-type"
+                            isDisabled={
+                                !draftMode && (state.cmSecretState === CM_SECRET_STATE.INHERITED || readonlyView)
+                            }
+                        />
+                    )}
                 </div>
-            )
-        }
+            </div>
+        )
 
         return (
             <>

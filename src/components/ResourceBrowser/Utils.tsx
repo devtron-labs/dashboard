@@ -41,8 +41,8 @@ import ClusterIcon from '../../assets/icons/ic-world-black.svg'
 export const getGroupedK8sObjectMap = (
     _k8SObjectList: K8SObjectType[],
     nodeType: string,
-): Map<string, K8SObjectMapType> => {
-    return _k8SObjectList.reduce((map, _k8sObject) => {
+): Map<string, K8SObjectMapType> =>
+    _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
             child: new Map<string, K8SObjectChildMapType>(),
@@ -64,7 +64,6 @@ export const getGroupedK8sObjectMap = (
         map.set(_k8sObject.name, childObj)
         return map
     }, new Map<string, K8SObjectMapType>())
-}
 
 export const getK8SObjectMapAfterGroupHeadingClick = (
     e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } },
@@ -117,16 +116,15 @@ export const sortEventListData = (eventList: ResourceDetailDataType[]): Resource
     ]
 }
 
-export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] => {
-    return storageList.map((storage) => {
-        return (storage.name as string).includes('(default)')
+export const removeDefaultForStorageClass = (storageList: ResourceDetailDataType[]): ResourceDetailDataType[] =>
+    storageList.map((storage) =>
+        (storage.name as string).includes('(default)')
             ? {
                   ...storage,
                   name: (storage.name as string).split(' (default)')[0],
               }
-            : storage
-    })
-}
+            : storage,
+    )
 
 export const getScrollableResourceClass = (
     className: string,
@@ -153,22 +151,20 @@ const newK8sObjectOption = (
     grouped: boolean,
     groupName: string,
     shortNames: ApiResourceGroupType['shortNames'],
-): K8sObjectOptionType => {
-    return {
-        label,
-        description,
-        value: gvk.Group || K8S_EMPTY_GROUP,
-        dataset: {
-            group: gvk.Group,
-            version: gvk.Version,
-            kind: gvk.Kind,
-            namespaced: `${namespaced}`,
-            grouped: `${grouped}`,
-            shortNames,
-        },
-        groupName,
-    }
-}
+): K8sObjectOptionType => ({
+    label,
+    description,
+    value: gvk.Group || K8S_EMPTY_GROUP,
+    dataset: {
+        group: gvk.Group,
+        version: gvk.Version,
+        kind: gvk.Kind,
+        namespaced: `${namespaced}`,
+        grouped: `${grouped}`,
+        shortNames,
+    },
+    groupName,
+})
 
 export const convertK8sObjectMapToOptionsList = (
     k8SObjectMap: Map<string, K8SObjectMapType>,
