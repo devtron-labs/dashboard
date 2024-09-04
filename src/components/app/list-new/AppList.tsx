@@ -226,8 +226,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
                       appListFilterResponse?.result.teams.length > 0 && {
                           label: 'Projects',
                           options: [
-                              ...getProjectOptions(appListFilterResponse?.result.teams),
-                              ...getProjectOptions(projectListResponse?.result),
+                              ...getProjectOptions(appListFilterResponse.result.teams),
+                              ...getProjectOptions(projectListResponse.result),
                           ].sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
                       },
                   ]
