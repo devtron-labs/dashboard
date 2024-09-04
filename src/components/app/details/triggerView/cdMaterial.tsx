@@ -66,6 +66,7 @@ import {
     GitCommitInfoGeneric,
     ErrorScreenManager,
     useDownload,
+    SearchBar,
     CDMaterialSidebarType,
     RuntimeParamsListItemType,
     CDMaterialResponseType,
@@ -92,7 +93,6 @@ import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
 import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as Clear } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as PlayIC } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -746,14 +746,13 @@ const CDMaterial = ({
         })
     }
 
-    const handleFilterKeyPress = (event): void => {
-        const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            if (event.target.value !== searchImageTag) {
-                setSearchValue(event.target.value)
-            }
-        } else if (theKeyCode === 'Backspace' && state.searchText.length === 1) {
-            clearSearch(event)
+    const handleFilterKeyPress = (_searchText: string): void => {
+        setState({
+            ...state,
+            searchText: _searchText,
+        })
+        if (_searchText !== searchImageTag) {
+            setSearchValue(_searchText)
         }
     }
 
@@ -1546,31 +1545,16 @@ const CDMaterial = ({
         })
 
     const renderSearch = (): JSX.Element => (
-        <div className="flexbox flex-grow-1 pt-8 pb-8 pl-10 pr-10 dc__gap-8 dc__align-self-stretch dc__align-items-center bc-n50 dc__border dc__border-radius-4-imp focus-within-border-b5 dc__hover-border-n300 h-32 w-250">
-            <SearchIcon className="icon-dim-16" />
-
-            <input
-                data-testid="ci-trigger-search-by-commit-hash"
-                type="text"
-                placeholder="Search by image tag"
-                value={state.searchText}
-                className="flex-grow-1 dc__no-border dc__outline-none-imp bc-n50 lh-20 fs-13 cn-9 fw-4 p-0 placeholder-cn5"
-                onChange={handleInputChange}
-                onKeyDown={handleFilterKeyPress}
-                autoFocus
-            />
-
-            {state.searchApplied && (
-                <button
-                    className="dc__outline-none-imp dc__no-border p-0 bc-n50 flex"
-                    type="button"
-                    onClick={clearSearch}
-                    aria-label="Clear search input"
-                >
-                    <Clear className="icon-dim-16 icon-n4 dc__vertical-align-middle" />
-                </button>
-            )}
-        </div>
+                <SearchBar
+                    initialSearchText={state.searchText}
+                    containerClassName="w-250"
+                    handleEnter={handleFilterKeyPress}
+                    inputProps={{
+                        placeholder: 'Search by image tag',
+                        autoFocus: true,
+                    }}
+                    dataTestId="ci-trigger-search-by-commit-hash"
+                />
     )
 
     const renderMaterialListBodyWrapper = (children: JSX.Element) => (
