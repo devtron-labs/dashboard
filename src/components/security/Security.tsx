@@ -66,9 +66,10 @@ export class Security extends Component<SecurityProps> {
         <div className="px-12 pt-12 fs-13 fw-4">
             Devtron provides DevSecOps capabilities across your software development life cycle.
             <p className="pt-20 m-0">
-            One of the key components of DevSecOps is the detection of security risks. Currently, Devtron supports the following types of scanning:
+                One of the key components of DevSecOps is the detection of security risks. Currently, Devtron supports
+                the following types of scanning:
             </p>
-            <ul className='pl-20'>
+            <ul className="pl-20">
                 <li>Image Scan</li>
                 <li>Code Scan</li>
                 <li>Kubernetes Manifest Scan</li>
@@ -83,7 +84,7 @@ export class Security extends Component<SecurityProps> {
                 tippyProps={{
                     isTippyCustomized: true,
                     tippyRedirectLink: DOCUMENTATION.SECURITY,
-                    additionalContent: this.getTippyContent()
+                    additionalContent: this.getTippyContent(),
                 }}
                 showTabs
                 renderHeaderTabs={this.renderSecurityTabs}
@@ -106,11 +107,13 @@ export class Security extends Component<SecurityProps> {
 
     render() {
         return (
-            <div className="security-scan bcn-0 flexbox-col min-h-100">
-                {this.renderPageheader()}
-                {this.props.serverMode === SERVER_MODE.EA_ONLY
-                    ? this.renderEmptyStateForEAOnlyMode()
-                    : this.renderRouter()}
+            <div className="security-scan-container bcn-0 flexbox-col min-h-100">
+                <div className="security-scan flexbox-col flex-grow-1">
+                    {this.renderPageheader()}
+                    {this.props.serverMode === SERVER_MODE.EA_ONLY
+                        ? this.renderEmptyStateForEAOnlyMode()
+                        : this.renderRouter()}
+                </div>
             </div>
         )
     }

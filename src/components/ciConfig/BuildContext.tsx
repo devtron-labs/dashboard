@@ -25,33 +25,29 @@ import { BuildContextProps } from './types'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { RootBuildContext } from './ciConfigConstant'
 
-const getBuildContextAdditionalContent = () => {
-    return (
-        <div className="p-12 fs-13">
-            To build all files from the root, use (.) as the build context, or set build context by referring a
-            subdirectory path such as
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
-            or
-            <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
-            if path not set, default path will be root dir of selected git repository
-        </div>
-    )
-}
+const getBuildContextAdditionalContent = () => (
+    <div className="p-12 fs-13">
+        To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory
+        path such as
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder</span>
+        or
+        <span className="bcn-1 pt-2 pb-2 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">/myfolder/buildhere</span>
+        if path not set, default path will be root dir of selected git repository
+    </div>
+)
 
-const InfoCard: FunctionComponent = () => {
-    return (
-        <div className="row ml-0">
-            <InfoIconTippy
-                heading="Docker build context"
-                infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
-                documentationLinkText="View Documentation"
-                additionalContent={getBuildContextAdditionalContent()}
-                iconClassName="icon-dim-16 fcn-6 ml-4"
-                placement="right"
-            />
-        </div>
-    )
-}
+const InfoCard: FunctionComponent = () => (
+    <div className="row ml-0">
+        <InfoIconTippy
+            heading="Docker build context"
+            infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
+            documentationLinkText="View Documentation"
+            additionalContent={getBuildContextAdditionalContent()}
+            iconClassName="icon-dim-16 fcn-6 ml-4"
+            placement="right"
+        />
+    </div>
+)
 
 const BuildContext: FunctionComponent<BuildContextProps> = ({
     readOnly,

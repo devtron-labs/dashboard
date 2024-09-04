@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { applyCompareDiffOnUneditedDocument, ResponseType, YAMLStringify } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    applyCompareDiffOnUneditedDocument,
+    getGuiSchemaFromChartName,
+    ResponseType,
+    YAMLStringify,
+} from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { DeploymentTemplateOptionsTabProps } from './types'
-import fallbackGuiSchema from './basicViewSchema.json'
-import fallbackJobsNCronJobGuiSchema from './fallbackJobsNCronJobGuiSchema.json'
-import { DEPLOYMENT, JOB_AND_CRONJOB_CHART_NAME, ROLLOUT_DEPLOYMENT, STATEFUL_SET } from './constants'
 
 export const getRenderActionButton =
     (changeEditorMode: DeploymentTemplateOptionsTabProps['changeEditorMode']) => () => (
@@ -32,19 +34,6 @@ export const getRenderActionButton =
             <span className="cb-5 cursor fw-6">Switch to Advanced</span>
         </button>
     )
-
-const getGuiSchemaFromChartName = (chartName: string) => {
-    switch (chartName) {
-        case JOB_AND_CRONJOB_CHART_NAME:
-            return fallbackJobsNCronJobGuiSchema
-        case DEPLOYMENT:
-        case ROLLOUT_DEPLOYMENT:
-        case STATEFUL_SET:
-            return fallbackGuiSchema
-        default:
-            return {}
-    }
-}
 
 export const addGUISchemaIfAbsent = (response: ResponseType, chartName: string) => {
     if (response && response.result && !response.result.guiSchema) {
@@ -76,12 +65,18 @@ export const makeObjectFromJsonPathArray = (index: number, paths: string[]) => {
     return { [key]: makeObjectFromJsonPathArray(index + 1, paths) }
 }
 
+/**
+ * This method will compare and calculate the diffs between @unedited and @edited
+ * documents and apply these diffs onto the @unedited document and return this new document
+ * @param {string} unedited - The unedited document onto which we want to patch the changes from @edited
+ * @param {string} edited - The edited document whose changes we want to patch onto @unedited
+ */
 export const applyCompareDiffOfTempFormDataOnOriginalData = (
     unedited: string,
     edited: string,
-    updateTempFormData: (data: string) => void,
+    updateTempFormData?: (data: string) => void,
 ) => {
     const updated = applyCompareDiffOnUneditedDocument(YAML.parse(unedited), YAML.parse(edited))
-    updateTempFormData(YAMLStringify(updated))
+    updateTempFormData?.(YAMLStringify(updated))
     return updated
 }

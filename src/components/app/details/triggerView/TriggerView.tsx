@@ -27,12 +27,11 @@ import {
     ToastBody,
     CommonNodeAttr,
     WorkflowType,
-    HandleKeyValueChangeType,
-    KeyValueListActionType,
     getIsRequestAborted,
     handleUTCTime,
     createGitCommitUrl,
-    CIMaterialType
+    CIMaterialType,
+    Environment,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import ReactGA from 'react-ga4'
@@ -52,7 +51,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
+import { CIMaterialProps, CIPipelineNodeType, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import {
     URLS,
@@ -88,9 +87,7 @@ import {
     processWorkflowStatuses,
 } from '../../../ApplicationGroup/AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { Environment } from '../../../cdPipeline/cdPipeline.types'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
-import { validateAndGetValidRuntimeParams } from './TriggerView.utils'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 
@@ -98,6 +95,7 @@ const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModa
 const getCIBlockState = importComponentFromFELibrary('getCIBlockState', null, 'function')
 const ImagePromotionRouter = importComponentFromFELibrary('ImagePromotionRouter', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -719,7 +717,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 if (resp[2]) {
                     // Not saving as null since page ViewType is set as Error in case of error
                     this.setState({
-                        runtimeParams: resp[2],
+                        runtimeParams: resp[2] || [],
                     })
                 }
             })
@@ -883,12 +881,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             envId = this.state.selectedEnv.id
         }
 
-        const runtimeParamsValidationResponse = validateAndGetValidRuntimeParams(this.state.runtimeParams ?? [])
-        if (!runtimeParamsValidationResponse.isValid) {
-            this.setState({ isLoading: false })
-            toast.error(runtimeParamsValidationResponse.message)
-            return
-        }
+        // No need to validate here since ciMaterial handles it for trigger view
+        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
 
         const payload = {
             pipelineId: +this.state.ciNodeId,
@@ -896,7 +890,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             invalidateCache: this.state.invalidateCache,
             environmentId: envId,
             pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParams ? { runtimeParams: runtimeParamsValidationResponse.validParams } : {}),
+            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
         this.abortCIBuild = new AbortController()
@@ -1106,31 +1100,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch })
     }
 
-    handleRuntimeParametersChange = ({ action, data }: HandleKeyValueChangeType) => {
-        const { runtimeParams } = this.state
-        let _runtimeParams = runtimeParams
-
-        switch (action) {
-            case KeyValueListActionType.ADD:
-                _runtimeParams.unshift({ key: '', value: '' })
-                break
-
-            case KeyValueListActionType.UPDATE_KEY:
-                _runtimeParams[data.index].key = data.value
-                break
-
-            case KeyValueListActionType.UPDATE_VALUE:
-                _runtimeParams[data.index].value = data.value
-                break
-
-            case KeyValueListActionType.DELETE:
-                _runtimeParams = _runtimeParams.filter((_, index) => index !== data.index)
-                break
-            default:
-                throw new Error(`Invalid action: ${action}`)
-        }
-
-        this.setState({ runtimeParams: _runtimeParams })
+    handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
+        this.setState({
+            runtimeParams: updatedRuntimeParams,
+        })
     }
 
     setLoader = (isLoader) => {
@@ -1218,7 +1191,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             environmentLists={this.state.environmentLists}
                             isJobCI={!!nd?.isJobCI}
                             runtimeParams={this.state.runtimeParams}
-                            handleRuntimeParametersChange={this.handleRuntimeParametersChange}
+                            handleRuntimeParamChange={this.handleRuntimeParamChange}
                             closeCIModal={this.closeCIModal}
                             abortController={this.abortCIBuild}
                             resetAbortController={this.resetAbortController}

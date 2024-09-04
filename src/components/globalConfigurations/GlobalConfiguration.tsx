@@ -15,8 +15,7 @@
  */
 
 import { lazy, useState, useEffect, Suspense, isValidElement } from 'react'
-import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation } from 'react-router'
+import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -57,7 +56,7 @@ const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
-const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
 const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
@@ -218,9 +217,9 @@ const NavItem = ({ serverMode }) => {
     const ConfigOptional = [
         { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
-            name: 'Custom Charts',
-            href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
-            component: CustomChartList,
+            name: 'Deployment Charts',
+            href: CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+            component: DeploymentChartsRouter,
             isAvailableInEA: false,
         },
         {
@@ -457,15 +456,17 @@ const NavItem = ({ serverMode }) => {
                             <div className="flexbox flex-justify">Deployment Window</div>
                         </NavLink>
                     )}
-                     {serverMode !== SERVER_MODE.EA_ONLY && window._env_.FEATURE_IMAGE_PROMOTION_ENABLE  && ImagePromotion && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                            key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Image Promotion</div>
-                        </NavLink>
-                    )}
+                    {serverMode !== SERVER_MODE.EA_ONLY &&
+                        window._env_.FEATURE_IMAGE_PROMOTION_ENABLE &&
+                        ImagePromotion && (
+                            <NavLink
+                                to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
+                                activeClassName="active-route"
+                            >
+                                <div className="flexbox flex-justify">Image Promotion</div>
+                            </NavLink>
+                        )}
                     <NavLink
                         to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
                         key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
@@ -559,7 +560,7 @@ const NavItem = ({ serverMode }) => {
 
 const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) => {
     const location = useLocation()
-        const defaultRoute = (): string => {
+    const defaultRoute = (): string => {
         if (window._env_.K8S_CLIENT) {
             return URLS.GLOBAL_CONFIG_CLUSTER
         }
@@ -640,8 +641,11 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                     }}
                 />,
-                <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                    <CustomChartList />
+                <Route
+                    key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                    path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                >
+                    <DeploymentChartsRouter />
                 </Route>,
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
                 <Route
@@ -682,20 +686,18 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <CatalogFramework isSuperAdmin={isSuperAdmin} />
                 </Route>
             )}
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
-                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
-            {
-                serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
-                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
-                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                )
-            },
+            {serverMode !== SERVER_MODE.EA_ONLY && DeploymentWindow && (
+                <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
+                    <DeploymentWindow isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            ,
+            {serverMode !== SERVER_MODE.EA_ONLY && ImagePromotion && (
+                <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
+                    <ImagePromotion isSuperAdmin={isSuperAdmin} />
+                </Route>
+            )}
+            ,
             {PluginsPolicy && (
                 <Route path={URLS.GLOBAL_CONFIG_PLUGINS}>
                     <PluginsPolicy />

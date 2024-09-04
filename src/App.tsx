@@ -31,6 +31,7 @@ import {
     DevtronProgressing,
     APPROVAL_MODAL_TYPE,
     useUserEmail,
+    URLS as CommonURLS
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import {
@@ -79,6 +80,9 @@ export default function App() {
         location.pathname.includes('approve') &&
         location.search &&
         location.search.includes(`?token=${approvalToken}`)
+    const customThemeClassName = location.pathname.startsWith(CommonURLS.NETWORK_STATUS_INTERFACE)
+        ? 'custom-theme-override'
+        : ''
 
     function onlineToast(toastBody: JSX.Element, options) {
         if (onlineToastRef.current && toast.isActive(onlineToastRef.current)) {
@@ -127,7 +131,9 @@ export default function App() {
 
     async function validation() {
         try {
-            const { result: { emailId: email } } = await validateToken()
+            const {
+                result: { emailId: email },
+            } = await validateToken()
             setEmail(email)
             defaultRedirection()
         } catch (err: any) {
@@ -176,11 +182,11 @@ export default function App() {
             defaultRedirection()
         }
         return () => {
-          navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+            navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
         }
     }, [])
 
-    const serviceWorkerTimeout = (()=> {
+    const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
 
         if (parsedTimeout) {
@@ -197,23 +203,26 @@ export default function App() {
         onRegisteredSW(swUrl, r) {
             console.log(`Service Worker at: ${swUrl}`)
             r &&
-                setInterval(async () => {
-                    if (!(!r.installing && navigator)) return
-                    if ('connection' in navigator && !navigator.onLine) return
+                setInterval(
+                    async () => {
+                        if (!(!r.installing && navigator)) return
+                        if ('connection' in navigator && !navigator.onLine) return
 
-                    try {
-                        const resp = await fetch(swUrl, {
-                            cache: 'no-store',
-                            headers: {
+                        try {
+                            const resp = await fetch(swUrl, {
                                 cache: 'no-store',
-                                'cache-control': 'no-cache',
-                            },
-                        })
-                        if (resp?.status === 200) await r.update()
-                    } catch {
-                        // Do nothing
-                    }
-                }, serviceWorkerTimeout * 1000 * 60)
+                                headers: {
+                                    cache: 'no-store',
+                                    'cache-control': 'no-cache',
+                                },
+                            })
+                            if (resp?.status === 200) await r.update()
+                        } catch {
+                            // Do nothing
+                        }
+                    },
+                    serviceWorkerTimeout * 1000 * 60,
+                )
         },
         onRegisterError(error) {
             console.log('SW registration error', error)
@@ -279,46 +288,48 @@ export default function App() {
     }, [bgUpdated])
 
     return (
-        <Suspense fallback={null}>
-            {validating ? (
-                <div className="full-height-width">
-                    <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
-                </div>
-            ) : (
-                <>
-                    {errorPage ? (
-                        <div className="full-height-width">
-                            <Reload />
-                        </div>
-                    ) : (
-                        <ErrorBoundary>
-                            <BreadcrumbStore>
-                                <Switch>
-                                    {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                                        <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                            <GenericDirectApprovalModal
-                                                approvalType={approvalType}
-                                                approvalToken={approvalToken}
-                                            />
-                                        </Route>
-                                    )}
-                                    {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
-                                    <Route path="/" render={() => <NavigationRoutes />} />
-                                    <Redirect
-                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                    />
-                                </Switch>
-                                <div id="full-screen-modal" />
-                                <div id="visible-modal" />
-                                <div id="visible-modal-2" />
-                                {import.meta.env.VITE_NODE_ENV === 'production' &&
-                                    window._env_ &&
-                                    window._env_.HOTJAR_ENABLED && <Hotjar />}
-                            </BreadcrumbStore>
-                        </ErrorBoundary>
-                    )}
-                </>
-            )}
-        </Suspense>
+        <div className={customThemeClassName}>
+            <Suspense fallback={null}>
+                {validating ? (
+                    <div className="full-height-width">
+                        <DevtronProgressing parentClasses="h-100 flex bcn-0" classes="icon-dim-80" />
+                    </div>
+                ) : (
+                    <>
+                        {errorPage ? (
+                            <div className="full-height-width">
+                                <Reload />
+                            </div>
+                        ) : (
+                            <ErrorBoundary>
+                                <BreadcrumbStore>
+                                    <Switch>
+                                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
+                                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
+                                                <GenericDirectApprovalModal
+                                                    approvalType={approvalType}
+                                                    approvalToken={approvalToken}
+                                                />
+                                            </Route>
+                                        )}
+                                        {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
+                                        <Route path="/" render={() => <NavigationRoutes />} />
+                                        <Redirect
+                                            to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                                        />
+                                    </Switch>
+                                    <div id="full-screen-modal" />
+                                    <div id="visible-modal" />
+                                    <div id="visible-modal-2" />
+                                    {import.meta.env.VITE_NODE_ENV === 'production' &&
+                                        window._env_ &&
+                                        window._env_.HOTJAR_ENABLED && <Hotjar />}
+                                </BreadcrumbStore>
+                            </ErrorBoundary>
+                        )}
+                    </>
+                )}
+            </Suspense>
+        </div>
     )
 }

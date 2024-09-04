@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch, useHistory, useLocation } from 'react-router'
+import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { QueryParams } from './charts.util'
@@ -33,7 +33,7 @@ const ChartHeaderFilter = ({
     appStoreName,
     isGrid,
     setIsGrid,
-}: ChartHeaderFilterProps ) => {
+}: ChartHeaderFilterProps) => {
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -171,8 +171,9 @@ const ChartHeaderFilter = ({
                     handleEnter={handleSearchEnter}
                     inputProps={{
                         placeholder: 'Search charts',
+                        autoFocus: true
                     }}
-                    data-testid="chart-store-search-box"
+                    dataTestId="chart-store-search-box"
                 />
             </div>
             <div className="pl-12 pr-12 filter-tab">

@@ -18,7 +18,7 @@ import React from 'react'
 import { ResponseType, ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import * as jsonpatch from 'fast-json-patch'
 import { AppEnvironment } from '../../services/service.types'
-import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'
+import { EnvironmentOverrideComponentProps } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface DeploymentObject {
     id: number | null
@@ -85,7 +85,7 @@ export interface ConfigMapRequest {
     secret_data: any
 }
 
-export interface DeploymentConfigProps extends EnvironmentOverrideComponentProps {
+export interface DeploymentConfigProps extends Omit<EnvironmentOverrideComponentProps, 'envConfig' | 'fetchEnvConfig' | 'onErrorRedirectURL'> {
     respondOnSuccess?: (redirection: boolean) => void
     isUnSet: boolean
     isCiPipeline: boolean
@@ -339,6 +339,7 @@ export interface DeploymentConfigStateType {
     template: string
     schema: any
     guiSchema: string
+    wasGuiOrHideLockedKeysEdited: boolean
     loading: boolean
     chartConfig: any
     isAppMetricsEnabled: boolean
@@ -438,6 +439,7 @@ export enum DeploymentConfigStateActionTypes {
     convertVariablesOverride = 'convertVariablesOverride',
     lockChangesLoading = 'lockChangesLoading',
     guiSchema = 'guiSchema',
+    wasGuiOrHideLockedKeysEdited = 'wasGuiOrHideLockedKeysEdited',
 }
 
 export interface DeploymentConfigStateAction {

@@ -16,7 +16,13 @@
 
 import React, { Fragment, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { CIBuildType, ConditionalWrap, showError, Progressing, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildType,
+    ConditionalWrap,
+    showError,
+    Progressing,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import BuildContext from './BuildContext'
 import CISelfDockerBuildOption from './CISelfDockerBuildOption'
@@ -115,6 +121,7 @@ export default function CIDockerFileConfig({
     useEffect(() => {
         if (configOverrideView && isBuildpackType && buildEnvArgs && updateDockerConfigOverride) {
             updateDockerConfigOverride(DockerConfigOverrideKeys.buildPackConfig, {
+                // FIXME: The current CI build config is not updated on change hence some of the previous values might persist
                 ...currentCIBuildConfig,
                 buildPackConfig: {
                     ...currentCIBuildConfig.buildPackConfig,

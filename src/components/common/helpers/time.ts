@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { DATE_TIME_FORMAT_STRING, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { DATE_TIME_FORMAT_STRING, getTimeDifference } from '@devtron-labs/devtron-fe-common-lib'
+import { Dayjs } from 'dayjs'
 import moment from 'moment'
 
 /**
@@ -37,18 +38,6 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
     return timestamp
 }
 
-export const getTimeElapsed = (startedOn, finishedOn) => {
-    const diff: moment.Duration = moment.duration(finishedOn.diff(startedOn))
-    const hours = diff.hours() > 0 ? `${String(diff.hours()).padStart(2, '0')}h:` : ''
-    const minutes = diff.minutes() > 0 ? `${String(diff.minutes()).padStart(2, '0')}m:` : ''
-    const seconds = String(diff.seconds()).padStart(2, '0')
-    return `${hours}${minutes}${seconds}s`
-}
-
-export const formatDurationDiff = (startedOn: string, finishedOn: string) => {
-    const diff: moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
-    const hours = diff.hours() > 0 ? `${diff.hours()}h ` : ''
-    const minutes = diff.minutes() > 0 ? `${diff.minutes()}m ` : ''
-    const seconds = `${diff.seconds()}s`
-    return `${hours}${minutes}${seconds}`
+export const getTimeElapsed = (start: Dayjs, now: Dayjs) => {
+    return getTimeDifference(start.toISOString(), now.toISOString())
 }

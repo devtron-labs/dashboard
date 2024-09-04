@@ -43,11 +43,7 @@ export default function JobsEmptyState(props: JobsEmptyProps) {
     }
 
     const renderNoResultsView = () => {
-        return (
-            <GenericFilterEmptyState
-                handleClearFilters={props.clickHandler}
-            />
-        )
+        return <GenericFilterEmptyState handleClearFilters={props.clickHandler} />
     }
 
     return (

@@ -56,7 +56,6 @@ export const Routes = {
     LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
-    CD_MATERIAL_GET: 'app/cd-pipeline',
     CD_TRIGGER_POST: 'app/cd-pipeline/trigger',
     CD_TRIGGER_STATUS: 'app/vsm',
 
@@ -194,9 +193,8 @@ export const Routes = {
     APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
-    PLUGIN_LIST: 'plugin/global/list',
-    PLUGIN_DETAIL: 'plugin/global',
     GLOBAL_VARIABLES: 'plugin/global/list/global-variable',
+    PLUGIN_GLOBAL_CREATE: 'plugin/global/create',
     DASHBOARD_ACCESSED: 'dashboard-event/dashboardAccessed',
     DASHBOARD_LOGGEDIN: 'dashboard-event/dashboardLoggedIn',
     HELM_APP_HIBERNATE_API: 'application/hibernate',
@@ -208,7 +206,6 @@ export const Routes = {
     LOG_PODNAME_API: 'k8s/resource/inception/info',
     RELEASE_NOTES_API: 'release/notes',
     MODULES_API: 'modules',
-    CUSTOM_CHART_LIST: 'deployment/template/fetch',
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
@@ -266,13 +263,14 @@ export const Routes = {
     SCOPED_GLOBAL_VARIABLES_DETAIL: 'global/variables/detail',
     GVK: 'gvk',
     USER: 'user',
+    ENV_CONFIG: 'config/autocomplete',
 }
 
-export const ViewType = {
-    EMPTY: 'EMPTY',
-    LOADING: 'LOADING',
-    FORM: 'FORM',
-    ERROR: 'ERROR',
+export enum ViewType {
+    EMPTY = 'EMPTY',
+    LOADING = 'LOADING',
+    FORM = 'FORM',
+    ERROR = 'ERROR',
 }
 
 export const AppConfigStatus = {
@@ -365,6 +363,7 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/deployment`,
     DEPLOYMENT_TEMPLATE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/upgrade`,
+    EXECUTE_CUSTOM_SCRIPT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins#execute-custom-script`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/external-links`,
     EXTERNAL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/secrets#external-secrets`,
     // Global Configurations
@@ -387,7 +386,6 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_SSO: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/sso-login`,
     GLOBAL_CONFIG_SCOPED_VARIABLES: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/scoped-variables`,
     GLOBAL_CONFIG_USER: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/authorization/user-access`,
-
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
     HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
     JOB_CRONJOB: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/deployment-template/job-and-cronjob`,
@@ -425,7 +423,7 @@ export const HEADER_TEXT = {
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
-        description: "Manage your organization’s git accounts.",
+        description: 'Manage your organization’s git accounts.',
         docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
     },
     NOTIFICATIONS: {
@@ -481,6 +479,12 @@ export enum ACCESS_TYPE_MAP {
     JOBS = '', // Empty string is intentional since there is no bifurcation in jobs as of now
 }
 
+export enum APP_TYPE {
+    HELM_CHART = 'helm-chart',
+    DEVTRON_APPS = 'app',
+    JOB = 'job',
+}
+
 export enum MODES {
     YAML = 'yaml',
     JSON = 'json',
@@ -521,7 +525,7 @@ export const EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT = {
 }
 
 export const CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT = {
-    heading: 'Custom Charts',
+    heading: 'Deployment Charts',
     infoText: 'Devtron provides charts that cover most use cases.',
     additionalParagraphText:
         'In case you need to add certain capabilities to a chart provided by Devtron, you can download the chart, make required changes and upload the chart.',
@@ -724,9 +728,35 @@ export const CHART_REPO_LABEL = [
     { value: 'PRIVATE', label: 'Private repository' },
 ]
 
-/** 
-* @deprecated - use from fe-common
-*/
+/**
+ * @deprecated - use from fe-common
+ */
+export enum TIMELINE_STATUS {
+    DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
+    GIT_COMMIT = 'GIT_COMMIT',
+    GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    ARGOCD_SYNC = 'ARGOCD_SYNC',
+    ARGOCD_SYNC_FAILED = 'ARGOCD_SYNC_FAILED',
+    KUBECTL_APPLY = 'KUBECTL_APPLY',
+    KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
+    KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
+    HEALTHY = 'HEALTHY',
+    APP_HEALTH = 'APP_HEALTH',
+    DEPLOYMENT_FAILED = 'FAILED',
+    FETCH_TIMED_OUT = 'TIMED_OUT',
+    UNABLE_TO_FETCH_STATUS = 'UNABLE_TO_FETCH_STATUS',
+    DEGRADED = 'DEGRADED',
+    DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
+    ABORTED = 'ABORTED',
+    INPROGRESS = 'INPROGRESS',
+    HELM_PACKAGE_GENERATED = 'HELM_PACKAGE_GENERATED',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
+    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
+}
+
+/**
+ * @deprecated - use from fe-common
+ */
 export const DEPLOYMENT_STATUS = {
     SUCCEEDED: 'succeeded',
     HEALTHY: 'healthy',
@@ -803,7 +833,7 @@ export const SERVER_ERROR_CODES = {
     CHART_NAME_RESERVED: '5002',
 }
 
-export const ENV_ALREADY_EXIST_ERROR = 'Deployment pipeline already exists for this environment'
+export const ENV_ALREADY_EXIST_ERROR = 'Pipeline already exists for this environment'
 export const CVE_ID_NOT_FOUND = 'CVE ID not found'
 export const CONFIGURE_LINK_NO_NAME = 'Please provide name for the tool you want to link'
 export const NO_HOST_URL = 'Please enter host url'
@@ -923,5 +953,5 @@ export const SwitchItemValues = {
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
-    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal'
+    DEVTRON_DEBUG_TERMINAL = 'devtron-debug-terminal',
 }

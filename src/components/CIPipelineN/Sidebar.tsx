@@ -21,6 +21,7 @@ import {
     Option,
     multiSelectStyles,
     CHECKBOX_VALUE,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import Tippy from '@tippyjs/react'
@@ -35,7 +36,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
 import { groupHeaderStyle, GroupHeading } from '../v2/common/ReactSelect.utils'
 import { ValueContainer } from '../cdPipeline/cdpipeline.util'
-import { PipelineFormType } from '../workflowEditor/types'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
 
@@ -45,7 +45,6 @@ export const Sidebar = ({
     isJobView,
     isJobCI,
     mandatoryPluginData,
-    mandatoryPluginsMap = {},
     setInputVariablesListFromPrevStep,
     environments,
     selectedEnv,
@@ -357,7 +356,6 @@ export const Sidebar = ({
                     <div className="pb-16 sidebar-action-container-border">
                         <TaskList
                             withWarning={showMandatoryWarning()}
-                            mandatoryPluginsMap={mandatoryPluginsMap}
                             setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                             isJobView={isJobCard}
                         />

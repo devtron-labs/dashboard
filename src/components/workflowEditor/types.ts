@@ -17,7 +17,6 @@
 import {
     CommonNodeAttr,
     DeploymentAppTypes,
-    FormType,
     OptionType,
     StepType,
     TaskErrorObj,
@@ -25,15 +24,14 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
+    MandatoryPluginDetailType,
+    ValidationResponseType,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router-dom'
 import { HostURLConfig } from '../../services/service.types'
-import {
-    CIPipelineNodeType,
-    CdPipelineResult,
-    CiPipeline,
-} from '../app/details/triggerView/types'
-import { CDFormType, InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
+import { CIPipelineNodeType, CdPipelineResult, CiPipeline } from '../app/details/triggerView/types'
+import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { WorkflowProps } from './Workflow'
@@ -221,29 +219,6 @@ export interface CDNodeState {
     deploymentWindowConfimationValue: string
 }
 
-export interface PipelineBuildStageType {
-    id: number
-    triggerType?: string
-    steps: StepType[]
-}
-
-export interface CustomTagType {
-    tagPattern: string
-    counterX: string
-}
-export interface PipelineFormType extends Partial<FormType>, Partial<CDFormType> {
-    name: string
-    triggerType: string
-    preBuildStage?: PipelineBuildStageType
-    postBuildStage?: PipelineBuildStageType
-    defaultTag?: string[]
-    customTag?: CustomTagType
-    enableCustomTag?: boolean
-    customTagStage?: string
-    isDigestEnforcedForPipeline?: boolean
-    isDigestEnforcedForEnv?: boolean
-}
-
 export interface PipelineFormDataErrorType {
     name: { message?: string; isValid: boolean }
     envNameError?: { message?: string; isValid: boolean }
@@ -269,6 +244,7 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
+    userApprovalConfig?: ValidationResponseType
 }
 
 export interface PipelineContext {
@@ -290,7 +266,12 @@ export interface PipelineContext {
     setFormDataErrorObj: React.Dispatch<React.SetStateAction<PipelineFormDataErrorType>>
     validateTask: (taskData: StepType, taskErrorobj: TaskErrorObj) => void
     setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
-    validateStage: (stageName: string, _formData: PipelineFormType, formDataErrorObject?: any, clonedPluginDataStore?: PluginDataStoreType) => void
+    validateStage: (
+        stageName: string,
+        _formData: PipelineFormType,
+        formDataErrorObject?: any,
+        clonedPluginDataStore?: PluginDataStoreType,
+    ) => void
     isCdPipeline?: boolean
     configMapAndSecrets?: {
         label: string
@@ -325,6 +306,19 @@ export interface PipelineContext {
     handlePluginDataStoreUpdate: (pluginDataStore: PluginDataStoreType) => void
     availableTags: string[]
     handleUpdateAvailableTags: (tags: string[]) => void
+    /**
+     * If hideScopedVariableWidget is true, then the scoped variable widget will be forced to be hidden
+     */
+    handleHideScopedVariableWidgetUpdate?: (hideScopedVariableWidget: boolean) => void
+    /**
+     * If disableParentModalClose is true, then the parent modal close will method will act as noop
+     * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
+     */
+    handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
+    /**
+     * Would be available only for CI pipeline
+     */
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
 }
 
 export interface SourceTypeCardProps {

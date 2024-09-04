@@ -23,6 +23,7 @@ import {
     PageHeader,
     ErrorScreenManager,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { sortObjectArrayAlphabetically } from '../common'
 import ClusterSelectionList from '../ClusterNodes/ClusterSelectionList'
 import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
@@ -46,10 +47,12 @@ const ResourceBrowser: React.FC = () => {
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
-            sortObjectArrayAlphabetically(
-                detailClusterList?.result || clusterListMinData?.result || [],
-                'name',
-            ) as ClusterDetail[],
+            (
+                sortObjectArrayAlphabetically(
+                    detailClusterList?.result || clusterListMinData?.result || [],
+                    'name',
+                ) as ClusterDetail[]
+            ).filter((option) => !window._env_.HIDE_DEFAULT_CLUSTER || option.id !== DEFAULT_CLUSTER_ID),
         [detailClusterList, clusterListMinData],
     )
 
@@ -65,6 +68,7 @@ const ResourceBrowser: React.FC = () => {
                 clusterOptions={sortedClusterList}
                 isSuperAdmin={isSuperAdmin}
                 clusterListLoader={detailClusterListLoading}
+                initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
             />
         )
