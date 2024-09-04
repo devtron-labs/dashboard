@@ -26,6 +26,7 @@ import {
     DATE_TIME_FORMAT_STRING,
     EnvironmentListHelmResponse,
     getSortedVulnerabilities,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
@@ -169,16 +170,15 @@ export function getEnvironmentListMin(includeAllowedDeploymentTypes?: boolean): 
     return get(url)
 }
 
-export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> => get(`${Routes.APP_FILTER_LIST}?auth=false`).then((response) => {
-    return {
+export const getAppFilters = (): Promise<ResponseType<ClusterEnvTeams>> =>
+    get(getUrlWithSearchParams(Routes.APP_FILTER_LIST, {auth: false})).then((response) => ({
         ...response,
         result: {
             clusters: response.result?.Clusters ?? [],
             environments: response.result?.Environments ?? [],
             teams: response.result?.Teams ?? [],
-        }
-    }
-})
+        },
+    }))
 
 /**
  * @deprecated Use getEnvironmentListMinPublic form common lib instead
