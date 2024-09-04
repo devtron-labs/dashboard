@@ -72,6 +72,10 @@ export interface NotificationConfiguration {
         project: { id: number; name: string }[]
         application: { id: number; name: string }[]
         environment: { id: number; name: string }[]
+        cluster: {
+            id: number
+            name: string
+        }[]
     }
     singleDeletedId: number
     isVirtualEnvironment?: boolean
@@ -626,7 +630,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     {row.pipelineName ? row.pipelineName : ''}
                                     {row.appliedFilters.environment?.length ||
                                     row.appliedFilters.application.length ||
-                                    row.appliedFilters.project?.length ? (
+                                    row.appliedFilters.project?.length ||
+                                    row.appliedFilters.cluster?.length ? (
                                         <>
                                             <i>All current and future pipelines matching.</i>
                                             <div className="dc__devtron-tag__container">
@@ -660,6 +665,17 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                             className="dc__devtron-tag mr-5"
                                                         >
                                                             Env:{element.name}
+                                                        </span>
+                                                    )
+                                                })}
+                                                {row.appliedFilters.cluster.map((element) => {
+                                                    return (
+                                                        <span
+                                                            data-testid={`${row.pipelineType}-${element.name}`}
+                                                            key={element.name}
+                                                            className="dc__devtron-tag mr-5"
+                                                        >
+                                                            Cluster:{element.name}
                                                         </span>
                                                     )
                                                 })}
