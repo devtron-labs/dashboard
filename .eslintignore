@@ -207,7 +207,6 @@ src/components/charts/list/DeployedChartFilters.tsx
 src/components/charts/list/DiscoverCharts.tsx
 src/components/charts/modal/ChartGroupBasicDeploy.tsx
 src/components/charts/modal/CreateChartGroup.tsx
-src/components/charts/modal/deployChart.types.ts
 src/components/charts/useChartGroup.ts
 src/components/charts/util/ChartGroupCard.tsx
 src/components/charts/util/ChartSelect.tsx
