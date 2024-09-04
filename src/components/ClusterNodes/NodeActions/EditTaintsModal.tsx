@@ -23,6 +23,7 @@ import {
     TippyTheme,
     stopPropagation,
     InfoColourBar,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { toast } from 'react-toastify'
@@ -234,35 +235,16 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                                 </div>
 
                                 <div className="w-70 mr-8">
-                                    <ReactSelect
+                                    <SelectPicker
+                                        inputId='select-taint-effect'
                                         options={TAINT_OPTIONS}
-                                        onChange={(selectedValue) => {
+                                        onChange={(selectedValue: OptionType) => {
                                             onEffectChange(selectedValue, index)
                                         }}
                                         data-index={index}
-                                        components={{
-                                            IndicatorSeparator: null,
-                                            DropdownIndicator,
-                                            Option: (props) => (
-                                                <Option
-                                                    {...props}
-                                                    tippyClass="default-tt w-200"
-                                                    showTippy
-                                                    placement="left"
-                                                    tippyContent={props.data['description']}
-                                                />
-                                            ),
-                                        }}
                                         value={{
                                             label: taintDetails.effect,
                                             value: taintDetails.effect,
-                                        }}
-                                        styles={{
-                                            ...containerImageSelectStyles,
-                                            singleValue: (base, state) => ({
-                                                ...base,
-                                                padding: '5px 0',
-                                            }),
                                         }}
                                     />
                                 </div>
