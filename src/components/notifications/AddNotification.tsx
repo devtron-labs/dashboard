@@ -662,7 +662,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         />
                     ) : (
                         !this.state.appliedFilters.length && (
-                            <span>Filter by Project, applications and environment, search by name.</span>
+                            <span>Filter by Project, application, cluster and environment, search by name.</span>
                         )
                     )}
                 </div>
