@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useState } from 'react'
+import { ChangeEvent, Fragment, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { followCursor } from 'tippy.js'
@@ -14,6 +14,8 @@ import {
     getRandomColor,
     processDeployedTime,
     PopupMenu,
+    stringComparatorBySortOrder,
+    handleRelativeDateSorting,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
@@ -28,8 +30,38 @@ import {
     EnvironmentOverviewTableHeaderVariableKeys,
     EnvironmentOverviewTableSortableKeys,
 } from './EnvironmentOverview.constants'
-import { EnvironmentOverviewTableProps, EnvironmentOverviewTableRowData } from './EnvironmentOverviewTable.types'
+import {
+    EnvironmentOverviewTableProps,
+    EnvironmentOverviewTableRow,
+    EnvironmentOverviewTableRowData,
+} from './EnvironmentOverviewTable.types'
 import './EnvironmentOverviewTable.scss'
+
+const renderPopUpMenu = (items: EnvironmentOverviewTableRow['popUpMenuItems']) => (
+    <PopupMenu autoClose>
+        <PopupMenu.Button isKebab rootClassName="p-4 flex dc__no-border cursor">
+            <ICMoreOption className="icon-dim-16 fcn-6 rotateBy--90" />
+        </PopupMenu.Button>
+        <PopupMenu.Body rootClassName="dc__border py-4 w-150">
+            {items.map(({ label, onClick, disabled, Icon, iconType = 'fill' }) => (
+                <button
+                    key={label}
+                    type="button"
+                    className="dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 dc__hover-n50"
+                    onClick={onClick}
+                    disabled={disabled}
+                >
+                    {Icon && (
+                        <Icon
+                            className={`icon-dim-16 ${iconType === 'fill' ? 'fcn-7' : ''} ${iconType === 'stroke' ? 'scn-7' : ''}`}
+                        />
+                    )}
+                    <span className="dc__truncate cn-9 fs-13 lh-20">{label}</span>
+                </button>
+            ))}
+        </PopupMenu.Body>
+    </PopupMenu>
+)
 
 export const EnvironmentOverviewTable = ({
     rows = [],
@@ -40,13 +72,29 @@ export const EnvironmentOverviewTable = ({
     const [isLastDeployedExpanded, setIsLastDeployedExpanded] = useState(false)
 
     // HOOKS
-    const { sortBy, sortOrder, handleSorting } = useUrlFilters({
+    const { sortBy, sortOrder, handleSorting } = useUrlFilters<
+        (typeof EnvironmentOverviewTableSortableKeys)[keyof typeof EnvironmentOverviewTableSortableKeys]
+    >({
         initialSortKey: EnvironmentOverviewTableSortableKeys.NAME,
     })
 
+    // ROWS
+    const sortedRows = useMemo(
+        () =>
+            rows.sort((a, b) => {
+                if (sortBy === EnvironmentOverviewTableSortableKeys.DEPLOYED_AT) {
+                    return handleRelativeDateSorting(a.environment.deployedAt, b.environment.deployedAt, sortOrder)
+                }
+
+                return stringComparatorBySortOrder(a.environment.name, b.environment.name, sortOrder)
+            }),
+        [rows, sortBy, sortOrder],
+    )
+
     // CONSTANTS
-    const isAllChecked = rows.every(({ isChecked }) => isChecked)
-    const isPartialChecked = rows.some(({ isChecked }) => isChecked)
+    const isAllChecked = sortedRows.every(({ isChecked }) => isChecked)
+    const isPartialChecked = sortedRows.some(({ isChecked }) => isChecked)
+
     // CLASSES
     const isCheckedRowClassName = 'bcb-50 no-hover'
     const isVirtualEnvRowClassName = isVirtualEnv ? 'environment-overview-table__fixed-cell--no-status' : ''
@@ -170,31 +218,7 @@ export const EnvironmentOverviewTable = ({
                                 {name}
                             </Link>
                         </Tippy>
-                        {!!popUpMenuItems?.length && (
-                            <PopupMenu autoClose>
-                                <PopupMenu.Button isKebab rootClassName="p-4 flex dc__no-border cursor">
-                                    <ICMoreOption className="icon-dim-16 fcn-6 rotateBy--90" />
-                                </PopupMenu.Button>
-                                <PopupMenu.Body rootClassName="dc__border py-4 w-150">
-                                    {popUpMenuItems.map(({ label, onClick, disabled, Icon, iconType = 'fill' }) => (
-                                        <button
-                                            key={label}
-                                            type="button"
-                                            className="dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 dc__hover-n50"
-                                            onClick={onClick}
-                                            disabled={disabled}
-                                        >
-                                            {Icon && (
-                                                <Icon
-                                                    className={`icon-dim-16 ${iconType === 'fill' ? 'fcn-7' : ''} ${iconType === 'stroke' ? 'scn-7' : ''}`}
-                                                />
-                                            )}
-                                            <span className="dc__truncate cn-9 fs-13 lh-20">{label}</span>
-                                        </button>
-                                    ))}
-                                </PopupMenu.Body>
-                            </PopupMenu>
-                        )}
+                        {!!popUpMenuItems?.length && renderPopUpMenu(popUpMenuItems)}
                     </div>
                 </div>
                 <div
@@ -240,7 +264,7 @@ export const EnvironmentOverviewTable = ({
     return (
         <div className="environment-overview-table dc__border br-4 bcn-0 w-100">
             {renderHeaderRow()}
-            {rows.map((row) => (
+            {sortedRows.map((row) => (
                 <Fragment key={row.environment.id}>{renderRow(row)}</Fragment>
             ))}
         </div>

@@ -17,10 +17,8 @@
 import {
     ACTION_STATE,
     getRandomColor,
-    handleRelativeDateSorting,
     Progressing,
     showError,
-    SortingOrder,
     EditableTextArea,
     useSearchString,
     AppInfoListType,
@@ -55,9 +53,8 @@ import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hib
 import { ReactComponent as UnhibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
+import { EnvironmentOverviewTable, EnvironmentOverviewTableProps } from '@Pages/Shared/EnvironmentOverviewTable'
 import './envOverview.scss'
-import { EnvironmentOverviewTable } from '@Pages/Shared/EnvironmentOverviewTable/EnvironmentOverviewTable.component'
-import { EnvironmentOverviewTableSortableKeys } from '@Pages/Shared/EnvironmentOverviewTable/EnvironmentOverview.constants'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     'processDeploymentWindowAppGroupOverviewMap',
@@ -211,28 +208,6 @@ export default function EnvironmentOverview({
 
     const getAppRedirectLink = (appId: number, envId: number) => `/app/${appId}/details/${envId}`
 
-    const sortAndUpdateAppListData = (_appListData) => {
-        const { sortBy = EnvironmentOverviewTableSortableKeys.NAME, sortOrder = SortingOrder.ASC } = searchParams
-        setAppListData({
-            ..._appListData,
-            ist: _appListData.appInfoList.sort((a, b) => {
-                if (sortBy === EnvironmentOverviewTableSortableKeys.DEPLOYED_AT) {
-                    return handleRelativeDateSorting(a.lastDeployed, b.lastDeployed, sortOrder)
-                }
-
-                return sortOrder === SortingOrder.ASC
-                    ? a.application.localeCompare(b.application)
-                    : b.application.localeCompare(a.application)
-            }),
-        })
-    }
-
-    useEffect(() => {
-        if (appListData) {
-            sortAndUpdateAppListData(appListData)
-        }
-    }, [searchParams.sortBy, searchParams.sortOrder])
-
     const parseAppListData = (
         data: AppGroupListType,
         statusRecord: Record<string, { status: string; pipelineId: number }>,
@@ -260,9 +235,7 @@ export default function EnvironmentOverview({
             parsedData.appInfoList.push(appInfo)
         })
 
-        parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
-
-        sortAndUpdateAppListData(parsedData)
+        setAppListData(parsedData)
     }
 
     const closePopup = () => {
@@ -309,23 +282,25 @@ export default function EnvironmentOverview({
         })
     }
 
-    const environmentOverviewTableRows = appListData?.appInfoList?.map((appInfo) => ({
-        environment: {
-            id: appInfo.appId,
-            name: appInfo.application,
-            commits: appInfo.commits,
-            deployedAt: appInfo.lastDeployed,
-            status: appInfo.appStatus,
-            deploymentStatus: appInfo.deploymentStatus,
-            deployedBy: appInfo.lastDeployedBy,
-            lastDeployedImage: appInfo.lastDeployedImage,
-        },
-        isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
-        onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
-        onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
-        deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
-        redirectLink: getAppRedirectLink(appInfo.appId, +envId),
-    }))
+    const environmentOverviewTableRows: EnvironmentOverviewTableProps['rows'] = appListData?.appInfoList?.map(
+        (appInfo) => ({
+            environment: {
+                id: appInfo.appId,
+                name: appInfo.application,
+                commits: appInfo.commits,
+                deployedAt: appInfo.lastDeployed,
+                status: appInfo.appStatus,
+                deploymentStatus: appInfo.deploymentStatus,
+                deployedBy: appInfo.lastDeployedBy,
+                lastDeployedImage: appInfo.lastDeployedImage,
+            },
+            isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
+            onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
+            onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
+            deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
+            redirectLink: getAppRedirectLink(appInfo.appId, +envId),
+        }),
+    )
 
     const renderSideInfoColumn = () => {
         return (
@@ -466,7 +441,7 @@ export default function EnvironmentOverview({
     }
 
     return appListData?.appInfoList?.length > 0 ? (
-        <div className="env-overview-container dc__content-center bcn-0 p-20">
+        <div className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bcn-0 p-20">
             <div>{renderSideInfoColumn()}</div>
             <div className="mw-none">
                 <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
