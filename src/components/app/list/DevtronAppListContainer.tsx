@@ -79,7 +79,7 @@ const DevtronAppList = ({
         searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const [appListLoading, appListResponse, appListError, appListReload] = useAsync(
+    const [appListResponseLoading, appListResponse, appListError, appListReload] = useAsync(
         () =>
             abortPreviousRequests(
                 () =>
@@ -92,13 +92,15 @@ const DevtronAppList = ({
         !appFiltersResponseLoading, // We need to wait until environment filters are created from cluster and namespace
     )
 
+    const appListLoading = appListResponseLoading || getIsRequestAborted(appListError)
+
     const parsedAppList: App[] = useMemo(
-        () => (appListResponse?.result.appContainers ? appListModal(appListResponse?.result.appContainers) : []),
+        () => (appListResponse?.result?.appContainers ? appListModal(appListResponse.result.appContainers) : []),
         [appListResponse],
     )
 
     useEffect(() => {
-        if (appListLoading) {
+        if (appListResponseLoading) {
             updateDataSyncing(true)
             return
         }
@@ -108,7 +110,7 @@ const DevtronAppList = ({
             isAllExpandable: parsedAppList.some((app) => app.environments.length > 1),
         })
         setAppCount(parsedAppList.length)
-    }, [appListLoading])
+    }, [appListResponseLoading])
 
     const handleEditApp = (appId: number): void => {
         const url = `/${Routes.APP}/${appId}/${Routes.EDIT}`
@@ -206,7 +208,7 @@ const DevtronAppList = ({
         </div>
     )
 
-    if (!appListLoading && appListError && !getIsRequestAborted(appListError)) {
+    if (!appListLoading && appListError) {
         return <ErrorScreenManager code={appListError.code} reload={appListReload} />
     }
 
@@ -307,7 +309,7 @@ const DevtronAppList = ({
                 </div>
                 <div className="app-list__cell app-list__cell--action" />
             </div>
-            {appListLoading || appFiltersResponseLoading || getIsRequestAborted(appListError) ? (
+            {appListLoading || appFiltersResponseLoading ? (
                 <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
                     {appListLoadingArray.map((eachRow) => (
                         <div className="pl-20 resource-list__table-row" key={eachRow.id}>
