@@ -98,7 +98,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                 >
                     {({ match, location }) => {
                         const basePath = generatePath(path, match.params)
-                        const resourceTypePath = `/${match.params.resourceType}`
+                        const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
                         const resourceNamePath = match.params.resourceName ? `/${match.params.resourceName}` : ''
 
                         const goBackURL = `${basePath}${resourceTypePath}${resourceNamePath}`

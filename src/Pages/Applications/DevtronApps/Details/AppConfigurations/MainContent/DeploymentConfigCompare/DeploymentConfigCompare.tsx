@@ -1,22 +1,22 @@
 import { useEffect, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useRouteMatch } from 'react-router-dom'
 
 import {
     useUrlFilters,
     SelectPickerOptionType,
     SelectPickerVariantType,
     useAsync,
-    ErrorScreenManager,
     DeploymentConfigDiff,
     DeploymentConfigDiffProps,
     SortingOrder,
     AppEnvDeploymentConfigType,
-    getAppEnvDeploymentConfig,
     getDefaultVersionAndPreviousDeploymentOptions,
     getAppEnvDeploymentConfigList,
     getSelectPickerOptionByValue,
+    EnvResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getChartReferencesForAppAndEnv } from '@Services/service'
 import { getOptions } from '@Components/deploymentConfig/service'
 
 import { BASE_CONFIGURATIONS } from '../../AppConfig.constants'
@@ -34,7 +34,11 @@ import {
     parseCompareWithSearchParams,
     getEnvironmentConfigTypeOptions,
     isEnvProtected,
+    getConfigChartRefId,
+    getManifestRequestValues,
+    getDeploymentConfigDiffTabs,
 } from './utils'
+import { getConfigDiffData, getDeploymentTemplateData, getManifestData } from './service.utils'
 
 export const DeploymentConfigCompare = ({
     environments,
@@ -46,7 +50,11 @@ export const DeploymentConfigCompare = ({
     getNavItemHref,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
-    const { compareTo, resourceType, resourceName, appId, envId } = useParams<DeploymentConfigParams>()
+    const { path, params } = useRouteMatch<DeploymentConfigParams>()
+    const { compareTo, resourceType, resourceName, appId, envId } = params
+
+    // CONSTANTS
+    const isManifestView = resourceType === EnvResourceType.Manifest
 
     // SEARCH PARAMS & SORTING
     const {
@@ -58,6 +66,8 @@ export const DeploymentConfigCompare = ({
         compareWithConfigType,
         configType,
         chartRefId,
+        manifestChartRefId,
+        compareWithManifestChartRefId,
         updateSearchParams,
         sortBy,
         sortOrder,
@@ -103,40 +113,103 @@ export const DeploymentConfigCompare = ({
         [options, optionsLoader],
     )
 
+    // Load chartReferences for the environment
+    const [chartReferencesLoader, chartReferences, chartReferencesErr, reloadChartReferences] = useAsync(
+        () =>
+            Promise.all([
+                getChartReferencesForAppAndEnv(+appId, getEnvironmentIdByEnvironmentName(environments, compareTo)),
+                getChartReferencesForAppAndEnv(+appId, getEnvironmentIdByEnvironmentName(environments, compareWith)),
+            ]),
+        [isManifestView, appId, compareTo, compareWith],
+        isManifestView,
+    )
+
+    useEffect(() => {
+        if (!chartReferencesLoader && chartReferences) {
+            const currentChartRefId = getConfigChartRefId(chartReferences[0].result)
+            const compareChartRefId = getConfigChartRefId(chartReferences[1].result)
+
+            updateSearchParams({
+                manifestChartRefId: currentChartRefId,
+                compareWithManifestChartRefId: compareChartRefId,
+            })
+        }
+
+        return null
+    }, [chartReferencesLoader, chartReferences])
+
+    const fetchManifestData = async () => {
+        const [{ result: currentList }, { result: compareList }] = await Promise.all([
+            getDeploymentTemplateData({ type, appName, envName, configType, compareName: compareTo }),
+            getDeploymentTemplateData({
+                type,
+                appName,
+                envName,
+                configType: compareWithConfigType,
+                compareName: compareWith,
+            }),
+        ])
+
+        const currentManifestRequestValues = getManifestRequestValues(currentList)
+        const compareManifestRequestValues = getManifestRequestValues(compareList)
+
+        const _manifestChartRefId = currentManifestRequestValues?.chartRefId ?? manifestChartRefId
+        const _compareWithManifestChartRefId = compareManifestRequestValues?.chartRefId ?? compareWithManifestChartRefId
+
+        updateSearchParams({
+            manifestChartRefId: _manifestChartRefId,
+            compareWithManifestChartRefId: _compareWithManifestChartRefId,
+        })
+
+        return Promise.all([
+            getManifestData({
+                appId: +appId,
+                envId: envId ? +envId : null,
+                manifestChartRefId: _manifestChartRefId,
+                configType,
+                values: currentManifestRequestValues?.data,
+                identifierId,
+                pipelineId,
+            }),
+            getManifestData({
+                appId: +appId,
+                envId: compareWith ? getEnvironmentIdByEnvironmentName(environments, compareWith) : null,
+                manifestChartRefId: _compareWithManifestChartRefId,
+                configType: compareWithConfigType,
+                values: compareManifestRequestValues?.data,
+                identifierId: compareWithIdentifierId,
+                pipelineId: compareWithPipelineId,
+            }),
+        ])
+    }
+
     // Load data for comparing the two environments
     const [comparisonDataLoader, comparisonData, comparisonDataErr, reloadComparisonData] = useAsync(
         () =>
-            Promise.all([
-                getAppEnvDeploymentConfig({
-                    ...(type === 'app'
-                        ? {
-                              appName,
-                              envName: compareTo || '',
-                          }
-                        : {
-                              appName: compareTo || '',
-                              envName,
-                          }),
-                    configType,
-                    identifierId,
-                    pipelineId,
-                }),
-                getAppEnvDeploymentConfig({
-                    ...(type === 'app'
-                        ? {
-                              appName,
-                              envName: compareWith || '',
-                          }
-                        : {
-                              appName: compareWith || '',
-                              envName,
-                          }),
-                    configType: compareWithConfigType,
-                    identifierId: chartRefId || compareWithIdentifierId,
-                    pipelineId: compareWithPipelineId,
-                }),
-            ]),
+            isManifestView
+                ? fetchManifestData()
+                : Promise.all([
+                      getConfigDiffData({
+                          type,
+                          appName,
+                          envName,
+                          compareName: compareTo,
+                          configType,
+                          identifierId,
+                          pipelineId,
+                      }),
+                      getConfigDiffData({
+                          type,
+                          appName,
+                          envName,
+                          compareName: compareWith,
+                          configType: compareWithConfigType,
+                          identifierId: chartRefId || compareWithIdentifierId,
+                          pipelineId: compareWithPipelineId,
+                      }),
+                  ]),
         [
+            isManifestView,
             compareTo,
             compareWith,
             compareWithConfigType,
@@ -146,27 +219,37 @@ export const DeploymentConfigCompare = ({
             pipelineId,
             compareWithPipelineId,
             chartRefId,
+            manifestChartRefId,
+            compareWithManifestChartRefId,
         ],
-        !!configType && !!compareWithConfigType,
+        isManifestView
+            ? !!manifestChartRefId && !!compareWithManifestChartRefId
+            : !!configType && !!compareWithConfigType,
     )
 
     const reload = () => {
         reloadOptions()
         reloadComparisonData()
+        reloadChartReferences()
     }
 
     // Generate the deployment configuration list for the environments using comparison data
     const appEnvDeploymentConfigList = useMemo(() => {
         if (!comparisonDataLoader && comparisonData) {
-            const currentData = comparisonData[0].result
-            const compareData = comparisonData[1].result
+            const [{ result: currentList }, { result: compareList }] = comparisonData
 
-            const configData = getAppEnvDeploymentConfigList(currentData, compareData, getNavItemHref, sortOrder)
+            const configData = getAppEnvDeploymentConfigList({
+                currentList,
+                compareList,
+                getNavItemHref,
+                sortOrder,
+                isManifestView,
+            })
             return configData
         }
 
         return null
-    }, [comparisonDataLoader, comparisonData, sortOrder])
+    }, [comparisonDataLoader, comparisonData, sortOrder, isManifestView])
 
     // SELECT PICKER OPTIONS
     /** Compare Environment Select Picker Options  */
@@ -183,6 +266,7 @@ export const DeploymentConfigCompare = ({
         if (typeof value === 'number') {
             updateSearchParams({
                 chartRefId: value,
+                compareWithManifestChartRefId: isManifestView ? value : null,
                 compareWithConfigType: AppEnvDeploymentConfigType.DEFAULT_VERSION,
                 compareWithIdentifierId: null,
                 compareWithPipelineId: null,
@@ -191,13 +275,11 @@ export const DeploymentConfigCompare = ({
             updateSearchParams({
                 compareWith: value,
                 chartRefId: null,
+                manifestChartRefId: null,
+                compareWithManifestChartRefId: null,
                 compareWithIdentifierId: null,
                 compareWithPipelineId: null,
-                compareWithConfigType:
-                    compareWithConfigType === AppEnvDeploymentConfigType.DEFAULT_VERSION ||
-                    compareWithConfigType === AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS
-                        ? AppEnvDeploymentConfigType.PUBLISHED_ONLY
-                        : compareWithConfigType,
+                compareWithConfigType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
             })
         }
     }
@@ -219,10 +301,12 @@ export const DeploymentConfigCompare = ({
                             ? {
                                   identifierId: modifiedValue.identifierId,
                                   pipelineId: modifiedValue.pipelineId,
+                                  manifestChartRefId: isManifestView ? modifiedValue.chartRefId : null,
                               }
                             : {
                                   compareWithIdentifierId: modifiedValue.identifierId,
                                   compareWithPipelineId: modifiedValue.pipelineId,
+                                  compareWithManifestChartRefId: isManifestView ? modifiedValue.chartRefId : null,
                               }),
                     })
                 } else {
@@ -234,10 +318,12 @@ export const DeploymentConfigCompare = ({
                             ? {
                                   identifierId: null,
                                   pipelineId: null,
+                                  manifestChartRefId: isManifestView ? manifestChartRefId : null,
                               }
                             : {
                                   compareWithIdentifierId: null,
                                   compareWithPipelineId: null,
+                                  compareWithManifestChartRefId: isManifestView ? compareWithManifestChartRefId : null,
                               }),
                     })
                 }
@@ -265,6 +351,7 @@ export const DeploymentConfigCompare = ({
         options: getEnvironmentConfigTypeOptions(
             isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
             isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
+            isManifestView,
         ),
         placeholder: 'Select State',
         classNamePrefix: 'environment-config-type-selector',
@@ -277,11 +364,15 @@ export const DeploymentConfigCompare = ({
             getEnvironmentConfigTypeOptions(
                 isCompare ? compareEnvOptions?.previousDeployments : currentEnvOptions?.previousDeployments,
                 isEnvProtected(environments, isCompare ? compareWith : compareTo, isBaseConfigProtected),
+                isManifestView,
             ),
             !isCompare
-                ? getPreviousDeploymentOptionValue(identifierId, pipelineId) || configType
-                : getPreviousDeploymentOptionValue(compareWithIdentifierId, compareWithPipelineId) ||
-                      compareWithConfigType,
+                ? getPreviousDeploymentOptionValue(identifierId, pipelineId, manifestChartRefId) || configType
+                : getPreviousDeploymentOptionValue(
+                      compareWithIdentifierId,
+                      compareWithPipelineId,
+                      compareWithManifestChartRefId,
+                  ) || compareWithConfigType,
             {
                 label: BASE_CONFIGURATIONS.name,
                 value: '',
@@ -328,7 +419,11 @@ export const DeploymentConfigCompare = ({
         ],
     }
 
-    const getNavHelpText = () => {
+    const getNavHelpText = (): DeploymentConfigDiffProps['navHelpText'] => {
+        if (isManifestView) {
+            return `The manifest is generated locally from the configuration files. Server-side testing of chart validity (eg. whether an API is supported) is NOT done. K8s based templating may be different depending on cluster version.`
+        }
+
         const chart = currentEnvOptions?.defaultVersions.find(
             ({ chartRefId: _chartRefId }) => _chartRefId === chartRefId,
         )
@@ -338,27 +433,49 @@ export const DeploymentConfigCompare = ({
         return `Showing files from ${compareWithText} & ${compareToText}`
     }
 
+    const deploymentConfigDiffTabs = getDeploymentConfigDiffTabs(path, params)
+
+    const onTabClick = (tab: string) => {
+        const _isManifestView = tab === deploymentConfigDiffTabs[1].value
+        if (!_isManifestView) {
+            updateSearchParams({
+                manifestChartRefId: null,
+                compareWithManifestChartRefId: null,
+            })
+        }
+    }
+
+    const tabConfig: DeploymentConfigDiffProps['tabConfig'] = {
+        tabs: deploymentConfigDiffTabs,
+        onClick: onTabClick,
+    }
+
     const onSorting = () => handleSorting(sortOrder !== SortingOrder.DESC ? 'sort-config' : '')
 
-    // ERROR SCREEN
-    if ((comparisonDataErr || optionsErr) && !(comparisonDataLoader || optionsLoader)) {
-        return <ErrorScreenManager code={comparisonDataErr?.code || optionsErr?.code} reload={reload} />
+    const sortingConfig: DeploymentConfigDiffProps['sortingConfig'] = {
+        handleSorting: onSorting,
+        sortBy,
+        sortOrder,
     }
 
     return (
         <DeploymentConfigDiff
             isLoading={comparisonDataLoader || !appEnvDeploymentConfigList || optionsLoader}
+            errorConfig={{
+                error:
+                    (comparisonDataErr || optionsErr || chartReferencesErr) &&
+                    !(comparisonDataLoader || optionsLoader || chartReferencesLoader),
+                code: comparisonDataErr?.code || optionsErr?.code || chartReferencesErr?.code,
+                reload,
+            }}
             {...appEnvDeploymentConfigList}
             goBackURL={goBackURL}
             selectorsConfig={deploymentConfigDiffSelectors}
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
             navHeading={`Comparing ${compareTo || BASE_CONFIGURATIONS.name}`}
             navHelpText={getNavHelpText()}
-            sortingConfig={{
-                handleSorting: onSorting,
-                sortBy,
-                sortOrder,
-            }}
+            tabConfig={tabConfig}
+            sortingConfig={!isManifestView ? sortingConfig : null}
         />
     )
 }

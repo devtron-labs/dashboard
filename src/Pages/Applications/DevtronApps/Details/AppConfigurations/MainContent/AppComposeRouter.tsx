@@ -302,7 +302,7 @@ const AppComposeRouter = () => {
                                   const envOverridePath = match.params.envId
                                       ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/${match.params.envId}`
                                       : ''
-                                  const resourceTypePath = `/${match.params.resourceType}`
+                                  const resourceTypePath = `/${match.params.resourceType === EnvResourceType.Manifest ? EnvResourceType.DeploymentTemplate : match.params.resourceType}`
                                   const resourceNamePath = match.params.resourceName
                                       ? `/${match.params.resourceName}`
                                       : ''
