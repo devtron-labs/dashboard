@@ -43,34 +43,32 @@ export const filteredData = [
     },
 ]
 
-const result = () => {
-    return [
-        {
-            id: 19,
-            name: 'testing-app',
-        },
-        {
-            id: 23,
-            name: 'testing-4',
-        },
-        {
-            id: 1,
-            name: 'ajay-app',
-        },
-        {
-            id: 81,
-            name: 'docker-hub-test',
-        },
-        {
-            id: 101,
-            name: 'aravind-child',
-        },
-        {
-            id: 374,
-            name: 'prakash-1mar',
-        },
-    ]
-}
+const result = () => [
+    {
+        id: 19,
+        name: 'testing-app',
+    },
+    {
+        id: 23,
+        name: 'testing-4',
+    },
+    {
+        id: 1,
+        name: 'ajay-app',
+    },
+    {
+        id: 81,
+        name: 'docker-hub-test',
+    },
+    {
+        id: 101,
+        name: 'aravind-child',
+    },
+    {
+        id: 374,
+        name: 'prakash-1mar',
+    },
+]
 
 export async function mockConfigAppList(): Promise<ConfigAppListType> {
     const response = {

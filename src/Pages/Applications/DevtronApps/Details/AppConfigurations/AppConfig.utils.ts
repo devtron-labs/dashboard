@@ -28,44 +28,42 @@ const isCommonUnlocked = (stage, isGitOpsConfigurationRequired) =>
     stage === STAGE_NAME.CD_PIPELINE ||
     stage === STAGE_NAME.CHART_ENV_CONFIG
 
-export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolean): AppStageUnlockedType => {
-    return {
-        material:
-            stage === STAGE_NAME.APP ||
-            stage === STAGE_NAME.GIT_MATERIAL ||
-            stage === STAGE_NAME.CI_CONFIG ||
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.GITOPS_CONFIG ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        dockerBuildConfig:
-            stage === STAGE_NAME.GIT_MATERIAL ||
-            stage === STAGE_NAME.CI_CONFIG ||
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.GITOPS_CONFIG ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        deploymentTemplate:
-            stage === STAGE_NAME.CI_CONFIG ||
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.GITOPS_CONFIG ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        gitOpsConfig:
-            stage === STAGE_NAME.CI_PIPELINE ||
-            stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
-            stage === STAGE_NAME.GITOPS_CONFIG ||
-            stage === STAGE_NAME.CD_PIPELINE ||
-            stage === STAGE_NAME.CHART_ENV_CONFIG,
-        workflowEditor: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        configmap: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        secret: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-        envOverride: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
-    }
-}
+export const isUnlocked = (stage: string, isGitOpsConfigurationRequired?: boolean): AppStageUnlockedType => ({
+    material:
+        stage === STAGE_NAME.APP ||
+        stage === STAGE_NAME.GIT_MATERIAL ||
+        stage === STAGE_NAME.CI_CONFIG ||
+        stage === STAGE_NAME.CI_PIPELINE ||
+        stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+        stage === STAGE_NAME.GITOPS_CONFIG ||
+        stage === STAGE_NAME.CD_PIPELINE ||
+        stage === STAGE_NAME.CHART_ENV_CONFIG,
+    dockerBuildConfig:
+        stage === STAGE_NAME.GIT_MATERIAL ||
+        stage === STAGE_NAME.CI_CONFIG ||
+        stage === STAGE_NAME.CI_PIPELINE ||
+        stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+        stage === STAGE_NAME.GITOPS_CONFIG ||
+        stage === STAGE_NAME.CD_PIPELINE ||
+        stage === STAGE_NAME.CHART_ENV_CONFIG,
+    deploymentTemplate:
+        stage === STAGE_NAME.CI_CONFIG ||
+        stage === STAGE_NAME.CI_PIPELINE ||
+        stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+        stage === STAGE_NAME.GITOPS_CONFIG ||
+        stage === STAGE_NAME.CD_PIPELINE ||
+        stage === STAGE_NAME.CHART_ENV_CONFIG,
+    gitOpsConfig:
+        stage === STAGE_NAME.CI_PIPELINE ||
+        stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
+        stage === STAGE_NAME.GITOPS_CONFIG ||
+        stage === STAGE_NAME.CD_PIPELINE ||
+        stage === STAGE_NAME.CHART_ENV_CONFIG,
+    workflowEditor: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+    configmap: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+    secret: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+    envOverride: isCommonUnlocked(stage, isGitOpsConfigurationRequired),
+})
 
 export const getCompletedStep = (
     _isUnlocked: AppStageUnlockedType,
@@ -301,14 +299,12 @@ export const isCDPipelineCreated = (responseArr: AppConfigStatusItemType[]) => {
 
 export const transformEnvConfig = ({ resourceConfig }: EnvConfigDTO) => {
     const updatedEnvConfig = resourceConfig.reduce<EnvConfigType>(
-        (acc, curr) => {
-            return {
-                ...acc,
-                deploymentTemplate: curr.type === ConfigResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
-                configmaps: curr.type === ConfigResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
-                secrets: curr.type === ConfigResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
-            }
-        },
+        (acc, curr) => ({
+            ...acc,
+            deploymentTemplate: curr.type === ConfigResourceType.DeploymentTemplate ? curr : acc.deploymentTemplate,
+            configmaps: curr.type === ConfigResourceType.ConfigMap ? [...acc.configmaps, curr] : acc.configmaps,
+            secrets: curr.type === ConfigResourceType.Secret ? [...acc.secrets, curr] : acc.secrets,
+        }),
         {
             deploymentTemplate: null,
             configmaps: [],

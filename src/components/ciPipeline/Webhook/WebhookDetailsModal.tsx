@@ -217,12 +217,13 @@ export const WebhookDetailsModal = ({ close }: WebhookDetailType) => {
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.id,
                     userIdentifier: result.userIdentifier,
-                    userGroups: [],
+                    userRoleGroups: [],
                     serverMode: SERVER_MODE.FULL,
                     directPermission: [],
                     chartPermission: {} as ChartGroupPermissionsFilter,
                     k8sPermission: [],
                     permissionType: PermissionType.SPECIFIC,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
                 const { result: userPermissionResponse } = await createOrUpdateUser({

@@ -19,7 +19,6 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
-    multiSelectStyles,
     Progressing,
     ReleaseTag,
     ImageComment,
@@ -37,7 +36,11 @@ import {
     MODAL_TYPE,
     ApiQueuingWithBatch,
     SelectPicker,
+    CDMaterialSidebarType,
+    CD_MATERIAL_SIDEBAR_TABS,
+    RuntimeParamsListItemType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { toast } from 'react-toastify'
 import { components } from 'react-select'
 import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -57,6 +60,7 @@ import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Option as releaseTagOption } from '../../../v2/common/ReactSelect.utils'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
+import { BULK_ERROR_MESSAGES } from './constants'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -70,6 +74,7 @@ const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     null,
     'function',
 )
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -86,6 +91,10 @@ export default function BulkCDTrigger({
     isVirtualEnv,
     uniqueReleaseTags,
     httpProtocol,
+    runtimeParams,
+    setRuntimeParams,
+    runtimeParamsErrorState,
+    setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -102,11 +111,15 @@ export default function BulkCDTrigger({
     >({})
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
     const [showResistanceBox, setShowResistanceBox] = useState(false)
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
 
     const location = useLocation()
     const history = useHistory()
     const { isSuperAdmin } = useSuperAdmin()
     const isBulkDeploymentTriggered = useRef(false)
+
+    const showRuntimeParams =
+        RuntimeParamTabs && (stage === DeploymentNodeType.PRECD || stage === DeploymentNodeType.POSTCD)
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search)
@@ -132,6 +145,28 @@ export default function BulkCDTrigger({
         label: 'latest',
         value: 'latest',
     })
+
+    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (runtimeParamsErrorState[selectedApp.appId]) {
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_SIDEBAR_TAB)
+            return
+        }
+
+        setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
+    }
+
+    const handleRuntimeParamError = (errorState: boolean) => {
+        setRuntimeParamsErrorState((prevErrorState) => ({
+            ...prevErrorState,
+            [selectedApp.appId]: errorState,
+        }))
+    }
+
+    const handleRuntimeParamChange = (currentAppRuntimeParams: RuntimeParamsListItemType[]) => {
+        const clonedRuntimeParams = structuredClone(runtimeParams)
+        clonedRuntimeParams[selectedApp.appId] = currentAppRuntimeParams
+        setRuntimeParams(clonedRuntimeParams)
+    }
 
     const getDeploymentWindowData = async (_cdMaterialResponse) => {
         const currentEnv = appList[0].envId
@@ -163,6 +198,12 @@ export default function BulkCDTrigger({
 
     const resolveMaterialData = (_cdMaterialResponse, _unauthorizedAppList) => (response) => {
         if (response.status === 'fulfilled') {
+            setRuntimeParams((prevState) => {
+                const updatedRuntimeParams = { ...prevState }
+                updatedRuntimeParams[response.value['appId']] = response.value.runtimeParams || []
+                return updatedRuntimeParams
+            })
+
             _cdMaterialResponse[response.value['appId']] = response.value
             // if first image does not have filerState.ALLOWED then unselect all images and set SELECT_NONE for selectedImage and for first app send the trigger of SELECT_NONE from selectedImageFromBulk
             if (
@@ -301,6 +342,11 @@ export default function BulkCDTrigger({
     }
 
     const changeApp = (e): void => {
+        if (runtimeParamsErrorState[selectedApp.appId]) {
+            toast.error(BULK_ERROR_MESSAGES.CHANGE_APPLICATION)
+            return
+        }
+
         const _selectedApp = appList[e.currentTarget.dataset.index]
         setSelectedApp(_selectedApp)
         setSelectedImageFromBulk(selectedImages[_selectedApp.appId])
@@ -432,7 +478,7 @@ export default function BulkCDTrigger({
             const _tagNotFoundWarningsMap = new Map()
             const _cdMaterialResponse: Record<string, any> = {}
 
-            for (let i = 0; i < appList?.length ?? 0; i++) {
+            for (let i = 0; i < (appList?.length ?? 0); i++) {
                 const app = appList[i]
                 const tagsToArtifactIdMap = appWiseTagsToArtifactIdMapMappings[app.appId]
                 let artifactIndex = -1
@@ -576,6 +622,15 @@ export default function BulkCDTrigger({
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
                     <div className="dc__position-sticky dc__top-0 pt-12 bcn-0">
+                        {showRuntimeParams && (
+                            <div className="px-16 pb-8">
+                                <RuntimeParamTabs
+                                    tabs={CD_MATERIAL_SIDEBAR_TABS}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                />
+                            </div>
+                        )}
                         <span className="pl-16 pr-16">Select image by release tag</span>
                         <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
                             <SelectPicker
@@ -592,7 +647,7 @@ export default function BulkCDTrigger({
                             />
                         </div>
                         <div
-                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 pt-8 pr-16 pb-8 pl-16"
+                            className="dc__position-sticky dc__top-0 bcn-0 dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16"
                             style={{ zIndex: 0 }}
                         >
                             APPLICATIONS
@@ -658,8 +713,6 @@ export default function BulkCDTrigger({
                                     />
                                 )}
                             <CDMaterial
-                                // TODO: Handle this
-                                triggerDeploy={onClickStartDeploy}
                                 key={selectedApp.appId}
                                 materialType={MATERIAL_TYPE.inputMaterialList}
                                 appId={selectedApp.appId}
@@ -679,6 +732,11 @@ export default function BulkCDTrigger({
                                 updateBulkCDMaterialsItem={updateBulkCDMaterialsItem}
                                 selectedImageFromBulk={selectedImageFromBulk}
                                 isSuperAdmin={isSuperAdmin}
+                                bulkRuntimeParams={runtimeParams[selectedApp.appId] || []}
+                                handleBulkRuntimeParamChange={handleRuntimeParamChange}
+                                handleBulkRuntimeParamError={handleRuntimeParamError}
+                                bulkSidebarTab={currentSidebarTab}
+                                selectedAppName={selectedApp.name}
                             />
                         </>
                     )}

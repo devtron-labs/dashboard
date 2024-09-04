@@ -412,6 +412,7 @@ function migrateOldData(
         defaultValue: '',
         variableType: RefVariableType.GLOBAL,
         refVariableStepIndex: 0,
+        allowEmptyValue: false,
     }
     const updatedData = {
         id: 0,

@@ -69,7 +69,7 @@ const EditAPIToken = ({
     isLoading: boolean
     setEditData: (editData: EditDataType) => void
 }) => {
-    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userGroups } =
+    const { permissionType, directPermission, setDirectPermission, chartPermission, k8sPermission, userRoleGroups } =
         usePermissionConfiguration()
 
     const history = useHistory()
@@ -81,25 +81,21 @@ const EditAPIToken = ({
     const [deleteConfirmation, setDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const renderActionButton = () => {
-        return (
-            <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
-                Regenerate token
-            </span>
-        )
-    }
+    const renderActionButton = () => (
+        <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
+            Regenerate token
+        </span>
+    )
 
-    const renderRegenerateInfoBar = () => {
-        return (
-            <InfoColourBar
-                message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-                classname="info_bar"
-                Icon={InfoIcon}
-                iconClass="icon-dim-20"
-                renderActionButton={renderActionButton}
-            />
-        )
-    }
+    const renderRegenerateInfoBar = () => (
+        <InfoColourBar
+            message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
+            classname="info_bar"
+            Icon={InfoIcon}
+            iconClass="icon-dim-20"
+            renderActionButton={renderActionButton}
+        />
+    )
 
     const redirectToTokenList = () => {
         history.push(`${match.path.split('edit')[0]}list`)
@@ -131,12 +127,13 @@ const EditAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: editData.userId,
                     userIdentifier: editData.userIdentifier,
-                    userGroups,
+                    userRoleGroups,
                     serverMode,
                     directPermission,
                     chartPermission,
                     k8sPermission,
                     permissionType,
+                    userGroups: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

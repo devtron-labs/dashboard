@@ -24,6 +24,8 @@ import {
     SelectedNode,
     WorkflowType,
     PluginDataStoreType,
+    MandatoryPluginDetailType,
+    ValidationResponseType,
     PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router-dom'
@@ -242,6 +244,7 @@ export interface PipelineFormDataErrorType {
         message: string
         isValid: boolean
     }
+    userApprovalConfig?: ValidationResponseType
 }
 
 export interface PipelineContext {
@@ -303,6 +306,19 @@ export interface PipelineContext {
     handlePluginDataStoreUpdate: (pluginDataStore: PluginDataStoreType) => void
     availableTags: string[]
     handleUpdateAvailableTags: (tags: string[]) => void
+    /**
+     * If hideScopedVariableWidget is true, then the scoped variable widget will be forced to be hidden
+     */
+    handleHideScopedVariableWidgetUpdate?: (hideScopedVariableWidget: boolean) => void
+    /**
+     * If disableParentModalClose is true, then the parent modal close will method will act as noop
+     * Use case: When we open another modal to create plugin and we don't want to close the parent modal on escape key press
+     */
+    handleDisableParentModalCloseUpdate?: (disableParentModalClose: boolean) => void
+    /**
+     * Would be available only for CI pipeline
+     */
+    mandatoryPluginsMap?: Record<number, MandatoryPluginDetailType>
 }
 
 export interface SourceTypeCardProps {

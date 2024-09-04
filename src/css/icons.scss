@@ -316,3 +316,16 @@
         }
     }
 }
+
+.dc__hover-remove-btn {
+    @extend .icon-use-fill-n6;
+
+    &:hover {
+        background: var(--R100);
+        border-radius: 2px;
+
+        svg use {
+            fill: var(--R500);
+        }
+    }
+}
