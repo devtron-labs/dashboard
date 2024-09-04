@@ -632,8 +632,8 @@ export default function BulkCDTrigger({
                                 />
                             </div>
                         )}
-                        <span className="pl-16 pr-16">Select image by release tag</span>
-                        <div style={{ zIndex: 1 }} className="tag-selection-dropdown pr-16 pl-16 pt-6 pb-12">
+                        <span className="px-16">Select image by release tag</span>
+                        <div className="tag-selection-dropdown px-16 pt-6 pb-12 dc__zi-1">
                             <SelectPicker
                                 name="build-config__select-repository-containing-code"
                                 inputId="build-config__select-repository-containing-code"
