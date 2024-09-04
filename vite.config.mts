@@ -140,18 +140,18 @@ export default defineConfig(({ mode }) => {
             }),
             jsToBottomNoModule(),
         ],
-        // test: {
-        //     globals: true,
-        //     environment: 'jsdom',
-        //     setupFiles: './src/setupTests.ts',
-        //     css: true,
-        //     reporters: ['verbose'],
-        //     coverage: {
-        //         reporter: ['text', 'json', 'html'],
-        //         include: ['src/**/*'],
-        //         exclude: [],
-        //     },
-        // },
+        test: {
+            globals: true,
+            environment: 'jsdom',
+            setupFiles: './src/setupTests.ts',
+            css: true,
+            reporters: ['verbose'],
+            coverage: {
+                reporter: ['text', 'json', 'html'],
+                include: ['src/**/*'],
+                exclude: [],
+            },
+        },
         server: {
             port: 3000,
             proxy: {
@@ -160,6 +160,9 @@ export default defineConfig(({ mode }) => {
                     changeOrigin: true,
                 },
                 '/grafana': TARGET_URL,
+            },
+            deps: {
+              inline: [/@devtron-labs\/devtron-fe-common-lib*/,/@devtron-labs\/devtron-fe-lib*/],
             },
         },
     }

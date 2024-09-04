@@ -16,18 +16,19 @@
 
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import SearchBar from '../DescriptorSearchBar'
 
 describe('When SearchBar mounts', () => {
     it('should display valid input component', () => {
-        const onSearch = jest.fn()
+        const onSearch = vi.fn()
         const { container } = render(<SearchBar onSearch={onSearch} />)
         const input = container.querySelector('input')
         expect(input).toBeTruthy()
     })
 
     it('should call onSearch on enter', () => {
-        const onSearch = jest.fn()
+        const onSearch = vi.fn()
         const { container } = render(<SearchBar onSearch={onSearch} />)
         const input = container.querySelector('input')
         fireEvent.keyDown(input!, { key: 'Enter', code: 'Enter' })
@@ -35,7 +36,7 @@ describe('When SearchBar mounts', () => {
     })
 
     it('should show valid text in input', () => {
-        const onSearch = jest.fn()
+        const onSearch = vi.fn()
         const { container } = render(<SearchBar onSearch={onSearch} />)
         const input = container.querySelector('input')
         fireEvent.change(input!, { target: { value: 'test' } })

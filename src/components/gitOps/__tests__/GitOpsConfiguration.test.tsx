@@ -19,6 +19,7 @@ import GitOpsConfiguration from '../GitOpsConfiguration'
 import { render } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { BrowserRouter } from 'react-router-dom'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('Gitopsconfiguration', () => {
     let div
@@ -28,7 +29,7 @@ describe('Gitopsconfiguration', () => {
     })
 
     it('GitOpsConfiguration renders without crashing', () => {
-        const { container } = render(<GitOpsConfiguration handleChecklistUpdate={jest.fn()} />, {
+        const { container } = render(<GitOpsConfiguration handleChecklistUpdate={vi.fn()} />, {
             wrapper: BrowserRouter,
         })
         expect(container).toBeInTheDocument()
