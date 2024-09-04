@@ -340,7 +340,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
 
     // In EA Mode if there is only one cluster select it
     useEffect(() => {
-        if (serverMode === SERVER_MODE.EA_ONLY && appListFilterResponse?.result.clusters.length === 1) {
+        if (serverMode === SERVER_MODE.EA_ONLY && appListFilterResponse?.result.clusters?.length === 1) {
             updateSearchParams({ cluster: [String(appListFilterResponse?.result.clusters[0].id)] })
         }
     }, [appListFilterResponse])

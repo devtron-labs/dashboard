@@ -154,3 +154,13 @@ export interface GenericAppListProps
     appType: string
     clusterList: Cluster[]
 }
+
+export interface GetFilteredHelmAppListReturnType {
+    filteredHelmAppList: HelmApp[]
+    filteredListTotalSize: number
+}
+
+export interface GetFilteredGenericAppListReturnType {
+    filteredAppsList: GenericAppType[]
+    filteredListTotalSize: number
+}

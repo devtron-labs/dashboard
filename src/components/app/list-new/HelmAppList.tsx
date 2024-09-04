@@ -67,7 +67,7 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
+import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps, GetFilteredHelmAppListReturnType } from './AppListType'
 
 const HelmAppList = ({
     serverMode,
@@ -101,7 +101,7 @@ const HelmAppList = ({
             ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
             : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
 
-    const getFilteredAppList = (): { filteredHelmAppList: HelmApp[]; filteredListSize: number } =>
+    const getFilteredAppList = (): GetFilteredHelmAppListReturnType =>
         useMemo(() => {
             let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
             if (searchKey) {
@@ -133,14 +133,14 @@ const HelmAppList = ({
             }
             filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
 
-            const filteredListSize = filteredHelmAppList.length
+            const filteredListTotalSize = filteredHelmAppList.length
 
             filteredHelmAppList = filteredHelmAppList.slice(offset, offset + pageSize)
 
-            return { filteredHelmAppList, filteredListSize }
+            return { filteredHelmAppList, filteredListTotalSize }
         }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
 
-    const { filteredHelmAppList, filteredListSize } = getFilteredAppList()
+    const { filteredHelmAppList, filteredListTotalSize } = getFilteredAppList()
 
     // component load
     useEffect(() => {
@@ -485,7 +485,7 @@ const HelmAppList = ({
                 {externalHelmListFetchErrors.map((externalHelmListFetchError, index) =>
                     renderFetchError(externalHelmListFetchError, index),
                 )}
-                {filteredListSize > 0 && renderHeaders()}
+                {filteredListTotalSize > 0 && renderHeaders()}
                 {filteredHelmAppList.map((app) => renderHelmAppLink(app))}
                 {showGuidedContentCards && (
                     <div className="helm-app-guided-cards-wrapper">
@@ -623,7 +623,7 @@ const HelmAppList = ({
     }
 
     function renderFullModeApplicationListContainer() {
-        if (!sseConnection && filteredListSize === 0) {
+        if (!sseConnection && filteredListTotalSize === 0) {
             return (
                 <>
                     {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
@@ -636,11 +636,11 @@ const HelmAppList = ({
 
     function renderPagination(): JSX.Element {
         return (
-            filteredListSize > DEFAULT_BASE_PAGE_SIZE &&
+            filteredListTotalSize > DEFAULT_BASE_PAGE_SIZE &&
             !fetchingExternalApps && (
                 <Pagination
                     rootClassName="flex dc__content-space px-20"
-                    size={filteredListSize}
+                    size={filteredListTotalSize}
                     pageSize={pageSize}
                     offset={offset}
                     changePage={changePage}

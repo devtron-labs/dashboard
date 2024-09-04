@@ -56,6 +56,7 @@ import {
     GenericAppListProps,
     GenericAppListResponse,
     GenericAppType,
+    GetFilteredGenericAppListReturnType,
 } from './AppListType'
 import { renderIcon } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
@@ -84,7 +85,7 @@ const GenericAppList = ({
     const { searchKey, sortBy, sortOrder, templateType, namespace, cluster, offset, pageSize } = filterConfig
 
     // Filtering
-    const getFilteredAppList = (): { filteredAppsList: GenericAppType[]; filteredAppListSize: number } =>
+    const getFilteredAppList = (): GetFilteredGenericAppListReturnType =>
         useMemo(() => {
             let filteredAppsList = appsList
             if (searchKey) {
@@ -109,13 +110,13 @@ const GenericAppList = ({
                 stringComparatorBySortOrder(a.appName, b.appName, sortOrder),
             ) // Sorting
 
-            const filteredAppListSize = filteredAppsList.length
+            const filteredListTotalSize = filteredAppsList.length
 
             filteredAppsList = filteredAppsList.slice(offset, offset + pageSize)
-            return { filteredAppsList, filteredAppListSize }
+            return { filteredAppsList, filteredListTotalSize }
         }, [appsList, filterConfig])
 
-    const { filteredAppsList, filteredAppListSize } = getFilteredAppList()
+    const { filteredAppsList, filteredListTotalSize } = getFilteredAppList()
 
     const closeSseConnection = (sseConnection: EventSource) => {
         sseConnection.close()
@@ -411,17 +412,17 @@ const GenericAppList = ({
     }
 
     function renderFullModeApplicationListContainer() {
-        if (filteredAppListSize === 0) {
+        if (filteredListTotalSize === 0) {
             return renderNoApplicationState()
         }
         return renderApplicationList()
     }
 
     const renderPagination = (): JSX.Element =>
-        filteredAppListSize > DEFAULT_BASE_PAGE_SIZE && (
+        filteredListTotalSize > DEFAULT_BASE_PAGE_SIZE && (
             <Pagination
                 rootClassName="flex dc__content-space px-20"
-                size={filteredAppListSize}
+                size={filteredListTotalSize}
                 pageSize={pageSize}
                 offset={offset}
                 changePage={changePage}
